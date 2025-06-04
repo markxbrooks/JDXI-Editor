@@ -27,6 +27,7 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
     QScrollArea,
     QGridLayout,
+    QTabWidget,
 )
 
 from jdxi_editor.jdxi.synth.type import JDXiSynth
@@ -79,21 +80,36 @@ class DrumPartialEditor(PartialEditor):
         grid_layout = QGridLayout()
         scroll_layout.addLayout(grid_layout)
 
+        tab_widget = QTabWidget()
+        scroll_layout.addWidget(tab_widget)
+
+        tab_pitch = QWidget()
+        tab_pitch_layout = QVBoxLayout(tab_pitch)
+        tab_widget.addTab(tab_pitch, "Pitch")
+
         pitch_group = DrumPitchSection(
             self.controls,
             self._create_parameter_combo_box,
             self._create_parameter_slider,
             self.midi_helper,
         )
-        grid_layout.addWidget(pitch_group, 1, 0)
+        tab_pitch_layout.addWidget(pitch_group)
 
-        pitch_group = DrumPitchEnvSection(
+        tab_pitch_env = QWidget()
+        tab_pitch_env_layout = QVBoxLayout(tab_pitch_env)
+        tab_widget.addTab(tab_pitch_env, "Pitch Env")
+
+        pitch_env_group = DrumPitchEnvSection(
             self.controls,
             self._create_parameter_combo_box,
             self._create_parameter_slider,
             self.midi_helper,
         )
-        grid_layout.addWidget(pitch_group, 0, 1)
+        tab_pitch_env_layout.addWidget(pitch_env_group)
+
+        tab_output = QWidget()
+        tab_output_layout = QVBoxLayout(tab_output)
+        tab_widget.addTab(tab_output, "Output")
 
         output_group = DrumOutputSection(
             self.controls,
@@ -101,7 +117,11 @@ class DrumPartialEditor(PartialEditor):
             self._create_parameter_slider,
             self.midi_helper,
         )
-        grid_layout.addWidget(output_group, 0, 2)
+        tab_output_layout.addWidget(output_group)
+
+        tab_tvf = QWidget()
+        tab_tvf_layout = QVBoxLayout(tab_tvf)
+        tab_widget.addTab(tab_tvf, "TVF")
 
         tvf_group = DrumTVFSection(
             self.controls,
@@ -109,7 +129,11 @@ class DrumPartialEditor(PartialEditor):
             self._create_parameter_slider,
             self.midi_helper,
         )
-        grid_layout.addWidget(tvf_group, 1, 2)
+        tab_tvf_layout.addWidget(tvf_group)
+
+        tab_wmt = QWidget()
+        tab_wmt_layout = QVBoxLayout(tab_wmt)
+        tab_widget.addTab(tab_wmt, "WMT")
 
         wmt_group = DrumWMTSection(
             self.controls,
@@ -117,7 +141,11 @@ class DrumPartialEditor(PartialEditor):
             self._create_parameter_slider,
             self.midi_helper,
         )
-        grid_layout.addWidget(wmt_group, 0, 0)
+        tab_wmt_layout.addWidget(wmt_group)
+
+        tab_tva = QWidget()
+        tab_tva_layout = QVBoxLayout(tab_tva)
+        tab_widget.addTab(tab_tva, "TVA")
 
         tva_group = DrumTVASection(
             self.controls,
@@ -125,7 +153,7 @@ class DrumPartialEditor(PartialEditor):
             self._create_parameter_slider,
             self.midi_helper,
         )
-        grid_layout.addWidget(tva_group, 1, 1)
+        tab_tva_layout.addWidget(tva_group)
 
         main_layout.addWidget(scroll_area)
 

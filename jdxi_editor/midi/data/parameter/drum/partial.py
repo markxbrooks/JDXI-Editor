@@ -150,7 +150,7 @@ class AddressParameterDrumPartial(AddressParameter):
     PARTIAL_RANDOM_PITCH_DEPTH = (0x11, 0, 30, 0, 30, "Specifies the width of random pitch deviation that will occur each time a key is pressed. If you do\nnot want the pitch to change randomly, set this to “0.” These values are in units of cents (1/100th\n of a semitone).")
 
     # Partial Pan
-    PARTIAL_PAN = (0x12, 0, 127, -64, 63, "This specifies the pan of the waveform.\n“L64” is far left, “0” is center, and “63R” is far right.")  # L64 - 63R
+    PARTIAL_PAN = (0x12, 0, 127, -64, 63, "Sets the pan for the drum partial. “L64” is far left, “0” is center, and “63R” is far right.\nMEMO\nUse the Wave Pan parameter (p. 21 f the Manual) to specify the panning of the waveforms that make up\nthe drum partial.")  # L64 - 63R
 
     # Partial Random Pan Depth
     PARTIAL_RANDOM_PAN_DEPTH = (0x13, 0, 63, 0, 63, "When a loop waveform is selected, the sound will normally continue as long as the key is\npressed. If you want the sound to decay naturally even if the key remains pressed, set this to\nNO-SUS.\n* If a one-shot type Wave is selected, it will not sustain even if this parameter is set to\nSUSTAIN.")
@@ -207,31 +207,31 @@ class AddressParameterDrumPartial(AddressParameter):
     WMT1_WAVE_FXM_SWITCH = (0x30, 0, 1, 0, 1, "OFF, ON")  # OFF, ON
 
     # WMT1 Wave FXM Color
-    WMT1_WAVE_FXM_COLOR = (0x31, 0, 3, 1, 4, "1 - 4")  # 1 - 4
+    WMT1_WAVE_FXM_COLOR = (0x31, 0, 3, 1, 4, "Specifies how FXM will perform frequency modulation.\nHigher settings result in a grainier sound, while lower settings result in a more metallic sound.\nValues: 1 - 4")  # 1 - 4
 
     # WMT1 Wave FXM Depth
-    WMT1_WAVE_FXM_DEPTH = (0x32, 0, 16, 0, 16, "0 - 16")  # 0 - 16
+    WMT1_WAVE_FXM_DEPTH = (0x32, 0, 16, 0, 16, "Specifies the depth of the modulation produced by FXM.\nNOTE\nIf Wave Tempo Sync is “ON,” pitch-related settings (p. 22) and FMX-related settings have no\neffect.\nValues: 0 - 16")  # 0 - 16
 
     # WMT1 Wave Tempo Sync
-    WMT1_WAVE_TEMPO_SYNC = (0x33, 0, 1, 0, 1, "OFF, ON")  # OFF, ON
+    WMT1_WAVE_TEMPO_SYNC = (0x33, 0, 1, 0, 1, "This setting causes the pitch of the waveform to be adjusted in response to the tempo of the song.\nWhen this is set to “ON,” the pitch of the waveform will be adjusted in response to the tempo of the song.\nWhen this is set to “OFF,” the pitch of the waveform will not be adjusted in response to the tempo of the song.")  # OFF, ON
 
     # WMT1 Wave Coarse Tune
-    WMT1_WAVE_COARSE_TUNE = (0x34, 16, 112, -48, 48, "-48 - +48")  # -48 - +48
+    WMT1_WAVE_COARSE_TUNE = (0x34, 16, 112, -48, 48, "Adjusts the pitch of the waveform’s sound up or down in semitone steps (+/- 4 octaves).\nMEMO\nThe overall coarse tuning for all of the drum partials is specified by PITCH Coarse Tune (p. 22).")  # -48 - +48
 
     # WMT1 Wave Fine Tune
-    WMT1_WAVE_FINE_TUNE = (0x35, 14, 114, -50, 50, "-50 - +50")  # -50 - +50
+    WMT1_WAVE_FINE_TUNE = (0x35, 14, 114, -50, 50, "Adjusts the pitch of the waveform’s sound up or down in 1/100th of a semitone steps (+/- 50 cents).\nMEMO\nThe overall fine tuning for all of the drum partials is specified by PITCH Fine Tune (p. 22).")  # -50 - +50
 
     # WMT1 Wave Pan
-    WMT1_WAVE_PAN = (0x36, 0, 127, -64, 63, "L64 - 63R")  # L64 - 63R
+    WMT1_WAVE_PAN = (0x36, 0, 127, -64, 63, "Sets the pan for the drum partial. “L64” is far left, “0” is center, and “63R” is far right.\nMEMO\nUse the Wave Pan parameter (p. 21 f the Manual) to specify the panning of the waveforms that make up\nthe drum partial.")  # L64 - 63R
 
     # WMT1 Wave Random Pan Switch
-    WMT1_WAVE_RANDOM_PAN_SWITCH = (0x37, 0, 1, 0, 1, "OFF, ON")  # OFF, ON
+    WMT1_WAVE_RANDOM_PAN_SWITCH = (0x37, 0, 1, 0, 1, "Use this setting to cause the waveform’s panning to change randomly each time a key is pressed\n(ON) or not (OFF).\n* To specify the range in which pan is changed, edit Random Pan Depth (p. 24).")  # OFF, ON
 
     # WMT1 Wave Alternate Pan Switch
-    WMT1_WAVE_ALTERNATE_PAN_SWITCH = (0x38, 0, 2, 0, 2, "OFF, ON, REVERSE")  # OFF, ON, REVERSE
+    WMT1_WAVE_ALTERNATE_PAN_SWITCH = (0x38, 0, 2, 0, 2, "This setting causes panning of the waveform to be alternated between left and right each time a\nkey is pressed.\nSet Alter Pan Sw to “ON” to pan the Wave according to the Alter Pan Depth settings, or to\n“REVS” when you want the panning reversed.\nIf you do not want the panning to change each time a key is pressed, set this to “OFF.”")  # OFF, ON, REVERSE
 
     # WMT1 Wave Level
-    WMT1_WAVE_LEVEL = (0x39, 0, 127, 0, 127, "0 - 127")  # 0 - 127
+    WMT1_WAVE_LEVEL = (0x39, 0, 127, 0, 127, "Sets the volume of the waveform.\nMEMO\nThe volume of each drum partial is specified by TVA Level (p. 24), and the overall volume of\nthe entire drum kit is specified by COMMON Kit Level (p. 20).\nValues: 0 - 127")  # 0 - 127
 
     # WMT1 Velocity Range Lower
     WMT1_VELOCITY_RANGE_LOWER = (0x3A, 1, 127, 1, 127, "Sets the lowest velocity at which the waveform will sound. Make these settings when you want\ndifferent waveforms to sound in response to notes played at different strengths.\nNOTE\nIf you attempt to set the lower key velocity above the higher, or the higher key velocity\nbelow the lower, the other setting changes in tandem.")  # 1 - UPPER
@@ -245,13 +245,13 @@ class AddressParameterDrumPartial(AddressParameter):
     WMT1_VELOCITY_FADE_WIDTH_UPPER = (0x3D, 0, 127, 0, 127, "This determines what will happen to the tone’s level when the tone is played at a velocity greater\nthan its specified velocity range.\nHigher settings produce a more gradual change in volume.\nIf you want notes played outside the specified key velocity range to not be sounded at all, set\nthis to 0")
 
     # WMT2 Wave Switch
-    WMT2_WAVE_SWITCH = (0x3E, 0, 1, 0, 1, "OFF, ON")  # OFF, ON
+    WMT2_WAVE_SWITCH = (0x3E, 0, 1, 0, 1, "When a loop waveform is selected, the sound will normally continue as long as the key is pressed. If you want the sound to decay naturally even if the key remains pressed, set this to\nNO-SUS.\nMEMO\n* If a one-shot type Wave is selected, it will not sustain even if this parameter is set to“SUSTAIN.” NO-SUS, SUSTAIN")  # OFF, ON
 
     # WMT2 Wave Group Type
-    WMT2_WAVE_GROUP_TYPE = (0x3F, 0, 0, 0, 0, "Only one preset_type")  # Only one preset_type
+    WMT2_WAVE_GROUP_TYPE = (0x3F, 0, 0, 0, 0, "Selects the Wave Group that contains the Wave to be used for the drum partial. The Wave Group ID is displayed at the lower part of the display.\nWhen in monaural mode, only the left side (L) is specified. When in stereo, the right side (R) is also\nNo.R specified.")  # Only one preset_type
 
     # WMT2 Wave Group ID
-    WMT2_WAVE_GROUP_ID = (0x40, 0, 16384, 0, 16384, "OFF, 1 - 16384")  # OFF, 1 - 16384
+    WMT2_WAVE_GROUP_ID = (0x40, 0, 16384, 0, 16384, "Selects the Wave Group that contains the Wave to be used for the drum partial. The Wave Group ID is displayed at the lower part of the display.\nWhen in monaural mode, only the left side (L) is specified. When in stereo, the right side (R) is also\nNo.R specified.")  # OFF, 1 - 16384
 
     # WMT2 Wave Number L (Mono)
     WMT2_WAVE_NUMBER_L = (0x44, 0, 16384, 0, 16384, "Selects the Waves comprising the drum partial. Along with the Wave number, the Wave name\nappears at the lower part of the display.\nWhen in monaural mode, only the left side (L) is specified. When in stereo, the right side (R) is also\nNo.R specified.")  # OFF, 1 - 16384
@@ -272,25 +272,25 @@ class AddressParameterDrumPartial(AddressParameter):
     WMT2_WAVE_FXM_DEPTH = (0x4F, 0, 16, 0, 16, "Specifies the depth of the modulation produced by FXM.\nNOTE\nIf Wave Tempo Sync is “ON,” pitch-related settings (p. 22) and FMX-related settings have no\neffect.")  # 0 - 16
 
     # WMT2 Wave Tempo Sync
-    WMT2_WAVE_TEMPO_SYNC = (0x50, 0, 1, 0, 1, "OFF, ON")  # OFF, ON
+    WMT2_WAVE_TEMPO_SYNC = (0x50, 0, 1, 0, 1, "This setting causes the pitch of the waveform to be adjusted in response to the tempo of the song.\nWhen this is set to “ON,” the pitch of the waveform will be adjusted in response to the tempo of the song.\nWhen this is set to “OFF,” the pitch of the waveform will not be adjusted in response to the tempo of the song.")  # OFF, ON
 
     # WMT2 Wave Coarse Tune
-    WMT2_WAVE_COARSE_TUNE = (0x51, 16, 112, -48, 48, "-48 - +48")  # -48 - +48
+    WMT2_WAVE_COARSE_TUNE = (0x51, 16, 112, -48, 48, "Adjusts the pitch of the waveform’s sound up or down in semitone steps (+/- 4 octaves).\nMEMO\nThe overall coarse tuning for all of the drum partials is specified by PITCH Coarse Tune (p. 22).")  # -48 - +48
 
     # WMT2 Wave Fine Tune
-    WMT2_WAVE_FINE_TUNE = (0x52, 14, 114, -50, 50, "-50 - +50")  # -50 - +50
+    WMT2_WAVE_FINE_TUNE = (0x52, 14, 114, -50, 50, "Adjusts the pitch of the waveform’s sound up or down in 1/100th of a semitone steps (+/- 50 cents).\nMEMO\nThe overall fine tuning for all of the drum partials is specified by PITCH Fine Tune (p. 22).")  # -50 - +50
 
     # WMT2 Wave Pan
-    WMT2_WAVE_PAN = (0x53, 0, 127, -64, 63, "L64 - 63R")  # L64 - 63R
+    WMT2_WAVE_PAN = (0x53, 0, 127, -64, 63, "Sets the pan for the drum partial. “L64” is far left, “0” is center, and “63R” is far right.\nMEMO\nUse the Wave Pan parameter (p. 21 f the Manual) to specify the panning of the waveforms that make up\nthe drum partial.")  # L64 - 63R
 
     # WMT2 Wave Random Pan Switch
-    WMT2_WAVE_RANDOM_PAN_SWITCH = (0x54, 0, 1, 0, 1, "OFF, ON")  # OFF, ON
+    WMT2_WAVE_RANDOM_PAN_SWITCH = (0x54, 0, 1, 0, 1, "Use this setting to cause the waveform’s panning to change randomly each time a key is pressed\n(ON) or not (OFF).\n* To specify the range in which pan is changed, edit Random Pan Depth (p. 24).")  # OFF, ON
 
     # WMT2 Wave Alternate Pan Switch
-    WMT2_WAVE_ALTERNATE_PAN_SWITCH = (0x55, 0, 2, 0, 2, "OFF, ON, REVERSE")  # OFF, ON, REVERSE
+    WMT2_WAVE_ALTERNATE_PAN_SWITCH = (0x55, 0, 2, 0, 2, "This setting causes panning of the waveform to be alternated between left and right each time a\nkey is pressed.\nSet Alter Pan Sw to “ON” to pan the Wave according to the Alter Pan Depth settings, or to\n“REVS” when you want the panning reversed.\nIf you do not want the panning to change each time a key is pressed, set this to “OFF.”")  # OFF, ON, REVERSE
 
     # WMT2 Wave Level
-    WMT2_WAVE_LEVEL = (0x56, 0, 127, 0, 127, "0 - 127")  # 0 - 127
+    WMT2_WAVE_LEVEL = (0x56, 0, 127, 0, 127, "Sets the level of the waveform. The value will change in 6 dB (decibel) steps.\nEach 6 dB increase doubles the gain. The gain is specified in decibels (dB).")  # 0 - 127
 
     # WMT2 Velocity Range Lower
     WMT2_VELOCITY_RANGE_LOWER = (0x57, 1, 127, 1, 127, "Sets the lowest velocity at which the waveform will sound. Make these settings when you want\ndifferent waveforms to sound in response to notes played at different strengths.\nNOTE\nIf you attempt to set the lower key velocity above the higher, or the higher key velocity\nbelow the lower, the other setting changes in tandem.")  # 1 - UPPER
@@ -305,13 +305,13 @@ class AddressParameterDrumPartial(AddressParameter):
     WMT2_VELOCITY_FADE_WIDTH_UPPER = (0x5A, 0, 127, 0, 127, "This determines what will happen to the tone’s level when the tone is played at a velocity greater\nthan its specified velocity range.\nHigher settings produce a more gradual change in volume.\nIf you want notes played outside the specified key velocity range to not be sounded at all, set\nthis to 0")
 
     # WMT3 Wave Switch
-    WMT3_WAVE_SWITCH = (0x5B, 0, 1, 0, 1, "OFF, ON")  # OFF, ON
+    WMT3_WAVE_SWITCH = (0x5B, 0, 1, 0, 1, "When a loop waveform is selected, the sound will normally continue as long as the key is pressed. If you want the sound to decay naturally even if the key remains pressed, set this to\nNO-SUS.\nMEMO\n* If a one-shot type Wave is selected, it will not sustain even if this parameter is set to“SUSTAIN.” NO-SUS, SUSTAIN")  # OFF, ON
 
     # WMT3 Wave Group Type
-    WMT3_WAVE_GROUP_TYPE = (0x5C, 0, 0, 0, 0, "Only one preset_type")  # Only one preset_type
+    WMT3_WAVE_GROUP_TYPE = (0x5C, 0, 0, 0, 0, "Selects the Wave Group that contains the Wave to be used for the drum partial. The Wave Group ID is displayed at the lower part of the display.\nWhen in monaural mode, only the left side (L) is specified. When in stereo, the right side (R) is also\nNo.R specified.")  # Only one preset_type
 
     # WMT3 Wave Group ID
-    WMT3_WAVE_GROUP_ID = (0x5D, 0, 16384, 0, 16384, "OFF, 1 - 16384")  # OFF, 1 - 16384
+    WMT3_WAVE_GROUP_ID = (0x5D, 0, 16384, 0, 16384, "Selects the Wave Group that contains the Wave to be used for the drum partial. The Wave Group ID is displayed at the lower part of the display.\nWhen in monaural mode, only the left side (L) is specified. When in stereo, the right side (R) is also\nNo.R specified.")  # OFF, 1 - 16384
 
     # WMT3 Wave Number L (Mono)
     WMT3_WAVE_NUMBER_L = (0x61, 0, 16384, 0, 16384, "Specifies the Waves comprising the drum partial. Along with the Wave number, the Wave name\nappears at the lower part of the display.\nWhen in monaural mode, only the left side (L) is specified. When in stereo, the right side (R) is also\nNo.R specified.")  # OFF, 1 - 16384
@@ -332,25 +332,25 @@ class AddressParameterDrumPartial(AddressParameter):
     WMT3_WAVE_FXM_DEPTH = (0x6C, 0, 16, 0, 16, "Specifies the depth of the modulation produced by FXM.\nNOTE\nIf Wave Tempo Sync is “ON,” pitch-related settings (p. 22) and FMX-related settings have no\neffect.")  # 0 - 16
 
     # WMT3 Wave Tempo Sync
-    WMT3_WAVE_TEMPO_SYNC = (0x6D, 0, 1, 0, 1, "OFF, ON")  # OFF, ON
+    WMT3_WAVE_TEMPO_SYNC = (0x6D, 0, 1, 0, 1, "This setting causes the pitch of the waveform to be adjusted in response to the tempo of the song.\nWhen this is set to “ON,” the pitch of the waveform will be adjusted in response to the tempo of the song.\nWhen this is set to “OFF,” the pitch of the waveform will not be adjusted in response to the tempo of the song.")  # OFF, ON
 
     # WMT3 Wave Coarse Tune
-    WMT3_WAVE_COARSE_TUNE = (0x6E, 16, 112, -48, 48, "-48 - +48")  # -48 - +48
+    WMT3_WAVE_COARSE_TUNE = (0x6E, 16, 112, -48, 48, "Adjusts the pitch of the waveform’s sound up or down in semitone steps (+/- 4 octaves).\nMEMO\nThe overall coarse tuning for all of the drum partials is specified by PITCH Coarse Tune (p. 22).")  # -48 - +48
 
     # WMT3 Wave Fine Tune
-    WMT3_WAVE_FINE_TUNE = (0x6F, 14, 114, -50, 50, "-50 - +50")  # -50 - +50
+    WMT3_WAVE_FINE_TUNE = (0x6F, 14, 114, -50, 50, "Adjusts the pitch of the waveform’s sound up or down in 1/100th of a semitone steps (+/- 50 cents).\nMEMO\nThe overall fine tuning for all of the drum partials is specified by PITCH Fine Tune (p. 22).")  # -50 - +50
 
     # WMT3 Wave Pan
-    WMT3_WAVE_PAN = (0x70, 0, 127, -64, 64, "L64 - 63R")  # L64 - 63R
+    WMT3_WAVE_PAN = (0x70, 0, 127, -64, 64, "Sets the pan for the drum partial. “L64” is far left, “0” is center, and “63R” is far right.\nMEMO\nUse the Wave Pan parameter (p. 21 f the Manual) to specify the panning of the waveforms that make up\nthe drum partial.")  # L64 - 63R
 
     # WMT3 Wave Random Pan Switch
-    WMT3_WAVE_RANDOM_PAN_SWITCH = (0x71, 0, 1, 0, 1, "OFF, ON")  # OFF, ON
+    WMT3_WAVE_RANDOM_PAN_SWITCH = (0x71, 0, 1, 0, 1, "Use this setting to cause the waveform’s panning to change randomly each time a key is pressed\n(ON) or not (OFF).\n* To specify the range in which pan is changed, edit Random Pan Depth (p. 24).")  # OFF, ON
 
     # WMT3 Wave Alternate Pan Switch
-    WMT3_WAVE_ALTERNATE_PAN_SWITCH = (0x72, 0, 2, 0, 2, "OFF, ON, REVERSE")  # OFF, ON, REVERSE
+    WMT3_WAVE_ALTERNATE_PAN_SWITCH = (0x72, 0, 2, 0, 2, "This setting causes panning of the waveform to be alternated between left and right each time a\nkey is pressed.\nSet Alter Pan Sw to “ON” to pan the Wave according to the Alter Pan Depth settings, or to\n“REVS” when you want the panning reversed.\nIf you do not want the panning to change each time a key is pressed, set this to “OFF.”")  # OFF, ON, REVERSE
 
     # WMT3 Wave Level
-    WMT3_WAVE_LEVEL = (0x73, 0, 127, 0, 127, "0 - 127")  # 0 - 127  
+    WMT3_WAVE_LEVEL = (0x73, 0, 127, 0, 127, "Sets the level of the waveform. The value will change in 6 dB (decibel) steps.\nEach 6 dB increase doubles the gain. The gain is specified in decibels (dB).")  # 0 - 127
 
     # WMT3 Velocity Range Lower
     WMT3_VELOCITY_RANGE_LOWER = (0x74, 1, 127, 1, 127, "Sets the lowest velocity at which the waveform will sound. Make these settings when you want\ndifferent waveforms to sound in response to notes played at different strengths.\nNOTE\nIf you attempt to set the lower key velocity above the higher, or the higher key velocity\nbelow the lower, the other setting changes in tandem.")  # 1 - UPPER
@@ -365,13 +365,13 @@ class AddressParameterDrumPartial(AddressParameter):
     WMT3_VELOCITY_FADE_WIDTH_UPPER = (0x77, 0, 127, 0, 127, "This determines what will happen to the tone’s level when the tone is played at a velocity greater\nthan its specified velocity range.\nHigher settings produce a more gradual change in volume.\nIf you want notes played outside the specified key velocity range to not be sounded at all, set\nthis to 0")
 
     # WMT4 Wave Switch
-    WMT4_WAVE_SWITCH = (0x78, 0, 1, 0, 1, "OFF, ON")  # OFF, ON
+    WMT4_WAVE_SWITCH = (0x78, 0, 1, 0, 1, "When a loop waveform is selected, the sound will normally continue as long as the key is pressed. If you want the sound to decay naturally even if the key remains pressed, set this to\nNO-SUS.\nMEMO\n* If a one-shot type Wave is selected, it will not sustain even if this parameter is set to“SUSTAIN.” NO-SUS, SUSTAIN")  # OFF, ON
 
     # WMT4 Wave Group Type
-    WMT4_WAVE_GROUP_TYPE = (0x79, 0, 0, 0, 0, "Only one preset_type")  # Only one preset_type
+    WMT4_WAVE_GROUP_TYPE = (0x79, 0, 0, 0, 0, "Selects the Wave Group that contains the Wave to be used for the drum partial. The Wave Group ID is displayed at the lower part of the display.\nWhen in monaural mode, only the left side (L) is specified. When in stereo, the right side (R) is also\nNo.R specified.")  # Only one preset_type
 
     # WMT4 Wave Group ID
-    WMT4_WAVE_GROUP_ID = (0x7A, 0, 16384, 0, 16384, "OFF, 1 - 16384")  # OFF, 1 - 16384
+    WMT4_WAVE_GROUP_ID = (0x7A, 0, 16384, 0, 16384, "Selects the Wave Group that contains the Wave to be used for the drum partial. The Wave Group ID is displayed at the lower part of the display.\nWhen in monaural mode, only the left side (L) is specified. When in stereo, the right side (R) is also\nNo.R specified.")  # OFF, 1 - 16384
 
     # WMT4 Wave Number L (Mono)
     WMT4_WAVE_NUMBER_L = (0x7E, 0, 16384, 0, 16384, "Specifies the Waves comprising the drum partial. Along with the Wave number, the Wave name\nappears at the lower part of the display.\nWhen in monaural mode, only the left side (L) is specified. When in stereo, the right side (R) is also\nNo.R specified.")  # OFF, 1 - 16384
@@ -392,7 +392,7 @@ class AddressParameterDrumPartial(AddressParameter):
     WMT4_WAVE_FXM_DEPTH = (0x109, 0, 16, 0, 16, "Specifies the depth of the frequency modulation. Higher settings result in a more dramatic effect, while lower settings result in a more subtle effect.\nNOTE\nIf Wave Tempo Sync is ON, pitch-related settings (p. 22) and FMX-related settings have no effect.")  # 1 - 16
 
     # WMT4 Wave Tempo Sync
-    WMT4_WAVE_TEMPO_SYNC = (0x10A, 0, 1, 0, 1, "Tempo Sync, OFF, ON")  # OFF, ON
+    WMT4_WAVE_TEMPO_SYNC = (0x10A, 0, 1, 0, 1, "This setting causes the pitch of the waveform to be adjusted in response to the tempo of the song.\nWhen this is set to “ON,” the pitch of the waveform will be adjusted in response to the tempo of the song.\nWhen this is set to “OFF,” the pitch of the waveform will not be adjusted in response to the tempo of the song.")  # OFF, ON
 
     # WMT4 Wave Coarse Tune
     WMT4_WAVE_COARSE_TUNE = (0x10B, 16, 112, -48, 48, "Selects the pitch at which a drum partial sounds.\nNOTE\nThe coarse tune of the waveforms that make up the drum partial is specified by the Wave Coarse Tune parameter (p. 21). C-1–G9")  # -48 - +48
@@ -428,64 +428,64 @@ class AddressParameterDrumPartial(AddressParameter):
     PITCH_ENV_DEPTH = (0x115, 52, 76, -12, 12, "Adjusts the effect of the Pitch Envelope. Higher settings will cause the pitch envelope to produce\ngreater change.\nNegative (“-”) settings invert the shape of the envelope.")  # -12 - +12
 
     # Pitch Env Velocity Sens
-    PITCH_ENV_VELOCITY_SENS = (0x116, 1, 127, -63, 63, "Sets the sensitivity of the pitch envelope to velocity. Higher settings result in a more dramatic effect, while lower settings result in a more subtle effect.")  # -63 - +63
+    PITCH_ENV_VELOCITY_SENS = (0x116, 1, 127, -63, 63, "Keyboard playing dynamics can be used to control the depth of the pitch envelope.\nSpecify a positive (“+”) setting if you want the pitch envelope to have a greater effect as you play\nthe key more strongly; specify a negative (“-”) setting if you want the pitch envelope to have less\neffect.")  # -63 - +63
 
     # Pitch Env Time 1 Velocity Sens
-    PITCH_ENV_TIME_1_VELOCITY_SENS = (0x117, 1, 127, -63, 63, "Sets the sensitivity of the pitch envelope to velocity. Higher settings result in a more dramatic effect, while lower settings result in a more subtle effect.")  # -63 - +63
+    PITCH_ENV_TIME_1_VELOCITY_SENS = (0x117, 1, 127, -63, 63, "Allows keyboard dynamics to affect the Time 1 of the Pitch envelope.\nSpecify a positive (“+”) setting if you want Time 1 to become faster as you play the key more\nstrongly; specify a negative (“-”) setting if you want Time 1 to become slower.")  # -63 - +63
 
     # Pitch Env Time 4 Velocity Sens
-    PITCH_ENV_TIME_4_VELOCITY_SENS = (0x118, 1, 127, -63, 63, "Sets the sensitivity of the pitch envelope to velocity. Higher settings result in a more dramatic effect, while lower settings result in a more subtle effect.")  # -63 - +63
+    PITCH_ENV_TIME_4_VELOCITY_SENS = (0x118, 1, 127, -63, 63, "Allows keyboard dynamics to affect the Time 4 of the Pitch envelope.\nSpecify a positive (“+”) setting if you want Time 4 to become faster as you play the key more\nstrongly; specify a negative (“-”) setting if you want Time 4 to become slower.")  # -63 - +63
 
     # Pitch Env Time 1
-    PITCH_ENV_TIME_1 = (0x119, 0, 127, 0, 127, "Sets the time of the pitch envelope. Higher settings result in a more dramatic effect, while lower settings result in a more subtle effect.")
+    PITCH_ENV_TIME_1 = (0x119, 0, 127, 0, 127, "Specify the pitch envelope times (Time 1–Time 4).\nHigher settings will result in a longer time until the next pitch is reached. (For example, Time 2 is\nthe time over which the pitch changes from Level 1 to Level 2.)")
 
     # Pitch Env Time 2
-    PITCH_ENV_TIME_2 = (0x11A, 0, 127, 0, 127, "Sets the time of the pitch envelope. Higher settings result in a more dramatic effect, while lower settings result in a more subtle effect.")
+    PITCH_ENV_TIME_2 = (0x11A, 0, 127, 0, 127, "Specify the pitch envelope times (Time 1–Time 4).\nHigher settings will result in a longer time until the next pitch is reached. (For example, Time 2 is\nthe time over which the pitch changes from Level 1 to Level 2.)")
 
     # Pitch Env Time 3
-    PITCH_ENV_TIME_3 = (0x11B, 0, 127, 0, 127, "Sets the time of the pitch envelope. Higher settings result in a more dramatic effect, while lower settings result in a more subtle effect.")
+    PITCH_ENV_TIME_3 = (0x11B, 0, 127, 0, 127, "Specify the pitch envelope times (Time 1–Time 4).\nHigher settings will result in a longer time until the next pitch is reached. (For example, Time 2 is\nthe time over which the pitch changes from Level 1 to Level 2.)")
 
     # Pitch Env Time 4
-    PITCH_ENV_TIME_4 = (0x11C, 0, 127, 0, 127, "Sets the time of the pitch envelope. Higher settings result in a more dramatic effect, while lower settings result in a more subtle effect.")
+    PITCH_ENV_TIME_4 = (0x11C, 0, 127, 0, 127, "Specify the pitch envelope times (Time 1–Time 4).\nHigher settings will result in a longer time until the next pitch is reached. (For example, Time 2 is\nthe time over which the pitch changes from Level 1 to Level 2.)")
 
     # Pitch Env Level 0
-    PITCH_ENV_LEVEL_0 = (0x11D, 1, 127, -63, 63, "Sets the level of the pitch envelope. Higher settings result in a more dramatic effect, while lower settings result in a more subtle effect.")  # -63 - +63
+    PITCH_ENV_LEVEL_0 = (0x11D, 1, 127, -63, 63, "Specify the pitch envelope levels (Level 0–Level 4).\nThese specify the amount of pitch change at each point relative to the standard pitch\n(Pitch screen) specified by coarse tune (and fine tune).\nPositive (“+”) settings make the pitch\nhigher than the standard pitch; negative (“-”) settings make the pitch lower.")
 
     # Pitch Env Level 1
-    PITCH_ENV_LEVEL_1 = (0x11E, 1, 127, -63, 63, "Sets the level of the pitch envelope. Higher settings result in a more dramatic effect, while lower settings result in a more subtle effect.")  # -63 - +63
+    PITCH_ENV_LEVEL_1 = (0x11E, 1, 127, -63, 63, "Specify the pitch envelope levels (Level 0–Level 4).\nThese specify the amount of pitch change at each point relative to the standard pitch\n(Pitch screen) specified by coarse tune (and fine tune).\nPositive (“+”) settings make the pitch\nhigher than the standard pitch; negative (“-”) settings make the pitch lower.")  # -63 - +63
 
     # Pitch Env Level 2
-    PITCH_ENV_LEVEL_2 = (0x11F, 1, 127, -63, 63, "Sets the level of the pitch envelope. Higher settings result in a more dramatic effect, while lower settings result in a more subtle effect.")  # -63 - +63
+    PITCH_ENV_LEVEL_2 = (0x11F, 1, 127, -63, 63, "Specify the pitch envelope levels (Level 0–Level 4).\nThese specify the amount of pitch change at each point relative to the standard pitch\n(Pitch screen) specified by coarse tune (and fine tune).\nPositive (“+”) settings make the pitch\nhigher than the standard pitch; negative (“-”) settings make the pitch lower.")  # -63 - +63
 
     # Pitch Env Level 3
-    PITCH_ENV_LEVEL_3 = (0x120, 1, 127, -63, 63, "Sets the level of the pitch envelope. Higher settings result in a more dramatic effect, while lower settings result in a more subtle effect.")  # -63 - +63
+    PITCH_ENV_LEVEL_3 = (0x120, 1, 127, -63, 63, "Specify the pitch envelope levels (Level 0–Level 4).\nThese specify the amount of pitch change at each point relative to the standard pitch\n(Pitch screen) specified by coarse tune (and fine tune).\nPositive (“+”) settings make the pitch\nhigher than the standard pitch; negative (“-”) settings make the pitch lower.")  # -63 - +63
 
     # Pitch Env Level 4
-    PITCH_ENV_LEVEL_4 = (0x121, 1, 127, -63, 63, "Sets the level of the pitch envelope. Higher settings result in a more dramatic effect, while lower settings result in a more subtle effect.")  # -63 - +63
+    PITCH_ENV_LEVEL_4 = (0x121, 1, 127, -63, 63, "Specify the pitch envelope levels (Level 0–Level 4).\nThese specify the amount of pitch change at each point relative to the standard pitch\n(Pitch screen) specified by coarse tune (and fine tune).\nPositive (“+”) settings make the pitch\nhigher than the standard pitch; negative (“-”) settings make the pitch lower.")  # -63 - +63
 
     # TVF Filter Type
-    TVF_FILTER_TYPE = (0x122, 0, 6, 0, 6, "OFF, LPF, BPF, HPF, PKG, LPF2, LPF3")  # OFF, LPF, BPF, HPF, PKF, LPF2, LPF3
+    TVF_FILTER_TYPE = (0x122, 0, 6, 0, 6, "Selects the type of filter. A filter cuts or boosts a specific frequency region to change a sound’s\nbrightness, thickness, or other qualities.\nOFF: The filter is not used.\nLPF: Low Pass Filter. Cuts the portion that is above the cutoff frequency. By cutting the highfrequency\nportion, this gives the sound a milder character. This is the most common filter\nused in synthesizers.\nBPF: Band Pass Filter. This leaves only the frequencies in the region of the cutoff frequency, and cuts the rest. This can be useful when creating distinctive sounds.\nHPF: High Pass Filter. This cuts the frequencies in the region below the cutoff frequency. This is suitable for creating percussive sounds emphasizing their higher ones.\nPKG: Peaking Filter. This emphasizes the frequencies in the region of the cutoff frequency. This represents the “resonance” of a drum.\nLPF2: Low Pass Filter 2. Although frequency components above the cutoff frequency are cut, the sensitivity of this filter is half that of the LPF. This makes it a comparatively warmer low pass filter. This filter is good for use with simulated instrument sounds such as the acoustic piano.\nLPF3: Low Pass Filter 3. Although frequency components above the cutoff frequency are cut, the sensitivity of this filter changes according to the Cutoff frequency. While this filter is also good for use with simulated acoustic instrument sounds, the nuance exhibits\ndiffers from that of the LPF2, even with the same TVF Envelope settings")  # OFF, LPF, BPF, HPF, PKF, LPF2, LPF3
 
     # TVF Cutoff Frequency
-    TVF_CUTOFF_FREQUENCY = (0x123, 0, 127, 0, 127, "Sets the cutoff frequency of the filter. Higher settings result in a more dramatic effect, while lower settings result in a more subtle effect.")
+    TVF_CUTOFF_FREQUENCY = (0x123, 0, 127, 0, 127, "Selects the frequency at which the filter begins to have an effect on the waveform’s frequency\ncomponents.\nWith “LPF/LPF2/LPF3” selected for the Filter Type parameter, lower cutoff frequency settings\nreduce a tone’s upper harmonics for a more rounded, warmer sound. Higher settings make it\nsound brighter.\nIf the Filter Type parameter is set to “BPF,” the cutoff frequency setting changes the region of\nharmonics that are allowed to sound. This can be useful when creating distinctive sounds.\nWith “HPF” selected, higher Cutoff Frequency settings will reduce lower harmonics to emphasize\njust the brighter components of the sound.\nWith “PKG” selected, the harmonics to be emphasized will vary depending on Cutoff Frequency\nsetting.")
 
     # TVF Cutoff Velocity Curve
-    TVF_CUTOFF_VELOCITY_CURVE = (0x124, 0, 7, 0, 7, "FIXED, 1 - 7")  # FIXED, 1 - 7
+    TVF_CUTOFF_VELOCITY_CURVE = (0x124, 0, 7, 0, 7, "Selects one of the following seven curves that determine how keyboard playing dynamics\n(velocity) influence the cutoff frequency. Set this to “FIXED” if you don’t want the Cutoff\nfrequency to be affected by the keyboard velocity.")  # FIXED, 1 - 7
 
     # TVF Cutoff Velocity Sens
-    TVF_CUTOFF_VELOCITY_SENS = (0x125, 1, 127, -63, 63, "Sets the sensitivity of the cutoff frequency to velocity. Higher settings result in a more dramatic effect, while lower settings result in a more subtle effect.")  # -63 - +63
+    TVF_CUTOFF_VELOCITY_SENS = (0x125, 1, 127, -63, 63, "Use this parameter when changing the cutoff frequency to be applied as a result of changes in\nplaying velocity.\nSpecify a positive (“+”) setting if you want the cutoff frequency to become higher as you play\nmore strongly; specify a negative (“-”) setting if you want the cutoff frequency to become lower.")  # -63 - +63
 
     # TVF Resonance
     TVF_RESONANCE = (0x126, 0, 127, 0, 127, "Sets the resonance of the filter. Higher settings result in a more dramatic effect, while lower settings result in a more subtle effect.")
 
     # TVF Resonance Velocity Sens
-    TVF_RESONANCE_VELOCITY_SENS = (0x127, 1, 127, -63, 63, "Sets the sensitivity of the resonance to velocity. Higher settings result in a more dramatic effect, while lower settings result in a more subtle effect.")  # -63 - +63
+    TVF_RESONANCE_VELOCITY_SENS = (0x127, 1, 127, -63, 63, "This allows keyboard velocity to modify the amount of Resonance.\nSpecify a positive (“+”) setting if you want the resonance to increase as you play more strongly;\nspecify a negative (“-”) setting if you want the resonance to decrease.")  # -63 - +63
 
     # TVF Env Depth
     TVF_ENV_DEPTH = (0x128, 1, 127, -63, 63, "Sets the depth of the envelope. Higher settings result in a more dramatic effect, while lower settings result in a more subtle effect.")  # -63 - +63
 
     # TVF Env Velocity Curve Type
-    TVF_ENV_VELOCITY_CURVE_TYPE = (0x129, 0, 7, 0, 7, "FIXED, 1 - 7")  # FIXED, 1 - 7
+    TVF_ENV_VELOCITY_CURVE_TYPE = (0x129, 0, 7, 0, 7, "Choose one of the following seven curves to specify how the volume of the drum partial changes\nin response to your keyboard playing dynamics.\nIf you don’t want the volume of the drum partial to change in response to your keyboard\ndynamics, choose the “FIXED” setting.")  # FIXED, 1 - 7
 
     # TVF Env Velocity Sens
     TVF_ENV_VELOCITY_SENS = (0x137, 1, 127, -63, 63, "Sets the sensitivity of the envelope to velocity. Higher settings result in a more dramatic effect, while lower settings result in a more subtle effect.")  # -63 - +63
@@ -497,37 +497,37 @@ class AddressParameterDrumPartial(AddressParameter):
     TVF_ENV_TIME_4_VELOCITY_SENS = (0x12C, 1, 127, -63, 63, "Sets the sensitivity of the envelope to velocity. Higher settings result in a more dramatic effect, while lower settings result in a more subtle effect.")  # -63 - +63
 
     # TVF Env Time 1
-    TVF_ENV_TIME_1 = (0x12D, 0, 127, 0, 127, "Sets the time of the envelope. Higher settings result in a more dramatic effect, while lower settings result in a more subtle effect.")
+    TVF_ENV_TIME_1 = (0x12D, 0, 127, 0, 127, "Specify the TVF envelope times (Time 1–Time 4).\nHigher settings will lengthen the time until the\nnext cutoff frequency level is reached. (For example, Time 2 is the time over which Level 1 will\nchange to Level 2.)")
 
     # TVF Env Time 2
-    TVF_ENV_TIME_2 = (0x12E, 0, 127, 0, 127, "Sets the time of the envelope. Higher settings result in a more dramatic effect, while lower settings result in a more subtle effect.")
+    TVF_ENV_TIME_2 = (0x12E, 0, 127, 0, 127, "Specify the TVF envelope times (Time 1–Time 4).\nHigher settings will lengthen the time until the\nnext cutoff frequency level is reached. (For example, Time 2 is the time over which Level 1 will\nchange to Level 2.)")
 
     # TVF Env Time 3
-    TVF_ENV_TIME_3 = (0x12F, 0, 127, 0, 127, "Sets the time of the envelope. Higher settings result in a more dramatic effect, while lower settings result in a more subtle effect.")
-
+    TVF_ENV_TIME_3 = (0x12F, 0, 127, 0, 127, "Specify the TVF envelope times (Time 1–Time 4).\nHigher settings will lengthen the time until the\nnext cutoff frequency level is reached. (For example, Time 2 is the time over which Level 1 will\nchange to Level 2.)")
+    
     # TVF Env Time 4
-    TVF_ENV_TIME_4 = (0x130, 0, 127, 0, 127, "Sets the time of the envelope. Higher settings result in a more dramatic effect, while lower settings result in a more subtle effect.")
+    TVF_ENV_TIME_4 = (0x130, 0, 127, 0, 127, "Specify the TVF envelope times (Time 1–Time 4).\nHigher settings will lengthen the time until the\nnext cutoff frequency level is reached. (For example, Time 2 is the time over which Level 1 will\nchange to Level 2.)")
 
     # TVF Env Level 0
-    TVF_ENV_LEVEL_0 = (0x131, 0, 127, 0, 127, "Sets the level of the envelope. Higher settings result in a more dramatic effect, while lower settings result in a more subtle effect.")
+    TVF_ENV_LEVEL_0 = (0x131, 0, 127, 0, 127, "Specify the TVF envelope levels (Level 0–Level 4).\nThese settings specify how the cutoff frequency will change at each point, relative to the\nstandard cutoff frequency (the cutoff frequency value specified in the TVF screen).")
 
     # TVF Env Level 1
-    TVF_ENV_LEVEL_1 = (0x132, 0, 127, 0, 127, "Sets the level of the envelope. Higher settings result in a more dramatic effect, while lower settings result in a more subtle effect.")
+    TVF_ENV_LEVEL_1 = (0x132, 0, 127, 0, 127, "Specify the TVF envelope levels (Level 0–Level 4).\nThese settings specify how the cutoff frequency will change at each point, relative to the\nstandard cutoff frequency (the cutoff frequency value specified in the TVF screen).")
 
     # TVF Env Level 2
-    TVF_ENV_LEVEL_2 = (0x133, 0, 127, 0, 127, "Sets the level of the envelope. Higher settings result in a more dramatic effect, while lower settings result in a more subtle effect.")
+    TVF_ENV_LEVEL_2 = (0x133, 0, 127, 0, 127, "Specify the TVF envelope levels (Level 0–Level 4).\nThese settings specify how the cutoff frequency will change at each point, relative to the\nstandard cutoff frequency (the cutoff frequency value specified in the TVF screen).")
 
     # TVF Env Level 3
-    TVF_ENV_LEVEL_3 = (0x134, 0, 127, 0, 127, "Sets the level of the envelope. Higher settings result in a more dramatic effect, while lower settings result in a more subtle effect.")
+    TVF_ENV_LEVEL_3 = (0x134, 0, 127, 0, 127, "Specify the TVF envelope levels (Level 0–Level 4).\nThese settings specify how the cutoff frequency will change at each point, relative to the\nstandard cutoff frequency (the cutoff frequency value specified in the TVF screen).")
 
     # TVF Env Level 4
-    TVF_ENV_LEVEL_4 = (0x135, 0, 127, 0, 127, "Sets the level of the envelope. Higher settings result in a more dramatic effect, while lower settings result in a more subtle effect.")
+    TVF_ENV_LEVEL_4 = (0x135, 0, 127, 0, 127, "Specify the TVF envelope levels (Level 0–Level 4).\nThese settings specify how the cutoff frequency will change at each point, relative to the\nstandard cutoff frequency (the cutoff frequency value specified in the TVF screen).")
 
     # TVA Level Velocity Curve
-    TVA_LEVEL_VELOCITY_CURVE = (0x136, 0, 7, 0, 7, "FIXED, 1 - 7")  # FIXED, 1 - 7
+    TVA_LEVEL_VELOCITY_CURVE = (0x136, 0, 7, 0, 7, "Choose one of the following seven curves to specify how the volume of the drum partial changes\nin response to your keyboard playing dynamics.\nIf you don’t want the volume of the drum partial to change in response to your keyboard\ndynamics, choose the “FIXED” setting.")  # FIXED, 1 - 7
 
     # TVA Level Velocity Sens
-    TVA_LEVEL_VELOCITY_SENS = (0x137, 1, 127, -63, 63, "Sets the sensitivity of the level to velocity. Higher settings result in a more dramatic effect, while lower settings result in a more subtle effect.")  # -63 - +63
+    TVA_LEVEL_VELOCITY_SENS = (0x137, 1, 127, -63, 63, "Set this when you want the volume of the drum partial to change depending on the force with\nwhich you press the keys.\nSpecify a positive (“+”) setting if you want the volume of the drum partial to increase as you play\nmore strongly; specify a negative (“-”) setting if you want the volume to decrease.")
 
     # TVA Env Time 1 Velocity Sens
     TVA_ENV_TIME_1_VELOCITY_SENS = (0x138, 1, 127, -63, 63, "Sets the sensitivity of the envelope to velocity. Higher settings result in a more dramatic effect, while lower settings result in a more subtle effect.")  # -63 - +63
@@ -536,25 +536,25 @@ class AddressParameterDrumPartial(AddressParameter):
     TVA_ENV_TIME_4_VELOCITY_SENS = (0x139, 1, 127, -63, 63, "Sets the sensitivity of the envelope to velocity. Higher settings result in a more dramatic effect, while lower settings result in a more subtle effect.")  # -63 - +63
 
     # TVA Env Time 1
-    TVA_ENV_TIME_1 = (0x13A, 0, 127, 0, 127, "Sets the time of the envelope. Higher settings result in a more dramatic effect, while lower settings result in a more subtle effect.")
+    TVA_ENV_TIME_1 = (0x13A, 0, 127, 0, 127, "Specify the TVA envelope times (Time 1–Time 4).\nHigher settings will lengthen the time until the\nnext volume level is reached. (For example, Time 2 is the time over which Level 1 will change to\nLevel 2.)")
 
     # TVA Env Time 2
-    TVA_ENV_TIME_2 = (0x13B, 0, 127, 0, 127, "Sets the time of the envelope. Higher settings result in a more dramatic effect, while lower settings result in a more subtle effect.")
+    TVA_ENV_TIME_2 = (0x13B, 0, 127, 0, 127, "Specify the TVA envelope times (Time 1–Time 4).\nHigher settings will lengthen the time until the\nnext volume level is reached. (For example, Time 2 is the time over which Level 1 will change to\nLevel 2.)")
 
     # TVA Env Time 3
-    TVA_ENV_TIME_3 = (0x13C, 0, 127, 0, 127, "Sets the time of the envelope. Higher settings result in a more dramatic effect, while lower settings result in a more subtle effect.")
+    TVA_ENV_TIME_3 = (0x13C, 0, 127, 0, 127, "Specify the TVA envelope times (Time 1–Time 4).\nHigher settings will lengthen the time until the\nnext volume level is reached. (For example, Time 2 is the time over which Level 1 will change to\nLevel 2.)")
 
     # TVA Env Time 4
-    TVA_ENV_TIME_4 = (0x13D, 0, 127, 0, 127, "Sets the time of the envelope. Higher settings result in a more dramatic effect, while lower settings result in a more subtle effect.")
+    TVA_ENV_TIME_4 = (0x13D, 0, 127, 0, 127, "Specify the TVA envelope times (Time 1–Time 4).\nHigher settings will lengthen the time until the\nnext volume level is reached. (For example, Time 2 is the time over which Level 1 will change to\nLevel 2.)")
 
     # TVA Env Level 1
     TVA_ENV_LEVEL_1 = (0x13E, 0, 127, 0, 127, "Specify the TVA envelope levels (Level 1–Level 3).\nThese settings specify how the volume will change at each point, relative to the standard volume\n(the Partial Level value specified in the TVA screen).")
 
     # TVA Env Level 2
-    TVA_ENV_LEVEL_2 = (0x13F, 0, 127, 0, 127, "Sets the level of the envelope. Higher settings result in a more dramatic effect, while lower settings result in a more subtle effect.")
+    TVA_ENV_LEVEL_2 = (0x13F, 0, 127, 0, 127, "Specify the TVA envelope levels (Level 1–Level 3).\nThese settings specify how the volume will change at each point, relative to the standard volume\n(the Partial Level value specified in the TVA screen).")
 
     # TVA Env Level 3
-    TVA_ENV_LEVEL_3 = (0x140, 0, 127, 0, 127, "Sets the level of the envelope. Higher settings result in a more dramatic effect, while lower settings result in a more subtle effect."  )
+    TVA_ENV_LEVEL_3 = (0x140, 0, 127, 0, 127, "Specify the TVA envelope levels (Level 1–Level 3).\nThese settings specify how the volume will change at each point, relative to the standard volume\n(the Partial Level value specified in the TVA screen).")
 
     # One Shot Mode
     ONE_SHOT_MODE = (0x141, 0, 1, 0, 1, "The sound will play back until the end of the waveform (or the end of the envelope, whichever\ncomes first).\nThe result will be the same as when the envelope’s Env Mode parameter is set to “NO-SUS.”")  # OFF, ON
