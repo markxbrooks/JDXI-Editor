@@ -156,22 +156,22 @@ class AddressParameterDrumPartial(AddressParameter):
     PARTIAL_RANDOM_PAN_DEPTH = (0x13, 0, 63, 0, 63, "When a loop waveform is selected, the sound will normally continue as long as the key is\npressed. If you want the sound to decay naturally even if the key remains pressed, set this to\nNO-SUS.\n* If a one-shot type Wave is selected, it will not sustain even if this parameter is set to\nSUSTAIN.")
 
     # Partial Alternate Pan Depth
-    PARTIAL_ALTERNATE_PAN_DEPTH = (0x14, 1, 127, -63, 63, "")  # L63 - 63R
+    PARTIAL_ALTERNATE_PAN_DEPTH = (0x14, 1, 127, -63, 63, "Use this parameter when you want the stereo location to change randomly each time you press\na key.\nHigher settings will produce a greater amount of change.\nNOTE\nThis applies only to waves whose Wave Random Pan Sw parameter (p. 21) is ON.")  # L63 - 63R
 
     # Partial Env Mode
-    PARTIAL_ENV_MODE = (0x15, 0, 1)  # NO-SUS, SUSTAIN
+    PARTIAL_ENV_MODE = (0x15, 0, 1, "Partial Env Mode: When a loop waveform is selected, the sound will normally continue as long as the key is pressed. If you want the sound to decay naturally even if the key remains pressed, set this to\nNO-SUS.\nMEMO\n* If a one-shot type Wave is selected, it will not sustain even if this parameter is set to“SUSTAIN.” NO-SUS, SUSTAIN")  # NO-SUS, SUSTAIN
 
     # Partial Output Level
-    PARTIAL_OUTPUT_LEVEL = (0x16, 0, 127, 0, 127)
+    PARTIAL_OUTPUT_LEVEL = (0x16, 0, 127, 0, 127, "Specifies the signal level of each partial.\nMEMO\nThe overall output level of the entire drum kit is specified by COMMON Kit Level (p. 20 of the manual).")
 
     # Partial Chorus Send Level
-    PARTIAL_CHORUS_SEND_LEVEL = (0x19, 0, 127, 0, 127)
+    PARTIAL_CHORUS_SEND_LEVEL = (0x19, 0, 127, 0, 127, "Specifies the level of the signal sent to the chorus for each partial.")
 
     # Partial Reverb Send Level
-    PARTIAL_REVERB_SEND_LEVEL = (0x1A, 0, 127, 0, 127)
+    PARTIAL_REVERB_SEND_LEVEL = (0x1A, 0, 127, 0, 127, "Specifies the level of the signal sent to the reverb for each partial.")
 
     # Partial Output Assign
-    PARTIAL_OUTPUT_ASSIGN = (0x1B, 0, 4, 0, 4   )  # EFX1, EFX2, DLY, REV, DIR
+    PARTIAL_OUTPUT_ASSIGN = (0x1B, 0, 4, 0, 4,  "Specifies how the sound of each partial will be output. (EFX1, EFX2, DLY, REV, DIR)" )  # EFX1, EFX2, DLY, REV, DIR
 
     # Partial Pitch Bend Range
     PARTIAL_PITCH_BEND_RANGE = (0x1C, 0, 48, 0, 48, "Specifies the amount of pitch change in semitones (4 octaves) that will occur when the Pitch\nBend Lever is moved. The amount of change when the lever is tilted is set to the same value for\n both left and right sides")
