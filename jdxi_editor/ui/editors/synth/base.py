@@ -191,6 +191,10 @@ class SynthBase(QWidget):
             display_min, display_max = param.get_display_value()
         else:
             display_min, display_max = param.min_val, param.max_val
+        if hasattr(param, "get_tooltip"):
+            tooltip = param.get_tooltip()
+        else:
+            tooltip = f"{param.name} ({display_min} to {display_max})"
 
         slider = Slider(
             label,
@@ -200,6 +204,7 @@ class SynthBase(QWidget):
             vertical=vertical,
             show_value_label=show_value_label,
             is_bipolar=param.is_bipolar,
+            tooltip=tooltip,
         )
 
         if param.name in self.bipolar_parameters or param.is_bipolar:
@@ -227,7 +232,19 @@ class SynthBase(QWidget):
         :param show_label: bool whether to show the label
         :return: ComboBox
         """
-        combo_box = ComboBox(label, options, values, show_label=show_label)
+        if hasattr(param, "get_display_value"):
+            display_min, display_max = param.get_display_value()
+        else:
+            display_min, display_max = param.min_val, param.max_val
+        if hasattr(param, "get_tooltip"):
+            tooltip = param.get_tooltip()
+        else:
+            tooltip = f"{param.name} ({display_min} to {display_max})"
+        combo_box = ComboBox(label=label,
+                             options=options,
+                             values=values,
+                             show_label=show_label,
+                             tooltip=tooltip)
         combo_box.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))
         self.controls[param] = combo_box
         return combo_box
@@ -246,7 +263,14 @@ class SynthBase(QWidget):
             display_min, display_max = param.get_display_value()
         else:
             display_min, display_max = param.min_val, param.max_val
-        spin_box = SpinBox(label, display_min, display_max)
+        if hasattr(param, "get_tooltip"):
+            tooltip = param.get_tooltip()
+        else:
+            tooltip = f"{param.name} ({display_min} to {display_max})"
+        spin_box = SpinBox(label=label,
+                           low=display_min,
+                           high=display_max,
+                           tooltip=tooltip)
         # Connect value changed signal
         spin_box.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))
         # Store control reference
@@ -265,7 +289,17 @@ class SynthBase(QWidget):
         :param values: list of values for the switch
         :return: Switch
         """
-        switch = Switch(label, values)
+        if hasattr(param, "get_display_value"):
+            display_min, display_max = param.get_display_value()
+        else:
+            display_min, display_max = param.min_val, param.max_val
+        if hasattr(param, "get_tooltip"):
+            tooltip = param.get_tooltip()
+        else:
+            tooltip = f"{param.name} ({display_min} to {display_max})"
+        switch = Switch(label=label,
+                        values=values,
+                        tooltip=tooltip)
         switch.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))
         self.controls[param] = switch
         return switch

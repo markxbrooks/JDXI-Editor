@@ -52,18 +52,24 @@ class SpinBox(QWidget):
 
     valueChanged = Signal(int)  # Define signal to emit selected value
 
-    def __init__(self, label: str, low: int, high: int = None, parent=None):
+    def __init__(self, label: str,
+                 low: int,
+                 high: int = None,
+                 tooltip: str = "",
+                 parent=None):
         """
         Initialize the SpinBox widget.
 
         :param label: str Label text
         :param low: int low limit of range of spin box
+        :param tooltip: str tooltip text for the spin box
         :param high: int high limit of range of spin box
         :param parent: Parent widget
         """
         super().__init__(parent)
         self.low = low
         self.high = high
+        self.setToolTip(tooltip)
 
         # Main layout
         layout = QHBoxLayout()
