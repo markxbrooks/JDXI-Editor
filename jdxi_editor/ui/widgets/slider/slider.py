@@ -61,6 +61,7 @@ class Slider(QWidget):
         vertical: bool = False,
         show_value_label: bool = True,
         is_bipolar: bool = False,
+        tooltip: str = "",
         draw_center_mark: bool = True,
         draw_tick_marks: bool = True,
         parent=None,
@@ -77,6 +78,7 @@ class Slider(QWidget):
         self.is_bipolar = is_bipolar
         self.draw_center_mark = draw_center_mark
         self.draw_tick_marks = draw_tick_marks
+        self.setToolTip(tooltip)
 
         # Main layout
         layout = QVBoxLayout() if vertical else QHBoxLayout()

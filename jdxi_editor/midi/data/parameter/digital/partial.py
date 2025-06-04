@@ -55,10 +55,12 @@ class AddressParameterDigitalPartial(AddressParameter):
         max_val: int,
         display_min: Optional[int] = None,
         display_max: Optional[int] = None,
+        tooltip: Optional[str] = None,
     ):
         super().__init__(address, min_val, max_val)
         self.display_min = display_min if display_min is not None else min_val
         self.display_max = display_max if display_max is not None else max_val
+        self.tooltip = tooltip if tooltip is not None else None
         self.bipolar_parameters = [
             # Oscillator parameters
             "OSC_PITCH",
@@ -113,73 +115,76 @@ class AddressParameterDigitalPartial(AddressParameter):
         """Get the display range for the parameter"""
         return self.display_min, self.display_max
 
-    # Oscillator parameters
-    OSC_WAVE = (0x00, 0, 7)  # Waveform preset_type
-    OSC_WAVE_VARIATION = (0x01, 0, 2)  # Wave variation
-    OSC_PITCH = (0x03, -24, 24)  # Coarse tune
-    OSC_DETUNE = (0x04, -50, 50)  # Fine tune (-50 to +50)
-    OSC_PULSE_WIDTH_MOD_DEPTH = (0x05, 0, 127)  # PWM Depth
-    OSC_PULSE_WIDTH = (0x06, 0, 127)  # Pulse Width
-    OSC_PITCH_ENV_ATTACK_TIME = (0x07, 0, 127)  # Pitch Envelope Attack
-    OSC_PITCH_ENV_DECAY_TIME = (0x08, 0, 127)  # Pitch Envelope Decay
-    OSC_PITCH_ENV_DEPTH = (0x09, -63, 63)  # Pitch Envelope Depth (-63 to +63)
+    def get_tooltip(self) -> str:
+        """Get tooltip for the parameter"""
+        return self.tooltip if hasattr(self, 'tooltip') else ""
 
-    FILTER_MODE_SWITCH = (0x0A, 0, 7)  # Filter mode
-    FILTER_SLOPE = (0x0B, 0, 1)  # Filter slope
-    FILTER_CUTOFF = (0x0C, 0, 127, 0, 127)  # Cutoff frequency
-    FILTER_CUTOFF_KEYFOLLOW = (0x0D, 54, 74, -100, 100)  # Key follow
-    FILTER_ENV_VELOCITY_SENSITIVITY = (0x0E, 1, 127, -63, 63)  # Velocity sensitivity
-    FILTER_RESONANCE = (0x0F, 0, 127)  # Resonance
-    FILTER_ENV_ATTACK_TIME = (0x10, 0, 127)  # Filter envelope attack
-    FILTER_ENV_DECAY_TIME = (0x11, 0, 127)  # Filter envelope decay
-    FILTER_ENV_SUSTAIN_LEVEL = (0x12, 0, 127)  # Filter envelope sustain
-    FILTER_ENV_RELEASE_TIME = (0x13, 0, 127)  # Filter envelope release
-    FILTER_ENV_DEPTH = (0x14, 1, 127, -63, 63)  # Filter envelope depth
+    # Oscillator parameters
+    OSC_WAVE = (0x00, 0, 7, 0, 7, "Waveform of the Oscillator; Select from classic waveforms: SAW, SQR, TRI, SINE, NOISE, SUPER SAW or PCM. \nEach offers unique harmonic content for shaping tone and texture")  # Waveform preset_type
+    OSC_WAVE_VARIATION = (0x01, 0, 2, 0, 2, "You can select variations of the currently selected WAVE")  # Wave variation
+    OSC_PITCH = (0x03, -24, 24, -24, 24, "Adjusts the pitch in semitone steps")  # Coarse tune
+    OSC_DETUNE = (0x04, -50, 50, -50, 50, "Adjusts the pitch in steps of one cent")  # Fine tune (-50 to +50)
+    OSC_PULSE_WIDTH_MOD_DEPTH = (0x05, 0, 127, 0, 127, "Specifies the amount (depth) of LFO that is applied to PW (Pulse Width). \nIf the OSC Wave has selected (PW-SQR), you can use this slider to specify the amount of LFO modulation applied to PW (pulse width).")  # PWM Depth
+    OSC_PULSE_WIDTH = (0x06, 0, 127, 0, 127, "Sets the pulse width when PW-SQR is selected. \nSmaller values narrow the waveform; higher values widen it, shaping the tone" )  # Pulse Width
+    OSC_PITCH_ENV_ATTACK_TIME = (0x07, 0, 127, 0, 127, "Specifies the attack time of the pitch envelope. \nThis specifies the time from the moment you press the key until the pitch reaches its highest (or lowest) point")  # Pitch Envelope Attack
+    OSC_PITCH_ENV_DECAY_TIME = (0x08, 0, 127, 0, 127, "Specifies the decay time of the pitch envelope. \nThis specifies the time from the moment the pitch reaches its highest \n(or lowest) point until it returns to the pitch of the key you pressed")  # Pitch Envelope Decay
+    OSC_PITCH_ENV_DEPTH = (0x09, -63, 63, -63, 63, "This specifies how much the pitch envelope will affect the pitch")  # Pitch Envelope Depth (-63 to +63)
+
+    FILTER_MODE_SWITCH = (0x0A, 0, 7, 0, 7, "Selects the type of filter; \nBYPASS, LPF1, LPF2, LPF3, LPF4, HPF, BPF, PKG")  # Filter mode
+    FILTER_SLOPE = (0x0B, 0, 1, 0, 1, "Selects the slope (steepness) of the filter. -12, -24 [dB]")  # Filter slope
+    FILTER_CUTOFF = (0x0C, 0, 127, 0, 127, "Specifies the cutoff frequency")  # Cutoff frequency
+    FILTER_CUTOFF_KEYFOLLOW = (0x0D, 54, 74, -100, 100, "Specifies how you can make the filter cutoff frequency, \nto vary according to the key you play")  # Key follow
+    FILTER_ENV_VELOCITY_SENSITIVITY = (0x0E, 1, 127, -63, 63, "Specifies how you can make the filter envelope depth vary, \naccording to the strength with which you play the key")  # Velocity sensitivity
+    FILTER_RESONANCE = (0x0F, 0, 127, 0, 127, "Emphasizes the sound in the region of the filter cutoff frequency")  # Resonance
+    FILTER_ENV_ATTACK_TIME = (0x10, 0, 127, 0, 127, "Specifies the time from the moment you press the key until\n the cutoff frequency reaches its highest (or lowest) point")  # Filter envelope attack
+    FILTER_ENV_DECAY_TIME = (0x11, 0, 127, 0, 127, "Specifies the time from when the cutoff frequency reaches its\n highest (or lowest) point, until it decays to the sustain level")  # Filter envelope decay
+    FILTER_ENV_SUSTAIN_LEVEL = (0x12, 0, 127, 0, 127, "Specifies the cutoff frequency that will be maintained\n from when the decay time has elapsed until you release the key")  # Filter envelope sustain
+    FILTER_ENV_RELEASE_TIME = (0x13, 0, 127, 0, 127, "Specifies the time from when you release the key until\n the cutoff frequency reaches its minimum value")  # Filter envelope release
+    FILTER_ENV_DEPTH = (0x14, 1, 127, -63, 63, "Specifies the direction and depth to which the cutoff frequency will change")  # Filter envelope depth
 
     # Amplitude parameters
-    AMP_LEVEL = (0x15, 0, 127)  # Amplitude level
-    AMP_VELOCITY = (0x16, -63, 63)  # Velocity sensitivity
-    AMP_ENV_ATTACK_TIME = (0x17, 0, 127)  # Amplitude envelope attack
-    AMP_ENV_DECAY_TIME = (0x18, 0, 127)  # Amplitude envelope decay
-    AMP_ENV_SUSTAIN_LEVEL = (0x19, 0, 127)  # Amplitude envelope sustain
-    AMP_ENV_RELEASE_TIME = (0x1A, 0, 127)  # Amplitude envelope release
-    AMP_PAN = (0x1B, 0, 127, -64, 63)  # Pan position
-    AMP_LEVEL_KEYFOLLOW = (0x1C, 54, 74, -100, 100)  # Key follow (-100 to +100)
+    AMP_LEVEL = (0x15, 0, 127, 0, 127, "Partial volume")  # Amplitude level
+    AMP_VELOCITY = (0x16, -63, 63, -63, 63, "Specifies how the volume will vary according to the strength with which you play the keyboard.")  # Velocity sensitivity
+    AMP_ENV_ATTACK_TIME = (0x17, 0, 127, 0, 127, "Specifies the time from the \nmoment you press the key until \n the maximum volume is reached.")  # Amplitude envelope attack
+    AMP_ENV_DECAY_TIME = (0x18, 0, 127, 0, 127, "Specifies the time from when the\nmaximum volume is reached, until\nit decays to the sustain level.")  # Amplitude envelope decay
+    AMP_ENV_SUSTAIN_LEVEL = (0x19, 0, 127, 0, 127, "Specifies the volume level that\nwill be maintained from when\nthe attack and decay times have\nelapsed until you release the key")  # Amplitude envelope sustain
+    AMP_ENV_RELEASE_TIME = (0x1A, 0, 127, 0, 127, "Specifies the time from when you\nrelease the key until the volume\nreaches its minimum value.")  # Amplitude envelope release
+    AMP_PAN = (0x1B, 0, 127, -64, 63, "Specifies the stereo position of the partial; Left-Right")  # Pan position
+    AMP_LEVEL_KEYFOLLOW = (0x1C, 54, 74, -100, 100, "Specify this if you want to vary the volume according to the position of the key that you play.\nWith positive (“+”) settings the volume increases as you play upward from the C4 key (middle C);\n with negative (“-”) settings the volume decreases.\nHigher values will produce greater change.")  # Key follow (-100 to +100)
 
     # LFO parameters
-    LFO_SHAPE = (0x1C, 0, 5)  # LFO waveform
-    LFO_RATE = (0x1D, 0, 127)  # LFO rate
-    LFO_TEMPO_SYNC_SWITCH = (0x1E, 0, 1)  # Tempo sync switch
-    LFO_TEMPO_SYNC_NOTE = (0x1F, 0, 19)  # Tempo sync note
-    LFO_FADE_TIME = (0x20, 0, 127)  # Fade time
-    LFO_KEY_TRIGGER = (0x21, 0, 1)  # Key trigger
-    LFO_PITCH_DEPTH = (0x22, 1, 127, -63, 63)  # Pitch mod depth
-    LFO_FILTER_DEPTH = (0x23, 1, 127, -63, 63)  # Filter mod depth
-    LFO_AMP_DEPTH = (0x24, 1, 127, -63, 63)  # Amp mod depth
-    LFO_PAN_DEPTH = (0x25, 1, 127, -63, 63)  # Pan mod depth
+    LFO_SHAPE = (0x1C, 0, 5, 0, 5, "Selects the LFO waveform; Trangle, Sine, Sawtooth, Square, \nSample and Hold (The LFO value will change once each cycle.), Random wave")  # LFO waveform
+    LFO_RATE = (0x1D, 0, 127, 0, 127, "Specifies the LFO rate when LFO Tempo Sync Sw is OFF")  # LFO rate
+    LFO_TEMPO_SYNC_SWITCH = (0x1E, 0, 1, 0, 1, "If this is ON, the LFO rate can be specified as a note value relative to the tempo")  # Tempo sync switch
+    LFO_TEMPO_SYNC_NOTE = (0x1F, 0, 19, 0, 19, "Specifies the LFO rate when LFO Tempo Sync Sw is ON. \n16, 12, 8, 4, 2, 1, 3/4,\n2/3, 1/2, 3/8, 1/3, 1/4,\n3/16, 1/6, 1/8, 3/32,\n1/12, 1/16, 1/24, 1/32")  # Tempo sync note
+    LFO_FADE_TIME = (0x20, 0, 127, 0, 127, "Specifies the time from when the partial sounds until the LFO reaches its maximum amplitude")  # Fade time
+    LFO_KEY_TRIGGER = (0x21, 0, 1, 0, 1, "If this is on, the LFO cycle will be restarted when you press a key")  # Key trigger
+    LFO_PITCH_DEPTH = (0x22, 1, 127, -63, 63, "Allows the LFO to modulate the pitch, producing a vibrato effect")  # Pitch mod depth
+    LFO_FILTER_DEPTH = (0x23, 1, 127, -63, 63, "Allows the LFO to modulate the FILTER CUTOFF (cutoff frequency), producing a wah effect")  # Filter mod depth
+    LFO_AMP_DEPTH = (0x24, 1, 127, -63, 63, "Allows the LFO to modulate the AMP LEVEL (volume), producing a tremolo effect")  # Amp mod depth
+    LFO_PAN_DEPTH = (0x25, 1, 127, -63, 63, "Allows the LFO to modulate the PAN (stereo position), producing an auto panning effect")  # Pan mod depth
 
     # Modulation LFO parameters
-    MOD_LFO_SHAPE = (0x26, 0, 5)  # Mod LFO waveform
-    MOD_LFO_RATE = (0x27, 0, 127)  # Mod LFO rate
-    MOD_LFO_TEMPO_SYNC_SWITCH = (0x28, 0, 1)  # Tempo sync switch
-    MOD_LFO_TEMPO_SYNC_NOTE = (0x29, 0, 19)  # Tempo sync note
-    OSC_PULSE_WIDTH_SHIFT = (0x2A, 0, 127)  # OSC Pulse Width Shift
+    MOD_LFO_SHAPE = (0x26, 0, 5, 0, 5, "Selects the MODULATION LFO waveform.\n Trangle, Sine, Sawtooth, Square, \nSample and Hold (The LFO value will change once each cycle.), Random wave. \nThere is an LFO that is always applied to the partial, \nand a MODULATION LFO for applying modulation with the modulation\ncontroller (CC01).")  # Mod LFO waveform
+    MOD_LFO_RATE = (0x27, 0, 127, 0, 127, "Specifies the LFO rate when ModLFO TempoSyncSw is OFF.")  # Mod LFO rate
+    MOD_LFO_TEMPO_SYNC_SWITCH = (0x28, 0, 1, 0, 1, "If this is ON, the LFO rate can be specified as a note value relative to the tempo")  # Tempo sync switch
+    MOD_LFO_TEMPO_SYNC_NOTE = (0x29, 0, 19, 0, 19, "Specifies the LFO rate when ModLFO TempoSyncSw is ON")  # Tempo sync note
+    OSC_PULSE_WIDTH_SHIFT = (0x2A, 0, 127, 0, 127, "Shifts the range of change. Normally, you can leave this at 127.\n * If the Ring Switch is on, this has no effect on partials 1 and 2.")  # OSC Pulse Width Shift
     # 2B is reserved
-    MOD_LFO_PITCH_DEPTH = (0x2C, 1, 127, -63, 63)  # Pitch mod depth
-    MOD_LFO_FILTER_DEPTH = (0x2D, 1, 127, -63, 63)  # Filter mod depth
-    MOD_LFO_AMP_DEPTH = (0x2E, 1, 127, -63, 63)  # Amp mod depth
-    MOD_LFO_PAN = (0x2F, 1, 127, -63, 63)  # Pan mod depth
-    MOD_LFO_RATE_CTRL = (0x3B, 1, 127, -63, 63)  # Rate control
+    MOD_LFO_PITCH_DEPTH = (0x2C, 1, 127, -63, 63, "Allows the LFO to modulate the pitch, producing a vibrato effect.")  # Pitch mod depth
+    MOD_LFO_FILTER_DEPTH = (0x2D, 1, 127, -63, 63, "Allows the LFO to modulate the FILTER CUTOFF (cutoff frequency), producing a wah effect.")  # Filter mod depth
+    MOD_LFO_AMP_DEPTH = (0x2E, 1, 127, -63, 63, "Allows the LFO to modulate the AMP LEVEL (volume), producing a tremolo effect.")  # Amp mod depth
+    MOD_LFO_PAN = (0x2F, 1, 127, -63, 63, "Allows the LFO to modulate the pan (stereo position), producing an auto panning effect.")  # Pan mod depth
+    MOD_LFO_RATE_CTRL = (0x3B, 1, 127, -63, 63, "Make these settings if you want to change the Modulation LFO Rate when the modulation lever\nis operated.\n Specify a positive (“+”) setting if you want ModLFO Rate to become faster when you increase\nthe modulation controller (CC01) value; \nspecify a negative (“-”) setting if you want it to become slower.")  # Rate control
 
     # Additional parameters
-    CUTOFF_AFTERTOUCH = (0x30, 1, 127, -63, 63)  # Cutoff aftertouch
-    LEVEL_AFTERTOUCH = (0x31, 1, 127, -63, 63)  # Level aftertouch
-    WAVE_GAIN = (0x34, 0, 3)  # Wave gain
-    HPF_CUTOFF = (0x39, 0, 127)  # HPF cutoff
-    SUPER_SAW_DETUNE = (0x3A, 0, 127)  # Super saw detune
+    CUTOFF_AFTERTOUCH = (0x30, 1, 127, -63, 63, "Specifies how aftertouch pressure will affect the cutoff frequency")  # Cutoff aftertouch
+    LEVEL_AFTERTOUCH = (0x31, 1, 127, -63, 63, "Specifies how aftertouch pressure affects the volume")  # Level aftertouch
+    HPF_CUTOFF = (0x39, 0, 127, 0, 127, "Specifies the cutoff frequency of an independent -6 dB high-pass filter")  # HPF cutoff
+    SUPER_SAW_DETUNE = (0x3A, 0, 127, 0, 127, "Specifies the amount of pitch difference between the seven sawtooth waves layered within a single oscillator.\n * Lower values will produce a more subtle detune effect, similar to a single sawtooth wave.\n* Higher values will increase the pitch difference")  # Super saw detune
 
-    PCM_WAVE_GAIN = (0x34, 0, 3)
-    PCM_WAVE_NUMBER = (0x35, 0, 16384)
+    PCM_WAVE_GAIN = (0x34, 0, 3, 0, 3, "Sets the gain for PCM waveforms; 0dB, -6dB, +6dB, +12dB")  # PCM Wave Gain
+    PCM_WAVE_NUMBER = (0x35, 0, 16384, 0, 16384, "Selects the PCM waveform; 0-16383 * This is valid only if PCM is selected for OSC Wave.")  # PCM Wave Number
 
     @property
     def display_name(self) -> str:

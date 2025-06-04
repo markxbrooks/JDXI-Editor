@@ -62,6 +62,7 @@ class ComboBox(QWidget):
         values: list = None,
         parent=None,
         show_label: bool = True,
+        tooltip: str = ""  # Optional tooltip parameter
     ):
         """
         Initialize the ComboBox widget.
@@ -75,6 +76,7 @@ class ComboBox(QWidget):
         super().__init__(parent)
         self.options = options
         self.values = values
+        self.setToolTip(tooltip)
 
         # Main layout
         layout = QHBoxLayout()

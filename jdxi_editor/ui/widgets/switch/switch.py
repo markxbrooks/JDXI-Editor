@@ -29,11 +29,14 @@ class Switch(QWidget):
 
     valueChanged = Signal(int)  # Emits new value when changed
 
-    def __init__(self, label: str, values: list[str], parent=None):
+    def __init__(self, label: str,
+                 values: list[str],
+                 parent: QWidget =None,
+                 tooltip: str = ""):
         super().__init__(parent)
         self.values = values
         self.current_index = 0
-
+        self.setToolTip(tooltip)
         layout = QHBoxLayout()
         layout.setSpacing(5)
         layout.setContentsMargins(0, 0, 0, 0)
