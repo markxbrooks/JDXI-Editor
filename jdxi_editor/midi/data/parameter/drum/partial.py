@@ -425,7 +425,7 @@ class AddressParameterDrumPartial(AddressParameter):
     WMT4_VELOCITY_FADE_WIDTH_UPPER = (0x114, 0, 127, 0, 127, "This determines what will happen to the tone’s level when the tone is played at a velocity greater\nthan its specified velocity range.\nHigher settings produce a more gradual change in volume.\nIf you want notes played outside the specified key velocity range to not be sounded at all, set\nthis to 0")
 
     # Pitch Env Depth
-    PITCH_ENV_DEPTH = (0x115, 52, 76, -12, 12, "Sets the depth of the pitch envelope. Higher settings result in a more dramatic effect, while lower settings result in a more subtle effect.")  # -12 - +12
+    PITCH_ENV_DEPTH = (0x115, 52, 76, -12, 12, "Adjusts the effect of the Pitch Envelope. Higher settings will cause the pitch envelope to produce\ngreater change.\nNegative (“-”) settings invert the shape of the envelope.")  # -12 - +12
 
     # Pitch Env Velocity Sens
     PITCH_ENV_VELOCITY_SENS = (0x116, 1, 127, -63, 63, "Sets the sensitivity of the pitch envelope to velocity. Higher settings result in a more dramatic effect, while lower settings result in a more subtle effect.")  # -63 - +63
