@@ -65,6 +65,35 @@ class EffectsCommonEditor(BasicEditor):
         parent=None,
     ):
         super().__init__(midi_helper=midi_helper, parent=parent)
+        self.EFX1_PARAMETERS = [AddressParameterEffect1.EFX1_PARAM_1,
+                                AddressParameterEffect1.EFX1_PARAM_2,
+                                AddressParameterEffect1.EFX1_PARAM_3,
+                                AddressParameterEffect1.EFX1_PARAM_4,
+                                AddressParameterEffect1.EFX1_PARAM_5,
+                                AddressParameterEffect1.EFX1_PARAM_6,]
+        self.EFX2_PARAMETERS = [AddressParameterEffect2.EFX2_PARAM_1,
+                                AddressParameterEffect2.EFX2_PARAM_2,
+                                AddressParameterEffect2.EFX2_PARAM_3,
+                                AddressParameterEffect2.EFX2_PARAM_4,
+                                AddressParameterEffect2.EFX2_PARAM_5,
+                                AddressParameterEffect2.EFX2_PARAM_6,]
+        # Effect 1 parameter labels
+        self.efx1_param_labels = {
+            0: [],  # Thru – no params
+            1: ["Drive", "Tone", "Low Boost", "High Cut", "Level", "Wet/Dry Mix"],  # DISTORTION
+            2: ["Gain", "Color", "Tone", "Level", "Bias", "Wet/Dry Mix"],  # FUZZ
+            3: ["Threshold", "Ratio", "Attack", "Release", "Output Gain", "Wet/Dry Mix"],  # COMP
+            4: ["Bit Depth", "Sample Rate", "Tone", "Noise", "Mix", "Output Level"],  # BIT CRUSHER
+        }
+
+        # Effect 2 parameter labels
+        self.efx2_param_labels = {
+            0: ["Rate", "Depth", "Resonance", "Manual", "Step Rate", "Effect Level"],  # FLANGER
+            1: ["Rate", "Depth", "Manual", "Resonance", "Center Freq", "Effect Level"],  # PHASER
+            2: ["Delay Time", "Feedback", "High Damp", "Low Damp", "Spread", "Effect Level"],  # DELAY
+            3: ["Rate", "Depth", "Delay Time", "Feedback", "Pre-delay", "Effect Level"],  # CHORUS
+        }
+
         self.delay_params = None
         self.efx2_additional_params = [
             AddressParameterEffect2.EFX2_PARAM_1,
@@ -115,6 +144,16 @@ class EffectsCommonEditor(BasicEditor):
             MidiConstant.ZERO_BYTE,
         )
         self.sysex_composer = JDXiSysExComposer()
+        for param in self.EFX1_PARAMETERS:
+            slider = self.controls.get(param)
+            if slider:
+                slider.setVisible(False)
+        for param in self.EFX2_PARAMETERS:
+            slider = self.controls.get(param)
+            if slider:
+                slider.setVisible(False)
+        self.efx1_type.combo_box.currentIndexChanged.connect(self._update_efx1_labels)
+        self.efx2_type.combo_box.currentIndexChanged.connect(self._update_efx2_labels)
 
     def _update_efx2_parameters(self, effect_type: int):
         """Show/hide parameters based on effect preset_type"""
@@ -132,6 +171,49 @@ class EffectsCommonEditor(BasicEditor):
         # Show/hide parameters
         for i, param in enumerate(self.efx2_additional_params):
             self.controls[param].setVisible(i < count)
+
+    def _update_efx1_labels(self, effect_type: int):
+        """
+        Update Effect 1 parameter labels based on selected effect type.
+        :param effect_type: int
+        :return:
+        """
+        log.message(f"Updating EFX1 labels for effect type {effect_type}")
+        try:
+            for param in self.EFX1_PARAMETERS:
+                slider = self.controls.get(param)
+                if slider:
+                    slider.setVisible(False)
+
+            labels = self.efx1_param_labels.get(effect_type, [])
+
+            for i, param in enumerate(self.EFX1_PARAMETERS):
+                slider = self.controls.get(param)
+                log.message(f"Updating EFX1 parameter {param.name} with slider {slider}")
+                if not slider:
+                    continue
+                if i < len(labels):
+                    slider.setVisible(True)
+                    slider.setLabel(labels[i])
+                else:
+                    slider.setVisible(False)
+        except Exception as ex:
+            log.error(f"Error updating EFX1 labels: {ex}")
+
+    def _update_efx2_labels(self, effect_type: int):
+        """Relabel sliders based on selected Effect 2 type."""
+        labels = self.efx2_param_labels.get(effect_type, [])
+
+        for i, param in enumerate(self.EFX2_PARAMETERS):
+            slider = self.controls.get(param)
+            log.message(f"Updating EFX2 parameter {param.name} with slider {slider}")
+            if not slider:
+                continue
+            if i < len(labels):
+                slider.setVisible(True)
+                slider.setLabel(labels[i])
+            else:
+                slider.setVisible(False)
 
     def _update_delay_parameters(self, show_all: bool = False):
         """Show/hide delay parameters
@@ -196,20 +278,14 @@ class EffectsCommonEditor(BasicEditor):
         )
         layout.addRow(self.efx1_output_assign)
 
-        self.efx1_parameter1_slider = self._create_parameter_slider(
-            AddressParameterEffect1.EFX1_PARAM_1, "Parameter 1"
-        )
-        layout.addRow(self.efx1_parameter1_slider)
-
-        self.efx1_parameter2_slider = self._create_parameter_slider(
-            AddressParameterEffect1.EFX1_PARAM_2, "Parameter 2"
-        )
-        layout.addRow(self.efx1_parameter2_slider)
-
-        self.efx1_parameter32_slider = self._create_parameter_slider(
-            AddressParameterEffect1.EFX1_PARAM_32, "Parameter 32"
-        )
-        layout.addRow(self.efx1_parameter32_slider)
+        # Create sliders for EFX1 parameters
+        for param in self.EFX1_PARAMETERS:
+            if param not in self.controls:
+                slider = self._create_parameter_slider(param, param.display_name)
+                layout.addRow(slider)
+                self.controls[param] = slider
+            else:
+                log.warning(f"Parameter {param.name} already exists in controls.")
 
         return widget
 
@@ -246,20 +322,14 @@ class EffectsCommonEditor(BasicEditor):
         )
         layout.addRow(self.efx2_reverb_send_level)
 
-        self.efx2_parameter1_slider = self._create_parameter_slider(
-            AddressParameterEffect2.EFX2_PARAM_1, "Parameter 1"
-        )
-        layout.addRow(self.efx1_parameter2_slider)
-
-        self.efx2_parameter2_slider = self._create_parameter_slider(
-            AddressParameterEffect2.EFX2_PARAM_2, "Parameter 2"
-        )
-        layout.addRow(self.efx2_parameter2_slider)
-
-        self.efx2_parameter32_slider = self._create_parameter_slider(
-            AddressParameterEffect2.EFX2_PARAM_32, "Parameter 32"
-        )
-        layout.addRow(self.efx2_parameter32_slider)
+        # Create sliders for EFX1 parameters
+        for param in self.EFX2_PARAMETERS:
+            if param not in self.controls:
+                slider = self._create_parameter_slider(param, param.display_name)
+                layout.addRow(slider)
+                self.controls[param] = slider
+            else:
+                log.warning(f"Parameter {param.name} already exists in controls.")
 
         return widget
 

@@ -83,6 +83,18 @@ class DrumPartialEditor(PartialEditor):
         tab_widget = QTabWidget()
         scroll_layout.addWidget(tab_widget)
 
+        tab_wmt = QWidget()
+        tab_wmt_layout = QVBoxLayout(tab_wmt)
+        tab_widget.addTab(tab_wmt, "WMT")
+
+        wmt_group = DrumWMTSection(
+            self.controls,
+            self._create_parameter_combo_box,
+            self._create_parameter_slider,
+            self.midi_helper,
+        )
+        tab_wmt_layout.addWidget(wmt_group)
+
         tab_pitch = QWidget()
         tab_pitch_layout = QVBoxLayout(tab_pitch)
         tab_widget.addTab(tab_pitch, "Pitch")
@@ -130,18 +142,6 @@ class DrumPartialEditor(PartialEditor):
             self.midi_helper,
         )
         tab_tvf_layout.addWidget(tvf_group)
-
-        tab_wmt = QWidget()
-        tab_wmt_layout = QVBoxLayout(tab_wmt)
-        tab_widget.addTab(tab_wmt, "WMT")
-
-        wmt_group = DrumWMTSection(
-            self.controls,
-            self._create_parameter_combo_box,
-            self._create_parameter_slider,
-            self.midi_helper,
-        )
-        tab_wmt_layout.addWidget(wmt_group)
 
         tab_tva = QWidget()
         tab_tva_layout = QVBoxLayout(tab_tva)
