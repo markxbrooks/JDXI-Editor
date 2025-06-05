@@ -80,9 +80,9 @@ class EffectsCommonEditor(BasicEditor):
         # Effect 1 parameter labels
         self.efx1_param_labels = {
             0: [],  # Thru – no params
-            1: ["Drive", "Tone", "Low Boost", "High Cut", "Level", "Wet/Dry Mix"],  # DISTORTION
-            2: ["Gain", "Color", "Tone", "Level", "Bias", "Wet/Dry Mix"],  # FUZZ
-            3: ["Threshold", "Ratio", "Attack", "Release", "Output Gain", "Wet/Dry Mix"],  # COMP
+            1: ["Level", "Drive", "Type", "Low Boost", "High Cut", "Wet/Dry Mix"],  # DISTORTION "presence" = Parameter 32/1D
+            2: ["Level", "Drive", "Type", "Level", "Bias", "Wet/Dry Mix"],  # FUZZ Type = 19/EFX1_PARAM_3
+            3: ["Threshold", "Ratio", "Attack", "Release", "Level", "Side Switch"],  # COMP "Side level = 29/EFX1_PARAM_7, "Side Time = 29/EFX1_PARAM_8, "Side Release = 29/EFX1_PARAM_9
             4: ["Bit Depth", "Sample Rate", "Tone", "Noise", "Mix", "Output Level"],  # BIT CRUSHER
         }
 
