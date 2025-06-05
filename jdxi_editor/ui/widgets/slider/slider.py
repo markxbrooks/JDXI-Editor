@@ -132,6 +132,10 @@ class Slider(QWidget):
             self.value_label.setText("0")
         self.slider.setInvertedAppearance(False)
 
+    def setLabel(self, text: str):
+        if hasattr(self, "label"):
+            self.label.setText(text)
+
     def setValueDisplayFormat(self, format_func):
         """Set custom format function for value display"""
         self.value_display_format = format_func

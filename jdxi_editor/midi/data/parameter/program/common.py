@@ -47,10 +47,12 @@ class AddressParameterProgramCommon(AddressParameter):
         max_val: Optional[int] = None,
         display_min: Optional[int] = None,
         display_max: Optional[int] = None,
+        tooltip: Optional[str] = None,
     ):
         super().__init__(address, min_val, max_val)
         self.display_min = display_min if display_min is not None else min_val
         self.display_max = display_max if display_max is not None else max_val
+        self.tooltip = tooltip if tooltip is not None else ""
 
     NAME_1 = 0x00  # Character 1 of name (ASCII)
     NAME_2 = 0x01  # Character 2 of name
@@ -65,14 +67,18 @@ class AddressParameterProgramCommon(AddressParameter):
     NAME_11 = 0x0A  # Character 11 of name
     NAME_12 = 0x0B  # Character 12 of name
 
-    PROGRAM_LEVEL = (0x10, 0, 127, 0, 127)  # Program Level (0-127)
+    PROGRAM_LEVEL = (0x10, 0, 127, 0, 127, "Volume of the program")  # Program Level (0-127)
     PROGRAM_TEMPO = (
         0x11,
         500,
         30000,
         500,
         30000,
-    )  # Program Tempo (500-30000: 5.00-300.00 BPM)
+        """Tempo of the program
+The Tempo knob adjusts the setting in a range from 60 to 240.
+If the SYSTEM parameter Sync Mode is set to SLAVE, only “MIDI” can be selected.
+(Since the tempo is synchronized to an external device, it’s not possible to change the tempo
+from the JD-Xi.)""")  # Program Tempo (500-30000: 5.00-300.00 BPM)
     VOCAL_EFFECT = (
         0x16,
         0,
