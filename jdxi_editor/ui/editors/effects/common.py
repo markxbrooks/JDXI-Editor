@@ -38,6 +38,7 @@ from PySide6.QtCore import Qt
 
 from jdxi_editor.jdxi.midi.constant import MidiConstant
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
+from jdxi_editor.jdxi.sysex.bitmask import BitMask
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import (
     AddressStartMSB,
@@ -53,6 +54,44 @@ from jdxi_editor.ui.editors.synth.simple import BasicEditor
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
+
+
+def decode_roland_4byte(data_bytes: bytes) -> value:
+    """
+    decode_roland_4byte
+    :param data_bytes: bytes
+    decode_roland_4byte([0x08, 0x00, 0x00, 0x01])  # → 1048577
+    """
+    assert len(data_bytes) == 4
+    value = (
+        (data_bytes[0] & BitMask.LOW_7_BITS) << 21 |
+        (data_bytes[1] & BitMask.LOW_7_BITS) << 14 |
+        (data_bytes[2] & BitMask.LOW_7_BITS) << 7  |
+        (data_bytes[3] & BitMask.LOW_7_BITS)
+    )
+    # Convert from unsigned to signed if needed
+    if value >= (1 << 27):
+        value -= (1 << 28)
+    return value
+
+
+def encode_roland_4byte(value: int) -> list:
+    """
+    encode_roland_4byte
+    :param value: int
+    :return: list
+    encode_roland_4byte(0)  # [0x00, 0x00, 0x00, 0x00]
+    encode_roland_4byte(1)  # [0x00, 0x00, 0x00, 0x01]
+    encode_roland_4byte(1048576)  # [0x08, 0x00, 0x00, 0x00]
+    """
+    if value < 0:
+        value += (1 << 28)
+    return [
+        (value >> 21) & 0x7F,
+        (value >> 14) & 0x7F,
+        (value >> 7) & 0x7F,
+        value & 0x7F
+    ]
 
 
 class EffectsCommonEditor(BasicEditor):
