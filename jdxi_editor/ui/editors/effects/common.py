@@ -56,10 +56,10 @@ from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 
 
-def decode_roland_4byte(data_bytes: bytes) -> int:
+def decode_roland_4byte(data_bytes: list[int]) -> int:
     """
     decode_roland_4byte
-    :param data_bytes: bytes
+    :param data_bytes: list[int]
     :return: int
     decode_roland_4byte([0x08, 0x00, 0x00, 0x01])  # → 1048577
     """
@@ -76,11 +76,11 @@ def decode_roland_4byte(data_bytes: bytes) -> int:
     return value
 
 
-def encode_roland_4byte(value: int) -> list:
+def encode_roland_4byte(value: int) -> list[int]:
     """
     encode_roland_4byte
     :param value: int
-    :return: list
+    :return: list[int]
     encode_roland_4byte(0)  # [0x00, 0x00, 0x00, 0x00]
     encode_roland_4byte(1)  # [0x00, 0x00, 0x00, 0x01]
     encode_roland_4byte(1048576)  # [0x08, 0x00, 0x00, 0x00]
