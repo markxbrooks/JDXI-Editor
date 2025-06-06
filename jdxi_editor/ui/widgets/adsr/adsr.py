@@ -77,7 +77,7 @@ class ADSR(EnvelopeWidgetBase):
             "decay_time": 800.0,
             "release_time": 500.0,
             "initial_level": 0.0,
-            "peak_level": 1.0,
+            "peak_level": 0.50,
             "sustain_level": 0.8,
         }
         self.attack_control = AdsrSliderSpinbox(

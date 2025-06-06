@@ -177,7 +177,6 @@ class AnalogOscillatorSection(QWidget):
         env_group = QGroupBox("Envelope")
         env_group.setProperty("adsr", True)
         env_layout = QHBoxLayout()
-        # env_layout.addWidget(self.pitch_env_widget)
         env_group.setLayout(env_layout)
         pitch_env_layout.addWidget(self.pitch_env_widget)
         return pitch_env_group

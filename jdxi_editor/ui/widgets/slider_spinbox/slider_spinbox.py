@@ -8,7 +8,7 @@ from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QSpinBox, QDoubleSpinBox, QWidget, QVBoxLayout
 
 from jdxi_editor.jdxi.midi.constant import MidiConstant
-from jdxi_editor.log.logger import Logger as logger
+from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.utils.conversions import midi_value_to_ms, ms_to_midi_value
 
@@ -84,9 +84,9 @@ class AdsrSliderSpinbox(QWidget):
             self.factor = max_value
         self.create_parameter_slider = create_parameter_slider
         self.slider = self.create_parameter_slider(
-            param,
-            label,
-            value,
+            param=param,
+            label=label,
+            vertical=True,
         )
         param_type = param.get_envelope_param_type()
         if param_type in ["sustain_level", "peak_level"]:
@@ -120,14 +120,14 @@ class AdsrSliderSpinbox(QWidget):
         param_type = self.param.get_envelope_param_type()
         if param_type == "sustain_level":
             converted_value = value / self.factor
-            logger.message(f"convert_to_envelope param type: {param_type} value {value} -> env {converted_value}")
+            log.message(f"convert_to_envelope param type: {param_type} value {value} -> env {converted_value}")
             return converted_value
         if param_type == "peak_level":
             return value / self.factor
         elif param_type in ["attack_time", "decay_time", "release_time"]:
             return midi_value_to_ms(int(value))
         else:
-            logger.error(f"Unknown envelope parameter type: {param_type}")
+            log.error(f"Unknown envelope parameter type: {param_type}")
             return 0.0  # or raise an error, depending on design
 
     def convert_from_envelope(self, value: float):
@@ -136,7 +136,7 @@ class AdsrSliderSpinbox(QWidget):
             return int(value * self.factor)
         if param_type in ["sustain_level"]:
             converted_value = int(value * self.factor)
-            logger.message(f"convert_from_envelope param type: "
+            log.message(f"convert_from_envelope param type: "
                         f"{param_type} value {value} -> Slider {converted_value}", silent=True)
             return converted_value
         elif param_type in ["attack_time", "decay_time", "release_time"]:

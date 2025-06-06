@@ -82,9 +82,10 @@ class PWMSliderSpinbox(QWidget):
             self.factor = max_value
         self.create_parameter_slider = create_parameter_slider
         self.slider = self.create_parameter_slider(
-            param,
-            label,
-            value,
+            param=param,
+            label=label,
+            vertical=True,
+            initial_value=int(value * self.factor) if value is not None else 0,
         )
         self.spinbox = create_double_spinbox(
             min_value=min_value,

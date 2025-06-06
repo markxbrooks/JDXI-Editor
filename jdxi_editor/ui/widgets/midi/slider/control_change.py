@@ -21,7 +21,7 @@ from jdxi_editor.ui.widgets.slider import Slider
 
 class ControlChangeSlider(Slider):
     """
-    A base class for sliders with a common on_value_changed method to send Control Change (CC) messages.
+    A base class for sliders with a common on_valueChanged method to send Control Change (CC) messages.
     """
 
     def __init__(
@@ -62,7 +62,7 @@ class ControlChangeSlider(Slider):
         self.current_value = min_value
         self.vertical = vertical
         self.update_style(min_value)
-        self.valueChanged.connect(self.on_value_changed)
+        self.valueChanged.connect(self.on_valueChanged)
         self.setTickPosition(self.TickPosition.NoTicks)
         self.nrpn_map = nrpn_map
         self.setStyleSheet(JDXiStyle.ADSR_DISABLED)
@@ -77,7 +77,7 @@ class ControlChangeSlider(Slider):
         else:
             self.setStyleSheet(JDXiStyle.ADSR)
 
-    def on_value_changed(self, value: int):
+    def on_valueChanged(self, value: int):
         """
         Set the current value of the slider and send Control Change (CC) messages.
 

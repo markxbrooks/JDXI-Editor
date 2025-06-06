@@ -16,12 +16,13 @@ from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QWidget, QGridLayout, QSlider
 from typing import Optional, Callable
 
+from jdxi_editor.jdxi.midi.constant import MidiConstant
 from jdxi_editor.jdxi.style import JDXiStyle
-from jdxi_editor.log.logger import Logger as logger
+from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.ui.widgets.envelope.base import EnvelopeWidgetBase, TOOLTIPS
+from jdxi_editor.ui.widgets.envelope.base import EnvelopeWidgetBase
 from jdxi_editor.ui.widgets.pitch.envelope_plot import PitchEnvPlot
 from jdxi_editor.ui.widgets.pitch.slider_spinbox import PitchEnvSliderSpinbox
 from jdxi_editor.midi.utils.conversions import (
@@ -75,7 +76,7 @@ class PitchEnvelopeWidget(EnvelopeWidgetBase):
             attack_param,
             min_value=0,
             max_value=5000,
-            suffix=" ms",
+            units=" ms",
             label="Attack",
             value=self.envelope["attack_time"],
             create_parameter_slider=self._create_parameter_slider,
@@ -85,7 +86,7 @@ class PitchEnvelopeWidget(EnvelopeWidgetBase):
             decay_param,
             min_value=0,
             max_value=5000,
-            suffix=" ms",
+            units=" ms",
             label="Decay",
             value=self.envelope["decay_time"],
             create_parameter_slider=self._create_parameter_slider,
@@ -95,18 +96,13 @@ class PitchEnvelopeWidget(EnvelopeWidgetBase):
         self.depth_control = PitchEnvSliderSpinbox(
             depth_param,
             min_value=1,
-            max_value=127,
-            suffix="",
+            max_value=MidiConstant.VALUE_MAX_SEVEN_BIT,
+            units="",
             label="Depth",
             value=self.envelope["peak_level"],
             create_parameter_slider=self._create_parameter_slider,
             parent=self,
         )
-        for key, widget in [("attack_time", self.attack_control),
-                            ("decay_time", self.decay_control),
-                            ("peak_level", self.depth_control)]:
-            if tooltip := TOOLTIPS.get(key):
-                widget.setToolTip(tooltip)
         self._control_widgets = [
             self.attack_control,
             self.decay_control,
@@ -190,7 +186,7 @@ class PitchEnvelopeWidget(EnvelopeWidgetBase):
         try:
             for param, slider in self.controls.items():
                 envelope_param_type = param.get_envelope_param_type()
-                logger.message(f"envelope_param_type = {envelope_param_type}")
+                log.message(f"envelope_param_type = {envelope_param_type}")
                 if envelope_param_type == "sustain_level":
                     self.envelope["sustain_level"] = slider.value() / 127
                 elif envelope_param_type == "peak_level":
@@ -200,9 +196,9 @@ class PitchEnvelopeWidget(EnvelopeWidgetBase):
                     self.envelope[envelope_param_type] = midi_value_to_ms(
                         slider.value()
                     )
-            logger.message(f"{self.envelope}")
+            log.message(f"{self.envelope}")
         except Exception as ex:
-            logger.error(f"Error updating envelope from controls: {ex}")
+            log.error(f"Error updating envelope from controls: {ex}")
         self.plot.set_values(self.envelope)
 
     def update_controls_from_envelope(self) -> None:
@@ -220,5 +216,5 @@ class PitchEnvelopeWidget(EnvelopeWidgetBase):
                         int(ms_to_midi_value(self.envelope[envelope_param_type]))
                     )
         except Exception as ex:
-            logger.error(f"Error updating controls from envelope: {ex}")
+            log.error(f"Error updating controls from envelope: {ex}")
         self.plot.set_values(self.envelope)

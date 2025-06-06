@@ -3,7 +3,7 @@ from typing import Callable, Optional
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QWidget
 
-from jdxi_editor.log.logger import Logger as logger
+from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.parameter import AddressParameter
 from jdxi_editor.midi.io.helper import MidiIOHelper
@@ -22,6 +22,7 @@ TOOLTIPS = {
 
 
 class EnvelopeWidgetBase(QWidget):
+    """ Base class for envelope widgets in the JD-Xi editor """
     envelope_changed = Signal(dict)
 
     def __init__(self,
@@ -36,9 +37,9 @@ class EnvelopeWidgetBase(QWidget):
         self.plot = None
         self.address = address
         self.midi_helper = midi_helper
-        self._create_parameter_slider = create_parameter_slider
         self.controls = controls if controls else {}
         self.envelope = {}
+        self._create_parameter_slider = create_parameter_slider
         self._params = parameters
         self._keys = envelope_keys
         self._control_widgets = []
@@ -55,6 +56,15 @@ class EnvelopeWidgetBase(QWidget):
         super().update()
         if hasattr(self, 'plot') and self.plot:
             self.plot.update()
+
+    def set_values(self, envelope: dict) -> None:
+        """
+        Update envelope values and trigger address redraw
+        :param envelope: dict
+        :return: None
+        """
+        self.envelope = envelope
+        self.update()
 
     def emit_envelope_changed(self) -> None:
         """
@@ -82,7 +92,7 @@ class EnvelopeWidgetBase(QWidget):
                     self.envelope[key] = val
             self.envelope_changed.emit(self.envelope)
         except Exception as ex:
-            logger.error(f"Error updating envelope from controls: {ex}")
+            log.error(f"Error updating envelope from controls: {ex}")
         if hasattr(self, "plot") and self.plot:
             self.plot.set_values(self.envelope)
 
@@ -99,6 +109,6 @@ class EnvelopeWidgetBase(QWidget):
                 else:
                     slider.setValue(int(ms_to_midi_value(self.envelope[key])))
         except Exception as ex:
-            logger.error(f"Error updating controls from envelope: {ex}")
+            log.error(f"Error updating controls from envelope: {ex}")
         if hasattr(self, "plot") and self.plot:
             self.plot.set_values(self.envelope)

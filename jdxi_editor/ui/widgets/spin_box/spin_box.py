@@ -90,11 +90,11 @@ class SpinBox(QWidget):
         self.spin_box.setMaximumHeight(25)
 
         # Connect combo box index change to emit mapped value
-        self.spin_box.valueChanged.connect(self._on_value_changed)
+        self.spin_box.valueChanged.connect(self._on_valueChanged)
         self.setVisible(True)
 
     @Slot(int)
-    def _on_value_changed(self, value: int):
+    def _on_valueChanged(self, value: int):
         """Emit the corresponding value when the selected value changes."""
         self.valueChanged.emit(value)
 

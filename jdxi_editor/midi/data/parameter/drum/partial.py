@@ -24,6 +24,7 @@ Example usage:
 
 from typing import Optional, Tuple
 
+from jdxi_editor.midi.data.parameter.digital.mapping import ENVELOPE_MAPPING
 from jdxi_editor.midi.data.parameter.drum.addresses import (
     DRUM_GROUP_MAP,
     DRUM_ADDRESS_MAP,
@@ -664,3 +665,12 @@ class AddressParameterDrumPartial(AddressParameter):
         :return: int The display value
         """
         return midi_value
+
+    def get_envelope_param_type(self):
+        """
+        Returns a envelope_param_type, if the parameter is part of an envelope,
+        otherwise returns None.
+
+        :return: Optional[str] The envelope parameter type
+        """
+        return ENVELOPE_MAPPING.get(self.name)
