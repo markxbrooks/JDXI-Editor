@@ -38,6 +38,7 @@ import logging
 import platform
 import threading
 from typing import Union, Optional
+import qtawesome as qta
 
 from PySide6.QtCore import Qt, QSettings, QTimer
 from PySide6.QtGui import QShortcut, QKeySequence, QMouseEvent, QCloseEvent
@@ -76,6 +77,7 @@ from jdxi_editor.ui.editors import (
     ProgramEditor,
     SynthEditor,
 )
+from jdxi_editor.ui.editors.config import EditorConfig
 from jdxi_editor.ui.editors.digital.editor import DigitalSynth2Editor
 from jdxi_editor.ui.editors.helpers.program import (
     get_program_id_by_name,
@@ -126,40 +128,75 @@ class JDXiInstrument(JDXiUi):
         self._set_callbacks()
         self._init_preset_helpers()
         self.editor_registry = {
-            "vocal_fx": (
-                "Vocal Effects",
-                VocalFXEditor,
-                JDXiSynth.VOCAL_FX,
-                MidiChannel.VOCAL_FX,
+            "vocal_fx": EditorConfig(
+                title="Vocal Effects",
+                editor_class=VocalFXEditor,
+                synth_type=JDXiSynth.VOCAL_FX,
+                midi_channel=MidiChannel.VOCAL_FX,
+                icon="mdi.microphone"
             ),
-            "digital1": (
-                "Digital Synth 1",
-                DigitalSynthEditor,
-                JDXiSynth.DIGITAL_SYNTH_1,
-                MidiChannel.DIGITAL_SYNTH_1,
-                {"synth_number": 1},
+            "digital1": EditorConfig(
+                title="Digital Synth 1",
+                editor_class=DigitalSynthEditor,
+                synth_type=JDXiSynth.DIGITAL_SYNTH_1,
+                midi_channel=MidiChannel.DIGITAL_SYNTH_1,
+                kwargs={"synth_number": 1},
+                icon="mdi.piano"
             ),
-            "digital2": (
-                "Digital Synth 2",
-                DigitalSynth2Editor,
-                JDXiSynth.DIGITAL_SYNTH_2,
-                MidiChannel.DIGITAL_SYNTH_2,
-                {"synth_number": 2},
+            "digital2": EditorConfig(
+                title="Digital Synth 2",
+                editor_class=DigitalSynth2Editor,
+                synth_type=JDXiSynth.DIGITAL_SYNTH_2,
+                midi_channel=MidiChannel.DIGITAL_SYNTH_2,
+                kwargs={"synth_number": 2},
+                icon="mdi.piano"
             ),
-            "analog": (
-                "Analog Synth",
-                AnalogSynthEditor,
-                JDXiSynth.ANALOG_SYNTH,
-                MidiChannel.ANALOG_SYNTH,
+            "analog": EditorConfig(
+                title="Analog Synth",
+                editor_class=AnalogSynthEditor,
+                synth_type=JDXiSynth.ANALOG_SYNTH,
+                midi_channel=MidiChannel.ANALOG_SYNTH,
+                icon="mdi.piano"
             ),
-            "drums": ("Drums", DrumCommonEditor, JDXiSynth.DRUM_KIT, MidiChannel.DRUM_KIT),
-            "arpeggio": ("Arpeggiator", ArpeggioEditor, None, None),
-            "effects": ("Effects", EffectsCommonEditor, None, None),
-            "pattern": ("Pattern", PatternSequenceEditor, None, None),
-            "preset": ("Preset", PresetEditor, None, None),
-            "program": ("Program", ProgramEditor, None, None),
-            "midi_file": ("MIDI File", MidiFileEditor, None, None),
+            "drums": EditorConfig(
+                title="Drums",
+                editor_class=DrumCommonEditor,
+                synth_type=JDXiSynth.DRUM_KIT,
+                midi_channel=MidiChannel.DRUM_KIT,
+                icon="fa5s.drum"
+            ),
+            "arpeggio": EditorConfig(
+                title="Arpeggiator",
+                editor_class=ArpeggioEditor,
+                icon="ph.music-notes-simple-bold"
+            ),
+            "effects": EditorConfig(
+                title="Effects",
+                editor_class=EffectsCommonEditor,
+                icon="ri.sound-module-fill"
+            ),
+            "pattern": EditorConfig(
+                title="Pattern",
+                editor_class=PatternSequenceEditor,
+                icon="mdi.view-sequential-outline"
+            ),
+            "preset": EditorConfig(
+                title="Preset",
+                editor_class=PresetEditor,
+                icon="mdi6.soundbar"
+            ),
+            "program": EditorConfig(
+                title="Program",
+                editor_class=ProgramEditor,
+                icon="ri.speaker-line"
+            ),
+            "midi_file": EditorConfig(
+                title="MIDI File",
+                editor_class=MidiFileEditor,
+                icon="mdi.midi-port"
+            ),
         }
+
         self.show()
         self.main_editor = None
         self.data_request()
@@ -519,22 +556,17 @@ class JDXiInstrument(JDXiUi):
         :param editor_type: str Editor type
         :return: None
         """
-
         config = self.editor_registry.get(editor_type)
         if not config:
             logging.warning(f"Unknown editor type: {editor_type}")
             return
 
-        title, editor_class, synth_type, midi_channel, kwargs = (
-            (*config, {}) if len(config) == 4 else config
-        )
-
-        if synth_type:
-            self.current_synth_type = synth_type
-        if midi_channel:
-            self.channel = midi_channel
-
-        self._show_editor_tab(title, editor_class, **kwargs)
+        if config.synth_type:
+            self.current_synth_type = config.synth_type
+        if config.midi_channel:
+            self.channel = config.midi_channel
+        kwargs = config.kwargs
+        self._show_editor_tab(config.title, config.editor_class, config.icon, **kwargs)
 
     def get_existing_editor(self, editor_class) -> Optional[SynthEditor]:
         """
@@ -547,7 +579,7 @@ class JDXiInstrument(JDXiUi):
         log.parameter("existing_editor", existing_editor)
         return existing_editor
 
-    def _show_editor_tab(self, title: str, editor_class, **kwargs) -> None:
+    def _show_editor_tab(self, title: str, editor_class, icon, **kwargs) -> None:
         """
         _show_editor_tab
         :param title: str Title of the tab
@@ -592,7 +624,7 @@ class JDXiInstrument(JDXiUi):
             )
             editor.setWindowTitle(title)
 
-            self.main_editor.editor_tab_widget.addTab(editor, title)
+            self.main_editor.editor_tab_widget.addTab(editor, qta.icon(icon, color="#666666"), title)
             self.main_editor.editor_tab_widget.setCurrentWidget(editor)
 
             setattr(self, instance_attr, editor)
