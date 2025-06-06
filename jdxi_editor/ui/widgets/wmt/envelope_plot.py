@@ -124,8 +124,8 @@ class WMTEnvPlot(QWidget):
             range_lower = max(self.envelope["range_lower"] / 1000.0, 1.0)
             depth = self.envelope["depth"] / 2.0  # Depth in range [0.0, 0.5]
 
-            range_upper = max(self.envelope["range_upper"] / 1000.0, 0.1)
-            fade_upper = max(self.envelope["fade_upper"] / 1000.0, 0.5)
+            range_upper = max(self.envelope["range_upper"] / 2000.0, 0.1)
+            fade_upper = max(self.envelope["fade_upper"] / 2000.0, 0.5)
             sustain = 2.0  # Sustain in seconds
 
             fade_lower_period = range_lower - fade_lower
@@ -139,7 +139,6 @@ class WMTEnvPlot(QWidget):
             upper_fade = np.linspace(
                 depth, initial_level, fade_upper_samples, endpoint=False
             )
-            log.message(f"upper_fade: {upper_fade}")
             sustain_samples = int(self.sample_rate * (sustain + range_upper))  # Sustain for 2 seconds
             sustain = np.full(sustain_samples, depth)
             baseline = np.full(fade_lower_samples, initial_level)

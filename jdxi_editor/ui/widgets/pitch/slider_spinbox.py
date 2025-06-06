@@ -176,6 +176,9 @@ class PitchEnvSliderSpinbox(QWidget):
         :param value: float double spinbox value
         :return: None
         """
+        if not isinstance(value, float):
+            log.error(f"Expected float value, got {type(value)}")
+            return
         self.slider.blockSignals(True)
         self.slider.setValue(int(self.convert_from_envelope(int(value))))
         self.slider.blockSignals(False)
