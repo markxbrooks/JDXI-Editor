@@ -92,6 +92,7 @@ class DrumPartialEditor(PartialEditor):
             self._create_parameter_combo_box,
             self._create_parameter_slider,
             self.midi_helper,
+            address=self.address
         )
         tab_wmt_layout.addWidget(wmt_group)
 

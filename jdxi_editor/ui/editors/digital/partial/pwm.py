@@ -22,7 +22,7 @@ from jdxi_editor.midi.utils.conversions import midi_value_to_ms, ms_to_midi_valu
 from jdxi_editor.ui.widgets.envelope.base import EnvelopeWidgetBase, TOOLTIPS
 from jdxi_editor.ui.widgets.pitch.pwm_plot import PWMPlot
 from jdxi_editor.ui.widgets.pulse_width.slider_spinbox import PWMSliderSpinbox
-from jdxi_editor.log.logger import Logger as logger
+from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
@@ -149,7 +149,7 @@ class PWMWidget(EnvelopeWidgetBase):
         try:
             for param, slider in self.controls.items():
                 envelope_param_type = param.get_envelope_param_type()
-                logger.message(f"envelope_param_type = {envelope_param_type}")
+                log.message(f"envelope_param_type = {envelope_param_type}")
                 if envelope_param_type == "mod_depth":
                     self.envelope["mod_depth"] = slider.value() / MidiConstant.VALUE_MAX_SEVEN_BIT
                 if envelope_param_type == "pulse_width":
@@ -158,9 +158,9 @@ class PWMWidget(EnvelopeWidgetBase):
                     self.envelope[envelope_param_type] = midi_value_to_ms(
                         slider.value()
                     )
-            logger.message(f"{self.envelope}")
+            log.message(f"{self.envelope}")
         except Exception as ex:
-            logger.error(f"Error updating envelope from controls: {ex}")
+            log.error(f"Error updating envelope from controls: {ex}")
         self.plot.set_values(self.envelope)
 
     def update_controls_from_envelope(self) -> None:
@@ -177,5 +177,5 @@ class PWMWidget(EnvelopeWidgetBase):
                         int(ms_to_midi_value(self.envelope[envelope_param_type]))
                     )
         except Exception as ex:
-            logger.error(f"Error updating controls from envelope: {ex}")
+            log.error(f"Error updating controls from envelope: {ex}")
         self.plot.set_values(self.envelope)

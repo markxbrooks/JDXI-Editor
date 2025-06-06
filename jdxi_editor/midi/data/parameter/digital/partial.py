@@ -124,7 +124,7 @@ class AddressParameterDigitalPartial(AddressParameter):
     OSC_PULSE_WIDTH = (0x06, 0, 127, 0, 127, "Sets the pulse width when PW-SQR is selected. \nSmaller values narrow the waveform; higher values widen it, shaping the tone" )  # Pulse Width
     OSC_PITCH_ENV_ATTACK_TIME = (0x07, 0, 127, 0, 127, "Specifies the attack time of the pitch envelope. \nThis specifies the time from the moment you press the key until the pitch reaches its highest (or lowest) point")  # Pitch Envelope Attack
     OSC_PITCH_ENV_DECAY_TIME = (0x08, 0, 127, 0, 127, "Specifies the decay time of the pitch envelope. \nThis specifies the time from the moment the pitch reaches its highest \n(or lowest) point until it returns to the pitch of the key you pressed")  # Pitch Envelope Decay
-    OSC_PITCH_ENV_DEPTH = (0x09, -63, 63, -63, 63, "This specifies how much the pitch envelope will affect the pitch")  # Pitch Envelope Depth (-63 to +63)
+    OSC_PITCH_ENV_DEPTH = (0x09, -63, 63, -63, 63, "This specifies how much the pitch envelope will affect the pitch\nNegative values will invert the shape of the envelope")  # Pitch Envelope Depth (-63 to +63)
 
     FILTER_MODE_SWITCH = (0x0A, 0, 7, 0, 7, "Selects the type of filter; \nBYPASS, LPF1, LPF2, LPF3, LPF4, HPF, BPF, PKG")  # Filter mode
     FILTER_SLOPE = (0x0B, 0, 1, 0, 1, "Selects the slope (steepness) of the filter. -12, -24 [dB]")  # Filter slope

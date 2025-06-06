@@ -64,6 +64,7 @@ class Slider(QWidget):
         tooltip: str = "",
         draw_center_mark: bool = True,
         draw_tick_marks: bool = True,
+        initial_value: int = 0,
         parent=None,
     ):
         super().__init__(parent)
@@ -94,7 +95,7 @@ class Slider(QWidget):
         )
         self.slider.setMinimum(min_value)
         self.slider.setMaximum(max_value)
-        self.slider.valueChanged.connect(self._on_value_changed)
+        self.slider.valueChanged.connect(self._on_valueChanged)
 
         # Set size policy for vertical sliders
         if vertical:
@@ -118,6 +119,7 @@ class Slider(QWidget):
             )
             layout.addWidget(self.label)  # Label is added before the slider
             layout.addWidget(self.slider)
+            self.slider.setValue(initial_value)
 
         # Create value display
 
@@ -147,7 +149,7 @@ class Slider(QWidget):
         self.center_value = center_value
         self.update()
 
-    def _on_value_changed(self, value: int):
+    def _on_valueChanged(self, value: int):
         """Handle slider value changes"""
         self._update_value_label()
         self.valueChanged.emit(value)

@@ -100,10 +100,10 @@ class ComboBox(QWidget):
         self.combo_box.setMaximumHeight(25)
 
         # Connect combo box index change to emit mapped value
-        self.combo_box.currentIndexChanged.connect(self._on_value_changed)
+        self.combo_box.currentIndexChanged.connect(self._on_valueChanged)
 
     @Slot(int)
-    def _on_value_changed(self, index: int) -> None:
+    def _on_valueChanged(self, index: int) -> None:
         """Emit the corresponding value when the selected index changes.
 
         :param index: int

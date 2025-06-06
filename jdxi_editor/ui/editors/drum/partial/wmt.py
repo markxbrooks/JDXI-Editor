@@ -47,9 +47,12 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
 )
 
+from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.drum.data import rm_waves
 from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
+from jdxi_editor.ui.widgets.adsr.adsr import ADSR
+from jdxi_editor.ui.widgets.wmt.envelope import WMTEnvelopeWidget
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
@@ -57,11 +60,12 @@ class DrumWMTSection(QWidget):
     """Drum TVF Section for the JDXI Editor"""
 
     def __init__(
-        self,
-        controls,
-        create_parameter_combo_box,
-        create_parameter_slider,
-        midi_helper,
+            self,
+            controls,
+            create_parameter_combo_box,
+            create_parameter_slider,
+            midi_helper,
+            address=None,
     ):
         super().__init__()
         """
@@ -82,6 +86,7 @@ class DrumWMTSection(QWidget):
         self._create_parameter_slider = create_parameter_slider
         self._create_parameter_combo_box = create_parameter_combo_box
         self.midi_helper = midi_helper
+        self.address = address
         self.setup_ui()
 
     def setup_ui(self):
@@ -367,6 +372,7 @@ class DrumWMTSection(QWidget):
         )
 
         # More sliders
+        """
         layout.addRow(self._create_parameter_slider(p("WAVE_LEVEL"), "Wave Level"))
         layout.addRow(
             self._create_parameter_slider(
@@ -387,7 +393,23 @@ class DrumWMTSection(QWidget):
             self._create_parameter_slider(
                 p("VELOCITY_FADE_WIDTH_UPPER"), "Velocity Fade Width Upper"
             )
-        )
+        )"""
+        try:
+
+            adsr_widget = WMTEnvelopeWidget(fade_lower_param=p("VELOCITY_FADE_WIDTH_LOWER"),
+                                            range_lower_param=p("VELOCITY_RANGE_LOWER"),
+                                            range_upper_param=p("VELOCITY_RANGE_UPPER"),
+                                            depth_param=p("WAVE_LEVEL"),
+                                            fade_upper_param=p("VELOCITY_FADE_WIDTH_UPPER"),
+                                            create_parameter_slider=self._create_parameter_slider,
+                                            controls=self.controls,
+                                            midi_helper=self.midi_helper,
+                                            address=self.address,
+                                            )
+            adsr_widget.setStyleSheet(JDXiStyle.ADSR)
+            layout.addRow(adsr_widget)
+        except Exception as ex:
+            log.error(f"WMT{wmt_index}: Error creating ADSR:", exception=ex)
 
         return layout
 

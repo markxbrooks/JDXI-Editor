@@ -41,6 +41,7 @@ from PySide6.QtGui import (
     QMouseEvent,
 )
 
+from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.jdxi.style import JDXiStyle
 
 
@@ -160,138 +161,138 @@ class ADSRPlot(QWidget):
         """Paint the ADSR plot.
         :param event: QPaintEvent
         """
-        painter = QPainter(self)
-        painter.setRenderHint(QPainter.Antialiasing)
+        with QPainter(self) as painter:
+            # Draw background gradient
+            gradient = QLinearGradient(0, 0, self.width(), self.height())
+            gradient.setColorAt(0.0, QColor("#321212"))  # Darker edges
+            gradient.setColorAt(0.3, QColor("#331111"))  # Gray transition
+            gradient.setColorAt(0.5, QColor("#551100"))  # Orange glow center
+            gradient.setColorAt(0.7, QColor("#331111"))  # Gray transition
+            gradient.setColorAt(1.0, QColor("#111111"))  # Darker edges
+            painter.setBrush(gradient)
+            painter.setPen(QPen(QColor("#000000"), 0))  # no border
+            painter.drawRect(0, 0, self.width(), self.height())
 
-        # Draw background gradient
-        gradient = QLinearGradient(0, 0, self.width(), self.height())
-        gradient.setColorAt(0.0, QColor("#321212"))  # Darker edges
-        gradient.setColorAt(0.3, QColor("#331111"))  # Gray transition
-        gradient.setColorAt(0.5, QColor("#551100"))  # Orange glow center
-        gradient.setColorAt(0.7, QColor("#331111"))  # Gray transition
-        gradient.setColorAt(1.0, QColor("#111111"))  # Darker edges
-        painter.setBrush(gradient)
-        painter.setPen(QPen(QColor("#000000"), 0))  # no border
-        painter.drawRect(0, 0, self.width(), self.height())
+            # Use orange for drawing
+            pen = QPen(QColor("orange"))
+            axis_pen = QPen(QColor("white"))
+            pen.setWidth(2)
+            painter.setPen(QPen(Qt.PenStyle.SolidLine))
+            painter.setPen(pen)
+            painter.setFont(QFont("JD LCD Rounded", 10))
 
-        # Use orange for drawing
-        pen = QPen(QColor("orange"))
-        axis_pen = QPen(QColor("white"))
-        pen.setWidth(2)
-        painter.setRenderHint(QPainter.Antialiasing, False)
-        painter.setPen(QPen(Qt.PenStyle.SolidLine))
-        painter.setPen(pen)
-        painter.setFont(QFont("JD LCD Rounded", 10))
+            # Compute envelope segments in seconds
+            attack_time = self.envelope["attack_time"] / 1000.0
+            decay_time = self.envelope["decay_time"] / 1000.0
+            release_time = self.envelope["release_time"] / 1000.0
+            sustain_level = self.envelope["sustain_level"]
+            peak_level = max(self.envelope["peak_level"]*2, 0)
+            log.message(f"peak_level: {peak_level}")
+            initial_level = self.envelope["initial_level"]
 
-        # Compute envelope segments in seconds
-        attack_time = self.envelope["attack_time"] / 1000.0
-        decay_time = self.envelope["decay_time"] / 1000.0
-        release_time = self.envelope["release_time"] / 1000.0
-        sustain_level = self.envelope["sustain_level"]
-        peak_level = self.envelope["peak_level"]
-        initial_level = self.envelope["initial_level"]
+            # Convert times to sample counts
+            attack_samples = int(attack_time * self.sample_rate)
+            decay_samples = int(decay_time * self.sample_rate)
+            sustain_samples = int(self.sample_rate * 2)  # Fixed 2 seconds sustain
+            release_samples = int(release_time * self.sample_rate)
 
-        # Convert times to sample counts
-        attack_samples = int(attack_time * self.sample_rate)
-        decay_samples = int(decay_time * self.sample_rate)
-        sustain_samples = int(self.sample_rate * 2)  # Fixed 2 seconds sustain
-        release_samples = int(release_time * self.sample_rate)
+            # Construct the ADSR envelope as one concatenated array
+            # Normalized ADSR envelope (peak level = 1.0)
+            attack = np.linspace(initial_level, peak_level, attack_samples, endpoint=False)  # Attack from initial to peak level
+            decay = np.linspace(peak_level, sustain_level * peak_level, decay_samples, endpoint=False)  # Decay to sustain level
+            sustain = np.full(sustain_samples, sustain_level * peak_level)  # Sustain level scaled by peak level
+            release = np.linspace(sustain_level * peak_level, 0.0, release_samples)  # Release from sustain level to 0
+            envelope = np.concatenate([attack, decay, sustain, release])
 
-        # Construct the ADSR envelope as one concatenated array
-        attack = np.linspace(initial_level, peak_level, attack_samples, endpoint=False)
-        decay = np.linspace(peak_level, sustain_level, decay_samples, endpoint=False)
-        sustain = np.full(sustain_samples, sustain_level)
-        release = np.linspace(sustain_level, 0, release_samples)
+            # envelope = np.concatenate([attack, decay, sustain, release])
+            total_samples = len(envelope)
+            total_time = 5  # in seconds
 
-        envelope = np.concatenate([attack, decay, sustain, release])
-        total_samples = len(envelope)
-        total_time = 5  # in seconds
+            # Prepare points for drawing
+            w = self.width()
+            h = self.height()
+            top_padding = 50  # Custom top padding value
+            right_padding = 50  # Custom right padding value
+            bottom_padding = 80  # Bottom padding remains the same
+            left_padding = 80  # Left padding remains the same
 
-        # Prepare points for drawing
-        w = self.width()
-        h = self.height()
-        top_padding = 50  # Custom top padding value
-        right_padding = 50  # Custom right padding value
-        bottom_padding = 80  # Bottom padding remains the same
-        left_padding = 80  # Left padding remains the same
+            plot_w = w - left_padding - right_padding
+            plot_h = h - top_padding - bottom_padding
 
-        plot_w = w - left_padding - right_padding
-        plot_h = h - top_padding - bottom_padding
+            # Optionally draw axis lines and labels
+            painter.setPen(axis_pen)
+            painter.drawLine(
+                left_padding, top_padding, left_padding, top_padding + plot_h
+            )  # Y-axis
+            painter.drawLine(
+                left_padding,
+                top_padding + plot_h,
+                left_padding + plot_w,
+                top_padding + plot_h,
+            )  # X-axis
+            painter.drawText(left_padding, top_padding + plot_h + 20, "0")
+            painter.drawText(left_padding + plot_w - 10, top_padding + plot_h + 20, "5")
+            for i in range(1, 5):
+                x = left_padding + i * plot_w / 5
+                painter.drawLine(x, top_padding + plot_h, x, top_padding + plot_h + 5)
+                painter.drawText(x - 10, top_padding + plot_h + 20, f"{i}")
+            for i in range(1, 5):
+                y = top_padding + i * plot_h / 5
+                painter.drawLine(left_padding, y, left_padding - 5, y)
+                painter.drawText(left_padding - 35, y + 5, f"{1 - i * 0.2:.1f}")
+            painter.drawText(left_padding - 35, top_padding + 5, "1")
+            painter.drawText(left_padding - 35, top_padding + plot_h, "0")
 
-        # Optionally draw axis lines and labels
-        painter.setPen(axis_pen)
-        painter.drawLine(
-            left_padding, top_padding, left_padding, top_padding + plot_h
-        )  # Y-axis
-        painter.drawLine(
-            left_padding,
-            top_padding + plot_h,
-            left_padding + plot_w,
-            top_padding + plot_h,
-        )  # X-axis
-        painter.drawText(left_padding, top_padding + plot_h + 20, "0")
-        painter.drawText(left_padding + plot_w - 10, top_padding + plot_h + 20, "5")
-        for i in range(1, 5):
-            x = left_padding + i * plot_w / 5
-            painter.drawLine(x, top_padding + plot_h, x, top_padding + plot_h + 5)
-            painter.drawText(x - 10, top_padding + plot_h + 20, f"{i}")
-        for i in range(1, 5):
-            y = top_padding + i * plot_h / 5
-            painter.drawLine(left_padding, y, left_padding - 5, y)
-            painter.drawText(left_padding - 35, y + 5, f"{1 - i * 0.2:.1f}")
-        painter.drawText(left_padding - 35, top_padding + 5, "1")
-        painter.drawText(left_padding - 35, top_padding + plot_h, "0")
-
-        # Draw the envelope label at the top center of the widget
-        painter.setPen(QPen(QColor("orange")))
-        painter.setFont(QFont("JD LCD Rounded", 16))
-        painter.drawText(
-            left_padding + plot_w / 2 - 40, top_padding / 2, "ADSR Envelope"
-        )  # half way up top padding
-
-        # Write legend label for x-axis at the bottom center of the widget
-        painter.setPen(QPen(QColor("white")))
-        painter.setFont(QFont("JD LCD Rounded", 16))
-        painter.drawText(
-            left_padding + plot_w / 2 - 10, top_padding + plot_h + 35, "Time (s)"
-        )
-
-        # Draw y-axis label rotated 90 degrees
-        painter.save()
-        painter.translate(left_padding - 50, top_padding + plot_h / 2 + 25)
-        painter.rotate(-90)
-        painter.drawText(0, 0, "Amplitude")
-        painter.restore()
-
-        # Draw background grid as dashed dark gray lines
-        pen = QPen(Qt.GlobalColor.darkGray, 2)
-        pen.setStyle(Qt.PenStyle.DashLine)
-        pen.setWidth(1)
-        painter.setPen(pen)
-        for i in range(1, 5):
-            x = left_padding + i * plot_w / 5
-            painter.drawLine(x, top_padding, x, top_padding + plot_h)
-        for i in range(1, 5):
-            y = top_padding + i * plot_h / 5
-            painter.drawLine(left_padding, y, left_padding + plot_w, y)
-
-        if self.enabled:
-            # Draw the envelope polyline last, on top of the grid
-            # Create a list of points for the envelope polyline.
+            # Draw the envelope label at the top center of the widget
             painter.setPen(QPen(QColor("orange")))
-            points = []
-            num_points = 500
-            indices = np.linspace(0, total_samples - 1, num_points).astype(int)
-            for i in indices:
-                t = i / self.sample_rate  # time in seconds
-                x = left_padding + (t / total_time) * plot_w
-                y = top_padding + plot_h - (envelope[i] * plot_h)
-                points.append((x, y))
+            painter.setFont(QFont("JD LCD Rounded", 16))
+            painter.drawText(
+                left_padding + plot_w / 2 - 40, top_padding / 2, "ADSR Envelope"
+            )  # half way up top padding
 
-            # Draw the envelope polyline
-            if points:
-                path = QPainterPath()
-                path.moveTo(*points[0])
-                for pt in points[1:]:
-                    path.lineTo(*pt)
-                painter.drawPath(path)
+            # Write legend label for x-axis at the bottom center of the widget
+            painter.setPen(QPen(QColor("white")))
+            painter.setFont(QFont("JD LCD Rounded", 16))
+            painter.drawText(
+                left_padding + plot_w / 2 - 10, top_padding + plot_h + 35, "Time (s)"
+            )
+
+            # Draw y-axis label rotated 90 degrees
+            painter.save()
+            painter.translate(left_padding - 50, top_padding + plot_h / 2 + 25)
+            painter.rotate(-90)
+            painter.drawText(0, 0, "Amplitude")
+            painter.restore()
+
+            # Draw background grid as dashed dark gray lines
+            pen = QPen(Qt.GlobalColor.darkGray, 2)
+            pen.setStyle(Qt.PenStyle.DashLine)
+            pen.setWidth(1)
+            painter.setPen(pen)
+            for i in range(1, 5):
+                x = left_padding + i * plot_w / 5
+                painter.drawLine(x, top_padding, x, top_padding + plot_h)
+            for i in range(1, 5):
+                y = top_padding + i * plot_h / 5
+                painter.drawLine(left_padding, y, left_padding + plot_w, y)
+
+            if self.enabled:
+                # Draw the envelope polyline last, on top of the grid
+                # Create a list of points for the envelope polyline.
+                painter.setPen(QPen(QColor("orange")))
+                points = []
+                num_points = 500
+                indices = np.linspace(0, total_samples - 1, num_points).astype(int)
+                for i in indices:
+                    t = i / self.sample_rate  # time in seconds
+                    x = left_padding + (t / total_time) * plot_w
+                    y = top_padding + plot_h - (envelope[i] * plot_h)
+                    points.append((x, y))
+
+                # Draw the envelope polyline
+                if points:
+                    path = QPainterPath()
+                    path.moveTo(*points[0])
+                    for pt in points[1:]:
+                        path.lineTo(*pt)
+                    painter.drawPath(path)

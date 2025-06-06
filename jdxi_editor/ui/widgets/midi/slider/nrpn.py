@@ -67,7 +67,7 @@ class NRPNSlider(Slider):
         self.current_value = min_value
         self.vertical = vertical
         self.setTickPosition(self.TickPosition.NoTicks)
-        self.valueChanged.connect(self.on_value_changed)
+        self.valueChanged.connect(self.on_valueChanged)
         self.param_type = param_type  # "nrpn" or "rpn"
         self.update_style(self.current_value)
         self.midi_requests = MidiRequests.PROGRAM_TONE_NAME_PARTIAL
@@ -94,7 +94,7 @@ class NRPNSlider(Slider):
             ),
         ).start()
 
-    def on_value_changed(self, value: int):
+    def on_valueChanged(self, value: int):
         """
         Set the current value of the slider and send NRPN or RPN messages
 

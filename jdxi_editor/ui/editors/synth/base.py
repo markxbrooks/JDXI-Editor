@@ -178,11 +178,13 @@ class SynthBase(QWidget):
             param: AddressParameter,
             label: str,
             vertical: bool = False,
+            initial_value: Optional[int] = 0,
             show_value_label: bool = True) -> Slider:
         """
         Create a slider for an address parameter with proper display conversion.
         :param param: AddressParameter Parameter to create slider for
         :param label: str label for the slider
+        :param initial_value: int initial value for the slider
         :param vertical: bool whether the slider is vertical
         :param show_value_label: str whether to show the value label
         :return: Slider
@@ -205,6 +207,7 @@ class SynthBase(QWidget):
             show_value_label=show_value_label,
             is_bipolar=param.is_bipolar,
             tooltip=tooltip,
+
         )
 
         if param.name in self.bipolar_parameters or param.is_bipolar:
