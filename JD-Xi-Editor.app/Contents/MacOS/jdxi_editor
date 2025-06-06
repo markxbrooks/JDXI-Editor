@@ -1,2 +1,0 @@
-#!/bin/bash
-exec "/Users/brooks/projects/JDXI-Editor/venv/bin/python" -m jdxi_editor.main
