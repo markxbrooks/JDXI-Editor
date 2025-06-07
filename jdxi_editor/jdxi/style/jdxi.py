@@ -87,6 +87,7 @@ class JDXiStyle:
     """Central style definitions for JD-Xi Manager"""
 
     # Colors
+
     PWM_WIDGET_HEIGHT = 250
     ADSR_PLOT_WIDTH = 300
     ADSR_PLOT_HEIGHT = 200

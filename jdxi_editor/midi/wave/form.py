@@ -37,13 +37,13 @@ OSC_WAVE_PCM = 0x06  # PCM waveform
 class Waveform(Enum):
     """Waveform types available on the JD-Xi"""
 
-    SAW = auto()  # Sawtooth wave
-    SQUARE = auto()  # Square wave
-    TRIANGLE = auto()  # Triangle wave
-    SINE = auto()  # Sine wave
-    NOISE = auto()  # Noise
-    SUPER_SAW = auto()  # Super saw
-    PCM = auto()  # PCM waveform
+    SAW = 1  # Sawtooth wave
+    SQUARE = 2  # Square wave
+    TRIANGLE = 3  # Triangle wave
+    SINE = 4  # Sine wave
+    NOISE = 5  # Noise
+    SUPER_SAW = 6  # Super saw
+    PCM = 7  # PCM waveform
 
     @property
     def display_name(self) -> str:
