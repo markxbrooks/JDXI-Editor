@@ -87,6 +87,8 @@ class Logger:
         if LOGGING and not silent:
             logging.log(level, full_message, stacklevel=stacklevel)
 
+    info = message
+
     @staticmethod
     def parameter(
         message: str,

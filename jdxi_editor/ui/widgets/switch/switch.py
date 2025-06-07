@@ -67,6 +67,12 @@ class Switch(QWidget):
             self.button.setText(self.values[value])
             self.button.setChecked(value > 0)
 
+    def setLabel(self, text: str):
+        """Set label text"""
+        if not text:
+            return
+        self.label.setText(text)
+
     def value(self) -> int:
         """Get current value"""
         return self.current_index

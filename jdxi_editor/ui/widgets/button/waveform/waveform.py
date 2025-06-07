@@ -35,5 +35,10 @@ class WaveformButton(QPushButton):
         if self.isChecked():
             self.waveform_selected.emit(self.waveform)
 
-    #def setValue(self, value): @@@
-    #    """ sets a value for the button"""
+    def setValue(self, value: int):
+        """Set the button's checked state based on a MIDI value."""
+        try:
+            selected_waveform = Waveform.from_midi_value(value)
+            self.setChecked(selected_waveform == self.waveform)
+        except ValueError:
+            self.setChecked(False)

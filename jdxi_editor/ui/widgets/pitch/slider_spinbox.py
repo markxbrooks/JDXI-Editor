@@ -129,7 +129,7 @@ class PitchEnvSliderSpinbox(QWidget):
                                                min_time=10,
                                                max_time=5000)
         else:
-            log.error(f"Unknown envelope parameter type: {param_type}")
+            log.error(f"Unknown envelope parameter type {param_type} for {self.param}")
             converted_value = 0.0  # or raise an error, depending on design
         return converted_value
 
@@ -152,10 +152,11 @@ class PitchEnvSliderSpinbox(QWidget):
                             "fade_upper",
                             "range_lower",
                             "range_upper"]:
-            converted_value = ms_to_midi_value(value, min_time=10, max_time=5000)
+            converted_value = int(ms_to_midi_value(value, min_time=10, max_time=5000))
         else:
             converted_value = 64
         log.message(f"convert_from_envelope: {value} -> {converted_value}")
+        return converted_value
 
     def _slider_changed(self, value: int) -> None:
         """
@@ -172,15 +173,32 @@ class PitchEnvSliderSpinbox(QWidget):
 
     def _spinbox_changed(self, value: float):
         """
-        spinbox changed
+        Spinbox changed
         :param value: float double spinbox value
         :return: None
         """
-        if not isinstance(value, float):
-            log.error(f"Expected float value, got {type(value)}")
+        if value is None:
             return
+
+        # Defensive: make sure we can work with the value
+        if isinstance(value, float):
+            try:
+                value = int(value)
+            except Exception as ex:
+                log.error(f"Error {ex} occurred casting float {value} to int")
+                return
+
+        if not isinstance(value, int):
+            log.error(f"{value} is neither int nor castable float")
+            return
+
+        converted_value = self.convert_from_envelope(value)
+        if converted_value is None:
+            log.error(f"convert_from_envelope({value}) returned None")
+            return
+
         self.slider.blockSignals(True)
-        self.slider.setValue(int(self.convert_from_envelope(int(value))))
+        self.slider.setValue(int(converted_value))
         self.slider.blockSignals(False)
         self.envelope_changed.emit({self.param.get_envelope_param_type(): value})
 

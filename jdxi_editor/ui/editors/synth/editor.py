@@ -277,7 +277,7 @@ class SynthEditor(SynthBase):
 
         if current_synth != temporary_area:
             log.message(
-                f"temp_area: {temporary_area} is not current_synth: {current_synth}, Skipping update"
+                f"temporary_area: {temporary_area} is not current_synth: {current_synth}, Skipping update"
             )
             return
 
@@ -458,6 +458,141 @@ class SynthEditor(SynthBase):
         return True
 
     def update_instrument_image(self):
+        """Update the instrument image based on the selected synth."""
+        selected_text = self._get_selected_instrument_text()
+        if not selected_text:
+            self._fallback_to_default_image("No instrument text selected.")
+            return
+
+        name, type_ = self._parse_instrument_text(selected_text)
+        if name and type_:
+            image_loaded = self._try_load_specific_or_generic_image(name, type_)
+        else:
+            image_loaded = False
+
+        if not image_loaded:
+            self._fallback_to_default_image("Failed to load specific/generic image.")
+
+    def _get_selected_instrument_text(self) -> str:
+        combo = getattr(self.instrument_selection_combo, "combo_box", None)
+        if combo and hasattr(combo, "currentText"):
+            return combo.currentText()
+        log.error("Instrument combo box is missing or malformed.")
+        return ""
+
+    def _parse_instrument_text(self, text: str) -> tuple:
+        match = re.search(r"(\d{3}) - (\S+)\s(\S+)+", text, re.IGNORECASE)
+        if not match:
+            log.warning("Instrument text did not match expected pattern.")
+            return None, None
+        try:
+            name = match.group(2).lower().replace("&", "_").split("_")[0]
+            type_ = match.group(3).lower().replace("&", "_").split("_")[0]
+            log.parameter("Parsed instrument name:", name)
+            log.parameter("Parsed instrument type:", type_)
+            return name, type_
+        except Exception as ex:
+            log.error(f"Error parsing instrument name/type: {ex}")
+            return None, None
+
+    def _try_load_specific_or_generic_image(self, name: str, type_: str) -> bool:
+        try:
+            specific_path = resource_path(os.path.join(
+                "resources", self.instrument_icon_folder, f"{name}.png"
+            ))
+            generic_path = resource_path(os.path.join(
+                "resources", self.instrument_icon_folder, f"{type_}.png"
+            ))
+            return self.load_and_set_image(specific_path, generic_path)
+        except Exception as ex:
+            log.error(f"Error loading specific/generic images: {ex}")
+            return False
+
+    def _fallback_to_default_image(self, reason: str):
+        log.info(f"{reason} Falling back to default image.")
+        try:
+            default_path = resource_path(os.path.join(
+                "resources", self.instrument_icon_folder, self.instrument_default_image
+            ))
+            if not self.load_and_set_image(default_path):
+                log.error("Default instrument image not found. Clearing label.")
+                self.instrument_image_label.clear()
+        except Exception as ex:
+            log.error(f"Error loading default image: {ex}")
+            self.instrument_image_label.clear()
+
+    def update_instrument_image_new(self):
+        """Update the instrument image based on the selected synth."""
+        try:
+            # Prepare default image path
+            if not hasattr(self, "instrument_icon_folder") or not hasattr(self, "instrument_default_image"):
+                log.error("Missing attributes: 'instrument_icon_folder' or 'instrument_default_image'")
+                return
+
+            default_image_path = resource_path(os.path.join(
+                "resources", self.instrument_icon_folder, self.instrument_default_image
+            ))
+
+            # Extract selected instrument text
+            combo = getattr(self.instrument_selection_combo, "combo_box", None)
+            if combo is None or not hasattr(combo, "currentText"):
+                log.error("Instrument combo box is missing or malformed.")
+                return
+
+            selected_instrument_text = combo.currentText()
+            if not selected_instrument_text:
+                log.warning("No instrument selected.")
+                self.load_and_set_image(default_image_path)
+                return
+
+            log.parameter("Selected instrument text:", selected_instrument_text)
+
+            # Try to extract synth name and type
+            instrument_matches = re.search(
+                r"(\d{3}) - (\S+)\s(\S+)+", selected_instrument_text, re.IGNORECASE
+            )
+
+            if instrument_matches:
+                try:
+                    selected_instrument_name = (
+                        instrument_matches.group(2).lower().replace("&", "_").split("_")[0]
+                    )
+                    selected_instrument_type = (
+                        instrument_matches.group(3).lower().replace("&", "_").split("_")[0]
+                    )
+                    log.parameter("Selected instrument name:", selected_instrument_name)
+                    log.parameter("Selected instrument type:", selected_instrument_type)
+
+                    specific_image_path = resource_path(os.path.join(
+                        "resources",
+                        self.instrument_icon_folder,
+                        f"{selected_instrument_name}.png",
+                    ))
+                    generic_image_path = resource_path(os.path.join(
+                        "resources",
+                        self.instrument_icon_folder,
+                        f"{selected_instrument_type}.png",
+                    ))
+
+                    image_loaded = self.load_and_set_image(specific_image_path, generic_image_path)
+                except Exception as ex:
+                    log.error(f"Error parsing instrument name/type: {ex}")
+                    image_loaded = False
+            else:
+                log.warning("Instrument text did not match expected pattern.")
+                image_loaded = False
+
+            # Fallback to default image
+            if not image_loaded:
+                log.info("Falling back to default instrument image.")
+                if not self.load_and_set_image(default_image_path):
+                    log.error("Default instrument image not found. Clearing image label.")
+                    self.instrument_image_label.clear()
+
+        except Exception as e:
+            log.error(f"Unhandled exception in update_instrument_image: {e}")
+
+    def update_instrument_image_old(self):
         """Update the instrument image based on the selected synth."""
         default_image_path = resource_path(os.path.join(
             "resources", self.instrument_icon_folder, self.instrument_default_image

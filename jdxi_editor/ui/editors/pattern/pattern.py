@@ -58,7 +58,7 @@ class PatternSequenceEditor(SynthEditor):
         preset_helper: Optional[JDXiPresetHelper],
         parent: Optional[QWidget] = None,
     ):
-        super().__init__(parent)
+        super().__init__(parent=parent)
         """
         Initialize the PatternSequencer
         :param midi_helper: Optional[MidiIOHelper]
