@@ -15,7 +15,7 @@ from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.data.address.address import RolandSysExAddress, JD_XI_HEADER_LIST, AddressOffsetSuperNATURALLMB
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.midi.sysex.validation import validate_raw_sysex_message, validate_raw_midi_message
-from jdxi_editor.midi.utils.byte import split_16bit_value_to_nibbles
+from jdxi_editor.midi.utils.byte import split_16bit_value_to_nibbles, encode_roland_7bit
 
 
 def apply_lmb_offset(address: RolandSysExAddress, param: AddressParameter) -> RolandSysExAddress:

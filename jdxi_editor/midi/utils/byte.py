@@ -30,6 +30,55 @@ def split_8bit_value_to_nibbles(value: int) -> list[int]:
     return [(value >> 4) & BitMask.LOW_4_BITS, value & BitMask.LOW_4_BITS]
 
 
+def encode_roland_7bit(value: int) -> list[int]:
+    """Encodes a 28-bit value into 4x 7-bit MIDI bytes (MSB first)."""
+    return [
+        (value >> 21) & BitMask.LOW_7_BITS,
+        (value >> 14) & BitMask.LOW_7_BITS,
+        (value >> 7)  & BitMask.LOW_7_BITS,
+        value & BitMask.LOW_7_BITS
+    ]
+
+
+def decode_roland_4byte(data_bytes: list[int]) -> int:
+    """
+    decode_roland_4byte
+    :param data_bytes: list[int]
+    :return: int
+    decode_roland_4byte([0x08, 0x00, 0x00, 0x01])  # → 1048577
+    """
+    assert len(data_bytes) == 4
+    value = (
+        (data_bytes[0] & BitMask.LOW_7_BITS) << 21 |
+        (data_bytes[1] & BitMask.LOW_7_BITS) << 14 |
+        (data_bytes[2] & BitMask.LOW_7_BITS) << 7  |
+        (data_bytes[3] & BitMask.LOW_7_BITS)
+    )
+    # Convert from unsigned to signed if needed
+    if value >= (1 << 27):
+        value -= (1 << 28)
+    return value
+
+
+def encode_roland_4byte(value: int) -> list[int]:
+    """
+    encode_roland_4byte
+    :param value: int
+    :return: list[int]
+    encode_roland_4byte(0)  # [0x00, 0x00, 0x00, 0x00]
+    encode_roland_4byte(1)  # [0x00, 0x00, 0x00, 0x01]
+    encode_roland_4byte(1048576)  # [0x08, 0x00, 0x00, 0x00]
+    """
+    if value < 0:
+        value += (1 << 28)
+    return [
+        (value >> 21) & BitMask.LOW_7_BITS,
+        (value >> 14) & BitMask.LOW_7_BITS,
+        (value >> 7) & BitMask.LOW_7_BITS,
+        value & BitMask.LOW_7_BITS
+    ]
+
+
 def split_16bit_value_to_nibbles(value: int) -> list[int]:
     """
     Splits an integer into exactly 4 nibbles (4-bit values), padding with zeros if necessary
