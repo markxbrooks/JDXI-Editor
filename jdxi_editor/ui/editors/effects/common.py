@@ -22,6 +22,37 @@ Features:
     - Sends MIDI messages to update effect settings in real-time.
     - Organizes effect parameters into categorized tabs.
 
+                                AddressParameterEffect1.EFX1_PARAM_17,
+                                AddressParameterEffect1.EFX1_PARAM_18,
+                                AddressParameterEffect1.EFX1_PARAM_19,
+                                AddressParameterEffect1.EFX1_PARAM_20,
+                                AddressParameterEffect1.EFX1_PARAM_21,
+                                AddressParameterEffect1.EFX1_PARAM_22,
+                                AddressParameterEffect1.EFX1_PARAM_23,
+                                AddressParameterEffect1.EFX1_PARAM_24,
+                                AddressParameterEffect1.EFX1_PARAM_25,
+                                AddressParameterEffect1.EFX1_PARAM_26,
+                                AddressParameterEffect1.EFX1_PARAM_27,
+                                AddressParameterEffect1.EFX1_PARAM_28,
+                                AddressParameterEffect1.EFX1_PARAM_29,
+                                AddressParameterEffect1.EFX1_PARAM_30,
+                                AddressParameterEffect1.EFX1_PARAM_31,
+
+                                AddressParameterEffect1.EFX2_PARAM_17,
+                                AddressParameterEffect1.EFX2_PARAM_18,
+                                AddressParameterEffect1.EFX2_PARAM_19,
+                                AddressParameterEffect1.EFX2_PARAM_20,
+                                AddressParameterEffect1.EFX2_PARAM_21,
+                                AddressParameterEffect1.EFX2_PARAM_22,
+                                AddressParameterEffect1.EFX2_PARAM_23,
+                                AddressParameterEffect1.EFX2_PARAM_24,
+                                AddressParameterEffect1.EFX2_PARAM_25,
+                                AddressParameterEffect1.EFX2_PARAM_26,
+                                AddressParameterEffect1.EFX2_PARAM_27,
+                                AddressParameterEffect1.EFX2_PARAM_28,
+                                AddressParameterEffect1.EFX2_PARAM_29,
+                                AddressParameterEffect1.EFX2_PARAM_30,
+                                AddressParameterEffect1.EFX2_PARAM_31,
 """
 
 from typing import Union, Dict
@@ -121,70 +152,85 @@ class EffectsCommonEditor(BasicEditor):
                                 AddressParameterEffect1.EFX1_PARAM_14,
                                 AddressParameterEffect1.EFX1_PARAM_15,
                                 AddressParameterEffect1.EFX1_PARAM_16,
-                                AddressParameterEffect1.EFX1_PARAM_32,]
-                                """AddressParameterEffect1.EFX1_PARAM_17,
-                                AddressParameterEffect1.EFX1_PARAM_18,
-                                AddressParameterEffect1.EFX1_PARAM_19,
-                                AddressParameterEffect1.EFX1_PARAM_20,
-                                AddressParameterEffect1.EFX1_PARAM_21,
-                                AddressParameterEffect1.EFX1_PARAM_22,
-                                AddressParameterEffect1.EFX1_PARAM_23,
-                                AddressParameterEffect1.EFX1_PARAM_24,
-                                AddressParameterEffect1.EFX1_PARAM_25,
-                                AddressParameterEffect1.EFX1_PARAM_26,
-                                AddressParameterEffect1.EFX1_PARAM_27,
-                                AddressParameterEffect1.EFX1_PARAM_28,
-                                AddressParameterEffect1.EFX1_PARAM_29,
-                                AddressParameterEffect1.EFX1_PARAM_30,
-                                AddressParameterEffect1.EFX1_PARAM_31,"""
+                                AddressParameterEffect1.EFX1_PARAM_32]
         self.EFX2_PARAMETERS = [AddressParameterEffect2.EFX2_PARAM_1,
-                                AddressParameterEffect1.EFX2_PARAM_2,
-                                AddressParameterEffect1.EFX2_PARAM_3,
-                                AddressParameterEffect1.EFX2_PARAM_4,
-                                AddressParameterEffect1.EFX2_PARAM_5,
-                                AddressParameterEffect1.EFX2_PARAM_6,
-                                AddressParameterEffect1.EFX2_PARAM_7,
-                                AddressParameterEffect1.EFX2_PARAM_8,
-                                AddressParameterEffect1.EFX2_PARAM_9,
-                                AddressParameterEffect1.EFX2_PARAM_10,
-                                AddressParameterEffect1.EFX2_PARAM_11,
-                                AddressParameterEffect1.EFX2_PARAM_12,
-                                AddressParameterEffect1.EFX2_PARAM_13,
-                                AddressParameterEffect1.EFX2_PARAM_14,
-                                AddressParameterEffect1.EFX2_PARAM_15,
-                                AddressParameterEffect1.EFX2_PARAM_16,
-                                AddressParameterEffect2.EFX2_PARAM_32,]
-                                """AddressParameterEffect1.EFX2_PARAM_17,
-                                AddressParameterEffect1.EFX2_PARAM_18,
-                                AddressParameterEffect1.EFX2_PARAM_19,
-                                AddressParameterEffect1.EFX2_PARAM_20,
-                                AddressParameterEffect1.EFX2_PARAM_21,
-                                AddressParameterEffect1.EFX2_PARAM_22,
-                                AddressParameterEffect1.EFX2_PARAM_23,
-                                AddressParameterEffect1.EFX2_PARAM_24,
-                                AddressParameterEffect1.EFX2_PARAM_25,
-                                AddressParameterEffect1.EFX2_PARAM_26,
-                                AddressParameterEffect1.EFX2_PARAM_27,
-                                AddressParameterEffect1.EFX2_PARAM_28,
-                                AddressParameterEffect1.EFX2_PARAM_29,
-                                AddressParameterEffect1.EFX2_PARAM_30,
-                                AddressParameterEffect1.EFX2_PARAM_31,"""
+                                AddressParameterEffect2.EFX2_PARAM_2,
+                                AddressParameterEffect2.EFX2_PARAM_3,
+                                AddressParameterEffect2.EFX2_PARAM_4,
+                                AddressParameterEffect2.EFX2_PARAM_5,
+                                AddressParameterEffect2.EFX2_PARAM_6,
+                                AddressParameterEffect2.EFX2_PARAM_7,
+                                AddressParameterEffect2.EFX2_PARAM_8,
+                                AddressParameterEffect2.EFX2_PARAM_9,
+                                AddressParameterEffect2.EFX2_PARAM_10,
+                                AddressParameterEffect2.EFX2_PARAM_11,
+                                AddressParameterEffect2.EFX2_PARAM_12,
+                                AddressParameterEffect2.EFX2_PARAM_13,
+                                AddressParameterEffect2.EFX2_PARAM_14,
+                                AddressParameterEffect2.EFX2_PARAM_15,
+                                AddressParameterEffect2.EFX2_PARAM_16,
+                                AddressParameterEffect2.EFX2_PARAM_32]
+
         # Effect 1 parameter labels
         self.efx1_param_labels = {
-            0: [],  # Thru – no params
-            1: ["Level", "Drive", "Type", "Low Boost", "High Cut", "Wet/Dry Mix"],  # DISTORTION "presence" = Parameter 32/1D
-            2: ["Level", "Drive", "Type", "Level", "Bias", "Wet/Dry Mix"],  # FUZZ Type = 19/EFX1_PARAM_3
-            3: ["Threshold", "Ratio", "Attack", "Release", "Level", "Side Switch"],  # COMP "Side level = 29/EFX1_PARAM_7, "Side Time = 29/EFX1_PARAM_8, "Side Release = 29/EFX1_PARAM_9
-            4: ["Bit Depth", "Sample Rate", "Tone", "Noise", "Mix", "Output Level"],  # BIT CRUSHER
+            0: {},  # Thru – no params
+            1: {AddressParameterEffect1.EFX1_PARAM_1: "Level",
+                AddressParameterEffect1.EFX1_PARAM_2: "Drive",
+                AddressParameterEffect1.EFX1_PARAM_3: "Type",
+                AddressParameterEffect1.EFX1_PARAM_32: "Presence"},  # DISTORTION "presence" = Parameter 32/1D
+            2: {AddressParameterEffect1.EFX1_PARAM_1: "Level",
+                AddressParameterEffect1.EFX1_PARAM_2: "Drive",
+                AddressParameterEffect1.EFX1_PARAM_3: "Type",
+                AddressParameterEffect1.EFX1_PARAM_32: "Presence"},  # FUZZ Type = 19/EFX1_PARAM_3
+            3: {AddressParameterEffect1.EFX1_PARAM_1: "Threshold",
+                AddressParameterEffect1.EFX1_PARAM_2: "Ratio",
+                AddressParameterEffect1.EFX1_PARAM_5: "Level",
+                AddressParameterEffect1.EFX1_PARAM_7: "Side level",
+                AddressParameterEffect1.EFX1_PARAM_8: "Side note",
+                AddressParameterEffect1.EFX1_PARAM_9: "Side time",
+                AddressParameterEffect1.EFX1_PARAM_10: "Side release"}, # COMP "Side level = 29/EFX1_PARAM_7, "Side Time = 29/EFX1_PARAM_8, "Side Release = 29/EFX1_PARAM_9
+            4: {AddressParameterEffect1.EFX1_PARAM_1: "Bit Depth",
+                AddressParameterEffect1.EFX1_PARAM_2: "Sample Rate",
+                AddressParameterEffect1.EFX1_PARAM_3: "Tone",
+                AddressParameterEffect1.EFX1_PARAM_7: "Noise",
+                AddressParameterEffect1.EFX1_PARAM_8: "Mix",
+                AddressParameterEffect1.EFX1_PARAM_9: "Output Level"}  # ["Bit Depth", "Sample Rate", "Tone", "Noise", "Mix", "Output Level"],  # BIT CRUSHER
         }
-
-        # Effect 2 parameter labels
         self.efx2_param_labels = {
+            0: {},  # Thru – no params
+            1: {AddressParameterEffect2.EFX2_PARAM_2: "Rate/Note", # Flanger
+                AddressParameterEffect2.EFX2_PARAM_3: "Note",
+                AddressParameterEffect2.EFX2_PARAM_4: "Depth",
+                AddressParameterEffect2.EFX2_PARAM_5: "Feedback (0=Chorus)",
+                AddressParameterEffect2.EFX2_PARAM_6: "Manual",
+                AddressParameterEffect2.EFX2_PARAM_7: "Balance (Dry/Wet)",
+                AddressParameterEffect2.EFX2_PARAM_8: "Level"},
+            2: {AddressParameterEffect2.EFX2_PARAM_1: "Rate/Note",  # Phaser
+                AddressParameterEffect2.EFX2_PARAM_2: "Note",
+                AddressParameterEffect2.EFX2_PARAM_3: "Rate",
+                AddressParameterEffect2.EFX2_PARAM_4: "Depth",
+                AddressParameterEffect2.EFX2_PARAM_5: "Center Freq",
+                AddressParameterEffect2.EFX2_PARAM_32: "Effect Level"},  #
+            3: {AddressParameterEffect2.EFX2_PARAM_1: "Frequency",
+                AddressParameterEffect2.EFX2_PARAM_2: "Sensitivity",
+                AddressParameterEffect2.EFX2_PARAM_3: "Balance (Dry/Wet)",
+                AddressParameterEffect2.EFX2_PARAM_4: "Level"},
+            # COMP "Side level = 29/EFX1_PARAM_7, "Side Time = 29/EFX1_PARAM_8, "Side Release = 29/EFX1_PARAM_9
+            4: {AddressParameterEffect2.EFX2_PARAM_1: "Timing pattern",
+                AddressParameterEffect2.EFX2_PARAM_2: "Rate [Note]",
+                AddressParameterEffect2.EFX2_PARAM_3: "Attack Time",
+                AddressParameterEffect2.EFX2_PARAM_4: "Trigger Level",
+                AddressParameterEffect2.EFX2_PARAM_5: "Level"}
+            # ["Bit Depth", "Sample Rate", "Tone", "Noise", "Mix", "Output Level"],  # BIT CRUSHER
+        }
+        self.midi_requests = ["F0 41 10 00 00 00 0E 12 18 00 02 00 01 7F 32 32 01 00 40 00 40 00 40 00 40 00 00 00 00 08 00 05 00 08 00 06 0E 08 00 00 02 08 00 07 0F 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 50 F7"]
+        # Effect 2 parameter labels
+        """self.efx2_param_labels = {
             0: ["Rate", "Depth", "Resonance", "Manual", "Step Rate", "Effect Level"],  # FLANGER
             1: ["Rate", "Depth", "Manual", "Resonance", "Center Freq", "Effect Level"],  # PHASER
             2: ["Delay Time", "Feedback", "High Damp", "Low Damp", "Spread", "Effect Level"],  # DELAY
             3: ["Rate", "Depth", "Delay Time", "Feedback", "Pre-delay", "Effect Level"],  # CHORUS
-        }
+        }"""
 
         self.delay_params = None
         self.efx2_additional_params = [
@@ -245,7 +291,9 @@ class EffectsCommonEditor(BasicEditor):
             if slider:
                 slider.setVisible(False)
         self.efx1_type.combo_box.currentIndexChanged.connect(self._update_efx1_labels)
+        # self.efx1_type.combo_box.currentIndexChanged.connect(self.data_request)
         self.efx2_type.combo_box.currentIndexChanged.connect(self._update_efx2_labels)
+        # self.efx2_type.combo_box.currentIndexChanged.connect(self.data_request)
 
     def _update_efx2_parameters(self, effect_type: int):
         """Show/hide parameters based on effect preset_type"""
@@ -272,40 +320,63 @@ class EffectsCommonEditor(BasicEditor):
         """
         log.message(f"Updating EFX1 labels for effect type {effect_type}")
         try:
-            for param in self.EFX1_PARAMETERS:
+            label_map = self.efx1_param_labels.get(effect_type, {})
+            for param, label in label_map.items():
                 slider = self.controls.get(param)
                 if slider:
-                    slider.setVisible(False)
-
-            labels = self.efx1_param_labels.get(effect_type, [])
-
-            for i, param in enumerate(self.EFX1_PARAMETERS):
-                slider = self.controls.get(param)
-                log.message(f"Updating EFX1 parameter {param.name} with slider {slider}")
-                if not slider:
-                    continue
-                if i < len(labels):
                     slider.setVisible(True)
-                    slider.setLabel(labels[i])
+                    slider.setLabel(label)
+                    log.message(f"Updated slider {param.name} with label '{label}'")
                 else:
-                    slider.setVisible(False)
+                    log.warning(f"No slider found for param {param}")
+
+            # Build a complete set of all known EFX1 parameters
+            all_efx1_params = set()
+            for param_dict in self.efx1_param_labels.values():
+                all_efx1_params.update(param_dict.keys())
+
+            # Hide any EFX1 slider not used by the current effect type
+            for param in all_efx1_params:
+                if param not in label_map:
+                    slider = self.controls.get(param)
+                    if slider:
+                        slider.setVisible(False)
+
         except Exception as ex:
             log.error(f"Error updating EFX1 labels: {ex}")
 
     def _update_efx2_labels(self, effect_type: int):
-        """Relabel sliders based on selected Effect 2 type."""
-        labels = self.efx2_param_labels.get(effect_type, [])
+        """
+        Update Effect 2 parameter labels based on selected effect type.
+        :param effect_type: int
+        :return:
+        """
+        log.message(f"Updating EFX2 labels for effect type {effect_type}")
+        try:
+            label_map = self.efx2_param_labels.get(effect_type, {})
+            for param, label in label_map.items():
+                slider = self.controls.get(param)
+                if slider:
+                    slider.setVisible(True)
+                    slider.setLabel(label)
+                    log.message(f"Updated slider {param.name} with label '{label}'")
+                else:
+                    log.warning(f"No slider found for param {param}")
 
-        for i, param in enumerate(self.EFX2_PARAMETERS):
-            slider = self.controls.get(param)
-            log.message(f"Updating EFX2 parameter {param.name} with slider {slider}")
-            if not slider:
-                continue
-            if i < len(labels):
-                slider.setVisible(True)
-                slider.setLabel(labels[i])
-            else:
-                slider.setVisible(False)
+            # Build a complete set of all known EFX1 parameters
+            all_efx2_params = set()
+            for param_dict in self.efx2_param_labels.values():
+                all_efx2_params.update(param_dict.keys())
+
+            # Hide any EFX1 slider not used by the current effect type
+            for param in all_efx2_params:
+                if param not in label_map:
+                    slider = self.controls.get(param)
+                    if slider:
+                        slider.setVisible(False)
+
+        except Exception as ex:
+            log.error(f"Error updating EFX1 labels: {ex}")
 
     def _update_delay_parameters(self, show_all: bool = False):
         """Show/hide delay parameters
