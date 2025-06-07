@@ -140,7 +140,7 @@ class AddressParameterEffect1(AddressParameter):
     EFX1_PARAM_14 = (0x45, 12768, 52768, -20000, 20000)
     EFX1_PARAM_15 = (0x49, 12768, 52768, -20000, 20000)
     EFX1_PARAM_16 = (0x4D, 12768, 52768, -20000, 20000)
-    EFX1_PARAM_32 = (0x0D, 12768, 52768, -20000, 20000, "Sets the third parameter of the effect.")
+    EFX1_PARAM_32 = (0x1D, 12768, 52768, -20000, 20000, "Sets the third parameter of the effect.")
 
     @classmethod
     def get_address_by_name(cls, name: str) -> Optional[int]:
@@ -176,14 +176,14 @@ class AddressParameterEffect1(AddressParameter):
         :return: int The MIDI value
         """
         # Handle special bipolar cases first
-        if self == AddressParameterEffect1.EFX1_PARAM_1:
-            return display_value + 32768  #
-        elif self == AddressParameterEffect1.EFX1_PARAM_2:
-            return display_value + 32768  #
-        elif self == AddressParameterEffect1.EFX1_PARAM_32:
-            return display_value + 32768  #
+        if self in [AddressParameterEffect1.EFX1_TYPE,
+                    AddressParameterEffect1.EFX1_LEVEL,
+                    AddressParameterEffect1.EFX1_REVERB_SEND_LEVEL,
+                    AddressParameterEffect1.EFX1_DELAY_SEND_LEVEL,
+                    AddressParameterEffect1.EFX1_OUTPUT_ASSIGN]:
+            return display_value  # Already 0–127 or boolean-style
         else:
-            return display_value
+            return display_value + 20000  # Convert to MIDI value by adding 20000 for bipolar parameters
 
     convert_from_display = convert_to_midi
 

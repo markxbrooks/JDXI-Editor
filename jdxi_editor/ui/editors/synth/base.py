@@ -158,17 +158,8 @@ class SynthBase(QWidget):
         :return: None
         """
         try:
-            # Convert display value to MIDI value
-            if hasattr(param, "convert_to_midi"):
-                midi_value = param.convert_to_midi(display_value)
-            else:
-                midi_value = (
-                    param.convert_from_display(display_value)
-                    if hasattr(param, "convert_from_display")
-                    else param.validate_value(display_value)
-                )
             # Send MIDI message
-            if not self.send_midi_parameter(param, midi_value):
+            if not self.send_midi_parameter(param, display_value):
                 log.message(f"Failed to send parameter {param.name}")
         except Exception as ex:
             log.error(f"Error handling parameter {param.name}: {ex}")

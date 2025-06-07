@@ -72,6 +72,7 @@ class JDXiSysExComposer:
                 data_bytes = midi_value
             elif size == 4:
                 data_bytes = split_16bit_value_to_nibbles(midi_value)
+                log.message(f"Converting value {value} midi_value {midi_value} to {size} nibbles for SysEx message: data_bytes={data_bytes}")
             else:
                 log.message(f"Unsupported parameter size: {size}")
                 return None
@@ -83,63 +84,6 @@ class JDXiSysExComposer:
             # Validate the message
             if not self._verify_header():
                 raise ValueError("Invalid JD-Xi header")
-            if not self._is_valid_sysex():
-                raise ValueError("Invalid JD-Xi SysEx status byte(s)")
-
-            return self.sysex_message
-
-        except (ValueError, TypeError, OSError, IOError) as ex:
-            log.error(f"Error sending message: {ex}")
-            return None
-
-    def compose_message_old(
-        self,
-        address: RolandSysExAddress,
-        param: AddressParameter,
-        value: int,
-        size: int = 1,
-    ) -> Optional[RolandSysEx]:
-        """
-        :param address: RolandSysExAddress
-        :param param: AddressParameter
-        :param value: int Parameter value
-        :param size: int Size of the value in bytes (1 or 4).
-        :return: RolandSysEx
-        """
-        self.address = address
-        try:
-            address = apply_address_offset(self.address, param)
-            # Convert display value to MIDI value if needed
-            if isinstance(param, AddressParameterDigitalCommon):
-                self.address.lmb = AddressOffsetSuperNATURALLMB.COMMON
-            if isinstance(param, AddressParameterDigitalModify):
-                self.address.lmb = AddressOffsetSuperNATURALLMB.MODIFY
-            if isinstance(param, AddressParameterDrumCommon):
-                self.address.lmb = AddressOffsetSuperNATURALLMB.COMMON
-            if hasattr(param, "convert_to_midi"):
-                midi_value = param.convert_to_midi(value)
-            else:
-                midi_value = param.validate_value(value)
-            if hasattr(param, "get_nibbled_size"):
-                size = param.get_nibbled_size()
-            else:
-                size = 1
-            if size == 1:
-                data_bytes = value  # Single byte format (0-127)
-            elif size == 4:
-                data_bytes = split_16bit_value_to_nibbles(midi_value)  # Convert to nibbles
-            else:
-                log.message(f"Unsupported parameter size: {size}")
-                return None
-            sysex_message = RolandSysEx(
-                sysex_address=address,
-                value=data_bytes
-            )
-            self.sysex_message = sysex_message
-
-            if not self._verify_header():
-                raise ValueError("Invalid JD-Xi header")
-
             if not self._is_valid_sysex():
                 raise ValueError("Invalid JD-Xi SysEx status byte(s)")
 
