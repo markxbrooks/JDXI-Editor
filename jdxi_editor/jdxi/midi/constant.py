@@ -16,11 +16,14 @@ class MidiConstant:
     ZERO_BYTE = 0x00
     VALUE_ON = 0x01
     VALUE_OFF = 0x00
-    VALUE_MAX_FOUR_BIT = 0x0F  # 15, 4-bit max
+    VALUE_MAX_FOUR_BIT = 0x0F  # 15, 4-bit max (unsigned)
     VALUE_MAX_SEVEN_BIT = 0x7F  # 127, 7-bit max (standard MIDI data byte)
-    VALUE_MAX_EIGHT_BIT = 0xFF  # 255
-    VALUE_MAX_FOURTEEN_BIT = 0x3FFF  # 16383
-    VALUE_MAX_THIRTY_TWO_BIT = 0xFFFFFFFF  # 4294967295
+    VALUE_MAX_EIGHT_BIT = 0xFF  # 255, 8-bit max (unsigned)
+    VALUE_MAX_FOURTEEN_BIT = 0x3FFF  # 16383, 14-bit max (used in MIDI pitch bend)
+    VALUE_MAX_SIGNED_SIXTEEN_BIT = 0x7FFF  # 32767, max positive signed 16-bit
+    VALUE_MIN_SIGNED_SIXTEEN_BIT = 0x8000  # -32768, two's complement min signed
+    VALUE_MAX_UNSIGNED_SIXTEEN_BIT = 0xFFFF   # 65535, full unsigned 16-bit range
+    VALUE_MAX_THIRTY_TWO_BIT = 0xFFFFFFFF  # 4294967295, max unsigned 32-bit
     
     # Channel voice messages (base values)
     NOTE_OFF = 0x80

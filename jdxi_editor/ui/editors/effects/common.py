@@ -87,45 +87,6 @@ from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 
 
-def decode_roland_4byte(data_bytes: list[int]) -> int:
-    """
-    decode_roland_4byte
-    :param data_bytes: list[int]
-    :return: int
-    decode_roland_4byte([0x08, 0x00, 0x00, 0x01])  # → 1048577
-    """
-    assert len(data_bytes) == 4
-    value = (
-        (data_bytes[0] & BitMask.LOW_7_BITS) << 21 |
-        (data_bytes[1] & BitMask.LOW_7_BITS) << 14 |
-        (data_bytes[2] & BitMask.LOW_7_BITS) << 7  |
-        (data_bytes[3] & BitMask.LOW_7_BITS)
-    )
-    # Convert from unsigned to signed if needed
-    if value >= (1 << 27):
-        value -= (1 << 28)
-    return value
-
-
-def encode_roland_4byte(value: int) -> list[int]:
-    """
-    encode_roland_4byte
-    :param value: int
-    :return: list[int]
-    encode_roland_4byte(0)  # [0x00, 0x00, 0x00, 0x00]
-    encode_roland_4byte(1)  # [0x00, 0x00, 0x00, 0x01]
-    encode_roland_4byte(1048576)  # [0x08, 0x00, 0x00, 0x00]
-    """
-    if value < 0:
-        value += (1 << 28)
-    return [
-        (value >> 21) & BitMask.LOW_7_BITS,
-        (value >> 14) & BitMask.LOW_7_BITS,
-        (value >> 7) & BitMask.LOW_7_BITS,
-        value & BitMask.LOW_7_BITS
-    ]
-
-
 class EffectsCommonEditor(BasicEditor):
     """Effects Editor Window"""
 
@@ -152,6 +113,10 @@ class EffectsCommonEditor(BasicEditor):
                                 AddressParameterEffect1.EFX1_PARAM_14,
                                 AddressParameterEffect1.EFX1_PARAM_15,
                                 AddressParameterEffect1.EFX1_PARAM_16,
+                                AddressParameterEffect1.EFX1_PARAM_1_DISTORTION_LEVEL,
+                                AddressParameterEffect1.EFX1_PARAM_2_DISTORTION_DRIVE,
+                                AddressParameterEffect1.EFX1_PARAM_3_DISTORTION_TYPE,
+                                AddressParameterEffect1.EFX1_PARAM_32_DISTORTION_PRESENCE,
                                 AddressParameterEffect1.EFX1_PARAM_32]
         self.EFX2_PARAMETERS = [AddressParameterEffect2.EFX2_PARAM_1,
                                 AddressParameterEffect2.EFX2_PARAM_2,
@@ -174,10 +139,10 @@ class EffectsCommonEditor(BasicEditor):
         # Effect 1 parameter labels
         self.efx1_param_labels = {
             0: {},  # Thru – no params
-            1: {AddressParameterEffect1.EFX1_PARAM_1: "Level",
-                AddressParameterEffect1.EFX1_PARAM_2: "Drive",
-                AddressParameterEffect1.EFX1_PARAM_3: "Type",
-                AddressParameterEffect1.EFX1_PARAM_32: "Presence"},  # DISTORTION "presence" = Parameter 32/1D
+            1: {AddressParameterEffect1.EFX1_PARAM_1_DISTORTION_LEVEL: "Level",
+                AddressParameterEffect1.EFX1_PARAM_2_DISTORTION_DRIVE: "Drive",
+                AddressParameterEffect1.EFX1_PARAM_3_DISTORTION_TYPE: "Type",
+                AddressParameterEffect1.EFX1_PARAM_32_DISTORTION_PRESENCE: "Presence"},  # DISTORTION "presence" = Parameter 32/1D
             2: {AddressParameterEffect1.EFX1_PARAM_1: "Level",
                 AddressParameterEffect1.EFX1_PARAM_2: "Drive",
                 AddressParameterEffect1.EFX1_PARAM_3: "Type",
@@ -551,20 +516,11 @@ class EffectsCommonEditor(BasicEditor):
         layout.addRow(reverb_parameter24_slider)
         return widget
 
-    def _on_parameter_changed(self, param: AddressParameter, display_value: int):
+    def _on_parameter_changed(self, param: AddressParameter, value: int):
         """Handle parameter value changes from UI controls."""
         try:
-            # Convert display value to MIDI value
-            if hasattr(param, "convert_to_midi"):
-                midi_value = param.convert_to_midi(display_value)
-            else:
-                midi_value = (
-                    param.convert_from_display(display_value)
-                    if hasattr(param, "convert_from_display")
-                    else param.validate_value(display_value)
-                )
             # Send MIDI message
-            if not self.send_midi_parameter(param, midi_value):
+            if not self.send_midi_parameter(param, value):
                 log.message(f"Failed to send parameter {param.name}")
         except Exception as ex:
             log.error(f"Error handling parameter {param.name}: {ex}")

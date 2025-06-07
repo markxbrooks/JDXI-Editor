@@ -90,6 +90,7 @@ Param 3	00 19	(possibly unused or Level)
 
 from typing import Optional, Tuple
 
+from jdxi_editor.jdxi.midi.constant import MidiConstant
 from jdxi_editor.midi.data.parameter.effects.common import AddressParameterEffectCommon
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 
@@ -125,8 +126,11 @@ class AddressParameterEffect1(AddressParameter):
     EFX1_REVERB_SEND_LEVEL = (0x03, 0, 127, 0, 127, "Depth of reverb applied to the sound from effect 1.")
     EFX1_OUTPUT_ASSIGN = (0x04, 0, 1, 0, 1, "Selects the output destination for the sound from effect 1.\nDIR: Output to the Output jacks.\nEFX2: Output to Effect 2.\nIf you want to use EFX1 and EFX2 separately for each part, set this parameter to DIR. For details, refer to the effect block diagram.")
     EFX1_PARAM_1 = (0x11, 12768, 52768, -20000, 20000, "Sets the first parameter of the effect.")
-    EFX1_PARAM_2 = (0x15, 12768, 52768, -20000, 20000, "Sets the second parameter of the effect.")
+    EFX1_PARAM_1_DISTORTION_LEVEL = (0x11, 32768, 32895, 0, 127, "Adjusts the volume.")
+    EFX1_PARAM_2 = (0x15, 32767, 32894, 0, 127, "Sets the second parameter of the effect.")
+    EFX1_PARAM_2_DISTORTION_DRIVE = (0x15, 32768, 32895, 0, 127, "Adjusts the depth of distortion")
     EFX1_PARAM_3 = (0x19, 12768, 52768, -20000, 20000)
+    EFX1_PARAM_3_DISTORTION_TYPE = (0x19, 32822, 32827, 0, 5)  # 32822 = 08 00 03 06
     EFX1_PARAM_4 = (0x1D, 12768, 52768, -20000, 20000)
     EFX1_PARAM_5 = (0x21, 12768, 52768, -20000, 20000)
     EFX1_PARAM_6 = (0x25, 12768, 52768, -20000, 20000)
@@ -141,6 +145,7 @@ class AddressParameterEffect1(AddressParameter):
     EFX1_PARAM_15 = (0x49, 12768, 52768, -20000, 20000)
     EFX1_PARAM_16 = (0x4D, 12768, 52768, -20000, 20000)
     EFX1_PARAM_32 = (0x1D, 12768, 52768, -20000, 20000, "Sets the third parameter of the effect.")
+    EFX1_PARAM_32_DISTORTION_PRESENCE = (0x1D,  32768, 32895, 0, 127, "Adjusts the character of the ultra-high-frequency region")
 
     @classmethod
     def get_address_by_name(cls, name: str) -> Optional[int]:
@@ -175,7 +180,7 @@ class AddressParameterEffect1(AddressParameter):
         :param display_value: int The display value
         :return: int The MIDI value
         """
-        # Handle special bipolar cases first
+        # Handle special cases first
         if self in [AddressParameterEffect1.EFX1_TYPE,
                     AddressParameterEffect1.EFX1_LEVEL,
                     AddressParameterEffect1.EFX1_REVERB_SEND_LEVEL,
@@ -183,7 +188,7 @@ class AddressParameterEffect1(AddressParameter):
                     AddressParameterEffect1.EFX1_OUTPUT_ASSIGN]:
             return display_value  # Already 0–127 or boolean-style
         else:
-            return display_value + 20000  # Convert to MIDI value by adding 20000 for bipolar parameters
+            return display_value + MidiConstant.VALUE_MIN_SIGNED_SIXTEEN_BIT  # Convert to unsigned 16 bit
 
     convert_from_display = convert_to_midi
 
