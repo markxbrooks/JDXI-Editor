@@ -60,7 +60,7 @@ from jdxi_editor.midi.data.control_change.sustain import ControlChangeSustain
 from jdxi_editor.midi.data.parameter.digital.common import AddressParameterDigitalCommon
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.parameter.program.zone import AddressParameterProgramZone
-from jdxi_editor.midi.io.helper import MidiIOHelper
+
 from jdxi_editor.midi.io.controller import MidiIOController
 from jdxi_editor.midi.io.delay import send_with_delay
 from jdxi_editor.midi.message.roland import RolandSysEx
@@ -944,6 +944,7 @@ class JDXiInstrument(JDXiUi):
         :return: None
         """
         try:
+            from jdxi_editor.midi.io.helper import MidiIOHelper
             self.midi_helper.midi_in = MidiIOHelper.open_input(in_port, self)
             self.midi_helper.midi_out = MidiIOHelper.open_output(out_port, self)
             self.midi_helper.in_port_name = in_port

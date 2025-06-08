@@ -22,14 +22,19 @@ Dependencies:
 
 import json
 import logging
+from dataclasses import asdict
 
 import mido
-from typing import Any, Callable, List, Optional
+from typing import Any, Callable, List, Optional, Dict
 from PySide6.QtCore import Signal
 
 from jdxi_editor.jdxi.midi.constant import JDXiConstant, MidiConstant
+from jdxi_editor.jdxi.preset.data import JDXiPresetData
+from jdxi_editor.jdxi.preset.incoming_data import IncomingPresetData
+from jdxi_editor.jdxi.program.program import JDXiProgram
 from jdxi_editor.jdxi.sysex.offset import JDXIIdentityOffset
 from jdxi_editor.log.logger import Logger as log
+from jdxi_editor.midi.data.programs import JDXiProgramList
 from jdxi_editor.midi.io.controller import MidiIOController
 from jdxi_editor.midi.io.utils import handle_identity_request
 from jdxi_editor.midi.map.synth_type import JDXiMapSynthType
@@ -38,6 +43,45 @@ from jdxi_editor.midi.sysex.request.data import IGNORED_KEYS
 from jdxi_editor.jdxi.preset.button import JDXiPresetButtonData
 
 from jdxi_editor.midi.data.address.address import AddressStartMSB as AreaMSB
+# from jdxi_editor.ui.editors.helpers.program import add_program_and_save
+
+
+def add_program_and_save(new_program: Dict[str, str]) -> bool:
+    """
+    add_program_and_save
+    :param new_program:
+    :return:
+    """
+    program_list = load_programs()
+    existing_ids = {p["id"] for p in program_list}
+    existing_pcs = {p["pc"] for p in program_list}
+
+    if new_program["id"] in existing_ids or new_program["pc"] in existing_pcs:
+        print(f"Program '{new_program['id']}' already exists.")
+        return False
+
+    program_list.append(new_program)
+    save_programs(program_list)
+    print(f"Added and saved program: {new_program['id']}")
+    return True
+
+
+def load_programs() -> List[Dict[str, str]]:
+    try:
+        with open(JDXiProgramList.PROGRAMS_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return []
+
+
+def save_programs(program_list: List[Dict[str, str]]) -> None:
+    """
+    save_programs
+    :param program_list: List[Dict[str, str]]
+    :return: None
+    """
+    with open(JDXiProgramList.PROGRAMS_FILE, "w", encoding="utf-8") as f:
+        json.dump(program_list, f, indent=4, ensure_ascii=False)
 
 
 class MidiInHandler(MidiIOController):
@@ -72,6 +116,7 @@ class MidiInHandler(MidiIOController):
         self.midi_in.set_callback(self.midi_callback)
         self.midi_in.ignore_types(sysex=False, timing=True, active_sense=True)
         self.sysex_parser = JDXiSysExParser()
+        self._incoming_preset_data = IncomingPresetData()
 
     def midi_callback(self, message: list[Any], data: Any) -> None:
         """
@@ -263,6 +308,10 @@ class MidiInHandler(MidiIOController):
         program_number = message.program
         log.message(f"Program Change - Channel: {channel}, Program: {program_number}")
 
+        # Store for later use
+        self._incoming_preset_data.channel = channel
+        self._incoming_preset_data.program_number = program_number
+
         self.midi_program_changed.emit(channel, program_number)
 
     def _emit_program_or_tone_name(self, parsed_data: dict) -> None:
@@ -278,6 +327,7 @@ class MidiInHandler(MidiIOController):
         }
 
         address = parsed_data.get("ADDRESS")
+
         tone_name = parsed_data.get("TONE_NAME")
         temporary_area = parsed_data.get("TEMPORARY_AREA")
         log.parameter("ADDRESS", address, silent=True)
@@ -285,11 +335,50 @@ class MidiInHandler(MidiIOController):
         log.parameter("TONE_NAME", tone_name, silent=True)
         log.parameter("SYNTH_TONE", parsed_data.get("SYNTH_TONE"), silent=True)
 
+        # Map address to synth section
+        section_map = {
+            "12190100": "digital_1",
+            "12192100": "digital_2",
+            "12194200": "analog",
+            "12197000": "drum",
+        }
+
+        section = section_map.get(address)
+        if section:
+            self._incoming_preset_data.set_tone_name(section, tone_name)
+
         if address in valid_addresses and tone_name:
             if address == "12180000":
                 self._emit_program_name_signal(temporary_area, tone_name)
             else:
                 self._emit_tone_name_signal(temporary_area, tone_name)
+
+        # All parts received? Then save program!
+        if all(k in self._incoming_preset_data.tone_names for k in ("digital_1", "digital_2", "analog", "drum")):
+            self._auto_add_current_program()
+
+    def _auto_add_current_program(self):
+        data = self._incoming_preset_data
+
+        def to_preset(name):
+            return JDXiPresetData(name=name) if name else None
+
+        program = JDXiProgram(
+            id=f"A{data.program_number + 1:02d}",
+            name=f"Imported {data.program_number + 1:02d}",
+            genre="Unknown",
+            digital_1=to_preset(data.tone_names.get("digital_1")),
+            digital_2=to_preset(data.tone_names.get("digital_2")),
+            analog=to_preset(data.tone_names.get("analog")),
+            drums=to_preset(data.tone_names.get("drum")),
+        )
+
+        if add_program_and_save(asdict(program)):
+            log.message(f"✅ Auto-added program: {program.id}")
+        else:
+            log.message(f"⚠️ Duplicate or failed to add: {program.id}")
+
+        self._incoming_preset_data = IncomingPresetData()
 
     def _emit_program_name_signal(self, area: str, tone_name: str) -> None:
         """

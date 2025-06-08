@@ -42,6 +42,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
 
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.resources import resource_path
 from jdxi_editor.ui.editors import SynthEditor
 
 
@@ -51,6 +52,8 @@ class BasicEditor(SynthEditor):
     def __init__(self, midi_helper: MidiIOHelper, parent=None):
         super().__init__(midi_helper=midi_helper, parent=parent)
         # self.setFixedWidth(450)
+        self.default_image = None
+        self.image_label = None
         self.setMinimumWidth(550)
         self.setMinimumHeight(550)
 
@@ -69,10 +72,7 @@ class BasicEditor(SynthEditor):
         image_loaded = False
 
         # Define paths
-        default_image_path = os.path.join(
-            "resources", self.instrument_icon_folder, self.default_image
-        )
-
+        default_image_path = resource_path(os.path.join("resources", self.instrument_icon_folder, self.default_image))
         if not image_loaded:
             if not self.load_and_set_image(default_image_path):
                 self.image_label.clear()  # Clear label if default image is also missing

@@ -9,6 +9,8 @@ class MidiConstant:
     """Miscellaneous MIDI constants for JD-Xi communication."""
 
     # SysEx framing
+    SONG_STOP = 0xFC
+    SONG_START = 0xFA
     START_OF_SYSEX = 0xF0
     END_OF_SYSEX = 0xF7
 

@@ -139,9 +139,12 @@ class TimeRulerWidget(QWidget):
                 painter.drawText(x + 2, height - 4, f"{second}s")
 
 
-def generate_track_colors(n):
-    """Generate visually distinct colors for up to n tracks."""
-    import colorsys
+def generate_track_colors(n: int):
+    """
+    Generate visually distinct colors for up to n tracks.
+    :param n: int Number of tracks
+    :return:
+    """
     return [
         QColor.fromHsvF(i / max(1, n), 0.7, 0.9)  # HSV for distinct hues
         for i in range(n)
