@@ -37,13 +37,12 @@ from jdxi_editor.jdxi.preset.lists import JDXiPresetToneList
 from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.io.helper import MidiIOHelper
+# from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.parser.json import JDXiJsonSysexParser
 from jdxi_editor.resources import resource_path
 from jdxi_editor.ui.editors.digital.utils import get_area, filter_sysex_keys, get_partial_number
 from jdxi_editor.midi.sysex.request.data import SYNTH_PARTIAL_MAP
-from jdxi_editor.ui.editors.helpers.program import (
-    get_preset_parameter_value,
-)
+from jdxi_editor.ui.editors.helpers.preset import get_preset_parameter_value
 from jdxi_editor.log.midi_info import log_midi_info
 from jdxi_editor.ui.editors.synth.base import SynthBase
 from jdxi_editor.jdxi.style import JDXiStyle
@@ -86,7 +85,7 @@ class SynthEditor(SynthBase):
 
     def __init__(
         self,
-        midi_helper: Optional[MidiIOHelper] = None,
+        midi_helper: Optional[object] = None,
         parent: Optional[QWidget] = None,
     ):
         super().__init__(midi_helper, parent)
@@ -101,7 +100,7 @@ class SynthEditor(SynthBase):
         self.cc_parameters = dict()
         self.nrpn_parameters = dict()
         self.nrpn_map = dict()
-        self.controls = list()
+        self.controls = dict()
         self.bipolar_parameters = list()
         # Midi request for Temporary program
         self.midi_requests = list()

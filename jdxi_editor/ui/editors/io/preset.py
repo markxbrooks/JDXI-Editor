@@ -53,6 +53,7 @@ from PySide6.QtCore import Signal, Qt
 import qtawesome as qta
 
 from jdxi_editor.jdxi.preset.lists import JDXiPresetToneList
+from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
 from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
@@ -64,8 +65,8 @@ from jdxi_editor.midi.sysex.request.midi_requests import MidiRequests
 from jdxi_editor.ui.editors.helpers.program import (
     get_program_by_id,
     calculate_midi_values,
-    get_preset_parameter_value,
 )
+from jdxi_editor.ui.editors.helpers.preset import get_preset_parameter_value
 from jdxi_editor.log.midi_info import log_midi_info
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
 from jdxi_editor.jdxi.style import JDXiStyle
@@ -301,7 +302,7 @@ class PresetEditor(BasicEditor):
         )
         self._populate_presets()
         self.midi_helper.update_tone_name.connect(
-             lambda tone_name, synth_type: self.update_tone_name(tone_name, synth_type)
+             lambda tone_name, synth_type: self.update_tone_name_for_synth(tone_name, synth_type)
         )
 
     def on_preset_type_changed(self, index: int) -> None:
@@ -323,24 +324,25 @@ class PresetEditor(BasicEditor):
         self._populate_presets()
         self.update_category_combo_box_categories()
 
-    def update_tone_name(self, tone_name: str, synth_type: str) -> None:
+    def update_tone_name_for_synth(self, tone_name: str, synth_type: str) -> None:
         """
         Update the tone name.
         :param tone_name: str
         :param synth_type: str
         """
+        log.message(f"Update tone name triggered: tone_name {tone_name} {synth_type}")
         synth_label_map = {
-            "Digital Synth 1": self.digital_synth_1_current_label,
-            "Digital Synth 2": self.digital_synth_2_current_label,
-            "Drums": self.drum_kit_current_label,
-            "Analog Synth": self.analog_synth_current_label,
+            JDXiSynth.DIGITAL_SYNTH_1: self.digital_synth_1_current_label,
+            JDXiSynth.DIGITAL_SYNTH_2: self.digital_synth_2_current_label,
+            JDXiSynth.DRUM_KIT: self.drum_kit_current_label,
+            JDXiSynth.ANALOG_SYNTH: self.analog_synth_current_label,
         }
 
         label = synth_label_map.get(synth_type)
         if label:
             label.setText(tone_name)
         else:
-            logging.warning(f"synth type: {synth_type} not found in mapping. Cannot update tone name.")
+            log.warning(f"synth type: {synth_type} not found in mapping. Cannot update tone name.")
 
     def load_preset_by_program_change(self, preset_index: int) -> None:
         """
@@ -470,6 +472,7 @@ class PresetEditor(BasicEditor):
         log.parameter("combo box bank_number", bank_number)
         if bank_letter in ["A", "B", "C", "D"]:
             program_details = get_program_by_id(program_id)
+            log.parameter("program_details", program_details)
             self.update_current_synths(program_details)
         msb, lsb, pc = calculate_midi_values(bank_letter, bank_number)
         log.message("calculated msb, lsb, pc :")

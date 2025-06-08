@@ -1,7 +1,8 @@
 """
 Modulation Wheel
 """
-
+from jdxi_editor.jdxi.midi.constant import MidiConstant
+from jdxi_editor.jdxi.sysex.bitmask import BitMask
 from jdxi_editor.ui.widgets.wheel.wheel import WheelWidget
 
 
@@ -26,9 +27,9 @@ class ModWheel(WheelWidget):
         Set modulation wheel value (0.0 to 1.0) and send MIDI CC1.
         """
         self.value = max(0.0, min(1.0, value))  # Clamp between 0 and 1
-        cc_value = int(self.value * 127)
+        cc_value = int(self.value * MidiConstant.VALUE_MAX_SEVEN_BIT)
 
-        status = MidiConstant.CONTROL_CHANGE| (self.channel & 0x0F)
+        status = MidiConstant.CONTROL_CHANGE | (self.channel & BitMask.LOW_4_BITS)
         cc_number = 1  # Modulation wheel
 
         if self.midi_helper.midi_out:

@@ -25,94 +25,116 @@ Example usage:
     #     'bank_lsb': 0,
     #     'program': 10
     # }
+
+import json
+from dataclasses import asdict
+
+preset = JDXiPresetData.get_preset_details(JDXiSynth.ANALOG_SYNTH, 5)
+
+with open("preset.json", "w") as f:
+    json.dump(asdict(preset), f, indent=2)
+
+with open("preset.json", "r") as f:
+    data = json.load(f)
+    preset = JDXiPresetData(**data)
 """
 
 
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
+from typing import List
+
+# from jdxi_editor.jdxi.preset.save import add_program_and_save
+from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.jdxi.preset.lists import JDXiPresetToneList
 from jdxi_editor.jdxi.synth.type import JDXiSynth
+# from jdxi_editor.jdxi.preset.save import add_program_and_save
+
+
+def _auto_add_current_program(self):
+    data = self._incoming_preset_data
+
+    def get_preset(synth_type: str, name: str) -> Optional[JDXiPresetData]:
+        preset_list = {
+            JDXiSynth.ANALOG_SYNTH: JDXiPresetToneList.ANALOG,
+            JDXiSynth.DIGITAL_SYNTH_1: JDXiPresetToneList.DIGITAL_ENUMERATED,
+            JDXiSynth.DIGITAL_SYNTH_2: JDXiPresetToneList.DIGITAL_ENUMERATED,
+            JDXiSynth.DRUM_KIT: JDXiPresetToneList.DRUM_ENUMERATED,
+        }.get(synth_type)
+
+        if preset_list and name in preset_list:
+            index = preset_list.index(name)
+            return JDXiPresetData.get_preset_details(synth_type, index)
+        return None
+
+    from jdxi_editor.jdxi.program.program import JDXiProgram
+    program = JDXiProgram(
+        id=f"A{data.program_number + 1:02d}",
+        name=f"Imported {data.program_number + 1:02d}",
+        genre="Unknown",
+        tempo=data.tempo or 120,
+        analog=get_preset(JDXiSynth.ANALOG_SYNTH, data.tone_names.get("analog")),
+        digital_1=get_preset(JDXiSynth.DIGITAL_SYNTH_1, data.tone_names.get("digital_1")),
+        digital_2=get_preset(JDXiSynth.DIGITAL_SYNTH_2, data.tone_names.get("digital_2")),
+        drums=get_preset(JDXiSynth.DRUM_KIT, data.tone_names.get("drum")),
+    )
+
+    if add_program_and_save(asdict(program)):
+        log.message(f"✅ Auto-added program: {program.id}")
+    else:
+        log.message(f"⚠️ Duplicate or failed to add: {program.id}")
+
+    self._incoming_preset_data = IncomingPresetData()
 
 
 @dataclass
 class JDXiPresetData:
-    presets: list
+    name: str
+    presets: List[str]
     bank_msb: int
     bank_lsb: int
     program: int
 
     @staticmethod
-    def get_preset_details(
-        synth_type: str, preset_number: int
-    ) -> "JDXiPresetData":
-        """
-        Get preset details based on the synth type and preset number.
-
-        :param synth_type: The type of synth (e.g., SynthType.ANALOG, DIGITAL_1, etc.)
-        :param preset_number: The preset number
-        :return: A JDXIPresetData instance with preset list and MIDI values
-        """
-        if synth_type == JDXiSynth.ANALOG_SYNTH:
-            presets = JDXiPresetToneList.ANALOG
-            bank_msb = 0
-            bank_lsb = preset_number // 7
-            program = preset_number % 7
-        elif synth_type == JDXiSynth.DIGITAL_SYNTH_1:
-            presets = JDXiPresetToneList.DIGITAL_ENUMERATED
-            bank_msb = 1
-            bank_lsb = preset_number // 16
-            program = preset_number % 16
-        elif synth_type == JDXiSynth.DIGITAL_SYNTH_2:
-            presets = JDXiPresetToneList.DIGITAL_ENUMERATED
-            bank_msb = 2
-            bank_lsb = preset_number // 16
-            program = preset_number % 16
-        else:  # Drums
-            presets = JDXiPresetToneList.DRUM_ENUMERATED
-            bank_msb = 3
-            bank_lsb = preset_number // 16
-            program = preset_number % 16
-
-        return JDXiPresetData(presets, bank_msb, bank_lsb, program)
-
-
-class JDXIPresetDataOld:
-    """
-    A class to handle synth data, including preset selection based on synth type.
-    """
+    def from_dict(data: dict) -> "JDXiPresetData":
+        return JDXiPresetData(
+            presets=data.get("presets", []),
+            bank_msb=data.get("bank_msb", 0),
+            bank_lsb=data.get("bank_lsb", 0),
+            program=data.get("program", 0),
+        )
 
     @staticmethod
-    def get_preset_details(synth_type: JDXiSynth, preset_number: int) -> dict:
-        """
-        Get preset details based on the synth type and preset number.
-
-        :param synth_type: The type of synth (e.g., SynthType.ANALOG, SynthType.DIGITAL_1, etc.)
-        :param preset_number: The preset number
-        :return: A dictionary with presets, bank_msb, bank_lsb, and program
-        """
+    def get_preset_details(synth_type: str, preset_number: int) -> "JDXiPresetData":
         if synth_type == JDXiSynth.ANALOG_SYNTH:
             presets = JDXiPresetToneList.ANALOG
-            bank_msb = 0
+            bank_msb = 0x10  # JD-Xi MSB for Analog (example)
             bank_lsb = preset_number // 7
             program = preset_number % 7
         elif synth_type == JDXiSynth.DIGITAL_SYNTH_1:
             presets = JDXiPresetToneList.DIGITAL_ENUMERATED
-            bank_msb = 1
+            bank_msb = 0x10
             bank_lsb = preset_number // 16
             program = preset_number % 16
         elif synth_type == JDXiSynth.DIGITAL_SYNTH_2:
             presets = JDXiPresetToneList.DIGITAL_ENUMERATED
-            bank_msb = 2
+            bank_msb = 0x10
             bank_lsb = preset_number // 16
             program = preset_number % 16
-        else:  # Drums
+        elif synth_type == JDXiSynth.DRUM_KIT:
             presets = JDXiPresetToneList.DRUM_ENUMERATED
-            bank_msb = 3
+            bank_msb = 0x10
             bank_lsb = preset_number // 16
             program = preset_number % 16
+        else:
+            raise ValueError(f"Unknown synth type: {synth_type}")
 
+        return JDXiPresetData(presets=presets, bank_msb=bank_msb, bank_lsb=bank_lsb, program=program)
+
+    def to_dict(self):
         return {
-            "presets": presets,
-            "bank_msb": bank_msb,
-            "bank_lsb": bank_lsb,
-            "program": program,
+            "name": self.name,
+            "presets": self.presets,
+            "bank_msb": self.bank_msb,
+            "bank_lsb": self.bank_lsb,
+            "program": self.program,
         }

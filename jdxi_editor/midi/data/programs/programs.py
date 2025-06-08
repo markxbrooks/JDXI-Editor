@@ -1,3 +1,8 @@
+import json
+from typing import List, Optional
+
+from jdxi_editor.jdxi.program.program import JDXiProgram
+
 PROGRAM_LIST = [
     {
         "id": "A01",
@@ -3753,4 +3758,35 @@ PROGRAM_LIST = [
 
 
 class JDXiProgramList:
-    PROGRAM_LIST = PROGRAM_LIST
+    # Convert each dict to a JDXiProgram instance
+    PROGRAM_LIST = [
+        JDXiProgram(
+            id=data["id"],
+            name=data["name"],
+            genre=data.get("genre"),
+            digital_1=data.get("digital_1"),
+            digital_2=data.get("digital_2"),
+            drums=data.get("drum"),  # note: key was "drum" not "drums" in source
+            analog=data.get("analog"),
+            measure_length=int(data["measure_length"]),
+            scale=data.get("scale"),
+            tempo=int(data["tempo"]),
+            msb=int(data["msb"]),
+            lsb=int(data["lsb"]),
+            pc=int(data["pc"]),
+        )
+        for data in PROGRAM_LIST
+    ]
+    PROGRAMS_FILE = "programs.json"
+
+    @classmethod
+    def add_program(cls, program: JDXiProgram) -> None:
+        """Append a new program to the list."""
+        cls.PROGRAM_LIST.append(program)
+
+    @classmethod
+    def save_to_file(cls, filepath: Optional[str] = None) -> None:
+        """Save the current program list to JSON."""
+        filepath = filepath or cls.PROGRAMS_FILE
+        with open(filepath, "w") as f:
+            json.dump([p.to_dict() for p in cls.PROGRAM_LIST], f, indent=2)

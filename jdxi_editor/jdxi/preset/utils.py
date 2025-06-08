@@ -1,6 +1,6 @@
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.programs.digital import DIGITAL_PRESET_LIST
-from jdxi_editor.ui.editors.helpers.program import get_preset_parameter_value
+from jdxi_editor.ui.editors.helpers.preset import get_preset_parameter_value
 
 
 def get_preset_values(preset_index, preset_list=DIGITAL_PRESET_LIST):

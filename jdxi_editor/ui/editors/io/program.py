@@ -37,7 +37,7 @@ Dependencies:
 
 """
 
-from typing import Optional
+from typing import Optional, Dict
 
 from PySide6.QtWidgets import (
     QVBoxLayout,
@@ -49,10 +49,17 @@ from PySide6.QtWidgets import (
     QGroupBox, QFormLayout,
 )
 from PySide6.QtCore import Signal, Qt
-from rtmidi.midiconstants import SONG_START, SONG_STOP
 import qtawesome as qta
 
+from jdxi_editor.jdxi.midi.constant import MidiConstant
+from jdxi_editor.jdxi.program.program import JDXiProgram
+from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.log.logger import Logger as log
+from jdxi_editor.midi.data.parameter import AddressParameter
+from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
+from jdxi_editor.midi.data.parameter.digital import AddressParameterDigitalCommon
+from jdxi_editor.midi.data.parameter.drum.common import AddressParameterDrumCommon
+from jdxi_editor.midi.data.parameter.program.common import AddressParameterProgramCommon
 from jdxi_editor.midi.data.programs.programs import JDXiProgramList
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.io.helper import MidiIOHelper
@@ -111,6 +118,7 @@ class ProgramEditor(BasicEditor):
         self.programs = {}  # Maps program names to numbers
         self.setup_ui()
         self.midi_helper.update_program_name.connect(self.set_current_program_name)
+        self.controls: Dict[AddressParameter, QWidget] = {}
 
     def setup_ui(self):
         """set up ui elements"""
@@ -141,7 +149,7 @@ class ProgramEditor(BasicEditor):
 
         self.file_label = DigitalTitle("No file loaded")
         title_left_vlayout.addWidget(self.file_label)
-        title_left_vlayout.addStretch()
+        # title_left_vlayout.addStretch()
 
         # Image display
         self.title_group = QGroupBox()
@@ -172,7 +180,7 @@ class ProgramEditor(BasicEditor):
         # Genre selection combo box
         self.genre_combo_box = QComboBox()
         self.genre_combo_box.addItem("No Genre Selected")
-        genres = set(program["genre"] for program in JDXiProgramList.PROGRAM_LIST)
+        genres = set(program.genre for program in JDXiProgramList.PROGRAM_LIST)
         self.genre_combo_box.addItems(sorted(genres))
         self.genre_combo_box.currentIndexChanged.connect(self.on_genre_changed)
         main_vlayout.addWidget(self.genre_combo_box)
@@ -232,9 +240,9 @@ class ProgramEditor(BasicEditor):
                 color: {JDXiStyle.ACCENT};
             """
         )
-        self.digital_synth_1_current_synth = QLabel("Current Synth:")
-        self.digital_synth_1_hlayout.addWidget(self.digital_synth_1_current_synth)
-        self.digital_synth_1_current_synth.setStyleSheet(
+        self.digital_synth_1_current_label = QLabel("Current Synth:")
+        self.digital_synth_1_hlayout.addWidget(self.digital_synth_1_current_label)
+        self.digital_synth_1_current_label.setStyleSheet(
             f"""
                 font-size: 16px;
                 font-weight: bold;
@@ -260,9 +268,9 @@ class ProgramEditor(BasicEditor):
                 color: {JDXiStyle.ACCENT};
             """
         )
-        self.digital_synth_2_current_synth = QLabel("Current Synth:")
-        self.digital_synth_2_hlayout.addWidget(self.digital_synth_2_current_synth)
-        self.digital_synth_2_current_synth.setStyleSheet(
+        self.digital_synth_2_current_label = QLabel("Current Synth:")
+        self.digital_synth_2_hlayout.addWidget(self.digital_synth_2_current_label)
+        self.digital_synth_2_current_label.setStyleSheet(
             f"""
                 font-size: 16px;
                 font-weight: bold;  
@@ -287,9 +295,9 @@ class ProgramEditor(BasicEditor):
                 color: {JDXiStyle.ACCENT};
             """
         )
-        self.drum_kit_current_synth = QLabel("Current Synth:")
-        self.drum_kit_hlayout.addWidget(self.drum_kit_current_synth)
-        self.drum_kit_current_synth.setStyleSheet(
+        self.drum_kit_current_label = QLabel("Current Synth:")
+        self.drum_kit_hlayout.addWidget(self.drum_kit_current_label)
+        self.drum_kit_current_label.setStyleSheet(
             f"""
                 font-size: 16px;
                 font-weight: bold;
@@ -298,7 +306,7 @@ class ProgramEditor(BasicEditor):
         )
         self.analog_synth_hlayout = QHBoxLayout()
         main_vlayout.addLayout(self.analog_synth_hlayout)
-        main_vlayout.addStretch()
+        # main_vlayout.addStretch()
 
         self.analog_synth_icon = QLabel()
         self.analog_synth_icon.setPixmap(
@@ -315,9 +323,9 @@ class ProgramEditor(BasicEditor):
                 color: {JDXiStyle.ACCENT_ANALOG};
             """
         )
-        self.analog_synth_current_synth = QLabel("Current Synth:")
-        self.analog_synth_hlayout.addWidget(self.analog_synth_current_synth)
-        self.analog_synth_current_synth.setStyleSheet(
+        self.analog_synth_current_label = QLabel("Current Synth:")
+        self.analog_synth_hlayout.addWidget(self.analog_synth_current_label)
+        self.analog_synth_current_label.setStyleSheet(
             f"""
                 font-size: 16px;
                 font-weight: bold;
@@ -325,6 +333,74 @@ class ProgramEditor(BasicEditor):
             """
         )
         self.populate_programs()
+        self.midi_helper.update_tone_name.connect(
+             lambda tone_name, synth_type: self.update_tone_name_for_synth(tone_name, synth_type)
+        )
+        mixer_section = self._create_mixer_section()
+        main_vlayout.addWidget(mixer_section)
+
+    def _create_mixer_section(self) -> QWidget:
+        """Create general vocal effect controls section"""
+        mixer_section = QWidget()
+        layout = QVBoxLayout()
+        mixer_section.setLayout(layout)
+
+        # Add Mixer controls
+        mixer_group = QGroupBox("Mixer Level Settings")
+        mixer_layout = QVBoxLayout()
+        mixer_group.setLayout(mixer_layout)
+        # Level controls
+        levels_row_layout = QHBoxLayout()
+        self.master_level_slider = self._create_parameter_slider(
+            AddressParameterProgramCommon.PROGRAM_LEVEL, "Master", vertical=True
+        )
+        self.digital1_level_slider = self._create_parameter_slider(
+            AddressParameterDigitalCommon.TONE_LEVEL, "Digital 1", vertical=True
+        )
+        self.digital2_level_slider = self._create_parameter_slider(
+            AddressParameterDigitalCommon.TONE_LEVEL, "Digital 2", vertical=True
+        )
+
+        self.drums_level_slider = self._create_parameter_slider(
+            AddressParameterDrumCommon.KIT_LEVEL, "Drums", vertical=True
+        )
+
+        self.analog_level_slider = self._create_parameter_slider(
+            AddressParameterAnalog.AMP_LEVEL, "Analog", vertical=True
+        )
+
+        # Add all controls
+        levels_row_layout.addWidget(self.master_level_slider)
+        levels_row_layout.addWidget(self.digital1_level_slider)
+        levels_row_layout.addWidget(self.digital2_level_slider)
+        levels_row_layout.addWidget(self.drums_level_slider)
+        levels_row_layout.addWidget(self.analog_level_slider)
+        mixer_layout.addLayout(levels_row_layout)
+
+        layout.addWidget(mixer_group)
+        mixer_group.setStyleSheet(JDXiStyle.ADSR)
+        self.analog_level_slider.setStyleSheet(JDXiStyle.ADSR_ANALOG)
+        return mixer_section
+
+    def update_tone_name_for_synth(self, tone_name: str, synth_type: str) -> None:
+        """
+        Update the tone name.
+        :param tone_name: str
+        :param synth_type: str
+        """
+        log.message(f"Update tone name triggered: tone_name {tone_name} {synth_type}")
+        synth_label_map = {
+            JDXiSynth.DIGITAL_SYNTH_1: self.digital_synth_1_current_label,
+            JDXiSynth.DIGITAL_SYNTH_2: self.digital_synth_2_current_label,
+            JDXiSynth.DRUM_KIT: self.drum_kit_current_label,
+            JDXiSynth.ANALOG_SYNTH: self.analog_synth_current_label,
+        }
+
+        label = synth_label_map.get(synth_type)
+        if label:
+            label.setText(tone_name)
+        else:
+            log.warning(f"synth type: {synth_type} not found in mapping. Cannot update tone name.")
 
     def set_current_program_name(self, program_name: str, synth_type: str = None) -> None:
         """
@@ -340,11 +416,11 @@ class ProgramEditor(BasicEditor):
 
     def start_playback(self):
         """Start playback of the MIDI file."""
-        self.midi_helper.send_raw_message([SONG_START])
+        self.midi_helper.send_raw_message([MidiConstant.SONG_START])
 
     def stop_playback(self):
         """Stop playback of the MIDI file."""
-        self.midi_helper.send_raw_message([SONG_STOP])
+        self.midi_helper.send_raw_message([MidiConstant.SONG_STOP])
 
     def populate_programs(self):
         """Populate the program list with available presets."""
@@ -363,13 +439,13 @@ class ProgramEditor(BasicEditor):
         filtered_list = [  # Filter programs based on bank and genre
             program
             for program in JDXiProgramList.PROGRAM_LIST
-            if (selected_bank in ["No Bank Selected", program["id"][0]])
-            and (selected_genre in ["No Genre Selected", program["genre"]])
+            if (selected_bank in ["No Bank Selected", program.id[0]])
+            and (selected_genre in ["No Genre Selected", program.genre])
         ]
 
         for program in filtered_list:  # Add programs to the combo box
-            program_name = program["name"]
-            program_id = program["id"]
+            program_name = program.name
+            program_id = program.id
             index = len(self.programs)  # Use the current number of programs
             self.program_number_combo_box.addItem(
                 f"{program_id} - {program_name}", index
@@ -447,25 +523,27 @@ class ProgramEditor(BasicEditor):
         self.midi_helper.send_bank_select_and_program_change(self.channel, msb, lsb, pc)
         self.data_request()
 
-    def update_current_synths(self, program_details: dict) -> None:
+    def update_current_synths(self, program_details: JDXiProgram) -> None:
         """Update the current synth label.
         :param program_details: dict
+        :return: None
         """
         try:
-            self.digital_synth_1_current_synth.setText(program_details["digital_1"])
-            self.digital_synth_2_current_synth.setText(program_details["digital_2"])
-            self.drum_kit_current_synth.setText(program_details["drum"])
-            self.analog_synth_current_synth.setText(program_details["analog"])
+            self.digital_synth_1_current_label.setText(program_details.digital_1)
+            self.digital_synth_2_current_label.setText(program_details.digital_2)
+            self.drum_kit_current_label.setText(program_details.drums)
+            self.analog_synth_current_label.setText(program_details.analog)
         except KeyError:
             log.message(f"Program details missing required keys: {program_details}")
-            self.digital_synth_1_current_synth.setText("Unknown")
-            self.digital_synth_2_current_synth.setText("Unknown")
-            self.drum_kit_current_synth.setText("Unknown")
-            self.analog_synth_current_synth.setText("Unknown")
+            self.digital_synth_1_current_label.setText("Unknown")
+            self.digital_synth_2_current_label.setText("Unknown")
+            self.drum_kit_current_label.setText("Unknown")
+            self.analog_synth_current_label.setText("Unknown")
 
     def load_preset(self, program_number: int) -> None:
         """Load preset data and update UI.
         :param program_number: int
+        :return: None
         """
         if not self.preset_helper:
             return
