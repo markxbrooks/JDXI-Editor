@@ -12,7 +12,7 @@ Functions:
     - to_hex_string: Convert an integer value to a hexadecimal string representation
 
 """
-
+from typing import Optional
 
 from jdxi_editor.jdxi.sysex.bitmask import BitMask
 from jdxi_editor.log.logger import Logger as log
@@ -45,7 +45,7 @@ def calculate_checksum(data: tuple) -> int:
     return (128 - (sum(data) & BitMask.LOW_7_BITS)) & BitMask.LOW_7_BITS
 
 
-def bytes_to_hex(byte_list: list, prefix: str = "F0") -> str:
+def bytes_to_hex(byte_list: list, prefix: str = "F0") -> Optional[str]:
     """
     Convert a list of byte values to a space-separated hex string.
     :param byte_list: List of integers (bytes).

@@ -4,7 +4,8 @@ from logging.handlers import RotatingFileHandler
 from pathlib import Path
 from jdxi_editor.project import __program__, __version__, __package_name__
 
-def setup_logging():
+
+def setup_logging() -> logging.Logger:
     """Set up logging configuration"""
     try:
         # Create logs directory in user's home directory

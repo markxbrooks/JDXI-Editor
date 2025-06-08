@@ -1,9 +1,9 @@
-def get_previous_program_bank_and_number(program_number: int, bank_letter: str):
+def get_previous_program_bank_and_number(program_number: int, bank_letter: str) -> tuple[str, int]:
     """
     get previous program bank number
     :param program_number: int
     :param bank_letter: str
-    :return: tuple
+    :return: tuple[str,int]
     """
     if program_number > 1:
         program_number -= 1
@@ -16,7 +16,7 @@ def get_previous_program_bank_and_number(program_number: int, bank_letter: str):
     return bank_letter, program_number
 
 
-def get_next_program_bank_and_number(program_number: int, bank_letter: str):
+def get_next_program_bank_and_number(program_number: int, bank_letter: str) -> tuple[int,str]:
     """
     get next program bank number
     :param program_number: int

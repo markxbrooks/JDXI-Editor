@@ -13,7 +13,7 @@ class JDXiPresetManager:
             cls._instance = super(JDXiPresetManager, cls).__new__(cls)
         return cls._instance
 
-    def __init__(self):
+    def __init__(self) -> None:
         # Initialize tone-related attributes
         self.current_preset_number = 1
         self.current_preset_index = self.current_preset_number - 1

@@ -45,6 +45,7 @@ import logging
 import re
 from typing import Optional, Dict, Union, Any, List
 
+from jdxi_editor.jdxi.midi.constant import MidiConstant
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.programs.digital import DIGITAL_PRESET_LIST
 from jdxi_editor.midi.data.programs.programs import JDXiProgramList
@@ -90,11 +91,11 @@ def get_program_id_by_name(name: str) -> Optional[str]:
     return None
 
 
-def get_program_number_by_name(program_name: str) -> Optional[str]:
+def get_program_number_by_name(program_name: str) -> Optional[int]:
     """
     Retrieve a program's number (without bank letter) by its name from JDXiProgramList.PROGRAM_LIST
     :param program_name: str
-    :return: str
+    :return: int
     """
     program = next((p for p in JDXiProgramList.PROGRAM_LIST if p["name"] == program_name), None)
     return int(program["id"][1:]) if program else None
@@ -191,7 +192,7 @@ def calculate_midi_values(bank: str, program_number: int) -> tuple[int, int, int
         msb, lsb, pc = None, None, None
 
     # Ensure PC is within range
-    if not 0 <= pc <= 127:
+    if not 0 <= pc <= MidiConstant.VALUE_MAX_SEVEN_BIT:
         log.message(f"Invalid Program Change value: {pc}")
         raise ValueError(f"Program Change value {pc} is out of range")
 

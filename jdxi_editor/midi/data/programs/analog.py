@@ -1,6 +1,7 @@
 """
 Analog presets
 """
+from typing import Any
 
 ANALOG_PRESET_LIST = [
     {
@@ -390,13 +391,23 @@ ANALOG_PRESET_LIST = [
 ]
 
 
-def get_preset_by_program_number(program_number):
+def get_preset_by_program_number(program_number: int) -> dict[str]:
+    """
+    get_preset_by_program_number
+    :param program_number: int Program number
+    :return: Program details
+    """
     return next(
         (preset for preset in ANALOG_PRESET_LIST if preset["pc"] == program_number),
         None,
     )
 
 
-def get_preset_parameters(program_number):
+def get_preset_parameters(program_number: int) -> tuple[float, float, float]:
+    """
+    get_preset_parameters
+    :param program_number: int
+    :return:
+    """
     preset = get_preset_by_program_number(program_number)
     return preset["msb"], preset["lsb"], preset["pc"]

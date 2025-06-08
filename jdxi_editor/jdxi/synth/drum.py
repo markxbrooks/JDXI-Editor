@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 from typing import Dict
 
 from jdxi_editor.jdxi.synth.data import JDXISynthData
-from jdxi_editor.midi.data.address.address import AddressOffsetDrumKitLMB
+from jdxi_editor.midi.data.address.address import AddressOffsetDrumKitLMB, Address
 
 
 @dataclass
@@ -18,12 +18,12 @@ class DrumSynthData(JDXISynthData):
         default_factory=dict, init=False, repr=False
     )
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         """Post Init"""
         super().__post_init__()
         self._build_group_map()
 
-    def _build_group_map(self):
+    def _build_group_map(self) -> None:
         """Build the map once after initialization."""
         self._group_map = {
             0: AddressOffsetDrumKitLMB.COMMON,
@@ -67,15 +67,15 @@ class DrumSynthData(JDXISynthData):
         }
 
     @property
-    def group_map(self) -> Dict[int, AddressOffsetDrumKitLMB]:
+    def group_map(self) -> Dict[int, Address]:
         """Return the drum group map."""
         return self._group_map
 
     @property
-    def partial_lmb(self) -> AddressOffsetDrumKitLMB:
+    def partial_lmb(self) -> Address:
         """Return the LMB for the current partial number."""
         return self.get_partial_lmb(self.partial_number)
 
-    def get_partial_lmb(self, partial_number: int) -> AddressOffsetDrumKitLMB:
+    def get_partial_lmb(self, partial_number: int) -> Address:
         """Return the LMB for a given partial number."""
         return self._group_map.get(partial_number, AddressOffsetDrumKitLMB.COMMON)

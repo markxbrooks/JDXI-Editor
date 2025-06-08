@@ -1,12 +1,12 @@
 from jdxi_editor.log.logger import Logger as log
 
 
-def log_debug_info(successes: list, failures: list) -> None:
+def log_debug_info(successes: list[str], failures: list[str]) -> None:
     """
     Logs debug information about the parsed SysEx data.
 
-    :param successes: list – Parameters successfully decoded.
-    :param failures: list – Parameters that failed decoding.
+    :param successes: list[str] – Parameters successfully decoded.
+    :param failures: list[str] – Parameters that failed decoding.
     """
     for listing in [successes, failures]:
         try:
