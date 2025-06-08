@@ -8,13 +8,18 @@ from jdxi_editor.globals import LOG_PADDING_WIDTH, LOGGING
 from jdxi_editor.log.decorator import decorate_log_message
 
 
-def format_midi_message_to_hex_string(message):
-    """hexlify message"""
+def format_midi_message_to_hex_string(message: list) -> str:
+    """
+    format_midi_message_to_hex_string
+    :param message: list of bytes
+    :return: str
+    """
     formatted_message = " ".join([hex(x)[2:].upper().zfill(2) for x in message])
     return formatted_message
 
 
 class Logger:
+    """ Logger class """
     def __init__(self):
         pass
 
@@ -148,10 +153,13 @@ class Logger:
         Logger.message(separator, level=level, stacklevel=stacklevel, silent=silent)
 
     @staticmethod
-    def debug_info(successes: list, failures: list, stacklevel=3) -> None:
+    def debug_info(successes: list,
+                   failures: list,
+                   stacklevel: int = 3) -> None:
         """
         Logs debug information about the parsed SysEx data.
 
+        :param stacklevel: int
         :param successes: list – Parameters successfully decoded.
         :param failures: list – Parameters that failed decoding.
         """

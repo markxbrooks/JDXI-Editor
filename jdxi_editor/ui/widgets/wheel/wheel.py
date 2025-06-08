@@ -11,6 +11,9 @@ from PySide6.QtCore import QRectF, Signal, Property, QPropertyAnimation
 
 
 class WheelWidget(QWidget):
+    """
+    Wheel Widget for Pitch and Mod Wheels
+    """
     valueChanged = Signal(float)
 
     def __init__(self, parent=None, bidirectional=False, label="Wheel"):
@@ -30,7 +33,12 @@ class WheelWidget(QWidget):
     def get_value(self):
         return self._value
 
-    def set_value(self, value: float):
+    def set_value(self, value: float) -> None:
+        """
+        set_value
+        :param value: float
+        :return: None
+        """
         clamped = max(-1.0 if self.bidirectional else 0.0, min(1.0, value))
         if clamped != self._value:
             self._value = clamped
@@ -39,7 +47,12 @@ class WheelWidget(QWidget):
 
     value = Property(float, get_value, set_value)
 
-    def paintEvent(self, event):
+    def paintEvent(self, event: QMouseEvent) -> None:
+        """
+        paintEvent
+        :param event: QMouseEvent
+        :return: None
+        """
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
 
@@ -84,15 +97,30 @@ class WheelWidget(QWidget):
         painter.restore()
 
     def mousePressEvent(self, event: QMouseEvent):
+        """
+        mousePressEvent
+        :param event: QMouseEvent
+        :return: None
+        """
         self._drag_active = True
         self.snap_animation.stop()
         self._update_value_from_mouse(event.pos().y())
 
-    def mouseMoveEvent(self, event: QMouseEvent):
+    def mouseMoveEvent(self, event: QMouseEvent) -> None:
+        """
+        mouseMoveEvent
+        :param event: QMouseEvent
+        :return: None
+        """
         if self._drag_active:
             self._update_value_from_mouse(event.pos().y())
 
-    def mouseReleaseEvent(self, event: QMouseEvent):
+    def mouseReleaseEvent(self, event: QMouseEvent) -> None:
+        """
+        mouseReleaseEvent
+        :param event: QMouseEvent
+        :return: None
+        """
         self._drag_active = False
         if self.bidirectional:
             self.snap_animation.stop()
@@ -100,7 +128,12 @@ class WheelWidget(QWidget):
             self.snap_animation.setEndValue(0.0)
             self.snap_animation.start()
 
-    def _update_value_from_mouse(self, y: int):
+    def _update_value_from_mouse(self, y: int) -> None:
+        """
+        _update_value_from_mouse
+        :param y: int
+        :return: None
+        """
         h = self.height()
         if self.bidirectional:
             center = h / 2

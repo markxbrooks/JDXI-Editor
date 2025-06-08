@@ -1,8 +1,9 @@
 import json
 from typing import Dict
+from jdxi_editor.log.logger import Logger as log
 
 
-def log_json(data: Dict, silent: bool = False) -> None:
+def log_json(data: Dict[str], silent: bool = False) -> None:
     """
     Helper function to log JSON data as address single line.
     :param silent: bool
@@ -14,7 +15,7 @@ def log_json(data: Dict, silent: bool = False) -> None:
         try:
             data = json.loads(data)
         except json.JSONDecodeError:
-            log_message("Invalid JSON string provided.")
+            log.message("Invalid JSON string provided.")
             return
 
     # Serialize the JSON into address single line string (compact form)
@@ -22,4 +23,4 @@ def log_json(data: Dict, silent: bool = False) -> None:
 
     # Log the JSON in address single line
     if not silent:
-        log_message(compact_json, stacklevel=2)
+        log.message(compact_json, stacklevel=2)

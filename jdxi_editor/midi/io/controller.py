@@ -22,6 +22,7 @@ Example Usage:
     print(controller.current_in_port, controller.current_out_port)
 
 """
+from __future__ import annotations
 
 import time
 from typing import Optional, List, Tuple
@@ -35,7 +36,7 @@ from jdxi_editor.log.logger import Logger as log
 class MidiIOController(QObject):
     """Helper class for MIDI communication with the JD-Xi"""
 
-    def __init__(self, parent: QObject = None):
+    def __init__(self, parent: QObject):
         """
         Initialize the MIDI I/O Controller
         :param parent: QObject, parent object for the controller
@@ -97,7 +98,7 @@ class MidiIOController(QObject):
 
         return (jdxi_in, jdxi_out)
 
-    def open_input(self, port_name_or_index) -> bool:
+    def open_input(self, port_name_or_index: str) -> bool:
         """
         Open MIDI input port by name or index
         :param port_name_or_index: str, MIDI input port name or index
@@ -183,7 +184,7 @@ class MidiIOController(QObject):
             log.error(f"Error opening MIDI output port: {str(ex)}")
             return False
 
-    def close_ports(self):
+    def close_ports(self) -> None:
         """
         Close MIDI ports
         :return: None

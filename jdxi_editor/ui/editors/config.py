@@ -21,11 +21,13 @@ Example usage:
 from dataclasses import dataclass, field
 from typing import Type, Optional, Any, Dict
 
+from jdxi_editor.ui.editors.synth.base import SynthBase
+
 
 @dataclass
 class EditorConfig:
     title: str
-    editor_class: Type
+    editor_class: SynthBase
     synth_type: Optional[Any] = None
     midi_channel: Optional[Any] = None
     kwargs: Dict[str, Any] = field(default_factory=dict)

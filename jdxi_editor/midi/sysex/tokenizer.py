@@ -1,4 +1,13 @@
+"""
+Tokeniser for lexing
+# Example input
+# input_data = "DIGITAL_SYNTH_1 COMMON"
+# mapping = generate_mapping(input_data)
+# print(mapping)
+
+"""
 import re
+from typing import Optional
 
 # Define token patterns
 TOKEN_PATTERNS = {
@@ -6,8 +15,14 @@ TOKEN_PATTERNS = {
     "COMMON": r"COMMON|COMMON|MODIFY|PARTIAL_\d",
 }
 
+
 # Lexer function
-def tokenize(input_string):
+def tokenize(input_string: str) -> dict[str, str]:
+    """
+    tokenize
+    :param input_string: str
+    :return: dict[str,str] tokens
+    """
     tokens = {}
     for token_type, pattern in TOKEN_PATTERNS.items():
         match = re.search(pattern, input_string)
@@ -15,8 +30,14 @@ def tokenize(input_string):
             tokens[token_type] = match.group()
     return tokens
 
+
 # Generate mappings dynamically
-def generate_mapping(input_string):
+def generate_mapping(input_string: str) -> Optional[dict[str, str]]:
+    """
+    generate_mapping
+    :param input_string: str
+    :return: Optional[dict[str, str]]
+    """
     tokens = tokenize(input_string)
     if "AREA" in tokens and "COMMON" in tokens:
         return {
@@ -24,8 +45,3 @@ def generate_mapping(input_string):
             "Parameter": f"AddressParameter{tokens['COMMON'].replace('_', '')}"
         }
     return None
-
-# Example input
-# input_data = "DIGITAL_SYNTH_1 COMMON"
-# mapping = generate_mapping(input_data)
-# print(mapping)

@@ -37,7 +37,7 @@ from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 from PySide6.QtGui import QPixmap, QLinearGradient, QColor
 
 
-def draw_instrument_pixmap():
+def draw_instrument_pixmap() -> QPixmap:
     """
     Create a visual representation of the JD-Xi instrument panel.
 
@@ -47,12 +47,12 @@ def draw_instrument_pixmap():
     # Create address black background image with correct aspect ratio
     jdxi_width = JDXiDimensions.WIDTH
     jdxi_height = JDXiDimensions.HEIGHT
-    jdxi_image = QImage(jdxi_width, jdxi_height, QImage.Format_RGB32)
-    jdxi_image.fill(Qt.black)
+    jdxi_image = QImage(jdxi_width, jdxi_height, QImage.Format_RGB32) # type: ignore[attr-defined]
+    jdxi_image.fill(Qt.black) # type: ignore[attr-defined]
 
     pixmap = QPixmap.fromImage(jdxi_image)
     painter = QPainter(pixmap)
-    painter.setRenderHint(QPainter.Antialiasing)
+    painter.setRenderHint(QPainter.Antialiasing) # type: ignore[attr-defined]
 
     # draw the background
     gradient = QLinearGradient(0, 0, 0, jdxi_height)
@@ -62,16 +62,16 @@ def draw_instrument_pixmap():
     painter.fillRect(0, 0, jdxi_width, jdxi_height, gradient)
 
     # Draw a black rectangle 1 px wide at the margin for style, with no fill
-    pen = QPen(Qt.black, 1)
+    pen = QPen(Qt.black, 1) # type: ignore[attr-defined]
     painter.setPen(pen)
-    painter.setBrush(Qt.NoBrush)
+    painter.setBrush(Qt.NoBrush) # type: ignore[attr-defined]
     painter.drawRect(10, 50, jdxi_width - 20, jdxi_height - 100)
     draw_sequencer(painter)
     painter.end()
     return pixmap
 
 
-def draw_sequencer(painter: QPainter):
+def draw_sequencer(painter: QPainter) -> None:
     """
     Draw the sequencer section of the JD-Xi interface.
 
@@ -97,7 +97,7 @@ def draw_sequencer(painter: QPainter):
     total_spacing = sequencer_width - (step_count * step_size)
     step_spacing = total_spacing / (step_count - 1)
     # Draw horizontal measure lines (white)
-    painter.setPen(QPen(Qt.white, 1))
+    painter.setPen(QPen(Qt.white, 1))  # type: ignore[attr-defined]
     line_y = sequencer_y - 10  # Move lines above buttons
     measure_width = (step_size + step_spacing) * 4  # Width of 4 steps
     line_spacing = step_size / 3  # Space between lines

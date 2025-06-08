@@ -1,10 +1,10 @@
 from dataclasses import dataclass, field
 from typing import Dict
 
+from jdxi_editor.jdxi.midi.constant import MidiConstant
 from jdxi_editor.midi.data.address.address import (
     RolandSysExAddress,
-    ZERO_BYTE,
-    AddressOffsetProgramLMB,
+    AddressOffsetProgramLMB, Address,
 )
 from jdxi_editor.jdxi.synth.instrument_display import InstrumentDisplayConfig
 from jdxi_editor.jdxi.synth.midi_config import MidiSynthConfig
@@ -19,14 +19,14 @@ class JDXISynthData(MidiSynthConfig, InstrumentDisplayConfig):
     lmb: int
     address: RolandSysExAddress = field(init=False)
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         """Post Init"""
         self.address = RolandSysExAddress(
-            msb=self.msb, umb=self.umb, lmb=self.lmb, lsb=ZERO_BYTE
+            msb=self.msb, umb=self.umb, lmb=self.lmb, lsb=MidiConstant.ZERO_BYTE
         )
 
     @property
-    def group_map(self) -> Dict[int, AddressOffsetProgramLMB]:
+    def group_map(self) -> Dict[int, Address]:
         """
         Group Map
         :return: Dict[int, AddressOffsetProgramLMB] The group map

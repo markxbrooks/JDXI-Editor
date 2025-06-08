@@ -28,7 +28,7 @@ class ParameterHandler(QObject):
         super().__init__()
         self._parameters = {}
 
-    def update_parameter(self, address: List[int], value: int):
+    def update_parameter(self, address: List[int], value: int) -> None:
         """Update address parameter value
         :param address: List[int]
         :param value: int
@@ -46,7 +46,7 @@ class ParameterHandler(QObject):
         addr_key = ".".join(str(x) for x in address)
         return self._parameters.get(addr_key, 0)
 
-    def clear_parameters(self):
+    def clear_parameters(self) -> None:
         """Clear all parameters
         :return: None
         """

@@ -2,7 +2,9 @@
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import Tuple
+from typing import Tuple, Any
+
+from shiboken6.Shiboken import Object
 
 from jdxi_editor.jdxi.midi.constant import MidiConstant
 from jdxi_editor.midi.data.control_change.base import ControlChange
@@ -67,11 +69,11 @@ class PartialRPNValue:
         msb, base_lsb = self.base_msb_lsb
         return msb, base_lsb + (self.partial - 1)
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if not (1 <= self.partial <= 3):
             raise ValueError("Partial must be between 1 and 3.")
 
-    def midi_bytes(self, value: int):
+    def midi_bytes(self, value: int) -> list[tuple[Any, int, int]]:
         """Generate CC messages for this RPN and a given value."""
         msb, lsb = self.msb_lsb
         value = max(min(value, self.value_range[1]), self.value_range[0])
@@ -95,7 +97,12 @@ class PartialRPNValue:
         return (msb, base_lsb + (self.partial - 1))
 
 
-def make_digital_rpn(partial: int):
+def make_digital_rpn(partial: int) -> Object:
+    """
+    make_digital_rpn
+    :param partial: int
+    :return: Object
+    """
     class DigitalPartialRPN(Enum):
         ENVELOPE = PartialRPNValue((0, 124), (0, 127), partial)
         LFO_SHAPE = PartialRPNValue((0, 3), (0, 5), partial)

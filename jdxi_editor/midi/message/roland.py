@@ -28,6 +28,7 @@ from typing import List, Union, Optional
 
 
 from jdxi_editor.jdxi.midi.constant import MidiConstant, JDXiConstant
+from jdxi_editor.jdxi.sysex.bitmask import BitMask
 from jdxi_editor.jdxi.sysex.offset import JDXiSysExOffset
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import (
@@ -110,7 +111,7 @@ class RolandSysEx(SysExMessage):
 
     manufacturer_id: int = RolandID.ROLAND_ID
     device_id: int = RolandID.DEVICE_ID
-    model_id: list[int] = field(
+    model_id: List[int] = field(
         default_factory=lambda: [
             ModelID.MODEL_ID_1,
             ModelID.MODEL_ID_2,
@@ -118,38 +119,36 @@ class RolandSysEx(SysExMessage):
             ModelID.MODEL_ID_4,
         ]
     )
-    command: int = CommandID.DT1  # Default to Data Set 1 (DT1)
+    command: int = CommandID.DT1
     sysex_address: Optional[RolandSysExAddress] = None
     msb: int = MidiConstant.ZERO_BYTE
     umb: int = MidiConstant.ZERO_BYTE
     lmb: int = MidiConstant.ZERO_BYTE
     lsb: int = MidiConstant.ZERO_BYTE
-    value: Union[int, list[int]] = MidiConstant.ZERO_BYTE
+    value: Union[int, List[int]] = MidiConstant.ZERO_BYTE
     size: int = 1
 
-    # These attributes should not be set in `__init__`
-    synth_type: int = field(init=False, default=None)
-    part: int = field(init=False, default=None)
+    synth_type: Optional[int] = field(init=False, default=None)
+    part: Optional[int] = field(init=False, default=None)
 
-    dt1_command: int = CommandID.DT1  # Write command
-    rq1_command: int = CommandID.RQ1  # Read command
+    dt1_command: int = CommandID.DT1
+    rq1_command: int = CommandID.RQ1
 
-    def __post_init__(self):
-        """Initialize address and data."""
+    def __post_init__(self) -> None:
         if self.sysex_address:
             self.msb = self.sysex_address.msb
             self.umb = self.sysex_address.umb
             self.lmb = self.sysex_address.lmb
             self.lsb = self.sysex_address.lsb
 
-        self.address = [self.msb, self.umb, self.lmb, self.lsb]
+        self.address: List[int] = [self.msb, self.umb, self.lmb, self.lsb]
 
         if isinstance(self.value, int) and self.size == 4:
-            self.data = split_16bit_value_to_nibbles(self.value)
+            self.data: List[int] = split_16bit_value_to_nibbles(self.value)
         else:
             self.data = [self.value] if isinstance(self.value, int) else self.value
 
-    def from_sysex_address(self, sysex_address: RolandSysExAddress):
+    def from_sysex_address(self, sysex_address: RolandSysExAddress) -> None:
         """from_sysex_address
         :param sysex_address: RolandSysExAddress
         :return: None
@@ -161,22 +160,26 @@ class RolandSysEx(SysExMessage):
         self.address = [self.msb, self.umb, self.lmb, self.lsb]
 
     def to_message_list(self) -> List[int]:
-        """Convert the SysEx message to a list of integers.
-        :return: list
+        """
+        to_message_list
+        :return: List[int]
         """
         msg = (
-                [MidiConstant.START_OF_SYSEX, self.manufacturer_id, self.device_id]
-                + list(self.model_id)
-                + [self.command]
-                + self.address
-                + self.data  # Directly append value (no extra list around it)
+            [MidiConstant.START_OF_SYSEX, self.manufacturer_id, self.device_id]
+            + list(self.model_id)
+            + [self.command]
+            + self.address
+            + self.data
         )
         msg.append(self.calculate_checksum())
         msg.append(self.end_of_sysex)
         return msg
 
     def construct_sysex(
-            self, address: RolandSysExAddress, *data_bytes: list, request: bool = False
+        self,
+        address: RolandSysExAddress,
+        *data_bytes: Union[List[int], int],
+        request: bool = False
     ) -> List[int]:
         """
         Construct a SysEx message based on the provided address and data bytes.
@@ -187,87 +190,62 @@ class RolandSysEx(SysExMessage):
         """
         log.message(f"address: {address} data_bytes: {data_bytes} request: {request}")
 
-        # Convert address and data_bytes from hex strings to integers if needed
-        address = [int(a, 16) if isinstance(a, str) else a for a in address]
-        data_bytes = [int(d, 16) if isinstance(d, str) else d for d in data_bytes]
+        # Handle address fields directly
+        addr_list = [address.msb, address.umb, address.lmb, address.lsb]
 
-        if len(address) != 4:
-            raise ValueError(
-                "Address must be a list of 4 bytes (area, synth_type, part, group)."
-            )
+        # Flatten and normalize data_bytes
+        flat_data: List[int] = []
+        for db in data_bytes:
+            if isinstance(db, list):
+                flat_data.extend(int(d, 16) if isinstance(d, str) else d for d in db)
+            else:
+                flat_data.append(int(db, 16) if isinstance(db, str) else db)
 
-        # Update instance variables
-        self.msb, self.umb, self.lmb, self.lsb = address
-
-        # Convert the value into nibbles (if it's 4 bytes long)
-        if (
-                isinstance(self.value, int) and 0 <= self.value <= 0xFFFFFFFF
-        ):  # Check for 4-byte integer
-            self.value = split_16bit_value_to_nibbles(self.value)  # @@@@
-
-        # Determine parameter and value split
-        if len(data_bytes) == 1:
+        if len(flat_data) == 1:
             self.parameter = []
-            self.value = data_bytes
-        elif len(data_bytes) >= 2:
-            self.parameter = data_bytes[:-1]
-            self.value = [data_bytes[-1]]
-        elif len(data_bytes) == 4:
+            self.value = flat_data
+        elif len(flat_data) >= 2 and len(flat_data) != 4:
+            self.parameter = flat_data[:-1]
+            self.value = [flat_data[-1]]
+        elif len(flat_data) == 4:
             self.parameter = []
-            self.value = data_bytes
+            self.value = flat_data
         else:
             raise ValueError("Invalid data_bytes length. Must be 1, 2+, or 4.")
 
         command = self.rq1_command if request else self.dt1_command
 
-        # **Validation 1: Ensure self.parameter and self.value are lists of integers**
-        if not isinstance(self.parameter, list) or not all(
-                isinstance(p, int) for p in self.parameter
-        ):
-            raise TypeError(
-                f"Invalid parameter format: Expected list of integers, got {self.parameter}"
-            )
-
-        if not isinstance(self.value, list) or not all(
-                isinstance(v, int) for v in self.value
-        ):
-            raise TypeError(
-                f"Invalid value format: Expected list of integers, got {self.value}"
-            )
-
-        # **Validation 2: Ensure self.parameter and self.value are not empty if required**
+        if not all(isinstance(p, int) for p in self.parameter):
+            raise TypeError("Parameter list must contain only integers.")
+        if not all(isinstance(v, int) for v in self.value):
+            raise TypeError("Value list must contain only integers.")
         if len(self.parameter) == 0 and len(self.value) == 0:
-            raise ValueError(
-                "Both parameter and value cannot be empty. At least one must contain data."
-            )
+            raise ValueError("Both parameter and value cannot be empty.")
 
         required_values = {
             "manufacturer_id": self.manufacturer_id,
             "device_id": self.device_id,
             "model_id": self.model_id,
             "command": self.command,
-            "address": address,
+            "address": addr_list,
             "parameter": self.parameter,
             "value": self.value,
         }
 
-        for key, value in required_values.items():
-            if value is None:
+        for key, val in required_values.items():
+            if val is None:
                 raise ValueError(f"Missing required value: {key} cannot be None.")
 
-        # Construct SysEx message
-        sysex_msg = (
-                [START_OF_SYSEX, self.manufacturer_id, self.device_id]
-                + list(self.model_id)
-                + [command]
-                + address
-                + [self.parameter]
-                + [self.value]
+        sysex_msg: List[Union[int, List[int]]] = (
+            [START_OF_SYSEX, self.manufacturer_id, self.device_id]
+            + list(self.model_id)
+            + [command]
+            + addr_list
+            + self.parameter
+            + self.value
         )
 
-        # Append checksum
-        checksum = self.calculate_checksum()
-        sysex_msg.append(checksum)
+        sysex_msg.append(self.calculate_checksum())
         sysex_msg.append(END_OF_SYSEX)
 
         return sysex_msg
@@ -310,7 +288,7 @@ class JDXiSysEx(RolandSysEx):
         # Validate address
         if len(self.address) != 4:
             raise ValueError("Address must be 4 bytes")
-        if not all(ZERO_BYTE <= x <= JDXiBitMask.FULL_BYTE for x in self.address):
+        if not all(ZERO_BYTE <= x <= BitMask.FULL_BYTE for x in self.address):
             raise ValueError(
                 f"Invalid address bytes: {[f'{x:02X}' for x in self.address]}"
             )
@@ -334,7 +312,7 @@ class JDXiSysEx(RolandSysEx):
         """Calculate Roland checksum for the message"""
         # Checksum = 128 - (sum of address and data bytes % 128)
         checksum = sum(self.address) + sum(self.data)
-        return (128 - (checksum % 128)) & JDXiBitMask.LOW_7_BITS
+        return (128 - (checksum % 128)) & BitMask.LOW_7_BITS
 
     @classmethod
     def from_bytes(cls, data: bytes):
@@ -383,13 +361,17 @@ class ParameterMessage(JDXiSysEx):
         if hasattr(self, "convert_value"):
             self.data = self.convert_value(self.value)
 
-    def convert_value(self, value: int) -> List[int]:
-        """Convert parameter value to data bytes"""
+    def convert_value(self, value: int) -> list[int]:
+        """
+        Convert parameter value to data bytes
+        :param value: int
+        :return: list[int]
+        """
         # Default implementation just returns single byte
         return [value]
 
     @classmethod
-    def from_bytes(cls, data: bytes):
+    def from_bytes(cls, data: bytes) -> JDXiSysEx:
         """Create message from received bytes"""
         msg = super().from_bytes(data)
 
@@ -701,11 +683,11 @@ class DigitalTonePartialMessage(ParameterMessage):
 class AnalogToneMessage(ParameterMessage):
     """Message for analog tone parameters"""
 
-    msb: int
-    umb: int
-    lmb: int
-    lsb: int
-    value: int
+    msb: int = 0
+    umb: int = 0
+    lmb: int = 0
+    lsb: int = 0
+    value: int = 0
 
     def to_message_list(self) -> List[int]:
         """Convert to SysEx message bytes"""

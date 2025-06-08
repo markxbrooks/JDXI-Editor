@@ -3,11 +3,12 @@ Digital Synth Data
 """
 
 from dataclasses import dataclass
+from typing import Dict
 
 from jdxi_editor.jdxi.synth.data import JDXISynthData
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetProgramLMB,
-    AddressOffsetSuperNATURALLMB,
+    AddressOffsetSuperNATURALLMB, Address,
 )
 
 
@@ -18,7 +19,7 @@ class DigitalSynthData(JDXISynthData):
     synth_number: int = 1
     partial_number: int = 0
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         """Post Init"""
         super().__post_init__()
 
@@ -31,12 +32,12 @@ class DigitalSynthData(JDXISynthData):
         }
 
     @property
-    def group_map(self):
+    def group_map(self) -> Dict[int, Address]:
         """Group Map"""
         return self._group_map
 
     @group_map.setter
-    def group_map(self, value):
+    def group_map(self, value) -> None:
         """Group Map Setter"""
         self._group_map = value
 

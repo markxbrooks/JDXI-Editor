@@ -63,7 +63,7 @@ class Address(SysExByte):
     """
 
     def add_offset(
-        self, address_offset: Union[int, Tuple[int, int, int]]
+        self, address_offset: Union[int, Tuple[int, ...]]
     ) -> tuple[int, Any]:
         """
         Returns the full 4-byte address by adding a 3-byte offset to the base address.
@@ -107,10 +107,10 @@ class Address(SysExByte):
             return None
         return cls.get_parameter_by_address(address[0])
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<{self.__class__.__name__}.{self.name}: 0x{self.value:02X}>"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.__class__.__name__}.{self.name}: 0x{self.value:02X}"
 
 
@@ -176,7 +176,7 @@ class RolandSysExAddress:
         new_lsb = (self.lsb + offset_bytes[2]) & BitMask.LOW_7_BITS
         return RolandSysExAddress(self.msb, new_umb, new_lmb, new_lsb)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """
         Return a string representation of the RolandSysExAddress object.
         :return: str The string representation
@@ -203,14 +203,14 @@ class RolandSysExAddress:
             return NotImplemented
         return self.to_bytes() == other.to_bytes()
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         """
         Return the hash of the RolandSysExAddress object.
         :return: int The hash of the RolandSysExAddress object
         """
         return hash(self.to_bytes())
 
-    def copy(self):
+    def copy(self) -> RolandSysExAddress:
         return RolandSysExAddress(self.msb, self.umb, self.lsb, self.lsb)
 
 # ==========================
@@ -250,7 +250,7 @@ class CommandID(SysExByte):
     RQ1 = 0x11  # Data Request 1
 
     @classmethod
-    def message_position(cls):
+    def message_position(cls) -> int:
         """Return the fixed message position for command bytes."""
         return 7
 
@@ -272,7 +272,7 @@ class AddressStartMSB(Address):
     TEMPORARY_TONE = 0x19
 
     @classmethod
-    def message_position(cls):
+    def message_position(cls) -> int:
         """Return the fixed message position for command bytes."""
         return 8
 
@@ -290,7 +290,7 @@ class AddressOffsetTemporaryToneUMB(Address):
     COMMON = 0x00
 
     @classmethod
-    def message_position(cls):
+    def message_position(cls) -> int:
         """Return the fixed message position for command bytes."""
         return 9
 
@@ -303,7 +303,7 @@ class AddressOffsetSystemUMB(Address):
     COMMON = 0x00
 
     @classmethod
-    def message_position(cls):
+    def message_position(cls) -> int:
         """Return the fixed message position for command bytes."""
         return 9
 
@@ -318,7 +318,7 @@ class AddressOffsetSystemLMB(Address):
     CONTROLLER = 0x03
 
     @classmethod
-    def message_position(cls):
+    def message_position(cls) -> int:
         """Return the fixed message position for command bytes."""
         return 10
 
@@ -336,7 +336,7 @@ class AddressOffsetSuperNATURALLMB(Address):
     MODIFY = 0x50
 
     @classmethod
-    def message_position(cls):
+    def message_position(cls) -> int:
         """Return the fixed message position for command bytes."""
         return 10
 
@@ -481,7 +481,7 @@ class AddressOffsetDrumKitLMB(Address):
     DRUM_KIT_PART_37 = 0x76
 
     @classmethod
-    def message_position(cls):
+    def message_position(cls) -> int:
         """
         Return the fixed message position for command bytes.
         :return: int The fixed message position
