@@ -89,7 +89,7 @@ class JDXiJSONComposer:
         except Exception as ex:
             log.error(f"Error saving JSON: {ex}")
 
-    def process_editor(self, editor: SynthEditor, temp_folder: Path) -> None:
+    def process_editor(self, editor: SynthEditor, temp_folder: Path) -> Path:
         """
         Process the editor and save the JSON
         :param editor: SynthEditor Editor instance to process
@@ -98,6 +98,7 @@ class JDXiJSONComposer:
         """
         if temp_folder:
             self.temp_folder = temp_folder
+        os.makedirs(temp_folder, exist_ok=True)
         self.compose_message(editor)
         address_hex = ''.join([f"{x:02x}" for x in editor.address.to_bytes()])
         json_temp_file = (
@@ -106,3 +107,4 @@ class JDXiJSONComposer:
         )
         self.save_json(str(json_temp_file))
         log.message(f"JSON saved successfully to {json_temp_file}")
+        return json_temp_file
