@@ -259,7 +259,26 @@ class ProgramEditor(BasicEditor):
         """
         1) Create Labels and Icons
         """
-
+        self.master_level_icon = QLabel()
+        self.master_level_icon.setPixmap(
+            qta.icon("mdi6.keyboard-settings-outline", color=JDXiStyle.FOREGROUND).pixmap(40, 40)
+        )
+        self.master_level_title = QLabel("Master Level")
+        self.master_level_title.setStyleSheet(
+            f"""
+                font-size: 16px;
+                font-weight: bold;
+                color: {JDXiStyle.ACCENT};
+            """
+        )
+        self.master_level_current_label = QLabel("Current Program")
+        self.master_level_current_label.setStyleSheet(
+            f"""
+                font-size: 16px;
+                font-weight: bold;
+                color: {JDXiStyle.ACCENT};
+            """
+        )
         self.digital_synth_1_icon = QLabel()
         self.digital_synth_1_icon.setPixmap(
             qta.icon("msc.piano", color=JDXiStyle.FOREGROUND).pixmap(40, 40)
@@ -341,6 +360,7 @@ class ProgramEditor(BasicEditor):
                 color: {JDXiStyle.ACCENT_ANALOG};
             """
         )
+
         """
         2) Set up the Scrolled Area
         """
@@ -388,16 +408,19 @@ class ProgramEditor(BasicEditor):
         mixer_layout.addWidget(self.digital2_level_slider, 0, 1)
         mixer_layout.addWidget(self.drums_level_slider, 0, 2)
         mixer_layout.addWidget(self.analog_level_slider, 0, 3)
+        mixer_layout.addWidget(self.master_level_slider, 0, 4)
 
         mixer_layout.addWidget(self.digital_synth_1_current_label, 1, 0)
         mixer_layout.addWidget(self.digital_synth_2_current_label, 1, 1)
         mixer_layout.addWidget(self.drum_kit_current_label, 1, 2)
         mixer_layout.addWidget(self.analog_synth_current_label, 1, 3)
+        mixer_layout.addWidget(self.master_level_current_label, 1, 4)
 
         mixer_layout.addWidget(self.digital_synth_1_icon, 2, 0)
         mixer_layout.addWidget(self.digital_synth_2_icon, 2, 1)
         mixer_layout.addWidget(self.drum_kit_icon, 2, 2)
         mixer_layout.addWidget(self.analog_synth_icon, 2, 3)
+        mixer_layout.addWidget(self.master_level_icon, 2, 4)
 
         mixer_group.setStyleSheet(JDXiStyle.ADSR)
         self.analog_level_slider.setStyleSheet(JDXiStyle.ADSR_ANALOG)
@@ -438,6 +461,9 @@ class ProgramEditor(BasicEditor):
             self.file_label.setText(program_name)
         else:
             log.message("File label not initialized.")
+        if hasattr(self, "master_level_current_label"):
+            self.master_level_current_label.setText(program_name)
+
 
     def start_playback(self):
         """Start playback of the MIDI file."""

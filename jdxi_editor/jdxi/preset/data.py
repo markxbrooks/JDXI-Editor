@@ -97,6 +97,7 @@ class JDXiPresetData:
     @staticmethod
     def from_dict(data: dict) -> "JDXiPresetData":
         return JDXiPresetData(
+            name=data.get("name", "Unnamed"),
             presets=data.get("presets", []),
             bank_msb=data.get("bank_msb", 0),
             bank_lsb=data.get("bank_lsb", 0),
@@ -128,7 +129,19 @@ class JDXiPresetData:
         else:
             raise ValueError(f"Unknown synth type: {synth_type}")
 
-        return JDXiPresetData(presets=presets, bank_msb=bank_msb, bank_lsb=bank_lsb, program=program)
+        # Make sure preset_number is within range
+        try:
+            name = presets[preset_number]
+        except IndexError:
+            name = f"Unknown {synth_type} preset {preset_number}"
+
+        return JDXiPresetData(
+            name=name,
+            presets=presets,
+            bank_msb=bank_msb,
+            bank_lsb=bank_lsb,
+            program=program,
+        )
 
     def to_dict(self):
         return {
