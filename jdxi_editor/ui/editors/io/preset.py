@@ -47,7 +47,7 @@ from PySide6.QtWidgets import (
     QWidget,
     QLabel,
     QHBoxLayout,
-    QLineEdit,
+    QLineEdit, QGroupBox,
 )
 from PySide6.QtCore import Signal, Qt
 import qtawesome as qta
@@ -116,13 +116,13 @@ class PresetEditor(BasicEditor):
         self.data_request()
 
     def setup_ui(self):
-        """set up ui elements"""
+        """set up UI elements"""
         self.setWindowTitle("Preset Editor")
         self.setMinimumSize(400, 400)
         # center_widget = QWidget()
-        layout = QVBoxLayout()
+        main_vlayout = QVBoxLayout()
         # self.setCentralWidget(center_widget)
-        self.setLayout(layout)
+        self.setLayout(main_vlayout)
         self.setStyleSheet(JDXiStyle.EDITOR)
 
         self.title_label = QLabel("Presets:")
@@ -134,7 +134,7 @@ class PresetEditor(BasicEditor):
         )
         title_layout = QHBoxLayout()
         title_layout.addWidget(self.title_label)
-        layout.addLayout(title_layout)
+        main_vlayout.addLayout(title_layout)
         # Image display
         self.image_label = QLabel()
         self.image_label.setAlignment(
@@ -143,56 +143,11 @@ class PresetEditor(BasicEditor):
         title_layout.addWidget(self.image_label)
         self.update_instrument_image()
 
-        # Synth type selection combo box
-        self.digital_preset_type_combo = QComboBox()
-        self.digital_preset_type_combo.addItems(
-            ["Digital Synth 1", "Digital Synth 2", "Drums", "Analog Synth"]
-        )
-        self.digital_preset_type_combo.currentIndexChanged.connect(
-            self.on_preset_type_changed
-        )
-        layout.addWidget(self.digital_preset_type_combo)
-
-        # Search Box
-        search_row = QHBoxLayout()
-        search_row.addWidget(QLabel("Search:"))
-        self.search_box = QLineEdit()
-        self.search_box.setPlaceholderText("Search presets...")
-        self.search_box.textChanged.connect(self._populate_presets)
-        search_row.addWidget(self.search_box)
-        layout.addLayout(search_row)
-
-        self.digital_preset_label = QLabel("Preset")
-        layout.addWidget(self.digital_preset_label)
-
-        # Program number selection combo box
-        self.preset_combo_box = QComboBox()
-        self.preset_combo_box.addItems([f"{i:02}" for i in range(1, 65)])
-        self.preset_combo_box.currentIndexChanged.connect(self.on_preset_number_changed)
-        layout.addWidget(self.preset_combo_box)
-
-        self.genre_label = QLabel("Category")
-        layout.addWidget(self.genre_label)
-
-        # Category selection combo box
-        self.category_combo_box = QComboBox()
-        self.category_combo_box.addItem("No Category Selected")
-        categories = set(preset["category"] for preset in DIGITAL_PRESET_LIST)
-        self.category_combo_box.addItems(sorted(categories))
-        self.category_combo_box.currentIndexChanged.connect(self.on_category_changed)
-        layout.addWidget(self.category_combo_box)
-
-        # Load button
-        self.load_button = QPushButton(
-            qta.icon("ph.folder-notch-open-fill", color=JDXiStyle.FOREGROUND),
-            "Load Preset",
-        )
-        self.load_button.clicked.connect(self.load_preset_by_program_change)
-        layout.addWidget(self.load_button)
-        self.setLayout(layout)
+        preset_group = self._create_preset_selection_group()
+        main_vlayout.addWidget(preset_group)
 
         self.digital_synth_1_hlayout = QHBoxLayout()
-        layout.addLayout(self.digital_synth_1_hlayout)
+        main_vlayout.addLayout(self.digital_synth_1_hlayout)
 
         self.digital_synth_1_icon = QLabel()
         self.digital_synth_1_icon.setPixmap(
@@ -219,7 +174,7 @@ class PresetEditor(BasicEditor):
             """
         )
         self.digital_synth_2_hlayout = QHBoxLayout()
-        layout.addLayout(self.digital_synth_2_hlayout)
+        main_vlayout.addLayout(self.digital_synth_2_hlayout)
 
         self.digital_synth_2_icon = QLabel()
         self.digital_synth_2_icon.setPixmap(
@@ -246,7 +201,7 @@ class PresetEditor(BasicEditor):
             """
         )
         self.drum_kit_hlayout = QHBoxLayout()
-        layout.addLayout(self.drum_kit_hlayout)
+        main_vlayout.addLayout(self.drum_kit_hlayout)
 
         self.drum_kit_icon = QLabel()
         self.drum_kit_icon.setPixmap(
@@ -280,7 +235,7 @@ class PresetEditor(BasicEditor):
         )
         self.analog_synth_hlayout.addWidget(self.analog_synth_icon)
 
-        layout.addLayout(self.analog_synth_hlayout)
+        main_vlayout.addLayout(self.analog_synth_hlayout)
 
         self.analog_synth_title = QLabel("Analog Synth")
         self.analog_synth_hlayout.addWidget(self.analog_synth_title)
@@ -304,6 +259,57 @@ class PresetEditor(BasicEditor):
         self.midi_helper.update_tone_name.connect(
              lambda tone_name, synth_type: self.update_tone_name_for_synth(tone_name, synth_type)
         )
+
+    def _create_preset_selection_group(self) -> QGroupBox:
+        """
+        create_preset_selection_group
+        :return: QGroupBox
+        """
+        # Program controls group
+        preset_group = QGroupBox("Load a program")
+        preset_vlayout = QVBoxLayout()
+        preset_group.setLayout(preset_vlayout)
+        # Synth type selection combo box
+        self.digital_preset_type_combo = QComboBox()
+        self.digital_preset_type_combo.addItems(
+            ["Digital Synth 1", "Digital Synth 2", "Drums", "Analog Synth"]
+        )
+        self.digital_preset_type_combo.currentIndexChanged.connect(
+            self.on_preset_type_changed
+        )
+        preset_vlayout.addWidget(self.digital_preset_type_combo)
+        # Search Box
+        search_row = QHBoxLayout()
+        search_row.addWidget(QLabel("Search:"))
+        self.search_box = QLineEdit()
+        self.search_box.setPlaceholderText("Search presets...")
+        self.search_box.textChanged.connect(self._populate_presets)
+        search_row.addWidget(self.search_box)
+        preset_vlayout.addLayout(search_row)
+        self.digital_preset_label = QLabel("Preset")
+        preset_vlayout.addWidget(self.digital_preset_label)
+        # Program number selection combo box
+        self.preset_combo_box = QComboBox()
+        self.preset_combo_box.addItems([f"{i:02}" for i in range(1, 65)])
+        self.preset_combo_box.currentIndexChanged.connect(self.on_preset_number_changed)
+        preset_vlayout.addWidget(self.preset_combo_box)
+        self.genre_label = QLabel("Category")
+        preset_vlayout.addWidget(self.genre_label)
+        # Category selection combo box
+        self.category_combo_box = QComboBox()
+        self.category_combo_box.addItem("No Category Selected")
+        categories = set(preset["category"] for preset in DIGITAL_PRESET_LIST)
+        self.category_combo_box.addItems(sorted(categories))
+        self.category_combo_box.currentIndexChanged.connect(self.on_category_changed)
+        preset_vlayout.addWidget(self.category_combo_box)
+        # Load button
+        self.load_button = QPushButton(
+            qta.icon("ph.folder-notch-open-fill", color=JDXiStyle.FOREGROUND),
+            "Load Preset",
+        )
+        self.load_button.clicked.connect(self.load_preset_by_program_change)
+        preset_vlayout.addWidget(self.load_button)
+        return preset_group
 
     def on_preset_type_changed(self, index: int) -> None:
         """Handle preset type selection change."""

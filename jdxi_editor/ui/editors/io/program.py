@@ -46,7 +46,7 @@ from PySide6.QtWidgets import (
     QWidget,
     QLabel,
     QHBoxLayout,
-    QGroupBox, QFormLayout, QGridLayout, QScrollArea,
+    QGroupBox, QFormLayout, QGridLayout, QScrollArea, QLineEdit,
 )
 from PySide6.QtCore import Signal, Qt
 import qtawesome as qta
@@ -61,11 +61,15 @@ from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
 from jdxi_editor.midi.data.parameter.digital import AddressParameterDigitalCommon
 from jdxi_editor.midi.data.parameter.drum.common import AddressParameterDrumCommon
 from jdxi_editor.midi.data.parameter.program.common import AddressParameterProgramCommon
+from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
+from jdxi_editor.midi.data.programs.digital import DIGITAL_PRESET_LIST
+from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
 from jdxi_editor.midi.data.programs.programs import JDXiProgramList
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.midi.sysex.request.midi_requests import MidiRequests
+from jdxi_editor.ui.editors.helpers.preset import get_preset_parameter_value
 from jdxi_editor.ui.editors.helpers.program import (
     get_program_by_id,
     calculate_midi_values,
@@ -165,51 +169,131 @@ class ProgramEditor(BasicEditor):
         title_right_vlayout.addWidget(self.title_group)
         self.update_instrument_image()
 
-        self.program_label = QLabel("Program")
-        main_vlayout.addWidget(self.program_label)
+        program_preset_hlayout = QHBoxLayout()
+        main_vlayout.addLayout(program_preset_hlayout)
 
-        # Program number selection combo box
-        self.program_number_combo_box = QComboBox()
-        self.program_number_combo_box.addItems([f"{i:02}" for i in range(1, 65)])
-        self.program_number_combo_box.currentIndexChanged.connect(
-            self.on_program_number_changed
+        program_group = self._create_program_selection_box()
+        program_group.setMinimumWidth(JDXiStyle.PROGRAM_PRESET_GROUP_WIDTH)
+        program_group.setStyleSheet(JDXiStyle.PROGRAM_PRESET_GROUPS)
+        program_preset_hlayout.addWidget(program_group)
+
+        preset_group = self._create_preset_selection_group()
+        preset_group.setMinimumWidth(JDXiStyle.PROGRAM_PRESET_GROUP_WIDTH)
+        preset_group.setStyleSheet(JDXiStyle.PROGRAM_PRESET_GROUPS)
+        program_preset_hlayout.addWidget(preset_group)
+
+        transport_group = self._create_transport_group()
+        # main_vlayout.addWidget(transport_group)
+        self.populate_programs()
+
+        mixer_section = self._create_mixer_section()
+        main_vlayout.addWidget(mixer_section)
+
+        self.midi_helper.update_tone_name.connect(
+             lambda tone_name, synth_type: self.update_tone_name_for_synth(tone_name, synth_type)
         )
-        main_vlayout.addWidget(self.program_number_combo_box)
 
-        self.genre_label = QLabel("Genre")
-        main_vlayout.addWidget(self.genre_label)
-
-        # Genre selection combo box
-        self.genre_combo_box = QComboBox()
-        self.genre_combo_box.addItem("No Genre Selected")
-        genres = set(program.genre for program in JDXiProgramList.PROGRAM_LIST)
-        self.genre_combo_box.addItems(sorted(genres))
-        self.genre_combo_box.currentIndexChanged.connect(self.on_genre_changed)
-        main_vlayout.addWidget(self.genre_combo_box)
-
-        self.bank_label = QLabel("Bank")
-        main_vlayout.addWidget(self.bank_label)
-
-        # Bank selection combo box
-        self.bank_combo_box = QComboBox()
-        self.bank_combo_box.addItem("No Bank Selected")
-        self.bank_combo_box.addItems(["A", "B", "C", "D", "E", "F", "G", "H"])
-        self.bank_combo_box.currentIndexChanged.connect(self.on_bank_changed)
-        main_vlayout.addWidget(self.bank_combo_box)
-
+    def _create_preset_selection_group(self) -> QGroupBox:
+        """
+        create_preset_selection_group
+        :return: QGroupBox
+        """
+        # Program controls group
+        preset_group = QGroupBox("Load a Preset")
+        preset_vlayout = QVBoxLayout()
+        preset_group.setLayout(preset_vlayout)
+        # Synth type selection combo box
+        self.digital_preset_type_combo = QComboBox()
+        self.digital_preset_type_combo.addItems(
+            ["Digital Synth 1", "Digital Synth 2", "Drums", "Analog Synth"]
+        )
+        self.digital_preset_type_combo.currentIndexChanged.connect(
+            self.on_preset_type_changed
+        )
+        preset_vlayout.addWidget(self.digital_preset_type_combo)
+        # Search Box
+        search_row = QHBoxLayout()
+        search_row.addWidget(QLabel("Search:"))
+        self.search_box = QLineEdit()
+        self.search_box.setPlaceholderText("Search presets...")
+        self.search_box.textChanged.connect(self._populate_presets)
+        search_row.addWidget(self.search_box)
+        preset_vlayout.addLayout(search_row)
+        self.digital_preset_label = QLabel("Preset")
+        preset_vlayout.addWidget(self.digital_preset_label)
+        # Program number selection combo box
+        self.preset_combo_box = QComboBox()
+        self.preset_combo_box.addItems([f"{i:02}" for i in range(1, 65)])
+        # self.preset_combo_box.currentIndexChanged.connect(self.on_preset_number_changed)
+        preset_vlayout.addWidget(self.preset_combo_box)
+        self.genre_label = QLabel("Category")
+        preset_vlayout.addWidget(self.genre_label)
+        # Category selection combo box
+        self.category_combo_box = QComboBox()
+        self.category_combo_box.addItem("No Category Selected")
+        categories = set(preset["category"] for preset in DIGITAL_PRESET_LIST)
+        self.category_combo_box.addItems(sorted(categories))
+        self.category_combo_box.currentIndexChanged.connect(self.on_category_changed)
+        preset_vlayout.addWidget(self.category_combo_box)
         # Load button
         self.load_button = QPushButton(
             qta.icon("ph.folder-notch-open-fill", color=JDXiStyle.FOREGROUND),
-            "Load Program",
+            "Load Preset",
         )
-        self.load_button.clicked.connect(self.load_program)
-        main_vlayout.addWidget(self.load_button)
-        self.setLayout(title_hlayout)
+        self.load_button.clicked.connect(self.load_preset_by_program_change)
+        preset_vlayout.addWidget(self.load_button)
+        return preset_group
 
-        # Transport controls area
+    def load_preset_by_program_change(self, preset_index: int) -> None:
+        """
+        Load a preset by program change.
+        :param preset_index: int
+        """
+        preset_name = self.preset_combo_box.currentText()
+        log.message("=======load_preset_by_program_change=======")
+        log.parameter("combo box preset_name", preset_name)
+        program_number = preset_name[:3]
+        log.parameter("combo box program_number", program_number)
+
+        # Get MSB, LSB, PC values from the preset using get_preset_parameter_value
+        msb = get_preset_parameter_value("msb", program_number, self.preset_list)
+        lsb = get_preset_parameter_value("lsb", program_number, self.preset_list)
+        pc = get_preset_parameter_value("pc", program_number, self.preset_list)
+
+        if None in [msb, lsb, pc]:
+            log.message(
+                f"Could not retrieve preset parameters for program {program_number}"
+            )
+            return
+
+        log.message("retrieved msb, lsb, pc :")
+        log.parameter("combo box msb", msb)
+        log.parameter("combo box lsb", lsb)
+        log.parameter("combo box pc", pc)
+        log_midi_info(msb, lsb, pc)
+
+        # Send bank select and program change
+        # Note: PC is 0-based in MIDI, so subtract 1
+        self.midi_helper.send_bank_select_and_program_change(
+            self.midi_channel,  # MIDI channel
+            msb,  # MSB is already correct
+            lsb,  # LSB is already correct
+            pc - 1,  # Convert 1-based PC to 0-based
+        )
+        self.data_request()
+
+    def on_category_changed(self, _: int) -> None:
+        """Handle category selection change."""
+        self._populate_presets()
+
+    def _create_transport_group(self) -> QGroupBox:
+        """
+        _create_transport_group
+        :return: QGroupBox
+        Transport controls area
+        """
         transport_group = QGroupBox("Transport")
         transport_layout = QHBoxLayout()
-
         self.start_button = QPushButton(
             qta.icon("ri.play-line", color=JDXiStyle.FOREGROUND), "Play"
         )
@@ -218,16 +302,143 @@ class ProgramEditor(BasicEditor):
         )
         self.start_button.clicked.connect(self.start_playback)
         self.stop_button.clicked.connect(self.stop_playback)
-
         transport_layout.addWidget(self.start_button)
         transport_layout.addWidget(self.stop_button)
         transport_group.setLayout(transport_layout)
-        self.populate_programs()
-        mixer_section = self._create_mixer_section()
-        main_vlayout.addWidget(mixer_section)
-        self.midi_helper.update_tone_name.connect(
-             lambda tone_name, synth_type: self.update_tone_name_for_synth(tone_name, synth_type)
+        return transport_group
+
+    def _create_program_selection_box(self) -> QGroupBox:
+        """
+        create_program_selection_box
+        :return: QGroupBox
+        """
+        # Program controls group
+        program_group = QGroupBox("Load a program")
+        program_vlayout = QVBoxLayout()
+        program_group.setLayout(program_vlayout)
+        # Program number selection combo box
+        self.program_number_combo_box = QComboBox()
+        self.program_number_combo_box.addItems([f"{i:02}" for i in range(1, 65)])
+        self.program_number_combo_box.currentIndexChanged.connect(
+            self.on_program_number_changed
         )
+        program_vlayout.addWidget(self.program_number_combo_box)
+        self.genre_label = QLabel("Genre")
+        program_vlayout.addWidget(self.genre_label)
+        # Genre selection combo box
+        self.genre_combo_box = QComboBox()
+        self.genre_combo_box.addItem("No Genre Selected")
+        genres = set(program.genre for program in JDXiProgramList.PROGRAM_LIST)
+        self.genre_combo_box.addItems(sorted(genres))
+        self.genre_combo_box.currentIndexChanged.connect(self.on_genre_changed)
+        program_vlayout.addWidget(self.genre_combo_box)
+        self.bank_label = QLabel("Bank")
+        program_vlayout.addWidget(self.bank_label)
+        # Bank selection combo box
+        self.bank_combo_box = QComboBox()
+        self.bank_combo_box.addItem("No Bank Selected")
+        self.bank_combo_box.addItems(["A", "B", "C", "D", "E", "F", "G", "H"])
+        self.bank_combo_box.currentIndexChanged.connect(self.on_bank_changed)
+        program_vlayout.addWidget(self.bank_combo_box)
+        # Load button
+        self.load_button = QPushButton(
+            qta.icon("ph.folder-notch-open-fill", color=JDXiStyle.FOREGROUND),
+            "Load Program",
+        )
+        self.load_button.clicked.connect(self.load_program)
+        program_vlayout.addWidget(self.load_button)
+        return program_group
+
+    def on_preset_type_changed(self, index: int) -> None:
+        """Handle preset type selection change."""
+        preset_type = self.digital_preset_type_combo.currentText()
+        log.message(f"preset_type: {preset_type}")
+        if preset_type == "Digital Synth 1":
+            self.midi_channel = MidiChannel.DIGITAL_SYNTH_1
+            self.preset_list = DIGITAL_PRESET_LIST
+        elif preset_type == "Digital Synth 2":
+            self.midi_channel = MidiChannel.DIGITAL_SYNTH_2
+            self.preset_list = JDXiPresetToneList.DIGITAL_TONE_PC
+        elif preset_type == "Drums":
+            self.midi_channel = MidiChannel.DRUM_KIT
+            self.preset_list = JDXiPresetToneList.DRUM_PROGRAM_CHANGE
+        elif preset_type == "Analog Synth":
+            self.midi_channel = MidiChannel.ANALOG_SYNTH
+            self.preset_list = ANALOG_PRESET_LIST
+        self._populate_presets()
+        self.update_category_combo_box_categories()
+
+    def update_category_combo_box_categories(self) -> None:
+        """
+        Update the category combo box.
+        """
+        # Update the category combo box
+        categories = set(preset["category"] for preset in self.preset_list)
+        self.category_combo_box.blockSignals(True)  # Block signals during update
+
+        # Clear and update items
+        self.category_combo_box.clear()
+        self.category_combo_box.addItem(
+            "No Category Selected"
+        )  # Add the default option
+        self.category_combo_box.addItems(
+            sorted(categories)
+        )  # Add the sorted categories
+
+        # Set the default selected index
+        self.category_combo_box.setCurrentIndex(
+            0
+        )  # Select "No Category Selected" as default
+
+        self.category_combo_box.blockSignals(False)  # Unblock signals after update
+
+    def _populate_presets(self, search_text: str = ""):
+        """
+        Populate the program list with available presets.
+        :param search_text: str
+        """
+        if not self.preset_helper:
+            return
+
+        preset_type = self.digital_preset_type_combo.currentText()
+        if preset_type in ["Digital Synth 1", "Digital Synth 2"]:
+            self.preset_list = DIGITAL_PRESET_LIST
+        elif preset_type == "Drums":
+            self.preset_list = DRUM_KIT_LIST
+        elif preset_type == "Analog Synth":
+            self.preset_list = ANALOG_PRESET_LIST
+        else:
+            self.preset_list = DIGITAL_PRESET_LIST  # Default to digital synth 1
+        # self.update_category_combo_box_categories()
+
+        selected_category = self.category_combo_box.currentText()
+        log.message(f"Selected Category: {selected_category}")
+
+        self.preset_combo_box.clear()
+        self.presets.clear()
+
+        filtered_list = [  # Filter programs based on bank and genre
+            preset
+            for preset in self.preset_list
+            if (selected_category in ["No Category Selected", preset["category"]])
+        ]
+        filtered_presets = []
+        for i, preset in enumerate(filtered_list):
+            if search_text.lower() in preset["name"].lower():
+                filtered_presets.append(preset)
+
+        for preset in filtered_presets:  # Add programs to the combo box
+            preset_name = preset["name"]
+            preset_id = preset["id"]
+            index = len(self.presets)  # Use the current number of programs
+            self.preset_combo_box.addItem(f"{preset_id} - {preset_name}", index)
+            self.presets[preset_name] = index
+        self.preset_combo_box.setCurrentIndex(
+            0
+        )  # Update the UI with the new program list
+        self.preset_combo_box.setCurrentIndex(
+            0
+        )  # Select "No Category Selected" as default
 
     def _init_synth_data(self,
                          synth_type: JDXiSynth = JDXiSynth.DIGITAL_SYNTH_1,
@@ -404,23 +615,24 @@ class ProgramEditor(BasicEditor):
         )
 
         # Mixer layout population
-        mixer_layout.addWidget(self.digital1_level_slider, 0, 0)
-        mixer_layout.addWidget(self.digital2_level_slider, 0, 1)
-        mixer_layout.addWidget(self.drums_level_slider, 0, 2)
-        mixer_layout.addWidget(self.analog_level_slider, 0, 3)
-        mixer_layout.addWidget(self.master_level_slider, 0, 4)
+        mixer_layout.addWidget(self.master_level_slider, 0, 0)
+        mixer_layout.addWidget(self.digital1_level_slider, 0, 1)
+        mixer_layout.addWidget(self.digital2_level_slider, 0, 2)
+        mixer_layout.addWidget(self.drums_level_slider, 0, 3)
+        mixer_layout.addWidget(self.analog_level_slider, 0, 4)
 
-        mixer_layout.addWidget(self.digital_synth_1_current_label, 1, 0)
-        mixer_layout.addWidget(self.digital_synth_2_current_label, 1, 1)
-        mixer_layout.addWidget(self.drum_kit_current_label, 1, 2)
-        mixer_layout.addWidget(self.analog_synth_current_label, 1, 3)
-        mixer_layout.addWidget(self.master_level_current_label, 1, 4)
+        mixer_layout.addWidget(self.master_level_current_label, 1, 0)
+        mixer_layout.addWidget(self.digital_synth_1_current_label, 1, 1)
+        mixer_layout.addWidget(self.digital_synth_2_current_label, 1, 2)
+        mixer_layout.addWidget(self.drum_kit_current_label, 1, 3)
+        mixer_layout.addWidget(self.analog_synth_current_label, 1, 4)
 
-        mixer_layout.addWidget(self.digital_synth_1_icon, 2, 0)
-        mixer_layout.addWidget(self.digital_synth_2_icon, 2, 1)
-        mixer_layout.addWidget(self.drum_kit_icon, 2, 2)
-        mixer_layout.addWidget(self.analog_synth_icon, 2, 3)
-        mixer_layout.addWidget(self.master_level_icon, 2, 4)
+        mixer_layout.addWidget(self.master_level_icon, 2, 0)
+        mixer_layout.addWidget(self.digital_synth_1_icon, 2, 1)
+        mixer_layout.addWidget(self.digital_synth_2_icon, 2, 2)
+        mixer_layout.addWidget(self.drum_kit_icon, 2, 3)
+        mixer_layout.addWidget(self.analog_synth_icon, 2, 4)
+
 
         mixer_group.setStyleSheet(JDXiStyle.ADSR)
         self.analog_level_slider.setStyleSheet(JDXiStyle.ADSR_ANALOG)
@@ -565,6 +777,7 @@ class ProgramEditor(BasicEditor):
         if bank_letter in ["A", "B", "C", "D"]:
             program_details = get_program_by_id(program_id)
             self.update_current_synths(program_details)
+            self.set_current_program_name(program_details.name)
         msb, lsb, pc = calculate_midi_values(bank_letter, bank_number)
         log.message("calculated msb, lsb, pc :")
         log.parameter("msb", msb)
