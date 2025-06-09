@@ -36,6 +36,115 @@ from typing import Tuple, Optional
 
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 
+class AddressParameterSystemCommon(AddressParameter):
+    """Program Common parameters"""
+
+    def __init__(
+        self,
+        address: int,
+        min_val: Optional[int] = None,
+        max_val: Optional[int] = None,
+        display_min: Optional[int] = None,
+        display_max: Optional[int] = None,
+        tooltip: Optional[str] = None,
+    ):
+        super().__init__(address, min_val, max_val)
+        self.display_min = display_min if display_min is not None else min_val
+        self.display_max = display_max if display_max is not None else max_val
+        self.tooltip = tooltip if tooltip is not None else ""
+
+    MASTER_TUNE = (0x00, 24, 2024, -100, 100, "Master Tune")  # Program Level (0-127)
+    MASTER_KEY_SHIFT = (0x04, 40, 88, -24, 24, "Volume of the program")  # Program Level (0-127)
+    MASTER_LEVEL = (0x05, 0, 127, 0, 127, "Volume of the program")  # Program Level (0-127)
+
+    def get_display_value(self) -> Tuple[int, int]:
+        """Get the display value range (min, max) for the parameter"""
+        if hasattr(self, "display_min") and hasattr(self, "display_max"):
+            return self.display_min, self.display_max
+        return self.min_val, self.max_val
+
+    @property
+    def display_name(self) -> str:
+        """Get display name for the parameter"""
+        return {
+            self.MASTER_LEVEL: "Master Level",
+        }.get(self, self.name.replace("_", " ").title())
+
+    def get_address_for_partial(self, partial_number: int = 0) -> Tuple[int, int]:
+        """
+        Get parameter area and address adjusted for partial number.
+        :param partial_number: int The partial number
+        :return: Tuple[int, int] The address
+        """
+        group_map = {0: 0x00}
+        group = group_map.get(
+            partial_number, 0x00
+        )  # Default to 0x20 if partial_name is not 1, 2, or 3
+        return group, self.address
+
+    @property
+    def is_switch(self) -> bool:
+        """Returns True if parameter is address binary/enum switch"""
+        return self in []
+
+    def get_switch_text(self, value: int) -> str:
+        """Get display text for switch values
+        :param value: int The value
+        :return: str The display text
+        """
+        if self == self.AUTO_NOTE_SWITCH:
+            return ["OFF", "---", "ON"][value]
+        elif self.is_switch:
+            return "ON" if value else "OFF"
+        return str(value)
+
+    def validate_value(self, value: int) -> int:
+        """Validate and convert parameter value
+        :param value: int The value
+        :return: int The validated value
+        """
+        if not isinstance(value, int):
+            raise ValueError(f"Value must be integer, got {type(value)}")
+
+        # Special handling for ring switch
+        if self == self.AUTO_NOTE_SWITCH and value == 1:
+            # Skip over the "---" value
+            value = 2
+
+        # Regular range check
+        if value < self.min_val or value > self.max_val:
+            raise ValueError(
+                f"Value {value} out of range for {self.name} "
+                f"(valid range: {self.min_val}-{self.max_val})"
+            )
+
+        return value
+
+    def get_partial_number(self) -> Optional[int]:
+        """Returns the partial number (1-3) if this is address partial parameter, None otherwise"""
+        partial_params = {}
+        """
+        {
+            self.PARTIAL1_SWITCH: 1,
+            self.PARTIAL1_SELECT: 1,
+            self.PARTIAL2_SWITCH: 2,
+            self.PARTIAL2_SELECT: 2,
+            self.PARTIAL3_SWITCH: 3,
+            self.PARTIAL3_SELECT: 3,
+        }
+        """
+        return partial_params.get(self)
+
+    @staticmethod
+    def get_by_name(param_name: str) -> Optional[object]:
+        """Get the Parameter by name.
+        :param param_name: str The parameter name
+        :return: Optional[object] The parameter
+        Return the parameter member by name, or None if not found
+        """
+
+        return AddressParameterProgramCommon.__members__.get(param_name, None)
+
 
 class AddressParameterProgramCommon(AddressParameter):
     """Program Common parameters"""

@@ -28,7 +28,7 @@ from jdxi_editor.jdxi.synth.factory import create_synth_data
 from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.log.slider_parameter import log_slider_parameters
-from jdxi_editor.midi.data.address.address import AddressOffsetSuperNATURALLMB
+from jdxi_editor.midi.data.address.address import AddressOffsetSuperNATURALLMB, RolandSysExAddress
 from jdxi_editor.midi.data.parameter.digital.common import AddressParameterDigitalCommon
 from jdxi_editor.midi.data.parameter.digital.modify import AddressParameterDigitalModify
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
@@ -114,16 +114,21 @@ class SynthBase(QWidget):
             self.data_request()
             self.blockSignals(False)
 
-    def send_midi_parameter(self, param: AddressParameter, value: int) -> bool:
+    def send_midi_parameter(self, param: AddressParameter,
+                            value: int,
+                            address: RolandSysExAddress = None) -> bool:
         """
         Send MIDI parameter with error handling
+        :param address: RolandSysExAddress
         :param param: AddressParameter the parameter to send
         :param value: int value to send
         :return: bool True on success, False otherwise
         """
+        if not address:
+            address = self.address
         try:
             sysex_message = self.sysex_composer.compose_message(
-                address=self.address,
+                address=address,
                 param=param,
                 value=value
             )
@@ -150,7 +155,8 @@ class SynthBase(QWidget):
 
     def _on_parameter_changed(self,
                               param: AddressParameter,
-                              display_value: int) -> None:
+                              display_value: int,
+                              address: RolandSysExAddress = None) -> None:
         """
         Handle parameter change event, convert display value to MIDI value,
         :param param: AddressParameter Parameter that was changed
@@ -159,7 +165,9 @@ class SynthBase(QWidget):
         """
         try:
             # Send MIDI message
-            if not self.send_midi_parameter(param, display_value):
+            if not address:
+                address = self.address
+            if not self.send_midi_parameter(param, display_value, address):
                 log.message(f"Failed to send parameter {param.name}")
         except Exception as ex:
             log.error(f"Error handling parameter {param.name}: {ex}")
@@ -170,6 +178,7 @@ class SynthBase(QWidget):
             label: str,
             vertical: bool = False,
             initial_value: Optional[int] = 0,
+            address: RolandSysExAddress = None,
             show_value_label: bool = True) -> Slider:
         """
         Create a slider for an address parameter with proper display conversion.
@@ -177,6 +186,7 @@ class SynthBase(QWidget):
         :param label: str label for the slider
         :param initial_value: int initial value for the slider
         :param vertical: bool whether the slider is vertical
+        :param address: RolandSysExAddress
         :param show_value_label: str whether to show the value label
         :return: Slider
         """
@@ -200,13 +210,14 @@ class SynthBase(QWidget):
             tooltip=tooltip,
 
         )
-
+        if not address:
+            address = self.address
         if param.name in self.bipolar_parameters or param.is_bipolar:
             slider.setValueDisplayFormat(lambda v: f"{v:+d}" if v != 0 else "0")
             slider.setCenterMark(0)
             slider.setTickPosition(Slider.TickPosition.TicksBothSides)
             slider.setTickInterval((display_max - display_min) // 4)
-        slider.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))
+        slider.valueChanged.connect(lambda v: self._on_parameter_changed(param, v, address))
         self.controls[param] = slider
         return slider
 

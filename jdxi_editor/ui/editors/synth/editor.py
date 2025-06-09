@@ -113,8 +113,9 @@ class SynthEditor(SynthBase):
         self.preset_helper = None
         self.instrument_selection_combo = None
         self.preset_type = None
-        self.midi_helper.update_tone_name.connect(
-            lambda title, synth_type: self.set_instrument_title_label(title, synth_type))
+        if hasattr(self, "instrument_title_label"):
+            self.midi_helper.update_tone_name.connect(
+                lambda title, synth_type: self.set_instrument_title_label(title, synth_type))
         self.midi_helper.midi_program_changed.connect(self.data_request)
         log.parameter("Initialized:", self.__class__.__name__)
         log.parameter("---> Using MIDI helper:", midi_helper)
@@ -350,7 +351,8 @@ class SynthEditor(SynthBase):
         """
 
         if self.preset_type == synth_type:
-            self.instrument_title_label.setText(name)
+            if hasattr(self, "instrument_title_label"):
+                self.instrument_title_label.setText(name)
 
     def update_combo_box_index(self, preset_number):
         """Updates the QComboBox to reflect the loaded preset."""

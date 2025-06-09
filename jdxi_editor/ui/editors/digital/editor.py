@@ -78,6 +78,7 @@ class DigitalSynthEditor(SynthEditor):
     ):
         super().__init__(parent)
         self.instrument_image_group = None
+        self.instrument_title_label = None
         self.partial_number = None
         self.current_data = None
         self.midi_helper = midi_helper

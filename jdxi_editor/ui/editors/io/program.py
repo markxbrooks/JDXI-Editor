@@ -46,7 +46,7 @@ from PySide6.QtWidgets import (
     QWidget,
     QLabel,
     QHBoxLayout,
-    QGroupBox, QFormLayout,
+    QGroupBox, QFormLayout, QGridLayout, QScrollArea,
 )
 from PySide6.QtCore import Signal, Qt
 import qtawesome as qta
@@ -55,6 +55,7 @@ from jdxi_editor.jdxi.midi.constant import MidiConstant
 from jdxi_editor.jdxi.program.program import JDXiProgram
 from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.log.logger import Logger as log
+from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.parameter import AddressParameter
 from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
 from jdxi_editor.midi.data.parameter.digital import AddressParameterDigitalCommon
@@ -103,6 +104,7 @@ class ProgramEditor(BasicEditor):
         self.midi_requests = MidiRequests.PROGRAM_TONE_NAME_PARTIAL
         self.default_image = "programs.png"
         self.instrument_icon_folder = "programs"
+        self.instrument_title_label = QLabel()  # Just to stop error messages for now
         self.layout = None
         self.genre_label = None
         self.program_number_combo_box = None
@@ -144,8 +146,8 @@ class ProgramEditor(BasicEditor):
         self.setStyleSheet(JDXiStyle.EDITOR)
 
         self.title_label.setStyleSheet(JDXiStyle.EDITOR_TITLE_LABEL)
-        self.midi_helper.update_tone_name.connect(
-            lambda title, synth_type: self.set_instrument_title_label(title, synth_type))
+        #self.midi_helper.update_tone_name.connect(
+        #    lambda title, synth_type: self.set_instrument_title_label(title, synth_type))
 
         self.file_label = DigitalTitle("No file loaded")
         title_left_vlayout.addWidget(self.file_label)
@@ -220,19 +222,49 @@ class ProgramEditor(BasicEditor):
         transport_layout.addWidget(self.start_button)
         transport_layout.addWidget(self.stop_button)
         transport_group.setLayout(transport_layout)
-        # left_layout.addWidget(transport_group) # I guess we need to send the MIDI clock also for midi sart to work
+        self.populate_programs()
+        mixer_section = self._create_mixer_section()
+        main_vlayout.addWidget(mixer_section)
+        self.midi_helper.update_tone_name.connect(
+             lambda tone_name, synth_type: self.update_tone_name_for_synth(tone_name, synth_type)
+        )
 
-        self.digital_synth_1_hlayout = QHBoxLayout()
-        main_vlayout.addLayout(self.digital_synth_1_hlayout)
+    def _init_synth_data(self,
+                         synth_type: JDXiSynth = JDXiSynth.DIGITAL_SYNTH_1,
+                         partial_number: Optional[int] = 0):
+        """Initialize synth-specific data."""
+        from jdxi_editor.jdxi.synth.factory import create_synth_data
+        self.synth_data = create_synth_data(synth_type,
+                                            partial_number=partial_number)
+
+        # Dynamically assign attributes
+        for attr in [
+            "address",
+            "preset_type",
+            "instrument_default_image",
+            "instrument_icon_folder",
+            "presets",
+            "preset_list",
+            "midi_requests",
+            "midi_channel",
+        ]:
+            setattr(self, attr, getattr(self.synth_data, attr))
+
+    def _create_mixer_section(self) -> QWidget:
+        """Create general vocal effect controls section with scrolling"""
+
+        mixer_section = QWidget()
+        layout = QVBoxLayout(mixer_section)
+
+        """
+        1) Create Labels and Icons
+        """
 
         self.digital_synth_1_icon = QLabel()
         self.digital_synth_1_icon.setPixmap(
             qta.icon("msc.piano", color=JDXiStyle.FOREGROUND).pixmap(40, 40)
         )
-        self.digital_synth_1_hlayout.addWidget(self.digital_synth_1_icon)
-
         self.digital_synth_1_title = QLabel("Digital Synth 1")
-        self.digital_synth_1_hlayout.addWidget(self.digital_synth_1_title)
         self.digital_synth_1_title.setStyleSheet(
             f"""
                 font-size: 16px;
@@ -241,7 +273,6 @@ class ProgramEditor(BasicEditor):
             """
         )
         self.digital_synth_1_current_label = QLabel("Current Synth:")
-        self.digital_synth_1_hlayout.addWidget(self.digital_synth_1_current_label)
         self.digital_synth_1_current_label.setStyleSheet(
             f"""
                 font-size: 16px;
@@ -249,18 +280,12 @@ class ProgramEditor(BasicEditor):
                 color: {JDXiStyle.ACCENT};
             """
         )
-        self.digital_synth_2_hlayout = QHBoxLayout()
-
         self.digital_synth_2_icon = QLabel()
         self.digital_synth_2_icon.setPixmap(
             qta.icon("msc.piano", color=JDXiStyle.FOREGROUND).pixmap(40, 40)
         )
-        self.digital_synth_2_hlayout.addWidget(self.digital_synth_2_icon)
-
-        main_vlayout.addLayout(self.digital_synth_2_hlayout)
 
         self.digital_synth_2_title = QLabel("Digital Synth 2")
-        self.digital_synth_2_hlayout.addWidget(self.digital_synth_2_title)
         self.digital_synth_2_title.setStyleSheet(
             f"""
                 font-size: 16px;
@@ -269,7 +294,6 @@ class ProgramEditor(BasicEditor):
             """
         )
         self.digital_synth_2_current_label = QLabel("Current Synth:")
-        self.digital_synth_2_hlayout.addWidget(self.digital_synth_2_current_label)
         self.digital_synth_2_current_label.setStyleSheet(
             f"""
                 font-size: 16px;
@@ -277,17 +301,11 @@ class ProgramEditor(BasicEditor):
                 color: {JDXiStyle.ACCENT};
             """
         )
-        self.drum_kit_hlayout = QHBoxLayout()
-        main_vlayout.addLayout(self.drum_kit_hlayout)
-
         self.drum_kit_icon = QLabel()
         self.drum_kit_icon.setPixmap(
             qta.icon("fa5s.drum", color=JDXiStyle.FOREGROUND).pixmap(40, 40)
         )
-        self.drum_kit_hlayout.addWidget(self.drum_kit_icon)
-
         self.drum_kit_title = QLabel("Drums")
-        self.drum_kit_hlayout.addWidget(self.drum_kit_title)
         self.drum_kit_title.setStyleSheet(
             f"""
                 font-size: 16px;
@@ -296,7 +314,6 @@ class ProgramEditor(BasicEditor):
             """
         )
         self.drum_kit_current_label = QLabel("Current Synth:")
-        self.drum_kit_hlayout.addWidget(self.drum_kit_current_label)
         self.drum_kit_current_label.setStyleSheet(
             f"""
                 font-size: 16px;
@@ -304,18 +321,11 @@ class ProgramEditor(BasicEditor):
                 color: {JDXiStyle.ACCENT};
             """
         )
-        self.analog_synth_hlayout = QHBoxLayout()
-        main_vlayout.addLayout(self.analog_synth_hlayout)
-        # main_vlayout.addStretch()
-
         self.analog_synth_icon = QLabel()
         self.analog_synth_icon.setPixmap(
             qta.icon("msc.piano", color=JDXiStyle.FOREGROUND).pixmap(40, 40)
         )
-        self.analog_synth_hlayout.addWidget(self.analog_synth_icon)
-
         self.analog_synth_title = QLabel("Analog Synth")
-        self.analog_synth_hlayout.addWidget(self.analog_synth_title)
         self.analog_synth_title.setStyleSheet(
             f"""
                 font-size: 16px;
@@ -324,7 +334,6 @@ class ProgramEditor(BasicEditor):
             """
         )
         self.analog_synth_current_label = QLabel("Current Synth:")
-        self.analog_synth_hlayout.addWidget(self.analog_synth_current_label)
         self.analog_synth_current_label.setStyleSheet(
             f"""
                 font-size: 16px;
@@ -332,54 +341,67 @@ class ProgramEditor(BasicEditor):
                 color: {JDXiStyle.ACCENT_ANALOG};
             """
         )
-        self.populate_programs()
-        self.midi_helper.update_tone_name.connect(
-             lambda tone_name, synth_type: self.update_tone_name_for_synth(tone_name, synth_type)
-        )
-        mixer_section = self._create_mixer_section()
-        main_vlayout.addWidget(mixer_section)
+        """
+        2) Set up the Scrolled Area
+        """
+        # Scrollable area setup
+        scrolled_area = QScrollArea()
+        scrolled_area.setWidgetResizable(True)
 
-    def _create_mixer_section(self) -> QWidget:
-        """Create general vocal effect controls section"""
-        mixer_section = QWidget()
-        layout = QVBoxLayout()
-        mixer_section.setLayout(layout)
+        container = QWidget()
+        container_layout = QVBoxLayout(container)
 
-        # Add Mixer controls
+        scrolled_area.setWidget(container)
+        layout.addWidget(scrolled_area)  # ✅ Add scroll area to the main layout
+
+        # Mixer controls group
         mixer_group = QGroupBox("Mixer Level Settings")
-        mixer_layout = QVBoxLayout()
+        container_layout.addWidget(mixer_group)
+        mixer_layout = QGridLayout()
         mixer_group.setLayout(mixer_layout)
-        # Level controls
-        levels_row_layout = QHBoxLayout()
+
+        # Sliders
+        self.address = RolandSysExAddress(msb=0x18, umb=0x00, lmb=0x00, lsb=0x00)
         self.master_level_slider = self._create_parameter_slider(
-            AddressParameterProgramCommon.PROGRAM_LEVEL, "Master", vertical=True
+            param=AddressParameterProgramCommon.PROGRAM_LEVEL, label="Master", vertical=True, address=self.address
         )
+
+        self._init_synth_data(synth_type=JDXiSynth.DIGITAL_SYNTH_1)
         self.digital1_level_slider = self._create_parameter_slider(
             AddressParameterDigitalCommon.TONE_LEVEL, "Digital 1", vertical=True
         )
+        self._init_synth_data(synth_type=JDXiSynth.DIGITAL_SYNTH_2)
         self.digital2_level_slider = self._create_parameter_slider(
             AddressParameterDigitalCommon.TONE_LEVEL, "Digital 2", vertical=True
         )
-
+        self._init_synth_data(synth_type=JDXiSynth.DRUM_KIT)
         self.drums_level_slider = self._create_parameter_slider(
             AddressParameterDrumCommon.KIT_LEVEL, "Drums", vertical=True
         )
-
+        self._init_synth_data(synth_type=JDXiSynth.ANALOG_SYNTH)
         self.analog_level_slider = self._create_parameter_slider(
             AddressParameterAnalog.AMP_LEVEL, "Analog", vertical=True
         )
 
-        # Add all controls
-        levels_row_layout.addWidget(self.master_level_slider)
-        levels_row_layout.addWidget(self.digital1_level_slider)
-        levels_row_layout.addWidget(self.digital2_level_slider)
-        levels_row_layout.addWidget(self.drums_level_slider)
-        levels_row_layout.addWidget(self.analog_level_slider)
-        mixer_layout.addLayout(levels_row_layout)
+        # Mixer layout population
+        mixer_layout.addWidget(self.digital1_level_slider, 0, 0)
+        mixer_layout.addWidget(self.digital2_level_slider, 0, 1)
+        mixer_layout.addWidget(self.drums_level_slider, 0, 2)
+        mixer_layout.addWidget(self.analog_level_slider, 0, 3)
 
-        layout.addWidget(mixer_group)
+        mixer_layout.addWidget(self.digital_synth_1_current_label, 1, 0)
+        mixer_layout.addWidget(self.digital_synth_2_current_label, 1, 1)
+        mixer_layout.addWidget(self.drum_kit_current_label, 1, 2)
+        mixer_layout.addWidget(self.analog_synth_current_label, 1, 3)
+
+        mixer_layout.addWidget(self.digital_synth_1_icon, 2, 0)
+        mixer_layout.addWidget(self.digital_synth_2_icon, 2, 1)
+        mixer_layout.addWidget(self.drum_kit_icon, 2, 2)
+        mixer_layout.addWidget(self.analog_synth_icon, 2, 3)
+
         mixer_group.setStyleSheet(JDXiStyle.ADSR)
         self.analog_level_slider.setStyleSheet(JDXiStyle.ADSR_ANALOG)
+
         return mixer_section
 
     def update_tone_name_for_synth(self, tone_name: str, synth_type: str) -> None:
@@ -398,7 +420,10 @@ class ProgramEditor(BasicEditor):
 
         label = synth_label_map.get(synth_type)
         if label:
-            label.setText(tone_name)
+            try:
+                label.setText(tone_name)
+            except Exception as ex:
+                log.message(f"Error {ex} setting text")
         else:
             log.warning(f"synth type: {synth_type} not found in mapping. Cannot update tone name.")
 

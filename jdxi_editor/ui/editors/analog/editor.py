@@ -104,6 +104,7 @@ class AnalogSynthEditor(SynthEditor):
         self.tab_widget = None
         self.lfo_section = None
         self.instrument_selection_label = None
+        self.instrument_title_label = None
         self.preset_helper = preset_helper
         self.wave_buttons = {}
         self.lfo_shape_buttons = {}
