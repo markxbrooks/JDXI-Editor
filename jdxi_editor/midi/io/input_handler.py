@@ -32,6 +32,7 @@ from jdxi_editor.jdxi.midi.constant import JDXiConstant, MidiConstant
 from jdxi_editor.jdxi.preset.data import JDXiPresetData
 from jdxi_editor.jdxi.preset.incoming_data import IncomingPresetData
 from jdxi_editor.jdxi.program.program import JDXiProgram
+from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.jdxi.sysex.offset import JDXIIdentityOffset
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.programs import JDXiProgramList
@@ -246,7 +247,8 @@ class MidiInHandler(MidiIOController):
                 filtered_data = {
                     k: v for k, v in parsed_data.items() if k not in IGNORED_KEYS
                 }
-            except Exception:
+            except Exception as ex:
+                log.error(f"Error {ex} occurred parsing data")
                 filtered_data = {}
             log.message(
                 f"[MIDI SysEx received]: {hex_string} {filtered_data}",
@@ -360,17 +362,19 @@ class MidiInHandler(MidiIOController):
     def _auto_add_current_program(self):
         data = self._incoming_preset_data
 
-        def to_preset(name):
-            return JDXiPresetData(name=name) if name else None
+        def to_preset(name, synth_type, preset_number):
+            preset = JDXiPresetData.get_preset_details(synth_type, preset_number)
+            preset.name = name
+            return preset
 
         program = JDXiProgram(
             id=f"A{data.program_number + 1:02d}",
             name=f"Imported {data.program_number + 1:02d}",
             genre="Unknown",
-            digital_1=to_preset(data.tone_names.get("digital_1")),
-            digital_2=to_preset(data.tone_names.get("digital_2")),
-            analog=to_preset(data.tone_names.get("analog")),
-            drums=to_preset(data.tone_names.get("drum")),
+            digital_1=to_preset(data.tone_names.get("digital_1"), JDXiSynth.DIGITAL_SYNTH_1, 0),
+            digital_2=to_preset(data.tone_names.get("digital_2"), JDXiSynth.DIGITAL_SYNTH_2, 0),
+            analog=to_preset(data.tone_names.get("analog"), JDXiSynth.ANALOG_SYNTH, 0),
+            drums=to_preset(data.tone_names.get("drum"), JDXiSynth.DRUM_KIT, 0),
         )
 
         if add_program_and_save(asdict(program)):
@@ -405,4 +409,4 @@ class MidiInHandler(MidiIOController):
             )
             self.update_tone_name.emit(tone_name, synth_type)
         else:
-            log.message(f"Unknown area: {area}. Cannot emit tone name.", level=logging.WARNING)
+            log.warning(f"Unknown area: {area}. Cannot emit tone name.")

@@ -41,7 +41,7 @@ with open("preset.json", "r") as f:
 
 
 from dataclasses import dataclass, asdict
-from typing import List
+from typing import List, Optional
 
 # from jdxi_editor.jdxi.preset.save import add_program_and_save
 from jdxi_editor.log.logger import Logger as log

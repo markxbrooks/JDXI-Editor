@@ -156,7 +156,7 @@ class VocalFXEditor(BasicEditor):
         layout.addWidget(self.vocal_effect_number)
 
         self.program_level = self._create_parameter_slider(
-            AddressParameterProgramCommon.PROGRAM_LEVEL, "Level"
+            AddressParameterProgramCommon.MASTER_LEVEL, "Level"
         )
         layout.addWidget(self.program_level)
 

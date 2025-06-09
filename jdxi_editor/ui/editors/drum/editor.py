@@ -108,6 +108,7 @@ class DrumCommonEditor(SynthEditor):
         self.partial_editors = {}
         self.partial_tab_widget = QTabWidget()
         self.instrument_image_label = None
+        self.instrument_title_label = None
         self.controls: Dict[AddressParameterDrumPartial, QWidget] = {}
         self.setup_ui()
         self.update_instrument_image()
@@ -147,19 +148,6 @@ class DrumCommonEditor(SynthEditor):
         upper_layout.addWidget(self.instrument_image_group)
         self.instrument_image_group.setMinimumWidth(JDXiStyle.INSTRUMENT_IMAGE_WIDTH)
         self.update_instrument_image()
-
-
-        """
-        common_group = DrumCommonSection(
-            controls=self.controls,
-            create_parameter_combo_box=self._create_parameter_combo_box,
-            create_parameter_slider=self._create_parameter_slider,
-            midi_helper=self.midi_helper,
-            address=self.address
-        )
-        common_group.setContentsMargins(0, 0, 0, 0)  # No padding around the layout
-        upper_layout.addWidget(common_group)
-        """
 
         splitter.addWidget(upper_widget)
 
