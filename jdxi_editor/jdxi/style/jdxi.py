@@ -87,7 +87,6 @@ class JDXiStyle:
     """Central style definitions for JD-Xi Manager"""
 
     # Colors
-
     PWM_WIDGET_HEIGHT = 250
     ADSR_PLOT_WIDTH = 300
     ADSR_PLOT_HEIGHT = 200
@@ -393,6 +392,18 @@ class JDXiStyle:
                 color: #FFFFFF;
             }
         """
+
+    PROGRAM_PRESET_GROUPS = f"""            
+         QGroupBox {{
+                 font-family: {FONT_FAMILY};
+                 width: 300px;
+                 border: none;
+                 border-top: 1px solid {ACCENT};
+                 margin: 1px;
+                 padding: 1px;
+             }}"""
+
+    PROGRAM_PRESET_GROUP_WIDTH = 300
 
     PROGRESS_BAR = """
         QProgressBar {
@@ -757,6 +768,14 @@ class JDXiStyle:
     """
 
     ADSR_ANALOG = f"""
+        QGroupBox {{
+             font-family: {FONT_FAMILY};
+             width: 300px;
+             border: none;
+             border-top: 1px solid {ACCENT_ANALOG};
+             margin: 1px;
+             padding: 1px;
+         }}
         /* Groove (Track) */
         QSlider::groove:vertical {{
             font-family: {FONT_FAMILY};
@@ -838,6 +857,14 @@ class JDXiStyle:
     """
 
     ADSR = f"""
+         QGroupBox {{
+             font-family: {FONT_FAMILY};
+             width: 300px;
+             border: none;
+             border-top: 1px solid {ACCENT};
+             margin: 1px;
+             padding: 1px;
+         }}
         /* Groove (Track) */
         QSlider::groove:vertical {{
             font-family: {FONT_FAMILY};
