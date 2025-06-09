@@ -46,6 +46,7 @@ from jdxi_editor.midi.data.parameter.synth import AddressParameter
 class AddressParameterAnalog(AddressParameter):
     """Analog synth parameters with area, address, and value range."""
 
+
     TONE_NAME_1 = (0x00, 32, 127)
     TONE_NAME_2 = (0x01, 32, 127)
     TONE_NAME_3 = (0x02, 32, 127)

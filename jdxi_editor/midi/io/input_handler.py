@@ -360,22 +360,63 @@ class MidiInHandler(MidiIOController):
             self._auto_add_current_program()
 
     def _auto_add_current_program(self):
+        """
+        _auto_add_current_program
+        :return:
+        """
         data = self._incoming_preset_data
+        log.parameter("data", data)
 
         def to_preset(name, synth_type, preset_number):
             preset = JDXiPresetData.get_preset_details(synth_type, preset_number)
             preset.name = name
             return preset
 
-        program = JDXiProgram(
-            id=f"A{data.program_number + 1:02d}",
-            name=f"Imported {data.program_number + 1:02d}",
-            genre="Unknown",
-            digital_1=to_preset(data.tone_names.get("digital_1"), JDXiSynth.DIGITAL_SYNTH_1, 0),
-            digital_2=to_preset(data.tone_names.get("digital_2"), JDXiSynth.DIGITAL_SYNTH_2, 0),
-            analog=to_preset(data.tone_names.get("analog"), JDXiSynth.ANALOG_SYNTH, 0),
-            drums=to_preset(data.tone_names.get("drum"), JDXiSynth.DRUM_KIT, 0),
-        )
+        try:
+            program_number = data.program_number or 0
+
+            program = JDXiProgram(
+                id=f"A{program_number + 1:02d}",
+                name=f"Imported {program_number + 1:02d}",
+                genre="Unknown",
+                digital_1=to_preset(data.tone_names.get("digital_1"), JDXiSynth.DIGITAL_SYNTH_1, 0),
+                digital_2=to_preset(data.tone_names.get("digital_2"), JDXiSynth.DIGITAL_SYNTH_2, 0),
+                analog=to_preset(data.tone_names.get("analog"), JDXiSynth.ANALOG_SYNTH, 0),
+                drums=to_preset(data.tone_names.get("drum"), JDXiSynth.DRUM_KIT, 0),
+            )
+        except Exception as ex:
+            log.message(f"Error {ex} creating JDXiProgram")
+            return
+
+        if add_program_and_save(asdict(program)):
+            log.message(f"✅ Auto-added program: {program.id}")
+        else:
+            log.message(f"⚠️ Duplicate or failed to add: {program.id}")
+
+    def _auto_add_current_program_old(self):
+        """
+        _auto_add_current_program
+        :return:
+        """
+        data = self._incoming_preset_data
+        log.parameter("data", data)
+
+        def to_preset(name, synth_type, preset_number):
+            preset = JDXiPresetData.get_preset_details(synth_type, preset_number)
+            preset.name = name
+            return preset
+        try:
+            program = JDXiProgram(
+                id=f"A{data.program_number + 1:02d}",
+                name=f"Imported {data.program_number + 1:02d}",
+                genre="Unknown",
+                digital_1=to_preset(data.tone_names.get("digital_1"), JDXiSynth.DIGITAL_SYNTH_1, 0),
+                digital_2=to_preset(data.tone_names.get("digital_2"), JDXiSynth.DIGITAL_SYNTH_2, 0),
+                analog=to_preset(data.tone_names.get("analog"), JDXiSynth.ANALOG_SYNTH, 0),
+                drums=to_preset(data.tone_names.get("drum"), JDXiSynth.DRUM_KIT, 0),
+            )
+        except Exception as ex:
+            log.message(f"Error {ex} creating JDXiProgram")
 
         if add_program_and_save(asdict(program)):
             log.message(f"✅ Auto-added program: {program.id}")
