@@ -625,6 +625,7 @@ class JDXiInstrument(JDXiUi):
             editor.setWindowTitle(title)
 
             self.main_editor.editor_tab_widget.addTab(editor, qta.icon(icon, color="#666666"), title)
+            editor.setProperty("analog", True)
             self.main_editor.editor_tab_widget.setCurrentWidget(editor)
 
             setattr(self, instance_attr, editor)

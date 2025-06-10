@@ -52,6 +52,7 @@ from PySide6.QtCore import Signal, Qt
 import qtawesome as qta
 
 from jdxi_editor.jdxi.midi.constant import MidiConstant
+from jdxi_editor.jdxi.preset.lists import JDXiPresetToneList
 from jdxi_editor.jdxi.program.program import JDXiProgram
 from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.log.logger import Logger as log
@@ -110,6 +111,8 @@ class ProgramEditor(BasicEditor):
         self.instrument_icon_folder = "programs"
         self.instrument_title_label = QLabel()  # Just to stop error messages for now
         self.layout = None
+        self.midi_requests = MidiRequests.PROGRAM_TONE_NAME_PARTIAL
+        self.midi_channel = 0 # Defaults to DIGITAL 1
         self.genre_label = None
         self.program_number_combo_box = None
         self.bank_combo_box = None
@@ -121,6 +124,7 @@ class ProgramEditor(BasicEditor):
         self.program_label = None
         self.genre_combo_box = None
         self.preset_type = None
+        self.presets = {}
         self.programs = {}  # Maps program names to numbers
         self.setup_ui()
         self.midi_helper.update_program_name.connect(self.set_current_program_name)
@@ -134,28 +138,20 @@ class ProgramEditor(BasicEditor):
         main_vlayout = QVBoxLayout()
         title_hlayout = QHBoxLayout()
 
-        self.title_left_group = QGroupBox()
+        self.title_left_group = QGroupBox("Programs")
         title_left_vlayout = QVBoxLayout()
+        self.file_label = DigitalTitle("No file loaded")
+        title_left_vlayout.addWidget(self.file_label)
         self.title_left_group.setLayout(title_left_vlayout)
-        self.title_label = QLabel("Programs:")
-        title_left_vlayout.addWidget(self.title_label)
+
         title_hlayout.addWidget(self.title_left_group)
 
         title_right_vlayout = QVBoxLayout()
         title_hlayout.addLayout(title_right_vlayout)
 
         main_vlayout.addLayout(title_hlayout)
-        # self.setCentralWidget(center_widget)
         self.setLayout(main_vlayout)
         self.setStyleSheet(JDXiStyle.EDITOR)
-
-        self.title_label.setStyleSheet(JDXiStyle.EDITOR_TITLE_LABEL)
-        #self.midi_helper.update_tone_name.connect(
-        #    lambda title, synth_type: self.set_instrument_title_label(title, synth_type))
-
-        self.file_label = DigitalTitle("No file loaded")
-        title_left_vlayout.addWidget(self.file_label)
-        # title_left_vlayout.addStretch()
 
         # Image display
         self.title_group = QGroupBox()
@@ -175,12 +171,12 @@ class ProgramEditor(BasicEditor):
         program_group = self._create_program_selection_box()
         program_group.setMinimumWidth(JDXiStyle.PROGRAM_PRESET_GROUP_WIDTH)
         program_group.setStyleSheet(JDXiStyle.PROGRAM_PRESET_GROUPS)
-        program_preset_hlayout.addWidget(program_group)
+        program_preset_hlayout.addWidget(program_group, 1)
 
         preset_group = self._create_preset_selection_group()
         preset_group.setMinimumWidth(JDXiStyle.PROGRAM_PRESET_GROUP_WIDTH)
         preset_group.setStyleSheet(JDXiStyle.PROGRAM_PRESET_GROUPS)
-        program_preset_hlayout.addWidget(preset_group)
+        program_preset_hlayout.addWidget(preset_group, 1)
 
         transport_group = self._create_transport_group()
         # main_vlayout.addWidget(transport_group)
@@ -188,7 +184,7 @@ class ProgramEditor(BasicEditor):
 
         mixer_section = self._create_mixer_section()
         main_vlayout.addWidget(mixer_section)
-
+        self._populate_presets()
         self.midi_helper.update_tone_name.connect(
              lambda tone_name, synth_type: self.update_tone_name_for_synth(tone_name, synth_type)
         )
@@ -355,16 +351,16 @@ class ProgramEditor(BasicEditor):
         log.message(f"preset_type: {preset_type}")
         if preset_type == "Digital Synth 1":
             self.midi_channel = MidiChannel.DIGITAL_SYNTH_1
-            self.preset_list = DIGITAL_PRESET_LIST
+            self.preset_list = JDXiPresetToneList.DIGITAL_PROGRAM_CHANGE
         elif preset_type == "Digital Synth 2":
             self.midi_channel = MidiChannel.DIGITAL_SYNTH_2
-            self.preset_list = JDXiPresetToneList.DIGITAL_TONE_PC
+            self.preset_list = JDXiPresetToneList.DIGITAL_PROGRAM_CHANGE
         elif preset_type == "Drums":
             self.midi_channel = MidiChannel.DRUM_KIT
             self.preset_list = JDXiPresetToneList.DRUM_PROGRAM_CHANGE
         elif preset_type == "Analog Synth":
             self.midi_channel = MidiChannel.ANALOG_SYNTH
-            self.preset_list = ANALOG_PRESET_LIST
+            self.preset_list = JDXiPresetToneList.ANALOG_PROGRAM_CHANGE
         self._populate_presets()
         self.update_category_combo_box_categories()
 
@@ -399,7 +395,7 @@ class ProgramEditor(BasicEditor):
         """
         if not self.preset_helper:
             return
-
+        self.presets = {}  # reset dictionary each time
         preset_type = self.digital_preset_type_combo.currentText()
         if preset_type in ["Digital Synth 1", "Digital Synth 2"]:
             self.preset_list = DIGITAL_PRESET_LIST
@@ -415,7 +411,7 @@ class ProgramEditor(BasicEditor):
         log.message(f"Selected Category: {selected_category}")
 
         self.preset_combo_box.clear()
-        self.presets.clear()
+        # self.presets.clear()
 
         filtered_list = [  # Filter programs based on bank and genre
             preset
@@ -433,9 +429,6 @@ class ProgramEditor(BasicEditor):
             index = len(self.presets)  # Use the current number of programs
             self.preset_combo_box.addItem(f"{preset_id} - {preset_name}", index)
             self.presets[preset_name] = index
-        self.preset_combo_box.setCurrentIndex(
-            0
-        )  # Update the UI with the new program list
         self.preset_combo_box.setCurrentIndex(
             0
         )  # Select "No Category Selected" as default
@@ -633,7 +626,6 @@ class ProgramEditor(BasicEditor):
         mixer_layout.addWidget(self.drum_kit_icon, 2, 3)
         mixer_layout.addWidget(self.analog_synth_icon, 2, 4)
 
-
         mixer_group.setStyleSheet(JDXiStyle.ADSR)
         self.analog_level_slider.setStyleSheet(JDXiStyle.ADSR_ANALOG)
 
@@ -675,7 +667,6 @@ class ProgramEditor(BasicEditor):
             log.message("File label not initialized.")
         if hasattr(self, "master_level_current_label"):
             self.master_level_current_label.setText(program_name)
-
 
     def start_playback(self):
         """Start playback of the MIDI file."""

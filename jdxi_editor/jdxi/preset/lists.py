@@ -527,7 +527,7 @@ class JDXiPresetToneList:
         "062: Siren Hell 1",
         "063: SirenFX/Mod1",
     )
-    DIGITAL_TONE_PC = {
+    DIGITAL_PROGRAM_CHANGE = {
         1: {
             "Name": "JP8 Strings1",
             "Category": "Strings/Pad",

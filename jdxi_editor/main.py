@@ -36,7 +36,7 @@ from PySide6.QtWidgets import (
     QWidget,
     QVBoxLayout,
     QHBoxLayout,
-    QGroupBox,
+    QGroupBox, QSplashScreen,
 )
 from PySide6.QtGui import QIcon, QPixmap, QColor, Qt, QFont, QFontInfo
 
@@ -103,7 +103,7 @@ def main():
                 app.setWindowIcon(icon)
                 log_message("Using fallback icon")
 
-        splash = QWidget()
+        splash = QSplashScreen()
         splash.setWindowFlags(
             Qt.SplashScreen | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint
         )
@@ -183,6 +183,8 @@ def main():
 
         window = JDXiInstrument()
         window.show()
+        splash.finish(window)
+
         # Start event loop
         return app.exec()
 
