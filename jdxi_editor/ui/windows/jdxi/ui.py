@@ -39,6 +39,7 @@ from PySide6.QtGui import (
 )
 import qtawesome as qta
 
+from jdxi_editor.project import __program__
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.jdxi.synth.factory import create_synth_data
@@ -345,6 +346,11 @@ class JDXiUi(QMainWindow):
         about_help_action.triggered.connect(self._show_about_help)
         self.help_menu.addAction(about_help_action)
 
+        documentation_action = QAction(qta.icon("mdi6.help-rhombus-outline"),"Documentation", self,
+            statusTip=f"Show {__program__} documentation",
+            triggered=self.on_documentation)
+        self.help_menu.addAction(documentation_action)
+
         # Add Main Editor window action
         main_editor_action = QAction("Main Editor", self)
         main_editor_action.triggered.connect(self._show_main_editor)
@@ -520,6 +526,9 @@ class JDXiUi(QMainWindow):
         QMessageBox.information(self, title, message)
 
     def _load_settings(self):
+        raise NotImplementedError("to be implemented in subclass")
+
+    def on_documentation(self):
         raise NotImplementedError("to be implemented in subclass")
 
     def show_editor(self, param: str):
