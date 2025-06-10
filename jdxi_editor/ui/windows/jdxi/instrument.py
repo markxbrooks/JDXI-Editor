@@ -549,7 +549,7 @@ class JDXiInstrument(JDXiUi):
         self.show_editor("pattern")
         self.show_editor("effects")
         self.show_editor("vocal_fx")
-        self.main_editor.editor_tab_widget.setCurrentIndex(1)
+        self.main_editor.editor_tab_widget.setCurrentIndex(0)
 
     def show_editor(self, editor_type: str) -> None:
         """
