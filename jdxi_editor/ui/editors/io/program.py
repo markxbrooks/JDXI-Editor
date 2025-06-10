@@ -184,6 +184,8 @@ class ProgramEditor(BasicEditor):
 
         mixer_section = self._create_mixer_section()
         main_vlayout.addWidget(mixer_section)
+        preset_type = "Digital Synth 1"
+        self.set_channel_and_preset_lists(preset_type)
         self._populate_presets()
         self.midi_helper.update_tone_name.connect(
              lambda tone_name, synth_type: self.update_tone_name_for_synth(tone_name, synth_type)
@@ -349,6 +351,11 @@ class ProgramEditor(BasicEditor):
         """Handle preset type selection change."""
         preset_type = self.digital_preset_type_combo.currentText()
         log.message(f"preset_type: {preset_type}")
+        self.set_channel_and_preset_lists(preset_type)
+        self._populate_presets()
+        self.update_category_combo_box_categories()
+
+    def set_channel_and_preset_lists(self, preset_type):
         if preset_type == "Digital Synth 1":
             self.midi_channel = MidiChannel.DIGITAL_SYNTH_1
             self.preset_list = JDXiPresetToneList.DIGITAL_PROGRAM_CHANGE
@@ -361,8 +368,6 @@ class ProgramEditor(BasicEditor):
         elif preset_type == "Analog Synth":
             self.midi_channel = MidiChannel.ANALOG_SYNTH
             self.preset_list = JDXiPresetToneList.ANALOG_PROGRAM_CHANGE
-        self._populate_presets()
-        self.update_category_combo_box_categories()
 
     def update_category_combo_box_categories(self) -> None:
         """
