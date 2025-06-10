@@ -44,6 +44,7 @@ from PySide6.QtCore import Qt, QSettings, QTimer
 from PySide6.QtGui import QShortcut, QKeySequence, QMouseEvent, QCloseEvent
 from PySide6.QtWidgets import QMenu, QMessageBox
 
+from jdxi_editor.jdxi.file.utils import documentation_file_path, os_file_open
 from jdxi_editor.jdxi.preset.button import JDXiPresetButtonData
 from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.jdxi.preset.lists import JDXiPresetToneList
@@ -567,6 +568,17 @@ class JDXiInstrument(JDXiUi):
             self.channel = config.midi_channel
         kwargs = config.kwargs
         self._show_editor_tab(config.title, config.editor_class, config.icon, **kwargs)
+
+    def on_documentation(self):
+        """
+        on_documentation
+        :return: None
+        """
+        html_file = documentation_file_path("index.html")
+        try:
+            os_file_open(html_file)
+        except Exception as ex:
+            log.exception(f"Error {ex} occurred opening documentation")
 
     def get_existing_editor(self, editor_class) -> Optional[SynthEditor]:
         """
