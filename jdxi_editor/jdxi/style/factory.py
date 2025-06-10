@@ -167,9 +167,11 @@ def generate_tab_style(
     font_size: str = "12px",
     padding: str = "1px 1px",
     margin: str = "1px",
+    accent: str = "#FF2200"
 ):
     """
     Generate address tab style dynamically.
+    :param accent:
     :param selected_border:
     :param selected_bg:
     :param hover_border:
@@ -184,7 +186,7 @@ def generate_tab_style(
     :param hover_bg: str The hover background color
     """
     return f"""
-            QTabBar::tab {{
+                QTabBar::tab {{
                 font-family: {FONT_FAMILY};
                 background: {bg};
                 color: {text_color};
@@ -213,9 +215,10 @@ def generate_tab_style(
             }}
             QTabWidget {{
                 font-family: {FONT_FAMILY};
+                border: none
             }}
             QTabWidget::pane {{
-                border: 1px solid {selected_border};
+                border: none;
             }}
         """
 
@@ -268,7 +271,8 @@ def generate_editor_style(
 
         QGroupBox {{
             font-family: {font_family};
-            border: 1px solid {accent};
+            border: none;
+            border-top: 1px solid {accent};
             border-radius: 3px;
             margin-top: 1px;
             padding: {padding}px;

@@ -317,16 +317,16 @@ class PresetEditor(BasicEditor):
         log.message(f"preset_type: {preset_type}")
         if preset_type == "Digital Synth 1":
             self.midi_channel = MidiChannel.DIGITAL_SYNTH_1
-            self.preset_list = DIGITAL_PRESET_LIST
+            self.preset_list = JDXiPresetToneList.DIGITAL_PROGRAM_CHANGE
         elif preset_type == "Digital Synth 2":
             self.midi_channel = MidiChannel.DIGITAL_SYNTH_2
-            self.preset_list = JDXiPresetToneList.DIGITAL_TONE_PC
+            self.preset_list = JDXiPresetToneList.DIGITAL_PROGRAM_CHANGE
         elif preset_type == "Drums":
             self.midi_channel = MidiChannel.DRUM_KIT
             self.preset_list = JDXiPresetToneList.DRUM_PROGRAM_CHANGE
         elif preset_type == "Analog Synth":
             self.midi_channel = MidiChannel.ANALOG_SYNTH
-            self.preset_list = ANALOG_PRESET_LIST
+            self.preset_list = JDXiPresetToneList.ANALOG_PROGRAM_CHANGE
         self._populate_presets()
         self.update_category_combo_box_categories()
 

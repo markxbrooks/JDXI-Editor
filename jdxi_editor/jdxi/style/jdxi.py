@@ -549,7 +549,7 @@ class JDXiStyle:
         hover_bg=BUTTON_BACKGROUND,
         hover_border="#ff9999",
         selected_bg=BUTTON_BACKGROUND,
-        selected_border="#ff6666",
+        selected_border=ACCENT,
     )
 
     TABS_ANALOG = generate_tab_style(
