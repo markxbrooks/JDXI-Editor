@@ -1,42 +1,28 @@
-.. mxpandda documentation master file, created by
+.. jdxi-editor documentation master file, created by
    sphinx-quickstart on Sat May 11 10:48:11 2024.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Installation of the Command Line Interface (CLI)
-================================================
+Installation of the JDXi Editor
+===============================
 
-1) Set up your BASH environment appropriately.
+1) Install the JDXi Editor
 
-Some example aliases as well as locations of the files being sourced during my login sessions is shown below.
+The JDXi Editor is packaged under both MacOS as a .app, in a DMG file, and under Windows as an Nullsoft Installer (NSIS) file.
 
-.. code-block:: console
-
-      source /data/teams/xray/software/ccp4-8.0.004-pandda-pri/ccp4/bin/ccp4.setup-sh
-      source '/data/teams/xray/env_setup.sh'
-      export BDG_GRADE2_PYTHON_VERSION="3.9"
-      module load GPHL/20230726
-      . /apps/xray/GPHL/20230726/setup.sh
-      module load /apps/modulefiles/xray/ccp4/8.0.004
-      module load pandda/extras
-      export PATH=$PATH:"/data/teams/xray/software/mxpipe/scripts:/home/mbrooks/.local/bin"
-      alias python="/data/teams/xray/software/ccp4-8.0.004-pandda-pri/ccp4/bin/ccp4-python"
-      alias sshgpu="ssh co-fr7-sgpu03"
-      alias sshpri="ssh 192.168.56.243"
-      alias cdpanddas="cd /data/sbio/xray/us-pri/XRay-Raw/panddas"
-      alias cdmxpipe="cd /data/teams/xray/software/mxpipe"
-
-
-2) Change directory to the mxpandda directory
+MacOS:
 
 .. code-block:: console
 
-   $ cdmxpandda
+   $ open JDXi-Editor-0.8.dmg
 
-This is an alias to cd to the mxpandda directory
-
-3) Install the python module by running the script "setup.py". Usually we want to install it into ccp4-python:
+Windows:
 
 .. code-block:: console
 
-   $ ccp4-python setup.py install
+   $ jdxi-editor-0.8_windows_setup.exe
+
+
+Icons should then appear in the Applications folder under MacOS, and in the Users folder under Windows.
+
+

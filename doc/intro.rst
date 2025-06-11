@@ -1,89 +1,98 @@
-.. mxpandda documentation master file, created by
+.. jdxi-editor documentation master file, created by
    sphinx-quickstart on Sat May 11 10:48:11 2024.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Introduction to the CLI
-=======================
+Introduction to the JDXi Editor
+===============================
 
-These scripts are a collection of Python and BASH scripts which are intended to automate crystallographic data processing.
+The JDXi Editor is a graphical tool for editing parameters of the JDXi instrument, with a focus on ease of use and efficiency, instead of using hardware-based menus.
 
-Ideally, 400 datasets can be processed in around 2 hours and the intention is to reduce this time further as mxpipe and mxpandda improves.
+There are two main components to the JDXi Editor:
 
-Namespace
----------
+1. The JDXi Editor Instrument Window, which has sliders, buttons, and a keyboard for sending MIDI messages to the JDXi instrument.
+- The sliders are linked to (N)RPNS and Control Change parameters of the JDXi instrument.
+- The buttons are linked to the different MIDI channels of the JDXi instrument.
+- The keyboard is linked to the different MIDI notes of the JDXi instrument.
 
-The scripts have a prefix "mxpipe_" ... to give them a 'namespace'.
+2. The JDXi Editor Window (the main window), which has a tabbed interface for the different JDXi "Editors".
+- Each Editor tab has sliders, buttons and pull-down menus for the different midi parameters, which apply the changes in real-time via MIDI messages.
+- The sliders are linked to the JDXi file, so that when the slider is moved, the JDXi file is updated.
+- For each of the 4 synths, (Digital 1, Digital 2, Analog, Drum Kit), there is a tab in the JDXi Editor Window.
+- Additional tabs are available for the different JDXi parameters, such as Effects, Vocal Effects, which are used to edit the different parameters of the JDXi instrument.
 
-Scripts specifically for panddas may have a prefix "mxpipe_pandda_" e.g.:
+- Each Editor tab has sliders, buttons and pull-down menus for the different midi parameters, which apply the changes in real-time via MIDI messages.
+- The sliders are linked to the JDXi file, so that when the slider is moved, the JDXi file is updated.
+- For each of the 4 synths, (Digital 1, Digital 2, Analog, Drum Kit), there is a tab in the JDXi Editor Window.
+- Additional tabs are available for the different JDXi parameters, such as Effects, Vocal Effects, which are used to edit the different parameters of the JDXi instrument.
 
-.. code-block:: console
+.. figure:: images/jdxi-editor-window.png
+   :alt: JDXi Editor Window
+   :width: 100%
 
-   $ mxpipe_pandda_dimple.py
-..
+   JDXi Editor Window
 
-Similarly, scripts to assist in file transfer, may have a prefix "mxpipe_file_" e.g.:
+.. figure:: images/jdxi-digital-synth1.png
+   :alt: JDXi Digital Synth 1
+   :width: 100%
 
-.. code-block:: console
-
-   $ mxpipe_file_copy.py
-..
-
-Global-Phasing-related scripts may have a prefix "mxpipe_gphl_" e.g.:
-
-.. code-block:: console
-
-   $ mxpipe_gphl_grade2.py
-..
-
-CCP4-related scripts may have a prefix "mxpipe_ccp4_" e.g.:
-
-.. code-block:: console
-
-   $ mxpipe_ccp4_xia2.py
-..
-
-Command-Line Options
---------------------
-
-The programs use command-line options to specify the necessary parameters.
-
-Commonly used arguments are:
+   JDXi Digital Synth 1
 
 
-.. option:: -r <dir>, --root <dir>
+.. figure:: images/jdxi-editor-instrument-window.png
+   :alt: JDXi Editor Instrument Window
+   :width: 100%
 
-      Specify the root directory of the datasets
-
-      Default: Current directory
-
-.. option:: -d <True/False>, --dry_run <True/False>
-
-      Specify whether a dry run should be performed. This is useful to test whether command line arguments are correct or not.
-
-      Default: False
-
-.. option:: -s <True/False>, --slurmify <True/False>
-
-      Specify whether runs should be submitted via SLURM.
-      It is generally recommended to test that one or two jobs run correctly before submitting ~400 jobs via SLURM.
-
-      Default: False
+   JDXi Editor Instrument Window
 
 
-The program SVIEW can be used to see the status of SLURM jobs
 
-.. image:: images/sview.png
-  :width: 400
-  :alt: sview SLURM job
+.. figure:: images/jdxi-drum-kit.png
+   :alt: JDXi Drum Kit
+   :width: 100%
+
+   JDXi Drum Kit
+
+.. figure:: images/jdxi-analog-synth.png
+   :alt: JDXi Analog Synth
+   :width: 100%
+
+   JDXi Analog Synth
 
 
-The mxpipe SLURM commands are shown below.
+.. figure:: images/jdxi-effects.png
+   :alt: JDXi Effects
+   :width: 100%   
 
-mxpipe.slurmify module
-----------------------
+   JDXi Effects
 
-.. automodule:: mxpipe.slurmify
-   :members:
-   :undoc-members:
-   :show-inheritance:
+
+.. figure:: images/jdxi-vocal-effects.png
+   :alt: JDXi Vocal Effects
+   :width: 100%   
+
+   JDXi Vocal Effects
+
+
+.. figure:: images/jdxi-pattern-sequencer.png
+   :alt: JDXi Pattern Sequencer
+   :width: 100%   
+
+   JDXi Pattern Sequencer
+
+.. figure:: images/jdxi-midi-editor.png
+   :alt: JDXi MIDI Editor
+   :width: 100%   
+
+   JDXi MIDI Editor
+
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents
+
+   usage
+   installation
+   api
+   troubleshooting
+   license

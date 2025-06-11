@@ -25,6 +25,7 @@ def log_slider_parameters(
 ) -> None:
     """
     Log slider parameters for debugging.
+
     :param address: int The address
     :param param: AddressParameter The parameter
     :param midi_value: int The value
