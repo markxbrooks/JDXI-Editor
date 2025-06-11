@@ -18,6 +18,7 @@ Dependencies:
 
 """
 
+import mido
 import logging
 import zipfile
 
@@ -48,6 +49,9 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
             if parent:
                 self.parent = parent
             self.initialized = True
+
+    def send(self, msg: mido.Message):
+        self.send_raw_message(msg.bytes())
 
     def load_patch(self, file_path: str):
         """

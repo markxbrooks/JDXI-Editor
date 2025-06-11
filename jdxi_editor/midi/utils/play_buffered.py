@@ -1,9 +1,11 @@
 
 import time
 import rtmidi
+import mido
 
 # Load MIDI file
-mid = mido.MidiFile('yourfile.mid')
+# mid = mido.MidiFile(r'/Users/brooks/Downloads/temptation.mid')
+midi_playback_file = mido.MidiFile(r'/Users/brooks/Documents/New Order - Temptation JD-Xi.mid')
 
 # Initialize MIDI output
 midi_out = rtmidi.MidiOut()
@@ -15,14 +17,21 @@ else:
     midi_out.open_virtual_port("My Virtual MIDI Output")
 
 # Constants
-ticks_per_beat = mid.ticks_per_beat
-default_tempo = 500000  # microseconds per beat (120 BPM)
+ticks_per_beat = midi_playback_file.ticks_per_beat
+default_tempo = 500_000  # microseconds per beat (120 BPM)
 
-# Buffer all messages into a unified timeline
-def buffer_midi_tracks(mid):
+
+def buffer_midi_tracks(midi_file: list):
+    """
+    buffer_midi_tracks
+
+    :param midi_file:
+    :return:
+    Buffer all messages into a unified timeline
+    """
     buffered_messages = []
 
-    for track in mid.tracks:
+    for track in midi_file.tracks:
         absolute_time_ticks = 0
         current_tempo = default_tempo  # default tempo at start
         for msg in track:
@@ -36,16 +45,37 @@ def buffer_midi_tracks(mid):
     buffered_messages.sort(key=lambda x: x[0])
     return buffered_messages
 
-buffered = buffer_midi_tracks(mid)
+
+buffered_messages = buffer_midi_tracks(midi_playback_file)
+
 
 # Convert ticks to seconds, considering tempo
-def ticks_to_seconds(ticks, tempo, ticks_per_beat):
+def ticks_to_seconds(ticks: int, tempo: int, ticks_per_beat: int) -> float:
+    """
+    ticks_to_seconds
+
+    :param ticks: int
+    :param tempo: int
+    :param ticks_per_beat: int
+    :return: float
+    """
     seconds_per_beat = tempo / 1_000_000
     seconds_per_tick = seconds_per_beat / ticks_per_beat
     return ticks * seconds_per_tick
 
-# Playback function with program change control
-def play_buffered(buffered_msgs, midi_out, play_program_changes=True):
+
+def play_buffered(buffered_msgs: list,
+                  midi_out_port: rtmidi.MidiOut,
+                  play_program_changes: bool = True):
+    """
+    play_buffered
+
+    :param buffered_msgs: list
+    :param midi_out_port: rtmidi.MidiOut
+    :param play_program_changes: bool Whether or not to suppress Program Changes
+    :return:
+    Playback function with program change control
+    """
     start_time = time.time()
 
     for i, (abs_ticks, msg, tempo) in enumerate(buffered_msgs):
@@ -61,18 +91,20 @@ def play_buffered(buffered_msgs, midi_out, play_program_changes=True):
         if not msg.is_meta:
             if msg.type == 'program_change':
                 if play_program_changes:
-                    midi_out.send_message(msg.bytes())
+                    midi_out_port.send_message(msg.bytes())
                 else:
                     # Skip program change if disabled
                     continue
             else:
-                midi_out.send_message(msg.bytes())
+                midi_out_port.send_message(msg.bytes())
+
+
 if __name__ == "__main__":
     
     # Usage:
     try:
         print("Starting multi-track playback with Program Changes enabled...")
-        play_buffered(buffered, midi_out, play_program_changes=True)
+        play_buffered(buffered_messages, midi_out, play_program_changes=True)
         # To disable program changes during playback, set to False:
         # play_buffered(buffered, midi_out, play_program_changes=False)
         print("Playback finished.")
