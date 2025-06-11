@@ -8,6 +8,7 @@ These functions are useful for mapping MIDI messages to meaningful time or inten
 in a synthesizer or effect unit.
 from jdxi_editor.jdxi.midi.constant import MidiConstant
 """
+from jdxi_editor.jdxi.midi.constant import MidiConstant
 
 
 def midi_value_to_ms(
