@@ -19,6 +19,7 @@ def log_adsr_parameter(
 ) -> None:
     """
     Log slider parameters for debugging.
+
     :param umb: int The UMB
     :param lmb: int The LMB
     :param param: AddressParameter The parameter

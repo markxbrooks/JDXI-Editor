@@ -33,6 +33,7 @@ class AmpSection(QWidget):
         super().__init__()
         """
         Initialize the Amp section of the JD-Xi editor
+
         :param midi_helper: MidiIOHelper
         :param address: RolandSysExAddress
         :param create_parameter_slider: Callable

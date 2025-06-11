@@ -14,6 +14,7 @@ def create_spinbox(min_value: int,
                    value: int) -> QSpinBox:
     """
     Create a spinbox with specified range and suffix
+
     :param min_value: int
     :param max_value: int
     :param suffix: str
@@ -32,6 +33,7 @@ def create_double_spinbox(
 ) -> QDoubleSpinBox:
     """
     Create a double spinbox with specified range, step, and initial value.
+
     :param min_value: int
     :param max_value: int
     :param step: float
@@ -65,6 +67,7 @@ class PWMSliderSpinbox(QWidget):
     ):
         """
         Initialize the ADSR slider and spinbox widget.
+
         :param param: AddressParameter
         :param min_value: int
         :param max_value: int
@@ -127,6 +130,7 @@ class PWMSliderSpinbox(QWidget):
     def _slider_changed(self, value: int) -> None:
         """
         slider changed
+
         :param value: int slider value
         :return: None
         """
@@ -140,6 +144,7 @@ class PWMSliderSpinbox(QWidget):
     def _spinbox_changed(self, value: float):
         """
         spinbox changed
+
         :param value: float double spinbox value
         :return: None
         """
@@ -151,6 +156,7 @@ class PWMSliderSpinbox(QWidget):
     def setValue(self, value: float):
         """
         Set the value of the double spinbox and slider
+
         :param value: float
         :return: None
         """
@@ -163,6 +169,7 @@ class PWMSliderSpinbox(QWidget):
     def value(self) -> float:
         """
         Get the value of the spinbox
+
         :return: int
         """
         return self.spinbox.value()

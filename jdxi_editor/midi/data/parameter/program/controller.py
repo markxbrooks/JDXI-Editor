@@ -85,6 +85,7 @@ class AddressParameterProgramController(AddressParameter):
     def get_grid_name(value: int) -> str:
         """
         Get grid name from value
+
         :param value: int The value
         :return: str The grid name
         """
@@ -95,6 +96,7 @@ class AddressParameterProgramController(AddressParameter):
     def get_duration_name(value: int) -> str:
         """
         Get duration name from value
+
         :param value: int The value
         :return: str The duration name
         """
@@ -105,6 +107,7 @@ class AddressParameterProgramController(AddressParameter):
     def get_motif_name(value: int) -> str:
         """
         Get motif name from value
+
         :param value: int The value
         :return: str The motif name
         """
@@ -128,6 +131,7 @@ class AddressParameterProgramController(AddressParameter):
     def get_display_value(param: int, value: int) -> str:
         """
         Convert raw value to display value
+
         :param param: int The parameter
         :param value: int The value
         :return: str The display value

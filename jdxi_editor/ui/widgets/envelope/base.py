@@ -60,6 +60,7 @@ class EnvelopeWidgetBase(QWidget):
     def set_values(self, envelope: dict) -> None:
         """
         Update envelope values and trigger address redraw
+
         :param envelope: dict
         :return: None
         """
@@ -69,6 +70,7 @@ class EnvelopeWidgetBase(QWidget):
     def emit_envelope_changed(self) -> None:
         """
         Emit the envelope changed signal
+
         :return: None
         """
         if hasattr(self, 'plot') and self.plot:
@@ -77,6 +79,7 @@ class EnvelopeWidgetBase(QWidget):
     def update_envelope_from_controls(self) -> None:
         """
         Update envelope values from slider controls.
+
         :return:
         """
         try:
@@ -99,6 +102,7 @@ class EnvelopeWidgetBase(QWidget):
     def update_controls_from_envelope(self) -> None:
         """
         Update slider controls from envelope values.
+
         :return: None
         """
         try:

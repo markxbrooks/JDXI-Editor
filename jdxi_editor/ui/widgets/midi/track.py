@@ -142,6 +142,7 @@ class TimeRulerWidget(QWidget):
 def generate_track_colors(n: int):
     """
     Generate visually distinct colors for up to n tracks.
+
     :param n: int Number of tracks
     :return:
     """
@@ -159,6 +160,7 @@ class MidiTrackWidget(QWidget):
                  parent: QWidget = None):
         """
         Initialize the MidiTrackWidget.
+
         :param track: mido.MidiTrack the mido track data
         :param track_number: int The track number
         :param total_length: float The total length of the longest of the tracks in seconds
@@ -181,6 +183,7 @@ class MidiTrackWidget(QWidget):
     def set_track(self, track: mido.MidiTrack, total_length: float) -> None:
         """
         Set the MIDI track and extract relevant data.
+
         :param track: mido.MidiTrack Track to be displayed
         :param total_length: float track length in seconds
         :return: None
@@ -288,6 +291,7 @@ class MidiTrackWidget(QWidget):
     def paintEventOld(self, event: QPaintEvent) -> None:
         """
         Paint the MIDI track widget.
+
         :param event: QPaintEvent
         :return: None
         """
@@ -373,6 +377,7 @@ class MidiTrackWidget(QWidget):
 def get_first_channel(track) -> int:
     """
     Get the first channel from a MIDI track.
+
     :param track: mido.MidiTrack
     :return: int
     """
@@ -460,6 +465,7 @@ class MidiTrackViewer(QWidget):
     def toggle_channel_mute(self, channel: int, is_muted: bool) -> None:
         """
         Toggle mute state for a specific MIDI channel.
+
         :param channel: int MIDI channel (1-16)
         :param is_muted: bool is the channel muted?
         :return: None
@@ -521,6 +527,7 @@ class MidiTrackViewer(QWidget):
     def mute_track(self, track_index: int) -> None:
         """
         Mute a specific track
+
         :param track_index: int
         :return: None
         """
@@ -533,6 +540,7 @@ class MidiTrackViewer(QWidget):
     def change_track_channel(self, track_index: int, new_channel: int) -> None:
         """
         Change the MIDI channel of a specific track.
+
         :param track_index: int
         :param new_channel: int
         :return: None
@@ -566,6 +574,7 @@ class MidiTrackViewer(QWidget):
     def make_apply_slot(self, track_index: int, spin_box: MidiSpinBox) -> callable:
         """
         Create a slot for applying changes to the track channel.
+
         :param track_index: int Track index to modify
         :param spin_box: MidiSpinBox Spin box for selecting the channel
         :return: callable function to apply changes
@@ -578,6 +587,7 @@ class MidiTrackViewer(QWidget):
     def set_midi_file(self, midi_file: mido.MidiFile) -> None:
         """
         Set the MIDI file for the widget and create channel controls.
+
         :param midi_file:
         :return: None
         """

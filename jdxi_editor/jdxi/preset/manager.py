@@ -42,6 +42,7 @@ class JDXiPresetManager:
     ) -> str:
         """
         Get the name of the currently selected preset
+
         :param synth_type: JDXISynth The type of synth
         :param preset_index: int The index of the preset
         :return: str The name of the preset
@@ -59,6 +60,7 @@ class JDXiPresetManager:
     def get_presets_for_synth(self, synth: JDXiSynth) -> JDXiPresetToneList:
         """
         Get the available presets for the given synth type.
+
         :param synth: JDXISynth The type of synth
         :return: JDXIPresets The available presets
         """
@@ -68,6 +70,7 @@ class JDXiPresetManager:
     def get_presets_for_channel(self, channel: MidiChannel) -> JDXiPresetToneList:
         """
         Get the available presets for the given channel.
+
         :param channel: MidiChannel The MIDI channel
         :return: JDXIPresets The available presets
         """
@@ -77,6 +80,7 @@ class JDXiPresetManager:
     def set_current_preset_name(self, preset_name: str):
         """
         Set the current global tone name.
+
         :param preset_name: str The name of the preset
         """
         self.current_preset_name = preset_name
@@ -85,6 +89,7 @@ class JDXiPresetManager:
     def set_preset_name_by_type(self, preset_type: str, preset_name: str):
         """
         Set the preset name for a specific tone type.
+
         :param preset_type: str The type of preset
         :param preset_name: str The name of the preset
         """
@@ -95,6 +100,7 @@ class JDXiPresetManager:
     def get_preset_name_by_type(self, tone_type: JDXiSynth) -> str:
         """
         Get the tone name for a specific tone type.
+
         :param tone_type: JDXISynth The type of tone
         :return: str The name of the tone
         """

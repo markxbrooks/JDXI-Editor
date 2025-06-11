@@ -129,6 +129,7 @@ class VocalFXEditor(BasicEditor):
     def _create_common_section(self) -> QWidget:
         """
         _create_common_section
+
         :return: QWidget
         """
         common_section = QWidget()
@@ -253,6 +254,7 @@ class VocalFXEditor(BasicEditor):
     def _create_mixer_section(self) -> QWidget:
         """
         _create_mixer_section
+
         :return: QWidget
         """
         mixer_section = QWidget()
@@ -298,6 +300,7 @@ class VocalFXEditor(BasicEditor):
     def _create_auto_pitch_section(self):
         """
         _create_auto_pitch_section
+
         :return: QWidget
         """
         auto_pitch_section = QWidget()

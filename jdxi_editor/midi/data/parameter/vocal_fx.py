@@ -128,6 +128,7 @@ class AddressParameterVocalFX(AddressParameter):
     def get_address(param_name: str) -> Optional[int]:
         """
         Get the address of address parameter by name.
+
         :param param_name: str The parameter name
         :return: Optional[int] The address
         """
@@ -140,6 +141,7 @@ class AddressParameterVocalFX(AddressParameter):
     def get_range(param_name: str) -> Tuple[int, int]:
         """
         Get the value range (min, max) of address parameter by name.
+
         :param param_name: str The parameter name
         :return: Tuple[int, int] The value range
         """
@@ -152,6 +154,7 @@ class AddressParameterVocalFX(AddressParameter):
     def get_display_range(param_name: str) -> Tuple[int, int]:
         """
         Get the display value range (min, max) of address parameter by name.
+
         :param param_name: str The parameter name
         :return: Tuple[int, int] The display value range
         """
@@ -163,6 +166,7 @@ class AddressParameterVocalFX(AddressParameter):
     def get_display_value(self) -> Tuple[int, int]:
         """
         Get the display value range (min, max) for the parameter
+
         :return: Tuple[int, int] The display value range
         """
         if hasattr(self, "display_min") and hasattr(self, "display_max"):
@@ -172,6 +176,7 @@ class AddressParameterVocalFX(AddressParameter):
     def convert_from_display(self, display_value: int) -> int:
         """
         Convert from display value to MIDI value (0-127)
+
         :param display_value: int The display value
         :return: int The MIDI value
         """
@@ -191,6 +196,7 @@ class AddressParameterVocalFX(AddressParameter):
     ) -> int:
         """
         Convert address value to address display value within address range.
+
         :param value: int The address value
         :param min_val: int The address minimum value
         :param max_val: int The address maximum value
@@ -206,6 +212,7 @@ class AddressParameterVocalFX(AddressParameter):
     def convert_to_midi(self, display_value: int) -> int:
         """
         Convert from display value to MIDI value
+
         :param display_value: int The display value
         :return: int The MIDI value
         """
@@ -228,6 +235,7 @@ class AddressParameterVocalFX(AddressParameter):
     def convert_from_midi(self, midi_value: int) -> int:
         """
         Convert from MIDI value to display value
+
         :param midi_value: int The MIDI value
         :return: int The display value
         """
@@ -251,6 +259,7 @@ class AddressParameterVocalFX(AddressParameter):
     def get_display_value_by_name(param_name: str, value: int) -> int:
         """
         Get the display value for address parameter by name and value.
+
         :param param_name: str The parameter name
         :param value: int The value
         :return: int The display value
@@ -264,6 +273,7 @@ class AddressParameterVocalFX(AddressParameter):
     def get_midi_range(param_name: str) -> Tuple[int, int]:
         """
         Get the MIDI value range (min, max) of address parameter by name.
+
         :param param_name: str The parameter name
         :return: Tuple[int, int] The MIDI value range
         """
@@ -275,6 +285,7 @@ class AddressParameterVocalFX(AddressParameter):
     def get_midi_value(param_name: str, value: int) -> Optional[int]:
         """
         Get the MIDI value for address parameter by name and value.
+
         :param param_name: str The parameter name
         :param value: int The value
         :return: Optional[int] The MIDI value

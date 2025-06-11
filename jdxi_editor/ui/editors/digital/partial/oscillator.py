@@ -233,6 +233,7 @@ class DigitalOscillatorSection(QWidget):
     def _update_waveform_controls_enabled_states(self, waveform: DigitalOscWave):
         """
         _update_waveform_controls_states
+
         :param waveform: DigitalOscWave
         :return: None
 

@@ -23,6 +23,7 @@ def apply_address_offset(base_address: RolandSysExAddress,
                          param: AddressParameter) -> RolandSysExAddress:
     """
     Applies the offset of a parameter to a base address.
+
     :param base_address: RolandSysExAddress
     :param param: AddressParameter
     :return: RolandSysExAddress
@@ -37,6 +38,7 @@ def apply_address_offset(base_address: RolandSysExAddress,
 def address_to_hex_string(address: Tuple[int, int, int, int]) -> str:
     """
     Converts a 4-byte SysEx address into a hex string.
+
     :param address: Tuple[int, int, int, int]
     :return: str
     """
@@ -47,6 +49,7 @@ def parse_sysex_address_json(address: Tuple[int, int, int, int],
                              base_classes: Tuple[Type[Any], ...]) -> Dict[str, Any]:
     """
     Parses a SysEx address into a JSON-like structure.
+
     :param address: Tuple[int, int, int, int]
     :param base_classes: Tuple[Type[Any], ...]
     :return: Dict[str, Any]
@@ -74,6 +77,7 @@ def find_matching_symbol(
 ) -> Union[Dict[str, Any], None]:
     """
     Finds a matching symbol in the provided base classes.
+
     :param value: int
     :param base_classes: Tuple[Type[Any], ...]
     :return: Union[Dict[str, Any], None]

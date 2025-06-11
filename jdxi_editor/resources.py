@@ -5,8 +5,9 @@ import sys
 def resource_path(relative_path: str) -> str:
     """
     resource_path
+
     :param relative_path: str
-    :return:
+    :return: str string representation of the file path
     """
     if hasattr(sys, "_MEIPASS"):
         base_path = sys._MEIPASS

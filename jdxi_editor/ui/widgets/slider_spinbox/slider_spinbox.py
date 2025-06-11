@@ -16,6 +16,7 @@ from jdxi_editor.midi.utils.conversions import midi_value_to_ms, ms_to_midi_valu
 def create_spinbox(min_value: int, max_value: int, suffix: str, value: int) -> QSpinBox:
     """
     Create a spinbox with specified range and suffix
+
     :param min_value: int
     :param max_value: int
     :param suffix: str
@@ -34,6 +35,7 @@ def create_double_spinbox(
 ) -> QDoubleSpinBox:
     """
     Create a double spinbox with specified range, step, and initial value.
+
     :param min_value: int
     :param max_value: int
     :param step: float
@@ -67,6 +69,7 @@ class AdsrSliderSpinbox(QWidget):
     ):
         """
         Initialize the ADSR slider and spinbox widget.
+
         :param param: AddressParameter
         :param min_value: int
         :param max_value: int
@@ -114,6 +117,7 @@ class AdsrSliderSpinbox(QWidget):
     def convert_to_envelope(self, value: float) -> float:
         """
         Convert the slider value to envelope value based on parameter type
+
         :param value: float
         :return: float
         """
@@ -147,6 +151,7 @@ class AdsrSliderSpinbox(QWidget):
     def _slider_changed(self, value: int) -> None:
         """
         Handle changes from the slider and update the spinbox and envelope
+
         :param value:
         :return:
         """
@@ -160,6 +165,7 @@ class AdsrSliderSpinbox(QWidget):
     def _spinbox_changed(self, value: float) -> None:
         """
         Handle changes from the spinbox and update the slider and envelope
+
         :param value:
         :return: None
         """
@@ -171,6 +177,7 @@ class AdsrSliderSpinbox(QWidget):
     def setValue(self, value: float):
         """
         Set the value of the spinbox and slider
+
         :param value: int
         :return: None
         """
@@ -179,6 +186,7 @@ class AdsrSliderSpinbox(QWidget):
     def value(self) -> float:
         """
         Get the value of the spinbox
+
         :return: int
         """
         return self.spinbox.value()

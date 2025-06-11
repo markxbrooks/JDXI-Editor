@@ -26,6 +26,7 @@ class AnalogLFOSection(QWidget):
         super().__init__()
         """
         Initialize the AnalogLFOSection
+
         :param create_parameter_slider: Callable
         :param create_parameter_switch: Callable
         :param create_parameter_combo_box: Callable

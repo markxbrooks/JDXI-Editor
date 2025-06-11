@@ -4,18 +4,18 @@ DrumKitMessage
 
 # Example usage:
 # Set kit name
-msg = DrumKitMessage(
-    section=DrumKitSection.COMMON.value,
-    param=DrumKitCommon.NAME_1.value,
-    value=0x41,  # 'A'
-)
+>>> msg = DrumKitMessage(
+>>>     section=DrumKitSection.COMMON.value,
+>>>     param=DrumKitCommon.NAME_1.value,
+>>>     value=0x41,  # 'A'
+>>> )
 
 # Set pad parameter
-msg = DrumKitMessage(
-    section=DrumKitSection.get_pad_offset(36),  # Pad C1
-    param=DrumPadParam.WAVE.value,
-    value=1,  # Wave number
-)
+>>> msg = DrumKitMessage(
+>>>     section=DrumKitSection.get_pad_offset(36),  # Pad C1
+>>>     param=DrumPadParam.WAVE.value,
+>>>     value=1,  # Wave number
+>>> )
 """
 
 from dataclasses import dataclass

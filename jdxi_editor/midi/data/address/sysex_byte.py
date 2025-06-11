@@ -15,6 +15,7 @@ class SysExByte(IntEnum):
     def get_parameter_by_address(cls: Type[T], address: int) -> Optional[T]:
         """
         Get parameter by address
+
         :param address: int The address
         :return: Optional[T] The parameter
         """

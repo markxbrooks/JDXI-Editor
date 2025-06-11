@@ -28,11 +28,15 @@ Functions:
 - `create_request(header, tone_area, param1) -> str`: Constructs a complete
   SysEx request message, appends the checksum, and returns the full message.
 
-Example usage:
+    Examples
+    --------
     To generate a request for the program common area:
-    request = create_request(TEMPORARY_PROGRAM_RQ11_HEADER,
-                             SYSEX_CONSTANTS['PROGRAM_COMMON_AREA'],
-                             "00 00 00 00 00 40")
+
+    >>> request = create_request(
+    ...     TEMPORARY_PROGRAM_RQ11_HEADER,
+    ...     SYSEX_CONSTANTS['PROGRAM_COMMON_AREA'],
+    ...     "00 00 00 00 00 40"
+    )
 
     To retrieve a list of all program and tone name requests:
     all_requests = PROGRAM_AND_TONE_NAME_REQUESTS

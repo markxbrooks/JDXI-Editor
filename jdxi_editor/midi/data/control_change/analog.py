@@ -100,6 +100,7 @@ class PartialRPNValue:
 def make_digital_rpn(partial: int) -> Object:
     """
     make_digital_rpn
+
     :param partial: int
     :return: Object
     """

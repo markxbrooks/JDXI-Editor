@@ -174,6 +174,7 @@ class DrumCommonEditor(SynthEditor):
     def _handle_program_change(self, channel: int, program: int):
         """
         Handle program change messages by requesting updated data
+
         :param channel: int
         :param program: int
         """
@@ -214,6 +215,7 @@ class DrumCommonEditor(SynthEditor):
     def update_partial_number(self, index: int):
         """
         Update the current partial number based on tab index
+
         :param index: int partial number
         """
         try:
@@ -226,6 +228,7 @@ class DrumCommonEditor(SynthEditor):
     def _update_partial_controls(self, partial_no: int, sysex_data: dict, successes: list, failures: list) -> None:
         """
         apply partial ui updates
+
         :param partial_no: int
         :param sysex_data: dict
         :param successes: list
@@ -249,6 +252,7 @@ class DrumCommonEditor(SynthEditor):
     ):
         """
         Update the UI components for tone common and modify parameters.
+
         :param partial: int
         :param sysex_data: Dictionary containing SysEx data
         :param successes: List of successful parameters

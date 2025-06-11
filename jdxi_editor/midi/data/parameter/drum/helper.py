@@ -17,6 +17,7 @@ from jdxi_editor.midi.data.parameter.drum.addresses import DRUM_ADDRESS_MAP
 def get_address_for_partial_name(partial_name: str) -> int:
     """
     Get parameter area and address adjusted for partial number.
+
     :param partial_name: str The partial name
     :return: int The address
     """

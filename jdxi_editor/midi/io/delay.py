@@ -13,6 +13,7 @@ from jdxi_editor.midi.sleep import MIDI_SLEEP_TIME
 def send_with_delay(midi_helper: MidiIOHelper, midi_requests: list) -> None:
     """
     send_with_delay
+
     :param midi_helper: MidiIOHelper, helper for sending MIDI messages
     :param midi_requests: list, list of MIDI messages to send
     :return: None

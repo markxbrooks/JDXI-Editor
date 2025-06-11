@@ -13,6 +13,7 @@ from jdxi_editor.midi.map.drum_tone import JDXiMapDrumTone
 def get_temporary_area(data: bytes) -> str:
     """
     Map address bytes to corresponding temporary area.
+
     :param data: bytes SysEx message data
     :return: str Temporary Area: TEMPORARY_PROGRAM, ANALOG_SYNTH, DIGITAL_SYNTH_1 ...
     """
@@ -26,6 +27,7 @@ def get_temporary_area(data: bytes) -> str:
 def get_partial_address(part_name: str) -> str:
     """
     Map partial address to corresponding temporary area.
+
     :param part_name: str
     :return: str
     """
@@ -38,6 +40,7 @@ def get_partial_address(part_name: str) -> str:
 def get_drum_tone(byte_value: int) -> tuple[str, int]:
     """
     Map byte value to corresponding synth tone.
+
     :param byte_value: int
     :return: str
     """
@@ -56,6 +59,7 @@ def get_drum_tone(byte_value: int) -> tuple[str, int]:
 def get_synth_tone(byte_value: int) -> tuple[str, int]:
     """
     Map byte value to corresponding synth tone.
+
     :param byte_value: int byte value to query
     :return: tuple[str, int]
     """

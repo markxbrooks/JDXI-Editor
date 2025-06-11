@@ -39,6 +39,7 @@ class IdentityRequestMessage(MidiMessage):
     def to_message_list(self) -> List[int]:
         """
         Convert to list of bytes for sending
+
         :return: list
         """
         return [MidiConstant.START_OF_SYSEX,

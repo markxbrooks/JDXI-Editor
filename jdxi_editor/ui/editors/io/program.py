@@ -96,6 +96,7 @@ class ProgramEditor(BasicEditor):
         self.file_label = None
         """
         Initialize the ProgramEditor
+
         :param midi_helper: Optional[MidiIOHelper]
         :param parent: Optional[QWidget]
         :param preset_helper: JDXIPresetHelper
@@ -194,6 +195,7 @@ class ProgramEditor(BasicEditor):
     def _create_preset_selection_group(self) -> QGroupBox:
         """
         create_preset_selection_group
+
         :return: QGroupBox
         """
         # Program controls group
@@ -245,6 +247,7 @@ class ProgramEditor(BasicEditor):
     def load_preset_by_program_change(self, preset_index: int) -> None:
         """
         Load a preset by program change.
+
         :param preset_index: int
         """
         preset_name = self.preset_combo_box.currentText()
@@ -287,6 +290,7 @@ class ProgramEditor(BasicEditor):
     def _create_transport_group(self) -> QGroupBox:
         """
         _create_transport_group
+
         :return: QGroupBox
         Transport controls area
         """
@@ -308,6 +312,7 @@ class ProgramEditor(BasicEditor):
     def _create_program_selection_box(self) -> QGroupBox:
         """
         create_program_selection_box
+
         :return: QGroupBox
         """
         # Program controls group
@@ -396,6 +401,7 @@ class ProgramEditor(BasicEditor):
     def _populate_presets(self, search_text: str = ""):
         """
         Populate the program list with available presets.
+
         :param search_text: str
         """
         if not self.preset_helper:
@@ -639,6 +645,7 @@ class ProgramEditor(BasicEditor):
     def update_tone_name_for_synth(self, tone_name: str, synth_type: str) -> None:
         """
         Update the tone name.
+
         :param tone_name: str
         :param synth_type: str
         """
@@ -662,6 +669,7 @@ class ProgramEditor(BasicEditor):
     def set_current_program_name(self, program_name: str, synth_type: str = None) -> None:
         """
         Set the current program name in the file label
+
         :param program_name: str
         :param synth_type: str (optional), discarded for now
         :return: None
@@ -817,6 +825,7 @@ class ProgramEditor(BasicEditor):
     def on_genre_changed(self, _: int) -> None:
         """
         Handle genre selection change.
+
         :param _: int
         """
         self.populate_programs()

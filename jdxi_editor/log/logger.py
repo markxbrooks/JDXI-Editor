@@ -11,6 +11,7 @@ from jdxi_editor.log.decorator import decorate_log_message
 def format_midi_message_to_hex_string(message: list) -> str:
     """
     format_midi_message_to_hex_string
+
     :param message: list of bytes
     :return: str
     """

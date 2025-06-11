@@ -175,6 +175,7 @@ class WMTEnvelopeWidget(EnvelopeWidgetBase):
     def on_control_changed(self, change: dict) -> None:
         """
         Control Change callback
+
         :param change: dict envelope
         :return: None
         :emits: dict pitch envelope parameters
@@ -211,6 +212,7 @@ class WMTEnvelopeWidget(EnvelopeWidgetBase):
     def update_envelope_from_slider(self, slider: QSlider) -> None:
         """
         Update envelope with value from a single slider
+
         :param slider: QSlider
         :return:
         """

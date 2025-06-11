@@ -106,6 +106,7 @@ class PWMWidget(EnvelopeWidgetBase):
     def on_envelope_changed(self, envelope: dict) -> None:
         """
         Handle envelope changes from controls
+
         :param envelope: dict
         :return: None
         """
@@ -116,6 +117,7 @@ class PWMWidget(EnvelopeWidgetBase):
     def on_pulse_width_changed(self, val: int) -> None:
         """
         Handle pulse width changes from slider
+
         :param val: int
         :return: None
         """
@@ -125,6 +127,7 @@ class PWMWidget(EnvelopeWidgetBase):
     def on_mod_depth_changed(self, val: int) -> None:
         """
         Handle modulation depth changes from slider
+
         :param val: int
         :return: None
         """

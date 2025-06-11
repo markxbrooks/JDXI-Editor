@@ -71,6 +71,7 @@ class PitchEnvPlot(QWidget):
     def set_values(self, envelope: dict) -> None:
         """
         Update envelope values and trigger address redraw
+
         :param envelope: dict
         :return: None
         """

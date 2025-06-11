@@ -16,6 +16,7 @@ def parse_digital_parameters(data: list) -> dict:
     def safe_get(index: int, default: int = 0) -> int:
         """
         Safely retrieve values from `data`
+
         :param index: int The index
         :param default: int The default value
         :return: int The value

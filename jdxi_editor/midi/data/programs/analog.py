@@ -394,6 +394,7 @@ ANALOG_PRESET_LIST = [
 def get_preset_by_program_number(program_number: int) -> dict[str]:
     """
     get_preset_by_program_number
+
     :param program_number: int Program number
     :return: Program details
     """
@@ -406,6 +407,7 @@ def get_preset_by_program_number(program_number: int) -> dict[str]:
 def get_preset_parameters(program_number: int) -> tuple[float, float, float]:
     """
     get_preset_parameters
+
     :param program_number: int
     :return:
     """

@@ -88,6 +88,7 @@ class EnumWithAddress(Protocol):
 def parse_sysex_byte(byte_value: int, enum_cls: EnumWithAddress) -> str:
     """
     Get the name of a SysEx byte value using a given enum class.
+
     :param byte_value: int
     :param enum_cls: EnumWithAddress
     :return: name of the parameter or "Unknown" if not found
@@ -100,6 +101,7 @@ def parse_sysex_byte(byte_value: int, enum_cls: EnumWithAddress) -> str:
 def parse_sysex_message(message: bytes, enum_cls: EnumWithAddress) -> Tuple[str, int]:
     """
     Parse a SysEx message and return the name and byte value of the specified parameter.
+
     :param message: str
     :param enum_cls: EnumWithAddress
     :return: Tuple containing the name and byte value
@@ -113,6 +115,7 @@ def parse_sysex_message(message: bytes, enum_cls: EnumWithAddress) -> Tuple[str,
 def parse_parameter(offset: int, parameter_type: AddressParameter) -> str:
     """
     Parses JD-Xi tone parameters from SysEx data for Digital, Analog, and Digital Common types.
+
     :param offset: int - The offset in the SysEx message where the parameter starts.
     :param parameter_type: AddressParameter - The parameter type to parse.
     :return: str name
@@ -126,6 +129,7 @@ class MIDIDebugger(QMainWindow):
     def __init__(self, midi_helper: MidiIOHelper, parent: QWidget = None):
         """
         init method
+
         :param midi_helper: MidiIOHelper
         :param parent: QWidget main window
         """
@@ -314,6 +318,7 @@ class MIDIDebugger(QMainWindow):
     def send_message(self, match: str) -> None:
         """
         Send a SysEx message based on the provided hex string.
+
         :param match: str - Hex string representing the SysEx message
         :return: None
         """

@@ -231,6 +231,7 @@ class AddressParameterDigitalPartial(AddressParameter):
     def get_address_for_partial(self, partial_number: int) -> Tuple[int, int]:
         """
         Get parameter area and address adjusted for partial number.
+
         :param partial_number: int The partial number
         :return: Tuple[int, int] The (group, address) tuple
         """
@@ -244,6 +245,7 @@ class AddressParameterDigitalPartial(AddressParameter):
     def get_by_name(param_name: str) -> Optional[object]:
         """
         Get the DigitalParameter by name.
+
         :param param_name: str The parameter name
         :return: Optional[AddressParameterDigitalPartial] The parameter
         Return the parameter member by name, or None if not found
@@ -253,6 +255,7 @@ class AddressParameterDigitalPartial(AddressParameter):
     def convert_value(self, value: int, reverse: bool = False) -> int:
         """
         Converts value in both directions based on CONVERSION_OFFSETS
+
         :param value: int The value
         :param reverse: bool The reverse flag
         :return: int The converted value
@@ -276,6 +279,7 @@ class AddressParameterDigitalPartial(AddressParameter):
     def convert_to_midi(self, slider_value: int) -> int:
         """
         Convert from display value to MIDI value
+
         :param slider_value: int The display value
         :return: int The MIDI value
         """
@@ -284,6 +288,7 @@ class AddressParameterDigitalPartial(AddressParameter):
     def convert_from_midi(self, midi_value: int) -> int:
         """
         Convert from MIDI value to display value
+
         :param midi_value: int The MIDI value
         :return: int The display value
         """

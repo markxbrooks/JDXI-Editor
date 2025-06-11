@@ -29,6 +29,7 @@ class UiAboutDialog(QDialog):
     def setup_ui(self, parent: QWidget = None) -> None:
         """
         setup_ui
+
         :param parent: QWidget
         :return: None
         """

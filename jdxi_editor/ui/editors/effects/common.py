@@ -342,6 +342,7 @@ class EffectsCommonEditor(BasicEditor):
     def _update_efx1_labels(self, effect_type: int):
         """
         Update Effect 1 parameter labels based on selected effect type.
+
         :param effect_type: int
         :return:
         """
@@ -375,6 +376,7 @@ class EffectsCommonEditor(BasicEditor):
     def _update_efx2_labels(self, effect_type: int):
         """
         Update Effect 2 parameter labels based on selected effect type.
+
         :param effect_type: int
         """
         log.message(f"Updating EFX2 labels for effect type {effect_type}")
@@ -609,6 +611,7 @@ class EffectsCommonEditor(BasicEditor):
     def send_midi_parameter(self, param: AddressParameter, value: int) -> bool:
         """
         Send MIDI parameter with error handling
+
         :param param: AddressParameter
         :param value: int value
         :return: bool True on success, False otherwise

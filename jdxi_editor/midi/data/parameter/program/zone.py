@@ -61,6 +61,7 @@ class AddressParameterProgramZone(AddressParameter):
     def get_display_value(self) -> Tuple[int, int]:
         """
         Get the display value range (min, max) for the parameter
+
         :return: Tuple[int, int] The display value range
         """
         if hasattr(self, "display_min") and hasattr(self, "display_max"):
@@ -70,6 +71,7 @@ class AddressParameterProgramZone(AddressParameter):
     def get_address_for_partial(self, partial_number: int = 0) -> Tuple[int, int]:
         """
         Get parameter area and address adjusted for partial number.
+
         :param partial_number: int The partial number
         :return: Tuple[int, int] The parameter area and address
         """
@@ -83,6 +85,7 @@ class AddressParameterProgramZone(AddressParameter):
     def is_switch(self) -> bool:
         """
         Returns True if parameter is address binary/enum switch
+
         :return: bool True if parameter is address binary/enum switch
         """
         return self in [self.ARPEGGIO_SWITCH]
@@ -90,6 +93,7 @@ class AddressParameterProgramZone(AddressParameter):
     def get_switch_text(self, value: int) -> str:
         """
         Get display text for switch values
+
         :param value: int The value
         :return: str The display text
         """
@@ -102,6 +106,7 @@ class AddressParameterProgramZone(AddressParameter):
     def validate_value(self, value: int) -> int:
         """
         Validate and convert parameter value
+
         :param value: int The value
         :return: int The validated value
         """
@@ -120,6 +125,7 @@ class AddressParameterProgramZone(AddressParameter):
     def set_partial_number(self, partial_number: int) -> Optional[int]:
         """
         Returns the partial number (1-4) if this is address partial parameter, None otherwise
+
         :param partial_number: int The partial number
         :return: Optional[int] The partial number
         """
@@ -128,6 +134,7 @@ class AddressParameterProgramZone(AddressParameter):
     def get_partial_number(self) -> Optional[int]:
         """
         Returns the partial number (1-4) if this is address partial parameter, None otherwise
+
         :return: Optional[int] The partial number
         """
         return self.partial_number
@@ -136,6 +143,7 @@ class AddressParameterProgramZone(AddressParameter):
     def get_by_name(param_name: str) -> Optional[object]:
         """
         Get the Parameter by name.
+
         :param param_name: str The parameter name
         :return: Optional[object] The parameter
         Return the parameter member by name, or None if not found

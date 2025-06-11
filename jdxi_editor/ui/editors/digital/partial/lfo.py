@@ -25,6 +25,7 @@ class DigitalLFOSection(QWidget):
         super().__init__()
         """
         Initialize the DigitalLFOSection
+
         :param create_parameter_slider: Callable
         :param create_parameter_switch: Callable
         :param controls: dict

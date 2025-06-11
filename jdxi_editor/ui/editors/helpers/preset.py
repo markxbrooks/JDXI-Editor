@@ -9,6 +9,7 @@ def get_preset_list_number_by_name(
 ) -> Optional[int]:
     """
     Retrieve a program's number (without bank letter) by its name using regex search
+
     :param preset_name: str
     :param preset_list: list
     :return: int preset id

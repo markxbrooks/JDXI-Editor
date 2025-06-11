@@ -19,6 +19,7 @@ class DigitalToneModifySection(QWidget):
     ):
         """
         Initialize the DigitalToneModifySection
+
         :param create_parameter_slider: Callable
         :param create_parameter_combo_box: Callable
         :param create_parameter_switch: Callable

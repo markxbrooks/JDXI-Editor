@@ -40,6 +40,7 @@ from jdxi_editor.jdxi.style import JDXiStyle
 def midi_value_to_float(value: int) -> float:
     """
     Convert MIDI value (0-127) to a float in the range [0.0, 1.0].
+
     :param value: int
     :return: float in range [0.0, 1.0]
     """
@@ -89,6 +90,7 @@ class WMTEnvPlot(QWidget):
     def set_values(self, envelope: dict) -> None:
         """
         Update the envelope values and refresh the plot.
+
         :param envelope: dict
         :return: None
         """

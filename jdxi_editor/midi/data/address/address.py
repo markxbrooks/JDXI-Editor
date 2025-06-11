@@ -1,30 +1,28 @@
 """
 Parameter Address Map
 
-Usage example:
-==============
+Example Usage:
+--------------
 
-class AddressMemoryAreaMSB(Address):
-    PROGRAM = 0x18
-    TEMPORARY_TONE = 0x19
-
-# Add an offset to a base address
-addr_bytes = AddressMemoryAreaMSB.PROGRAM.add_offset((0x00, 0x20, 0x00))
-print(addr_bytes)  # (0x18, 0x00, 0x20, 0x00)
-
-# Get SysEx-ready address
-sysex_address = AddressMemoryAreaMSB.PROGRAM.to_sysex_address((0x00, 0x20, 0x00))
-print(sysex_address)  # b'\x18\x00\x20\x00'
-
-# Lookup
-found = AddressMemoryAreaMSB.get_parameter_by_address(0x19)
-print(found)  # ProgramAddress.TEMPORARY_TONE
+>>> class AddressMemoryAreaMSB(Address):
+...    PROGRAM = 0x18
+...    TEMPORARY_TONE = 0x19
+... # Add an offset to a base address
+... addr_bytes = AddressMemoryAreaMSB.PROGRAM.add_offset((0x00, 0x20, 0x00))
+... print(addr_bytes)  # (0x18, 0x00, 0x20, 0x00)
+... # Get SysEx-ready address
+... sysex_address = AddressMemoryAreaMSB.PROGRAM.to_sysex_address((0x00, 0x20, 0x00))
+... print(sysex_address)  # b'\x18\x00\x20\x00'
+... # Lookup
+... found = AddressMemoryAreaMSB.get_parameter_by_address(0x19)
+... print(found)  # ProgramAddress.TEMPORARY_TONE
 
 SysExByte
 
-# Example usage:
-command = CommandID.DT1
-print(f"Command: {command}, Value: {command.value}, Message Position: {command.message_position}")
+Example usage:
+--------------
+>>> command = CommandID.DT1
+... print(f"Command: {command}, Value: {command.value}, Message Position: {command.message_position}")
 """
 
 from __future__ import annotations
@@ -91,6 +89,7 @@ class Address(SysExByte):
     ) -> bytes:
         """
         Returns the full 4-byte address as a `bytes` object, suitable for SysEx messages.
+
         :param address_offset: Union[int, Tuple[int, int, int]] The address offset
         :return: bytes The full 4-byte address
         """
@@ -100,6 +99,7 @@ class Address(SysExByte):
     def from_sysex_bytes(cls: Type[T], address: bytes) -> Optional[T]:
         """
         Create an Address object from a 4-byte SysEx address.
+
         :param address: bytes The 4-byte SysEx address
         :return: Optional[T] The Address object
         """
@@ -134,6 +134,7 @@ class RolandSysExAddress:
     def from_bytes(cls, b: bytes) -> Optional[RolandSysExAddress]:
         """
         Create a RolandSysExAddress object from a 4-byte bytes object.
+
         :param b: bytes The 4-byte bytes object
         :return: Optional[RolandSysExAddress] The RolandSysExAddress object
         """
@@ -144,6 +145,7 @@ class RolandSysExAddress:
     def to_list(self) -> List[int]:
         """
         Convert the RolandSysExAddress object to a list of integers.
+
         :return: List[int] The list of integers
         """
         return [self.msb, self.umb, self.lmb, self.lsb]
@@ -151,6 +153,7 @@ class RolandSysExAddress:
     def to_bytes(self) -> bytes:
         """
         Convert the RolandSysExAddress object to a 4-byte bytes object.
+
         :return: bytes The 4-byte bytes object
         """
         return bytes([self.msb, self.umb, self.lmb, self.lsb])
@@ -179,6 +182,7 @@ class RolandSysExAddress:
     def __repr__(self) -> str:
         """
         Return a string representation of the RolandSysExAddress object.
+
         :return: str The string representation
         """
         return (
@@ -189,6 +193,7 @@ class RolandSysExAddress:
     def __str__(self):
         """
         Return a string representation of the RolandSysExAddress object.
+
         :return: str The string representation
         """
         return f"0x{int(self.msb):02X} 0x{int(self.umb):02X} 0x{int(self.lmb):02X} 0x{int(self.lsb):02X}"
@@ -196,6 +201,7 @@ class RolandSysExAddress:
     def __eq__(self, other: object) -> bool:
         """
         Check if the RolandSysExAddress object is equal to another object.
+
         :param other: object The other object
         :return: bool True if the objects are equal, False otherwise
         """
@@ -206,6 +212,7 @@ class RolandSysExAddress:
     def __hash__(self) -> int:
         """
         Return the hash of the RolandSysExAddress object.
+
         :return: int The hash of the RolandSysExAddress object
         """
         return hash(self.to_bytes())
@@ -418,6 +425,7 @@ class AddressOffsetProgramLMB(Address):
     def message_position(cls):
         """
         Return the fixed message position for command bytes.
+
         :return: int The fixed message position
         """
         return 10
@@ -426,6 +434,7 @@ class AddressOffsetProgramLMB(Address):
     def drum_partial_offset(cls, partial_number: int) -> int:
         """
         Return the LMB offset for the given drum partial (0–37).
+
         :param partial_number: int The partial number
         :return: int The LMB offset
         """
@@ -484,6 +493,7 @@ class AddressOffsetDrumKitLMB(Address):
     def message_position(cls) -> int:
         """
         Return the fixed message position for command bytes.
+
         :return: int The fixed message position
         """
         return 10
@@ -492,6 +502,7 @@ class AddressOffsetDrumKitLMB(Address):
     def drum_partial_offset(cls, partial_number: int) -> int:
         """
         Return the LMB offset for the given drum partial (0–37).
+
         :param partial_number: int The partial number
         :return: int The LMB offset
         """

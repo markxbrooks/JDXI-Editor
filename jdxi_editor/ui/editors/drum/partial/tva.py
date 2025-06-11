@@ -53,6 +53,7 @@ class DrumTVASection(QWidget):
         super().__init__()
         """
         Initialize the DrumTVASection
+
         :param controls: dict
         :param create_parameter_combo_box: Callable
         :param create_parameter_slider: Callable

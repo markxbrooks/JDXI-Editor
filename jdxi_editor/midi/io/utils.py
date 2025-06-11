@@ -20,6 +20,7 @@ from jdxi_editor.midi.sysex.device import DeviceInfo
 def format_midi_message_to_hex_string(message:  Iterable[int]) -> str:
     """
     Convert a list of MIDI byte values to a space-separated hex string.
+
     :param message: Iterable[int]
     :return: str A string like "F0 41 10 00 00 00 0E ... F7"
     """
@@ -29,6 +30,7 @@ def format_midi_message_to_hex_string(message:  Iterable[int]) -> str:
 def increment_if_lsb_exceeds_7bit(msb: int, lsb: int) -> int:
     """
     Increments the MSB if the LSB exceeds 7-bit maximum (127).
+
     :param msb: Most significant byte (int)
     :param lsb: Least significant byte (int)
     :return: Adjusted MSB (int)
@@ -65,6 +67,7 @@ def nibble_data(data: list[int]) -> list[int]:
 def rtmidi_to_mido(byte_message: bytes) -> Union[bool, mido.Message]:
     """
     Convert an rtmidi message to address mido message.
+
     :param byte_message: bytes
     :return: Union[bool, mido.Message]: mido message on success or False otherwise
     """
@@ -80,6 +83,7 @@ def convert_to_mido_message(
 ) -> Optional[Union[mido.Message, List[mido.Message]]]:
     """
     Convert raw MIDI message content to a mido.Message object or a list of them.
+
     :param message_content: List[int] byte list
     :return: Optional[Union[mido.Message, List[mido.Message]] either a single mido message or a list of mido messages
     """
@@ -123,6 +127,7 @@ def convert_to_mido_message(
 def mido_message_data_to_byte_list(message: mido.Message) -> bytes:
     """
     mido message data to byte list
+
     :param message: mido.Message
     :return: bytes
     """
@@ -137,6 +142,7 @@ def mido_message_data_to_byte_list(message: mido.Message) -> bytes:
 def handle_identity_request(message: mido.Message) -> dict:
     """
     Handles an incoming Identity Request
+
     :param message: mido.Message incoming response to identity request
     :return: dict device details
     """

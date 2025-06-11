@@ -115,6 +115,7 @@ class AddressParameterEffect1(AddressParameter):
     def get_display_value(self) -> Tuple[int, int]:
         """
         Get the display range for the parameter
+
         :return: Tuple[int, int] The display range
         """
         return self.display_min, self.display_max
@@ -213,6 +214,7 @@ class AddressParameterEffect1(AddressParameter):
     def get_midi_value(param_name: str, value: int) -> Optional[int]:
         """
         Get the MIDI value for address parameter by name and value.
+
         :param param_name: str The parameter name
         :param value: int The value
         :return: Optional[int] The MIDI value
@@ -228,6 +230,7 @@ class AddressParameterEffect1(AddressParameter):
     ) -> Optional[AddressParameterEffectCommon]:
         """
         Look up an effect parameter's category using address dictionary mapping
+
         :param name: str The parameter name
         :return: Optional[AddressParameterEffectCommon] The category
         """
@@ -270,6 +273,7 @@ class AddressParameterEffect2(AddressParameter):
     def get_display_value(self) -> Tuple[int, int]:
         """
         Get the display range for the parameter
+
         :return: Tuple[int, int] The display range
         """
         return self.display_min, self.display_max
@@ -383,6 +387,7 @@ class AddressParameterEffect2(AddressParameter):
     def get_midi_value(param_name: str, value: int) -> Optional[int]:
         """
         Get the MIDI value for address parameter by name and value.
+
         :param param_name: str The parameter name
         :param value: int The value
         :return: Optional[int] The MIDI value
@@ -398,6 +403,7 @@ class AddressParameterEffect2(AddressParameter):
     ) -> Optional[AddressParameterEffectCommon]:
         """
         Look up an effect parameter's category using address dictionary mapping
+
         :param name: str The parameter name
         :return: Optional[AddressParameterEffectCommon] The category
         """
@@ -439,6 +445,7 @@ class AddressParameterDelay(AddressParameter):
     def get_display_value(self) -> Tuple[int, int]:
         """
         Get the display range for the parameter
+
         :return: Tuple[int, int] The display range
         """
         return self.display_min, self.display_max
@@ -499,6 +506,7 @@ class AddressParameterDelay(AddressParameter):
     def get_midi_value(param_name: str, value: int) -> Optional[int]:
         """
         Get the MIDI value for address parameter by name and value.
+
         :param param_name: str The parameter name
         :param value: int The value
         :return: Optional[int] The MIDI value
@@ -514,6 +522,7 @@ class AddressParameterDelay(AddressParameter):
     ) -> Optional[AddressParameterEffectCommon]:
         """
         Look up an effect parameter's category using address dictionary mapping
+
         :param name: str The parameter name
         :return: Optional[AddressParameterEffectCommon] The category
         """
@@ -559,6 +568,7 @@ class AddressParameterReverb(AddressParameter):
     def get_display_value(self) -> Tuple[int, int]:
         """
         Get the display range for the parameter
+
         :return: Tuple[int, int] The display range
         """
         return self.display_min, self.display_max
@@ -618,6 +628,7 @@ class AddressParameterReverb(AddressParameter):
     def get_midi_value(param_name: str, value: int) -> Optional[int]:
         """
         Get the MIDI value for address parameter by name and value.
+
         :param param_name: str The parameter name
         :param value: int The value
         :return: Optional[int] The MIDI value
@@ -633,6 +644,7 @@ class AddressParameterReverb(AddressParameter):
     ) -> Optional[AddressParameterEffectCommon]:
         """
         Look up an effect parameter's category using address dictionary mapping
+
         :param name: str The parameter name
         :return: Optional[AddressParameterEffectCommon] The category
         """

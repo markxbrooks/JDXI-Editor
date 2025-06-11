@@ -261,6 +261,7 @@ class JDXiInstrument(JDXiUi):
     def closeEvent(self, event: QCloseEvent) -> None:
         """
         Handle window close event
+
         :param event: QCloseEvent
         :return: None
         """
@@ -275,6 +276,7 @@ class JDXiInstrument(JDXiUi):
     def mousePressEvent(self, event: QMouseEvent) -> None:
         """
         mousePressEvent
+
         :param event: mousePressEvent
         :return: None
         """
@@ -284,6 +286,7 @@ class JDXiInstrument(JDXiUi):
     def mouseMoveEvent(self, event: QMouseEvent) :
         """
         mouseMoveEvent
+
         :param event: QMouseEvent
         :return: None
         """
@@ -295,6 +298,7 @@ class JDXiInstrument(JDXiUi):
     def mouseReleaseEvent(self, event: QMouseEvent) -> None:
         """
         mouseReleaseEvent
+
         :param event: QMouseEvent
         :return: None
         """
@@ -316,6 +320,7 @@ class JDXiInstrument(JDXiUi):
     def _handle_program_change(self, bank_letter: str, program_number: int) -> None:
         """
         perform data request
+
         :param bank_letter: str
         :param program_number: int
         :return: None
@@ -325,6 +330,7 @@ class JDXiInstrument(JDXiUi):
     def register_editor(self, editor: SynthEditor) -> None:
         """
         register editor
+
         :param editor: SynthEditor
         :return: None
         """
@@ -336,6 +342,7 @@ class JDXiInstrument(JDXiUi):
     def set_tone_name_by_type(self, tone_name: str, synth_type: str) -> None:
         """
         set tone name by type
+
         :param tone_name: str Tone name
         :param synth_type: str Synth type
         :return: None
@@ -348,6 +355,7 @@ class JDXiInstrument(JDXiUi):
     def get_preset_helper_for_current_synth(self) -> JDXiPresetHelper:
         """
         Return the appropriate preset helper based on the current synth preset_type
+
         :return: JDXiPresetHelper
         """
         helper = self.preset_helpers.get(self.current_synth_type)
@@ -361,6 +369,7 @@ class JDXiInstrument(JDXiUi):
     def set_current_program_name(self, program_name: str) -> None:
         """
         program name
+
         :param program_name: str
         :return: None
         """
@@ -375,6 +384,7 @@ class JDXiInstrument(JDXiUi):
     def set_current_program_number(self, channel: int, program_number: int) -> None:
         """
         program number
+
         :param channel: int midi channel (discarded)
         :param program_number: int Program number
         :return: None
@@ -386,6 +396,7 @@ class JDXiInstrument(JDXiUi):
     def _select_synth(self, synth_type: JDXiSynth) -> None:
         """
         Select address synth and update button styles
+
         :param synth_type: JDXiSynth
         :return: None
         """
@@ -410,6 +421,7 @@ class JDXiInstrument(JDXiUi):
     def _program_update(self, index_change: int) -> None:
         """
         Update the program by incrementing or decrementing its index
+
         :param index_change: int
         :return: None
         """
@@ -435,6 +447,7 @@ class JDXiInstrument(JDXiUi):
     def _preset_update(self, index_change: int) -> None:
         """
         Update the preset by incrementing or decrementing its index
+
         :param index_change: int
         :return: None
         """
@@ -470,6 +483,7 @@ class JDXiInstrument(JDXiUi):
     def _preset_previous(self) -> None:
         """
         Decrement the tone index and update the display
+
         :return: None
         """
         self._preset_update(-1)
@@ -483,6 +497,7 @@ class JDXiInstrument(JDXiUi):
     ) -> None:
         """
         Update the display for the given synth preset_type and preset index
+
         :param synth_type: JDXiSynth
         :param preset_index: int
         :param channel: int
@@ -501,6 +516,7 @@ class JDXiInstrument(JDXiUi):
     def _toggle_illuminate_sequencer_lightshow(self, enabled: bool) -> None:
         """
         Toggle the sequencer lightshow on or off
+
         :param enabled: bool
         :return: None
         """
@@ -537,6 +553,7 @@ class JDXiInstrument(JDXiUi):
     def init_main_editor(self) -> None:
         """
         Initialize the UI for the MainEditor
+
         :return:
         """
         self.show_editor("program")
@@ -554,6 +571,7 @@ class JDXiInstrument(JDXiUi):
     def show_editor(self, editor_type: str) -> None:
         """
         Show editor of given type
+
         :param editor_type: str Editor type
         :return: None
         """
@@ -572,6 +590,7 @@ class JDXiInstrument(JDXiUi):
     def on_documentation(self):
         """
         on_documentation
+
         :return: None
         """
         html_file = documentation_file_path("index.html")
@@ -583,6 +602,7 @@ class JDXiInstrument(JDXiUi):
     def get_existing_editor(self, editor_class) -> Optional[SynthEditor]:
         """
         Get existing editor instance of the specified class
+
         :param editor_class: class
         :return: Optional[SynthEditor]
         """
@@ -594,6 +614,7 @@ class JDXiInstrument(JDXiUi):
     def _show_editor_tab(self, title: str, editor_class, icon, **kwargs) -> None:
         """
         _show_editor_tab
+
         :param title: str Title of the tab
         :param editor_class: cls Class of the Editor
         :param kwargs:
@@ -656,6 +677,7 @@ class JDXiInstrument(JDXiUi):
     def show_editor_old(self, editor_type: str) -> None:
         """
         Show editor of given type
+
         :param editor_type: str
         :return: None
         """
@@ -714,6 +736,7 @@ class JDXiInstrument(JDXiUi):
     def _show_editor(self, title: str, editor_class, **kwargs) -> None:
         """
         _show editor
+
         :param title: str
         :param editor_class: class
         :param kwargs: Any
@@ -825,6 +848,7 @@ class JDXiInstrument(JDXiUi):
     def _show_about_help(self) -> None:
         """
         _show_about_help
+
         :return:
         """
         about_dialog = UiAboutDialog(self)
@@ -835,6 +859,7 @@ class JDXiInstrument(JDXiUi):
     def _show_main_editor(self) -> None:
         """
         _show_about_help
+
         :return:
         """
         if not self.main_editor:
@@ -871,6 +896,7 @@ class JDXiInstrument(JDXiUi):
     def load_button_preset(self, button: SequencerSquare) -> None:
         """
         load preset data stored on the button
+
         :param button: SequencerSquare
         :return: None
         """
@@ -933,6 +959,7 @@ class JDXiInstrument(JDXiUi):
     def _get_current_preset_type(self) -> JDXiSynth:
         """
         Get the preset_type of the currently selected preset
+
         :return: JDXiSynth
         """
         return self.current_synth_type
@@ -952,6 +979,7 @@ class JDXiInstrument(JDXiUi):
     ) -> None:
         """
         Set MIDI input and output ports
+
         :param in_port:
         :param out_port:
         :return: None
@@ -980,6 +1008,7 @@ class JDXiInstrument(JDXiUi):
     def _midi_send_octave(self, direction: int) -> Union[None, bool]:
         """
         Send octave change MIDI message
+
         :param direction: int
         :return: Union[None, bool]
         """
@@ -1009,6 +1038,7 @@ class JDXiInstrument(JDXiUi):
     def _midi_send_arp_key_hold(self, state: bool) -> None:
         """
         Send arpeggiator key hold (latch) command
+
         :param state: bool
         :return: None
         """
@@ -1058,6 +1088,7 @@ class JDXiInstrument(JDXiUi):
     def _midi_send_arp_on_off(self, state: bool) -> None:
         """
         Send arpeggiator on/off command
+
         :param state: bool ON/OFF
         :return: None
         """
@@ -1093,6 +1124,7 @@ class JDXiInstrument(JDXiUi):
     def handle_piano_note_on(self, note_num: int) -> None:
         """
         Handle piano key press
+
         :param note_num: int note midi number
         :return: None
         """
@@ -1105,6 +1137,7 @@ class JDXiInstrument(JDXiUi):
     def handle_piano_note_off(self, note_num: int) -> None:
         """
         Handle piano key release
+
         :param note_num: int midi note number
         :return: None
         """
@@ -1204,6 +1237,7 @@ class JDXiInstrument(JDXiUi):
     def _save_to_favorite(self, button: Union[FavoriteButton, SequencerSquare]) -> None:
         """
         Save current preset to favorite slot
+
         :param button: Union[FavoriteButton, SequencerSquare]
         :return: None
         """
@@ -1237,6 +1271,7 @@ class JDXiInstrument(JDXiUi):
     def _clear_favorite(self, button: Union[FavoriteButton, SequencerSquare]) -> None:
         """
         Clear favorite slot
+
         :param button: FavoriteButton
         :return: None
         """
@@ -1268,6 +1303,7 @@ class JDXiInstrument(JDXiUi):
     ) -> None:
         """
         Save the current preset as an address favorite and prevent toggling off
+
         :param button: button: Union[FavoriteButton, SequencerSquare]
         :param index: int
         :return: None

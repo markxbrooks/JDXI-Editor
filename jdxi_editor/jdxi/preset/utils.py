@@ -6,6 +6,7 @@ from jdxi_editor.ui.editors.helpers.preset import get_preset_parameter_value
 def get_preset_values(preset_index, preset_list=DIGITAL_PRESET_LIST):
     """
     Retrieve MSB, LSB, and PC values for a given preset.
+
     :param preset_index: int The index of the preset
     :param preset_list: list The list of presets
     :return: tuple The MSB, LSB, and PC values

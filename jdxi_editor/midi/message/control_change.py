@@ -55,6 +55,7 @@ class ControlChangeMessage(MidiMessage):
     def to_message_list(self) -> List[int]:
         """
         Convert Control Change message to a list of bytes for sending
+
         :return: list
         """
         status_byte = self.status | (
