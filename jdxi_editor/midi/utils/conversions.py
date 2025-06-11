@@ -11,9 +11,9 @@ from jdxi_editor.jdxi.midi.constant import MidiConstant
 from jdxi_editor.jdxi.midi.constant import MidiConstant
 
 
-def midi_value_to_ms(
-    midi_value: int, min_time: int = 10, max_time: int = 1000
-) -> float:
+def midi_value_to_ms(midi_value: int,
+                     min_time: int = 10,
+                     max_time: int = 1000) -> float:
     """
     Converts a MIDI value (0–127) to a time value in milliseconds.
 
@@ -31,7 +31,9 @@ def midi_value_to_ms(
     return ms_time
 
 
-def ms_to_midi_value(ms_time: float, min_time: int = 10, max_time: int = 1000) -> int:
+def ms_to_midi_value(ms_time: float,
+                     min_time: int = 10,
+                     max_time: int = 1000) -> int:
     """
     Converts address time value in milliseconds to address MIDI byte range value (0-127)
 
@@ -47,8 +49,9 @@ def ms_to_midi_value(ms_time: float, min_time: int = 10, max_time: int = 1000) -
     return midi_value
 
 
-def fraction_to_midi_value(
-    fractional_value: float, minimum: float = 0, maximum: float = 1
+def fraction_to_midi_value(fractional_value: float,
+                           minimum: float = 0.0,
+                           maximum: float = 1.0
 ) -> int:
     """
     Converts address fractional value (0.0-1.0) to address MIDI CC value (0-127).
@@ -65,9 +68,9 @@ def fraction_to_midi_value(
     return midi_value
 
 
-def midi_value_to_fraction(
-    midi_value: int, minimum: float = 0, maximum: float = 1
-) -> float:
+def midi_value_to_fraction(midi_value: int,
+                           minimum: float = 0.0,
+                           maximum: float = 1.0) -> float:
     """
     Converts address MIDI value (0-127) to address fractional value (0.0-1.0).
 
