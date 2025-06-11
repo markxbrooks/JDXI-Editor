@@ -9,14 +9,17 @@ from jdxi_editor.resources import resource_path
 def documentation_file_path(file_name: str) -> str:
     """
     documentation_file_path
+
     :param file_name: str The file name to return a path for the documentation file
     :return: str The file path
     """
-    return resource_path(os.path.join("doc", "_build", "html", file_name))
+    return resource_path(os.path.join("doc", "build", "html", file_name))
+
 
 def os_file_open(file_name: str) -> None:
     """
     os_file_open
+
     :param file_name:  str
     :return None:
     Opens a file using default program from the OS
@@ -31,4 +34,4 @@ def os_file_open(file_name: str) -> None:
         else:  # linux variants
             subprocess.call(['xdg-open', file_name])
     except OSError as error:
-        log.debug(f"Error opening file: {error}")
+        log.error(f"Error opening file: {error}")

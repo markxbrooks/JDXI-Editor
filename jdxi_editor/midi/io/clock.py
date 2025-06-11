@@ -1,4 +1,4 @@
-import mido
+"""import mido
 import time
 
 try:
@@ -18,4 +18,4 @@ try:
 except KeyboardInterrupt:
     print("Stopping MIDI clock.")
 finally:
-    outport.close()
+    outport.close()"""
