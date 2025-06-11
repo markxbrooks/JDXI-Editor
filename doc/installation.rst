@@ -3,18 +3,18 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Installation of the JDXi Editor
+Installation of the JD-Xi Editor
 ===============================
 
-1) Install the JDXi Editor
+1) Install the JD-Xi Editor
 
-The JDXi Editor is packaged under both MacOS as a .app, in a DMG file, and under Windows as an Nullsoft Installer (NSIS) file.
+The JD-Xi Editor is packaged under both MacOS as a .app, in a DMG file, and under Windows as an Nullsoft Installer (NSIS) file.
 
 MacOS:
 
 .. code-block:: console
 
-   $ open JDXi-Editor-0.8.dmg
+   $ open JD-Xi-Editor-0.8.dmg
 
 Windows:
 

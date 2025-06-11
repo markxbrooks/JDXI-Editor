@@ -1,24 +1,19 @@
-.. JDXi Editor documentation master file, created by
+.. JD-Xi Editor documentation master file, created by
    sphinx-quickstart on Tue Jun 10 19:47:55 2025.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to JDXi Editor's documentation!
+Welcome to JD-Xi Editor's documentation!
 =======================================
-
-.. include:: intro.rst
-
-.. include:: installation.rst
-
-.. include:: usage.rst
-
-.. include:: api.rst
-
-.. include:: troubleshooting.rst
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
+
+   intro
+   installation
+   usage
+   troubleshooting
 
 .. automodule:: jdxi_editor
    :members:
@@ -39,11 +34,9 @@ Indices and tables
    :maxdepth: 6
    :caption: API Reference:
 
-   api
-   jdxi_editor/jdxi/preset/button
-   jdxi_editor/jdxi/preset/__init__
-
    modules
+
+
 
 Indices and tables
 ==================
