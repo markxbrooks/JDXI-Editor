@@ -73,6 +73,7 @@ class AddressParameterSystemCommon(AddressParameter):
     def get_address_for_partial(self, partial_number: int = 0) -> Tuple[int, int]:
         """
         Get parameter area and address adjusted for partial number.
+
         :param partial_number: int The partial number
         :return: Tuple[int, int] The address
         """
@@ -215,6 +216,7 @@ from the JD-Xi.)""")  # Program Tempo (500-30000: 5.00-300.00 BPM)
     def get_address_for_partial(self, partial_number: int = 0) -> Tuple[int, int]:
         """
         Get parameter area and address adjusted for partial number.
+
         :param partial_number: int The partial number
         :return: Tuple[int, int] The address
         """

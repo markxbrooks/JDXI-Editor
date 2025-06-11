@@ -56,6 +56,7 @@ class ADSRPlot(QWidget):
         super().__init__(parent)
         """
         Initialize the ADSRPlot
+
         :param width: int
         :param height: int
         :param envelope: dict

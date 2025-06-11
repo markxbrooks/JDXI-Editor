@@ -20,6 +20,7 @@ TOKEN_PATTERNS = {
 def tokenize(input_string: str) -> dict[str, str]:
     """
     tokenize
+
     :param input_string: str
     :return: dict[str,str] tokens
     """
@@ -35,6 +36,7 @@ def tokenize(input_string: str) -> dict[str, str]:
 def generate_mapping(input_string: str) -> Optional[dict[str, str]]:
     """
     generate_mapping
+
     :param input_string: str
     :return: Optional[dict[str, str]]
     """

@@ -49,6 +49,7 @@ class PlaybackWorker(QObject):
 def format_time(seconds: float) -> str:
     """
     Format a time in seconds to a string
+
     :param seconds: float
     :return: str
     """
@@ -70,6 +71,7 @@ class MidiFileEditor(SynthEditor):
         self.worker_thread = None
         """
         Initialize the MidiPlayer
+
         :param midi_helper: Optional[MidiIOHelper]
         :param parent: Optional[QWidget]
         :param preset_helper: Optional[JDXIPresetHelper]
@@ -358,6 +360,7 @@ class MidiFileEditor(SynthEditor):
     def toggle_pause_playback(self):
         """
         Toggle pause and resume playback.
+
         :return: None
         """
         if not self.midi_file or not self.timer:

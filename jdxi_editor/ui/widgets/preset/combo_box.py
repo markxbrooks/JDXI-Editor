@@ -84,6 +84,7 @@ class PresetComboBox(QWidget):
     def _filter_presets(self, search_text: str):
         """
         Filter presets based on the search text.
+
         :param search_text: str
         :return: None
         """

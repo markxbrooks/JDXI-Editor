@@ -6,6 +6,7 @@ from jdxi_editor.log.logger import Logger as log
 def log_json(data: Dict[str], silent: bool = False) -> None:
     """
     Helper function to log JSON data as address single line.
+
     :param silent: bool
     :param data: Dict
     :return: None

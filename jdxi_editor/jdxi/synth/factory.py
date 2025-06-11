@@ -24,6 +24,7 @@ def create_synth_data(synth_type: JDXiSynth, partial_number: int = 0) -> Union[
     AnalogSynthData, DrumSynthData, DigitalSynthData, None]:
     """
     Factory function to create synth data based on the synth type and partial number.
+
     :param synth_type: str
     :param partial_number: int
     :return: JDXISynthData

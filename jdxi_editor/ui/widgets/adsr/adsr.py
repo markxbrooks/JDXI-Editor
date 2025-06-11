@@ -55,6 +55,7 @@ class ADSR(EnvelopeWidgetBase):
         self.sysex_composer = JDXiSysExComposer()
         """
         Initialize the ADSR widget
+
         :param attack_param: AddressParameter
         :param decay_param: AddressParameter
         :param sustain_param: AddressParameter

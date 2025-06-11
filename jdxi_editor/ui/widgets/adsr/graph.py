@@ -10,6 +10,7 @@ class ADSRGraph(QWidget):
         super().__init__(parent)
         """
         Initialize the ADSRGraph
+
         :param parent: Optional[QWidget]
         """
         self.setMinimumHeight(150)

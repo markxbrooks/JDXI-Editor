@@ -15,6 +15,7 @@ def load_programs() -> List[Dict[str, str]]:
 def save_programs(program_list: List[Dict[str, str]]) -> None:
     """
     save_programs
+
     :param program_list: List[Dict[str, str]]
     :return: None
     """
@@ -25,6 +26,7 @@ def save_programs(program_list: List[Dict[str, str]]) -> None:
 def add_program_and_save(new_program: Dict[str, str]) -> bool:
     """
     add_program_and_save
+
     :param new_program:
     :return:
     """

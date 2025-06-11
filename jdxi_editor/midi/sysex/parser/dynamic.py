@@ -13,6 +13,7 @@ from jdxi_editor.log.logger import Logger as log
 def dynamic_map_resolver(data: bytes) -> Dict[str, str]:
     """
     Dynamically resolve mappings for SysEx data.
+
     :param data: bytes SysEx message data
     :return: Dict[str, str]
     """
@@ -51,6 +52,7 @@ def dynamic_map_resolver(data: bytes) -> Dict[str, str]:
 def parse_sysex_with_dynamic_mapping(data: bytes) -> Dict[str, str]:
     """
     Parse SysEx data using dynamic mapping.
+
     :param data: bytes SysEx message data
     :return: Dict[str, str]
     """

@@ -3,20 +3,20 @@ DigitalToneMessage
 ==================
 # Example usage:
 # Set common parameter
-msg = DigitalToneMessage(
-    tone_type=TEMP_DIGITAL_TONE,  # Digital 1
-    section=DigitalToneSection.COMMON.value,
-    param=0x00,  # Common parameter
-    value=64,
-)
+>>> msg = DigitalToneMessage(
+>>>     tone_type=TEMP_DIGITAL_TONE,  # Digital 1
+>>>     section=DigitalToneSection.COMMON.value,
+>>>     param=0x00,  # Common parameter
+>>>     value=64,
+>>> )
 
 # Set partial parameter
-msg = DigitalToneMessage(
-    tone_type=TEMP_DIGITAL_TONE,  # Digital 1
-    section=DigitalToneSection.PARTIAL_1.value,
-    param=0x00,  # Partial parameter
-    value=64,
-)
+>>> msg = DigitalToneMessage(
+>>>     tone_type=TEMP_DIGITAL_TONE,  # Digital 1
+>>>     section=DigitalToneSection.PARTIAL_1.value,
+>>>     param=0x00,  # Partial parameter
+>>>     value=64,
+>>> )
 
 # Set modify parameter
 msg = DigitalToneMessage(

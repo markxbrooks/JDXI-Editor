@@ -89,6 +89,7 @@ class DeviceInfo:
     def from_identity_reply(cls, data: bytes) -> Optional["DeviceInfo"]:
         """
         Parse an Identity Reply SysEx message into a DeviceInfo object.
+
         :param data: bytes
         :return: DeviceInfo
         """

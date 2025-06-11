@@ -1992,6 +1992,7 @@ def get_preset_by_program_number(program_number: str) -> Optional[dict]:
 def get_preset_parameters(program_number: str) -> Optional[Tuple[int, int, int]]:
     """
     Get MSB, LSB, and PC values for a given program number.
+
     :param program_number: str The program number (e.g., '090')
     :return: Tuple[int, int, int] The MSB, LSB, and PC values as integers
     :return: Optional[Tuple[int, int, int]] The MSB, LSB, and PC values as integers

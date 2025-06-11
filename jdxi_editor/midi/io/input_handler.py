@@ -50,6 +50,7 @@ from jdxi_editor.midi.data.address.address import AddressStartMSB as AreaMSB
 def add_program_and_save(new_program: Dict[str, str]) -> bool:
     """
     add_program_and_save
+
     :param new_program:
     :return:
     """
@@ -78,6 +79,7 @@ def load_programs() -> List[Dict[str, str]]:
 def save_programs(program_list: List[Dict[str, str]]) -> None:
     """
     save_programs
+
     :param program_list: List[Dict[str, str]]
     :return: None
     """
@@ -138,6 +140,7 @@ class MidiInHandler(MidiIOController):
     def reopen_input_port_name(self, in_port: str) -> bool:
         """
         Reopen the current MIDI input port and reattach the callback.
+
         :param in_port: str
         :return: bool
         """
@@ -168,6 +171,7 @@ class MidiInHandler(MidiIOController):
     def set_callback(self, callback: Callable) -> None:
         """
         Set address callback for MIDI messages.
+
         :param callback: The callback function to be set.
         """
         try:
@@ -180,6 +184,7 @@ class MidiInHandler(MidiIOController):
     def _handle_midi_message(self, message: Any) -> None:
         """
         Routes MIDI messages to appropriate handlers
+
         :param message: Any
         :return: None
         """
@@ -205,6 +210,7 @@ class MidiInHandler(MidiIOController):
     def _handle_note_change(self, message: mido.Message, preset_data: dict) -> None:
         """
         Handle Note On and Note Off MIDI messages.
+
         :param message: Any The MIDI message.
         :param preset_data: Dictionary for preset data modifications.
         """
@@ -269,6 +275,7 @@ class MidiInHandler(MidiIOController):
     def _handle_control_change(self, message: mido.Message, preset_data: dict) -> None:  # @@
         """
         Handle Control Change (CC) MIDI messages.
+
         :param message: mido.Message The MIDI Control Change message.
         :param preset_data: Dictionary for preset data modifications.
         """
@@ -362,6 +369,7 @@ class MidiInHandler(MidiIOController):
     def _auto_add_current_program(self):
         """
         _auto_add_current_program
+
         :return:
         """
         data = self._incoming_preset_data
@@ -396,6 +404,7 @@ class MidiInHandler(MidiIOController):
     def _auto_add_current_program_old(self):
         """
         _auto_add_current_program
+
         :return:
         """
         data = self._incoming_preset_data
@@ -428,6 +437,7 @@ class MidiInHandler(MidiIOController):
     def _emit_program_name_signal(self, area: str, tone_name: str) -> None:
         """
         Emits the appropriate Qt signal for a given tone name
+
         :param area: str
         :param tone_name: str
         :return: None
@@ -439,6 +449,7 @@ class MidiInHandler(MidiIOController):
     def _emit_tone_name_signal(self, area: str, tone_name: str) -> None:
         """
         Emits the appropriate Qt signal for a given tone name
+
         :param area: str
         :param tone_name: str
         :return: None

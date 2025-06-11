@@ -190,6 +190,7 @@ class DigitalSynthEditor(SynthEditor):
     ) -> None:
         """
         Create the partial tab widget for the digital synth editor.
+
         :param container_layout: QVBoxLayout for the main container
         :param midi_helper: MiodiIOHelper instance for MIDI communication
         :return: None
@@ -225,6 +226,7 @@ class DigitalSynthEditor(SynthEditor):
     ) -> None:
         """
         Handle the state change of a partial (enabled/disabled and selected/unselected).
+
         :param partial: The partial to modify
         :param enabled: Whether the partial is enabled (ON/OFF)
         :param selected: Whether the partial is selected
@@ -245,6 +247,7 @@ class DigitalSynthEditor(SynthEditor):
     ) -> Optional[bool]:
         """
         Set the state of a partial (enabled/disabled and selected/unselected).
+
         :param partial: The partial to modify
         :param enabled: Whether the partial is enabled (ON/OFF)
         :param selected: Whether the partial is selected
@@ -282,6 +285,7 @@ class DigitalSynthEditor(SynthEditor):
     ) -> None:
         """
         Handle special parameters that require additional UI updates.
+
         :param partial_no: int
         :param param: AddressParameter
         :param value: int
@@ -303,6 +307,7 @@ class DigitalSynthEditor(SynthEditor):
     ) -> None:
         """
         Apply updates to the UI components based on the received SysEx data.
+
         :param partial_no: int
         :param sysex_data: dict
         :param successes: list
@@ -341,6 +346,7 @@ class DigitalSynthEditor(SynthEditor):
     def _update_filter_state(self, partial_no: int, value: int) -> None:
         """
         Update the filter state of a partial based on the given value.
+
         :param partial_no: int
         :param value: int
         :return: None
@@ -356,6 +362,7 @@ class DigitalSynthEditor(SynthEditor):
     ) -> None:
         """
         Update the UI components for tone common and modify parameters.
+
         :param partial_number: int partial number
         :param sysex_data: Dictionary containing SysEx data
         :param successes: List of successful parameters
@@ -409,6 +416,7 @@ class DigitalSynthEditor(SynthEditor):
     ) -> None:
         """
         Update the UI components for tone common and modify parameters.
+
         :param partial_number: int partial number
         :param sysex_data: dict Dictionary containing SysEx data
         :param successes: list List of successful parameters
@@ -444,6 +452,7 @@ class DigitalSynthEditor(SynthEditor):
     ):
         """
         Update the ADSR widget for a specific partial based on the parameter and value.
+
         :param partial_no: int Partial number
         :param param: AddressParameter address
         :param midi_value: int value
@@ -505,6 +514,7 @@ class DigitalSynthEditor(SynthEditor):
     ):
         """
         Update the Pitch Env widget for a specific partial based on the parameter and value.
+
         :param partial_no: int Partial number
         :param param: AddressParameter address
         :param midi_value: int value
@@ -547,6 +557,7 @@ class DigitalSynthEditor(SynthEditor):
             failures: list = None):
         """
         Update the Pitch Env widget for a specific partial based on the parameter and value.
+
         :param partial_no: int Partial number
         :param param: AddressParameter address
         :param midi_value: int value
@@ -587,6 +598,7 @@ class DigitalSynthEditor(SynthEditor):
     ) -> None:
         """
         Update the partial selection switches based on parameter and value.
+
         :param param: AddressParameter
         :param value: int
         :param successes: list
@@ -621,6 +633,7 @@ class DigitalSynthEditor(SynthEditor):
     ) -> None:
         """
         Update the partial selected state based on parameter and value.
+
         :param param: AddressParameter
         :param value: int
         :param successes: list
@@ -648,6 +661,7 @@ class DigitalSynthEditor(SynthEditor):
     def _update_waveform_buttons(self, partial_number: int, value: int):
         """
          Update the waveform buttons based on the OSC_WAVE value with visual feedback
+
         :param partial_number: int
         :param value: int
         :return:

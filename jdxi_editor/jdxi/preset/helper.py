@@ -106,6 +106,7 @@ class JDXiPresetHelper(QObject):
     def load_preset(self, preset_data: JDXiPresetButtonData):
         """
         Load the preset based on the provided data
+
         :param preset_data: JDXIPresetData
         :return: None
         """
@@ -139,6 +140,7 @@ class JDXiPresetHelper(QObject):
     def send_program_change(self, channel: int, msb: int, lsb: int, pc: int) -> None:
         """
         Send a Bank Select and Program Change message
+
         :param channel: int
         :param msb: int
         :param lsb: int

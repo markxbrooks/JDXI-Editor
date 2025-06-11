@@ -96,6 +96,7 @@ class MidiOutHandler(MidiIOController):
                      channel: int = 1) -> None:
         """
         Send 'Note On' message to the specified MIDI channel.
+
         :param note: int MIDI note number (0–127), default is 60 (Middle C).
         :param velocity: int Note velocity (0–127), default is 127.
         :param channel: int MIDI channel (1–16), default is 1.
@@ -108,6 +109,7 @@ class MidiOutHandler(MidiIOController):
                       channel: int = 1) -> None:
         """
         Send address 'Note Off' message
+
         :param note: int MIDI note number (0–127), default is 60 (Middle C).
         :param velocity: int Note velocity (0–127), default is 127.
         :param channel: int MIDI channel (1–16), default is 1.
@@ -121,6 +123,7 @@ class MidiOutHandler(MidiIOController):
                              channel: int = 1) -> None:
         """
         Send a MIDI Channel Message.
+
         :param status: int Status byte (e.g., NOTE_ON, NOTE_OFF, CONTROL_CHANGE).
         :param data1: Optional[int]): First data byte, typically a note or controller number.
         :param data2: Optional[int]): Second data byte, typically velocity or value.
@@ -141,6 +144,7 @@ class MidiOutHandler(MidiIOController):
                          channel: int = 0) -> bool:
         """
         Send address bank select message.
+
         :param msb: int Upper byte of the bank.
         :param lsb: int Lower byte of the bank.
         :param channel: int midi channel (0-15).
@@ -164,6 +168,7 @@ class MidiOutHandler(MidiIOController):
     def send_identity_request(self) -> bool:
         """
         Send identity request message (Universal System Exclusive).
+
         :return: bool True if the message was sent successfully, False otherwise.
         """
         log.message("=========Sending identity request========")
@@ -184,6 +189,7 @@ class MidiOutHandler(MidiIOController):
                           sysex_message: MidiMessage) -> bool:
         """
         Send SysEx parameter change message using a MidiMessage.
+
         :param sysex_message: MidiMessage instance to be converted and sent.
         :return: True if the message was successfully sent, False otherwise.
         """
@@ -199,6 +205,7 @@ class MidiOutHandler(MidiIOController):
                             channel: int = 0) -> bool:
         """
         Send address program change message.
+
         :param program: int Program number (0-127).
         :param channel: int MIDI channel (0-15).
         :return: True if successful, False otherwise.
@@ -222,6 +229,7 @@ class MidiOutHandler(MidiIOController):
                             channel: int = 0) -> bool:
         """
         Send control change message.
+
         :param controller: int Controller number (0–127).
         :param value: int Controller value (0–127).
         :param channel: int MIDI channel (0–15).
@@ -254,6 +262,7 @@ class MidiOutHandler(MidiIOController):
                  channel: int = 0) -> bool:
         """
         Send a Registered Parameter Number (RPN) message via MIDI Control Change.
+
         :param parameter: int RPN parameter number (0–16383).
         :param value: int Parameter value (0–16383).
         :param channel: int MIDI channel (0–15).
@@ -299,6 +308,7 @@ class MidiOutHandler(MidiIOController):
                   use_14bit: bool = False) -> bool:
         """
         Send a Non-Registered Parameter Number (NRPN) message via MIDI Control Change.
+
         :param parameter: int NRPN parameter number (0–16383).
         :param value: int Parameter value (0–16383 for 14-bit, 0–127 for 7-bit).
         :param channel: int MIDI channel (0–15).
@@ -353,6 +363,7 @@ class MidiOutHandler(MidiIOController):
     ) -> bool:
         """
         Sends Bank Select and Program Change messages.
+
         :param channel: int MIDI channel (1-16).
         :param bank_msb: int Bank MSB value.
         :param bank_lsb: int Bank LSB value.
@@ -385,6 +396,7 @@ class MidiOutHandler(MidiIOController):
     def identify_device(self) -> None:
         """
         Send Identity Request and verify response
+
         :return: None
         """
         request = IdentityRequestMessage()
@@ -394,6 +406,7 @@ class MidiOutHandler(MidiIOController):
     def send_message(self, message: MidiMessage) -> None:
         """
         unpack the message list and send it
+
         :param message: MidiMessage
         :return: None
         """

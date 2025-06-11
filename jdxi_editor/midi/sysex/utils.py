@@ -39,6 +39,7 @@ def map_range(value: int,
 def calculate_checksum(data: tuple) -> int:
     """
     Calculate Roland checksum for parameter messages.
+
     :param data: tuple of integers (bytes) to calculate checksum for.
     :return: int
     """
@@ -48,6 +49,7 @@ def calculate_checksum(data: tuple) -> int:
 def bytes_to_hex(byte_list: list, prefix: str = "F0") -> Optional[str]:
     """
     Convert a list of byte values to a space-separated hex string.
+
     :param byte_list: List of integers (bytes).
     :param prefix: Optional prefix (default is "F0" for SysEx messages).
     :return: str Formatted hex string.

@@ -80,6 +80,7 @@ class ArpeggioEditor(BasicEditor):
         super().__init__(midi_helper=midi_helper, parent=parent)
         """
         Initialize the ArpeggioEditor
+
         :param midi_helper: MidiIOHelper
         :param preset_helper: JDXIPresetHelper
         :param parent: QWidget

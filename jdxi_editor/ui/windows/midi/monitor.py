@@ -50,6 +50,7 @@ class MIDIMessageMonitor(QMainWindow):
     def process_incoming_message(self, message: str) -> None:
         """
         process_incoming_message
+
         :param message: str
         :return: None
         """
@@ -58,6 +59,7 @@ class MIDIMessageMonitor(QMainWindow):
     def process_outgoing_message(self, message: str) -> None:
         """
         process_outgoing_message
+
         :param message: str
         :return: None
         """
@@ -66,6 +68,7 @@ class MIDIMessageMonitor(QMainWindow):
     def log_message(self, message: str, direction="→"):
         """
         Log address MIDI message with timestamp and hex formatting if possible
+
         :param message: str
         :param direction: str
         :return: None

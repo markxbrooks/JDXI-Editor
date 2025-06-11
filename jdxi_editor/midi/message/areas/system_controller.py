@@ -3,24 +3,24 @@ SystemControllerMessage
 =======================
 # Example usage:
 # Enable program change transmission
-msg = SystemControllerMessage(
-    param=SystemController.TX_PROGRAM_CHANGE.value, value=1  # ON
-)
+>>> msg = SystemControllerMessage(
+>>>     param=SystemController.TX_PROGRAM_CHANGE.value, value=1  # ON
+>>> )
 
 # Set keyboard velocity to REAL
-msg = SystemControllerMessage(
-    param=SystemController.KEYBOARD_VELOCITY.value, value=0  # REAL
-)
+>>> msg = SystemControllerMessage(
+>>>     param=SystemController.KEYBOARD_VELOCITY.value, value=0  # REAL
+>>> )
 
 # Set velocity curve to MEDIUM
-msg = SystemControllerMessage(
-    param=SystemController.VELOCITY_CURVE.value, value=1  # MEDIUM
-)
+>>> msg = SystemControllerMessage(
+>>>     param=SystemController.VELOCITY_CURVE.value, value=1  # MEDIUM
+>>> )
 
 # Set velocity offset to +5
-msg = SystemControllerMessage(
-    param=SystemController.VELOCITY_OFFSET.value, value=69  # Convert +5 to 69 (64+5)
-)
+>>> msg = SystemControllerMessage(
+>>>     param=SystemController.VELOCITY_OFFSET.value, value=69  # Convert +5 to 69 (64+5)
+>>> )
 """
 
 from dataclasses import dataclass

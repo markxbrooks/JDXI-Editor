@@ -49,6 +49,7 @@ class SynthBase(QWidget):
                  parent: QWidget = None):
         """
         Initialize the SynthBase editor with MIDI helper and parent widget.
+
         :param midi_helper: Optional[MidiIOHelper] instance for MIDI communication
         :param parent: QWidget Parent widget for this editor
         """
@@ -71,6 +72,7 @@ class SynthBase(QWidget):
     def midi_helper(self, helper: MidiIOHelper) -> None:
         """
         Set the MIDI helper for sending and receiving MIDI messages.
+
         :param helper: MidiIOHelper instance to use for MIDI communication
         :return: None
         """
@@ -80,6 +82,7 @@ class SynthBase(QWidget):
                          message: bytes) -> bool:
         """
         Send a raw MIDI message using the MIDI helper.
+
         :param message: bytes MIDI message to send
         :return: bool True on success, False otherwise
         """
@@ -91,6 +94,7 @@ class SynthBase(QWidget):
     def data_request(self, channel=None, program=None):
         """
         Request the current value of the NRPN parameter from the device.
+
         :param channel: int MIDI channel to send the request on (discarded)
         :param program: int Program number to request data for (discarded)
         """
@@ -105,6 +109,7 @@ class SynthBase(QWidget):
     def _on_midi_message_received(self, message: mido.Message) -> None:
         """
         Handle incoming MIDI messages
+
         :param message: mido.Message MIDI message received
         :return: None
         """
@@ -119,6 +124,7 @@ class SynthBase(QWidget):
                             address: RolandSysExAddress = None) -> bool:
         """
         Send MIDI parameter with error handling
+
         :param address: RolandSysExAddress
         :param param: AddressParameter the parameter to send
         :param value: int value to send
@@ -141,6 +147,7 @@ class SynthBase(QWidget):
     def get_controls_as_dict(self):
         """
         Get the current values of self.controls as a dictionary.
+
         :returns: dict A dictionary of control parameter names and their values.
         """
         try:
@@ -159,6 +166,7 @@ class SynthBase(QWidget):
                               address: RolandSysExAddress = None) -> None:
         """
         Handle parameter change event, convert display value to MIDI value,
+
         :param param: AddressParameter Parameter that was changed
         :param display_value: int Display value from the UI control
         :return: None
@@ -182,6 +190,7 @@ class SynthBase(QWidget):
             show_value_label: bool = True) -> Slider:
         """
         Create a slider for an address parameter with proper display conversion.
+
         :param param: AddressParameter Parameter to create slider for
         :param label: str label for the slider
         :param initial_value: int initial value for the slider
@@ -230,6 +239,7 @@ class SynthBase(QWidget):
             show_label: bool = True) -> ComboBox:
         """
         Create a combo box for an address parameter with options and values.
+
         :param param: AddressParameter
         :param label: str label for the combo box
         :param options: list of options to display in the combo box
@@ -260,6 +270,7 @@ class SynthBase(QWidget):
             label: str = None) -> SpinBox:
         """
         Create address spin box for address parameter with proper display conversion
+
         :param param: AddressParameter Parameter to create spin box for
         :param label: str label for the spin box
         :return: SpinBox
@@ -289,6 +300,7 @@ class SynthBase(QWidget):
             values: list[str]) -> Switch:
         """
         Create a switch for an address parameter with specified label and values.
+
         :param param: AddressParameter Parameter to create switch for
         :param label: str label for the switch
         :param values: list of values for the switch
@@ -336,6 +348,7 @@ class SynthBase(QWidget):
             failures: list = None) -> None:
         """
         Update slider based on parameter and value.
+
         :param param: AddressParameter
         :param midi_value: int value
         :param successes: list
@@ -367,6 +380,7 @@ class SynthBase(QWidget):
     ) -> None:
         """
         Update switch based on parameter and value.
+
         :param param: AddressParameter
         :param midi_value: int value
         :param successes: list
@@ -400,6 +414,7 @@ class SynthBase(QWidget):
     ) -> None:
         """
         Update the slider for a specific partial based on the parameter and value.
+
         :param partial_no: int
         :param param: AddressParameter
         :param value: int

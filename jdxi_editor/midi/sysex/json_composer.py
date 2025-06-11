@@ -32,6 +32,7 @@ class JDXiJSONComposer:
     ) -> Optional[dict[Union[str, Any], Union[str, Any]]]:
         """
         :param editor: SynthEditor Editor instance to process
+
         :return: str JSON SysEx message
         """
         if editor:
@@ -79,6 +80,7 @@ class JDXiJSONComposer:
     def save_json(self, file_path: str) -> None:
         """
         Save the JSON string to a file
+
         :param file_path: str File path to save the JSON
         :return: None
         """
@@ -92,6 +94,7 @@ class JDXiJSONComposer:
     def process_editor(self, editor: SynthEditor, temp_folder: Path) -> Path:
         """
         Process the editor and save the JSON
+
         :param editor: SynthEditor Editor instance to process
         :param temp_folder: str Temporary folder to save the JSON
         :return: None

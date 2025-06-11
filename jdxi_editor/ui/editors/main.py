@@ -25,6 +25,7 @@ class MainEditor(QMainWindow):
                  parent: QMainWindow = None):
         """
         Constructor for the MainEditor class. Initializes the main layout and sets up the editor tab widget.
+
         :param parent: JDXiInstrument
         """
         super().__init__(parent=parent)
@@ -41,6 +42,7 @@ class MainEditor(QMainWindow):
     def closeEvent(self, event):
         """
         close the editor tab widget, but dont delete it
+
         :param event: QEvent
         """
         self.hide()

@@ -38,6 +38,7 @@ UNKNOWN_AREA = "Unknown area"
 def get_byte_offset_by_tone_name(data: bytes, index: int, offset: int = 12, default: int = 0) -> int:
     """
     Safely retrieve values from SysEx data with an optional offset.
+
     :param data: bytes SysEx message data
     :param index: int index of the byte to parse
     :param offset: int Offset because of TONE_NAME
@@ -51,6 +52,7 @@ def get_byte_offset_by_tone_name(data: bytes, index: int, offset: int = 12, defa
 def extract_hex(data: bytes, start: int, end: int, default: str = "N/A") -> str:
     """
     Extract address hex value from data safely.
+
     :param data: bytes SysEx message data
     :param start: int Starting byte
     :param end: int End byte
@@ -63,6 +65,7 @@ def extract_hex(data: bytes, start: int, end: int, default: str = "N/A") -> str:
 def extract_tone_name(data: bytes) -> str:
     """
     Extract and clean the tone name from SysEx data.
+
     :param data: bytes SysEx message data
     :return: str tone name, cleaned up
     """
@@ -79,6 +82,7 @@ def extract_tone_name(data: bytes) -> str:
 def parse_parameters(data: bytes, parameter_type: Iterable) -> Dict[str, int]:
     """
     Parses JD-Xi tone parameters from SysEx data for Digital, Analog, and Digital Common types.
+
     :param data: bytes SysEx message data
     :param parameter_type: Iterable Type
     :return: Dict[str, int]
@@ -89,6 +93,7 @@ def parse_parameters(data: bytes, parameter_type: Iterable) -> Dict[str, int]:
 def parse_single_parameter(data: bytes, parameter_type: AddressParameter) -> Dict[str, int]:
     """
     Parses JD-Xi tone parameters from SysEx data for Digital, Analog, and Digital Common types.
+
     :param data: bytes SysEx message data
     :param parameter_type: Type
     :return: Dict[str, int]
@@ -108,6 +113,7 @@ def parse_single_parameter(data: bytes, parameter_type: AddressParameter) -> Dic
 def safe_extract(data: bytes, start: int, end: int) -> str:
     """
     Safely extract hex data from a byte sequence, or return "Unknown" if out of bounds.
+
     :param data: bytes
     :param start: int start address position
     :param end: int end address position
@@ -132,6 +138,7 @@ def address_to_index(msb: int, lsb: int) -> int:
 def initialize_parameters(data: bytes) -> Dict[str, str]:
     """
     Initialize parameters with essential fields extracted from SysEx data.
+
     :param data: bytes SysEx message data
     :return: Dict[str, str]
     """
@@ -169,6 +176,7 @@ def initialize_parameters(data: bytes) -> Dict[str, str]:
 def _return_minimal_metadata(data: bytes) -> Dict[str, str]:
     """
     Return minimal metadata for a JD-Xi SysEx message.
+
     :param data: bytes SysEx message data
     :return: Dict[str, str]
     """
@@ -185,6 +193,7 @@ def _return_minimal_metadata(data: bytes) -> Dict[str, str]:
 def _get_tone_from_data(data: bytes, temporary_area: str) -> tuple[str, int]:
     """
     Determines synth tone type and offset from SysEx data.
+
     :param data: bytes SysEx Data
     :param temporary_area: str
     :return: tuple[str, int] tone type and byte offset
@@ -202,6 +211,7 @@ def _get_tone_from_data(data: bytes, temporary_area: str) -> tuple[str, int]:
 def parse_sysex(data: bytes) -> Dict[str, str]:
     """
     Parses JD-Xi tone data from SysEx messages.
+
     :param data: bytes SysEx message bytes
     :return: Dict[str, str] Dictionary with parsed tone parameters
     """
@@ -235,6 +245,7 @@ def update_data_with_parsed_parameters(data: bytes,
                                        parsed_data: dict):
     """
     Update parsed_data with parsed parameters
+
     :param data: bytes SysEx message data
     :param parameter_cls: Iterable AddressParameter
     :param parsed_data: dict
@@ -248,6 +259,7 @@ def update_short_data_with_parsed_parameters(data: bytes,
                                              parsed_data: dict):
     """
     Update parsed_data with parsed parameters
+
     :param data: bytes SysEx message data
     :param parameter_cls: AddressParameter
     :param parsed_data: dict

@@ -53,6 +53,7 @@ from jdxi_editor.midi.data.programs.programs import JDXiProgramList
 def get_program_index_by_id(program_id: str) -> Optional[int]:
     """
     Retrieve the index of a program by its ID.
+
     :param program_id: str
     :return: int
     """
@@ -68,6 +69,7 @@ def get_program_index_by_id(program_id: str) -> Optional[int]:
 def get_program_by_id(program_id: str) -> Optional[JDXiProgram]:
     """
     Retrieve a program by its ID from PROGRAM_LIST
+
     :param program_id: str
     :return: Optional[JDXiProgram]
     """
@@ -81,6 +83,7 @@ def get_program_by_bank_and_number(
 ) -> Optional[JDXiProgram]:
     """
     Retrieve a program by its bank letter and number
+
     :param bank: str
     :param program_number: int
     :return: Optional[JDXiProgram]
@@ -94,6 +97,7 @@ def get_program_by_bank_and_number(
 def get_program_id_by_name(name: str) -> Optional[str]:
     """
     get_program_id_by_name
+
     :param name: str
     :return: Optional[str]
     """
@@ -108,6 +112,7 @@ def get_program_id_by_name(name: str) -> Optional[str]:
 def add_program(program_list: List[JDXiProgram], new_program: JDXiProgram) -> bool:
     """
     add_program
+
     :param program_list: List[JDXiProgram]
     :param new_program: JDXiProgram
     :return:
@@ -129,6 +134,7 @@ def add_program(program_list: List[JDXiProgram], new_program: JDXiProgram) -> bo
 def load_programs() -> List[Dict[str, str]]:
     """
     load programs
+
     :return: list
     """
     try:
@@ -141,6 +147,7 @@ def load_programs() -> List[Dict[str, str]]:
 def save_programs(program_list: List[Dict[str, str]]) -> None:
     """
     save_programs
+
     :param program_list: List[Dict[str, str]]
     :return: None
     """
@@ -151,6 +158,7 @@ def save_programs(program_list: List[Dict[str, str]]) -> None:
 def get_program_number_by_name(program_name: str) -> Optional[int]:
     """
     Retrieve a program's number (without bank letter) by its name from JDXiProgramList.PROGRAM_LIST
+
     :param program_name: str
     :return: int
     """
@@ -161,6 +169,7 @@ def get_program_number_by_name(program_name: str) -> Optional[int]:
 def get_program_name_by_id(program_id: str) -> Optional[str]:
     """
     Retrieve a program name by its ID from JDXiProgramList.PROGRAM_LIST
+
     :param program_id: int
     :return: str
     """
@@ -173,6 +182,7 @@ def get_program_name_by_id(program_id: str) -> Optional[str]:
 def get_program_parameter_value(parameter: str, program_id: str) -> Optional[str]:
     """
     Retrieve a specific parameter value from a program by its ID
+
     :param parameter: str
     :param program_id: str
     :return:
@@ -184,6 +194,7 @@ def get_program_parameter_value(parameter: str, program_id: str) -> Optional[str
 def calculate_midi_values(bank: str, program_number: int) -> tuple[int, int, int]:
     """
     Calculate MSB, LSB, and PC based on bank and program number
+
     :param bank: str
     :param program_number: int
     :return: tuple[int, int, int] msb lsb pc
@@ -219,6 +230,7 @@ def calculate_midi_values(bank: str, program_number: int) -> tuple[int, int, int
 def calculate_index(bank: str, program_number: int) -> int:
     """
     Calculate the index based on bank and program number
+
     :param bank: str
     :param program_number:
     :return: int

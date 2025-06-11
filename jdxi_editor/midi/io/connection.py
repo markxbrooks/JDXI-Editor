@@ -73,6 +73,7 @@ class MIDIConnection:
     ) -> None:
         """
         Initialize MIDI connection with input and output ports
+
         :param midi_in: rtmidi.MidiIn
         :param midi_out: rtmidi.MidiOut
         :param main_window: Optional[QMainWindow] for UI interaction
@@ -86,6 +87,7 @@ class MIDIConnection:
     def send_message(self, message: Iterable[int]) -> None:
         """
         Send MIDI message and trigger indicator
+
         :param message: Iterable[int], MIDI message to send
         :return: None
         """

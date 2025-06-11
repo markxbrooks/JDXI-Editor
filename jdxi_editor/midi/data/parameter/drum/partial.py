@@ -586,6 +586,7 @@ class AddressParameterDrumPartial(AddressParameter):
     def convert_to_midi_old(self, value: int) -> int:
         """
         Convert the value to MIDI range (0-127) for sending via MIDI.
+
         :param value: int value to convert
         :return: int MIDI value
         """

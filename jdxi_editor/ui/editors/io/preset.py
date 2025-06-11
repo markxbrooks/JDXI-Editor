@@ -86,6 +86,7 @@ class PresetEditor(BasicEditor):
         super().__init__(midi_helper=midi_helper, parent=parent)
         """
         Initialize the PresetEditor
+
         :param midi_helper: Optional[MidiIOHelper]
         :param parent: Optional[QWidget]
         :param preset_helper: JDXIPresetHelper
@@ -263,6 +264,7 @@ class PresetEditor(BasicEditor):
     def _create_preset_selection_group(self) -> QGroupBox:
         """
         create_preset_selection_group
+
         :return: QGroupBox
         """
         # Program controls group
@@ -333,6 +335,7 @@ class PresetEditor(BasicEditor):
     def update_tone_name_for_synth(self, tone_name: str, synth_type: str) -> None:
         """
         Update the tone name.
+
         :param tone_name: str
         :param synth_type: str
         """
@@ -353,6 +356,7 @@ class PresetEditor(BasicEditor):
     def load_preset_by_program_change(self, preset_index: int) -> None:
         """
         Load a preset by program change.
+
         :param preset_index: int
         """
         preset_name = self.preset_combo_box.currentText()
@@ -391,6 +395,7 @@ class PresetEditor(BasicEditor):
     def _populate_presets(self, search_text: str = ""):
         """
         Populate the program list with available presets.
+
         :param search_text: str
         """
         if not self.preset_helper:

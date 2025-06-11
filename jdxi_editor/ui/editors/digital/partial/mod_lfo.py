@@ -22,6 +22,7 @@ class DigitalModLFOSection(QWidget):
         super().__init__()
         """
         Initialize the DigitalModLFOSection
+
         :param create_parameter_slider: Callable
         :param create_parameter_combo_box: Callable
         :param on_parameter_changed: Callable

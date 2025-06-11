@@ -88,6 +88,7 @@ class RolandSysExMessage(SysExMessage):
     def to_message_list(self) -> List[int]:
         """
         Convert the SysEx message to a list of integers.
+
         :return: list
         """
         msg = (
@@ -162,6 +163,7 @@ class RolandSysEx(SysExMessage):
     def to_message_list(self) -> List[int]:
         """
         to_message_list
+
         :return: List[int]
         """
         msg = (
@@ -183,6 +185,7 @@ class RolandSysEx(SysExMessage):
     ) -> List[int]:
         """
         Construct a SysEx message based on the provided address and data bytes.
+
         :param address: RolandSysExAddress
         :param data_bytes: list of data bytes
         :param request: bool is this a request?
@@ -364,6 +367,7 @@ class ParameterMessage(JDXiSysEx):
     def convert_value(self, value: int) -> list[int]:
         """
         Convert parameter value to data bytes
+
         :param value: int
         :return: list[int]
         """
@@ -547,6 +551,7 @@ class ControllerMessage(ParameterMessage):
     def convert_value(self, value: int) -> List[int]:
         """
         Convert parameter value based on parameter preset_type
+
         :param value:
         :return: List[int]
         """
@@ -561,6 +566,7 @@ class ControllerMessage(ParameterMessage):
     def convert_data(cls, data: List[int]) -> int:
         """
         Convert data bytes back to parameter value
+
         :param data: List
         :return: int
         """
@@ -584,6 +590,7 @@ class DigitalToneCommonMessage(ParameterMessage):
     def convert_value(self, value: int) -> List[int]:
         """
         Convert parameter value based on parameter preset_type
+
         :param value:
         :return: List[int]
         """
@@ -598,6 +605,7 @@ class DigitalToneCommonMessage(ParameterMessage):
     def convert_data(cls, data: List[int]) -> int:
         """
         Convert data bytes back to parameter value
+
         :param data: List
         :return: int
         """
@@ -621,6 +629,7 @@ class DigitalToneModifyMessage(ParameterMessage):
     def convert_value(self, value: int) -> List[int]:
         """
         Convert parameter value based on parameter preset_type
+
         :param value:
         :return: List[int]
         """
@@ -631,6 +640,7 @@ class DigitalToneModifyMessage(ParameterMessage):
     def convert_data(cls, data: List[int]) -> int:
         """
         Convert data bytes back to parameter value
+
         :param data: List
         :return: int
         """
@@ -648,6 +658,7 @@ class DigitalTonePartialMessage(ParameterMessage):
     def convert_value(self, value: int) -> List[int]:
         """
         Convert parameter value based on parameter preset_type
+
         :param value:
         :return: List[int]
         """
@@ -664,6 +675,7 @@ class DigitalTonePartialMessage(ParameterMessage):
     def convert_data(cls, data: List[int]) -> int:
         """
         Convert data bytes back to parameter value
+
         :param data: List
         :return: int
         """
@@ -721,6 +733,7 @@ class DrumKitCommonMessage(ParameterMessage):
     def convert_value(self, value: int) -> List[int]:
         """
         Convert parameter value based on parameter preset_type
+
         :param value:
         :return: List[int]
         """
@@ -731,6 +744,7 @@ class DrumKitCommonMessage(ParameterMessage):
     def convert_data(cls, data: List[int]) -> int:
         """
         Convert data bytes back to parameter value
+
         :param data: List
         :return: int
         """
@@ -749,6 +763,7 @@ class DrumKitPartialMessage(ParameterMessage):
     def convert_value(self, value: int) -> List[int]:
         """
         Convert parameter value based on parameter preset_type
+
         :param value:
         :return: List[int]
         """
@@ -765,6 +780,7 @@ class DrumKitPartialMessage(ParameterMessage):
     def convert_data(cls, data: List[int]) -> int:
         """
         Convert data bytes back to parameter value
+
         :param data: List
         :return: int
         """

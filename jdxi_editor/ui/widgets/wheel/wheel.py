@@ -36,6 +36,7 @@ class WheelWidget(QWidget):
     def set_value(self, value: float) -> None:
         """
         set_value
+
         :param value: float
         :return: None
         """
@@ -50,6 +51,7 @@ class WheelWidget(QWidget):
     def paintEvent(self, event: QMouseEvent) -> None:
         """
         paintEvent
+
         :param event: QMouseEvent
         :return: None
         """
@@ -99,6 +101,7 @@ class WheelWidget(QWidget):
     def mousePressEvent(self, event: QMouseEvent):
         """
         mousePressEvent
+
         :param event: QMouseEvent
         :return: None
         """
@@ -109,6 +112,7 @@ class WheelWidget(QWidget):
     def mouseMoveEvent(self, event: QMouseEvent) -> None:
         """
         mouseMoveEvent
+
         :param event: QMouseEvent
         :return: None
         """
@@ -118,6 +122,7 @@ class WheelWidget(QWidget):
     def mouseReleaseEvent(self, event: QMouseEvent) -> None:
         """
         mouseReleaseEvent
+
         :param event: QMouseEvent
         :return: None
         """
@@ -131,6 +136,7 @@ class WheelWidget(QWidget):
     def _update_value_from_mouse(self, y: int) -> None:
         """
         _update_value_from_mouse
+
         :param y: int
         :return: None
         """

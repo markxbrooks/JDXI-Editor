@@ -22,6 +22,7 @@ class DigitalCommonSection(QWidget):
         super().__init__()
         """
         Initialize the DigitalCommonSection
+
         :param create_parameter_slider: Callable
         :param create_parameter_switch: Callable
         :param create_parameter_combo_box: Callable

@@ -4,8 +4,9 @@ class JDXIDimensions
 Class to store dimensions of a Roland JDXi instrument
 
 # Example usage:
-# print(JDXIDimensions.HEIGHT)
-# print(JDXIDimensions.DISPLAY_WIDTH)
+----------------
+>>> print(JDXIDimensions.HEIGHT)
+>>> print(JDXIDimensions.DISPLAY_WIDTH)
 
 """
 

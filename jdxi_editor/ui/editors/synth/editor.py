@@ -203,6 +203,7 @@ class SynthEditor(SynthBase):
     def _create_instrument_preset_group(self, synth_type: str = "Analog") -> QGroupBox:
         """
         Create the instrument preset group box.
+
         :param synth_type: str
         :return: QGroupBox
         """
@@ -237,6 +238,7 @@ class SynthEditor(SynthBase):
     def get_controls_as_dict(self):
         """
         Get the current values of self.controls as a dictionary.
+
         :returns: dict A dictionary of control parameter names and their values.
         """
         try:
@@ -264,6 +266,7 @@ class SynthEditor(SynthBase):
     def _dispatch_sysex_to_area(self, json_sysex_data: str) -> None:
         """
         Dispatch SysEx data to the appropriate area for processing.
+
         :param json_sysex_data:
         :return: None
         """
@@ -317,6 +320,7 @@ class SynthEditor(SynthBase):
                                  failures: list) -> None:
         """
         Apply updates to the UI components based on the received SysEx data.
+
         :param partial_no: int
         :param sysex_data: dict
         :param successes: list
@@ -329,6 +333,7 @@ class SynthEditor(SynthBase):
     def _parse_sysex_json(self, json_sysex_data: str) -> Optional[dict]:
         """
         _parse_sysex_json
+
         :param json_sysex_data: str
         :return: dict
         """
@@ -345,6 +350,7 @@ class SynthEditor(SynthBase):
     def set_instrument_title_label(self, name: str, synth_type: str):
         """
         set_instrument_title_label
+
         :param name: str
         :param synth_type: str
         :return: None
@@ -362,6 +368,7 @@ class SynthEditor(SynthBase):
     def update_instrument_title(self):
         """
         update instrument title
+
         :return:
         """
         selected_synth_text = self.instrument_selection_combo.combo_box.currentText()

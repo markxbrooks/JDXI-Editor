@@ -79,6 +79,7 @@ class DigitalPartialEditor(PartialEditor):
         self.filter_mode_switch = None
         """
         Initialize the DigitalPartialEditor
+
         :param midi_helper: MidiIOHelper
         :param synth_number: int
         :param partial_number: int
@@ -197,6 +198,7 @@ class DigitalPartialEditor(PartialEditor):
     def update_filter_controls_state(self, mode: int):
         """
         Update filter controls enabled state based on mode
+
         :param mode: int
         """
         enabled = mode != 0  # Enable if not BYPASS
@@ -215,6 +217,7 @@ class DigitalPartialEditor(PartialEditor):
     def _on_waveform_selected(self, waveform: DigitalOscWave):
         """
         Handle waveform button clicks
+
         :param waveform: DigitalOscWave
         """
         # Reset all buttons to default style

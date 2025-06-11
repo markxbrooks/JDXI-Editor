@@ -24,10 +24,10 @@ Methods:
                                   corresponding to address given name.
 
 # Example usage
-value = 0x123
-offset = create_offset(value)
+>>> value = 0x123
+>>> offset = create_offset(value)
 
-print(offset)  # Output: (0x00, 0x01, 0x23)
+>>> print(offset)  # Output: (0x00, 0x01, 0x23)
 """
 
 from enum import Enum
@@ -54,6 +54,7 @@ class AddressParameter(Enum):
     def __str__(self) -> str:
         """
         Returns a string representation of the parameter.
+
         :return: str string representation
         """
         return f"{self.name} Address: 0x{self.address:02X}, Range: {self.min_val}-{self.max_val}"
@@ -61,6 +62,7 @@ class AddressParameter(Enum):
     def __repr__(self) -> str:
         """
         Returns a string representation of the parameter.
+
         :return: str string representation
         """
         return f"{self.name} Address: 0x{self.address:02X}, Range: {self.min_val}-{self.max_val}"
@@ -69,6 +71,7 @@ class AddressParameter(Enum):
     def message_position(cls):
         """
         Returns the position of the message in the SysEx message.
+
         :return: int
         """
         return 11
@@ -77,6 +80,7 @@ class AddressParameter(Enum):
     def get_parameter_by_address(cls: Type[T], address: int) -> Optional[T]:
         """
         Get the parameter member by address.
+
         :param address: int
         :return: parameter member or None
         """
@@ -88,6 +92,7 @@ class AddressParameter(Enum):
     def is_switch(self) -> bool:
         """
         Returns True if parameter is a switch (e.g. ON/OFF)
+
         :return: bool True if switch, False otherwise
         """
         return self.get_by_name(self.name) in self.switches
@@ -96,6 +101,7 @@ class AddressParameter(Enum):
     def is_bipolar(self) -> bool:
         """
         Returns True if parameter is bipolar (e.g. -64 to +63)
+
         :return: bool True if bipolar, False otherwise
         """
         return self.name in getattr(self, "bipolar_parameters", [])
@@ -104,6 +110,7 @@ class AddressParameter(Enum):
     def display_name(self) -> str:
         """
         Returns the display name of the parameter by formatting the enum name with spaces
+
         :return: str formatted display name
         """
         return self.name.replace("_", " ").title()
@@ -111,6 +118,7 @@ class AddressParameter(Enum):
     def validate_value(self, value: int) -> int:
         """
         Validate the value against the parameter's valid range.
+
         :param value: int value to validate
         :return: int validated value
         """
@@ -129,6 +137,7 @@ class AddressParameter(Enum):
     def get_name_by_address(address: int) -> Optional[str]:
         """
         Get the parameter name by address.
+
         :param address: int address of the parameter
         :return: str name of the parameter or None
         """
@@ -141,6 +150,7 @@ class AddressParameter(Enum):
     def get_by_name(param_name: str) -> Optional[T]:
         """
         Get the parameter member by name.
+
         :param param_name: str name of the parameter
         :return: parameter member or None
         """
@@ -150,6 +160,7 @@ class AddressParameter(Enum):
     def get_address_for_partial(self, partial_number: int = 0) -> Tuple[int, int]:
         """
         Get the address for the partial number.
+
         :param partial_number: int
         :return: int default area to be subclassed
         """
@@ -158,6 +169,7 @@ class AddressParameter(Enum):
     def convert_value(self, value: int, reverse: bool = False) -> int:
         """
         Converts value in both directions based on CONVERSION_OFFSETS
+
         :param value: int The value
         :param reverse: bool The reverse flag
         :return: int The converted value
@@ -181,6 +193,7 @@ class AddressParameter(Enum):
     def convert_to_midi(self, slider_value: int) -> int:
         """
         Convert from display value to MIDI value
+
         :param slider_value: int The display value
         :return: int The MIDI value
         """
@@ -189,6 +202,7 @@ class AddressParameter(Enum):
     def convert_from_midi(self, midi_value: int) -> int:
         """
         Convert from MIDI value to display value
+
         :param midi_value: int The MIDI value
         :return: int The display value
         """
@@ -197,6 +211,7 @@ class AddressParameter(Enum):
     def get_switch_text(self, value: int) -> str:
         """
         Get the text representation of the switch value.
+
         :param value: int value to convert
         :return: str text representation
         """
@@ -236,6 +251,7 @@ class AddressParameter(Enum):
     def lsb(self) -> Optional[int]:
         """
         Return the least significant byte (LSB) of the address.
+
         :return: int LSB of the address
         """
         return self.address & 0xFF  # Extract LSB

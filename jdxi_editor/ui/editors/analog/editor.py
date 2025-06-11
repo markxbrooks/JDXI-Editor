@@ -93,6 +93,7 @@ class AnalogSynthEditor(SynthEditor):
         super().__init__(midi_helper, parent)
         """
         Initialize the AnalogSynthEditor
+
         :param midi_helper: MidiIOHelper
         :param preset_helper: JDXIPresetHelper
         :param parent: QWidget
@@ -311,6 +312,7 @@ class AnalogSynthEditor(SynthEditor):
     def update_filter_state(self, value: int):
         """
         Update the filter state
+
         :param value: int value
         :return: None
         """
@@ -319,6 +321,7 @@ class AnalogSynthEditor(SynthEditor):
     def _on_waveform_selected(self, waveform: AnalogOscWave):
         """
         Handle waveform button selection
+
         :param waveform: AnalogOscWave value
         :return: None
         """
@@ -342,6 +345,7 @@ class AnalogSynthEditor(SynthEditor):
     def _on_lfo_shape_changed(self, value: int):
         """
         Handle LFO shape change
+
         :param value: int value
         :return: None
         """
@@ -370,6 +374,7 @@ class AnalogSynthEditor(SynthEditor):
     ) -> None:
         """
         Helper function to update sliders safely.
+
         :param param: AddressParameterAnalog value
         :param failures: list of failed parameters
         :param successes: list of successful parameters
@@ -398,6 +403,7 @@ class AnalogSynthEditor(SynthEditor):
     ) -> None:
         """
         Helper function to update ADSR widgets.
+
         :param param: AddressParameterAnalog value
         :param midi_value: int value
         :param failures: list of failed parameters
@@ -433,6 +439,7 @@ class AnalogSynthEditor(SynthEditor):
     ) -> None:
         """
         Helper function to update ADSR widgets.
+
         :param parameter: AddressParameterAnalog value
         :param value: int value
         :param failures: list of failed parameters
@@ -463,6 +470,7 @@ class AnalogSynthEditor(SynthEditor):
             failures: list = None) -> None:
         """
         Helper function to update PWM widgets.
+
         :param parameter: AddressParameterAnalog value
         :param value: int value
         :param failures: list of failed parameters
@@ -493,6 +501,7 @@ class AnalogSynthEditor(SynthEditor):
                                  failures: list) -> None:
         """
         Update sliders and combo boxes based on parsed SysEx data.
+
         :param sysex_data: dict SysEx data
         :param successes: list SysEx data
         :param failures: list SysEx data
@@ -576,6 +585,7 @@ class AnalogSynthEditor(SynthEditor):
     def _update_waveform_buttons(self, value: int):
         """
         Update the waveform buttons based on the OSC_WAVE value with visual feedback.
+
         :param value: int value
         :return: None
         """
@@ -610,6 +620,7 @@ class AnalogSynthEditor(SynthEditor):
     def _update_lfo_shape_buttons(self, value: int):
         """
         Update the LFO shape buttons with visual feedback.
+
         :param value: int value
         :return: None
         """
@@ -629,6 +640,7 @@ class AnalogSynthEditor(SynthEditor):
     def _update_pw_controls_state(self, waveform: AnalogOscWave):
         """
         Enable/disable PW controls based on waveform
+
         :param waveform: AnalogOscWave value
         :return: None
         """

@@ -33,6 +33,7 @@ def parse_sysex_address(
 ) -> Optional[Tuple[T, Tuple[int, int, int]]]:
     """
     Parse a 4-byte SysEx address into a (base, offset) tuple.
+
     :param address_bytes: bytes The 4-byte SysEx address
     :param enum_cls: Type[T] The enum class
     :return: Optional[Tuple[T, Tuple[int, int, int]]] The (base, offset) tuple

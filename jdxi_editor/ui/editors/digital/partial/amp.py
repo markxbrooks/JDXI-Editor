@@ -33,6 +33,7 @@ class DigitalAmpSection(QWidget):
         super().__init__()
         """
         Initialize the DigitalAmpSection
+
         :param create_parameter_slider: Callable
         :param partial_number: int
         :param midi_helper: MidiIOHelper

@@ -52,6 +52,7 @@ def generate_polyend_sequencer_button_style(
 ) -> str:
     """
     Generate button style based on state and current step
+
     :param self: The instance of the class
     :param is_checked: bool Whether the button is checked
     :param is_current: bool Whether the button is the current step
@@ -83,6 +84,7 @@ def generate_polyend_sequencer_button_style(
 def generate_sequencer_button_style(active: bool) -> str:
     """
     Generate button style based on active state
+
     :param active: bool Whether the button is active
     :return: str The style sheet for the button
     """
@@ -119,6 +121,7 @@ def generate_button_style(
 ) -> str:
     """
     Generate address button style dynamically.
+
     :param border_pressed: str The border color when pressed
     :param background_pressed: str The background color when pressed
     :param button_border_width: int The border width of the button
@@ -171,6 +174,7 @@ def generate_tab_style(
 ):
     """
     Generate address tab style dynamically.
+
     :param accent:
     :param selected_border:
     :param selected_bg:
@@ -243,6 +247,7 @@ def generate_editor_style(
 ) -> str:
     """
     Generate editor style dynamically.
+
     :param font_weight: str The font weight
     :param slider_neon_gradient_stop: str The gradient stop color for the slider handle
     :param slider_neon: str The neon color for the slider handle
@@ -417,6 +422,7 @@ def generate_editor_style(
 def get_button_styles(active: bool) -> str:
     """
     Returns the appropriate style for active/inactive button states
+
     :param active: bool Whether the button is active
     :return: str The style sheet for the button
     """

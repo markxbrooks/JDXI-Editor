@@ -137,6 +137,7 @@ class PitchEnvelopeWidget(EnvelopeWidgetBase):
     def on_control_changed(self, change: dict) -> None:
         """
         Control Change callback
+
         :param change: dict envelope
         :return: None
         :emits: dict pitch envelope parameters

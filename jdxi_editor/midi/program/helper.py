@@ -99,6 +99,7 @@ class JDXiProgramHelper(QObject):
     def get_current_program(self) -> tuple[str, int]:
         """
         Get current program bank and number
+
         :return: tuple[str, int]
         """
         return self.current_bank_letter, self.current_program_number
@@ -106,6 +107,7 @@ class JDXiProgramHelper(QObject):
     def load_program(self, bank_letter: str, program_number: int) -> None:
         """
         Load Program
+
         :param bank_letter: str
         :param program_number: int
         :return: None

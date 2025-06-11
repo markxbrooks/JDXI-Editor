@@ -4,23 +4,23 @@ SystemCommonMessage
 
 # Example usage:
 # Set master tune to +50 cents
-msg = SystemCommonMessage(
-    param=SystemCommon.MASTER_TUNE.value,
-    value=1024 + (50 * 10),  # Convert +50.0 cents to 1524
-)
+>>> msg = SystemCommonMessage(
+>>>     param=SystemCommon.MASTER_TUNE.value,
+>>>     value=1024 + (50 * 10),  # Convert +50.0 cents to 1524
+>>> )
 
 # Set master key shift to -12 semitones
-msg = SystemCommonMessage(
-    param=SystemCommon.MASTER_KEY_SHIFT.value, value=52  # Convert -12 to 52 (64-12)
-)
+>>> msg = SystemCommonMessage(
+>>>     param=SystemCommon.MASTER_KEY_SHIFT.value, value=52  # Convert -12 to 52 (64-12)
+>>> )
 
 # Set program control channel to 1
-msg = SystemCommonMessage(
-    param=SystemCommon.PROGRAM_CTRL_CH.value, value=1  # Channel 1
-)
+>>> msg = SystemCommonMessage(
+>>>     param=SystemCommon.PROGRAM_CTRL_CH.value, value=1  # Channel 1
+>>> )
 
 # Enable program change reception
-msg = SystemCommonMessage(param=SystemCommon.RX_PROGRAM_CHANGE.value, value=1)  # ON
+>>> msg = SystemCommonMessage(param=SystemCommon.RX_PROGRAM_CHANGE.value, value=1)  # ON
 """
 
 from dataclasses import dataclass

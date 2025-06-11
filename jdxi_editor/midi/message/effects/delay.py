@@ -4,15 +4,15 @@ DelayMessage
 
 # Example usage:
 # Set delay level
-msg = DelayMessage(param=Delay.LEVEL.value, value=100)  # Level 100
+>>> msg = DelayMessage(param=Delay.LEVEL.value, value=100)  # Level 100
 
 # Set reverb send level
-msg = DelayMessage(param=Delay.REVERB_SEND.value, value=64)  # Send to reverb
+>>> msg = DelayMessage(param=Delay.REVERB_SEND.value, value=64)  # Send to reverb
 
 # Set delay parameter 1 to +5000
-msg = DelayMessage(
-    param=Delay.get_param_offset(1), value=5000  # Will be converted to 37768
-)
+>>> msg = DelayMessage(
+>>>     param=Delay.get_param_offset(1), value=5000  # Will be converted to 37768
+>>> )
 """
 
 from dataclasses import dataclass

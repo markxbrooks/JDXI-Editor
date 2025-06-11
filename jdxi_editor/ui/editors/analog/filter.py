@@ -33,6 +33,7 @@ class AnalogFilterSection(QWidget):
         super().__init__()
         """
         Initialize the AnalogFilterSection
+
         :param create_parameter_slider: Callable
         :param create_parameter_switch: Callable
         :param on_filter_mode_changed: Callable

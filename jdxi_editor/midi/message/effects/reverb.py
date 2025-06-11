@@ -2,14 +2,15 @@
 ReverbMessage
 =============
 
-# Example usage:
+    Examples
+    --------
 # Set reverb level
-msg = ReverbMessage(param=Reverb.LEVEL.value, value=100)  # Level 100
+>>> msg = ReverbMessage(param=Reverb.LEVEL.value, value=100)  # Level 100
 
 # Set reverb parameter 1 to +5000
-msg = ReverbMessage(
-    param=Reverb.get_param_offset(1), value=5000  # Will be converted to 37768
-)
+>>> msg = ReverbMessage(
+>>>     param=Reverb.get_param_offset(1), value=5000  # Will be converted to 37768
+>>> )
 
 """
 

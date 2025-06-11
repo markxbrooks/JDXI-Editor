@@ -22,6 +22,7 @@ class PartialController(QObject):
     def enable_partial(self, partial_number: int, enabled: bool = True) -> None:
         """
         Enable or disable a specific partial.
+
         :param partial_number: The partial number to enable/disable.
         :param enabled: True to enable, False to disable.
         """
@@ -33,6 +34,7 @@ class PartialController(QObject):
     def select_partial(self, partial_number: int) -> None:
         """
         Select a specific partial. Deselects others.
+
         :param partial_number: The partial number to select.
         """
         for num in self.partial_states.keys():
@@ -42,6 +44,7 @@ class PartialController(QObject):
     def update_partial_parameter(self, partial_number: int, param: str, value: int) -> None:
         """
         Update a parameter for a specific partial.
+
         :param partial_number: The partial number.
         :param param: The parameter name to update.
         :param value: The value to set.
@@ -56,6 +59,7 @@ class PartialController(QObject):
     def _update_partial_state_ui(self, partial_number: int) -> None:
         """
         Update the UI for the state of a specific partial.
+
         :param partial_number: The partial number to update.
         """
         state = self.partial_states[partial_number]
@@ -64,6 +68,7 @@ class PartialController(QObject):
     def _log_partial_parameter_change(self, partial_number: int, param: str, value: int) -> None:
         """
         Log a parameter change for a specific partial.
+
         :param partial_number: The partial number.
         :param param: The parameter name.
         :param value: The new value.
@@ -75,6 +80,7 @@ class PartialController(QObject):
     ) -> None:
         """
         Handle the state change of a partial (enabled/disabled and selected/unselected).
+
         :param partial: The partial to modify
         :param enabled: Whether the partial is enabled (ON/OFF)
         :param selected: Whether the partial is selected
@@ -95,6 +101,7 @@ class PartialController(QObject):
     ) -> Optional[bool]:
         """
         Set the state of a partial (enabled/disabled and selected/unselected).
+
         :param partial: The partial to modify
         :param enabled: Whether the partial is enabled (ON/OFF)
         :param selected: Whether the partial is selected
@@ -133,6 +140,7 @@ class PartialController(QObject):
     ) -> None:
         """
         Handle special parameters that require additional UI updates.
+
         :param partial_no: int
         :param param: AddressParameter
         :param value: int
@@ -150,6 +158,7 @@ class PartialController(QObject):
     def _apply_partial_ui_updates(self, partial_no: int, sysex_data: dict) -> None:
         """
         Apply updates to the UI components based on the received SysEx data.
+
         :param partial_no: int
         :param sysex_data: dict
         :return: None

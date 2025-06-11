@@ -55,6 +55,7 @@ class DrumPitchEnvSection(QWidget):
         super().__init__()
         """
         Initialize the DrumPitchEnvSection
+
         :param controls: dict
         :param create_parameter_combo_box: Callable
         :param create_parameter_slider: Callable
