@@ -90,7 +90,7 @@ class MidiFileEditor(SynthEditor):
         )
         self.paused_time = None
         self.midi_file = None
-        self.midi_port = None
+        self.midi_port = self.midi_helper.midi_out
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.play_next_event)
 
@@ -274,7 +274,8 @@ class MidiFileEditor(SynthEditor):
         if not port_name:
             return
 
-        self.midi_port = open_output(port_name)
+        # self.midi_port = open_output(port_name)
+        self.midi_port = self.midi_helper.midi_out
         self.start_time = time.time()
         self.event_index = 0
 
@@ -311,7 +312,7 @@ class MidiFileEditor(SynthEditor):
                         if msg.type == "note_on" and msg.velocity > 0:
                             pass  # Skip muted channel but allow note off
                     else:
-                        self.midi_port.send(msg)
+                        self.midi_helper.send(msg)
                 self.event_index += 1
             else:
                 break
@@ -338,7 +339,7 @@ class MidiFileEditor(SynthEditor):
         if self.midi_port:
             for ch in range(16):
                 for note in range(128):
-                    self.midi_port.send(mido.Message("note_off", note=note, velocity=0, channel=ch))
+                    self.midi_helper.send(mido.Message("note_off", note=note, velocity=0, channel=ch))
 
     def stop_playback(self):
         """
@@ -349,7 +350,7 @@ class MidiFileEditor(SynthEditor):
         if self.midi_port:
             for ch in range(16):
                 for note in range(128):
-                    self.midi_port.send(mido.Message("note_off", note=note, velocity=0, channel=ch))
+                    self.midi_helper.send(mido.Message("note_off", note=note, velocity=0, channel=ch))
             self.midi_port.close()
             self.midi_port = None
 
