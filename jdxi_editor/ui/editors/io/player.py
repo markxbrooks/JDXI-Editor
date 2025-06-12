@@ -142,6 +142,10 @@ class MidiPlayer:
 
 
 class MidiFileEditor(SynthEditor):
+    """
+    Midi File Editor
+    """
+    BUFFER_WINDOW = 2.0
     def __init__(
         self,
         midi_helper: Optional[MidiIOHelper] = None,
@@ -150,6 +154,8 @@ class MidiFileEditor(SynthEditor):
     ):
         super().__init__()
         self.event_index = None
+        self.event_buffer = []
+        self.buffer_end_time = 0
         self.worker = None
         self.worker_thread = None
         """
@@ -367,7 +373,59 @@ class MidiFileEditor(SynthEditor):
 
         self.timer.start()
 
+    def refill_buffer(self):
+        """
+        Load events into the buffer for the next BUFFER_WINDOW seconds
+        """
+        now = time.time()
+        buffer_target_time = now - self.start_time + self.BUFFER_WINDOW
+
+        while self.event_index < len(self.midi_events):
+            tick_time, msg, track = self.midi_events[self.event_index]
+            scheduled_time = tick_time * self.tick_duration
+
+            if scheduled_time <= buffer_target_time:
+                self.event_buffer.append((scheduled_time, msg))
+                self.event_index += 1
+            else:
+                break
+
+        # Update the buffer end time
+        self.buffer_end_time = buffer_target_time
+
     def play_next_event(self):
+        """
+        Play the next event in the MIDI file from the buffer
+        """
+        now = time.time()
+        elapsed_time = now - self.start_time
+        self.position_slider.setValue(int(elapsed_time))
+        self.position_label.setText(
+            f"{format_time(elapsed_time)} / {format_time(self.duration_seconds)}"
+        )
+
+        # Send events from the buffer that are due to be played
+        while self.event_buffer and elapsed_time >= self.event_buffer[0][0]:
+            scheduled_time, msg = self.event_buffer.pop(0)
+            if not msg.is_meta:
+                if (
+                        hasattr(msg, "channel")
+                        and (msg.channel + 1) in self.midi_track_viewer.muted_channels
+                ):
+                    if msg.type == "note_on" and msg.velocity > 0:
+                        pass  # Skip muted channel but allow note off
+                else:
+                    self.midi_helper.send(msg)
+
+        # Refill the buffer if it's running low
+        if elapsed_time >= self.buffer_end_time - self.BUFFER_WINDOW / 2:
+            self.refill_buffer()
+
+        # Stop playback if all events have been processed
+        if not self.event_buffer and self.event_index >= len(self.midi_events):
+            self.stop_playback()
+
+    def play_next_event_old(self):
         """
         Play the next event in the MIDI file
         """
