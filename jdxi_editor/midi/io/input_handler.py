@@ -286,9 +286,9 @@ class MidiInHandler(MidiIOController):
             f"Control Change - Channel: {channel}, Control: {control}, Value: {value}"
         )
         self.midi_control_changed.emit(channel, control, value)
-        if control == 99:  # NRPN MSB
+        if control == MidiConstant.CONTROL_CHANGE_NRPN_MSB:  # NRPN MSB
             self.nrpn_msb = value
-        elif control == 98:  # NRPN LSB
+        elif control == MidiConstant.CONTROL_CHANGE_NRPN_LSB:  # NRPN LSB
             self.nrpn_lsb = value
         elif control == 6 and self.nrpn_msb is not None and self.nrpn_lsb is not None:
             # We have both MSB and LSB; reconstruct NRPN address

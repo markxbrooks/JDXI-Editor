@@ -15,7 +15,7 @@ from PySide6.QtWidgets import (
     QLabel,
     QDoubleSpinBox,
     QSlider,
-    QGroupBox, QHBoxLayout,
+    QGroupBox, QHBoxLayout, QWidget,
 )
 import qtawesome as qta
 
@@ -62,6 +62,8 @@ class MidiPlayer:
     BUFFER_WINDOW = 2.0  # Buffer events for the next 2 seconds
 
     def __init__(self):
+        self.midi_helper = None
+        self.midi_port = None
         self.event_buffer = []
         self.buffer_end_time = 0
 
@@ -145,11 +147,13 @@ class MidiFileEditor(SynthEditor):
     """
     Midi File Editor
     """
+
     BUFFER_WINDOW = 2.0
+
     def __init__(
         self,
         midi_helper: Optional[MidiIOHelper] = None,
-        parent=None,
+        parent: QWidget =None,
         preset_helper=None,
     ):
         super().__init__()
@@ -157,6 +161,7 @@ class MidiFileEditor(SynthEditor):
         self.event_buffer = []
         self.buffer_end_time = 0
         self.worker = None
+        self.parent = parent
         self.worker_thread = None
         """
         Initialize the MidiPlayer
@@ -182,7 +187,6 @@ class MidiFileEditor(SynthEditor):
         self.midi_port = self.midi_helper.midi_out
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.play_next_event)
-
         self.midi_events = []
         self.current_event_index = 0
         self.start_time = None
@@ -492,8 +496,8 @@ class MidiFileEditor(SynthEditor):
             for ch in range(16):
                 for note in range(128):
                     self.midi_helper.send(mido.Message("note_off", note=note, velocity=0, channel=ch))
-            self.midi_port.close()
-            self.midi_port = None
+            # self.midi_port.close()
+            # self.midi_port = None
 
         self.event_index = 0
         self.position_slider.setValue(0)
