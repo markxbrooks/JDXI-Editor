@@ -353,7 +353,12 @@ class ProgramEditor(BasicEditor):
         return program_group
 
     def on_preset_type_changed(self, index: int) -> None:
-        """Handle preset type selection change."""
+        """
+        on_preset_type_changed
+        
+        :param index: int
+        Handle preset type selection change
+        """
         preset_type = self.digital_preset_type_combo.currentText()
         log.message(f"preset_type: {preset_type}")
         self.set_channel_and_preset_lists(preset_type)
