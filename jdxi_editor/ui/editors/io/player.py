@@ -1,12 +1,11 @@
 """ MIDI Player for JDXI Editor """
-from typing import Optional
 
 import mido
 import time
 from pathlib import Path
 from typing import Optional
-from mido import MidiFile, open_output, tempo2bpm, bpm2tempo
-from PySide6.QtCore import Qt, QTimer, QObject, Signal, Slot, QThread
+from mido import MidiFile, tempo2bpm, bpm2tempo
+from PySide6.QtCore import Qt, QTimer, QThread
 from PySide6.QtWidgets import (
     QVBoxLayout,
     QPushButton,
@@ -25,122 +24,10 @@ from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.ui.editors import SynthEditor
 from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.ui.editors.io.playback_worker import PlaybackWorker
+from jdxi_editor.ui.editors.io.utils import format_time
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 from jdxi_editor.ui.widgets.midi.track import MidiTrackViewer
-
-
-class PlaybackWorker(QObject):
-    result_ready = Signal()  # e.g., to notify when a frame is processed
-
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.editor = None  # Reference to MidiFileEditor
-
-    def set_editor(self, editor):
-        self.editor = editor
-
-    @Slot()
-    def do_work(self):
-        if self.editor:
-            self.editor.play_next_event()
-            self.result_ready.emit()
-
-
-def format_time(seconds: float) -> str:
-    """
-    Format a time in seconds to a string
-
-    :param seconds: float
-    :return: str
-    """
-    mins = int(seconds) // 60
-    secs = int(seconds) % 60
-    return f"{mins}:{secs:02}"
-    
-    
-class MidiPlayer:
-    BUFFER_WINDOW = 2.0  # Buffer events for the next 2 seconds
-
-    def __init__(self):
-        self.midi_helper = None
-        self.midi_port = None
-        self.event_buffer = []
-        self.buffer_end_time = 0
-
-    def start_playback(self):
-        """
-        Start playback of the MIDI file
-        """
-        if not self.midi_file or not self.midi_events:
-            return
-
-        port_name = self.port_select.currentText()
-        if not port_name:
-            return
-
-        self.midi_port = self.midi_helper.midi_out
-        self.start_time = time.time()
-        self.event_index = 0
-        self.event_buffer = []
-        self.buffer_end_time = 0
-
-        if not self.worker_thread or not self.worker:
-            self.setup_worker()
-
-        self.refill_buffer()  # Fill the buffer before starting playback
-        self.timer.start()
-
-    def refill_buffer(self):
-        """
-        Load events into the buffer for the next BUFFER_WINDOW seconds
-        """
-        now = time.time()
-        buffer_target_time = now - self.start_time + self.BUFFER_WINDOW
-
-        while self.event_index < len(self.midi_events):
-            tick_time, msg, track = self.midi_events[self.event_index]
-            scheduled_time = tick_time * self.tick_duration
-
-            if scheduled_time <= buffer_target_time:
-                self.event_buffer.append((scheduled_time, msg))
-                self.event_index += 1
-            else:
-                break
-
-        # Update the buffer end time
-        self.buffer_end_time = buffer_target_time
-
-    def play_next_event(self):
-        """
-        Play the next event in the MIDI file from the buffer
-        """
-        now = time.time()
-        elapsed_time = now - self.start_time
-        self.position_slider.setValue(int(elapsed_time))
-        self.position_label.setText(
-            f"{format_time(elapsed_time)} / {format_time(self.duration_seconds)}"
-        )
-
-        # Send events from the buffer that are due to be played
-        while self.event_buffer and elapsed_time >= self.event_buffer[0][0]:
-            scheduled_time, msg = self.event_buffer.pop(0)
-            if not msg.is_meta:
-                if (
-                    hasattr(msg, "channel")
-                    and (msg.channel + 1) in self.midi_track_viewer.muted_channels
-                ):
-                    if msg.type == "note_on" and msg.velocity > 0:
-                        pass  # Skip muted channel but allow note off
-                else:
-                    self.midi_helper.send(msg)
-
-        # Refill the buffer if it's running low
-        if elapsed_time >= self.buffer_end_time - self.BUFFER_WINDOW / 2:
-            self.refill_buffer()
-
-        # Stop playback if all events have been processed
-        if not self.event_buffer and self.event_index >= len(self.midi_events):
-            self.stop_playback()
 
 
 class MidiFileEditor(SynthEditor):
@@ -148,7 +35,7 @@ class MidiFileEditor(SynthEditor):
     Midi File Editor
     """
 
-    BUFFER_WINDOW = 2.0
+    BUFFER_WINDOW_SECONDS = 2.0
 
     def __init__(
         self,
@@ -321,10 +208,11 @@ class MidiFileEditor(SynthEditor):
         if file_path:
             self.midi_file = MidiFile(file_path)
             self.file_label.setText(f"Loaded: {Path(file_path).name}")
+            self.midi_track_viewer.clear()
             self.midi_track_viewer.set_midi_file(self.midi_file)
 
             self.ticks_per_beat = self.midi_file.ticks_per_beat
-            self.tempo = 500000  # default 120 BPM
+            self.tempo = 500_000  # default 120 BPM
 
             # Look for a tempo message in track 0
             for msg in self.midi_file.tracks[0]:
@@ -363,14 +251,11 @@ class MidiFileEditor(SynthEditor):
         if not self.midi_file or not self.midi_events:
             return
 
-        port_name = self.port_select.currentText()
-        if not port_name:
-            return
-
-        # self.midi_port = open_output(port_name)
-        self.midi_port = self.midi_helper.midi_out
+        self.event_buffer.clear()
+        self.buffer_end_time = 0
         self.start_time = time.time()
         self.event_index = 0
+        self.refill_buffer()
 
         if not self.worker_thread or not self.worker:
             self.setup_worker()
@@ -381,8 +266,11 @@ class MidiFileEditor(SynthEditor):
         """
         Load events into the buffer for the next BUFFER_WINDOW seconds
         """
+        if self.event_index is None:
+            return
+
         now = time.time()
-        buffer_target_time = now - self.start_time + self.BUFFER_WINDOW
+        buffer_target_time = now - self.start_time + self.BUFFER_WINDOW_SECONDS
 
         while self.event_index < len(self.midi_events):
             tick_time, msg, track = self.midi_events[self.event_index]
@@ -419,10 +307,10 @@ class MidiFileEditor(SynthEditor):
                     if msg.type == "note_on" and msg.velocity > 0:
                         pass  # Skip muted channel but allow note off
                 else:
-                    self.midi_helper.send(msg)
+                    self.midi_helper.send_mido_message(msg)
 
         # Refill the buffer if it's running low
-        if elapsed_time >= self.buffer_end_time - self.BUFFER_WINDOW / 2:
+        if elapsed_time >= self.buffer_end_time - self.BUFFER_WINDOW_SECONDS / 2:
             self.refill_buffer()
 
         # Stop playback if all events have been processed
@@ -457,7 +345,7 @@ class MidiFileEditor(SynthEditor):
                         if msg.type == "note_on" and msg.velocity > 0:
                             pass  # Skip muted channel but allow note off
                     else:
-                        self.midi_helper.send(msg)
+                        self.midi_helper.send_mido_message(msg)
                 self.event_index += 1
             else:
                 break
@@ -481,10 +369,10 @@ class MidiFileEditor(SynthEditor):
                 break
 
         # Stop all notes to avoid hanging
-        if self.midi_port:
+        if self.midi_helper:
             for ch in range(16):
                 for note in range(128):
-                    self.midi_helper.send(mido.Message("note_off", note=note, velocity=0, channel=ch))
+                    self.midi_helper.send_mido_message(mido.Message("note_off", note=note, velocity=0, channel=ch))
 
     def stop_playback(self):
         """
@@ -492,12 +380,10 @@ class MidiFileEditor(SynthEditor):
         """
         self.timer.stop()
 
-        if self.midi_port:
+        if self.midi_helper:
             for ch in range(16):
                 for note in range(128):
-                    self.midi_helper.send(mido.Message("note_off", note=note, velocity=0, channel=ch))
-            # self.midi_port.close()
-            # self.midi_port = None
+                    self.midi_helper.send_mido_message(mido.Message("note_off", note=note, velocity=0, channel=ch))
 
         self.event_index = 0
         self.position_slider.setValue(0)
@@ -558,13 +444,3 @@ class MidiFileEditor(SynthEditor):
         # self.position_slider.setValue(0)
         # self.position_label.setText("0:00 / 0:00")
         # self.midi_track_viewer.clear_tracks()
-
-
-if __name__ == "__main__":
-    import sys
-    from PySide6.QtWidgets import QApplication
-
-    app = QApplication(sys.argv)
-    player = MidiFileEditor()
-    player.show()
-    sys.exit(app.exec())
