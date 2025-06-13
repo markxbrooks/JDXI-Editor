@@ -388,6 +388,9 @@ def get_first_channel(track) -> int:
 
 
 class MidiTrackViewer(QWidget):
+    """
+    MidiTrackViewer
+    """
     def __init__(self, parent: QWidget = None):
         super().__init__(parent)
 
@@ -455,12 +458,35 @@ class MidiTrackViewer(QWidget):
 
         self.setLayout(main_layout)
 
-    def update_track_zoom(self, width):
-        self.scroll_content.setFixedWidth(width * 80)
+    def clear(self):
+        """Clear the MIDI track view and reset state."""
+        # Clear MIDI data
+        self.midi_file = None
+        self.event_index = None
 
-    #def set_midi_file(self, midi_file):
-    #    self.ruler.set_midi_file(midi_file)
-    #    self.tracks.set_midi_file(midi_file)
+        # Unmute all channels
+        for ch, btn in self.mute_buttons.items():
+            if btn.isChecked():
+                btn.setChecked(False)
+        self.muted_channels.clear()
+
+        # Remove track widgets
+        for track_key, track_widget in self.midi_track_widgets.copy().items():
+            track_widget.setParent(None)
+            track_widget.deleteLater()
+        self.midi_track_widgets.clear()
+
+        # Reset zoom slider to default
+        self.track_zoom_slider.setValue(50)
+
+    def update_track_zoom(self, width: int):
+        """
+        update_track_zoom
+
+        :param width: int
+        :return: None
+        """
+        self.scroll_content.setFixedWidth(width * 80)
 
     def toggle_channel_mute(self, channel: int, is_muted: bool) -> None:
         """
