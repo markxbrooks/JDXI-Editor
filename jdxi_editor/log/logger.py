@@ -39,6 +39,8 @@ class Logger:
             message = f"{message}: {exception}"
         Logger.message(message, stacklevel=stacklevel, silent=silent, level=level)
 
+    exception = error
+
     @staticmethod
     def warning(
         message: str,

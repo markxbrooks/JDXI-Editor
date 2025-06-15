@@ -62,4 +62,4 @@ def log_slider_parameters(
         if LOGGING:
             logger.log(level, decorated_message, stacklevel=2)
     except Exception as ex:
-        logger.error(f"Error {ex} occurred logging parameter")
+        logger.recording_error(f"Error {ex} occurred logging parameter")

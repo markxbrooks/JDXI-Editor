@@ -244,10 +244,12 @@ def generate_editor_style(
     slider_neon: str,
     slider_neon_gradient_stop: str,
     font_weight: str = "normal",
+    box_width: str = "300px",
 ) -> str:
     """
     Generate editor style dynamically.
 
+    :param box_width: str width of box widgets such as combo boxes, push button, line edit
     :param font_weight: str The font weight
     :param slider_neon_gradient_stop: str The gradient stop color for the slider handle
     :param slider_neon: str The neon color for the slider handle
@@ -280,9 +282,14 @@ def generate_editor_style(
             border-top: 1px solid {accent};
             border-radius: 3px;
             margin-top: 1px;
+            width: 300px;
             padding: {padding}px;
         }}
-
+        
+        QPushButton {{
+            width: {box_width};
+        }}
+        
         QGroupBox[adsr="true"] {{
             min-height: 300px;  /* Reduced height for horizontal layout */
         }}
@@ -328,7 +335,9 @@ def generate_editor_style(
             padding: 1px;
             color: {foreground};
         }}
-        
+        QComboBox {{
+            width: {box_width};
+        }}
         QComboBox:disabled {{
             color: #333333;
         }}
