@@ -13,7 +13,10 @@ Welcome to JD-Xi Editor's documentation!
    intro
    installation
    usage
+   instrument
+   editor
    troubleshooting
+   legal
 
 .. automodule:: jdxi_editor
    :members:
