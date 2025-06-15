@@ -9,6 +9,7 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QGroupB
 from PySide6.QtCore import Qt
 import qtawesome as qta
 
+from jdxi_editor.ui.widgets.filter.filter import FilterWidget
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.parameter import AddressParameter
 from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
@@ -85,6 +86,11 @@ class AnalogFilterSection(QWidget):
         self.filter_cutoff = self._create_parameter_slider(
             AddressParameterAnalog.FILTER_CUTOFF, "Cutoff"
         )
+        """self.filter_widget = FilterWidget(cutoff_param=AddressParameterAnalog.FILTER_CUTOFF,
+                                          midi_helper=self.midi_helper,
+                                          controls=self.controls,
+                                          address=self.address)"""
+
         self.filter_resonance = self._create_parameter_slider(
             AddressParameterAnalog.FILTER_RESONANCE, "Resonance"
         )
@@ -96,6 +102,7 @@ class AnalogFilterSection(QWidget):
         layout.addWidget(self.filter_cutoff)
         layout.addWidget(self.filter_resonance)
         layout.addWidget(self.filter_cutoff_keyfollow)
+        # layout.addWidget(self.filter_widget)
 
         # Connect filter controls
         self.filter_resonance.valueChanged.connect(

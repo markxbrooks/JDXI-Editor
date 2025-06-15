@@ -55,6 +55,7 @@ class JDXiConstant:
     """JD-Xi-specific MIDI and SysEx constants."""
 
     # Roland SysEx header (Identity Request/Reply)
+    CHECKED = 2
     CENTER_OCTAVE_VALUE = 0x40  # for octave up/down buttons
     ID_NUMBER = 0x7E  # Non-realtime ID (0x7E) or realtime (0x7F), depending on context
     DEVICE_ID = 0x7F  # 'All Call' for all devices

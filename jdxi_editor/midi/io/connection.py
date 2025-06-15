@@ -65,12 +65,11 @@ class MIDIConnection:
         """Get MIDI output port"""
         return self._midi_out
 
-    def initialize(
-        self,
-        midi_in: rtmidi.MidiIn,
-        midi_out: rtmidi.MidiOut,
-        main_window=Optional[QMainWindow],
-    ) -> None:
+    def initialize(self,
+                   midi_in: rtmidi.MidiIn,
+                   midi_out: rtmidi.MidiOut,
+                   main_window=Optional[QMainWindow],
+                   ) -> None:
         """
         Initialize MIDI connection with input and output ports
 
@@ -96,7 +95,7 @@ class MIDIConnection:
                 self._midi_out.send_message(message)
                 # Blink indicator if main window exists
                 if self._main_window and hasattr(
-                    self._main_window, "midi_out_indicator"
+                        self._main_window, "midi_out_indicator"
                 ):
                     self._main_window.midi_out_indicator.blink()
                 log.parameter("Sent MIDI message", message)

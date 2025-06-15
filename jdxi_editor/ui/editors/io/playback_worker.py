@@ -5,7 +5,7 @@ Playback Worker to play Midi files in a new thread
 from PySide6.QtCore import QObject, Signal, Slot
 
 
-class PlaybackWorker(QObject):
+class MidiPlaybackWorker(QObject):
     """
     PlaybackWorker
     """
@@ -21,5 +21,5 @@ class PlaybackWorker(QObject):
     @Slot()
     def do_work(self):
         if self.editor:
-            self.editor.play_next_event()
+            self.editor.midi_play_next_event()
             self.result_ready.emit()

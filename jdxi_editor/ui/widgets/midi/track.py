@@ -663,7 +663,7 @@ class MidiTrackViewer(QWidget):
             mute_button.toggled.connect(
                 lambda checked, tr=i: self.toggle_track_mute(tr, checked)
             )
-            hlayout.addWidget(mute_button)
+            # hlayout.addWidget(mute_button)
 
             # Add the MidiTrackWidget for the specific track
             self.midi_track_widgets[i] = MidiTrackWidget(track=track, track_number=i, total_length=midi_file.length)  # Initialize the dictionary

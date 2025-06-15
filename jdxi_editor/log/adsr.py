@@ -58,7 +58,7 @@ def log_adsr_parameter(
     elif level == logging.WARNING:
         logger.warning(message, stacklevel=2)
     elif level == logging.ERROR:
-        logger.error(message, stacklevel=2)
+        logger.recording_error(message, stacklevel=2)
     elif level == logging.CRITICAL:
         logger.critical(message, stacklevel=2)
     else:
