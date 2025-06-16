@@ -18,6 +18,13 @@ Dependencies:
 - PySide6
 - jdxi_editor.ui.style.Style
 
+Example Usage
+=============
+>>>dialog = PatchNameEditor(current_name="Piano")
+...if dialog.exec_():  # If the user clicks Save
+...    sys_ex_bytes = dialog.get_sys_ex_bytes()
+...    print("SysEx Bytes:", sys_ex_bytes)
+
 """
 
 
