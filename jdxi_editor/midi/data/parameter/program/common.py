@@ -164,18 +164,19 @@ class AddressParameterProgramCommon(AddressParameter):
         self.display_max = display_max if display_max is not None else max_val
         self.tooltip = tooltip if tooltip is not None else ""
 
-    NAME_1 = 0x00  # Character 1 of name (ASCII)
-    NAME_2 = 0x01  # Character 2 of name
-    NAME_3 = 0x02  # Character 3 of name
-    NAME_4 = 0x03  # Character 4 of name
-    NAME_5 = 0x04  # Character 5 of name
-    NAME_6 = 0x05  # Character 6 of name
-    NAME_7 = 0x06  # Character 7 of name
-    NAME_8 = 0x07  # Character 8 of name
-    NAME_9 = 0x08  # Character 9 of name
-    NAME_10 = 0x09  # Character 10 of name
-    NAME_11 = 0x0A  # Character 11 of name
-    NAME_12 = 0x0B  # Character 12 of name
+    # Program name parameters (12 ASCII characters)
+    TONE_NAME_1 = (0x00, 32, 127)  # ASCII character 1
+    TONE_NAME_2 = (0x01, 32, 127)  # ASCII character 2
+    TONE_NAME_3 = (0x02, 32, 127)  # ASCII character 3
+    TONE_NAME_4 = (0x03, 32, 127)  # ASCII character 4
+    TONE_NAME_5 = (0x04, 32, 127)  # ASCII character 5
+    TONE_NAME_6 = (0x05, 32, 127)  # ASCII character 6
+    TONE_NAME_7 = (0x06, 32, 127)  # ASCII character 7
+    TONE_NAME_8 = (0x07, 32, 127)  # ASCII character 8
+    TONE_NAME_9 = (0x08, 32, 127)  # ASCII character 9
+    TONE_NAME_10 = (0x09, 32, 127)  # ASCII character 10
+    TONE_NAME_11 = (0x0A, 32, 127)  # ASCII character 11
+    TONE_NAME_12 = (0x0B, 32, 127)  # ASCII character 12
 
     PROGRAM_LEVEL = (0x10, 0, 127, 0, 127, "Volume of the program")  # Program Level (0-127)
     PROGRAM_TEMPO = (

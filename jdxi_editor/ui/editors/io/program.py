@@ -79,6 +79,7 @@ from jdxi_editor.log.midi_info import log_midi_info
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
+from jdxi_editor.ui.windows.patch.name_editor import PatchNameEditor
 
 
 class ProgramEditor(BasicEditor):
@@ -116,6 +117,7 @@ class ProgramEditor(BasicEditor):
         self.midi_channel = 0 # Defaults to DIGITAL 1
         self.genre_label = None
         self.program_number_combo_box = None
+        self.program_name = ""
         self.bank_combo_box = None
         self.load_button = None
         self.save_button = None
@@ -324,6 +326,12 @@ class ProgramEditor(BasicEditor):
         program_group.setLayout(program_vlayout)
         self.file_label = DigitalTitle("No file loaded")
         program_vlayout.addWidget(self.file_label)
+
+        # update_program_name
+        self.edit_program_name_button = QPushButton("Edit program name")
+        self.edit_program_name_button.clicked.connect(self.edit_program_name)
+        program_vlayout.addWidget(self.edit_program_name_button)
+
         # Program number selection combo box
         self.program_number_combo_box = QComboBox()
         self.program_number_combo_box.addItems([f"{i:02}" for i in range(1, 65)])
@@ -356,6 +364,18 @@ class ProgramEditor(BasicEditor):
         self.load_button.clicked.connect(self.load_program)
         program_vlayout.addWidget(self.load_button)
         return program_group
+
+    def edit_program_name(self):
+        """
+        edit_tone_name
+
+        :return: None
+        """
+        program_name_dialog = PatchNameEditor(current_name=self.program_name)
+        if program_name_dialog.exec():  # If the user clicks Save
+            sysex_string = program_name_dialog.get_sysex_string()
+            log.message(f"SysEx string: {sysex_string}")
+            self.send_tone_name(AddressParameterProgramCommon, sysex_string)
 
     def on_preset_type_changed(self, index: int) -> None:
         """
@@ -606,9 +626,10 @@ class ProgramEditor(BasicEditor):
         mixer_group.setLayout(mixer_layout)
 
         # Sliders
-        self.address = RolandSysExAddress(msb=0x18, umb=0x00, lmb=0x00, lsb=0x00)
+        program_common_address = RolandSysExAddress(msb=0x18, umb=0x00, lmb=0x00, lsb=0x00)
+        self.address = program_common_address
         self.master_level_slider = self._create_parameter_slider(
-            param=AddressParameterProgramCommon.PROGRAM_LEVEL, label="Master", vertical=True, address=self.address
+            param=AddressParameterProgramCommon.PROGRAM_LEVEL, label="Master", vertical=True, address=program_common_address
         )
 
         self._init_synth_data(synth_type=JDXiSynth.DIGITAL_SYNTH_1)
@@ -627,7 +648,7 @@ class ProgramEditor(BasicEditor):
         self.analog_level_slider = self._create_parameter_slider(
             AddressParameterAnalog.AMP_LEVEL, "Analog", vertical=True
         )
-
+        self.address = program_common_address
         # Mixer layout population
         mixer_layout.setColumnStretch(0, 1)
         mixer_layout.addWidget(self.master_level_slider, 0, 1)
@@ -686,6 +707,7 @@ class ProgramEditor(BasicEditor):
         :param synth_type: str (optional), discarded for now
         :return: None
         """
+        self.program_name = program_name
         if self.file_label:
             self.file_label.setText(program_name)
         else:
