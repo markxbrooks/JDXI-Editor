@@ -117,11 +117,12 @@ class SynthBase(QWidget):
             self.data_request()
             self.blockSignals(False)
           
-    def send_tone_name(self, tone_name: str) -> None:
+    def send_tone_name(self, parameter_cls: AddressParameter, tone_name: str) -> None:
         """
         send_tone_name
         
         :param tone_name: str
+        :param parameter_cls: AddressParameter
         Send the characters of the tone name to SysEx parameters.
         """
         # Ensure the tone name is exactly 12 characters (pad with spaces if shorter)
@@ -130,7 +131,7 @@ class SynthBase(QWidget):
         # Iterate over characters and send them to corresponding parameters
         for i, char in enumerate(tone_name):
             ascii_value = ord(char)
-            param = getattr(AddressParameterAnalog, f"TONE_NAME_{i + 1}")
+            param = getattr(parameter_cls, f"TONE_NAME_{i + 1}")
             self.send_midi_parameter(param, ascii_value)
 
     def send_midi_parameter(self, param: AddressParameter,
