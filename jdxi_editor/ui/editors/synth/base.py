@@ -56,8 +56,11 @@ class SynthBase(QWidget):
         super().__init__(parent)
         self.preset_type = None
         self.parent = parent
-        self.tone_names = {}
-        self.tone_name = None
+        # Store all Tone/Preset names for access by Digital Displays
+        self.tone_names = {JDXiSynth.DIGITAL_SYNTH_1: "",
+                           JDXiSynth.DIGITAL_SYNTH_2: "",
+                           JDXiSynth.ANALOG_SYNTH: "",
+                           JDXiSynth.DRUM_KIT: ""}
         self.partial_editors = {}
         self.sysex_data = None
         self.address = None
@@ -82,8 +85,7 @@ class SynthBase(QWidget):
         """
         self._midi_helper = helper
 
-    def send_raw_message(self,
-                         message: bytes) -> bool:
+    def send_raw_message(self, message: bytes) -> bool:
         """
         Send a raw MIDI message using the MIDI helper.
 
@@ -101,7 +103,6 @@ class SynthBase(QWidget):
 
         :return: None
         """
-        
         tone_name = self.tone_names[self.preset_type]
         tone_name_dialog = PatchNameEditor(current_name=tone_name)
         if hasattr(self, "partial_parameters"):
@@ -110,7 +111,7 @@ class SynthBase(QWidget):
             parameter_cls = self.synth_data.common_parameters
         if tone_name_dialog.exec():  # If the user clicks Save
             sysex_string = tone_name_dialog.get_sysex_string()
-            print("SysEx Bytes:", sysex_string)
+            log.message("SysEx string:", sysex_string)
             self.send_tone_name(parameter_cls, sysex_string)
 
     def data_request(self, channel=None, program=None):
@@ -145,7 +146,7 @@ class SynthBase(QWidget):
         """
         send_tone_name
         
-        :param tone_name: str
+        :param tone_name: str Name of the Tone/preset
         :param parameter_cls: AddressParameter
         Send the characters of the tone name to SysEx parameters.
         """
@@ -158,7 +159,8 @@ class SynthBase(QWidget):
             param = getattr(parameter_cls, f"TONE_NAME_{i + 1}")
             self.send_midi_parameter(param, ascii_value)
 
-    def send_midi_parameter(self, param: AddressParameter,
+    def send_midi_parameter(self,
+                            param: AddressParameter,
                             value: int,
                             address: RolandSysExAddress = None) -> bool:
         """
