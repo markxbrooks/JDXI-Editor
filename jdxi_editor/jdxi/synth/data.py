@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Dict
+from typing import Dict, Optional, Union
 
 from jdxi_editor.jdxi.midi.constant import MidiConstant
 from jdxi_editor.midi.data.address.address import (
@@ -8,6 +8,10 @@ from jdxi_editor.midi.data.address.address import (
 )
 from jdxi_editor.jdxi.synth.instrument_display import InstrumentDisplayConfig
 from jdxi_editor.jdxi.synth.midi_config import MidiSynthConfig
+from jdxi_editor.midi.data.parameter import AddressParameter
+from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
+from jdxi_editor.midi.data.parameter.digital import AddressParameterDigitalCommon
+from jdxi_editor.midi.data.parameter.drum.common import AddressParameterDrumCommon
 
 
 @dataclass
@@ -18,6 +22,7 @@ class JDXISynthData(MidiSynthConfig, InstrumentDisplayConfig):
     umb: int
     lmb: int
     address: RolandSysExAddress = field(init=False)
+    common_parameters: Optional[Union[AddressParameterDrumCommon, AddressParameterAnalog, AddressParameterDigitalCommon]] = None
 
     def __post_init__(self) -> None:
         """Post Init"""
