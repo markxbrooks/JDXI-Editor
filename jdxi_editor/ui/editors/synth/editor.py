@@ -88,7 +88,7 @@ class SynthEditor(SynthBase):
         midi_helper: Optional[object] = None,
         parent: Optional[QWidget] = None,
     ):
-        super().__init__(midi_helper, parent)
+        super().__init__(midi_helper, parent) # Dict of JDXiSynth Types
         self.partial_map = SYNTH_PARTIAL_MAP
         self.sysex_current_data = None
         self.preset_list = None
@@ -211,6 +211,11 @@ class SynthEditor(SynthBase):
         instrument_title_group_layout = QVBoxLayout(instrument_preset_group)
         self.instrument_title_label = DigitalTitle()
         instrument_title_group_layout.addWidget(self.instrument_title_label)
+        # update_tone_name
+        self.edit_tone_name_button = QPushButton("Edit tone name")
+        self.edit_tone_name_button.clicked.connect(self.edit_tone_name)
+        instrument_title_group_layout.addWidget(self.edit_tone_name_button)
+        # read request button
         self.read_request_button = QPushButton("Send Read Request to Synth")
         self.read_request_button.clicked.connect(self.data_request)
         instrument_title_group_layout.addWidget(self.read_request_button)
@@ -359,6 +364,8 @@ class SynthEditor(SynthBase):
         if self.preset_type == synth_type:
             if hasattr(self, "instrument_title_label"):
                 self.instrument_title_label.setText(name)
+        self.tone_names[synth_type] = name
+        
 
     def update_combo_box_index(self, preset_number):
         """Updates the QComboBox to reflect the loaded preset."""

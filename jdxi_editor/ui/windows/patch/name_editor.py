@@ -22,7 +22,7 @@ Example Usage
 =============
 >>>dialog = PatchNameEditor(current_name="Piano")
 ...if dialog.exec_():  # If the user clicks Save
-...    sys_ex_bytes = dialog.get_sys_ex_bytes()
+...    sys_ex_bytes = dialog.get_sysex_bytes()
 ...    print("SysEx Bytes:", sys_ex_bytes)
 
 """
@@ -40,6 +40,7 @@ from PySide6.QtWidgets import (
 
 from jdxi_editor.jdxi.style import JDXiStyle
 
+
 class PatchNameEditor(QDialog):
     def __init__(self, current_name="", parent=None):
         super().__init__(parent)
@@ -55,10 +56,10 @@ class PatchNameEditor(QDialog):
         # Add name input
         name_layout = QHBoxLayout()
         name_label = QLabel("Name:")
-        self.name_input = QLineEdit(current_name)
-        self.name_input.setMaxLength(12)  # JD-Xi patch names are max 12 chars
+        self.tone_name_input = QLineEdit(current_name)
+        self.tone_name_input.setMaxLength(12)  # JD-Xi patch names are max 12 chars
         name_layout.addWidget(name_label)
-        name_layout.addWidget(self.name_input)
+        name_layout.addWidget(self.tone_name_input)
         layout.addLayout(name_layout)
 
         # Add buttons
@@ -74,21 +75,30 @@ class PatchNameEditor(QDialog):
         main_layout.addWidget(group)
         self.setStyleSheet(JDXiStyle.EDITOR)
 
-    def get_sys_ex_bytes(self):
+    def get_sysex_string(self):
         """
         Converts the current name input to SysExAddress bytes.
         JD-Xi patch names are encoded as ASCII characters, padded with spaces if shorter than 12 chars.
         """
-        name = self.name_input.text()
-        if len(name) < 12:
+        tone_name = self.tone_name_input.text()
+        if len(tone_name) < 12:
             # Pad the name with spaces if it's shorter than 12 characters
-            name = name.ljust(12)
-        elif len(name) > 12:
+            tone_name = tone_name.ljust(12)
+        elif len(tone_name) > 12:
             # Truncate the name to 12 characters if it's too long (shouldn't happen due to setMaxLength)
-            name = name[:12]
+            tone_name = tone_name[:12]
+        return tone_name
+
+    def get_sysex_bytes(self):
+        """
+        Converts the current name input to SysExAddress bytes.
+        JD-Xi patch names are encoded as ASCII characters, padded with spaces if shorter than 12 chars.
+        """
+        tone_name = self.get_sysex_string()
         # Convert the string to a list of ASCII byte values
-        sys_ex_bytes = [ord(char) for char in name]
-        return sys_ex_bytes
+        sysex_bytes = [ord(char) for char in tone_name]
+        return sysex_bytes
+
 
 class PatchNameEditorOld(QDialog):
     def __init__(self, current_name="", parent=None):

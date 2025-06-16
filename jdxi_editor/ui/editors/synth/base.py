@@ -29,6 +29,7 @@ from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.log.slider_parameter import log_slider_parameters
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
+from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.io.delay import send_with_delay
@@ -37,6 +38,7 @@ from jdxi_editor.ui.widgets.combo_box.combo_box import ComboBox
 from jdxi_editor.ui.widgets.slider import Slider
 from jdxi_editor.ui.widgets.spin_box.spin_box import SpinBox
 from jdxi_editor.ui.widgets.switch.switch import Switch
+from jdxi_editor.ui.windows.patch.name_editor import PatchNameEditor
 
 
 class SynthBase(QWidget):
@@ -52,6 +54,9 @@ class SynthBase(QWidget):
         :param parent: QWidget Parent widget for this editor
         """
         super().__init__(parent)
+        self.parent = parent
+        self.tone_names = {}
+        self.tone_name = None
         self.partial_editors = {}
         self.sysex_data = None
         self.address = None
@@ -88,6 +93,19 @@ class SynthBase(QWidget):
             log.message("MIDI helper not initialized")
             return False
         return self._midi_helper.send_raw_message(message)
+
+    def edit_tone_name(self):
+        """
+        edit_tone_name
+
+        :return: None
+        """
+        tone_name = self.tone_names[JDXiSynth.ANALOG_SYNTH]
+        tone_name_dialog = PatchNameEditor(current_name=tone_name)
+        if tone_name_dialog.exec():  # If the user clicks Save
+            sysex_string = tone_name_dialog.get_sysex_string()
+            print("SysEx Bytes:", sysex_string)
+            self.send_tone_name(AddressParameterAnalog, sysex_string)
 
     def data_request(self, channel=None, program=None):
         """

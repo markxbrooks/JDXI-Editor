@@ -112,6 +112,12 @@ class PresetEditor(BasicEditor):
         self.digital_preset_label = None
         self.category_combo_box = None
         self.preset_type = None
+        self.synth_label_map = {
+            JDXiSynth.DIGITAL_SYNTH_1: self.digital_synth_1_current_label,
+            JDXiSynth.DIGITAL_SYNTH_2: self.digital_synth_2_current_label,
+            JDXiSynth.DRUM_KIT: self.drum_kit_current_label,
+            JDXiSynth.ANALOG_SYNTH: self.analog_synth_current_label,
+        }
         self.presets = {}  # Maps program names to numbers
         self.setup_ui()
         self.data_request()
@@ -340,14 +346,8 @@ class PresetEditor(BasicEditor):
         :param synth_type: str
         """
         log.message(f"Update tone name triggered: tone_name {tone_name} {synth_type}")
-        synth_label_map = {
-            JDXiSynth.DIGITAL_SYNTH_1: self.digital_synth_1_current_label,
-            JDXiSynth.DIGITAL_SYNTH_2: self.digital_synth_2_current_label,
-            JDXiSynth.DRUM_KIT: self.drum_kit_current_label,
-            JDXiSynth.ANALOG_SYNTH: self.analog_synth_current_label,
-        }
 
-        label = synth_label_map.get(synth_type)
+        label = self.synth_label_map.get(synth_type)
         if label:
             label.setText(tone_name)
         else:
