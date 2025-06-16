@@ -1,0 +1,1 @@
+nuitka --standalone --onefile --enable-plugin=pyside6 --include-package=jdxi_editor --include-package=rtmidi --include-data-files=resources/*=resources/ --plugin-enable=pillow --output-dir=dist run_editor.py
