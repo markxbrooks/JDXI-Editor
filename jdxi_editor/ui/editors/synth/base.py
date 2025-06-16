@@ -29,7 +29,6 @@ from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.log.slider_parameter import log_slider_parameters
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
-from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.io.delay import send_with_delay
@@ -111,8 +110,9 @@ class SynthBase(QWidget):
             parameter_cls = self.synth_data.common_parameters
         if tone_name_dialog.exec():  # If the user clicks Save
             sysex_string = tone_name_dialog.get_sysex_string()
-            log.message("SysEx string:", sysex_string)
+            log.message(f"SysEx string: {sysex_string}")
             self.send_tone_name(parameter_cls, sysex_string)
+            self.data_request()
 
     def data_request(self, channel=None, program=None):
         """

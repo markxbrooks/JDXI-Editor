@@ -137,8 +137,19 @@ class ProgramEditor(BasicEditor):
         """set up ui elements"""
         self.setWindowTitle("Program Editor")
         self.setMinimumSize(400, 400)
-        # center_widget = QWidget()
         main_vlayout = QVBoxLayout()
+        ### Scrolled area
+        # Scrollable area setup
+        scrolled_area = QScrollArea()
+        scrolled_area.setWidgetResizable(True)
+
+        scrolled_area_container = QWidget()
+        scrolled_area_container_layout = QVBoxLayout(scrolled_area_container)
+
+        scrolled_area.setWidget(scrolled_area_container)
+        main_vlayout.addWidget(scrolled_area)  # ✅ Add scroll area to the main layout
+        ###
+
         title_hlayout = QHBoxLayout()
 
         self.title_left_group = QGroupBox("Programs")
@@ -150,7 +161,7 @@ class ProgramEditor(BasicEditor):
         title_right_vlayout = QVBoxLayout()
         title_hlayout.addLayout(title_right_vlayout)
 
-        main_vlayout.addLayout(title_hlayout)
+        scrolled_area_container_layout.addLayout(title_hlayout)
         self.setLayout(main_vlayout)
         self.setStyleSheet(JDXiStyle.EDITOR)
 
@@ -162,7 +173,7 @@ class ProgramEditor(BasicEditor):
 
         program_preset_hlayout = QHBoxLayout()
         program_preset_hlayout.addStretch()
-        main_vlayout.addLayout(program_preset_hlayout)
+        scrolled_area_container_layout.addLayout(program_preset_hlayout)
 
         program_group = self._create_program_selection_box()
         program_group.setMinimumWidth(JDXiStyle.PROGRAM_PRESET_GROUP_WIDTH)
@@ -178,11 +189,11 @@ class ProgramEditor(BasicEditor):
         program_preset_hlayout.addStretch()
 
         transport_group = self._create_transport_group()
-        # main_vlayout.addWidget(transport_group)
+        # scrolled_area_container_layout.addWidget(transport_group)
         self.populate_programs()
 
         mixer_section = self._create_mixer_section()
-        main_vlayout.addWidget(mixer_section)
+        scrolled_area_container_layout.addWidget(mixer_section)
         preset_type = "Digital Synth 1"
         self.set_channel_and_preset_lists(preset_type)
         self._populate_presets()
@@ -376,6 +387,7 @@ class ProgramEditor(BasicEditor):
             sysex_string = program_name_dialog.get_sysex_string()
             log.message(f"SysEx string: {sysex_string}")
             self.send_tone_name(AddressParameterProgramCommon, sysex_string)
+            self.data_request()
 
     def on_preset_type_changed(self, index: int) -> None:
         """
@@ -609,19 +621,10 @@ class ProgramEditor(BasicEditor):
         """
         2) Set up the Scrolled Area
         """
-        # Scrollable area setup
-        scrolled_area = QScrollArea()
-        scrolled_area.setWidgetResizable(True)
-
-        container = QWidget()
-        container_layout = QVBoxLayout(container)
-
-        scrolled_area.setWidget(container)
-        layout.addWidget(scrolled_area)  # ✅ Add scroll area to the main layout
 
         # Mixer controls group
         mixer_group = QGroupBox("Mixer Level Settings")
-        container_layout.addWidget(mixer_group)
+        layout.addWidget(mixer_group)
         mixer_layout = QGridLayout()
         mixer_group.setLayout(mixer_layout)
 
