@@ -33,8 +33,57 @@ from PySide6.QtWidgets import (
 
 from jdxi_editor.jdxi.style import JDXiStyle
 
-
 class PatchNameEditor(QDialog):
+    def __init__(self, current_name="", parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Edit Patch Name")
+        self.setModal(True)
+
+        main_layout = QVBoxLayout(self)
+        group = QGroupBox("Patch Name")
+
+        # Set up layout
+        layout = QVBoxLayout(group)
+
+        # Add name input
+        name_layout = QHBoxLayout()
+        name_label = QLabel("Name:")
+        self.name_input = QLineEdit(current_name)
+        self.name_input.setMaxLength(12)  # JD-Xi patch names are max 12 chars
+        name_layout.addWidget(name_label)
+        name_layout.addWidget(self.name_input)
+        layout.addLayout(name_layout)
+
+        # Add buttons
+        button_layout = QHBoxLayout()
+        save_button = QPushButton("Save")
+        cancel_button = QPushButton("Cancel")
+        save_button.clicked.connect(self.accept)
+        cancel_button.clicked.connect(self.reject)
+        button_layout.addWidget(save_button)
+        button_layout.addWidget(cancel_button)
+        layout.addLayout(button_layout)
+        group.setLayout(layout)
+        main_layout.addWidget(group)
+        self.setStyleSheet(JDXiStyle.EDITOR)
+
+    def get_sys_ex_bytes(self):
+        """
+        Converts the current name input to SysExAddress bytes.
+        JD-Xi patch names are encoded as ASCII characters, padded with spaces if shorter than 12 chars.
+        """
+        name = self.name_input.text()
+        if len(name) < 12:
+            # Pad the name with spaces if it's shorter than 12 characters
+            name = name.ljust(12)
+        elif len(name) > 12:
+            # Truncate the name to 12 characters if it's too long (shouldn't happen due to setMaxLength)
+            name = name[:12]
+        # Convert the string to a list of ASCII byte values
+        sys_ex_bytes = [ord(char) for char in name]
+        return sys_ex_bytes
+
+class PatchNameEditorOld(QDialog):
     def __init__(self, current_name="", parent=None):
         super().__init__(parent)
         self.setWindowTitle("Edit Patch Name")
