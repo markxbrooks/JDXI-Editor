@@ -416,17 +416,3 @@ class MidiOutHandler(MidiIOController):
             log.parameter("Sent MIDI message:", raw_message)
         except Exception as ex:
             log.error(f"Error sending identity request: {str(ex)}")
-            
-    def send_tone_name(self, tone_name):
-        """
-        Send the characters of the tone name to SysEx parameters.
-        """
-        # Ensure the tone name is exactly 12 characters (pad with spaces if shorter)
-        tone_name = tone_name.ljust(12)[:12]
-
-        # Iterate over characters and send them to corresponding parameters
-        for i, char in enumerate(tone_name):
-            ascii_value = ord(char)
-            param = getattr(AddressParameterAnalog, f"TONE_NAME_{i + 1}")
-            self.send_message(param, ascii_value)
-
