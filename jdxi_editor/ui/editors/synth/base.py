@@ -54,6 +54,7 @@ class SynthBase(QWidget):
         :param parent: QWidget Parent widget for this editor
         """
         super().__init__(parent)
+        self.preset_type = None
         self.parent = parent
         self.tone_names = {}
         self.tone_name = None
@@ -100,12 +101,17 @@ class SynthBase(QWidget):
 
         :return: None
         """
-        tone_name = self.tone_names[JDXiSynth.ANALOG_SYNTH]
+        
+        tone_name = self.tone_names[self.preset_type]
         tone_name_dialog = PatchNameEditor(current_name=tone_name)
+        if hasattr(self, "partial_parameters"):
+            parameter_cls = self.synth_data.partial_parameters
+        else:
+            parameter_cls = self.synth_data.common_parameters
         if tone_name_dialog.exec():  # If the user clicks Save
             sysex_string = tone_name_dialog.get_sysex_string()
             print("SysEx Bytes:", sysex_string)
-            self.send_tone_name(AddressParameterAnalog, sysex_string)
+            self.send_tone_name(parameter_cls, sysex_string)
 
     def data_request(self, channel=None, program=None):
         """
@@ -370,8 +376,11 @@ class SynthBase(QWidget):
             "preset_list",
             "midi_requests",
             "midi_channel",
+            "common_parameters",
+            "partial_parameters"
         ]:
-            setattr(self, attr, getattr(self.synth_data, attr))
+            if hasattr(self.synth_data, attr):
+                setattr(self, attr, getattr(self.synth_data, attr))
 
     def _update_slider(
             self,
