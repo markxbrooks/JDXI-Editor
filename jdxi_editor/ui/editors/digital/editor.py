@@ -167,15 +167,19 @@ class DigitalSynthEditor(SynthEditor):
         container_layout = QVBoxLayout()
         container.setLayout(container_layout)
 
-        upper_layout = QHBoxLayout()
-        top_layout.addLayout(upper_layout)
+        upper_row_layout = QHBoxLayout()
+        upper_row_layout.addStretch()
+        top_layout.addLayout(upper_row_layout)
         top_layout.addWidget(self.partials_panel)
         instrument_preset_group = self._create_instrument_preset_group(
             synth_type="Digital"
         )
-        upper_layout.addWidget(instrument_preset_group)
+        upper_row_layout.addStretch()
+        upper_row_layout.addWidget(instrument_preset_group)
         self._create_instrument_image_group()
-        upper_layout.addWidget(self.instrument_image_group)
+        upper_row_layout.addStretch()
+        upper_row_layout.addWidget(self.instrument_image_group)
+        upper_row_layout.addStretch()
         self.update_instrument_image()
         self._create_partial_tab_widget(container_layout, self.midi_helper)
         scroll.setWidget(container)

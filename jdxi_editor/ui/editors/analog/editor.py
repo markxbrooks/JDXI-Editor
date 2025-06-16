@@ -184,14 +184,16 @@ class AnalogSynthEditor(SynthEditor):
 
         # Top layout with title and image
         upper_layout = QHBoxLayout()
+        upper_layout.addStretch()
         upper_widget.setLayout(upper_layout)
 
         instrument_preset_group = self._create_instrument_preset_group()
         upper_layout.addWidget(instrument_preset_group)
-
+        upper_layout.addStretch()
         self._create_instrument_image_group()
         upper_layout.addWidget(self.instrument_image_group)
         self.instrument_image_group.setMinimumWidth(JDXiStyle.INSTRUMENT_IMAGE_WIDTH)
+        upper_layout.addStretch()
         self.update_instrument_image()
 
         # Tab sections
@@ -211,7 +213,7 @@ class AnalogSynthEditor(SynthEditor):
         splitter.setSizes([300, 300])  # give more room to bottom
         # Splitter handle style
         splitter.setStyleSheet(JDXiStyle.SPLITTER)
-        # self.show()
+
 
     def _create_sections(self):
         """Create the sections for the Analog Synth Editor."""

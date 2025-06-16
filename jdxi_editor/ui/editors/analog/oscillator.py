@@ -54,11 +54,15 @@ class AnalogOscillatorSection(QWidget):
         self.controls = controls
         self.init_ui()
 
-    def init_ui(self):
+    def init_ui(self) -> None:
+        """
+        Initialize the UI
+        :return: None
+        """
         layout = QVBoxLayout()
         layout.setContentsMargins(1, 1, 1, 1)
         self.setLayout(layout)
-
+        self.setStyleSheet(JDXiStyle.ADSR_ANALOG)
         # Waveform buttons
         layout.addLayout(self.create_waveform_buttons())
 
@@ -115,19 +119,20 @@ class AnalogOscillatorSection(QWidget):
         :return: QGroupBox
         """
         tuning_group = QGroupBox("Tuning")
-        tuning_layout = QVBoxLayout()
+        tuning_layout = QHBoxLayout()
         tuning_group.setLayout(tuning_layout)
-
+        tuning_layout.addStretch()
         tuning_layout.addWidget(
             self._create_parameter_slider(
-                AddressParameterAnalog.OSC_PITCH_COARSE, "Coarse (1/2 tones)"
+                AddressParameterAnalog.OSC_PITCH_COARSE, "Coarse (1/2 tones)", vertical=True
             )
         )
         tuning_layout.addWidget(
             self._create_parameter_slider(
-                AddressParameterAnalog.OSC_PITCH_FINE, "Fine (cents)"
+                AddressParameterAnalog.OSC_PITCH_FINE, "Fine (cents)", vertical=True
             )
         )
+        tuning_layout.addStretch()
 
         return tuning_group
 
@@ -160,12 +165,12 @@ class AnalogOscillatorSection(QWidget):
         :return: QGroupBox
         """
         pitch_env_group = QGroupBox("Pitch Envelope")
-        pitch_env_layout = QVBoxLayout()
-        pitch_env_group.setLayout(pitch_env_layout)
-
-        pitch_env_layout.addWidget(
+        pitch_env_row_layout = QHBoxLayout()
+        pitch_env_group.setLayout(pitch_env_row_layout)
+        pitch_env_row_layout.addStretch()
+        pitch_env_row_layout.addWidget(
             self._create_parameter_slider(
-                AddressParameterAnalog.OSC_PITCH_ENV_VELOCITY_SENSITIVITY, "Velocity Sensitivity"
+                AddressParameterAnalog.OSC_PITCH_ENV_VELOCITY_SENSITIVITY, "Velocity Sensitivity", vertical=True
             )
         )
         # Pitch Env Widget
@@ -179,11 +184,13 @@ class AnalogOscillatorSection(QWidget):
             address=self.address,
         )
         self.pitch_env_widget.setStyleSheet(JDXiStyle.ADSR_ANALOG)
+        pitch_env_row_layout.addStretch()
+
         env_group = QGroupBox("Envelope")
         env_group.setProperty("adsr", True)
         env_layout = QHBoxLayout()
         env_group.setLayout(env_layout)
-        pitch_env_layout.addWidget(self.pitch_env_widget)
+        pitch_env_row_layout.addWidget(self.pitch_env_widget)
         return pitch_env_group
 
     def create_sub_osc_group(self) -> QGroupBox:

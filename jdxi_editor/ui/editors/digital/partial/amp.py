@@ -74,22 +74,30 @@ class DigitalAmpSection(QWidget):
         controls_layout = QVBoxLayout()
         controls_group.setLayout(controls_layout)
 
-        controls_layout.addWidget(
+        controls_row_layout = QHBoxLayout()
+        controls_layout.addLayout(controls_row_layout)
+        controls_row_layout.addStretch()
+
+        controls_row_layout.addWidget(
             self._create_parameter_slider(
-                AddressParameterDigitalPartial.AMP_LEVEL, "Level"
+                AddressParameterDigitalPartial.AMP_LEVEL, "Level", vertical=True
             )
         )
-        controls_layout.addWidget(
+        controls_row_layout.addWidget(
             self._create_parameter_slider(
-                AddressParameterDigitalPartial.AMP_VELOCITY, "Velocity"
+                AddressParameterDigitalPartial.AMP_VELOCITY, "Velocity", vertical=True
             )
         )
+        pan_row_layout = QHBoxLayout()
+        controls_layout.addLayout(pan_row_layout)
+        pan_row_layout.addStretch()
         # Create and center the pan slider
         pan_slider = self._create_parameter_slider(
             AddressParameterDigitalPartial.AMP_PAN, "Pan"
         )
         pan_slider.setValue(0)
-        controls_layout.addWidget(pan_slider)
+        pan_row_layout.addWidget(pan_slider)
+        pan_row_layout.addStretch()
         amp_section_layout.addWidget(controls_group)
 
         # Amp envelope
@@ -136,18 +144,20 @@ class DigitalAmpSection(QWidget):
         amp_section_layout.addStretch()
 
         # Keyfollow and aftertouch
-        controls_layout.addWidget(
+        controls_row_layout.addWidget(
             self._create_parameter_slider(
-                AddressParameterDigitalPartial.AMP_LEVEL_KEYFOLLOW, "KeyFollow"
+                AddressParameterDigitalPartial.AMP_LEVEL_KEYFOLLOW, "KeyFollow", vertical=True
             )
         )
-        controls_layout.addWidget(
+        controls_row_layout.addWidget(
             self._create_parameter_slider(
-                AddressParameterDigitalPartial.LEVEL_AFTERTOUCH, "After-touch Sensitivity"
+                AddressParameterDigitalPartial.LEVEL_AFTERTOUCH, "After-touch Sensitivity", vertical=True
             )
         )
-        controls_layout.addWidget(
+        controls_row_layout.addWidget(
             self._create_parameter_slider(
-                AddressParameterDigitalPartial.CUTOFF_AFTERTOUCH, "After-touch Cutoff"
+                AddressParameterDigitalPartial.CUTOFF_AFTERTOUCH, "After-touch Cutoff", vertical=True
             )
         )
+        controls_group.setStyleSheet(JDXiStyle.ADSR)
+        controls_row_layout.addStretch()

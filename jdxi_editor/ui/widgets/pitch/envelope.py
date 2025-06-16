@@ -111,11 +111,7 @@ class PitchEnvelopeWidget(EnvelopeWidgetBase):
         self.controls[attack_param] = self.attack_control
         self.controls[decay_param] = self.decay_control
         self.controls[depth_param] = self.depth_control
-        self.layout = QGridLayout()
-        self.layout.addWidget(self.attack_control, 0, 0)
-        self.layout.addWidget(self.decay_control, 0, 1)
-        self.layout.addWidget(self.depth_control, 0, 2)
-        self.setLayout(self.layout)
+
         self.depth_control.spinbox.setEnabled(False)
         self.envelope_spinbox_map = {
             "attack_time": self.attack_control.spinbox,
@@ -128,7 +124,16 @@ class PitchEnvelopeWidget(EnvelopeWidgetBase):
             envelope=self.envelope,
             parent=self
         )
+
+        self.layout = QGridLayout()
+        self.setLayout(self.layout)
+        self.layout.setColumnStretch(0, 1)
+        self.layout.addWidget(self.attack_control, 0, 1)
+        self.layout.addWidget(self.decay_control, 0, 2)
+        self.layout.addWidget(self.depth_control, 0, 3)
         self.layout.addWidget(self.plot, 0, 4, 3, 1)
+        self.layout.setColumnStretch(5, 1)
+
         self.plot.set_values(self.envelope)
         for control in self._control_widgets:
             control.envelope_changed.connect(self.on_control_changed)

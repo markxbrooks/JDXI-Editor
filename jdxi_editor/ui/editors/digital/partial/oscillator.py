@@ -68,6 +68,7 @@ class DigitalOscillatorSection(QWidget):
 
         # Top row: Waveform buttons and variation switch
         top_row = QHBoxLayout()
+        top_row.addStretch()
         wave_layout = QHBoxLayout()
         self.wave_buttons = {}
 
@@ -99,22 +100,30 @@ class DigitalOscillatorSection(QWidget):
             ["A", "B", "C"],
         )
         top_row.addWidget(self.wave_variation_switch)
+        top_row.addStretch()
         layout.addLayout(top_row)
 
         # Tuning controls
         tuning_group = QGroupBox("Tuning")
-        tuning_layout = QVBoxLayout()
+        tuning_layout = QHBoxLayout()
+        tuning_layout.addStretch()
         tuning_group.setLayout(tuning_layout)
         tuning_layout.addWidget(
             self._create_parameter_slider(
-                AddressParameterDigitalPartial.OSC_PITCH, "Pitch (1/2 tones)"
+                AddressParameterDigitalPartial.OSC_PITCH, "Pitch (1/2 tones)", vertical=True
             )
         )
         tuning_layout.addWidget(
             self._create_parameter_slider(
-                AddressParameterDigitalPartial.OSC_DETUNE, "Detune (cents)"
+                AddressParameterDigitalPartial.OSC_DETUNE, "Detune (cents)", vertical=True
             )
         )
+        self.super_saw_detune = self._create_parameter_slider(
+            AddressParameterDigitalPartial.SUPER_SAW_DETUNE, "Super-Saw Detune", vertical=True
+        )
+        tuning_layout.addWidget(self.super_saw_detune)
+        tuning_layout.addStretch()
+        tuning_group.setStyleSheet(JDXiStyle.ADSR)
         layout.addWidget(tuning_group)
 
         # Pulse Width controls
@@ -122,13 +131,6 @@ class DigitalOscillatorSection(QWidget):
         pw_layout = QVBoxLayout()
         pw_group.setLayout(pw_layout)
 
-        #self.pw_slider = self._create_parameter_slider(
-        #    AddressParameterDigitalPartial.OSC_PULSE_WIDTH, "Width (% of cycle)"
-        #)
-        #self.pw_mod_slider = self._create_parameter_slider(
-        #    AddressParameterDigitalPartial.OSC_PULSE_WIDTH_MOD_DEPTH,
-        #    "Mod Depth (of LFO applied)",
-        #)
         self.pw_shift_slider = self._create_parameter_slider(
             AddressParameterDigitalPartial.OSC_PULSE_WIDTH_SHIFT,
             "Shift (range of change)", vertical=True
@@ -136,6 +138,7 @@ class DigitalOscillatorSection(QWidget):
         self.pw_shift_slider.setStyleSheet(JDXiStyle.ADSR)
         pwm_widget_layout = QHBoxLayout()
         pw_layout.addLayout(pwm_widget_layout)
+        pwm_widget_layout.addStretch()
         self.pwm_widget = PWMWidget(pulse_width_param=AddressParameterDigitalPartial.OSC_PULSE_WIDTH,
                                     mod_depth_param=AddressParameterDigitalPartial.OSC_PULSE_WIDTH_MOD_DEPTH,
                                     midi_helper=self.midi_helper,
@@ -147,7 +150,7 @@ class DigitalOscillatorSection(QWidget):
         pwm_widget_layout.addWidget(self.pwm_widget)
 
         pwm_widget_layout.addWidget(self.pw_shift_slider)
-
+        pwm_widget_layout.addStretch()
         layout.addWidget(pw_group)
 
         # PCM Wave controls
@@ -170,21 +173,13 @@ class DigitalOscillatorSection(QWidget):
         )
         self.pcm_category_combo.addItems(self.pcm_categories)
         self.pcm_category_combo.currentIndexChanged.connect(self.update_waves)
-        pcm_layout.addWidget(self.pcm_wave_gain, 0, 0)
-        pcm_layout.addWidget(QLabel("Category"), 0, 1)
-        pcm_layout.addWidget(self.pcm_category_combo, 0, 2)
-        pcm_layout.addWidget(self.pcm_wave_number, 0, 3)
+        pcm_layout.setColumnStretch(0, 1)  # left side stretches
+        pcm_layout.addWidget(self.pcm_wave_gain, 0, 1)
+        pcm_layout.addWidget(QLabel("Category"), 0, 2)
+        pcm_layout.addWidget(self.pcm_category_combo, 0, 3)
+        pcm_layout.addWidget(self.pcm_wave_number, 0, 4)
+        pcm_layout.setColumnStretch(5, 1)  # left side stretches
         layout.addWidget(pcm_group)
-
-        # Super Saw controls
-        super_saw_group = QGroupBox("Super Saw")
-        super_saw_layout = QVBoxLayout()
-        super_saw_group.setLayout(super_saw_layout)
-        self.super_saw_detune = self._create_parameter_slider(
-            AddressParameterDigitalPartial.SUPER_SAW_DETUNE, "S-Saw Detune"
-        )
-        super_saw_layout.addWidget(self.super_saw_detune)
-        layout.addWidget(super_saw_group)
 
         # Pitch Envelope
         pitch_env_group = QGroupBox("Pitch Envelope")
@@ -203,7 +198,6 @@ class DigitalOscillatorSection(QWidget):
         self.pitch_env_widget.setStyleSheet(JDXiStyle.ADSR)
         pitch_env_layout.addWidget(self.pitch_env_widget)
         layout.addWidget(pitch_env_group)
-
         # Initialize states
         self._update_pw_controls_enabled_state(DigitalOscWave.SAW)
         self._update_pcm_controls_enabled_state(DigitalOscWave.PCM)

@@ -48,7 +48,7 @@ else:
 
 
 def generate_polyend_sequencer_button_style(
-    self, is_checked: bool, is_current: bool = False
+        self, is_checked: bool, is_current: bool = False
 ) -> str:
     """
     Generate button style based on state and current step
@@ -107,17 +107,17 @@ def generate_sequencer_button_style(active: bool) -> str:
 
 
 def generate_button_style(
-    bg: str,
-    border: str,
-    radius: int,
-    text_color: str,
-    hover: str,
-    border_pressed: str,
-    background_pressed: str = "#666666",
-    button_border_width: int = 4,
-    font_family: str = FONT_FAMILY,
-    font_size: str = "12px",
-    button_padding: int = 4,
+        bg: str,
+        border: str,
+        radius: int,
+        text_color: str,
+        hover: str,
+        border_pressed: str,
+        background_pressed: str = "#666666",
+        button_border_width: int = 4,
+        font_family: str = FONT_FAMILY,
+        font_size: str = "12px",
+        button_padding: int = 4,
 ) -> str:
     """
     Generate address button style dynamically.
@@ -158,19 +158,19 @@ def generate_button_style(
 
 
 def generate_tab_style(
-    bg: str,
-    border: str,
-    radius: int,
-    text_color: str,
-    hover_bg: str,
-    hover_border: str,
-    selected_bg: str,
-    selected_border: str,
-    font_family: str = FONT_FAMILY,
-    font_size: str = "12px",
-    padding: str = "1px 1px",
-    margin: str = "1px",
-    accent: str = "#FF2200"
+        bg: str,
+        border: str,
+        radius: int,
+        text_color: str,
+        hover_bg: str,
+        hover_border: str,
+        selected_bg: str,
+        selected_border: str,
+        font_family: str = FONT_FAMILY,
+        font_size: str = "12px",
+        padding: str = "1px 1px",
+        margin: str = "1px",
+        accent: str = "#FF2200"
 ):
     """
     Generate address tab style dynamically.
@@ -230,22 +230,21 @@ def generate_tab_style(
 
 
 def generate_editor_style(
-    accent: str,
-    accent_hover: str,
-    background: str,
-    foreground: str,
-    font_family: str,
-    font_size: str,
-    padding: int,
-    button_padding: int,
-    slider_handle: str,
-    slider_handle_border: str,
-    slider_groove: str,
-    slider_neon: str,
-    slider_neon_gradient_stop: str,
-    font_weight: str = "normal",
-    box_width: str = "300px",
-) -> str:
+        accent: str,
+        accent_hover: str,
+        background: str,
+        foreground: str,
+        font_family: str,
+        font_size: str,
+        padding: int,
+        button_padding: int,
+        slider_handle: str,
+        slider_handle_border: str,
+        slider_groove: str,
+        slider_neon: str,
+        slider_neon_gradient_stop: str,
+        font_weight: str = "normal",
+        box_width: str = "100px") -> str:
     """
     Generate editor style dynamically.
 
@@ -275,6 +274,97 @@ def generate_editor_style(
             font-size: {font_size};
             padding: 1px;
         }}
+               QGroupBox {{
+             font-family: {FONT_FAMILY};
+             width: 200px;
+             border: none;
+             border-top: 1px solid {accent};
+             margin: 1px;
+             padding: 1px;
+         }}
+        /* Groove (Track) */
+        QSlider::groove:vertical {{
+            font-family: {FONT_FAMILY};
+            background: #111; /* Dark background */
+            width: 6px;
+            border-radius: 3px;
+        }}
+
+        /* Handle (Knob) */
+        QSlider::handle:vertical {{
+            background: black;
+            border: 2px solid #ff1a1a; /* Neon red border */
+            width: 10px;  /* More rectangular */
+            height: 10px;  
+            margin: -8px;
+            margin-bottom: 2px;
+            margin-top: 1px;
+            border-radius: 5px;
+        }}
+        /* Handle (Knob) */
+        QSlider::handle:vertical:disabled {{
+            background: black;
+            border: 2px solid #333333; /* grey border */
+            width: 10px;  /* More rectangular */
+            height: 10px;  
+            margin: -10px;
+            border-radius: 5px;
+        }}
+        /* greyed out groove */
+        QSlider::sub-page:vertical:disabled {{
+            background: #333333;
+            border-radius: 3px;
+        }}
+
+        /* Glowing effect when moving */
+        QSlider::sub-page:vertical {{
+            background: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
+                         stop:0 #660000, stop:1 #ff1a1a);
+            border-radius: 3px;
+        }}
+        /* Glowing effect when moving */
+        QSlider::sub-page:vertical:disabled:hover {{
+            background: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
+                         stop:0 #660000, stop:1 #ff1a1a);
+            border-radius: 3px;
+        }}
+
+        /* Unfilled portion */
+        QSlider::add-page:vertical {{
+            font-family: {FONT_FAMILY};
+            background: #222;
+            border-radius: 3px;
+        }}
+
+        /* Tick Marks (Small dashes on both sides) */
+        QSlider::tick-mark {{
+            background: #ff1a1a;
+            width: 4px;
+            height: 2px;
+            border-radius: 1px;
+            margin-left: -8px;
+            margin-right: 8px;
+        }}
+        QSlider::horizontal {{
+            margin-left: 6px;
+            margin-right: 6x;
+        }}
+
+        /* Handle Hover Effect */
+        QSlider::handle:vertical:hover {{
+            border: 2px solid #ff3333;
+            background: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
+             stop:0 #660000, stop:1 #ff1a1a);
+        }}
+        /* Spin Box */
+        QSpinBox, QDoubleSpinBox {{
+            background-color: #222;
+            border: 1px solid #ff1a1a;
+            border-radius: 3px;
+            padding: 1px;
+            margin: -2px;
+            color: #ff1a1a;
+        }}
 
         QGroupBox {{
             font-family: {font_family};
@@ -282,7 +372,7 @@ def generate_editor_style(
             border-top: 1px solid {accent};
             border-radius: 3px;
             margin-top: 1px;
-            width: 300px;
+            width: 200px;
             padding: {padding}px;
         }}
         
@@ -292,6 +382,7 @@ def generate_editor_style(
         
         QGroupBox[adsr="true"] {{
             min-height: 300px;  /* Reduced height for horizontal layout */
+            width: 200px;
         }}
 
         QSlider::handle:vertical {{
@@ -451,8 +542,8 @@ def get_button_styles(active: bool) -> str:
     """
     if active:
         return (
-            base_style
-            + """
+                base_style
+                + """
             QPushButton {
                 background-color: #333333;
                 border-color: #ff6666;
@@ -461,8 +552,8 @@ def get_button_styles(active: bool) -> str:
         )
     else:
         return (
-            base_style
-            + """
+                base_style
+                + """
             QPushButton {
                 background-color: #222222;
                 border-color: #666666;

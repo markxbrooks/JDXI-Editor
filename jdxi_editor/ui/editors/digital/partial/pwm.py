@@ -90,14 +90,16 @@ class PWMWidget(EnvelopeWidgetBase):
             if tooltip := TOOLTIPS.get(key):
                 widget.setToolTip(tooltip)
         self.layout = QGridLayout()
-        self.layout.addWidget(self.mod_depth_control, 0, 0)
-        self.layout.addWidget(self.pulse_width_control, 0, 1)
+        self.layout.setColumnStretch(0, 1)  # left side stretches
+        self.layout.addWidget(self.mod_depth_control, 0, 1)
+        self.layout.addWidget(self.pulse_width_control, 0, 2)
         self.setLayout(self.layout)
         self.plot = PWMPlot(width=JDXiDimensions.PWM_WIDGET_WIDTH - 20,
                             height=JDXiDimensions.PWM_WIDGET_HEIGHT - 20,
                             parent=self,
                             envelope=self.envelope)
-        self.layout.addWidget(self.plot, 0, 4, 3, 1)
+        self.layout.addWidget(self.plot, 0, 3)
+        self.layout.setColumnStretch(4, 1)  # right side stretches
         self.pulse_width_control.slider.valueChanged.connect(self.on_pulse_width_changed)
         self.mod_depth_control.slider.valueChanged.connect(self.on_mod_depth_changed)
         self.pulse_width_control.setValue(self.envelope["pulse_width"] * MidiConstant.VALUE_MAX_SEVEN_BIT)

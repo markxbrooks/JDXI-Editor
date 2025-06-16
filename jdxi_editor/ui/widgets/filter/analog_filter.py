@@ -27,7 +27,7 @@ from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
-class FilterWidget(EnvelopeWidgetBase):
+class AnalogFilterWidget(EnvelopeWidgetBase):
 
     slope_param_changed = Signal(dict)
     cutoff_param_changed = Signal(dict)
@@ -35,17 +35,15 @@ class FilterWidget(EnvelopeWidgetBase):
 
     def __init__(self,
                  cutoff_param: AddressParameter,
-                 slope_param: AddressParameter = None,
                  midi_helper: Optional[MidiIOHelper] = None,
                  controls: dict[AddressParameter, QWidget] = None,
                  address: Optional[RolandSysExAddress] = None,
                  create_parameter_slider: Callable = None,
-                 create_parameter_switch: Callable = None,
                  parent: Optional[QWidget] = None,
                  ):
-        super().__init__(envelope_keys=["cutoff_param", "slope_param"],
+        super().__init__(envelope_keys=["cutoff_param"],
                          create_parameter_slider=create_parameter_slider,
-                         parameters=[cutoff_param, slope_param],
+                         parameters=[cutoff_param],
                          midi_helper=midi_helper,
                          address=address,
                          controls=controls,
@@ -55,16 +53,13 @@ class FilterWidget(EnvelopeWidgetBase):
         self.setWindowTitle("Filter Widget")
         self.address = address
         self.midi_helper = midi_helper
-        if slope_param:
-            self.slope_param = slope_param
         self._create_parameter_slider = create_parameter_slider
-        self._create_parameter_switch = create_parameter_switch
+        self._create_parameter_slider = create_parameter_slider
         if controls:
             self.controls = controls
         else:
             self.controls = {}
-        self.envelope = {"cutoff_param": 0.5,
-                         "slope_param": 0.0}
+        self.envelope = {"cutoff_param": 0.5, "slope_param": 0.5}
         self.cutoff_param_control = PWMSliderSpinbox(
             cutoff_param,
             min_value=0,
@@ -93,15 +88,6 @@ class FilterWidget(EnvelopeWidgetBase):
         self.cutoff_param_control.slider.valueChanged.connect(self.on_cutoff_param_changed)
 
         self.cutoff_param_control.setValue(self.envelope["cutoff_param"] * MidiConstant.VALUE_MAX_SEVEN_BIT)
-        if self.slope_param:
-            self.slope_param_control = self._create_parameter_switch(AddressParameterDigitalPartial.FILTER_SLOPE,
-                                                                     label="Slope",
-                                                                     values=["-12dB", "-24dB"])
-            self.controls_vertical_layout.addWidget(self.slope_param_control)
-            self.controls[slope_param] = self.slope_param_control
-            self._control_widgets.append(self.slope_param_control)
-            self.slope_param_control.valueChanged.connect(self.on_slope_param_changed)
-            self.slope_param_control.setValue(self.envelope["slope_param"])
 
     def on_envelope_changed(self, envelope: dict) -> None:
         """

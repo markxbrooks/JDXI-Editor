@@ -76,7 +76,7 @@ def generate_filter_plot(width: float,
     return envelope
 
 
-class FilterPlot(QWidget):
+class AnalogFilterPlot(QWidget):
     def __init__(
             self,
             width: int = JDXiStyle.ADSR_PLOT_WIDTH,

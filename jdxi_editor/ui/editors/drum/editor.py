@@ -131,23 +131,21 @@ class DrumCommonEditor(SynthEditor):
         main_layout.addWidget(splitter)
 
         upper_widget = QWidget()
-        upper_layout = QHBoxLayout(upper_widget)
-        upper_layout.setContentsMargins(0, 0, 0, 0)  # No padding around the layout
+        upper_row_layout = QHBoxLayout(upper_widget)
+        upper_row_layout.addStretch()
+        upper_row_layout.setContentsMargins(0, 0, 0, 0)  # No padding around the layout
 
         instrument_preset_group = self._create_instrument_preset_group(
             synth_type="Drums"
         )
-        upper_layout.addWidget(instrument_preset_group)
+        upper_row_layout.addWidget(instrument_preset_group)
+        upper_row_layout.addStretch()
         self._create_instrument_image_group()
         self.address.lmb = AddressOffsetProgramLMB.COMMON
-        kit_level_slider = self._create_parameter_slider(
-            AddressParameterDrumCommon.KIT_LEVEL, "Kit Level", vertical=True
-        )
-        kit_level_slider.setStyleSheet(JDXiStyle.SLIDER_VERTICAL)
-        upper_layout.addWidget(kit_level_slider)
-        upper_layout.addWidget(self.instrument_image_group)
+        upper_row_layout.addWidget(self.instrument_image_group)
         self.instrument_image_group.setMinimumWidth(JDXiStyle.INSTRUMENT_IMAGE_WIDTH)
         self.update_instrument_image()
+        upper_row_layout.addStretch()
 
         splitter.addWidget(upper_widget)
 
@@ -189,7 +187,7 @@ class DrumCommonEditor(SynthEditor):
         """
         total = len(self.partial_mapping)
         progress_dialog = ProgressDialog(
-            "Initializing Partials", "Loading drum kit:...", total, self
+            "Initializing Editor Window", "Loading drum kit:...", total, self
         )
         progress_dialog.show()
 

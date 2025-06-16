@@ -26,7 +26,8 @@ class PartialsPanel(QWidget):
         self.setLayout(layout)
 
         partial_layout = QHBoxLayout()
-        partial_layout.setSpacing(5)
+        partial_layout.addStretch()
+        partial_layout.setSpacing(10)
         self.setLayout(partial_layout)
 
         # Create switches for each partial (not structure types)
@@ -52,5 +53,6 @@ class PartialsPanel(QWidget):
             partial_layout.addWidget(group_box)
 
         layout.addLayout(partial_layout)
+        partial_layout.addStretch()
         # Style
         self.setStyleSheet(JDXiStyle.PARTIALS_PANEL)

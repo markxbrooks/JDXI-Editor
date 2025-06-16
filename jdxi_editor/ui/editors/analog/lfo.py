@@ -46,9 +46,9 @@ class AnalogLFOSection(QWidget):
         self.setLayout(layout)
 
         # Shape row
-        shape_row = QHBoxLayout()
-        shape_row.addWidget(QLabel("Shape"))
-        shape_row.addStretch(1)
+        shape_row_layout = QHBoxLayout()
+        shape_row_layout.addWidget(QLabel("Shape"))
+        shape_row_layout.addStretch(1)
 
         lfo_shapes = [
             ("TRI", "mdi.triangle-wave", 0),
@@ -70,10 +70,10 @@ class AnalogLFOSection(QWidget):
             btn.setToolTip(name)
             btn.clicked.connect(lambda checked, v=value: self._on_lfo_shape_changed(v))
             self.lfo_shape_buttons[value] = btn
-            shape_row.addWidget(btn)
-            shape_row.addStretch(1)
+            shape_row_layout.addWidget(btn)
+            shape_row_layout.addStretch(1)
 
-        layout.addLayout(shape_row)
+        layout.addLayout(shape_row_layout)
 
         # Rate and Fade Time
         self.lfo_rate = self._create_parameter_slider(
@@ -87,17 +87,18 @@ class AnalogLFOSection(QWidget):
         )
 
         # Tempo Sync controls
-        sync_row = QHBoxLayout()
+        sync_row_layout = QHBoxLayout()
+        sync_row_layout.addStretch()
         self.lfo_sync_switch = self._create_parameter_switch(
             AddressParameterAnalog.LFO_TEMPO_SYNC_SWITCH, "Tempo Sync", ["OFF", "ON"]
         )
-        sync_row.addWidget(self.lfo_sync_switch)
+        sync_row_layout.addWidget(self.lfo_sync_switch)
         self.lfo_sync_note = self._create_parameter_combo_box(
             AddressParameterAnalog.LFO_TEMPO_SYNC_NOTE,
             "Sync Note",
             options=["1/1", "1/2", "1/4", "1/8", "1/16"],
         )
-        sync_row.addWidget(self.lfo_sync_note)
+        sync_row_layout.addWidget(self.lfo_sync_note)
 
         # Depth controls
         self.lfo_pitch = self._create_parameter_slider(
@@ -127,12 +128,13 @@ class AnalogLFOSection(QWidget):
         layout.addWidget(self.lfo_rate)
         layout.addWidget(self.lfo_rate_modulation)
         layout.addWidget(self.lfo_fade)
-        layout.addLayout(sync_row)
+        layout.addLayout(sync_row_layout)
         layout.addWidget(self.lfo_pitch)
         layout.addWidget(self.lfo_pitch_modulation)
         layout.addWidget(self.lfo_filter)
         layout.addWidget(self.lfo_filter_modulation)
         layout.addWidget(self.lfo_amp)
         layout.addWidget(self.lfo_amp_modulation)
-        layout.addWidget(self.key_trigger_switch)
+        sync_row_layout.addWidget(self.key_trigger_switch)
+        sync_row_layout.addStretch()
         layout.addStretch()
