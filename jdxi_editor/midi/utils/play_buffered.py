@@ -5,7 +5,7 @@ import mido
 
 # Load MIDI file
 # mid = mido.MidiFile(r'/Users/brooks/Downloads/temptation.mid')
-midi_playback_file = mido.MidiFile(r'/Users/brooks/Documents/New Order - Temptation JD-Xi.mid')
+midi_playback_file = mido.MidiFile(r'/Users/brooks/Desktop/music/A Forest - The Cure - JDXi Editorv4.mid')
 
 # Initialize MIDI output
 midi_out = rtmidi.MidiOut()

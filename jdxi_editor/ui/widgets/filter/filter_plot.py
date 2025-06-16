@@ -30,35 +30,50 @@ Customization:
 import numpy as np
 from PySide6.QtCore import Qt, QPointF
 from PySide6.QtWidgets import QWidget
-from PySide6.QtGui import QPainter, QPainterPath, QLinearGradient, QColor, QPen, QFont
+from PySide6.QtGui import QPainter, QPainterPath, QLinearGradient, QColor, QPen, QFont, QBrush
 
+from jdxi_editor.jdxi.midi.constant import JDXiConstant
 from jdxi_editor.jdxi.style import JDXiStyle
 
 
-def generate_square_wave(width: float,
-                         mod_depth: float,
+def generate_filter_plot(width: float,
+                         slope: float,
                          sample_rate: int,
                          duration: float) -> np.ndarray:
-    """Generates a square wave with a given duty cycle (width ∈ [0, 1])."""
+    """Generates a filter envelope with a sustain plateau followed by a slope down to zero."""
     width = max(0.0, min(1.0, width))  # Clip to valid range
     total_samples = int(duration * sample_rate)
+    slope_gradient = 0.5 - (slope * 0.25)
+    print(f"slope: \t{slope}")
+    print(f"slope_gradient: \t{slope_gradient}")
+    # Define segments in samples
+    period = max(1, sample_rate)  # Avoid divide-by-zero
+    sustain_samples = int(period * width)
+    slope_samples = int(period * slope_gradient)
 
-    # Define the period in samples (e.g., 10 Hz wave → 100 ms period)
-    period = max(1, sample_rate // 10)  # Avoid divide-by-zero
-    high_samples = int(period * width)
-    low_samples = period - high_samples
+    # At least 1 sample high or slope to avoid weird signals
+    sustain_samples = max(1, sustain_samples)
+    slope_samples = max(1, slope_samples)
 
-    # At least 1 sample high and low to keep wave visually meaningful
-    high_samples = max(1, high_samples)
-    low_samples = max(1, low_samples)
+    # Create the sustain plateau first
+    sustain = np.full(sustain_samples, JDXiConstant.FILTER_PLOT_DEPTH, dtype=np.float32)
 
-    cycle = np.concatenate([
-        np.ones(high_samples, dtype=np.float32),
-        np.zeros(low_samples, dtype=np.float32)
-    ])
-    num_cycles = total_samples // len(cycle) + 1
-    wave = np.tile(cycle, num_cycles)
-    return wave[:total_samples] * mod_depth
+    # Now create slope descending to zero
+    slope_vals = np.linspace(
+        JDXiConstant.FILTER_PLOT_DEPTH, 0, slope_samples, endpoint=False, dtype=np.float32
+    )
+
+    # Combine together
+    envelope = np.concatenate([sustain, slope_vals], axis=0)
+
+    # Trim or pad to match total_samples
+    if envelope.size > total_samples:
+        envelope = envelope[:total_samples]
+    elif envelope.size < total_samples:
+        padding = np.zeros(total_samples - envelope.size, dtype=np.float32)
+        envelope = np.concatenate([envelope, padding], axis=0)
+
+    return envelope
 
 
 class FilterPlot(QWidget):
@@ -172,8 +187,8 @@ class FilterPlot(QWidget):
 
             # === Envelope Parameters ===
             # Pulse width envelope: rise and fall
-            envelope = generate_square_wave(width=self.envelope["pulse_width"],
-                                            mod_depth=self.envelope["mod_depth"],
+            envelope = generate_filter_plot(width=self.envelope["cutoff_param"],
+                                            slope=self.envelope["slope_param"],
                                             sample_rate=self.sample_rate,
                                             duration=self.envelope.get("duration", 1.0))
             total_samples = len(envelope)
@@ -200,10 +215,6 @@ class FilterPlot(QWidget):
             num_ticks = 6
             for i in range(num_ticks + 1):
                 x = left_pad + i * plot_w / num_ticks
-                # painter.drawLine(x, zero_y - 5, x, zero_y + 5)
-                # label = f"{i * (total_time / num_ticks):.0f}"
-                # label_width = font_metrics.horizontalAdvance(label)
-                # painter.drawText(x - label_width / 2, zero_y + 20, label)
 
             # === Y-axis Labels & Ticks ===
             for i in range(-1, 6):
@@ -217,14 +228,14 @@ class FilterPlot(QWidget):
             # === Title ===
             painter.setPen(QPen(QColor("orange")))
             painter.setFont(QFont("JD LCD Rounded", 16))
-            title = "Pulse Width Modulation"
+            title = "Filter Cutoff"
             title_width = painter.fontMetrics().horizontalAdvance(title)
             painter.drawText(left_pad + (plot_w - title_width) / 2, top_pad / 2, title)
 
             # === X-axis Label ===
             painter.setPen(QPen(QColor("white")))
             painter.setFont(QFont("JD LCD Rounded", 10))
-            x_label = "Time (s)"
+            x_label = "Frequency (Hz)"
             x_label_width = font_metrics.horizontalAdvance(x_label)
             painter.drawText(left_pad + (plot_w - x_label_width) / 2, top_pad + plot_h + 35, x_label)
 
@@ -265,12 +276,27 @@ class FilterPlot(QWidget):
                     y = top_pad + ((y_max - y_val) / (y_max - y_min)) * plot_h
                     points.append(QPointF(x, y))
 
-                if points:
+                if points and self.enabled:
                     path = QPainterPath()
                     path.moveTo(points[0])
                     for pt in points[1:]:
                         path.lineTo(pt)  # For smoothing: use cubicTo
                     painter.drawPath(path)
+
+                    # Now fill in to axes
+                    path.lineTo(left_pad + plot_w, zero_y)
+                    path.lineTo(left_pad, zero_y)
+                    path.closeSubpath()
+
+                    # Fill the path black first
+                    painter.fillPath(path, gradient)
+                    # redraw x-axis
+                    painter.setPen(axis_pen)
+                    painter.drawLine(left_pad, zero_y, left_pad + plot_w, zero_y)
+                    # === X-axis Labels & Ticks ===
+                    num_ticks = 6
+                    for i in range(num_ticks + 1):
+                        x = left_pad + i * plot_w / num_ticks
 
         finally:
             painter.end()

@@ -163,10 +163,11 @@ class ADSR(EnvelopeWidgetBase):
         if peak_param:
             self._control_parameters.append(peak_param)
         self.layout = QGridLayout()
-        self.layout.addWidget(self.attack_control, 0, 0)
-        self.layout.addWidget(self.decay_control, 0, 1)
-        self.layout.addWidget(self.sustain_control, 0, 2)
-        self.layout.addWidget(self.release_control, 0, 3)
+        self.layout.setColumnStretch(0, 1)
+        self.layout.addWidget(self.attack_control, 0, 1)
+        self.layout.addWidget(self.decay_control, 0, 2)
+        self.layout.addWidget(self.sustain_control, 0, 3)
+        self.layout.addWidget(self.release_control, 0, 4)
         self.setLayout(self.layout)
 
         self.envelope_spinbox_map = {
@@ -181,11 +182,13 @@ class ADSR(EnvelopeWidgetBase):
                              envelope=self.envelope,
                              parent=self)
         if hasattr(self, 'peak_control'):
-            self.layout.addWidget(self.peak_control, 0, 4)
+            self.layout.addWidget(self.peak_control, 0, 5)
             self.envelope_spinbox_map["peak_level"] = self.peak_control.spinbox
-            self.layout.addWidget(self.plot, 0, 5, 3, 1)
+            self.layout.addWidget(self.plot, 0, 6, 3, 1)
+            self.layout.setColumnStretch(7, 1)
         else:
-            self.layout.addWidget(self.plot, 0, 4, 3, 1)
+            self.layout.addWidget(self.plot, 0, 5, 3, 1)
+            self.layout.setColumnStretch(6, 1)
         self.plot.set_values(self.envelope)
         for control in self._control_widgets:
             control.envelope_changed.connect(self.on_control_changed)

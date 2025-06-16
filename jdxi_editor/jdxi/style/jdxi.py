@@ -859,7 +859,7 @@ class JDXiStyle:
     ADSR = f"""
          QGroupBox {{
              font-family: {FONT_FAMILY};
-             width: 300px;
+             width: 200px;
              border: none;
              border-top: 1px solid {ACCENT};
              margin: 1px;

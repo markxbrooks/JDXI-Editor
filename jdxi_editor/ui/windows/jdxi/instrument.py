@@ -556,6 +556,9 @@ class JDXiInstrument(JDXiUi):
 
         :return:
         """
+        self.main_editor.hide()
+        self.main_editor.setUpdatesEnabled(False)
+        self.main_editor.blockSignals(True)
         self.show_editor("program")
         self.show_editor("digital1")
         self.show_editor("digital2")
@@ -567,6 +570,9 @@ class JDXiInstrument(JDXiUi):
         self.show_editor("effects")
         self.show_editor("vocal_fx")
         self.main_editor.editor_tab_widget.setCurrentIndex(0)
+        self.main_editor.blockSignals(False)
+        self.main_editor.setUpdatesEnabled(True)
+        self.main_editor.show()
 
     def show_editor(self, editor_type: str) -> None:
         """

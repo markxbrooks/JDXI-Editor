@@ -7,6 +7,7 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QGroupB
 from PySide6.QtCore import Qt
 import qtawesome as qta
 
+from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.midi.data.parameter.digital.partial import (
     AddressParameterDigitalPartial,
 )
@@ -40,6 +41,7 @@ class DigitalLFOSection(QWidget):
         """Set up the UI for the LFO section."""
         layout = QVBoxLayout()
         self.setLayout(layout)
+        self.setStyleSheet(JDXiStyle.ADSR)
 
         # Icons row
         icons_hlayout = QHBoxLayout()
@@ -59,71 +61,80 @@ class DigitalLFOSection(QWidget):
         layout.addLayout(icons_hlayout)
 
         # Shape and sync controls
-        top_row = QHBoxLayout()
+        shape_row_layout = QHBoxLayout()
+        shape_row_layout.addStretch()
         self.lfo_shape = self._create_parameter_switch(
             AddressParameterDigitalPartial.LFO_SHAPE,
             "Shape",
             ["TRI", "SIN", "SAW", "SQR", "S&H", "RND"],
         )
-        top_row.addWidget(self.lfo_shape)
+        shape_row_layout.addWidget(self.lfo_shape)
 
         self.lfo_tempo_sync_switch = self._create_parameter_switch(
             AddressParameterDigitalPartial.LFO_TEMPO_SYNC_SWITCH,
             "Tempo Sync",
             ["OFF", "ON"],
         )
-        top_row.addWidget(self.lfo_tempo_sync_switch)
+        shape_row_layout.addWidget(self.lfo_tempo_sync_switch)
         self.lfo_sync_note = self._create_parameter_combo_box(
             AddressParameterDigitalPartial.LFO_TEMPO_SYNC_NOTE,
             "Sync Note",
             options=["1/1", "1/2", "1/4", "1/8", "1/16"],
         )
-        top_row.addWidget(self.lfo_sync_note)
-        layout.addLayout(top_row)
+        shape_row_layout.addWidget(self.lfo_sync_note)
+        layout.addLayout(shape_row_layout)
 
+        rate_fade_row_layout = QHBoxLayout()
+        layout.addLayout(rate_fade_row_layout)
+        rate_fade_row_layout.addStretch()
         # Rate and fade controls
-        layout.addWidget(
+        rate_fade_row_layout.addWidget(
             self._create_parameter_slider(
-                AddressParameterDigitalPartial.LFO_RATE, "Rate"
+                AddressParameterDigitalPartial.LFO_RATE, "Rate", vertical=True
             )
         )
-        layout.addWidget(
+        rate_fade_row_layout.addWidget(
             self._create_parameter_slider(
-                AddressParameterDigitalPartial.LFO_FADE_TIME, "Fade"
+                AddressParameterDigitalPartial.LFO_FADE_TIME, "Fade", vertical=True
             )
         )
+        rate_fade_row_layout.addStretch()
 
         # Key trigger switch
         self.lfo_trigger = self._create_parameter_switch(
             AddressParameterDigitalPartial.LFO_KEY_TRIGGER, "Key Trigger", ["OFF", "ON"]
         )
-        layout.addWidget(self.lfo_trigger)
+        shape_row_layout.addWidget(self.lfo_trigger)
+        shape_row_layout.addStretch()
+
 
         # Modulation depths
         depths_group = QGroupBox("Depths")
-        depths_layout = QVBoxLayout()
+        depths_layout = QHBoxLayout()
+        depths_layout.addStretch()
         depths_group.setLayout(depths_layout)
 
         depths_layout.addWidget(
             self._create_parameter_slider(
-                AddressParameterDigitalPartial.LFO_PITCH_DEPTH, "Pitch"
+                AddressParameterDigitalPartial.LFO_PITCH_DEPTH, "Pitch", vertical=True
             )
         )
         depths_layout.addWidget(
             self._create_parameter_slider(
-                AddressParameterDigitalPartial.LFO_FILTER_DEPTH, "Filter"
+                AddressParameterDigitalPartial.LFO_FILTER_DEPTH, "Filter", vertical=True
             )
         )
         depths_layout.addWidget(
             self._create_parameter_slider(
-                AddressParameterDigitalPartial.LFO_AMP_DEPTH, "Amp"
+                AddressParameterDigitalPartial.LFO_AMP_DEPTH, "Amp", vertical=True
             )
         )
         depths_layout.addWidget(
             self._create_parameter_slider(
-                AddressParameterDigitalPartial.LFO_PAN_DEPTH, "Pan"
+                AddressParameterDigitalPartial.LFO_PAN_DEPTH, "Pan", vertical=True
             )
         )
         layout.addWidget(depths_group)
+        depths_layout.addStretch()
 
         layout.addStretch()

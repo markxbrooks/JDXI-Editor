@@ -141,8 +141,6 @@ class ProgramEditor(BasicEditor):
 
         self.title_left_group = QGroupBox("Programs")
         title_left_vlayout = QVBoxLayout()
-        self.file_label = DigitalTitle("No file loaded")
-        title_left_vlayout.addWidget(self.file_label)
         self.title_left_group.setLayout(title_left_vlayout)
 
         title_hlayout.addWidget(self.title_left_group)
@@ -158,26 +156,24 @@ class ProgramEditor(BasicEditor):
         self.title_group = QGroupBox()
         title_image_layout = QFormLayout()
         self.title_group.setLayout(title_image_layout)
-        self.image_label = QLabel()
-        self.image_label.setAlignment(
-            Qt.AlignmentFlag.AlignVCenter
-        )  # Center align the image
-        title_image_layout.addWidget(self.image_label)
         title_right_vlayout.addWidget(self.title_group)
-        self.update_instrument_image()
 
         program_preset_hlayout = QHBoxLayout()
+        program_preset_hlayout.addStretch()
         main_vlayout.addLayout(program_preset_hlayout)
 
         program_group = self._create_program_selection_box()
         program_group.setMinimumWidth(JDXiStyle.PROGRAM_PRESET_GROUP_WIDTH)
         program_group.setStyleSheet(JDXiStyle.PROGRAM_PRESET_GROUPS)
-        program_preset_hlayout.addWidget(program_group, 1)
+        program_preset_hlayout.addWidget(program_group)
+
+        program_preset_hlayout.addStretch()
 
         preset_group = self._create_preset_selection_group()
         preset_group.setMinimumWidth(JDXiStyle.PROGRAM_PRESET_GROUP_WIDTH)
         preset_group.setStyleSheet(JDXiStyle.PROGRAM_PRESET_GROUPS)
-        program_preset_hlayout.addWidget(preset_group, 1)
+        program_preset_hlayout.addWidget(preset_group)
+        program_preset_hlayout.addStretch()
 
         transport_group = self._create_transport_group()
         # main_vlayout.addWidget(transport_group)
@@ -191,6 +187,7 @@ class ProgramEditor(BasicEditor):
         self.midi_helper.update_tone_name.connect(
              lambda tone_name, synth_type: self.update_tone_name_for_synth(tone_name, synth_type)
         )
+        self.update_instrument_image()
 
     def _create_preset_selection_group(self) -> QGroupBox:
         """
@@ -202,6 +199,11 @@ class ProgramEditor(BasicEditor):
         preset_group = QGroupBox("Load a Preset")
         preset_vlayout = QVBoxLayout()
         preset_group.setLayout(preset_vlayout)
+        self.image_label = QLabel()
+        self.image_label.setAlignment(
+            Qt.AlignmentFlag.AlignVCenter
+        )  # Center align the image
+        preset_vlayout.addWidget(self.image_label)
         # Synth type selection combo box
         self.digital_preset_type_combo = QComboBox()
         self.digital_preset_type_combo.addItems(
@@ -318,7 +320,10 @@ class ProgramEditor(BasicEditor):
         # Program controls group
         program_group = QGroupBox("Load a program")
         program_vlayout = QVBoxLayout()
+
         program_group.setLayout(program_vlayout)
+        self.file_label = DigitalTitle("No file loaded")
+        program_vlayout.addWidget(self.file_label)
         # Program number selection combo box
         self.program_number_combo_box = QComboBox()
         self.program_number_combo_box.addItems([f"{i:02}" for i in range(1, 65)])
@@ -624,23 +629,25 @@ class ProgramEditor(BasicEditor):
         )
 
         # Mixer layout population
-        mixer_layout.addWidget(self.master_level_slider, 0, 0)
-        mixer_layout.addWidget(self.digital1_level_slider, 0, 1)
-        mixer_layout.addWidget(self.digital2_level_slider, 0, 2)
-        mixer_layout.addWidget(self.drums_level_slider, 0, 3)
-        mixer_layout.addWidget(self.analog_level_slider, 0, 4)
+        mixer_layout.setColumnStretch(0, 1)
+        mixer_layout.addWidget(self.master_level_slider, 0, 1)
+        mixer_layout.addWidget(self.digital1_level_slider, 0, 2)
+        mixer_layout.addWidget(self.digital2_level_slider, 0, 3)
+        mixer_layout.addWidget(self.drums_level_slider, 0, 4)
+        mixer_layout.addWidget(self.analog_level_slider, 0, 5)
+        mixer_layout.setColumnStretch(6, 1)
 
-        mixer_layout.addWidget(self.master_level_current_label, 1, 0)
-        mixer_layout.addWidget(self.digital_synth_1_current_label, 1, 1)
-        mixer_layout.addWidget(self.digital_synth_2_current_label, 1, 2)
-        mixer_layout.addWidget(self.drum_kit_current_label, 1, 3)
-        mixer_layout.addWidget(self.analog_synth_current_label, 1, 4)
+        mixer_layout.addWidget(self.master_level_current_label, 1, 1)
+        mixer_layout.addWidget(self.digital_synth_1_current_label, 1, 2)
+        mixer_layout.addWidget(self.digital_synth_2_current_label, 1, 3)
+        mixer_layout.addWidget(self.drum_kit_current_label, 1, 4)
+        mixer_layout.addWidget(self.analog_synth_current_label, 1, 5)
 
-        mixer_layout.addWidget(self.master_level_icon, 2, 0)
-        mixer_layout.addWidget(self.digital_synth_1_icon, 2, 1)
-        mixer_layout.addWidget(self.digital_synth_2_icon, 2, 2)
-        mixer_layout.addWidget(self.drum_kit_icon, 2, 3)
-        mixer_layout.addWidget(self.analog_synth_icon, 2, 4)
+        mixer_layout.addWidget(self.master_level_icon, 2, 1)
+        mixer_layout.addWidget(self.digital_synth_1_icon, 2, 2)
+        mixer_layout.addWidget(self.digital_synth_2_icon, 2, 3)
+        mixer_layout.addWidget(self.drum_kit_icon, 2, 4)
+        mixer_layout.addWidget(self.analog_synth_icon, 2, 5)
 
         mixer_group.setStyleSheet(JDXiStyle.ADSR)
         self.analog_level_slider.setStyleSheet(JDXiStyle.ADSR_ANALOG)
