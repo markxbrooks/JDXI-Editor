@@ -32,7 +32,7 @@ Example:
     editor.show()
 """
 
-from PySide6.QtWidgets import QGroupBox, QFormLayout, QWidget, QVBoxLayout, QScrollArea
+from PySide6.QtWidgets import QGroupBox, QFormLayout, QWidget, QVBoxLayout, QScrollArea, QHBoxLayout
 from typing import Callable
 
 from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
@@ -81,8 +81,13 @@ class DrumTVASection(QWidget):
 
         scroll_area.setWidget(scrolled_widget)
 
+        main_row_hlayout = QHBoxLayout()
+        main_row_hlayout.addStretch()
+        scrolled_layout.addLayout(main_row_hlayout)
+
         # TVA Group
         tva_group = QGroupBox("TVA")
+        main_row_hlayout.addWidget(tva_group)
         tva_layout = QFormLayout()
         tva_group.setLayout(tva_layout)
 
@@ -148,4 +153,4 @@ class DrumTVASection(QWidget):
             AddressParameterDrumPartial.TVA_ENV_LEVEL_3, "Env Level 3"
         )
         tva_layout.addRow(tva_env_level3_slider)
-        scrolled_layout.addWidget(tva_group)
+        main_row_hlayout.addStretch()

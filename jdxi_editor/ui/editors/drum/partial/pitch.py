@@ -31,7 +31,7 @@ Example:
     editor = DrumPitchSection(midi_helper)
     editor.show()
 """
-from PySide6.QtWidgets import QGroupBox, QFormLayout, QWidget, QVBoxLayout, QScrollArea
+from PySide6.QtWidgets import QGroupBox, QFormLayout, QWidget, QVBoxLayout, QScrollArea, QHBoxLayout
 from typing import Callable
 from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
@@ -65,12 +65,16 @@ class DrumPitchSection(QWidget):
 
     def setup_ui(self) -> None:
         """setup UI"""
-        layout = QVBoxLayout(self)
+        main_row_hlayout = QHBoxLayout(self)
+        main_row_hlayout.addStretch()
+
+        main_rows_vlayout = QVBoxLayout()
+        main_row_hlayout.addLayout(main_rows_vlayout)
 
         scroll_area = QScrollArea()
         scroll_area.setMinimumHeight(JDXiDimensions.SCROLL_AREA_HEIGHT)
         scroll_area.setWidgetResizable(True)  # Important for resizing behavior
-        layout.addWidget(scroll_area)
+        main_rows_vlayout.addWidget(scroll_area)
 
         scrolled_widget = QWidget()
         scrolled_layout = QVBoxLayout(scrolled_widget)
@@ -177,3 +181,4 @@ class DrumPitchSection(QWidget):
         # return pitch_group
         pitch_group.setLayout(scrolled_layout)
         scrolled_layout.addWidget(pitch_group)
+        main_row_hlayout.addStretch()

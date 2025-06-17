@@ -33,7 +33,7 @@ Example:
 """
 
 
-from PySide6.QtWidgets import QGroupBox, QFormLayout, QWidget, QVBoxLayout, QScrollArea
+from PySide6.QtWidgets import QGroupBox, QFormLayout, QWidget, QVBoxLayout, QScrollArea, QHBoxLayout
 from typing import Callable
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
@@ -73,8 +73,13 @@ class DrumOutputSection(QWidget):
 
         scroll_area.setWidget(scrolled_widget)
 
+        main_row_hlayout = QHBoxLayout()
+        main_row_hlayout.addStretch()
+        scrolled_layout.addLayout(main_row_hlayout)
+
         # Pitch Group
         output_group = QGroupBox("Output")
+        main_row_hlayout.addWidget(output_group)
         output_layout = QFormLayout()
         output_group.setLayout(output_layout)
 
@@ -101,4 +106,4 @@ class DrumOutputSection(QWidget):
             [0, 1, 2, 3, 4],
         )
         output_layout.addRow(partial_output_assign_combo)
-        scrolled_layout.addWidget(output_group)
+        main_row_hlayout.addStretch()

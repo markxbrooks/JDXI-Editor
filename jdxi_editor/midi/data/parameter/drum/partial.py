@@ -184,7 +184,7 @@ class AddressParameterDrumPartial(AddressParameter):
     PARTIAL_RECEIVE_HOLD_1 = (0x1E, 0, 1, 0, 1, "For each drum partial, specify whether MIDI Hold-1 messages will be received (ON), or not (OFF).\nNOTE\nThis has no effect if the Env Mode parameter is set to “NO-SUS.”")  # OFF, ON
 
     # WMT Velocity Control
-    WMT1_VELOCITY_CONTROL = (0x20, 0, 2, 0, 2, "WMT Velocity Control determines whether a different drum partial is played (ON) or not (OFF)\ndepending on the force with which the key is played (velocity).\nWhen set to “RANDOM,” the drum kit’s constituent drum partials will sound randomly,\n\nregardless of any Velocity messages.")  # OFF, ON, RANDOM
+    WMT_VELOCITY_CONTROL = (0x20, 0, 2, 0, 2, "WMT Velocity Control determines whether a different drum partial is played (ON) or not (OFF)\ndepending on the force with which the key is played (velocity).\nWhen set to “RANDOM,” the drum kit’s constituent drum partials will sound randomly,\n\nregardless of any Velocity messages.")  # OFF, ON, RANDOM
 
     # WMT1 Wave Switch
     WMT1_WAVE_SWITCH = (0x21, 0, 1, 0, 1, "When a loop waveform is selected, the sound will normally continue as long as the key is pressed. If you want the sound to decay naturally even if the key remains pressed, set this to\nNO-SUS.\nMEMO\n* If a one-shot type Wave is selected, it will not sustain even if this parameter is set to“SUSTAIN.” NO-SUS, SUSTAIN")  # OFF, ON

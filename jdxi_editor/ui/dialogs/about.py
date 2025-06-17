@@ -37,10 +37,10 @@ class UiAboutDialog(QDialog):
         self.setWindowTitle(f"about {__program__}")
         self.setStyleSheet(JDXiStyle.SPLASH_SCREEN + JDXiStyle.CREDITS_LABEL_STYLE)
         main_layout = QVBoxLayout(self)
-        group_box_layout = QVBoxLayout(self)
+        group_box_layout = QVBoxLayout()
         group_box = QGroupBox(__program__)
         group_box_layout.addWidget(group_box)
-        image_layout = QVBoxLayout(self)
+        image_layout = QVBoxLayout()
         group_box.setLayout(image_layout)
         image_label = QLabel()
         image_pixmap = QPixmap(

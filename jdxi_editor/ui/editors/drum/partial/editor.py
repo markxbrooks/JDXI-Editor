@@ -61,7 +61,8 @@ class DrumPartialEditor(PartialEditor):
         self.partial_address_default = AddressOffsetProgramLMB.DRUM_DEFAULT_PARTIAL
         self.partial_address_map = DRUM_GROUP_MAP
         self.preset_helper = None
-        self._init_synth_data(synth_type=JDXiSynth.DRUM_KIT, partial_number=self.partial_number)
+        self._init_synth_data(synth_type=JDXiSynth.DRUM_KIT,
+                              partial_number=self.partial_number)
         # Store parameter controls for easy access
         self.controls: Dict[AddressParameterDrumPartial, QWidget] = {}
 
@@ -83,40 +84,41 @@ class DrumPartialEditor(PartialEditor):
         tab_widget = QTabWidget()
         scroll_layout.addWidget(tab_widget)
 
-        tab_wmt = QWidget()
-        tab_wmt_layout = QVBoxLayout(tab_wmt)
-        tab_widget.addTab(tab_wmt, "WMT")
-
-        wmt_group = DrumWMTSection(
-            self.controls,
-            self._create_parameter_combo_box,
-            self._create_parameter_slider,
-            self.midi_helper,
-            address=self.address
-        )
-        tab_wmt_layout.addWidget(wmt_group)
-
         tab_pitch = QWidget()
         tab_pitch_layout = QVBoxLayout(tab_pitch)
         tab_widget.addTab(tab_pitch, "Pitch")
 
         pitch_group = DrumPitchSection(
-            self.controls,
-            self._create_parameter_combo_box,
-            self._create_parameter_slider,
-            self.midi_helper,
+            controls=self.controls,
+            create_parameter_combo_box=self._create_parameter_combo_box,
+            create_parameter_slider=self._create_parameter_slider,
+            midi_helper=self.midi_helper,
         )
         tab_pitch_layout.addWidget(pitch_group)
+
+        tab_wmt = QWidget()
+        tab_wmt_layout = QVBoxLayout(tab_wmt)
+        tab_widget.addTab(tab_wmt, "WMT")
+
+        wmt_group = DrumWMTSection(
+            controls=self.controls,
+            create_parameter_combo_box=self._create_parameter_combo_box,
+            create_parameter_slider=self._create_parameter_slider,
+            create_parameter_switch=self._create_parameter_switch,
+            midi_helper=self.midi_helper,
+            address=self.address
+        )
+        tab_wmt_layout.addWidget(wmt_group)
 
         tab_pitch_env = QWidget()
         tab_pitch_env_layout = QVBoxLayout(tab_pitch_env)
         tab_widget.addTab(tab_pitch_env, "Pitch Env")
 
         pitch_env_group = DrumPitchEnvSection(
-            self.controls,
-            self._create_parameter_combo_box,
-            self._create_parameter_slider,
-            self.midi_helper,
+            controls=self.controls,
+            create_parameter_combo_box=self._create_parameter_combo_box,
+            create_parameter_slider=self._create_parameter_slider,
+            midi_helper=self.midi_helper,
         )
         tab_pitch_env_layout.addWidget(pitch_env_group)
 
@@ -125,10 +127,10 @@ class DrumPartialEditor(PartialEditor):
         tab_widget.addTab(tab_output, "Output")
 
         output_group = DrumOutputSection(
-            self.controls,
-            self._create_parameter_combo_box,
-            self._create_parameter_slider,
-            self.midi_helper,
+            controls=self.controls,
+            create_parameter_combo_box=self._create_parameter_combo_box,
+            create_parameter_slider=self._create_parameter_slider,
+            midi_helper=self.midi_helper,
         )
         tab_output_layout.addWidget(output_group)
 
@@ -137,10 +139,10 @@ class DrumPartialEditor(PartialEditor):
         tab_widget.addTab(tab_tvf, "TVF")
 
         tvf_group = DrumTVFSection(
-            self.controls,
-            self._create_parameter_combo_box,
-            self._create_parameter_slider,
-            self.midi_helper,
+            controls=self.controls,
+            create_parameter_combo_box=self._create_parameter_combo_box,
+            create_parameter_slider=self._create_parameter_slider,
+            midi_helper=self.midi_helper,
         )
         tab_tvf_layout.addWidget(tvf_group)
 
@@ -149,10 +151,10 @@ class DrumPartialEditor(PartialEditor):
         tab_widget.addTab(tab_tva, "TVA")
 
         tva_group = DrumTVASection(
-            self.controls,
-            self._create_parameter_combo_box,
-            self._create_parameter_slider,
-            self.midi_helper,
+            controls=self.controls,
+            create_parameter_combo_box=self._create_parameter_combo_box,
+            create_parameter_slider=self._create_parameter_slider,
+            midi_helper=self.midi_helper,
         )
         tab_tva_layout.addWidget(tva_group)
 

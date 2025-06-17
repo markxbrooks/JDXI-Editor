@@ -158,8 +158,8 @@ class AnalogSynthEditor(SynthEditor):
 
     def setup_ui(self):
         """Set up the Analog Synth Editor UI."""
-        self.setMinimumSize(JDXiDimensions.ANALOG_EDITOR_MIN_WIDTH, JDXiDimensions.ANALOG_EDITOR_MIN_HEIGHT)
-        self.resize(JDXiDimensions.ANALOG_EDITOR_WIDTH, JDXiDimensions.ANALOG_EDITOR_HEIGHT)
+        self.setMinimumSize(JDXiDimensions.EDITOR_ANALOG_MIN_WIDTH, JDXiDimensions.EDITOR_ANALOG_MIN_HEIGHT)
+        self.resize(JDXiDimensions.EDITOR_ANALOG_WIDTH, JDXiDimensions.EDITOR_ANALOG_HEIGHT)
         self.setStyleSheet(JDXiStyle.TABS_ANALOG + JDXiStyle.EDITOR_ANALOG)
 
         main_layout = QVBoxLayout()
@@ -210,10 +210,9 @@ class AnalogSynthEditor(SynthEditor):
 
         splitter.addWidget(upper_widget)
         splitter.addWidget(scroll)
-        splitter.setSizes([300, 300])  # give more room to bottom
+        splitter.setSizes(JDXiDimensions.EDITOR_DRUM_ANALOG_SPLITTER_SIZES)  # give more room to bottom
         # Splitter handle style
         splitter.setStyleSheet(JDXiStyle.SPLITTER)
-
 
     def _create_sections(self):
         """Create the sections for the Analog Synth Editor."""
