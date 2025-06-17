@@ -220,6 +220,9 @@ class RolandSysExAddress:
     def copy(self) -> RolandSysExAddress:
         return RolandSysExAddress(self.msb, self.umb, self.lsb, self.lsb)
 
+
+
+
 # ==========================
 # JD-Xi SysEx Header
 # ==========================

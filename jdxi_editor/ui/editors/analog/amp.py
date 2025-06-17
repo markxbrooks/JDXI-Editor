@@ -49,10 +49,12 @@ class AmpSection(QWidget):
         self.init_ui()
 
     def init_ui(self):
-        layout = QVBoxLayout()
-        layout.setSpacing(5)
-        layout.setContentsMargins(5, 15, 5, 5)
-        self.setLayout(layout)
+        """ Initialize UI """
+        main_rows_vlayout = QVBoxLayout()
+        main_rows_vlayout.setSpacing(5)
+        main_rows_vlayout.setContentsMargins(5, 15, 5, 5)
+        self.setLayout(main_rows_vlayout)
+        self.setStyleSheet(JDXiStyle.ADSR_ANALOG)
 
         # Icon row
         icons_hlayout = QHBoxLayout()
@@ -68,27 +70,30 @@ class AmpSection(QWidget):
             icon_label.setPixmap(icon_pixmap)
             icon_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
             icons_hlayout.addWidget(icon_label)
-        layout.addLayout(icons_hlayout)
+        main_rows_vlayout.addLayout(icons_hlayout)
 
         # Level controls
+        level_controls_row_layout = QHBoxLayout()
+        main_rows_vlayout.addLayout(level_controls_row_layout)
+
         self.amp_level = self._create_parameter_slider(
-            AddressParameterAnalog.AMP_LEVEL, "Level"
+            AddressParameterAnalog.AMP_LEVEL, "Level", vertical=True
         )
         self.amp_level_keyfollow = self._create_parameter_slider(
-            AddressParameterAnalog.AMP_LEVEL_KEYFOLLOW, "Keyfollow"
+            AddressParameterAnalog.AMP_LEVEL_KEYFOLLOW, "Keyfollow", vertical=True
         )
-        layout.addWidget(self.amp_level)
-        layout.addWidget(self.amp_level_keyfollow)
-
-        layout.addWidget(
-            self._create_parameter_slider(
-                AddressParameterAnalog.AMP_LEVEL_VELOCITY_SENSITIVITY,
-                "Velocity Sensitivity",
-            )
+        self.amp_level_velocity_sensitivity = self._create_parameter_slider(
+            AddressParameterAnalog.AMP_LEVEL_VELOCITY_SENSITIVITY,
+            "Velocity Sensitivity", vertical=True
         )
 
+        level_controls_row_layout.addStretch()
+        level_controls_row_layout.addWidget(self.amp_level)
+        level_controls_row_layout.addWidget(self.amp_level_keyfollow)
+        level_controls_row_layout.addWidget(self.amp_level_velocity_sensitivity)
+        level_controls_row_layout.addStretch()
         # Add spacing
-        layout.addSpacing(10)
+        main_rows_vlayout.addSpacing(10)
 
         # Amp Envelope
         env_group = QGroupBox("Envelope")
@@ -120,5 +125,5 @@ class AmpSection(QWidget):
         self.amp_env_adsr_widget.setStyleSheet(JDXiStyle.ADSR_ANALOG)
         amp_env_adsr_vlayout.addWidget(self.amp_env_adsr_widget)
 
-        layout.addWidget(env_group)
-        layout.addStretch()
+        main_rows_vlayout.addWidget(env_group)
+        main_rows_vlayout.addStretch()

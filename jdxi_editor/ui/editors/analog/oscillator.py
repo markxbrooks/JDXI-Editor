@@ -76,7 +76,7 @@ class AnalogOscillatorSection(QWidget):
         layout.addWidget(self.create_pitch_env_group())
 
         # Sub Oscillator
-        layout.addWidget(self.create_sub_osc_group())
+        # layout.addWidget(self.create_sub_osc_group())
 
     def create_waveform_buttons(self) -> QHBoxLayout:
         """
@@ -85,6 +85,7 @@ class AnalogOscillatorSection(QWidget):
         :return: QHBoxLayout
         """
         wave_layout = QHBoxLayout()
+        wave_layout.addStretch()
 
         for waveform in [
             AnalogOscWave.SAW,
@@ -110,6 +111,17 @@ class AnalogOscillatorSection(QWidget):
             self.controls[AddressParameterAnalog.OSC_WAVEFORM] = btn
             wave_layout.addWidget(btn)
 
+        self.sub_oscillator_type_switch = self._create_parameter_switch(
+            AddressParameterAnalog.SUB_OSCILLATOR_TYPE,
+            "Type",
+            [
+                AnalogSubOscType.OFF.display_name,
+                AnalogSubOscType.OCT_DOWN_1.display_name,
+                AnalogSubOscType.OCT_DOWN_2.display_name,
+            ],
+        )
+        wave_layout.addWidget(self.sub_oscillator_type_switch)
+        wave_layout.addStretch()
         return wave_layout
 
     def create_tuning_group(self) -> QGroupBox:
@@ -184,36 +196,14 @@ class AnalogOscillatorSection(QWidget):
             address=self.address,
         )
         self.pitch_env_widget.setStyleSheet(JDXiStyle.ADSR_ANALOG)
-        pitch_env_row_layout.addStretch()
 
         env_group = QGroupBox("Envelope")
         env_group.setProperty("adsr", True)
         env_layout = QHBoxLayout()
         env_group.setLayout(env_layout)
         pitch_env_row_layout.addWidget(self.pitch_env_widget)
+        pitch_env_row_layout.addStretch()
         return pitch_env_group
-
-    def create_sub_osc_group(self) -> QGroupBox:
-        """
-        Create the sub oscillator group
-
-        :return: QGroupBox
-        """
-        sub_group = QGroupBox("Sub Oscillator")
-        sub_layout = QVBoxLayout()
-        sub_group.setLayout(sub_layout)
-        self.sub_oscillator_type_switch = self._create_parameter_switch(
-            AddressParameterAnalog.SUB_OSCILLATOR_TYPE,
-            "Type",
-            [
-                AnalogSubOscType.OFF.display_name,
-                AnalogSubOscType.OCT_DOWN_1.display_name,
-                AnalogSubOscType.OCT_DOWN_2.display_name,
-            ],
-        )
-        sub_layout.addWidget(self.sub_oscillator_type_switch)
-
-        return sub_group
 
     def _update_pw_controls_state(self, waveform: AnalogOscWave):
         """
@@ -222,6 +212,5 @@ class AnalogOscillatorSection(QWidget):
         :param waveform: AnalogOscWave value
         :return: None
         """
-        pw_enabled = waveform == AnalogOscWave.PW_SQUARE
-        self.pw_slider.setEnabled(pw_enabled)
-        self.pwm_slider.setEnabled(pw_enabled)
+        pw_enabled = waveform == AnalogOscWave.PULSE
+        self.pwm_widget.setEnabled(pw_enabled)

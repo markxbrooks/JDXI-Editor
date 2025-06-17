@@ -29,15 +29,16 @@ def save_all_controls_to_single_file(editors: list, file_path: str) -> None:
                 log.warning(f"Skipping invalid editor: {editor}, has no address")
                 continue
             if not hasattr(editor, "get_controls_as_dict"):
-                log.warning(f"Skipping invalid editor: {editor}, has no get_controls_as_dict method")
+                log.warning(f"Skipping invalid editor: {editor}, "
+                            "has no get_controls_as_dict method")
                 continue
-            
+
             # Convert address to hex string without spaces
             address_hex = ''.join([f"{x:02x}" for x in editor.address.to_bytes()])
 
             synth_tone_byte = address_hex[4:6]
             combined_data["ADDRESS"] = address_hex
-            
+
             combined_data["TEMPORARY_AREA"] = parse_sysex_byte(
                 editor.address.umb, AddressOffsetTemporaryToneUMB
             )
@@ -49,15 +50,15 @@ def save_all_controls_to_single_file(editors: list, file_path: str) -> None:
             combined_data["SYNTH_TONE"] = synth_tone_map.get(synth_tone_byte, "UNKNOWN_SYNTH_TONE")
             # Get the raw control values instead of the full control data
             other_data = editor.get_controls_as_dict()
-            for k, v in other_data.items():
+            for key, value in other_data.items():
                 # If the value is a list/array, take just the first value (the actual control value)
-                if isinstance(v, (list, tuple)) and len(v) > 0:
-                    combined_data[k] = v[0]
+                if isinstance(value, (list, tuple)) and len(value) > 0:
+                    combined_data[key] = value[0]
                 else:
-                    combined_data[k] = v
-                    
+                    combined_data[key] = value
+
         # Save the combined data to a single JSON file
-        with open(file_path, "w") as file_name:
+        with open(file_path, "w", encoding="utf-8") as file_name:
             json.dump(combined_data, file_name, indent=4)
         log.message(f"All controls saved successfully to {file_path}")
     except Exception as ex:
