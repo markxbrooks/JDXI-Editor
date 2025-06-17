@@ -87,6 +87,7 @@ class JDXiStyle:
     """Central style definitions for JD-Xi Manager"""
 
     # Colors
+
     PWM_WIDGET_HEIGHT = 250
     ADSR_PLOT_WIDTH = 300
     ADSR_PLOT_HEIGHT = 200
@@ -392,6 +393,18 @@ class JDXiStyle:
                 color: #FFFFFF;
             }
         """
+
+    MIXER_LABEL_ANALOG = f"""
+                font-size: 16px;
+                font-weight: bold;
+                color: {ACCENT_ANALOG};
+            """
+
+    MIXER_LABEL = f"""
+                font-size: 16px;
+                font-weight: bold;
+                color: {ACCENT};
+    """
 
     PROGRAM_PRESET_GROUPS = f"""            
          QGroupBox {{
