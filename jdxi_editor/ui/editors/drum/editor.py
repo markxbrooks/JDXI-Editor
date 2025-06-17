@@ -83,6 +83,7 @@ from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.widgets.dialog.progress import ProgressDialog
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
+from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
 class DrumCommonEditor(SynthEditor):
@@ -158,7 +159,7 @@ class DrumCommonEditor(SynthEditor):
         scroll.setWidget(self.partial_tab_widget)
         splitter.addWidget(scroll)
 
-        splitter.setSizes([300, 300])
+        splitter.setSizes(JDXiDimensions.EDITOR_DRUM_ANALOG_SPLITTER_SIZES)
         splitter.setStyleSheet(JDXiStyle.SPLITTER)
         self.partial_tab_widget.setStyleSheet(JDXiStyle.TABS_DRUMS)
         self._setup_partial_editors()

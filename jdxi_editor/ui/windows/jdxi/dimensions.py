@@ -16,16 +16,6 @@ class JDXiDimensions:
     A class to store dimensions for the JD-Xi editor UI.
     """
 
-    SPLITTER_SIZES = [300, 300]
-    ANALOG_EDITOR_MIN_WIDTH = 330
-    ANALOG_EDITOR_MIN_HEIGHT = 330
-    ANALOG_EDITOR_WIDTH = 950
-    ANALOG_EDITOR_HEIGHT = 600
-    PWM_WIDGET_X = 100
-    PWM_WIDGET_Y = 100
-    PWM_WIDGET_WIDTH = 300
-    PWM_WIDGET_HEIGHT = 500
-
     HEIGHT = 400
     WIDTH = 1000
 
@@ -40,6 +30,18 @@ class JDXiDimensions:
     # LED title area (enlarged for 2 rows)
     DIGITAL_TITLE_WIDTH = 330
     DIGITAL_TITLE_HEIGHT = 70
+
+    EDITOR_DIGITAL_SPLITTER_SIZES = [100, 600]
+    EDITOR_DRUM_ANALOG_SPLITTER_SIZES = [200, 400]
+    EDITOR_ANALOG_MIN_WIDTH = 330
+    EDITOR_ANALOG_MIN_HEIGHT = 330
+    EDITOR_ANALOG_WIDTH = 950
+    EDITOR_ANALOG_HEIGHT = 600
+
+    PWM_WIDGET_X = 100
+    PWM_WIDGET_Y = 100
+    PWM_WIDGET_WIDTH = 300
+    PWM_WIDGET_HEIGHT = 500
 
     # Title above display (moved down)
     TITLE_X = DISPLAY_X

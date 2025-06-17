@@ -34,7 +34,7 @@ Example:
     editor.show()
 """
 
-from PySide6.QtWidgets import QGroupBox, QFormLayout, QWidget, QVBoxLayout, QScrollArea
+from PySide6.QtWidgets import QGroupBox, QFormLayout, QWidget, QVBoxLayout, QScrollArea, QHBoxLayout
 from typing import Callable
 
 from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
@@ -81,8 +81,13 @@ class DrumPitchEnvSection(QWidget):
 
         scroll_area.setWidget(scrolled_widget)
 
+        main_row_hlayout = QHBoxLayout()
+        main_row_hlayout.addStretch()
+        scrolled_layout.addLayout(main_row_hlayout)
+
         # Pitch Group
         pitch_env_group = QGroupBox("Pitch Env")
+        main_row_hlayout.addWidget(pitch_env_group)
         pitch_env_layout = QFormLayout()
         pitch_env_group.setLayout(pitch_env_layout)
 
@@ -153,7 +158,4 @@ class DrumPitchEnvSection(QWidget):
             AddressParameterDrumPartial.PITCH_ENV_LEVEL_4, "Level 4"
         )
         pitch_env_layout.addRow(pitch_env_level4_slider)
-
-        # return pitch_group
-        pitch_env_group.setLayout(scrolled_layout)
-        scrolled_layout.addWidget(pitch_env_group)
+        main_row_hlayout.addStretch()

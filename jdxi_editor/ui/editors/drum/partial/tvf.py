@@ -34,7 +34,7 @@ Example:
 """
 
 from typing import Callable
-from PySide6.QtWidgets import QGroupBox, QFormLayout, QWidget, QVBoxLayout, QScrollArea
+from PySide6.QtWidgets import QGroupBox, QFormLayout, QWidget, QVBoxLayout, QScrollArea, QHBoxLayout
 from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 from jdxi_editor.midi.io.helper import MidiIOHelper
@@ -81,8 +81,13 @@ class DrumTVFSection(QWidget):
 
         scroll_area.setWidget(scrolled_widget)
 
+        main_row_hlayout = QHBoxLayout()
+        main_row_hlayout.addStretch()
+        scrolled_layout.addLayout(main_row_hlayout)
+
         # TVF Group
         tvf_group = QGroupBox("TVF")
+        main_row_hlayout.addWidget(tvf_group)
         tvf_layout = QFormLayout()
         tvf_group.setLayout(tvf_layout)
 
@@ -182,4 +187,4 @@ class DrumTVFSection(QWidget):
             AddressParameterDrumPartial.TVF_ENV_LEVEL_4, "Env Level 4"
         )
         tvf_layout.addRow(tvf_env_level4_slider)
-        scrolled_layout.addWidget(tvf_group)
+        main_row_hlayout.addStretch()

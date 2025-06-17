@@ -50,6 +50,7 @@ from PySide6.QtWidgets import (
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.drum.data import rm_waves
+from jdxi_editor.midi.data.parameter.drum.common import AddressParameterDrumCommon
 from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 from jdxi_editor.ui.widgets.wmt.envelope import WMTEnvelopeWidget
@@ -64,6 +65,7 @@ class DrumWMTSection(QWidget):
             controls,
             create_parameter_combo_box,
             create_parameter_slider,
+            create_parameter_switch,
             midi_helper,
             address=None,
     ):
@@ -86,6 +88,7 @@ class DrumWMTSection(QWidget):
         self.controls = controls
         self._create_parameter_slider = create_parameter_slider
         self._create_parameter_combo_box = create_parameter_combo_box
+        self._create_parameter_switch = create_parameter_switch
         self.midi_helper = midi_helper
         self.address = address
         self.setup_ui()
@@ -112,9 +115,14 @@ class DrumWMTSection(QWidget):
         wmt_group.setLayout(wmt_layout)
 
         # WMT Velocity Control
-        wmt_velocity_control_combo = QComboBox()
-        wmt_velocity_control_combo.addItems(["OFF", "ON", "RANDOM"])
-        wmt_layout.addWidget(wmt_velocity_control_combo)
+        wmt_velocity_control_combo_row_layout = QHBoxLayout()
+        wmt_layout.addLayout(wmt_velocity_control_combo_row_layout)
+        wmt_velocity_control_combo_row_layout.addStretch()
+        wmt_velocity_control_combo = self._create_parameter_switch(AddressParameterDrumPartial.WMT_VELOCITY_CONTROL,
+                                                                   "Velocity control",
+                                                                   ["OFF", "ON", "RANDOM"])
+        wmt_velocity_control_combo_row_layout.addWidget(wmt_velocity_control_combo)
+        wmt_velocity_control_combo_row_layout.addStretch()
 
         # WMT Tabbed Widget
         self.wmt_tab_widget = QTabWidget()
@@ -142,17 +150,25 @@ class DrumWMTSection(QWidget):
         wmt4_tab.setLayout(wmt4_layout)
         scrolled_layout.addWidget(wmt_group)
 
-    def _create_wmt_layout(self, wmt_index: int):
-        layout = QFormLayout()
+    def _create_wmt_layout(self, wmt_index: int) -> QFormLayout:
+        """
+        _create_wmt_layout
+
+        :param wmt_index: int
+        :return: QFormLayout
+        """
+        main_row_hlayout = QHBoxLayout()
+        main_row_hlayout.addStretch()
+        form_layout = QFormLayout()
+        main_row_hlayout.addLayout(form_layout)
         prefix = f"WMT{wmt_index}_"
 
         def p(name):  # helper to get DrumPartialParameter by name
             return getattr(AddressParameterDrumPartial, prefix + name)
-
-        self.wave_switch = self._create_parameter_combo_box(
-            p("WAVE_SWITCH"), "Wave Switch", ["OFF", "ON"], [0, 1]
+        self.wave_switch = self._create_parameter_switch(
+            p("WAVE_SWITCH"), "Wave Switch", ["OFF", "ON"]
         )
-        layout.addRow(self.wave_switch)
+        form_layout.addWidget(self.wave_switch)
 
         rm_wave_groups = [
             "",  # Empty string for the first item
@@ -250,7 +266,7 @@ class DrumWMTSection(QWidget):
         ]
 
         # --- Combo and Search Controls for L Wave ---
-        layout.addRow(QLabel("Search L waves:"))
+        form_layout.addRow(QLabel("Search L waves:"))
 
         # Search box
         l_wave_search_box = QLineEdit()
@@ -278,19 +294,21 @@ class DrumWMTSection(QWidget):
 
         # Add widgets to layout
         search_row = QHBoxLayout()
+        search_row.addStretch()
         search_row.addWidget(QLabel("Group:"))
         search_row.addWidget(l_wave_selector)
         search_row.addWidget(QLabel("Search:"))
         search_row.addWidget(l_wave_search_box)
-        layout.addRow(search_row)
-        layout.addRow(l_wave_combo)
+        search_row.addStretch()
+        form_layout.addRow(search_row)
+        form_layout.addRow(l_wave_combo)
 
         self.l_wave_combos[wmt_index] = l_wave_combo
         self.l_wave_search_boxes[wmt_index] = l_wave_search_box
         self.l_wave_selectors[wmt_index] = l_wave_selector
 
         # --- Combo and Search Controls for R Wave ---
-        layout.addRow(QLabel("Search R waves:"))
+        form_layout.addRow(QLabel("Search R waves:"))
 
         # Search box
         r_wave_search_box = QLineEdit()
@@ -318,44 +336,46 @@ class DrumWMTSection(QWidget):
 
         # Add widgets to layout
         r_search_row = QHBoxLayout()
+        r_search_row.addStretch()
         r_search_row.addWidget(QLabel("Group:"))
         r_search_row.addWidget(r_wave_selector)
         r_search_row.addWidget(QLabel("Search:"))
         r_search_row.addWidget(r_wave_search_box)
-        layout.addRow(r_search_row)
-        layout.addRow(r_wave_combo)
+        r_search_row.addStretch()
+        form_layout.addRow(r_search_row)
+        form_layout.addRow(r_wave_combo)
 
-        layout.addRow(
+        form_layout.addRow(
             self._create_parameter_combo_box(
                 p("WAVE_GAIN"), "Wave Gain", ["-6", "0", "6", "12"], [0, 1, 2, 3]
             )
         )
-        layout.addRow(
+        form_layout.addRow(
             self._create_parameter_combo_box(
                 p("WAVE_GAIN"), "Wave FXM Switch", ["OFF", "ON"], [0, 1]
             )
         )  # If this is correct — maybe it’s a typo?
 
         # Sliders
-        layout.addRow(
+        form_layout.addRow(
             self._create_parameter_slider(p("WAVE_FXM_COLOR"), "Wave FXM Color")
         )
-        layout.addRow(
+        form_layout.addRow(
             self._create_parameter_slider(p("WAVE_FXM_DEPTH"), "Wave FXM Depth")
         )
-        layout.addRow(
+        form_layout.addRow(
             self._create_parameter_slider(p("WAVE_TEMPO_SYNC"), "Wave Tempo Sync")
         )
-        layout.addRow(
+        form_layout.addRow(
             self._create_parameter_slider(p("WAVE_COARSE_TUNE"), "Wave Coarse Tune")
         )
-        layout.addRow(
+        form_layout.addRow(
             self._create_parameter_slider(p("WAVE_FINE_TUNE"), "Wave Fine Tune")
         )
-        layout.addRow(self._create_parameter_slider(p("WAVE_PAN"), "Wave Pan"))
+        form_layout.addRow(self._create_parameter_slider(p("WAVE_PAN"), "Wave Pan"))
 
         # More combo boxes
-        layout.addRow(
+        form_layout.addRow(
             self._create_parameter_combo_box(
                 p("WAVE_RANDOM_PAN_SWITCH"),
                 "Wave Random Pan Switch",
@@ -363,7 +383,7 @@ class DrumWMTSection(QWidget):
                 [0, 1],
             )
         )
-        layout.addRow(
+        form_layout.addRow(
             self._create_parameter_combo_box(
                 p("WAVE_ALTERNATE_PAN_SWITCH"),
                 "Wave Alternate Pan Switch",
@@ -408,11 +428,11 @@ class DrumWMTSection(QWidget):
                                             address=self.address,
                                             )
             adsr_widget.setStyleSheet(JDXiStyle.ADSR)
-            layout.addRow(adsr_widget)
+            form_layout.addRow(adsr_widget)
         except Exception as ex:
             log.error(f"WMT{wmt_index}: Error creating ADSR:", exception=ex)
-
-        return layout
+        main_row_hlayout.addStretch()
+        return main_row_hlayout
 
     def _populate_l_waves(self, wmt_index):
         try:

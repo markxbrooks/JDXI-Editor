@@ -62,6 +62,7 @@ from jdxi_editor.midi.utils.conversions import midi_value_to_ms, midi_value_to_f
 from jdxi_editor.ui.editors.digital import DigitalCommonSection, DigitalToneModifySection, DigitalPartialEditor
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.widgets.panel.partial import PartialsPanel
+from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
 class DigitalSynthEditor(SynthEditor):
@@ -185,7 +186,8 @@ class DigitalSynthEditor(SynthEditor):
         scroll.setWidget(container)
         splitter.addWidget(top_widget)
         splitter.addWidget(scroll)
-        splitter.setSizes([100, 600])  # give more room to bottom
+        splitter.setSizes(JDXiDimensions.EDITOR_DIGITAL_SPLITTER_SIZES)  # give more room to bottom
+
         splitter.setStyleSheet(JDXiStyle.SPLITTER)
         # self.show()
 
