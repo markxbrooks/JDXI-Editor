@@ -474,7 +474,6 @@ class ProgramEditor(BasicEditor):
         log.message(f"Selected Category: {selected_category}")
 
         self.preset_combo_box.clear()
-        # self.presets.clear()
 
         filtered_list = [  # Filter programs based on bank and genre
             preset
@@ -534,114 +533,47 @@ class ProgramEditor(BasicEditor):
         mixer_section = QWidget()
         layout = QVBoxLayout(mixer_section)
 
-        """
-        1) Create Labels and Icons
-        """
         self.master_level_icon = QLabel()
         self.master_level_icon.setPixmap(
             qta.icon("mdi6.keyboard-settings-outline", color=JDXiStyle.FOREGROUND).pixmap(40, 40)
         )
         self.master_level_title = QLabel("Master Level")
-        self.master_level_title.setStyleSheet(
-            f"""
-                font-size: 16px;
-                font-weight: bold;
-                color: {JDXiStyle.ACCENT};
-            """
-        )
+        self.master_level_title.setStyleSheet(JDXiStyle.MIXER_LABEL)
         self.master_level_current_label = QLabel("Current Program")
-        self.master_level_current_label.setStyleSheet(
-            f"""
-                font-size: 16px;
-                font-weight: bold;
-                color: {JDXiStyle.ACCENT};
-            """
-        )
+        self.master_level_current_label.setStyleSheet(JDXiStyle.MIXER_LABEL)
         self.digital_synth_1_icon = QLabel()
         self.digital_synth_1_icon.setPixmap(
             qta.icon("msc.piano", color=JDXiStyle.FOREGROUND).pixmap(40, 40)
         )
         self.digital_synth_1_title = QLabel("Digital Synth 1")
-        self.digital_synth_1_title.setStyleSheet(
-            f"""
-                font-size: 16px;
-                font-weight: bold;
-                color: {JDXiStyle.ACCENT};
-            """
-        )
+        self.digital_synth_1_title.setStyleSheet(JDXiStyle.MIXER_LABEL)
         self.digital_synth_1_current_label = QLabel("Current Synth:")
-        self.digital_synth_1_current_label.setStyleSheet(
-            f"""
-                font-size: 16px;
-                font-weight: bold;
-                color: {JDXiStyle.ACCENT};
-            """
-        )
+        self.digital_synth_1_current_label.setStyleSheet(JDXiStyle.MIXER_LABEL)
         self.digital_synth_2_icon = QLabel()
         self.digital_synth_2_icon.setPixmap(
             qta.icon("msc.piano", color=JDXiStyle.FOREGROUND).pixmap(40, 40)
         )
 
         self.digital_synth_2_title = QLabel("Digital Synth 2")
-        self.digital_synth_2_title.setStyleSheet(
-            f"""
-                font-size: 16px;
-                font-weight: bold;
-                color: {JDXiStyle.ACCENT};
-            """
-        )
+        self.digital_synth_2_title.setStyleSheet(JDXiStyle.MIXER_LABEL)
         self.digital_synth_2_current_label = QLabel("Current Synth:")
-        self.digital_synth_2_current_label.setStyleSheet(
-            f"""
-                font-size: 16px;
-                font-weight: bold;  
-                color: {JDXiStyle.ACCENT};
-            """
-        )
+        self.digital_synth_2_current_label.setStyleSheet(JDXiStyle.MIXER_LABEL)
         self.drum_kit_icon = QLabel()
         self.drum_kit_icon.setPixmap(
             qta.icon("fa5s.drum", color=JDXiStyle.FOREGROUND).pixmap(40, 40)
         )
         self.drum_kit_title = QLabel("Drums")
-        self.drum_kit_title.setStyleSheet(
-            f"""
-                font-size: 16px;
-                font-weight: bold;
-                color: {JDXiStyle.ACCENT};
-            """
-        )
+        self.drum_kit_title.setStyleSheet(JDXiStyle.MIXER_LABEL)
         self.drum_kit_current_label = QLabel("Current Synth:")
-        self.drum_kit_current_label.setStyleSheet(
-            f"""
-                font-size: 16px;
-                font-weight: bold;
-                color: {JDXiStyle.ACCENT};
-            """
-        )
+        self.drum_kit_current_label.setStyleSheet(JDXiStyle.MIXER_LABEL)
         self.analog_synth_icon = QLabel()
         self.analog_synth_icon.setPixmap(
             qta.icon("msc.piano", color=JDXiStyle.FOREGROUND).pixmap(40, 40)
         )
         self.analog_synth_title = QLabel("Analog Synth")
-        self.analog_synth_title.setStyleSheet(
-            f"""
-                font-size: 16px;
-                font-weight: bold;
-                color: {JDXiStyle.ACCENT_ANALOG};
-            """
-        )
+        self.analog_synth_title.setStyleSheet(JDXiStyle.MIXER_LABEL_ANALOG)
         self.analog_synth_current_label = QLabel("Current Synth:")
-        self.analog_synth_current_label.setStyleSheet(
-            f"""
-                font-size: 16px;
-                font-weight: bold;
-                color: {JDXiStyle.ACCENT_ANALOG};
-            """
-        )
-
-        """
-        2) Set up the Scrolled Area
-        """
+        self.analog_synth_current_label.setStyleSheet(JDXiStyle.MIXER_LABEL_ANALOG)
 
         # Mixer controls group
         mixer_group = QGroupBox("Mixer Level Settings")
