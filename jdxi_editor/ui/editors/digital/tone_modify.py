@@ -38,10 +38,10 @@ class DigitalToneModifySection(QWidget):
         """
         Initialize the UI for the DigitalToneModifySection
         """
-        layout = QVBoxLayout()
+        main_rows_vlayout = QVBoxLayout()
         slider_row_layout = QHBoxLayout()
-        self.setLayout(layout)
-        layout.addLayout(slider_row_layout)
+        self.setLayout(main_rows_vlayout)
+        main_rows_vlayout.addLayout(slider_row_layout)
         slider_row_layout.addStretch()
 
         attack_time_interval_sens = self._create_parameter_slider(
@@ -72,7 +72,7 @@ class DigitalToneModifySection(QWidget):
         )
         envelope_loop_mode_row.addWidget(envelope_loop_mode)
         envelope_loop_mode_row.addStretch()
-        layout.addLayout(envelope_loop_mode_row)
+        main_rows_vlayout.addLayout(envelope_loop_mode_row)
 
         envelope_loop_sync_note_row = QHBoxLayout()
         envelope_loop_sync_note_row.addStretch()
@@ -83,18 +83,17 @@ class DigitalToneModifySection(QWidget):
         )
         envelope_loop_sync_note_row.addWidget(envelope_loop_sync_note)
         envelope_loop_sync_note_row.addStretch()
-        layout.addLayout(envelope_loop_sync_note_row)
+        main_rows_vlayout.addLayout(envelope_loop_sync_note_row)
 
         chromatic_portamento_row = QHBoxLayout()
         chromatic_portamento_row.addStretch()
-        chromatic_portamento_label = QLabel("Chromatic Portamento")
-        chromatic_portamento_row.addWidget(chromatic_portamento_label)
 
         chromatic_portamento = self._create_parameter_switch(
             AddressParameterDigitalModify.CHROMATIC_PORTAMENTO,
             "Chromatic Portamento",
             ["OFF", "ON"],
         )
-        layout.addWidget(chromatic_portamento)
+        chromatic_portamento_row.addWidget(chromatic_portamento)
         chromatic_portamento_row.addStretch()
-        layout.addStretch()
+        main_rows_vlayout.addLayout(chromatic_portamento_row)
+        main_rows_vlayout.addStretch()

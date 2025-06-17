@@ -56,7 +56,7 @@ from jdxi_editor.jdxi.preset.lists import JDXiPresetToneList
 from jdxi_editor.jdxi.program.program import JDXiProgram
 from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.log.logger import Logger as log
-from jdxi_editor.midi.data.address.address import RolandSysExAddress
+from jdxi_editor.midi.data.address.program import ProgramCommonAddress
 from jdxi_editor.midi.data.parameter import AddressParameter
 from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
 from jdxi_editor.midi.data.parameter.digital import AddressParameterDigitalCommon
@@ -402,7 +402,13 @@ class ProgramEditor(BasicEditor):
         self._populate_presets()
         self.update_category_combo_box_categories()
 
-    def set_channel_and_preset_lists(self, preset_type):
+    def set_channel_and_preset_lists(self, preset_type: str) -> None:
+        """
+        set_channel_and_preset_lists
+
+        :param preset_type:
+        :return: None
+        """
         if preset_type == "Digital Synth 1":
             self.midi_channel = MidiChannel.DIGITAL_SYNTH_1
             self.preset_list = JDXiPresetToneList.DIGITAL_PROGRAM_CHANGE
@@ -418,6 +424,9 @@ class ProgramEditor(BasicEditor):
 
     def update_category_combo_box_categories(self) -> None:
         """
+        update_category_combo_box_categories
+
+        :return: None
         Update the category combo box.
         """
         # Update the category combo box
@@ -440,11 +449,12 @@ class ProgramEditor(BasicEditor):
 
         self.category_combo_box.blockSignals(False)  # Unblock signals after update
 
-    def _populate_presets(self, search_text: str = ""):
+    def _populate_presets(self, search_text: str = "") -> None:
         """
         Populate the program list with available presets.
 
         :param search_text: str
+        :return: None
         """
         if not self.preset_helper:
             return
@@ -488,8 +498,14 @@ class ProgramEditor(BasicEditor):
 
     def _init_synth_data(self,
                          synth_type: JDXiSynth = JDXiSynth.DIGITAL_SYNTH_1,
-                         partial_number: Optional[int] = 0):
-        """Initialize synth-specific data."""
+                         partial_number: Optional[int] = 0) -> None:
+        """
+
+        :param synth_type: JDXiSynth
+        :param partial_number: int
+        :return: None
+        Initialize synth-specific data
+        """
         from jdxi_editor.jdxi.synth.factory import create_synth_data
         self.synth_data = create_synth_data(synth_type,
                                             partial_number=partial_number)
@@ -508,7 +524,12 @@ class ProgramEditor(BasicEditor):
             setattr(self, attr, getattr(self.synth_data, attr))
 
     def _create_mixer_section(self) -> QWidget:
-        """Create general vocal effect controls section with scrolling"""
+        """
+        _create_mixer_section
+
+        :return: QWidget
+        Create general vocal effect controls section with scrolling
+        """
 
         mixer_section = QWidget()
         layout = QVBoxLayout(mixer_section)
@@ -629,10 +650,13 @@ class ProgramEditor(BasicEditor):
         mixer_group.setLayout(mixer_layout)
 
         # Sliders
-        program_common_address = RolandSysExAddress(msb=0x18, umb=0x00, lmb=0x00, lsb=0x00)
+        program_common_address = ProgramCommonAddress()
         self.address = program_common_address
         self.master_level_slider = self._create_parameter_slider(
-            param=AddressParameterProgramCommon.PROGRAM_LEVEL, label="Master", vertical=True, address=program_common_address
+            param=AddressParameterProgramCommon.PROGRAM_LEVEL,
+            label="Master",
+            vertical=True,
+            address=program_common_address
         )
 
         self._init_synth_data(synth_type=JDXiSynth.DIGITAL_SYNTH_1)
@@ -846,9 +870,12 @@ class ProgramEditor(BasicEditor):
             self.analog_synth_current_label.setText("Unknown")
 
     def load_preset(self, program_number: int) -> None:
-        """Load preset data and update UI.
+        """
+        load_preset
+
         :param program_number: int
         :return: None
+        Load preset data and update UI
         """
         if not self.preset_helper:
             return

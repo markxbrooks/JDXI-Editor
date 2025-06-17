@@ -38,18 +38,18 @@ class AnalogLFOSection(QWidget):
         self._create_parameter_combo_box = create_parameter_combo_box
         self._on_lfo_shape_changed = on_lfo_shape_changed
         self.lfo_shape_buttons = lfo_shape_buttons
+        self.setStyleSheet(JDXiStyle.ADSR_ANALOG)
         self._init_ui()
 
     def _init_ui(self):
         """Initialize the UI"""
-        layout = QVBoxLayout()
-        self.setLayout(layout)
+        main_rows_vlayout = QVBoxLayout()
+        self.setLayout(main_rows_vlayout)
 
         # Shape row
         shape_row_layout = QHBoxLayout()
+        shape_row_layout.addStretch()
         shape_row_layout.addWidget(QLabel("Shape"))
-        shape_row_layout.addStretch(1)
-
         lfo_shapes = [
             ("TRI", "mdi.triangle-wave", 0),
             ("SIN", "mdi.sine-wave", 1),
@@ -71,20 +71,9 @@ class AnalogLFOSection(QWidget):
             btn.clicked.connect(lambda checked, v=value: self._on_lfo_shape_changed(v))
             self.lfo_shape_buttons[value] = btn
             shape_row_layout.addWidget(btn)
-            shape_row_layout.addStretch(1)
+            shape_row_layout.addStretch()
 
-        layout.addLayout(shape_row_layout)
-
-        # Rate and Fade Time
-        self.lfo_rate = self._create_parameter_slider(
-            AddressParameterAnalog.LFO_RATE, "Rate"
-        )
-        self.lfo_rate_modulation = self._create_parameter_slider(
-            AddressParameterAnalog.LFO_RATE_MODULATION_CONTROL, "Rate Modulation"
-        )
-        self.lfo_fade = self._create_parameter_slider(
-            AddressParameterAnalog.LFO_FADE_TIME, "Fade Time"
-        )
+        main_rows_vlayout.addLayout(shape_row_layout)
 
         # Tempo Sync controls
         sync_row_layout = QHBoxLayout()
@@ -99,42 +88,65 @@ class AnalogLFOSection(QWidget):
             options=["1/1", "1/2", "1/4", "1/8", "1/16"],
         )
         sync_row_layout.addWidget(self.lfo_sync_note)
-
-        # Depth controls
-        self.lfo_pitch = self._create_parameter_slider(
-            AddressParameterAnalog.LFO_PITCH_DEPTH, "Pitch Depth"
-        )
-        self.lfo_pitch_modulation = self._create_parameter_slider(
-            AddressParameterAnalog.LFO_PITCH_MODULATION_CONTROL, "Pitch Modulation"
-        )
-        self.lfo_filter = self._create_parameter_slider(
-            AddressParameterAnalog.LFO_FILTER_DEPTH, "Filter Depth"
-        )
-        self.lfo_filter_modulation = self._create_parameter_slider(
-            AddressParameterAnalog.LFO_FILTER_MODULATION_CONTROL, "Filter Modulation"
-        )
-        self.lfo_amp = self._create_parameter_slider(
-            AddressParameterAnalog.LFO_AMP_DEPTH, "Amp Depth"
-        )
-        self.lfo_amp_modulation = self._create_parameter_slider(
-            AddressParameterAnalog.LFO_AMP_MODULATION_CONTROL, "AMP Modulation"
-        )
         # Key Trigger switch
         self.key_trigger_switch = self._create_parameter_switch(
             AddressParameterAnalog.LFO_KEY_TRIGGER, "Key Trigger", ["OFF", "ON"]
         )
-
-        # Add all controls to layout
-        layout.addWidget(self.lfo_rate)
-        layout.addWidget(self.lfo_rate_modulation)
-        layout.addWidget(self.lfo_fade)
-        layout.addLayout(sync_row_layout)
-        layout.addWidget(self.lfo_pitch)
-        layout.addWidget(self.lfo_pitch_modulation)
-        layout.addWidget(self.lfo_filter)
-        layout.addWidget(self.lfo_filter_modulation)
-        layout.addWidget(self.lfo_amp)
-        layout.addWidget(self.lfo_amp_modulation)
         sync_row_layout.addWidget(self.key_trigger_switch)
         sync_row_layout.addStretch()
-        layout.addStretch()
+
+        main_rows_vlayout.addLayout(sync_row_layout)
+
+        # Rate and Fade Time
+        self.lfo_rate = self._create_parameter_slider(
+            AddressParameterAnalog.LFO_RATE, "Rate", vertical=True
+        )
+        self.lfo_rate_modulation = self._create_parameter_slider(
+            AddressParameterAnalog.LFO_RATE_MODULATION_CONTROL, "Rate Modulation", vertical=True
+        )
+        self.lfo_fade = self._create_parameter_slider(
+            AddressParameterAnalog.LFO_FADE_TIME, "Fade Time", vertical=True
+        )
+
+        fade_rate_controls_row_layout = QHBoxLayout()
+        depth_controls_row_layout = QHBoxLayout()
+
+        main_rows_vlayout.addLayout(fade_rate_controls_row_layout)
+        main_rows_vlayout.addLayout(depth_controls_row_layout)
+
+        # Depth controls
+        self.lfo_pitch = self._create_parameter_slider(
+            AddressParameterAnalog.LFO_PITCH_DEPTH, "Pitch Depth", vertical=True
+        )
+        self.lfo_pitch_modulation = self._create_parameter_slider(
+            AddressParameterAnalog.LFO_PITCH_MODULATION_CONTROL, "Pitch Modulation", vertical=True
+        )
+        self.lfo_filter = self._create_parameter_slider(
+            AddressParameterAnalog.LFO_FILTER_DEPTH, "Filter Depth", vertical=True
+        )
+        self.lfo_filter_modulation = self._create_parameter_slider(
+            AddressParameterAnalog.LFO_FILTER_MODULATION_CONTROL, "Filter Modulation", vertical=True
+        )
+        self.lfo_amp = self._create_parameter_slider(
+            AddressParameterAnalog.LFO_AMP_DEPTH, "Amp Depth", vertical=True
+        )
+        self.lfo_amp_modulation = self._create_parameter_slider(
+            AddressParameterAnalog.LFO_AMP_MODULATION_CONTROL, "AMP Modulation", vertical=True
+        )
+        # Add all controls to layout
+        fade_rate_controls_row_layout.addStretch()
+        fade_rate_controls_row_layout.addWidget(self.lfo_rate)
+        fade_rate_controls_row_layout.addWidget(self.lfo_rate_modulation)
+        fade_rate_controls_row_layout.addWidget(self.lfo_fade)
+        fade_rate_controls_row_layout.addStretch()
+
+        depth_controls_row_layout.addStretch()
+        depth_controls_row_layout.addWidget(self.lfo_pitch)
+        depth_controls_row_layout.addWidget(self.lfo_pitch_modulation)
+        depth_controls_row_layout.addWidget(self.lfo_filter)
+        depth_controls_row_layout.addWidget(self.lfo_filter_modulation)
+        depth_controls_row_layout.addWidget(self.lfo_amp)
+        depth_controls_row_layout.addWidget(self.lfo_amp_modulation)
+        depth_controls_row_layout.addStretch()
+
+        main_rows_vlayout.addStretch()
