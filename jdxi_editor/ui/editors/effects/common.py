@@ -63,7 +63,7 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QTabWidget,
-    QFormLayout, QScrollArea, QSlider, QSplitter, )
+    QFormLayout, QScrollArea, QSlider, QSplitter, QGroupBox, )
 from PySide6.QtCore import Qt
 
 from jdxi_editor.jdxi.midi.constant import MidiConstant
@@ -235,23 +235,34 @@ class EffectsCommonEditor(BasicEditor):
         self.setWindowTitle("Effects")
         # Main layout
         main_layout = QVBoxLayout()
-        upper_layout = QHBoxLayout()
+        self.setLayout(main_layout)
+        main_rows_hlayout = QHBoxLayout()
+        main_layout.addLayout(main_rows_hlayout)
 
-        # self.title_label = QLabel("Effects")
         self.title_label = DigitalTitle("Effects")
         self.title_label.setStyleSheet(JDXiStyle.INSTRUMENT_TITLE_LABEL)
-
-        main_layout.addLayout(upper_layout)
-        upper_layout.addWidget(self.title_label)
-
         self.image_label = QLabel()
         self.image_label.setAlignment(
             Qt.AlignmentFlag.AlignCenter
         )  # Center align the image
-        upper_layout.addWidget(self.image_label)
         self.update_instrument_image()
 
-        self.setLayout(main_layout)
+        title_group_box = QGroupBox()
+        title_group_layout = QHBoxLayout()
+        title_group_box.setLayout(title_group_layout)
+        title_group_layout.addWidget(self.title_label)
+        title_group_layout.addWidget(self.image_label)
+
+        main_row_hlayout = QHBoxLayout()
+        main_rows_hlayout.addLayout(main_row_hlayout)
+        main_row_hlayout.addStretch()
+        rows_layout = QVBoxLayout()
+        main_row_hlayout.addLayout(rows_layout)
+        rows_layout.addWidget(title_group_box)
+
+        main_rows_hlayout.addLayout(rows_layout)
+        main_row_hlayout.addStretch()
+
         self.controls: Dict[Union[AddressParameterReverb,
         AddressParameterEffectCommon,
         AddressParameterEffect1,
@@ -261,7 +272,7 @@ class EffectsCommonEditor(BasicEditor):
         # Create address tab widget
         self.tabs = QTabWidget()
         self.tabs.setStyleSheet(JDXiStyle.TABS)
-        main_layout.addWidget(self.tabs)
+        rows_layout.addWidget(self.tabs)
         # self.setup_ui()
 
         # Add tabs

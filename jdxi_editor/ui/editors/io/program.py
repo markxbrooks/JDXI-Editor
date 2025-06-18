@@ -166,7 +166,7 @@ class ProgramEditor(BasicEditor):
         self.setStyleSheet(JDXiStyle.EDITOR)
 
         # Image display
-        self.title_group = QGroupBox()
+        self.title_group = QGroupBox("Presets")
         title_image_layout = QFormLayout()
         self.title_group.setLayout(title_image_layout)
         title_right_vlayout.addWidget(self.title_group)

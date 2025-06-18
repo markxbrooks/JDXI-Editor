@@ -42,7 +42,7 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
     QHBoxLayout,
     QLabel,
-    QWidget,
+    QWidget, QGroupBox,
 )
 from PySide6.QtCore import Qt
 
@@ -116,18 +116,27 @@ class ArpeggioEditor(BasicEditor):
 
         self.title_label = DigitalTitle(tone_name="Arpeggiator")
         self.title_label.setStyleSheet(JDXiStyle.INSTRUMENT_TITLE_LABEL)
-        title_row_layout = QHBoxLayout()
-        title_row_layout.addWidget(self.title_label)
 
-        layout.addLayout(title_row_layout)
         # Image display
         self.image_label = QLabel()
         self.image_label.setAlignment(
             Qt.AlignmentFlag.AlignCenter
         )  # Center align the image
-        title_row_layout.addWidget(self.image_label)
+
+        title_group_box = QGroupBox()
+        title_group_layout = QHBoxLayout()
+        title_group_box.setLayout(title_group_layout)
+        title_group_layout.addWidget(self.title_label)
+        title_group_layout.addWidget(self.image_label)
+
         self.update_instrument_image()
 
+        main_row_hlayout = QHBoxLayout()
+        layout.addLayout(main_row_hlayout)
+        main_row_hlayout.addStretch()
+        rows_layout = QVBoxLayout()
+        main_row_hlayout.addLayout(rows_layout)
+        rows_layout.addWidget(title_group_box)
         # Add on-off switch
         program_zone_row = QHBoxLayout()
         common_button = self._create_parameter_switch(
@@ -137,7 +146,7 @@ class ArpeggioEditor(BasicEditor):
         )
         program_zone_row.addWidget(common_button)
 
-        layout.addLayout(program_zone_row)
+        rows_layout.addLayout(program_zone_row)
 
         # Add on-off switch
         switch_row = QHBoxLayout()
@@ -147,7 +156,7 @@ class ArpeggioEditor(BasicEditor):
             [switch_setting.display_name for switch_setting in ArpeggioSwitch],
         )
         switch_row.addWidget(self.switch_button)
-        layout.addLayout(switch_row)
+        rows_layout.addLayout(switch_row)
 
         # Create address combo box for Arpeggio Style
         self.style_combo = self._create_parameter_combo_box(
@@ -155,7 +164,7 @@ class ArpeggioEditor(BasicEditor):
         )
         style_row = QHBoxLayout()
         style_row.addWidget(self.style_combo)
-        layout.addLayout(style_row)
+        rows_layout.addLayout(style_row)
 
         # Create address combo box for Arpeggio Grid
         # Add grid combo box
@@ -166,7 +175,7 @@ class ArpeggioEditor(BasicEditor):
             [grid.display_name for grid in ArpeggioGrid],
         )
         grid_row.addWidget(self.grid_combo)
-        layout.addLayout(grid_row)
+        rows_layout.addLayout(grid_row)
 
         # Add grid combo box
         duration_row = QHBoxLayout()
@@ -177,18 +186,18 @@ class ArpeggioEditor(BasicEditor):
             [duration.display_name for duration in ArpeggioDuration],
         )
         duration_row.addWidget(self.duration_combo)
-        layout.addLayout(duration_row)
+        rows_layout.addLayout(duration_row)
 
         # Add sliders
         self.velocity_slider = self._create_parameter_slider(
             AddressParameterArpeggio.ARPEGGIO_VELOCITY, "Velocity", 0, 127
         )
-        layout.addWidget(self.velocity_slider)
+        rows_layout.addWidget(self.velocity_slider)
 
         self.accent_slider = self._create_parameter_slider(
             AddressParameterArpeggio.ARPEGGIO_ACCENT_RATE, "Accent", 0, 127
         )
-        layout.addWidget(self.accent_slider)
+        rows_layout.addWidget(self.accent_slider)
 
         # Add octave range combo box
         octave_row = QHBoxLayout()
@@ -201,7 +210,7 @@ class ArpeggioEditor(BasicEditor):
         # Set default to 0
         self.octave_combo.combo_box.setCurrentIndex(3)  # Index 3 is OCT_ZERO
         octave_row.addWidget(self.octave_combo)
-        layout.addLayout(octave_row)
+        rows_layout.addLayout(octave_row)
 
         # Add motif combo box
         motif_row = QHBoxLayout()
@@ -211,5 +220,6 @@ class ArpeggioEditor(BasicEditor):
             [motif.name for motif in ArpeggioMotif],
         )
         motif_row.addWidget(self.motif_combo)
-        layout.addLayout(motif_row)
-        layout.addStretch()
+        rows_layout.addLayout(motif_row)
+        rows_layout.addStretch()
+        main_row_hlayout.addStretch()
