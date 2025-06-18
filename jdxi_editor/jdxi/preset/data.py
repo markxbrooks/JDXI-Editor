@@ -15,9 +15,10 @@ Constants and Enums (from imports):
     - JDXIPresets: Named preset lists for each synth type.
 
 Example usage:
-    from jdxi_editor.jdxi.synth.type import JDXISynth
-    preset_data = JDXIPresetData.get_preset_details(JDXISynth.DIGITAL_1, 10)
-    print(preset_data)
+=============
+>>>from jdxi_editor.jdxi.synth.type import JDXISynth
+...preset_data = JDXIPresetData.get_preset_details(JDXISynth.DIGITAL_1, 10)
+...print(preset_data)
     # Output:
     # {
     #     'presets': [...],
@@ -25,29 +26,26 @@ Example usage:
     #     'bank_lsb': 0,
     #     'program': 10
     # }
-
-import json
-from dataclasses import asdict
-
-preset = JDXiPresetData.get_preset_details(JDXiSynth.ANALOG_SYNTH, 5)
-
-with open("preset.json", "w") as f:
-    json.dump(asdict(preset), f, indent=2)
-
-with open("preset.json", "r") as f:
-    data = json.load(f)
-    preset = JDXiPresetData(**data)
+>>>import json
+...from dataclasses import asdict
+...
+...preset = JDXiPresetData.get_preset_details(JDXiSynth.ANALOG_SYNTH, 5)
+...
+...with open("preset.json", "w") as f:
+...    json.dump(asdict(preset), f, indent=2)
+...
+...with open("preset.json", "r") as f:
+...    data = json.load(f)
+...    preset = JDXiPresetData(**data)
 """
 
 
 from dataclasses import dataclass, asdict
 from typing import List, Optional
-
-# from jdxi_editor.jdxi.preset.save import add_program_and_save
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.jdxi.preset.lists import JDXiPresetToneList
 from jdxi_editor.jdxi.synth.type import JDXiSynth
-# from jdxi_editor.jdxi.preset.save import add_program_and_save
+
 
 
 def _auto_add_current_program(self):
