@@ -81,8 +81,10 @@ class VocalFXEditor(BasicEditor):
         self.setStyleSheet(JDXiStyle.EDITOR + JDXiStyle.TABS)
 
         # Main layout
+
         main_layout = QVBoxLayout()
         self.setLayout(main_layout)
+
         self.controls: Dict[AddressParameter, QWidget] = {}
 
         # Create scroll area
@@ -93,8 +95,12 @@ class VocalFXEditor(BasicEditor):
 
         # Create container widget for scroll area
         container = QWidget()
+        container_hlayout = QHBoxLayout()
+        container.setLayout(container_hlayout)
         container_layout = QVBoxLayout()
-        container.setLayout(container_layout)
+        container_hlayout.addStretch()
+        container_hlayout.addLayout(container_layout)
+        container_hlayout.addStretch()
 
         # self.title_label = QLabel("Vocal Effects")
         self.title_label = DigitalTitle()
@@ -102,7 +108,11 @@ class VocalFXEditor(BasicEditor):
         self.title_label.setStyleSheet(JDXiStyle.INSTRUMENT_TITLE_LABEL)
         title_layout = QHBoxLayout()
         title_layout.addWidget(self.title_label)
-        container_layout.addLayout(title_layout)
+
+        main_rows_hlayout = QHBoxLayout()
+        main_layout.addLayout(main_rows_hlayout)
+        container_layout.addLayout(main_rows_hlayout)
+
         # Image display
         self.image_label = QLabel()
         self.image_label.setAlignment(
@@ -112,7 +122,24 @@ class VocalFXEditor(BasicEditor):
         self.instrument_icon_folder = "vocal_fx"
         container_layout.addWidget(self.image_label)
         self.update_instrument_image()
-        title_layout.addWidget(self.image_label)
+        ###
+        title_group_box = QGroupBox()
+        title_group_layout = QHBoxLayout()
+        title_group_box.setLayout(title_group_layout)
+        title_group_layout.addWidget(self.title_label)
+        title_group_layout.addWidget(self.image_label)
+
+        main_row_hlayout = QHBoxLayout()
+        main_rows_hlayout.addLayout(main_row_hlayout)
+        main_row_hlayout.addStretch()
+        rows_layout = QVBoxLayout()
+        main_row_hlayout.addLayout(rows_layout)
+        rows_layout.addWidget(title_group_box)
+
+        main_rows_hlayout.addLayout(rows_layout)
+        main_row_hlayout.addStretch()
+        ###
+
         self.tab_widget = QTabWidget()
         self.tab_widget.addTab(self._create_common_section(), "Common")
         self.tab_widget.addTab(self._create_vocal_effect_section(), "Vocal FX")
