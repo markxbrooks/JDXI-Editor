@@ -3,9 +3,11 @@ import time
 import rtmidi
 import mido
 
+from jdxi_editor.ui.widgets.midi.utils import ticks_to_seconds
+
 # Load MIDI file
 # mid = mido.MidiFile(r'/Users/brooks/Downloads/temptation.mid')
-midi_playback_file = mido.MidiFile(r'/Users/brooks/Desktop/music/A Forest - The Cure - JDXi Editorv4.mid')
+midi_playback_file = mido.MidiFile(r'/Users/brooks/Desktop/music/A Forest - The Cure - JDXi Editorv5.mid')
 
 # Initialize MIDI output
 midi_out = rtmidi.MidiOut()
@@ -21,15 +23,15 @@ ticks_per_beat = midi_playback_file.ticks_per_beat
 default_tempo = 500_000  # microseconds per beat (120 BPM)
 
 
-def buffer_midi_tracks(midi_file: list):
+def buffer_midi_tracks(midi_file: mido.MidiFile):
     """
     buffer_midi_tracks
 
-    :param midi_file:
+    :param midi_file: mido.MidiFile
     :return:
     Buffer all messages into a unified timeline
     """
-    buffered_messages = []
+    buffered_messages_list = []
 
     for track in midi_file.tracks:
         absolute_time_ticks = 0
@@ -39,29 +41,18 @@ def buffer_midi_tracks(midi_file: list):
             # Update tempo if message is set_tempo
             if msg.type == 'set_tempo':
                 current_tempo = msg.tempo
+                print("absolute_time_ticks", absolute_time_ticks, "current_tempo", current_tempo)
             # Store message with absolute tick time and current tempo
-            buffered_messages.append((absolute_time_ticks, msg, current_tempo))
+            buffered_messages_list.append((absolute_time_ticks, msg, current_tempo))
     # Sort all messages globally by absolute time
-    buffered_messages.sort(key=lambda x: x[0])
-    return buffered_messages
+    buffered_messages_list.sort(key=lambda x: x[0])
+    return buffered_messages_list
 
 
 buffered_messages = buffer_midi_tracks(midi_playback_file)
 
 
 # Convert ticks to seconds, considering tempo
-def ticks_to_seconds(ticks: int, tempo: int, ticks_per_beat: int) -> float:
-    """
-    ticks_to_seconds
-
-    :param ticks: int
-    :param tempo: int
-    :param ticks_per_beat: int
-    :return: float
-    """
-    seconds_per_beat = tempo / 1_000_000
-    seconds_per_tick = seconds_per_beat / ticks_per_beat
-    return ticks * seconds_per_tick
 
 
 def play_buffered(buffered_msgs: list,
