@@ -437,6 +437,17 @@ class MidiFileEditor(SynthEditor):
         """
         Start playback of the MIDI file
         """
+        # In setup_worker or midi_start_playback
+        try:
+            self.midi_timer.timeout.disconnect()  # optional: avoid duplicate connections
+        except Exception as ex:
+            log.error(f"error {ex} disconnecting timeoout")
+        try:
+            self.midi_timer.timeout.connect(self.midi_playback_worker.do_work)
+            self.midi_timer.timeout.connect(self.midi_play_next_event)
+        except Exception as ex:
+            log.error(f"Error {ex} connecting timeoout")
+
         if not self.midi_file or not self.midi_events:
             return
 
@@ -459,7 +470,7 @@ class MidiFileEditor(SynthEditor):
                 self.setup_worker()
 
             # === Prepare the buffered events for the worker ===
-            buffered_msgs =     buffer_midi_tracks(self.midi_file)
+            buffered_msgs = buffer_midi_tracks(self.midi_file)
             self.midi_playback_worker.setup(
                 buffered_msgs=buffered_msgs,
                 midi_out_port=self.midi_helper.midi_out,
@@ -538,6 +549,20 @@ class MidiFileEditor(SynthEditor):
             self.midi_playback_worker.update_tempo(tempo)
 
     def midi_play_next_event(self):
+        """
+        UI update: Update slider and label to reflect playback progress.
+        """
+        try:
+            now = time.time()
+            elapsed_time = now - self.midi_start_time
+            self.position_slider.setValue(int(elapsed_time))
+            self.position_label.setText(
+                f"{format_time(elapsed_time)} / {format_time(self.midi_duration_seconds)}"
+            )
+        except Exception as ex:
+            log.error(f"Error {ex} occurred updating playback UI")
+
+    def midi_play_next_event_old(self):
         """
         Play the next event in the MIDI file from the buffer.
         """
