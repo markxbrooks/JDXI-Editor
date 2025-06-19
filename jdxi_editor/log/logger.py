@@ -97,6 +97,8 @@ class Logger:
 
     info = message
 
+    debug = message
+
     @staticmethod
     def parameter(
         message: str,
