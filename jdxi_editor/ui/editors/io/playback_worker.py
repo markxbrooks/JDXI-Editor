@@ -8,11 +8,13 @@ from PySide6.QtCore import QObject, Signal, Slot
 import threading
 import time
 
+from jdxi_editor.jdxi.midi.constant import MidiConstant
 from jdxi_editor.ui.widgets.midi.utils import ticks_to_seconds
 
 
 class MidiPlaybackWorker(QObject):
     """ MidiPlaybackWorker """
+    set_tempo = Signal(int)
     result_ready = Signal(str)  # optional
     finished = Signal()
 
@@ -23,7 +25,7 @@ class MidiPlaybackWorker(QObject):
         self.play_program_changes = True
         self.ticks_per_beat = 480
         self.lock = threading.Lock()
-        self.current_tempo = 500_000  # default 120 BPM
+        self.current_tempo = MidiConstant.TEMPO_120_BPM_USEC  # default 120 BPM
         self.index = 0
         self.start_time = time.time()
 
@@ -35,12 +37,21 @@ class MidiPlaybackWorker(QObject):
         self.index = 0
         self.start_time = time.time()
 
-    def update_tempo(self, new_tempo):
+    def update_tempo(self, new_tempo: int) -> None:
+        """
+        update_tempo
+
+        :param new_tempo: int
+        :return: None
+        """
+        print(f"Emitting {new_tempo}")
+        self.set_tempo.emit(new_tempo)
         with self.lock:
             self.current_tempo = new_tempo
 
     @Slot()
     def do_work(self):
+        """ do_work """
         now = time.time()
         elapsed = now - self.start_time
 
@@ -68,25 +79,3 @@ class MidiPlaybackWorker(QObject):
 
         if self.index >= len(self.buffered_msgs):
             self.finished.emit()
-
-
-
-
-class MidiPlaybackWorkerOld(QObject):
-    """
-    PlaybackWorker
-    """
-    result_ready = Signal()  # e.g., to notify when a frame is processed
-
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.editor = None  # Reference to MidiFileEditor
-
-    def set_editor(self, editor):
-        self.editor = editor
-
-    @Slot()
-    def do_work(self):
-        if self.editor:
-            self.editor.midi_play_next_event()
-            self.result_ready.emit()

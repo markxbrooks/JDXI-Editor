@@ -8,6 +8,11 @@ from jdxi_editor.jdxi.sysex.bitmask import BitMask
 class MidiConstant:
     """Miscellaneous MIDI constants for JD-Xi communication."""
 
+    # Tempo
+    TEMPO_DEFAULT_120_BPM = 120
+    TEMPO_CONVERT_SEC_TO_USEC = 1_000_000
+    TEMPO_120_BPM_USEC = 500_000
+
     # SysEx framing
     CONTROL_CHANGE_NRPN_MSB = 99 # Controller number for NRPN MSB
     CONTROL_CHANGE_NRPN_LSB = 98 # Controller number for NRPN LSB
@@ -55,6 +60,7 @@ class JDXiConstant:
     """JD-Xi-specific MIDI and SysEx constants."""
 
     # Roland SysEx header (Identity Request/Reply)
+    TIMER_INTERVAL = 10
     FILTER_PLOT_DEPTH = 1.0
     CHECKED = 2
     CENTER_OCTAVE_VALUE = 0x40  # for octave up/down buttons
