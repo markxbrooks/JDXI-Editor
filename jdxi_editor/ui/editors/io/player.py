@@ -566,58 +566,13 @@ class MidiFileEditor(SynthEditor):
         try:
             now = time.time()
             elapsed_time = now - self.midi_start_time
-            self.position_slider.setValue(int(elapsed_time))
+            if not self.position_slider.isSliderDown():
+                self.position_slider.setValue(int(elapsed_time))
             self.position_label.setText(
                 f"{format_time(elapsed_time)} / {format_time(self.midi_duration_seconds)}"
             )
         except Exception as ex:
             log.error(f"Error {ex} occurred updating playback UI")
-
-    def midi_play_next_event_old(self):
-        """
-        Play the next event in the MIDI file from the buffer.
-        """
-        try:
-            now = time.time()
-            elapsed_time = now - self.midi_start_time
-            self.position_slider.setValue(int(elapsed_time))
-            self.position_label.setText(
-                f"{format_time(elapsed_time)} / {format_time(self.midi_duration_seconds)}"
-            )
-
-            # Send events from the buffer that are due to be played
-            while self.midi_event_buffer and elapsed_time >= self.midi_event_buffer[0][0]:
-                scheduled_time, msg = self.midi_event_buffer.pop(0)
-
-                if msg.is_meta:
-                    continue
-
-                if hasattr(msg, "channel") and (msg.channel + 1) in self.midi_track_viewer.muted_channels:
-                    continue
-
-                if msg.type == "program_change" and self.midi_suppress_program_changes:
-                    continue
-
-                if msg.type == "control_change" and self.midi_suppress_control_changes:
-                    continue
-
-                elif msg.type == "note_off":
-                    if msg.note in self.active_notes[msg.channel]:
-                        self.active_notes[msg.channel].remove(msg.note)
-                        self.midi_helper.send_mido_message(msg)
-
-                # If we haven't gotten a continue by now, it's a message we want to forward
-                self.midi_helper.send_mido_message(msg)
-
-                # Refill the buffer if it's running low
-                if elapsed_time >= self.midi_buffer_end_time - self.BUFFER_WINDOW_SECONDS / 2:
-                    self.midi_refill_buffer()
-
-                # Stop playback if we've finished everything
-                if not self.midi_event_buffer and self.midi_event_index >= len(self.midi_events):
-                    self.midi_stop_playback()
-        except Exception as ex:
-            log.error(f"Error {ex} occurred playing next event")
 
     def midi_scrub_position(self):
         """
@@ -625,16 +580,52 @@ class MidiFileEditor(SynthEditor):
         Resets start time and event index to match new slider position.
         """
         if not self.midi_file or not self.midi_events:
+            log.message("Either self.midi_file or self.midi_events not present, returning")
             return
 
         target_time = self.position_slider.value()
+        log.parameter("target_time", target_time)
         self.midi_start_time = time.time() - target_time
         self.midi_event_index = 0
 
+        log.parameter("self.midi_event_index was", self.midi_event_index)
+        for i, (tick, _, _) in enumerate(self.midi_events):
+            if tick * self.tick_duration >= target_time:
+                self.midi_event_index = i
+                log.parameter("self.midi_event_index now", self.midi_event_index)
+                break
+
+        # Stop all notes to avoid hanging
+        if self.midi_helper:
+            for ch in range(16):
+                for note in range(128):
+                    self.midi_helper.send_mido_message(mido.Message("note_off", note=note, velocity=0, channel=ch))
+
+        # ✅ Critical: refill buffer so playback resumes correctly
+        self.midi_event_buffer.clear()
+        self.midi_refill_buffer()
+
+    def midi_scrub_position_old(self):
+        """
+        Scrub to a new position in the file using the slider.
+        Resets start time and event index to match new slider position.
+        """
+        if not self.midi_file or not self.midi_events:
+            log.message("Either self.midi_file or not self.midi_events not present, returning")
+            return
+
+        target_time = self.position_slider.value()
+        log.parameter("target_time", target_time)
+        self.midi_start_time = time.time() - target_time
+        log.parameter("self.midi_start_time", self.midi_start_time)
+        self.midi_event_index = 0
+
+        log.parameter("self.midi_event_index was", self.midi_event_index)
         # Find the first event index that should be played after this point
         for i, (tick, _, _) in enumerate(self.midi_events):
             if tick * self.tick_duration >= target_time:
                 self.midi_event_index = i
+                log.parameter("self.midi_event_index now", self.midi_event_index)
                 break
 
         # Stop all notes to avoid hanging
@@ -673,26 +664,6 @@ class MidiFileEditor(SynthEditor):
         log.parameter("self.midi_event_buffer", self.midi_event_buffer)
         for t, msg in self.midi_event_buffer[:20]:
             log.message(f"Queued @ {t:.3f}s: {msg}")
-
-    def midi_stop_playback_old(self):
-        """
-        Stop the playback and reset everything.
-        """
-        self.midi_timer.stop()
-
-        if self.midi_helper:
-            for ch in range(16):
-                for note in range(128):
-                    self.midi_helper.send_mido_message(mido.Message("note_off", note=note, velocity=0, channel=ch))
-
-        self.midi_event_index = 0
-        self.position_slider.setValue(0)
-        self.position_label.setText(f"0:00 / {format_time(self.midi_duration_seconds)}")
-        log.parameter("self.midi_event_buffer", self.midi_event_buffer)
-        for t, msg in self.midi_event_buffer[:20]:
-            log.message(f"Queued @ {t:.3f}s: {msg}")
-        self.active_notes.clear()
-        self.usb_stop_recording()
 
     def midi_toggle_pause_playback(self):
         """
