@@ -3,6 +3,7 @@ import time
 import rtmidi
 import mido
 
+from jdxi_editor.jdxi.midi.constant import MidiConstant
 from jdxi_editor.ui.widgets.midi.utils import ticks_to_seconds
 
 # Load MIDI file
@@ -20,7 +21,7 @@ else:
 
 # Constants
 ticks_per_beat = midi_playback_file.ticks_per_beat
-default_tempo = 500_000  # microseconds per beat (120 BPM)
+default_tempo = MidiConstant.TEMPO_120_BPM_USEC  # microseconds per beat (120 BPM)
 
 
 def buffer_midi_tracks(midi_file: mido.MidiFile):
