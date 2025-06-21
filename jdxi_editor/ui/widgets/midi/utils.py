@@ -1,6 +1,7 @@
 """
 Midi Widget Utils
 """
+from typing import Any
 
 import mido
 from mido import MidiFile
@@ -86,14 +87,14 @@ def generate_track_colors(n: int):
     ]
 
 
-def get_first_channel(track) -> int:
+def get_first_channel(track: mido.MidiTrack) -> int | None:
     """
     Get the first channel from a MIDI track.
 
     :param track: mido.MidiTrack
-    :return: int
+    :return: int | None
     """
     for msg in track:
         if msg.type in {"note_on", "note_off", "control_change", "program_change"} and hasattr(msg, "channel"):
             return msg.channel
-    return 0  # default fallback
+    return None  # default fallback
