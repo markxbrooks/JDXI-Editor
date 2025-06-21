@@ -49,7 +49,13 @@ def tempo2bpm(tempo: int) -> float:
 
 
 def get_last_tempo(midi_file: MidiFile) -> int:
-    tempo = 500_000  # default
+    """
+    get_last_tempo
+
+    :param midi_file: MidiFile
+    :return: int
+    """
+    tempo = MidiConstant.TEMPO_120_BPM_USEC  # 500_000 default
     for track in midi_file.tracks:
         for msg in track:
             if msg.type == 'set_tempo':
@@ -62,7 +68,7 @@ class MidiFileEditor(SynthEditor):
     Midi File Editor
     """
 
-    BUFFER_WINDOW_SECONDS = 15.0
+    BUFFER_WINDOW_SECONDS = 30.0
 
     def __init__(
             self,
@@ -78,6 +84,7 @@ class MidiFileEditor(SynthEditor):
         :param preset_helper: Optional[JDXIPresetHelper]
         """
         super().__init__()
+        self.selected_channel = MidiChannel.DIGITAL_SYNTH_1  # Default channel for playback
         self.tempo = MidiConstant.TEMPO_DEFAULT_120_BPM  # Default of 120 bpm
         self.digital_title_file_name = None
         self.parent = parent
@@ -399,6 +406,84 @@ class MidiFileEditor(SynthEditor):
 
     def midi_load_file(self):
         """
+        Load a MIDI file and initialize parameters
+        """
+        file_path, _ = QFileDialog.getOpenFileName(
+            self, "Open MIDI File", "", "MIDI Files (*.mid)"
+        )
+        if not file_path:
+            return
+
+        self.midi_file = MidiFile(file_path)
+        self.digital_title_file_name.setText(f"Loaded: {Path(file_path).name}")
+        self.midi_track_viewer.clear()
+        self.midi_track_viewer.set_midi_file(self.midi_file)
+
+        self.ticks_per_beat = self.midi_file.ticks_per_beat
+
+        # === Detect Initial Tempo ===
+        self.tempo = MidiConstant.TEMPO_120_BPM_USEC
+        for track in self.midi_file.tracks:
+            for msg in track:
+                if msg.type == "set_tempo":
+                    self.tempo = msg.tempo
+                    log.parameter("self.tempo", self.tempo)
+                    break
+            else:
+                continue  # no tempo message in this track
+            break  # found tempo, break outer loop
+
+        # === Detect a "reasonable" playback channel ===
+        preferred_channels = {MidiChannel.DIGITAL_SYNTH_1,
+                              MidiChannel.DIGITAL_SYNTH_2,
+                              MidiChannel.ANALOG_SYNTH, 
+                              MidiChannel.DRUM_KIT}  # MIDI channels 1, 2, 3, 10 (zero-based)
+        selected_channel = None
+
+        for track in self.midi_file.tracks:
+            for msg in track:
+                if hasattr(msg, "channel") and msg.channel in preferred_channels:
+                    selected_channel = msg.channel
+                    break
+            if selected_channel is not None:
+                break
+
+        if selected_channel is None:
+            selected_channel = 0  # default to channel 1 if nothing suitable found
+            log.warning("No suitable channel found; defaulting to channel 1")
+
+        self.selected_channel = selected_channel
+        log.parameter("Selected MIDI playback channel", self.selected_channel)
+        initial_tempo = MidiConstant.TEMPO_120_BPM_USEC
+        bpm = tempo2bpm(initial_tempo)
+        log.parameter("bpm", bpm)
+        self.tempo_spin.setValue(round(bpm))
+        self.tempo = initial_tempo
+
+        # === MIDI Event Collection ===
+        events = []
+        for track_index, track in enumerate(self.midi_file.tracks):
+            abs_time = 0
+            for msg in track:
+                abs_time += msg.time
+                events.append((abs_time, msg, track_index))
+        self.tick_duration = self.tempo / MidiConstant.TEMPO_CONVERT_SEC_TO_USEC / self.ticks_per_beat
+        self.midi_events = sorted(events, key=lambda x: x[0])
+        self.setup_worker()
+
+        # === Accurate Total Duration Calculation ===
+        self.total_ticks = max(t for t, _, _ in self.midi_events)
+        self.midi_duration_seconds = get_total_duration_in_seconds(self.midi_file)
+
+        self.tick_duration = self.tempo / MidiConstant.TEMPO_CONVERT_SEC_TO_USEC / self.ticks_per_beat
+
+        # === UI Updates ===
+        self.position_slider.setEnabled(True)
+        self.position_slider.setRange(0, int(self.midi_duration_seconds))
+        self.position_label.setText(f"0:00 / {format_time(self.midi_duration_seconds)}")
+
+    def midi_load_file_old(self):
+        """
         Load a MIDI file
         """
         file_path, _ = QFileDialog.getOpenFileName(
@@ -424,6 +509,21 @@ class MidiFileEditor(SynthEditor):
                     log.parameter("self.tempo", initial_tempo)
                     break
             else:
+                track_channel = MidiChannel.DIGITAL_SYNTH_1
+                if hasattr(msg, "channel"):
+                    track_channel = msg.channel
+                    if track_channel in [MidiChannel.DIGITAL_SYNTH_1,
+                                         MidiChannel.DIGITAL_SYNTH_2,
+                                         MidiChannel.ANALOG_SYNTH,
+                                         MidiChannel.DRUM_KIT]:
+                        # Set the channel for all messages of the track if it's valid
+                        msg.channel = track_channel
+                    else:
+                        # choose a reasonable default channel
+                        track_channel = MidiChannel.DIGITAL_SYNTH_1
+                        # Log an error if the channel is invalid
+                        log.error(f"Invalid MIDI channel {track_channel} in track {track.name}")
+                msg.channel = track_channel
                 continue
             break
 

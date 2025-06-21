@@ -14,7 +14,7 @@ from jdxi_editor.ui.widgets.midi.utils import ticks_to_seconds
 
 class MidiPlaybackWorker(QObject):
     """ MidiPlaybackWorker """
-    set_tempo = Signal(int)
+    set_tempo = Signal(int)  # Tempo in microseconds
     result_ready = Signal(str)  # optional
     finished = Signal()
 
