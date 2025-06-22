@@ -6,22 +6,9 @@ import mido
 from jdxi_editor.jdxi.midi.constant import MidiConstant
 from jdxi_editor.ui.widgets.midi.utils import ticks_to_seconds
 
-# Load MIDI file
-# mid = mido.MidiFile(r'/Users/brooks/Downloads/temptation.mid')
-#midi_playback_file = mido.MidiFile(r'/Users/brooks/Desktop/music/A Forest - The Cure - JDXi Editorv5.mid')
-
-"""# Initialize MIDI output
-midi_out = rtmidi.MidiOut()
-available_ports = midi_out.get_ports()
-
-if available_ports:
-    midi_out.open_port(0)  # Change index as needed
-else:
-    midi_out.open_virtual_port("My Virtual MIDI Output")
 
 # Constants
-ticks_per_beat = midi_playback_file.ticks_per_beat
-default_tempo = MidiConstant.TEMPO_120_BPM_USEC  # microseconds per beat (120 BPM)"""
+default_tempo = MidiConstant.TEMPO_120_BPM_USEC  # microseconds per beat (120 BPM)
 
 
 def buffer_midi_tracks(midi_file: mido.MidiFile):
@@ -58,12 +45,14 @@ def buffer_midi_tracks(midi_file: mido.MidiFile):
 
 def play_buffered(buffered_msgs: list,
                   midi_out_port: rtmidi.MidiOut,
+                  ticks_per_beat: int,
                   play_program_changes: bool = True):
     """
     play_buffered
 
     :param buffered_msgs: list
     :param midi_out_port: rtmidi.MidiOut
+    :param ticks_per_beat: int
     :param play_program_changes: bool Whether or not to suppress Program Changes
     :return:
     Playback function with program change control
@@ -95,8 +84,16 @@ if __name__ == "__main__":
     
     # Usage:
     try:
+        midi_out = rtmidi.MidiOut()
+        available_ports = midi_out.get_ports()
+
+        if available_ports:
+            midi_out.open_port(0)  # Change index as needed
+        else:
+            midi_out.open_virtual_port("My Virtual MIDI Output")
+        midi_playback_file = mido.MidiFile(r'/Users/brooks/Desktop/music/A Forest - The Cure - JDXi Editorv5.mid')
         print("Starting multi-track playback with Program Changes enabled...")
-        play_buffered(buffered_messages, midi_out, play_program_changes=True)
+        play_buffered(buffered_messages, midi_out, play_program_changes=True, ticks_per_beat=midi_playback_file.ticks_per_beat)
         # To disable program changes during playback, set to False:
         # play_buffered(buffered, midi_out, play_program_changes=False)
         print("Playback finished.")
