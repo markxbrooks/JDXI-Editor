@@ -97,4 +97,4 @@ def get_first_channel(track: mido.MidiTrack) -> int | None:
     for msg in track:
         if msg.type in {"note_on", "note_off", "control_change", "program_change"} and hasattr(msg, "channel"):
             return msg.channel
-    return None  # default fallback
+    return 0  # default fallback
