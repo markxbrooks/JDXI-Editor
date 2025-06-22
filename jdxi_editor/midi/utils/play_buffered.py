@@ -8,9 +8,9 @@ from jdxi_editor.ui.widgets.midi.utils import ticks_to_seconds
 
 # Load MIDI file
 # mid = mido.MidiFile(r'/Users/brooks/Downloads/temptation.mid')
-midi_playback_file = mido.MidiFile(r'/Users/brooks/Desktop/music/A Forest - The Cure - JDXi Editorv5.mid')
+#midi_playback_file = mido.MidiFile(r'/Users/brooks/Desktop/music/A Forest - The Cure - JDXi Editorv5.mid')
 
-# Initialize MIDI output
+"""# Initialize MIDI output
 midi_out = rtmidi.MidiOut()
 available_ports = midi_out.get_ports()
 
@@ -21,7 +21,7 @@ else:
 
 # Constants
 ticks_per_beat = midi_playback_file.ticks_per_beat
-default_tempo = MidiConstant.TEMPO_120_BPM_USEC  # microseconds per beat (120 BPM)
+default_tempo = MidiConstant.TEMPO_120_BPM_USEC  # microseconds per beat (120 BPM)"""
 
 
 def buffer_midi_tracks(midi_file: mido.MidiFile):
@@ -50,7 +50,7 @@ def buffer_midi_tracks(midi_file: mido.MidiFile):
     return buffered_messages_list
 
 
-buffered_messages = buffer_midi_tracks(midi_playback_file)
+# buffered_messages = buffer_midi_tracks(midi_playback_file)
 
 
 # Convert ticks to seconds, considering tempo
