@@ -18,6 +18,10 @@ It’s designed to implement as many features as possible from Roland’s MIDI i
 
 ---
 
+### 📺 Video Demo
+[![Watch the demo](https://img.youtube.com/vi/vw-T-9LJkng/0.jpg)](https://www.youtube.com/watch?v=vw-T-9LJkng)
+
+
 ## 🚀 Getting Started
 
 
