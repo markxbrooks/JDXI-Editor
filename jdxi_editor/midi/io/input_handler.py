@@ -47,25 +47,32 @@ from jdxi_editor.midi.data.address.address import AddressStartMSB as AreaMSB
 # from jdxi_editor.ui.editors.helpers.program import add_program_and_save
 
 
-def add_program_and_save(new_program: Dict[str, str]) -> bool:
+def add_program_and_save(new_program: JDXiProgram) -> bool:
     """
     add_program_and_save
 
     :param new_program:
     :return:
     """
-    program_list = load_programs()
-    existing_ids = {p["id"] for p in program_list}
-    existing_pcs = {p["pc"] for p in program_list}
+    try:
+        program_list = load_programs()
+        log.parameter("program_list", program_list)
+        existing_ids = {p["id"] for p in program_list}
+        existing_pcs = {p["pc"] for p in program_list}
 
-    if new_program["id"] in existing_ids or new_program["pc"] in existing_pcs:
-        print(f"Program '{new_program['id']}' already exists.")
+        if new_program.id in existing_ids or new_program.pc in existing_pcs:
+            print(f"Program '{new_program.id}' already exists.")
+            return False
+
+        log.message(f"Adding new program {new_program}: {new_program.id} with PC {new_program.pc}")
+
+        program_list.append(new_program.to_dict())
+        save_programs(program_list)
+        print(f"Added and saved program: {new_program['id']}")
+        return True
+    except Exception as e:
+        log.error(f"Failed to add and save program: {e}")
         return False
-
-    program_list.append(new_program)
-    save_programs(program_list)
-    print(f"Added and saved program: {new_program['id']}")
-    return True
 
 
 def load_programs() -> List[Dict[str, str]]:
@@ -373,7 +380,7 @@ class MidiInHandler(MidiIOController):
         :return:
         """
         data = self._incoming_preset_data
-        log.parameter("data", data)
+        log.parameter("preset data", data)
 
         def to_preset(name, synth_type, preset_number):
             preset = JDXiPresetData.get_preset_details(synth_type, preset_number)
@@ -387,6 +394,7 @@ class MidiInHandler(MidiIOController):
                 id=f"A{program_number + 1:02d}",
                 name=f"Imported {program_number + 1:02d}",
                 genre="Unknown",
+                pc=program_number,
                 digital_1=to_preset(data.tone_names.get("digital_1"), JDXiSynth.DIGITAL_SYNTH_1, 0),
                 digital_2=to_preset(data.tone_names.get("digital_2"), JDXiSynth.DIGITAL_SYNTH_2, 0),
                 analog=to_preset(data.tone_names.get("analog"), JDXiSynth.ANALOG_SYNTH, 0),
@@ -395,8 +403,8 @@ class MidiInHandler(MidiIOController):
         except Exception as ex:
             log.message(f"Error {ex} creating JDXiProgram")
             return
-
-        if add_program_and_save(asdict(program)):
+        log.parameter("program", program)
+        if add_program_and_save(program):
             log.message(f"✅ Auto-added program: {program.id}")
         else:
             log.message(f"⚠️ Duplicate or failed to add: {program.id}")
