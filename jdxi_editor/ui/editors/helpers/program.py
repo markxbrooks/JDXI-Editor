@@ -138,7 +138,7 @@ def load_programs() -> List[Dict[str, str]]:
     :return: list
     """
     try:
-        with open(JDXiProgramList.PROGRAMS_FILE, "r", encoding="utf-8") as f:
+        with open(JDXiProgramList.USER_PROGRAMS_FILE, "r", encoding="utf-8") as f:
             return json.load(f)
     except (FileNotFoundError, json.JSONDecodeError):
         return []
@@ -151,7 +151,7 @@ def save_programs(program_list: List[Dict[str, str]]) -> None:
     :param program_list: List[Dict[str, str]]
     :return: None
     """
-    with open(JDXiProgramList.PROGRAMS_FILE, "w", encoding="utf-8") as f:
+    with open(JDXiProgramList.USER_PROGRAMS_FILE, "w", encoding="utf-8") as f:
         json.dump(program_list, f, indent=4, ensure_ascii=False)
 
 

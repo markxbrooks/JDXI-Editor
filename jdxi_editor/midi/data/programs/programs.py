@@ -1,7 +1,10 @@
 import json
+from pathlib import Path
 from typing import List, Optional
 
 from jdxi_editor.jdxi.program.program import JDXiProgram
+from jdxi_editor.log.logger import Logger as log
+from jdxi_editor.project import __package_name__
 
 ROM_PROGRAMS = [
     {
@@ -3777,11 +3780,16 @@ class JDXiProgramList:
         )
         for data in ROM_PROGRAMS
     ]
-    PROGRAMS_FILE = "programs.json"
-    with open(PROGRAMS_FILE, "r") as f:
-        data = json.load(f)
-        new_programs = [JDXiProgram.from_dict(d) for d in data]
-        PROGRAM_LIST += new_programs
+    try:
+        json_folder = Path.home() / f".{__package_name__}"
+        json_folder.mkdir(parents=True, exist_ok=True)
+        USER_PROGRAMS_FILE = str(json_folder / "user_programs.json")
+        with open(USER_PROGRAMS_FILE, "r") as f:
+            data = json.load(f)
+            new_programs = [JDXiProgram.from_dict(d) for d in data]
+            PROGRAM_LIST += new_programs
+    except FileNotFoundError:
+        log.error("User programs file not found, starting with ROM programs only.")
 
     @classmethod
     def add_program(cls, program: JDXiProgram) -> None:
@@ -3789,13 +3797,13 @@ class JDXiProgramList:
 
     @classmethod
     def save_to_file(cls, filepath: Optional[str] = None) -> None:
-        filepath = filepath or cls.PROGRAMS_FILE
+        filepath = filepath or cls.USER_PROGRAMS_FILE
         with open(filepath, "w") as f:
             json.dump([p.to_dict() for p in cls.PROGRAM_LIST], f, indent=2)
 
     @classmethod
     def load_from_file(cls, filepath: Optional[str] = None, append: bool = True) -> None:
-        filepath = filepath or cls.PROGRAMS_FILE
+        filepath = filepath or cls.USER_PROGRAMS_FILE
         with open(filepath, "r") as f:
             data = json.load(f)
             new_programs = [JDXiProgram.from_dict(d) for d in data]

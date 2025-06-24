@@ -92,7 +92,7 @@ class SynthEditor(SynthBase):
         self.partial_map = SYNTH_PARTIAL_MAP
         self.sysex_current_data = None
         self.preset_list = None
-        self.presets = None
+        self.programs = None
         # self.midi_helper = midi_helper
         self.midi_helper = MidiIOHelper()
         self.midi_helper.midi_program_changed.connect(self._handle_program_change)

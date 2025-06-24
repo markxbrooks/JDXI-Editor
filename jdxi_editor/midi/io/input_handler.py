@@ -80,7 +80,7 @@ def add_program_and_save(new_program: JDXiProgram) -> bool:
 
 def load_programs() -> List[Dict[str, str]]:
     try:
-        with open(JDXiProgramList.PROGRAMS_FILE, "r", encoding="utf-8") as f:
+        with open(JDXiProgramList.USER_PROGRAMS_FILE, "r", encoding="utf-8") as f:
             return json.load(f)
     except (FileNotFoundError, json.JSONDecodeError):
         return []
@@ -93,7 +93,7 @@ def save_programs(program_list: List[Dict[str, str]]) -> None:
     :param program_list: List[Dict[str, str]]
     :return: None
     """
-    with open(JDXiProgramList.PROGRAMS_FILE, "w", encoding="utf-8") as f:
+    with open(JDXiProgramList.USER_PROGRAMS_FILE, "w", encoding="utf-8") as f:
         json.dump(program_list, f, indent=4, ensure_ascii=False)
 
 
@@ -389,12 +389,6 @@ class MidiInHandler(MidiIOController):
         if data.program_number is None:
             log.message("No program number; cannot auto-add program")
             return
-
-        def to_preset(name, synth_type, preset_number):
-            preset = JDXiPresetData.get_preset_details(synth_type, preset_number)
-            preset.name = name
-            return preset
-
         try:
             """
             For reference:
