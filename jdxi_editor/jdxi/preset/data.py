@@ -144,7 +144,7 @@ class JDXiPresetData:
     def to_dict(self):
         return {
             "name": self.name,
-            "presets": self.presets,
+            # "presets": self.presets,
             "bank_msb": self.bank_msb,
             "bank_lsb": self.bank_lsb,
             "program": self.program,

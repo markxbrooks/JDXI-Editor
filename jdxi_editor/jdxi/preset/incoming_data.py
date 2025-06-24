@@ -5,6 +5,7 @@ from typing import Optional, Dict
 @dataclass
 class IncomingPresetData:
     program_number: Optional[int] = None
+    program_name: Optional[str] = None
     channel: Optional[int] = None
     tone_names: Dict[str, str] = field(default_factory=dict)  # e.g., {"analog": "Saw Lead"}
 

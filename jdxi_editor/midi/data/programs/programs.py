@@ -3,7 +3,7 @@ from typing import List, Optional
 
 from jdxi_editor.jdxi.program.program import JDXiProgram
 
-PROGRAM_LIST = [
+ROM_PROGRAMS = [
     {
         "id": "A01",
         "name": "Unleash Xi",
@@ -3775,18 +3775,31 @@ class JDXiProgramList:
             lsb=int(data["lsb"]),
             pc=int(data["pc"]),
         )
-        for data in PROGRAM_LIST
+        for data in ROM_PROGRAMS
     ]
     PROGRAMS_FILE = "programs.json"
+    with open(PROGRAMS_FILE, "r") as f:
+        data = json.load(f)
+        new_programs = [JDXiProgram.from_dict(d) for d in data]
+        PROGRAM_LIST += new_programs
 
     @classmethod
     def add_program(cls, program: JDXiProgram) -> None:
-        """Append a new program to the list."""
         cls.PROGRAM_LIST.append(program)
 
     @classmethod
     def save_to_file(cls, filepath: Optional[str] = None) -> None:
-        """Save the current program list to JSON."""
         filepath = filepath or cls.PROGRAMS_FILE
         with open(filepath, "w") as f:
             json.dump([p.to_dict() for p in cls.PROGRAM_LIST], f, indent=2)
+
+    @classmethod
+    def load_from_file(cls, filepath: Optional[str] = None, append: bool = True) -> None:
+        filepath = filepath or cls.PROGRAMS_FILE
+        with open(filepath, "r") as f:
+            data = json.load(f)
+            new_programs = [JDXiProgram.from_dict(d) for d in data]
+            if append:
+                cls.PROGRAM_LIST += new_programs
+            else:
+                cls.PROGRAM_LIST = new_programs
