@@ -35,10 +35,10 @@ class JDXiProgram:
     msb: Optional[int] = None
     lsb: Optional[int] = None
     pc: Optional[int] = None
-    analog: Optional[JDXiPresetData] = None
-    digital_1: Optional[JDXiPresetData] = None
-    digital_2: Optional[JDXiPresetData] = None
-    drums: Optional[JDXiPresetData] = None
+    analog: Optional[str] = None
+    digital_1: Optional[str] = None
+    digital_2: Optional[str] = None
+    drums: Optional[str] = None
 
     def __getitem__(self, key):
         import traceback
@@ -46,6 +46,9 @@ class JDXiProgram:
         traceback.print_stack(limit=5)  # Show recent calls
         raise TypeError(
             f"'JDXiProgram' object is not subscriptable. Tried to access key '{key}'. Use dot notation like program.{key} instead.")
+
+    def __str__(self):
+        return f"JDXiProgram(id={self.id}, name={self.name}, genre={self.genre}, tempo={self.tempo}), pc={self.pc}), msb={self.msb}), lsb={self.lsb}), measure_length={self.measure_length}), scale={self.scale}), analog={self.analog}), digital_1={self.digital_1}), digital_2={self.digital_2}), drums={self.drums})"
 
     @staticmethod
     def from_patch(
@@ -62,10 +65,10 @@ class JDXiProgram:
             name=name,
             genre=genre,
             tempo=tempo,
-            analog=analog,
-            digital_1=digital_1,
-            digital_2=digital_2,
-            drums=drums,
+            analog=analog.name,
+            digital_1=digital_1.name,
+            digital_2=digital_2.name,
+            drums=drums.name,
         )
 
     def to_json(self, filepath: str) -> None:
@@ -83,10 +86,10 @@ class JDXiProgram:
             "msb": self.msb,
             "lsb": self.lsb,
             "pc": self.pc,
-            "analog": self.analog.to_dict() if self.analog else None,
-            "digital_1": self.digital_1.to_dict() if self.digital_1 else None,
-            "digital_2": self.digital_2.to_dict() if self.digital_2 else None,
-            "drums": self.drums.to_dict() if self.drums else None,
+            "analog": self.analog if self.analog else None,
+            "digital_1": self.digital_1 if self.digital_1 else None,
+            "digital_2": self.digital_2 if self.digital_2 else None,
+            "drums": self.drums if self.drums else None,
         }
 
     @staticmethod
@@ -107,10 +110,10 @@ class JDXiProgram:
             msb=data.get("msb"),
             lsb=data.get("lsb"),
             pc=data.get("pc"),
-            analog=JDXiPresetData.from_dict(data["analog"]) if data.get("analog") else None,
-            digital_1=JDXiPresetData.from_dict(data["digital_1"]) if data.get("digital_1") else None,
-            digital_2=JDXiPresetData.from_dict(data["digital_2"]) if data.get("digital_2") else None,
-            drums=JDXiPresetData.from_dict(data["drums"]) if data.get("drums") else None,
+            analog=data["analog"],
+            digital_1=data["digital_1"],
+            digital_2=data["digital_2"],
+            drums=data["drums"],
         )
 
 

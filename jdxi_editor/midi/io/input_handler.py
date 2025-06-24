@@ -67,8 +67,11 @@ def add_program_and_save(new_program: JDXiProgram) -> bool:
         log.message(f"Adding new program {new_program}: {new_program.id} with PC {new_program.pc}")
 
         program_list.append(new_program.to_dict())
+
+        log.message(f"Program list after addition: {program_list}")
+
         save_programs(program_list)
-        print(f"Added and saved program: {new_program['id']}")
+        log.message(f"Added and saved program: {new_program.id} with PC {new_program.pc}")
         return True
     except Exception as e:
         log.error(f"Failed to add and save program: {e}")
@@ -366,10 +369,12 @@ class MidiInHandler(MidiIOController):
         if address in valid_addresses and tone_name:
             if address == "12180000":
                 self._emit_program_name_signal(temporary_area, tone_name)
+                self._incoming_preset_data.program_name = tone_name
             else:
                 self._emit_tone_name_signal(temporary_area, tone_name)
 
         # All parts received? Then save program!
+
         if all(k in self._incoming_preset_data.tone_names for k in ("digital_1", "digital_2", "analog", "drum")):
             self._auto_add_current_program()
 
@@ -381,6 +386,9 @@ class MidiInHandler(MidiIOController):
         """
         data = self._incoming_preset_data
         log.parameter("preset data", data)
+        if data.program_number is None:
+            log.message("No program number; cannot auto-add program")
+            return
 
         def to_preset(name, synth_type, preset_number):
             preset = JDXiPresetData.get_preset_details(synth_type, preset_number)
@@ -388,18 +396,80 @@ class MidiInHandler(MidiIOController):
             return preset
 
         try:
+            """
+            For reference:
+            BANK SELECT|  PROGRAM | GROUP|                   NUMBER
+            MSB | LSB | NUMBER    |                         |
+            -----+-----------+-----------+----------------------------+-----------
+            085 | 064 | 001 - 064 | Preset Bank Program (A) | A01 - A64     Banks to 64
+            085 | 064 | 065 - 128 | Preset Bank Program (B) | B01 - B64     Banks to 128
+            085 | 065 | 001 - 064 | Preset Bank Program (C) | C01 - C64     Banks to 192
+            085 | 065 | 065 - 128 | Preset Bank Program (D) | D01 - D64     Banks to 256
+            -----+-----------+-----------+----------------------------+-----------
+            085 | 000 | 001 - 064 | User Bank Program (E) | E01 - E64       Banks to 320
+            085 | 000 | 065 - 128 | User Bank Program (F) | F01 - F64       Banks to 384
+            085 | 001 | 001 - 064 | User Bank Program (G) | G01 - G64       Banks to 448
+            085 | 001 | 065 - 128 | User Bank Program (H) | H01 - H64       Banks to 512
+            -----+-----------+-----------+----------------------------+-----------
+            085 | 096 | 001 - 064 | Extra Bank Program (S) | S01 - S64      Banks to 576
+            | : | : | : | :
+            085 | 103 | 001 - 064 | Extra Bank Program (Z) | Z01 - Z64      Banks to 1024
+            """
             program_number = data.program_number or 0
-
+            prefix = "E"
+            msb = 85
+            lsb = 0
+            """
+            if 255 < data.program_number < 319:
+                lsb = 0
+                prefix = "E"
+            elif 319 <= data.program_number < 383:
+                lsb = 1
+                prefix = "F"
+            elif 383 <= data.program_number < 447:
+                lsb = 0
+                prefix = "G"
+            elif 447 <= data.program_number < 511:
+                lsb = 1
+                prefix = "H"""
+            if 256 <= program_number <= 320:
+                lsb = 0
+                prefix = "E"
+                display_number = program_number - 256 + 1
+            elif 321 <= program_number <= 384:
+                lsb = 0
+                prefix = "F"
+                display_number = program_number - 320
+            elif 385 <= program_number <= 448:
+                lsb = 1
+                prefix = "G"
+                display_number = program_number - 384
+            elif 449 <= program_number <= 512:
+                lsb = 1
+                prefix = "H"
+                display_number = program_number - 448
+            elif 513 <= program_number <= 1024:
+                # Extra banks: S (LSB 96) to Z (LSB 103)
+                bank_index = (program_number - 513) // 64
+                lsb = 96 + bank_index
+                prefix = chr(ord("S") + bank_index)
+                display_number = (program_number - 513) % 64 + 1
+            else:
+                log.message(f"❌ Program number {program_number} is not valid (outside 256–1024)")
+                return
             program = JDXiProgram(
-                id=f"A{program_number + 1:02d}",
-                name=f"Imported {program_number + 1:02d}",
+                id=f"{prefix}{display_number + 1:02d}",
+                name=f"{data.program_name}",
                 genre="Unknown",
                 pc=program_number,
-                digital_1=to_preset(data.tone_names.get("digital_1"), JDXiSynth.DIGITAL_SYNTH_1, 0),
-                digital_2=to_preset(data.tone_names.get("digital_2"), JDXiSynth.DIGITAL_SYNTH_2, 0),
-                analog=to_preset(data.tone_names.get("analog"), JDXiSynth.ANALOG_SYNTH, 0),
-                drums=to_preset(data.tone_names.get("drum"), JDXiSynth.DRUM_KIT, 0),
+                msb=msb,
+                lsb=lsb,
+                digital_1=data.tone_names.get("digital_1"),
+                digital_2=data.tone_names.get("digital_2"),
+                analog=data.tone_names.get("analog"),
+                drums=data.tone_names.get("drum"),
             )
+            log.parameter("program", program)
         except Exception as ex:
             log.message(f"Error {ex} creating JDXiProgram")
             return
@@ -408,39 +478,6 @@ class MidiInHandler(MidiIOController):
             log.message(f"✅ Auto-added program: {program.id}")
         else:
             log.message(f"⚠️ Duplicate or failed to add: {program.id}")
-
-    def _auto_add_current_program_old(self):
-        """
-        _auto_add_current_program
-
-        :return:
-        """
-        data = self._incoming_preset_data
-        log.parameter("data", data)
-
-        def to_preset(name, synth_type, preset_number):
-            preset = JDXiPresetData.get_preset_details(synth_type, preset_number)
-            preset.name = name
-            return preset
-        try:
-            program = JDXiProgram(
-                id=f"A{data.program_number + 1:02d}",
-                name=f"Imported {data.program_number + 1:02d}",
-                genre="Unknown",
-                digital_1=to_preset(data.tone_names.get("digital_1"), JDXiSynth.DIGITAL_SYNTH_1, 0),
-                digital_2=to_preset(data.tone_names.get("digital_2"), JDXiSynth.DIGITAL_SYNTH_2, 0),
-                analog=to_preset(data.tone_names.get("analog"), JDXiSynth.ANALOG_SYNTH, 0),
-                drums=to_preset(data.tone_names.get("drum"), JDXiSynth.DRUM_KIT, 0),
-            )
-        except Exception as ex:
-            log.message(f"Error {ex} creating JDXiProgram")
-
-        if add_program_and_save(asdict(program)):
-            log.message(f"✅ Auto-added program: {program.id}")
-        else:
-            log.message(f"⚠️ Duplicate or failed to add: {program.id}")
-
-        self._incoming_preset_data = IncomingPresetData()
 
     def _emit_program_name_signal(self, area: str, tone_name: str) -> None:
         """
