@@ -94,6 +94,7 @@ class ProgramEditor(BasicEditor):
         preset_helper: JDXiPresetHelper = None,
     ):
         super().__init__(midi_helper=midi_helper, parent=parent)
+        self.program_list = None
         self.file_label = None
         """
         Initialize the ProgramEditor
@@ -127,7 +128,7 @@ class ProgramEditor(BasicEditor):
         self.program_label = None
         self.genre_combo_box = None
         self.preset_type = None
-        self.presets = {}
+        self.programs = {}
         self.programs = {}  # Maps program names to numbers
         self.setup_ui()
         self.midi_helper.update_program_name.connect(self.set_current_program_name)
@@ -343,6 +344,15 @@ class ProgramEditor(BasicEditor):
         self.edit_program_name_button.clicked.connect(self.edit_program_name)
         program_vlayout.addWidget(self.edit_program_name_button)
 
+        # Search Box
+        search_row = QHBoxLayout()
+        search_row.addWidget(QLabel("Search:"))
+        self.search_box = QLineEdit()
+        self.search_box.setPlaceholderText("Search programs...")
+        self.search_box.textChanged.connect(self.populate_programs)  # @@
+        search_row.addWidget(self.search_box)
+        program_vlayout.addLayout(search_row)
+
         # Program number selection combo box
         self.program_number_combo_box = QComboBox()
         self.program_number_combo_box.addItems([f"{i:02}" for i in range(1, 65)])
@@ -449,6 +459,41 @@ class ProgramEditor(BasicEditor):
 
         self.category_combo_box.blockSignals(False)  # Unblock signals after update
 
+    def _populate_programs(self, search_text: str = "") -> None:
+        """
+        Populate the program list with available presets.
+
+        :param search_text: str
+        :return: None
+        """
+        if not self.preset_helper:
+            return
+        self.programs = {}  # reset dictionary each time
+        selected_genre = self.category_combo_box.currentText()
+        log.message(f"Selected Genre: {selected_genre}")
+
+        self.program_number_combo_box.clear()
+
+        filtered_list = [  # Filter programs based on bank and genre
+            program
+            for program in self.program_list
+            if (selected_genre in ["No Category Selected", program["category"]])
+        ]
+        filtered_programs = []
+        for i, program in enumerate(filtered_list):
+            if search_text.lower() in program["name"].lower():
+                filtered_programs.append(program)
+
+        for program in filtered_programs:  # Add programs to the combo box
+            program_name = program["name"]
+            program_id = program["id"]
+            index = len(self.programs)  # Use the current number of programs
+            self.program_number_combo_box.addItem(f"{program_id} - {program_name}", index)
+            self.programs[program_name] = index
+        self.preset_combo_box.setCurrentIndex(
+            0
+        )  # Select "No Category Selected" as default
+
     def _populate_presets(self, search_text: str = "") -> None:
         """
         Populate the program list with available presets.
@@ -458,7 +503,7 @@ class ProgramEditor(BasicEditor):
         """
         if not self.preset_helper:
             return
-        self.presets = {}  # reset dictionary each time
+        self.programs = {}  # reset dictionary each time
         preset_type = self.digital_preset_type_combo.currentText()
         if preset_type in ["Digital Synth 1", "Digital Synth 2"]:
             self.preset_list = DIGITAL_PRESET_LIST
@@ -488,9 +533,9 @@ class ProgramEditor(BasicEditor):
         for preset in filtered_presets:  # Add programs to the combo box
             preset_name = preset["name"]
             preset_id = preset["id"]
-            index = len(self.presets)  # Use the current number of programs
+            index = len(self.programs)  # Use the current number of programs
             self.preset_combo_box.addItem(f"{preset_id} - {preset_name}", index)
-            self.presets[preset_name] = index
+            self.programs[preset_name] = index
         self.preset_combo_box.setCurrentIndex(
             0
         )  # Select "No Category Selected" as default
@@ -682,7 +727,7 @@ class ProgramEditor(BasicEditor):
         """Stop playback of the MIDI file."""
         self.midi_helper.send_raw_message([MidiConstant.SONG_STOP])
 
-    def populate_programs(self):
+    def populate_programs(self, search_text: str = ""):
         """Populate the program list with available presets."""
         if not self.preset_helper:
             return
@@ -700,10 +745,12 @@ class ProgramEditor(BasicEditor):
             program
             for program in JDXiProgramList.PROGRAM_LIST
             if (selected_bank in ["No Bank Selected", program.id[0]])
-            and (selected_genre in ["No Genre Selected", program.genre])
+               and (selected_genre in ["No Genre Selected", program.genre])
         ]
 
         for program in filtered_list:  # Add programs to the combo box
+            if search_text and search_text.lower() not in program.name.lower():
+                continue
             program_name = program.name
             program_id = program.id
             index = len(self.programs)  # Use the current number of programs
@@ -713,18 +760,18 @@ class ProgramEditor(BasicEditor):
             self.programs[program_name] = index
 
         if (
-            selected_bank in ["No Bank Selected", "E", "F", "G", "H"]
-            and selected_genre == "No Genre Selected"
+                selected_bank in ["No Bank Selected", "E", "F", "G", "H"]
+                and selected_genre == "No Genre Selected"
         ):
             self.add_user_banks(
-                filtered_list, selected_bank
+                filtered_list, selected_bank, search_text
             )  # Handle user banks if necessary
 
         self.program_number_combo_box.setCurrentIndex(
             0
         )  # Update the UI with the new program list
 
-    def add_user_banks(self, filtered_list: list, bank: str) -> None:
+    def add_user_banks(self, filtered_list: list, bank: str, search_text: str = None) -> None:
         """Add user banks to the program list.
         :param filtered_list: list
         :param bank: str
@@ -746,6 +793,8 @@ class ProgramEditor(BasicEditor):
                     }
                     filtered_list.append(program)
                     program_name = program["name"]
+                    if search_text and search_text.lower() not in program_name.lower():
+                        continue
                     program_id = program["id"]
                     index = len(self.programs)
                     self.program_number_combo_box.addItem(
