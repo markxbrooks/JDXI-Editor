@@ -3811,3 +3811,27 @@ class JDXiProgramList:
                 cls.PROGRAM_LIST += new_programs
             else:
                 cls.PROGRAM_LIST = new_programs
+                
+                
+"""
+    @classmethod
+    def setup(cls):
+        json_folder = Path.home() / f".{__package_name__}"
+        json_folder.mkdir(parents=True, exist_ok=True)
+        cls.USER_PROGRAMS_FILE = str(json_folder / "user_programs.json")
+
+    @classmethod
+    def _load_programs(cls) -> List:
+        try:
+            with open(cls.USER_PROGRAMS_FILE, "r") as f:
+                data = json.load(f)
+                return [JDXiProgram.from_dict(d) for d in data]
+        except FileNotFoundError:
+            log.error("User programs file not found, starting with ROM programs only.")
+            return []
+
+    @property
+    def PROGRAM_LIST(cls) -> List:
+        return cls.ROM_PROGRAMS + cls._load_programs()
+
+"""
