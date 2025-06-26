@@ -11,6 +11,7 @@ from jdxi_editor.ui.widgets.midi.utils import ticks_to_seconds
 
 # Constants
 default_tempo = MidiConstant.TEMPO_120_BPM_USEC  # microseconds per beat (120 BPM)
+# default_tempo = MidiConstant.TEMPO_100_BPM_USEC  # microseconds per beat (100 BPM)
 # default_tempo = MidiConstant.TEMPO_150_BPM_USEC  # microseconds per beat (120 BPM)
 
 
@@ -98,7 +99,7 @@ if __name__ == "__main__":
             print("Creating virtual MIDI output port...")
             midi_out.open_virtual_port("My Virtual MIDI Output")
 
-        music_folder = Path.home() / 'Desktop' / 'oxygene'
+        music_folder = Path.home() / 'Desktop' / 'music'
         midi_files = [
             f for f in os.listdir(music_folder)
             if f.lower().endswith(('.mid', '.midi'))

@@ -1,7 +1,7 @@
 import pyaudio
 import wave
-import logging as log
-# from jdxi_editor.log.logger import Logger as log
+# import logging as log
+from jdxi_editor.log.logger import Logger as log
 
 
 class USBRecorder:
@@ -25,7 +25,7 @@ class USBRecorder:
 
     def list_devices(self):
         """ Prints a list of available audio input devices. """
-        log.info("Available audio input devices:")
+        log.message("Available audio input devices:")
         device_list = []
         for i in range(self.p.get_device_count()):
             info = self.p.get_device_info_by_index(i)

@@ -21,6 +21,7 @@ class MidiConstant:
     # Tempo calculations
     TEMPO_DEFAULT_120_BPM = 120
     TEMPO_CONVERT_SEC_TO_USEC = 1_000_000
+    TEMPO_100_BPM_USEC = 600_000
     TEMPO_120_BPM_USEC = 500_000
     TEMPO_150_BPM_USEC = 400_000
 
