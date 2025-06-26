@@ -8,10 +8,21 @@ from jdxi_editor.jdxi.sysex.bitmask import BitMask
 class MidiConstant:
     """Miscellaneous MIDI constants for JD-Xi communication."""
 
-    # Tempo
+    # User Banks
+    CONTROL_CHANGE_BANK_SELECT_MSB = 85
+    CONTROL_CHANGE_BANK_SELECT_LSB_BANK_E_AND_F = 0
+    CONTROL_CHANGE_BANK_SELECT_LSB_BANK_G_AND_H = 1
+    # ROM banks
+    CONTROL_CHANGE_BANK_SELECT_LSB_BANK_A_AND_B = 64
+    CONTROL_CHANGE_BANK_SELECT_LSB_BANK_C_AND_D = 65
+    # Program Change
+    PROGRAM_CHANGE_BANK_A_AND_C_AND_E_AND_G = 0
+    PROGRAM_CHANGE_BANK_B_AND_D_AND_F_AND_H = 64
+    # Tempo calculations
     TEMPO_DEFAULT_120_BPM = 120
     TEMPO_CONVERT_SEC_TO_USEC = 1_000_000
     TEMPO_120_BPM_USEC = 500_000
+    TEMPO_150_BPM_USEC = 400_000
 
     # SysEx framing
     CONTROL_CHANGE_NRPN_MSB = 99 # Controller number for NRPN MSB

@@ -22,6 +22,7 @@ Dependencies:
 
 import json
 import logging
+import os
 from dataclasses import asdict
 
 import mido
@@ -44,12 +45,38 @@ from jdxi_editor.midi.sysex.request.data import IGNORED_KEYS
 from jdxi_editor.jdxi.preset.button import JDXiPresetButtonData
 
 from jdxi_editor.midi.data.address.address import AddressStartMSB as AreaMSB
-# from jdxi_editor.ui.editors.helpers.program import add_program_and_save
 
 
-def add_program_and_save(new_program: JDXiProgram) -> bool:
+def add_or_replace_program_and_save(new_program: JDXiProgram) -> bool:
     """
-    add_program_and_save
+    Add a new program to the list, replacing any with matching ID or PC.
+
+    :param new_program: JDXiProgram to add or replace.
+    :return: True if successfully added/replaced and saved, False otherwise.
+    """
+    try:
+        program_list = load_programs()
+
+        # Remove any existing entries with same ID or PC
+        program_list = [
+            p for p in program_list
+            if p.get("id") != new_program.id and p.get("pc") != new_program.pc
+        ]
+
+        log.message(f"Adding or replacing program: {new_program.id} (PC {new_program.pc})")
+        program_list.append(new_program.to_dict())
+
+        save_programs(program_list)
+        log.message(f"✅ Saved updated program list with {new_program.id}")
+        return True
+    except Exception as e:
+        log.error(f"❌ Failed to add or replace program: {e}")
+        return False
+
+
+def add_or_replace_program_and_save_old(new_program: JDXiProgram) -> bool:
+    """
+    add_or_replace_program_and_save
 
     :param new_program:
     :return:
@@ -87,6 +114,21 @@ def load_programs() -> List[Dict[str, str]]:
 
 
 def save_programs(program_list: List[Dict[str, str]]) -> None:
+    """
+    Save the program list to USER_PROGRAMS_FILE, creating the file and directory if needed.
+
+    :param program_list: List of program dictionaries.
+    """
+    try:
+        file_path = JDXiProgramList.USER_PROGRAMS_FILE
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)  # ensure directory exists
+        with open(file_path, "w", encoding="utf-8") as f:
+            json.dump(program_list, f, indent=4, ensure_ascii=False)
+    except Exception as e:
+        print(f"Error saving programs: {e}")
+
+
+def save_programs_old(program_list: List[Dict[str, str]]) -> None:
     """
     save_programs
 
@@ -130,6 +172,7 @@ class MidiInHandler(MidiIOController):
         self.midi_in.ignore_types(sysex=False, timing=True, active_sense=True)
         self.sysex_parser = JDXiSysExParser()
         self._incoming_preset_data = IncomingPresetData()
+        self._incoming_preset_data.msb = 85  # default to Preset Bank
 
     def midi_callback(self, message: list[Any], data: Any) -> None:
         """
@@ -295,6 +338,12 @@ class MidiInHandler(MidiIOController):
         log.message(
             f"Control Change - Channel: {channel}, Control: {control}, Value: {value}"
         )
+        if value in [MidiConstant.CONTROL_CHANGE_BANK_SELECT_LSB_BANK_E_AND_F,
+                     MidiConstant.CONTROL_CHANGE_BANK_SELECT_LSB_BANK_G_AND_H]:
+            log.parameter("control", control)  # Bank Select LSB 00 or 01
+            log.parameter("value", value)  # Bank Select LSB 00 or 01
+            self._incoming_preset_data.lsb = value
+
         self.midi_control_changed.emit(channel, control, value)
         if control == MidiConstant.CONTROL_CHANGE_NRPN_MSB:  # NRPN MSB
             self.nrpn_msb = value
@@ -330,7 +379,6 @@ class MidiInHandler(MidiIOController):
         # Store for later use
         self._incoming_preset_data.channel = channel
         self._incoming_preset_data.program_number = program_number
-
         self.midi_program_changed.emit(channel, program_number)
 
     def _emit_program_or_tone_name(self, parsed_data: dict) -> None:
@@ -382,77 +430,57 @@ class MidiInHandler(MidiIOController):
         """
         _auto_add_current_program
 
-        :return:
+        :return: None
+
+        For reference:
+        BANK SELECT|  PROGRAM | GROUP|                   NUMBER
+        MSB | LSB | NUMBER    |                         |
+        -----+-----------+-----------+----------------------------+-----------
+        085 | 064 | 001 - 064 | Preset Bank Program (A) | A01 - A64     Banks to 64
+        085 | 064 | 065 - 128 | Preset Bank Program (B) | B01 - B64     Banks to 128
+        085 | 065 | 001 - 064 | Preset Bank Program (C) | C01 - C64     Banks to 192
+        085 | 065 | 065 - 128 | Preset Bank Program (D) | D01 - D64     Banks to 256
+        -----+-----------+-----------+----------------------------+-----------
+        085 | 000 | 001 - 064 | User Bank Program (E) | E01 - E64       Banks to 320
+        085 | 000 | 065 - 128 | User Bank Program (F) | F01 - F64       Banks to 384
+        085 | 001 | 001 - 064 | User Bank Program (G) | G01 - G64       Banks to 448
+        085 | 001 | 065 - 128 | User Bank Program (H) | H01 - H64       Banks to 512
+        -----+-----------+-----------+----------------------------+-----------
+        085 | 096 | 001 - 064 | Extra Bank Program (S) | S01 - S64      Banks to 576
+        | : | : | : | :
+        085 | 103 | 001 - 064 | Extra Bank Program (Z) | Z01 - Z64      Banks to 1024
         """
         data = self._incoming_preset_data
         log.parameter("preset data", data)
+
         if data.program_number is None:
             log.message("No program number; cannot auto-add program")
             return
+
         try:
-            """
-            For reference:
-            BANK SELECT|  PROGRAM | GROUP|                   NUMBER
-            MSB | LSB | NUMBER    |                         |
-            -----+-----------+-----------+----------------------------+-----------
-            085 | 064 | 001 - 064 | Preset Bank Program (A) | A01 - A64     Banks to 64
-            085 | 064 | 065 - 128 | Preset Bank Program (B) | B01 - B64     Banks to 128
-            085 | 065 | 001 - 064 | Preset Bank Program (C) | C01 - C64     Banks to 192
-            085 | 065 | 065 - 128 | Preset Bank Program (D) | D01 - D64     Banks to 256
-            -----+-----------+-----------+----------------------------+-----------
-            085 | 000 | 001 - 064 | User Bank Program (E) | E01 - E64       Banks to 320
-            085 | 000 | 065 - 128 | User Bank Program (F) | F01 - F64       Banks to 384
-            085 | 001 | 001 - 064 | User Bank Program (G) | G01 - G64       Banks to 448
-            085 | 001 | 065 - 128 | User Bank Program (H) | H01 - H64       Banks to 512
-            -----+-----------+-----------+----------------------------+-----------
-            085 | 096 | 001 - 064 | Extra Bank Program (S) | S01 - S64      Banks to 576
-            | : | : | : | :
-            085 | 103 | 001 - 064 | Extra Bank Program (Z) | Z01 - Z64      Banks to 1024
-            """
-            program_number = data.program_number or 0
-            prefix = "E"
-            msb = 85
-            lsb = 0
-            """
-            if 255 < data.program_number < 319:
-                lsb = 0
-                prefix = "E"
-            elif 319 <= data.program_number < 383:
-                lsb = 1
-                prefix = "F"
-            elif 383 <= data.program_number < 447:
-                lsb = 0
-                prefix = "G"
-            elif 447 <= data.program_number < 511:
-                lsb = 1
-                prefix = "H"""
-            if 256 <= program_number <= 320:
-                lsb = 0
-                prefix = "E"
-                display_number = program_number - 256 + 1
-            elif 321 <= program_number <= 384:
-                lsb = 0
-                prefix = "F"
-                display_number = program_number - 320
-            elif 385 <= program_number <= 448:
-                lsb = 1
-                prefix = "G"
-                display_number = program_number - 384
-            elif 449 <= program_number <= 512:
-                lsb = 1
-                prefix = "H"
-                display_number = program_number - 448
-            elif 513 <= program_number <= 1024:
-                # Extra banks: S (LSB 96) to Z (LSB 103)
-                bank_index = (program_number - 513) // 64
-                lsb = 96 + bank_index
-                prefix = chr(ord("S") + bank_index)
-                display_number = (program_number - 513) % 64 + 1
+            program_number = data.program_number
+            msb = data.msb  # data.msb or 85
+            lsb = data.lsb  # data.lsb or 0
+            prefix = None
+            index_in_bank = program_number % 64
+
+            # === User Banks ===
+            if msb == 85:
+                if lsb == 0:
+                    prefix = "E" if program_number < 64 else "F"
+                elif lsb == 1:
+                    prefix = "G" if program_number < 64 else "H"
+                elif 96 <= lsb <= 103:
+                    prefix = chr(ord("S") + (lsb - 96))
+                else:
+                    log.message(f"❌ Unsupported LSB {lsb} for user/extra banks")
+                    return
             else:
-                log.message(f"❌ Program number {program_number} is not valid (outside 256–1024)")
+                log.message(f"❌ Unsupported MSB {msb} (expected 85)")
                 return
+
             program = JDXiProgram(
-                id=f"{prefix}{display_number + 1:02d}",
+                id=f"{prefix}{index_in_bank + 1:02d}",
                 name=f"{data.program_name}",
                 genre="Unknown",
                 pc=program_number,
@@ -464,11 +492,12 @@ class MidiInHandler(MidiIOController):
                 drums=data.tone_names.get("drum"),
             )
             log.parameter("program", program)
+
         except Exception as ex:
             log.message(f"Error {ex} creating JDXiProgram")
             return
-        log.parameter("program", program)
-        if add_program_and_save(program):
+
+        if add_or_replace_program_and_save(program):
             log.message(f"✅ Auto-added program: {program.id}")
         else:
             log.message(f"⚠️ Duplicate or failed to add: {program.id}")

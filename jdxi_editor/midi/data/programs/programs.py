@@ -3761,8 +3761,12 @@ ROM_PROGRAMS = [
 
 
 class JDXiProgramList:
-    # Convert each dict to a JDXiProgram instance
-    PROGRAM_LIST = [
+    """
+    JDXiProgramList
+
+    Convert each dict to a JDXiProgram instance
+    """
+    ROM_PROGRAM_LIST = [
         JDXiProgram(
             id=data["id"],
             name=data["name"],
@@ -3780,58 +3784,75 @@ class JDXiProgramList:
         )
         for data in ROM_PROGRAMS
     ]
+    json_folder = Path.home() / f".{__package_name__}"
+    USER_PROGRAMS_FILE = str(json_folder / "user_programs.json")
+    USER_PROGRAMS = []
     try:
-        json_folder = Path.home() / f".{__package_name__}"
         json_folder.mkdir(parents=True, exist_ok=True)
-        USER_PROGRAMS_FILE = str(json_folder / "user_programs.json")
-        with open(USER_PROGRAMS_FILE, "r") as f:
-            data = json.load(f)
-            new_programs = [JDXiProgram.from_dict(d) for d in data]
-            PROGRAM_LIST += new_programs
-    except FileNotFoundError:
-        log.error("User programs file not found, starting with ROM programs only.")
+    except Exception as e:
+        log.error(f"Error creating directory {json_folder}: {e}")
 
     @classmethod
-    def add_program(cls, program: JDXiProgram) -> None:
-        cls.PROGRAM_LIST.append(program)
+    def list_rom_and_user_programs(cls) -> List[JDXiProgram]:
+        """
+        list_rom_and_user_programs
+
+        :return: List[JDXiProgram]
+        """
+        cls.USER_PROGRAMS = cls._load_user_programs()
+        return cls.ROM_PROGRAM_LIST + cls.USER_PROGRAMS
 
     @classmethod
-    def save_to_file(cls, filepath: Optional[str] = None) -> None:
-        filepath = filepath or cls.USER_PROGRAMS_FILE
-        with open(filepath, "w") as f:
-            json.dump([p.to_dict() for p in cls.PROGRAM_LIST], f, indent=2)
+    def _load_user_programs(cls) -> List[JDXiProgram]:
+        """
+        _load_user_programs
 
-    @classmethod
-    def load_from_file(cls, filepath: Optional[str] = None, append: bool = True) -> None:
-        filepath = filepath or cls.USER_PROGRAMS_FILE
-        with open(filepath, "r") as f:
-            data = json.load(f)
-            new_programs = [JDXiProgram.from_dict(d) for d in data]
-            if append:
-                cls.PROGRAM_LIST += new_programs
-            else:
-                cls.PROGRAM_LIST = new_programs
-                
-                
-"""
-    @classmethod
-    def setup(cls):
-        json_folder = Path.home() / f".{__package_name__}"
-        json_folder.mkdir(parents=True, exist_ok=True)
-        cls.USER_PROGRAMS_FILE = str(json_folder / "user_programs.json")
-
-    @classmethod
-    def _load_programs(cls) -> List:
+        :return: List[JDXiProgram]
+        """
         try:
             with open(cls.USER_PROGRAMS_FILE, "r") as f:
                 data = json.load(f)
                 return [JDXiProgram.from_dict(d) for d in data]
         except FileNotFoundError:
-            log.error("User programs file not found, starting with ROM programs only.")
+            log.warning("User programs file not found, starting with ROM programs only.")
+            return []
+        except Exception as e:
+            log.error(f"Error loading user programs: {e}")
             return []
 
-    @property
-    def PROGRAM_LIST(cls) -> List:
-        return cls.ROM_PROGRAMS + cls._load_programs()
+    @classmethod
+    def save_to_file(cls, filepath: Optional[str] = None) -> None:
+        """
+        save_to_file
 
-"""
+        :param filepath: str
+        :return: None
+        """
+        if cls.USER_PROGRAMS is None:
+            cls.USER_PROGRAMS = cls._load_user_programs()
+        filepath = filepath or cls.USER_PROGRAMS_FILE
+        with open(filepath, "w") as f:
+            json.dump([p.to_dict() for p in cls.USER_PROGRAMS], f, indent=2)
+
+    @classmethod
+    def reload_from_file(cls, filepath: Optional[str] = None, append: bool = True) -> None:
+        """
+        reload_from_file
+        :return:
+        :param filepath:
+        :param append:
+        :return:
+        """
+        new_programs = cls.get_from_user_file(filepath)
+        if append:
+            cls.ROM_PROGRAM_LIST += new_programs
+        else:
+            cls.ROM_PROGRAM_LIST = new_programs
+
+    @classmethod
+    def get_from_user_file(cls, filepath: Optional[str] = None) -> list[JDXiProgram]:
+        filepath = filepath or cls.USER_PROGRAMS_FILE
+        with open(filepath, "r") as f:
+            data = json.load(f)
+            user_programs = [JDXiProgram.from_dict(d) for d in data]
+            return user_programs

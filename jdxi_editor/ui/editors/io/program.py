@@ -56,7 +56,11 @@ from jdxi_editor.jdxi.preset.lists import JDXiPresetToneList
 from jdxi_editor.jdxi.program.program import JDXiProgram
 from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.log.logger import Logger as log
+from jdxi_editor.log.parameter import log_parameter
+from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB, AddressOffsetSuperNATURALLMB, \
+    AddressStartMSB
 from jdxi_editor.midi.data.address.program import ProgramCommonAddress
+from jdxi_editor.midi.data.drum.data import DRUM_PARTIAL_MAP
 from jdxi_editor.midi.data.parameter import AddressParameter
 from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
 from jdxi_editor.midi.data.parameter.digital import AddressParameterDigitalCommon
@@ -69,7 +73,9 @@ from jdxi_editor.midi.data.programs.programs import JDXiProgramList
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
+from jdxi_editor.midi.sysex.request.data import SYNTH_PARTIAL_MAP
 from jdxi_editor.midi.sysex.request.midi_requests import MidiRequests
+from jdxi_editor.ui.editors.digital.utils import filter_sysex_keys, get_partial_number
 from jdxi_editor.ui.editors.helpers.preset import get_preset_parameter_value
 from jdxi_editor.ui.editors.helpers.program import (
     get_program_by_id,
@@ -133,6 +139,7 @@ class ProgramEditor(BasicEditor):
         self.setup_ui()
         self.midi_helper.update_program_name.connect(self.set_current_program_name)
         self.controls: Dict[AddressParameter, QWidget] = {}
+        self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
 
     def setup_ui(self):
         """set up ui elements"""
@@ -365,7 +372,7 @@ class ProgramEditor(BasicEditor):
         # Genre selection combo box
         self.genre_combo_box = QComboBox()
         self.genre_combo_box.addItem("No Genre Selected")
-        genres = set(program.genre for program in JDXiProgramList.PROGRAM_LIST)
+        genres = set(program.genre for program in JDXiProgramList.list_rom_and_user_programs())
         self.genre_combo_box.addItems(sorted(genres))
         self.genre_combo_box.currentIndexChanged.connect(self.on_genre_changed)
         program_vlayout.addWidget(self.genre_combo_box)
@@ -635,23 +642,28 @@ class ProgramEditor(BasicEditor):
             vertical=True,
             address=program_common_address
         )
+        self.controls[AddressParameterProgramCommon.PROGRAM_LEVEL] = self.master_level_slider
 
         self._init_synth_data(synth_type=JDXiSynth.DIGITAL_SYNTH_1)
         self.digital1_level_slider = self._create_parameter_slider(
             AddressParameterDigitalCommon.TONE_LEVEL, "Digital 1", vertical=True
         )
+        self.controls[AddressParameterDigitalCommon.TONE_LEVEL] = self.digital1_level_slider
         self._init_synth_data(synth_type=JDXiSynth.DIGITAL_SYNTH_2)
         self.digital2_level_slider = self._create_parameter_slider(
             AddressParameterDigitalCommon.TONE_LEVEL, "Digital 2", vertical=True
         )
+        self.controls[AddressParameterDigitalCommon.TONE_LEVEL] = self.digital2_level_slider
         self._init_synth_data(synth_type=JDXiSynth.DRUM_KIT)
         self.drums_level_slider = self._create_parameter_slider(
             AddressParameterDrumCommon.KIT_LEVEL, "Drums", vertical=True
         )
+        self.controls[AddressParameterDrumCommon.KIT_LEVEL] = self.drums_level_slider
         self._init_synth_data(synth_type=JDXiSynth.ANALOG_SYNTH)
         self.analog_level_slider = self._create_parameter_slider(
             AddressParameterAnalog.AMP_LEVEL, "Analog", vertical=True
         )
+        self.controls[AddressParameterAnalog.AMP_LEVEL] = self.analog_level_slider
         self.address = program_common_address
         # Mixer layout population
         mixer_layout.setColumnStretch(0, 1)
@@ -743,7 +755,7 @@ class ProgramEditor(BasicEditor):
 
         filtered_list = [  # Filter programs based on bank and genre
             program
-            for program in JDXiProgramList.PROGRAM_LIST
+            for program in JDXiProgramList.list_rom_and_user_programs()
             if (selected_bank in ["No Bank Selected", program.id[0]])
                and (selected_genre in ["No Genre Selected", program.genre])
         ]
@@ -874,3 +886,164 @@ class ProgramEditor(BasicEditor):
         :param _: int
         """
         self.populate_programs()
+
+    def _dispatch_sysex_to_area(self, json_sysex_data: str) -> None:
+        """
+        Dispatch SysEx data to the appropriate area for processing.
+
+        :param json_sysex_data:
+        :return: None
+        """
+        sysex_data = self._parse_sysex_json(json_sysex_data)
+        if not sysex_data:
+            return
+
+        # current_synth = get_area([self.address.msb, self.address.umb])
+        temporary_area = sysex_data.get("TEMPORARY_AREA")
+        synth_tone = sysex_data.get("SYNTH_TONE")
+
+        """
+        if current_synth != temporary_area:
+            log.message(
+                f"temporary_area: {temporary_area} is not current_synth: {current_synth}, Skipping update"
+            )
+            return
+        """
+
+        log.header_message(
+            f"Updating UI components from SysEx data for \t{temporary_area} \t{synth_tone}"
+        )
+
+        sysex_data = filter_sysex_keys(sysex_data)
+
+        successes, failures = [], []
+
+        if temporary_area == AddressOffsetTemporaryToneUMB.DRUM_KIT.name:
+            partial_map = DRUM_PARTIAL_MAP
+        else:
+            partial_map = SYNTH_PARTIAL_MAP
+
+        partial_number = get_partial_number(synth_tone, partial_map=partial_map)
+        if temporary_area == AddressStartMSB.TEMPORARY_PROGRAM.name:
+            for param_name, param_value in sysex_data.items():
+                if param_name == "PROGRAM_LEVEL":
+                    param = AddressParameterProgramCommon.get_by_name(param_name)
+                    self._update_slider(param, param_value, successes, failures, self.master_level_slider)
+        elif temporary_area == AddressOffsetTemporaryToneUMB.ANALOG_SYNTH.name:
+            for param_name, param_value in sysex_data.items():
+                if param_name == "AMP_LEVEL":
+                    param = AddressParameterAnalog.get_by_name(param_name)
+                    self._update_slider(param, param_value, successes, failures, self.analog_level_slider)
+        elif temporary_area == AddressOffsetTemporaryToneUMB.DRUM_KIT.name:
+            for param_name, param_value in sysex_data.items():
+                if param_name == "KIT_LEVEL":
+                    param = AddressParameterDrumCommon.get_by_name(param_name)
+                    self._update_slider(param, param_value, successes, failures, self.drums_level_slider)
+        elif temporary_area == AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_1.name:
+            for param_name, param_value in sysex_data.items():
+                if param_name == "TONE_LEVEL":
+                    param = AddressParameterDigitalCommon.get_by_name(param_name)
+                    self._update_slider(param, param_value, successes, failures, self.digital1_level_slider)
+        elif temporary_area == AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_2.name:
+            for param_name, param_value in sysex_data.items():
+                if param_name == "TONE_LEVEL":
+                    param = AddressParameterDigitalCommon.get_by_name(param_name)
+                    self._update_slider(param, param_value, successes, failures, self.digital2_level_slider)
+        if synth_tone in [AddressOffsetSuperNATURALLMB.PARTIAL_1.name,
+                          AddressOffsetSuperNATURALLMB.PARTIAL_2.name,
+                          AddressOffsetSuperNATURALLMB.PARTIAL_3.name]:
+            self._update_common_controls(partial_number, sysex_data, successes, failures)
+        elif synth_tone == AddressOffsetSuperNATURALLMB.MODIFY.name:
+            pass
+            # self._update_modify_controls(partial_number, sysex_data, successes, failures)
+        else:  # Drums and Digital 1 & 2 are dealt with via partials
+            if partial_number is None:
+                log.error(f"Unknown partial number for synth_tone: {synth_tone}")
+                return
+            log.parameter("partial_number", partial_number)
+            # self._update_partial_controls(partial_number, sysex_data, successes, failures)
+
+        log.debug_info(successes, failures)
+
+    def _update_common_controls(
+            self,
+            partial_number: int,
+            sysex_data: Dict,
+            successes: list = None,
+            failures: list = None,
+    ) -> None:
+        """
+        Update the UI components for tone common and modify parameters.
+
+        :param partial_number: int partial number
+        :param sysex_data: Dictionary containing SysEx data
+        :param successes: List of successful parameters
+        :param failures: List of failed parameters
+        :return: None
+        """
+        log.message(f"Updating controls for partial {partial_number}")
+        log.parameter("self.controls", self.controls)
+        for control in self.controls:
+            log.parameter("control @@", control, silent=False)
+        sysex_data.pop("SYNTH_TONE")
+        for param_name, param_value in sysex_data.items():
+            log.parameter(f"{param_name} {param_value}", param_value, silent=True)
+            param = AddressParameterDigitalCommon.get_by_name(param_name)
+            if not param:
+                log.parameter(
+                    f"param not found: {param_name} ", param_value, silent=True
+                )
+                failures.append(param_name)
+                continue
+            log.parameter(f"found {param_name}", param_name, silent=True)
+            try:
+                if param.name in [
+                    "PARTIAL1_SWITCH",
+                    "PARTIAL2_SWITCH",
+                    "PARTIAL3_SWITCH",
+                ]:
+                    pass
+                    """self._update_partial_selection_switch(
+                        param, param_value, successes, failures
+                    )"""
+                if param.name in [
+                    "PARTIAL1_SELECT",
+                    "PARTIAL2_SELECT",
+                    "PARTIAL3_SELECT",
+                ]:
+                    pass
+                    """self._update_partial_selected_state(
+                        param, param_value, successes, failures
+                    )"""
+                elif "SWITCH" in param_name:
+                    self._update_switch(param, param_value, successes, failures)
+                else:
+                    self._update_slider(param, param_value, successes, failures)
+            except Exception as ex:
+                log.error(f"Error {ex} occurred")
+
+    def _update_slider(
+            self,
+            param: AddressParameter,
+            midi_value: int,
+            successes: list = None,
+            failures: list = None,
+            slider: QWidget = None) -> None:
+        """
+        Update slider based on parameter and value.
+
+        :param param: AddressParameter
+        :param midi_value: int value
+        :param successes: list
+        :param failures: list
+        :return: None
+        """
+        if slider is None:
+            slider = self.controls.get(param)
+        if slider:
+            slider.blockSignals(True)
+            slider.setValue(midi_value)
+            slider.blockSignals(False)
+            successes.append(param.name)
+        else:
+            failures.append(param.name)

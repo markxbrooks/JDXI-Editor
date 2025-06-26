@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from pathlib import Path
 import json
 import logging

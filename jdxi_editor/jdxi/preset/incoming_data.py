@@ -7,6 +7,8 @@ class IncomingPresetData:
     program_number: Optional[int] = None
     program_name: Optional[str] = None
     channel: Optional[int] = None
+    msb: Optional[int] = None
+    lsb: Optional[int] = None
     tone_names: Dict[str, str] = field(default_factory=dict)  # e.g., {"analog": "Saw Lead"}
 
     def set_tone_name(self, part: str, name: str):

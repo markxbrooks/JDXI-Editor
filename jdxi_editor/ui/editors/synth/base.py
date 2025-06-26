@@ -389,7 +389,8 @@ class SynthBase(QWidget):
             param: AddressParameter,
             midi_value: int,
             successes: list = None,
-            failures: list = None) -> None:
+            failures: list = None,
+            slider: QWidget = None) -> None:
         """
         Update slider based on parameter and value.
 
@@ -399,7 +400,8 @@ class SynthBase(QWidget):
         :param failures: list
         :return: None
         """
-        slider = self.controls.get(param)
+        if slider is None:
+            slider = self.controls.get(param)
         if slider:
             if hasattr(param, "convert_from_midi"):
                 slider_value = param.convert_from_midi(midi_value)
