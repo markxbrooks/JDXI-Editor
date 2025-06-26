@@ -141,7 +141,7 @@ class Logger:
         Logger.message(final_message, silent=silent, stacklevel=stacklevel, level=level)
 
     @staticmethod
-    def header_message(message: str, level: int = logging.INFO, silent: bool = False, stacklevel: int = 3) -> None:
+    def header_message(message: str, level: int = logging.INFO, silent: bool = False, stacklevel: int = 4) -> None:
         """
         Logs a visually distinct header message with separator lines and emojis.
 
@@ -160,7 +160,7 @@ class Logger:
     @staticmethod
     def debug_info(successes: list,
                    failures: list,
-                   stacklevel: int = 3) -> None:
+                   stacklevel: int = 4) -> None:
         """
         Logs debug information about the parsed SysEx data.
 
@@ -180,4 +180,4 @@ class Logger:
         Logger.message(f"Successes ({len(successes)}): {successes}", stacklevel=stacklevel)
         Logger.message(f"Failures ({len(failures)}): {failures}", stacklevel=stacklevel)
         Logger.message(f"Success Rate: {success_rate:.1f}%", stacklevel=stacklevel)
-        Logger.message("=" * 100, stacklevel=3)
+        Logger.message("=" * 100, stacklevel=4)

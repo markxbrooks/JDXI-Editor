@@ -1,5 +1,7 @@
-
+import os
 import time
+from pathlib import Path
+
 import rtmidi
 import mido
 
@@ -9,6 +11,7 @@ from jdxi_editor.ui.widgets.midi.utils import ticks_to_seconds
 
 # Constants
 default_tempo = MidiConstant.TEMPO_120_BPM_USEC  # microseconds per beat (120 BPM)
+# default_tempo = MidiConstant.TEMPO_150_BPM_USEC  # microseconds per beat (120 BPM)
 
 
 def buffer_midi_tracks(midi_file: mido.MidiFile):
@@ -37,7 +40,7 @@ def buffer_midi_tracks(midi_file: mido.MidiFile):
     return buffered_messages_list
 
 
-# buffered_messages = buffer_midi_tracks(midi_playback_file)
+
 
 
 # Convert ticks to seconds, considering tempo
@@ -79,23 +82,60 @@ def play_buffered(buffered_msgs: list,
             else:
                 midi_out_port.send_message(msg.bytes())
 
-
 if __name__ == "__main__":
-    
-    # Usage:
+    import os
+    import mido
+    import rtmidi
+
     try:
         midi_out = rtmidi.MidiOut()
         available_ports = midi_out.get_ports()
 
         if available_ports:
-            midi_out.open_port(0)  # Change index as needed
+            print(f"Opening MIDI port: {available_ports[0]}")
+            midi_out.open_port(0)
         else:
+            print("Creating virtual MIDI output port...")
             midi_out.open_virtual_port("My Virtual MIDI Output")
-        midi_playback_file = mido.MidiFile(r'/Users/brooks/Desktop/music/A Forest - The Cure - JDXi Editorv5.mid')
-        print("Starting multi-track playback with Program Changes enabled...")
-        play_buffered(buffered_messages, midi_out, play_program_changes=True, ticks_per_beat=midi_playback_file.ticks_per_beat)
-        # To disable program changes during playback, set to False:
-        # play_buffered(buffered, midi_out, play_program_changes=False)
-        print("Playback finished.")
-    finally:
-        midi_out.close_port()
+
+        music_folder = Path.home() / 'Desktop' / 'oxygene'
+        midi_files = [
+            f for f in os.listdir(music_folder)
+            if f.lower().endswith(('.mid', '.midi'))
+        ]
+        midi_files.sort(key=str.lower)
+
+        if not midi_files:
+            print("❌ No MIDI files found.")
+            exit(1)
+
+        print("Available MIDI files:")
+        for idx, f in enumerate(midi_files):
+            print(f"{idx}: {f}")
+
+        file_indices = input("Enter file numbers to play in order (e.g., 0 2 5): ").strip().split()
+        try:
+            playlist = [os.path.join(music_folder, midi_files[int(i)]) for i in file_indices]
+        except (IndexError, ValueError):
+            print("❌ Invalid input.")
+            exit(1)
+
+        play_pc_input = input("Play Program Changes? (y/n): ").strip().lower()
+        play_program_changes = play_pc_input == 'y'
+
+        # === Playback Loop ===
+        for file_path in playlist:
+            print(f"\n🎵 Playing: {os.path.basename(file_path)}")
+            midi_playback_file = mido.MidiFile(file_path)
+            buffered_messages = buffer_midi_tracks(midi_playback_file)
+            play_buffered(
+                buffered_messages,
+                midi_out,
+                play_program_changes=play_program_changes,
+                ticks_per_beat=midi_playback_file.ticks_per_beat,
+            )
+
+        print("✅ Playlist finished.")
+    except Exception as e:
+        print(f"❌ Error: {e}")
+

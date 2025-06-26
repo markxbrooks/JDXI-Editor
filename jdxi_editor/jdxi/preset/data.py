@@ -47,43 +47,6 @@ from jdxi_editor.jdxi.preset.lists import JDXiPresetToneList
 from jdxi_editor.jdxi.synth.type import JDXiSynth
 
 
-
-def _auto_add_current_program(self):
-    data = self._incoming_preset_data
-
-    def get_preset(synth_type: str, name: str) -> Optional[JDXiPresetData]:
-        preset_list = {
-            JDXiSynth.ANALOG_SYNTH: JDXiPresetToneList.ANALOG,
-            JDXiSynth.DIGITAL_SYNTH_1: JDXiPresetToneList.DIGITAL_ENUMERATED,
-            JDXiSynth.DIGITAL_SYNTH_2: JDXiPresetToneList.DIGITAL_ENUMERATED,
-            JDXiSynth.DRUM_KIT: JDXiPresetToneList.DRUM_ENUMERATED,
-        }.get(synth_type)
-
-        if preset_list and name in preset_list:
-            index = preset_list.index(name)
-            return JDXiPresetData.get_preset_details(synth_type, index)
-        return None
-
-    from jdxi_editor.jdxi.program.program import JDXiProgram
-    program = JDXiProgram(
-        id=f"A{data.program_number + 1:02d}",
-        name=f"Imported {data.program_number + 1:02d}",
-        genre="Unknown",
-        tempo=data.tempo or 120,
-        analog=get_preset(JDXiSynth.ANALOG_SYNTH, data.tone_names.get("analog")),
-        digital_1=get_preset(JDXiSynth.DIGITAL_SYNTH_1, data.tone_names.get("digital_1")),
-        digital_2=get_preset(JDXiSynth.DIGITAL_SYNTH_2, data.tone_names.get("digital_2")),
-        drums=get_preset(JDXiSynth.DRUM_KIT, data.tone_names.get("drum")),
-    )
-
-    if add_program_and_save(asdict(program)):
-        log.message(f"✅ Auto-added program: {program.id}")
-    else:
-        log.message(f"⚠️ Duplicate or failed to add: {program.id}")
-
-    self._incoming_preset_data = IncomingPresetData()
-
-
 @dataclass
 class JDXiPresetData:
     name: str

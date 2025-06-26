@@ -180,11 +180,6 @@ class AnalogOscillatorSection(QWidget):
         pitch_env_row_layout = QHBoxLayout()
         pitch_env_group.setLayout(pitch_env_row_layout)
         pitch_env_row_layout.addStretch()
-        pitch_env_row_layout.addWidget(
-            self._create_parameter_slider(
-                AddressParameterAnalog.OSC_PITCH_ENV_VELOCITY_SENSITIVITY, "Velocity Sensitivity", vertical=True
-            )
-        )
         # Pitch Env Widget
         self.pitch_env_widget = PitchEnvelopeWidget(
             attack_param=AddressParameterAnalog.OSC_PITCH_ENV_ATTACK_TIME,
@@ -202,6 +197,11 @@ class AnalogOscillatorSection(QWidget):
         env_layout = QHBoxLayout()
         env_group.setLayout(env_layout)
         pitch_env_row_layout.addWidget(self.pitch_env_widget)
+        pitch_env_row_layout.addWidget(
+            self._create_parameter_slider(
+                AddressParameterAnalog.OSC_PITCH_ENV_VELOCITY_SENSITIVITY, "Velocity Sensitivity", vertical=True
+            )
+        )
         pitch_env_row_layout.addStretch()
         return pitch_env_group
 

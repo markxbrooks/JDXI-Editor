@@ -1,4 +1,5 @@
 import json
+import os
 from typing import Dict, List
 
 from jdxi_editor.midi.data.programs import JDXiProgramList
@@ -14,13 +15,17 @@ def load_programs() -> List[Dict[str, str]]:
 
 def save_programs(program_list: List[Dict[str, str]]) -> None:
     """
-    save_programs
+    Save the program list to USER_PROGRAMS_FILE, creating the file and directory if needed.
 
-    :param program_list: List[Dict[str, str]]
-    :return: None
+    :param program_list: List of program dictionaries.
     """
-    with open(JDXiProgramList.USER_PROGRAMS_FILE, "w", encoding="utf-8") as f:
-        json.dump(program_list, f, indent=4, ensure_ascii=False)
+    try:
+        file_path = JDXiProgramList.USER_PROGRAMS_FILE
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)  # ensure directory exists
+        with open(file_path, "w", encoding="utf-8") as f:
+            json.dump(program_list, f, indent=4, ensure_ascii=False)
+    except Exception as e:
+        print(f"Error saving programs: {e}")
 
 
 def add_program_and_save(new_program: Dict[str, str]) -> bool:

@@ -58,7 +58,7 @@ def get_program_index_by_id(program_id: str) -> Optional[int]:
     :return: int
     """
     log.message(f"Getting program index for {program_id}")
-    for index, program in enumerate(JDXiProgramList.PROGRAM_LIST):
+    for index, program in enumerate(JDXiProgramList.list_rom_and_user_programs()):
         if getattr(program, "id", None) == program_id:
             log.message(f"Index for {program_id} is {index}")
             return index
@@ -74,7 +74,7 @@ def get_program_by_id(program_id: str) -> Optional[JDXiProgram]:
     :return: Optional[JDXiProgram]
     """
     return next(
-        (program for program in JDXiProgramList.PROGRAM_LIST if program.id == program_id), None
+        (program for program in JDXiProgramList.list_rom_and_user_programs() if program.id == program_id), None
     )
 
 
@@ -90,7 +90,7 @@ def get_program_by_bank_and_number(
     """
     program_id = f"{bank}{program_number:02d}"
     return next(
-        (program for program in JDXiProgramList.PROGRAM_LIST if program.id == program_id), None
+        (program for program in JDXiProgramList.list_rom_and_user_programs() if program.id == program_id), None
     )
 
 
@@ -102,7 +102,7 @@ def get_program_id_by_name(name: str) -> Optional[str]:
     :return: Optional[str]
     """
     log.message(f"Searching for program name: {name}")
-    for program in JDXiProgramList.PROGRAM_LIST:
+    for program in JDXiProgramList.list_rom_and_user_programs():
         if name in program.name:
             return getattr(program, "id", None)
     log.warning(f"Program named '{name}' not found.")
@@ -162,7 +162,7 @@ def get_program_number_by_name(program_name: str) -> Optional[int]:
     :param program_name: str
     :return: int
     """
-    program = next((p for p in JDXiProgramList.PROGRAM_LIST if p.name == program_name), None)
+    program = next((p for p in JDXiProgramList.list_rom_and_user_programs() if p.name == program_name), None)
     return int(program.id[1:]) if program else None
 
 
@@ -174,7 +174,7 @@ def get_program_name_by_id(program_id: str) -> Optional[str]:
     :return: str
     """
     program = next(
-        (program for program in JDXiProgramList.PROGRAM_LIST if program.id == program_id), None
+        (program for program in JDXiProgramList.list_rom_and_user_programs() if program.id == program_id), None
     )
     return program.name if program else None
 
@@ -187,7 +187,7 @@ def get_program_parameter_value(parameter: str, program_id: str) -> Optional[str
     :param program_id: str
     :return:
     """
-    program = next((p for p in JDXiProgramList.PROGRAM_LIST if p.id == program_id), None)
+    program = next((p for p in JDXiProgramList.list_rom_and_user_programs() if p.id == program_id), None)
     return program.get(parameter) if program else None
 
 
@@ -253,7 +253,8 @@ def get_msb_lsb_pc(program_number: int) -> tuple[int, int, int]:
     :raises ValueError: If any of the values can't be converted to int.
     """
     try:
-        program = JDXiProgramList.PROGRAM_LIST[program_number]
+        program_list = JDXiProgramList.list_rom_and_user_programs()
+        program = program_list[program_number]
     except IndexError:
         raise IndexError(f"Program number {program_number} is out of range.")
     try:
