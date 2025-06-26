@@ -1037,3 +1037,46 @@ class ProgramEditor(BasicEditor):
             successes.append(param.name)
         else:
             failures.append(param.name)
+            
+"""
+# Define a mapping between temporary_area and their corresponding handlers
+temporary_area_handlers = {
+    AddressStartMSB.TEMPORARY_PROGRAM.name: {
+        "PROGRAM_LEVEL": (AddressParameterProgramCommon.PROGRAM_LEVEL, self.master_level_slider)
+    },
+    AddressOffsetTemporaryToneUMB.ANALOG_SYNTH.name: {
+        "AMP_LEVEL": (AddressParameterAnalog.get_by_name, self.analog_level_slider)
+    },
+    AddressOffsetTemporaryToneUMB.DRUM_KIT.name: {
+        "KIT_LEVEL": (AddressParameterDrumCommon.KIT_LEVEL, self.drums_level_slider)
+    },
+    AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_1.name: {
+        "TONE_LEVEL": (AddressParameterDigitalCommon.get_by_name, self.digital1_level_slider)
+    },
+    AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_2.name: {
+        "TONE_LEVEL": (AddressParameterDigitalCommon.get_by_name, self.digital2_level_slider)
+    }
+}
+
+partial_tone_names = [
+    AddressOffsetSuperNATURALLMB.PARTIAL_1.name,
+    AddressOffsetSuperNATURALLMB.PARTIAL_2.name,
+    AddressOffsetSuperNATURALLMB.PARTIAL_3.name,
+]
+
+# Get the partial number
+partial_number = get_partial_number(synth_tone, partial_map=partial_map)
+
+# Handle the temporary_area cases
+if temporary_area in temporary_area_handlers:
+    handler = temporary_area_handlers[temporary_area]
+    for param_name, param_value in sysex_data.items():
+        if param_name in handler:
+            param_info = handler[param_name]
+            param = param_info[0](param_name) if callable(param_info[0]) else param_info[0]
+            self._update_slider(param, param_value, successes, failures, param_info[1])
+
+# Handle the partial tone cases
+if synth_tone in partial_tone_names:
+    self._update_common_controls(partial_number, sysex_data, successes, failures)
+"""
