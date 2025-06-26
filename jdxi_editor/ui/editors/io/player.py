@@ -1,4 +1,7 @@
 """ MIDI Player for JDXI Editor """
+import cProfile
+import io
+import pstats
 import re
 from collections import defaultdict
 
@@ -70,6 +73,8 @@ class MidiFileEditor(SynthEditor):
 
     BUFFER_WINDOW_SECONDS = 30.0
 
+    PROFILING = True
+
     def __init__(
             self,
             midi_helper: Optional[MidiIOHelper] = None,
@@ -84,6 +89,7 @@ class MidiFileEditor(SynthEditor):
         :param preset_helper: Optional[JDXIPresetHelper]
         """
         super().__init__()
+        self.profiler = None
         self.selected_channel = MidiChannel.DIGITAL_SYNTH_1  # Default channel for playback
         self.tempo = MidiConstant.TEMPO_DEFAULT_120_BPM  # Default of 120 bpm
         self.digital_title_file_name = None
@@ -344,14 +350,14 @@ class MidiFileEditor(SynthEditor):
             if pattern.search(item):
                 self.usb_port_select_combo.setCurrentIndex(i)
                 self.usb_port_input_device_index = i
-                print(f"Auto-selected {item}")
+                log.message(f"Auto-selected {item}")
                 break
 
     def usb_start_recording(self):
         """Start recording in a separate thread."""
         try:
             if not self.usb_file_output_name:
-                print("No output file selected.")
+                log.message("No output file selected.")
                 return
 
             selected_index = self.usb_port_select_combo.currentIndex()
@@ -482,78 +488,6 @@ class MidiFileEditor(SynthEditor):
         self.position_slider.setRange(0, int(self.midi_duration_seconds))
         self.position_label.setText(f"0:00 / {format_time(self.midi_duration_seconds)}")
 
-    def midi_load_file_old(self):
-        """
-        Load a MIDI file
-        """
-        file_path, _ = QFileDialog.getOpenFileName(
-            self, "Open MIDI File", "", "MIDI Files (*.mid)"
-        )
-        if not file_path:
-            return
-
-        self.midi_file = MidiFile(file_path)
-        self.digital_title_file_name.setText(f"Loaded: {Path(file_path).name}")
-        self.midi_track_viewer.clear()
-        self.midi_track_viewer.set_midi_file(self.midi_file)
-
-        self.ticks_per_beat = self.midi_file.ticks_per_beat
-
-        # === Accurate Tempo Detection ===
-        # Default tempo is 120 BPM (500000 microseconds per quarter note)
-        initial_tempo = MidiConstant.TEMPO_120_BPM_USEC
-        for track in self.midi_file.tracks:
-            for msg in track:
-                if msg.type == "set_tempo":
-                    initial_tempo = msg.tempo
-                    log.parameter("self.tempo", initial_tempo)
-                    break
-            else:
-                track_channel = MidiChannel.DIGITAL_SYNTH_1
-                if hasattr(msg, "channel"):
-                    track_channel = msg.channel
-                    if track_channel in [MidiChannel.DIGITAL_SYNTH_1,
-                                         MidiChannel.DIGITAL_SYNTH_2,
-                                         MidiChannel.ANALOG_SYNTH,
-                                         MidiChannel.DRUM_KIT]:
-                        # Set the channel for all messages of the track if it's valid
-                        msg.channel = track_channel
-                    else:
-                        # choose a reasonable default channel
-                        track_channel = MidiChannel.DIGITAL_SYNTH_1
-                        # Log an error if the channel is invalid
-                        log.error(f"Invalid MIDI channel {track_channel} in track {track.name}")
-                msg.channel = track_channel
-                continue
-            break
-
-        bpm = tempo2bpm(initial_tempo)
-        log.parameter("bpm", bpm)
-        self.tempo_spin.setValue(round(bpm))
-        self.tempo = initial_tempo
-
-        # === MIDI Event Collection ===
-        events = []
-        for track_index, track in enumerate(self.midi_file.tracks):
-            abs_time = 0
-            for msg in track:
-                abs_time += msg.time
-                events.append((abs_time, msg, track_index))
-        self.tick_duration = self.tempo / MidiConstant.TEMPO_CONVERT_SEC_TO_USEC / self.ticks_per_beat
-        self.midi_events = sorted(events, key=lambda x: x[0])
-        self.setup_worker()
-
-        # === Accurate Total Duration Calculation ===
-        self.total_ticks = max(t for t, _, _ in self.midi_events)
-        self.midi_duration_seconds = get_total_duration_in_seconds(self.midi_file)
-
-        self.tick_duration = self.tempo / MidiConstant.TEMPO_CONVERT_SEC_TO_USEC / self.ticks_per_beat
-
-        # === UI Updates ===
-        self.position_slider.setEnabled(True)
-        self.position_slider.setRange(0, int(self.midi_duration_seconds))
-        self.position_label.setText(f"0:00 / {format_time(self.midi_duration_seconds)}")
-
     def on_usb_recording_finished(self, output_file: str):
         """
         on_recording_finished
@@ -577,6 +511,11 @@ class MidiFileEditor(SynthEditor):
         Start playback of the MIDI file
         """
         # In setup_worker or midi_start_playback
+
+        if self.PROFILING:
+            self.profiler = cProfile.Profile()
+            self.profiler.enable()
+
         try:
             self.midi_timer.timeout.disconnect()  # optional: avoid duplicate connections
         except Exception as ex:
@@ -628,19 +567,19 @@ class MidiFileEditor(SynthEditor):
         """
         try:
             if self.midi_event_index is None:
-                log.message(f"No midi_event_index, returning")
+                # log.message(f"No midi_event_index, returning")
                 return
 
             now = time.time()
-            log.parameter("now", now)
+            # log.parameter("now", now)
             buffer_target_time = now - self.midi_start_time + self.BUFFER_WINDOW_SECONDS
-            log.message(f"self.midi_events length: {len(self.midi_events)}")
+            # log.message(f"self.midi_events length: {len(self.midi_events)}")
             while self.midi_event_index < len(self.midi_events):
-                log.message(f"self.midi_event_index: {self.midi_event_index}")
+                # log.message(f"self.midi_event_index: {self.midi_event_index}")
                 tick_time, msg, track = self.midi_events[self.midi_event_index]
                 scheduled_time = tick_time * self.tick_duration
-                log.parameter("scheduled_time", scheduled_time)
-                log.parameter("buffer_target_time", buffer_target_time)
+                # log.parameter("scheduled_time", scheduled_time)
+                # log.parameter("buffer_target_time", buffer_target_time)
                 if scheduled_time <= buffer_target_time:
                     self.midi_event_buffer.append((scheduled_time, msg))
                     self.midi_event_index += 1
@@ -705,35 +644,6 @@ class MidiFileEditor(SynthEditor):
         self.midi_event_buffer.clear()
         self.midi_refill_buffer()
 
-    def midi_scrub_position_old(self):
-        """
-        Scrub to a new position in the file using the slider.
-        Resets start time and event index to match new slider position.
-        """
-        if not self.midi_file or not self.midi_events:
-            log.message("Either self.midi_file or not self.midi_events not present, returning")
-            return
-
-        target_time = self.position_slider.value()
-        log.parameter("target_time", target_time)
-        self.midi_start_time = time.time() - target_time
-        log.parameter("self.midi_start_time", self.midi_start_time)
-        self.midi_event_index = 0
-
-        log.parameter("self.midi_event_index was", self.midi_event_index)
-        # Find the first event index that should be played after this point
-        for i, (tick, _, _) in enumerate(self.midi_events):
-            if tick * self.tick_duration >= target_time:
-                self.midi_event_index = i
-                log.parameter("self.midi_event_index now", self.midi_event_index)
-                break
-
-        # Stop all notes to avoid hanging
-        if self.midi_helper:
-            for ch in range(16):
-                for note in range(128):
-                    self.midi_helper.send_mido_message(mido.Message("note_off", note=note, velocity=0, channel=ch))
-
     def midi_stop_playback(self):
         """
         Stop the playback and reset everything.
@@ -764,6 +674,14 @@ class MidiFileEditor(SynthEditor):
         log.parameter("self.midi_event_buffer", self.midi_event_buffer)
         for t, msg in self.midi_event_buffer[:20]:
             log.message(f"Queued @ {t:.3f}s: {msg}")
+
+        if self.PROFILING:
+            self.profiler.disable()
+            s = io.StringIO()
+            sortby = 'cumtime'  # or 'tottime'
+            ps = pstats.Stats(self.profiler, stream=s).sort_stats(sortby)
+            ps.print_stats(50)  # Top 50 entries
+            log.message(s.getvalue())
 
     def midi_toggle_pause_playback(self):
         """

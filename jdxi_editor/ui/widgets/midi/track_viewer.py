@@ -132,6 +132,13 @@ class MidiTrackViewer(QWidget):
         for widget in self.midi_track_widgets.values():
             widget.update_muted_channels(self.muted_channels)
 
+    def update_muted_channels(self, muted_channels: set[int]) -> None:
+        """
+        Called when the global mute state is updated.
+        """
+        self.muted_channels = muted_channels
+        self.update()  # trigger repaint or UI change if needed
+
     """
     def toggle_track_mute(self, track: int, is_muted: bool) -> None:
         ""

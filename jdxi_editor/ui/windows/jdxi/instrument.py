@@ -360,7 +360,7 @@ class JDXiInstrument(JDXiUi):
         """
         helper = self.preset_helpers.get(self.current_synth_type)
         if helper is None:
-            logging.warning(
+            log.warning(
                 f"Unknown synth preset_type: {self.current_synth_type}, defaulting to digital_1"
             )
             return self.preset_helpers[JDXiSynth.DIGITAL_SYNTH_1]  # Safe fallback

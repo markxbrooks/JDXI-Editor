@@ -22,7 +22,6 @@ Dependencies:
 import json
 import re
 import os
-import logging
 from typing import Optional
 from PySide6.QtGui import QPixmap, QKeySequence, QShortcut
 from PySide6.QtWidgets import QWidget, QGroupBox, QVBoxLayout, QPushButton, QLabel
@@ -262,7 +261,7 @@ class SynthEditor(SynthBase):
         """Return the appropriate preset handler based on the current synth preset_type."""
         handler = self.preset_helpers.get(self.preset_type)
         if handler is None:
-            logging.warning(
+            log.warning(
                 f"Unknown synth preset_type: {self.preset_type}, defaulting to digital_1"
             )
             return self.preset_helpers[JDXiSynth.DIGITAL_SYNTH_1]  # Safe fallback

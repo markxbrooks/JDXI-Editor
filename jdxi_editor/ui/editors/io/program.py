@@ -902,14 +902,6 @@ class ProgramEditor(BasicEditor):
         temporary_area = sysex_data.get("TEMPORARY_AREA")
         synth_tone = sysex_data.get("SYNTH_TONE")
 
-        """
-        if current_synth != temporary_area:
-            log.message(
-                f"temporary_area: {temporary_area} is not current_synth: {current_synth}, Skipping update"
-            )
-            return
-        """
-
         log.header_message(
             f"Updating UI components from SysEx data for \t{temporary_area} \t{synth_tone}"
         )
@@ -927,7 +919,7 @@ class ProgramEditor(BasicEditor):
         if temporary_area == AddressStartMSB.TEMPORARY_PROGRAM.name:
             for param_name, param_value in sysex_data.items():
                 if param_name == "PROGRAM_LEVEL":
-                    param = AddressParameterProgramCommon.get_by_name(param_name)
+                    param = AddressParameterProgramCommon.PROGRAM_LEVEL
                     self._update_slider(param, param_value, successes, failures, self.master_level_slider)
         elif temporary_area == AddressOffsetTemporaryToneUMB.ANALOG_SYNTH.name:
             for param_name, param_value in sysex_data.items():
@@ -937,8 +929,7 @@ class ProgramEditor(BasicEditor):
         elif temporary_area == AddressOffsetTemporaryToneUMB.DRUM_KIT.name:
             for param_name, param_value in sysex_data.items():
                 if param_name == "KIT_LEVEL":
-                    param = AddressParameterDrumCommon.get_by_name(param_name)
-                    self._update_slider(param, param_value, successes, failures, self.drums_level_slider)
+                    self._update_slider(AddressParameterDrumCommon.KIT_LEVEL, param_value, successes, failures, self.drums_level_slider)
         elif temporary_area == AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_1.name:
             for param_name, param_value in sysex_data.items():
                 if param_name == "TONE_LEVEL":
@@ -954,8 +945,7 @@ class ProgramEditor(BasicEditor):
                           AddressOffsetSuperNATURALLMB.PARTIAL_3.name]:
             self._update_common_controls(partial_number, sysex_data, successes, failures)
         elif synth_tone == AddressOffsetSuperNATURALLMB.MODIFY.name:
-            pass
-            # self._update_modify_controls(partial_number, sysex_data, successes, failures)
+            pass # Not dealt with here, handled in editors
         else:  # Drums and Digital 1 & 2 are dealt with via partials
             if partial_number is None:
                 log.error(f"Unknown partial number for synth_tone: {synth_tone}")
