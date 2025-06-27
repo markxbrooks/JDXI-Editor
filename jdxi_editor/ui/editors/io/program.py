@@ -158,14 +158,18 @@ class ProgramEditor(BasicEditor):
         scrolled_area.setWidget(scrolled_area_container)
         main_vlayout.addWidget(scrolled_area)  # ✅ Add scroll area to the main layout
 
+        self.title_vlayout = QVBoxLayout()
         self.title_hlayout = QHBoxLayout()
+        self.title_vlayout.addLayout(self.title_hlayout)
+        self.title_hlayout.addStretch()
+
         self.title_left_vlayout = QVBoxLayout()
         self.title_hlayout.addLayout(self.title_left_vlayout)
 
         self.title_right_vlayout = QVBoxLayout()
         self.title_hlayout.addLayout(self.title_right_vlayout)
 
-        scrolled_area_container_layout.addLayout(self.title_hlayout)
+        scrolled_area_container_layout.addLayout(self.title_vlayout)
         self.setLayout(main_vlayout)
         self.setStyleSheet(JDXiStyle.EDITOR)
 
@@ -191,8 +195,11 @@ class ProgramEditor(BasicEditor):
         self.populate_programs()
 
         mixer_section = self._create_mixer_section()
-        self.title_right_vlayout.addWidget(mixer_section)
-        self.title_right_vlayout.addStretch()
+        self.right_hlayout = QHBoxLayout()
+        self.right_hlayout.addWidget(mixer_section)
+        self.title_right_vlayout.addLayout(self.right_hlayout)
+        self.title_hlayout.addStretch()
+        self.title_vlayout.addStretch()
         preset_type = "Digital Synth 1"
         self.set_channel_and_preset_lists(preset_type)
         self._populate_presets()
