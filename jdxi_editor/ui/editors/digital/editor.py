@@ -150,9 +150,9 @@ class DigitalSynthEditor(SynthEditor):
         main_layout.addWidget(splitter)
 
         # === Top half ===
-        top_widget = QWidget()
-        top_layout = QVBoxLayout()
-        top_widget.setLayout(top_layout)
+        instrument_widget = QWidget()
+        instrument_layout = QVBoxLayout()
+        instrument_widget.setLayout(instrument_layout)
 
         # Partials panel only
         self.partials_panel = PartialsPanel()
@@ -167,24 +167,29 @@ class DigitalSynthEditor(SynthEditor):
         container = QWidget()
         container_layout = QVBoxLayout()
         container.setLayout(container_layout)
-
-        upper_row_layout = QHBoxLayout()
-        upper_row_layout.addStretch()
-        top_layout.addLayout(upper_row_layout)
-        top_layout.addWidget(self.partials_panel)
+        instrument_hrow_layout = QHBoxLayout()
+        # instrument_hrow_layout.addStretch()
+        instrument_layout.addLayout(instrument_hrow_layout)
+        # top_layout.addWidget(self.partials_panel)
         instrument_preset_group = self._create_instrument_preset_group(
             synth_type="Digital"
         )
-        upper_row_layout.addStretch()
-        upper_row_layout.addWidget(instrument_preset_group)
+        instrument_hrow_layout.addStretch()
+        instrument_hrow_layout.addWidget(instrument_preset_group)
         self._create_instrument_image_group()
-        upper_row_layout.addStretch()
-        upper_row_layout.addWidget(self.instrument_image_group)
-        upper_row_layout.addStretch()
+        instrument_hrow_layout.addStretch()
+        instrument_hrow_layout.addWidget(self.instrument_image_group)
+        instrument_hrow_layout.addStretch()
+        instrument_layout.addLayout(instrument_hrow_layout)
+        instrument_layout.addStretch()
         self.update_instrument_image()
+        container_layout.addWidget(self.partials_panel)
+        container_layout.addStretch()
+        self.partial_tab_widget = QTabWidget()
+        instrument_widget.setLayout(instrument_layout)
+        self.partial_tab_widget.addTab(instrument_widget, "Presets")
         self._create_partial_tab_widget(container_layout, self.midi_helper)
         scroll.setWidget(container)
-        splitter.addWidget(top_widget)
         splitter.addWidget(scroll)
         splitter.setSizes(JDXiDimensions.EDITOR_DIGITAL_SPLITTER_SIZES)  # give more room to bottom
 
@@ -201,7 +206,7 @@ class DigitalSynthEditor(SynthEditor):
         :param midi_helper: MiodiIOHelper instance for MIDI communication
         :return: None
         """
-        self.partial_tab_widget = QTabWidget()
+
         self.partial_tab_widget.setStyleSheet(JDXiStyle.TABS + JDXiStyle.EDITOR)
         self.partial_editors = {}
         # Create editor for each partial
@@ -242,11 +247,11 @@ class DigitalSynthEditor(SynthEditor):
 
         # Enable/disable corresponding tab
         partial_num = partial.value
-        self.partial_tab_widget.setTabEnabled(partial_num - 1, enabled)
+        self.partial_tab_widget.setTabEnabled(partial_num, enabled)
 
         # Switch to selected partial's tab
         if selected:
-            self.partial_tab_widget.setCurrentIndex(partial_num - 1)
+            self.partial_tab_widget.setCurrentIndex(partial_num)
 
     def set_partial_state(
             self, partial: DigitalPartial, enabled: bool = True, selected: bool = True
@@ -283,7 +288,7 @@ class DigitalSynthEditor(SynthEditor):
             enabled = partial == DigitalPartial.PARTIAL_1
             selected = enabled
             self.partials_panel.switches[partial].setState(enabled, selected)
-            self.partial_tab_widget.setTabEnabled(partial.value - 1, enabled)
+            self.partial_tab_widget.setTabEnabled(partial.value, enabled)
         self.partial_tab_widget.setCurrentIndex(0)
 
     def _handle_special_params(

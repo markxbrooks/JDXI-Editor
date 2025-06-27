@@ -46,7 +46,7 @@ from PySide6.QtWidgets import (
     QWidget,
     QLabel,
     QHBoxLayout,
-    QGroupBox, QFormLayout, QGridLayout, QScrollArea, QLineEdit,
+    QGroupBox, QFormLayout, QGridLayout, QScrollArea, QLineEdit, QTabWidget,
 )
 from PySide6.QtCore import Signal, Qt
 import qtawesome as qta
@@ -100,6 +100,7 @@ class ProgramEditor(BasicEditor):
         preset_helper: JDXiPresetHelper = None,
     ):
         super().__init__(midi_helper=midi_helper, parent=parent)
+        self.title_right_vlayout = None
         self.program_list = None
         self.file_label = None
         """
@@ -156,52 +157,42 @@ class ProgramEditor(BasicEditor):
 
         scrolled_area.setWidget(scrolled_area_container)
         main_vlayout.addWidget(scrolled_area)  # ✅ Add scroll area to the main layout
-        ###
 
-        title_hlayout = QHBoxLayout()
+        self.title_hlayout = QHBoxLayout()
+        self.title_left_vlayout = QVBoxLayout()
+        self.title_hlayout.addLayout(self.title_left_vlayout)
 
-        self.title_left_group = QGroupBox("Programs")
-        title_left_vlayout = QVBoxLayout()
-        self.title_left_group.setLayout(title_left_vlayout)
+        self.title_right_vlayout = QVBoxLayout()
+        self.title_hlayout.addLayout(self.title_right_vlayout)
 
-        title_hlayout.addWidget(self.title_left_group)
-
-        title_right_vlayout = QVBoxLayout()
-        title_hlayout.addLayout(title_right_vlayout)
-
-        scrolled_area_container_layout.addLayout(title_hlayout)
+        scrolled_area_container_layout.addLayout(self.title_hlayout)
         self.setLayout(main_vlayout)
         self.setStyleSheet(JDXiStyle.EDITOR)
 
-        # Image display
-        self.title_group = QGroupBox("Presets")
-        title_image_layout = QFormLayout()
-        self.title_group.setLayout(title_image_layout)
-        title_right_vlayout.addWidget(self.title_group)
-
         program_preset_hlayout = QHBoxLayout()
         program_preset_hlayout.addStretch()
-        scrolled_area_container_layout.addLayout(program_preset_hlayout)
+        # scrolled_area_container_layout.addLayout(program_preset_hlayout)
 
         program_group = self._create_program_selection_box()
-        program_group.setMinimumWidth(JDXiStyle.PROGRAM_PRESET_GROUP_WIDTH)
-        program_group.setStyleSheet(JDXiStyle.PROGRAM_PRESET_GROUPS)
+        program_preset_hlayout.addStretch()
         program_preset_hlayout.addWidget(program_group)
 
         program_preset_hlayout.addStretch()
 
-        preset_group = self._create_preset_selection_group()
-        preset_group.setMinimumWidth(JDXiStyle.PROGRAM_PRESET_GROUP_WIDTH)
-        preset_group.setStyleSheet(JDXiStyle.PROGRAM_PRESET_GROUPS)
-        program_preset_hlayout.addWidget(preset_group)
+        preset_group = self._create_preset_selection_widget()
+        self.program_preset_tab_widget.addTab(preset_group, "Presets")
         program_preset_hlayout.addStretch()
+
+        self.title_left_vlayout.addLayout(program_preset_hlayout)
+        self.title_left_vlayout.addStretch()
 
         transport_group = self._create_transport_group()
         # scrolled_area_container_layout.addWidget(transport_group)
         self.populate_programs()
 
         mixer_section = self._create_mixer_section()
-        scrolled_area_container_layout.addWidget(mixer_section)
+        self.title_right_vlayout.addWidget(mixer_section)
+        self.title_right_vlayout.addStretch()
         preset_type = "Digital Synth 1"
         self.set_channel_and_preset_lists(preset_type)
         self._populate_presets()
@@ -210,16 +201,16 @@ class ProgramEditor(BasicEditor):
         )
         self.update_instrument_image()
 
-    def _create_preset_selection_group(self) -> QGroupBox:
+    def _create_preset_selection_widget(self) -> QWidget:
         """
-        create_preset_selection_group
+        create_preset_selection_widget
 
-        :return: QGroupBox
+        :return: QWidget
         """
         # Program controls group
-        preset_group = QGroupBox("Load a Preset")
+        preset_widget = QWidget()
         preset_vlayout = QVBoxLayout()
-        preset_group.setLayout(preset_vlayout)
+        preset_widget.setLayout(preset_vlayout)
         self.image_label = QLabel()
         self.image_label.setAlignment(
             Qt.AlignmentFlag.AlignVCenter
@@ -265,7 +256,7 @@ class ProgramEditor(BasicEditor):
         )
         self.load_button.clicked.connect(self.load_preset_by_program_change)
         preset_vlayout.addWidget(self.load_button)
-        return preset_group
+        return preset_widget
 
     def load_preset_by_program_change(self, preset_index: int) -> None:
         """
@@ -340,12 +331,20 @@ class ProgramEditor(BasicEditor):
         """
         # Program controls group
         program_group = QGroupBox("Load a program")
+        program_layout = QVBoxLayout()
         program_vlayout = QVBoxLayout()
 
-        program_group.setLayout(program_vlayout)
-        self.file_label = DigitalTitle("No file loaded")
-        program_vlayout.addWidget(self.file_label)
+        program_group.setLayout(program_layout)
 
+        self.file_label = DigitalTitle("No file loaded")
+        program_layout.addWidget(self.file_label)
+
+        # program and presets tab widget
+        self.program_preset_tab_widget = QTabWidget()
+        program_widget = QWidget()
+        program_widget.setLayout(program_vlayout)
+        program_layout.addWidget(self.program_preset_tab_widget)
+        self.program_preset_tab_widget.addTab(program_widget, "Programs")
         # update_program_name
         self.edit_program_name_button = QPushButton("Edit program name")
         self.edit_program_name_button.clicked.connect(self.edit_program_name)
@@ -629,7 +628,8 @@ class ProgramEditor(BasicEditor):
 
         # Mixer controls group
         mixer_group = QGroupBox("Mixer Level Settings")
-        layout.addWidget(mixer_group)
+        self.title_right_vlayout.addWidget(mixer_group)
+        # self.title_right_vlayout.addStretch()
         mixer_layout = QGridLayout()
         mixer_group.setLayout(mixer_layout)
 

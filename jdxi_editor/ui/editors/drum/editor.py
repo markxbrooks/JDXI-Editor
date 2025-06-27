@@ -97,6 +97,7 @@ class DrumCommonEditor(SynthEditor):
     ):
         super().__init__(midi_helper, parent)
         # Helpers
+        self.presets_parts_tab_widget = None
         self.preset_helper = preset_helper
         self.midi_helper = midi_helper
         self.partial_number = 0
@@ -128,27 +129,32 @@ class DrumCommonEditor(SynthEditor):
         main_layout = QVBoxLayout(self)
         self.setMinimumSize(1100, 500)
 
-        splitter = QSplitter(Qt.Orientation.Vertical)
-        main_layout.addWidget(splitter)
+        # splitter = QSplitter(Qt.Orientation.Vertical)
+        self.presets_parts_tab_widget = QTabWidget()
 
-        upper_widget = QWidget()
-        upper_row_layout = QHBoxLayout(upper_widget)
-        upper_row_layout.addStretch()
-        upper_row_layout.setContentsMargins(0, 0, 0, 0)  # No padding around the layout
+        main_layout.addWidget(self.presets_parts_tab_widget)
+
+        instrument_widget = QWidget()
+        instrument_row_layout = QVBoxLayout(instrument_widget)
+        instrument_hrow_layout = QHBoxLayout()
+        instrument_row_layout.addLayout(instrument_hrow_layout)  # Placeholder for top row
+        instrument_hrow_layout.addStretch()
+        instrument_hrow_layout.setContentsMargins(0, 0, 0, 0)  # No padding around the layout
 
         instrument_preset_group = self._create_instrument_preset_group(
             synth_type="Drums"
         )
-        upper_row_layout.addWidget(instrument_preset_group)
-        upper_row_layout.addStretch()
+        instrument_hrow_layout.addWidget(instrument_preset_group)
+        instrument_hrow_layout.addStretch()
         self._create_instrument_image_group()
         self.address.lmb = AddressOffsetProgramLMB.COMMON
-        upper_row_layout.addWidget(self.instrument_image_group)
+        instrument_hrow_layout.addWidget(self.instrument_image_group)
         self.instrument_image_group.setMinimumWidth(JDXiStyle.INSTRUMENT_IMAGE_WIDTH)
         self.update_instrument_image()
-        upper_row_layout.addStretch()
+        instrument_hrow_layout.addStretch()
+        instrument_row_layout.addStretch()
 
-        splitter.addWidget(upper_widget)
+        self.presets_parts_tab_widget.addTab(instrument_widget, "Drum Kit Presets")
 
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
@@ -157,10 +163,9 @@ class DrumCommonEditor(SynthEditor):
 
         self.partial_tab_widget.setStyleSheet(JDXiStyle.TABS_DRUMS)
         scroll.setWidget(self.partial_tab_widget)
-        splitter.addWidget(scroll)
+        self.presets_parts_tab_widget.addTab(scroll, "Drum Kit Parts")
 
-        splitter.setSizes(JDXiDimensions.EDITOR_DRUM_ANALOG_SPLITTER_SIZES)
-        splitter.setStyleSheet(JDXiStyle.SPLITTER)
+        self.presets_parts_tab_widget.setStyleSheet(JDXiStyle.TABS_DRUMS)
         self.partial_tab_widget.setStyleSheet(JDXiStyle.TABS_DRUMS)
         self._setup_partial_editors()
 
