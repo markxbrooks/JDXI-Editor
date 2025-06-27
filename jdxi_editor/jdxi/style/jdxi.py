@@ -401,9 +401,12 @@ class JDXiStyle:
             """
 
     MIXER_LABEL = f"""
+        QLabel {{
+                font-family: {FONT_FAMILY};
                 font-size: 16px;
                 font-weight: bold;
                 color: {ACCENT};
+                }}
     """
 
     PROGRAM_PRESET_GROUPS = f"""            
