@@ -186,6 +186,11 @@ class AnalogSynthEditor(SynthEditor):
         upper_layout = QHBoxLayout()
         upper_layout.addStretch()
         upper_widget.setLayout(upper_layout)
+        instrument_layout = QVBoxLayout()
+        instrument_layout.addWidget(upper_widget)
+        instrument_layout.addStretch()
+        instrument_widget = QWidget()
+        instrument_widget.setLayout(instrument_layout)
 
         instrument_preset_group = self._create_instrument_preset_group()
         upper_layout.addWidget(instrument_preset_group)
@@ -199,6 +204,7 @@ class AnalogSynthEditor(SynthEditor):
         # Tab sections
         self.tab_widget = QTabWidget()
         container_layout.addWidget(self.tab_widget)
+        self.tab_widget.addTab(instrument_widget, "Presets")
 
         # Configure sliders
         for param, slider in self.controls.items():
@@ -208,7 +214,7 @@ class AnalogSynthEditor(SynthEditor):
 
         scroll.setWidget(container)
 
-        splitter.addWidget(upper_widget)
+        # splitter.addWidget(upper_widget)
         splitter.addWidget(scroll)
         splitter.setSizes(JDXiDimensions.EDITOR_DRUM_ANALOG_SPLITTER_SIZES)  # give more room to bottom
         # Splitter handle style

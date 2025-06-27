@@ -956,44 +956,6 @@ class ProgramEditor(BasicEditor):
         if synth_tone in partial_tone_names:
             self._update_common_controls(partial_number, sysex_data, successes, failures)
 
-        """partial_number = get_partial_number(synth_tone, partial_map=partial_map)
-        if temporary_area == AddressStartMSB.TEMPORARY_PROGRAM.name:
-            for param_name, param_value in sysex_data.items():
-                if param_name == "PROGRAM_LEVEL":
-                    param = AddressParameterProgramCommon.PROGRAM_LEVEL
-                    self._update_slider(param, param_value, successes, failures, self.master_level_slider)
-        elif temporary_area == AddressOffsetTemporaryToneUMB.ANALOG_SYNTH.name:
-            for param_name, param_value in sysex_data.items():
-                if param_name == "AMP_LEVEL":
-                    param = AddressParameterAnalog.get_by_name(param_name)
-                    self._update_slider(param, param_value, successes, failures, self.analog_level_slider)
-        elif temporary_area == AddressOffsetTemporaryToneUMB.DRUM_KIT.name:
-            for param_name, param_value in sysex_data.items():
-                if param_name == "KIT_LEVEL":
-                    self._update_slider(AddressParameterDrumCommon.KIT_LEVEL, param_value, successes, failures, self.drums_level_slider)
-        elif temporary_area == AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_1.name:
-            for param_name, param_value in sysex_data.items():
-                if param_name == "TONE_LEVEL":
-                    param = AddressParameterDigitalCommon.get_by_name(param_name)
-                    self._update_slider(param, param_value, successes, failures, self.digital1_level_slider)
-        elif temporary_area == AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_2.name:
-            for param_name, param_value in sysex_data.items():
-                if param_name == "TONE_LEVEL":
-                    param = AddressParameterDigitalCommon.get_by_name(param_name)
-                    self._update_slider(param, param_value, successes, failures, self.digital2_level_slider)
-        if synth_tone in [AddressOffsetSuperNATURALLMB.PARTIAL_1.name,
-                          AddressOffsetSuperNATURALLMB.PARTIAL_2.name,
-                          AddressOffsetSuperNATURALLMB.PARTIAL_3.name]:
-            self._update_common_controls(partial_number, sysex_data, successes, failures)
-        elif synth_tone == AddressOffsetSuperNATURALLMB.MODIFY.name:
-            pass # Not dealt with here, handled in editors
-        else:  # Drums and Digital 1 & 2 are dealt with via partials
-            if partial_number is None:
-                log.error(f"Unknown partial number for synth_tone: {synth_tone}")
-                return
-            log.parameter("partial_number", partial_number)
-            # self._update_partial_controls(partial_number, sysex_data, successes, failures)"""
-
         log.debug_info(successes, failures)
 
     def _update_common_controls(
