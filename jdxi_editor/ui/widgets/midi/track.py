@@ -6,7 +6,7 @@ import mido
 from PySide6.QtWidgets import (
     QWidget,
 )
-from PySide6.QtGui import QPainter, QColor, QPaintEvent
+from PySide6.QtGui import QPainter, QColor, QPaintEvent, QPixmap
 from PySide6.QtCore import QRectF
 
 from jdxi_editor.jdxi.style import JDXiStyle
@@ -43,6 +43,8 @@ class MidiTrackWidget(QWidget):
         self.setMinimumHeight(JDXiStyle.TRACK_HEIGHT_MINIMUM)  # Adjust as needed
         self.track_data = None  # Dict: {rects: [...], label: str, channels: set}
         self.muted_channels = set()  # Set of muted channels
+        self.cached_pixmap = None
+        self.cached_width = 0
 
         if track:
             self.set_track(track, total_length)
@@ -95,11 +97,29 @@ class MidiTrackWidget(QWidget):
         if program_changes:
             label += f" | Prog: {', '.join(map(str, program_changes))}"
 
+        # self.track_data = {"rects": rects, "label": label, "channels": {first_channel}}
         self.track_data = {"rects": rects, "label": label, "channels": {first_channel}}
+        self.cached_pixmap = None
+        self.cached_width = 0
         self.update()
         log.message(f"rects: {rects}")
 
     def paintEvent(self, event: QPaintEvent) -> None:
+        """
+        paintEvent with caching and optimization
+        """
+        if not self.track_data:
+            return
+
+        if self.cached_pixmap is None or self.cached_width != self.width():
+            self.cached_pixmap = self.render_track_to_pixmap()
+            self.cached_width = self.width()
+
+        painter = QPainter(self)
+        painter.drawPixmap(0, 0, self.cached_pixmap)
+        painter.end()
+
+    def paintEventOld(self, event: QPaintEvent) -> None:
         """
         paintEvent
 
@@ -167,6 +187,70 @@ class MidiTrackWidget(QWidget):
 
         finally:
             painter.end()
+
+    def render_track_to_pixmap(self) -> QPixmap:
+        """
+        render_track_to_pixmap
+
+        :return: QPixmap
+        """
+        width = self.width()
+        height = self.height()
+        pixmap = QPixmap(width, height)
+        pixmap.fill(self.palette().window().color())
+
+        painter = QPainter(pixmap)
+        painter.setRenderHint(QPainter.Antialiasing)
+
+        font = painter.font()
+        font.setPointSize(8)
+        painter.setFont(font)
+
+        y = 0
+        rects = self.track_data["rects"]
+        label = self.track_data["label"]
+        channels = self.track_data["channels"]
+        muted = any(channel in self.muted_channels for channel in channels)
+
+        # Compute scale based on last timestamp
+        times = [t[0] for t in rects]
+        if not times:
+            return pixmap
+
+        max_time = max(times)
+        scale = width / max_time if max_time else 1.0
+
+        # Background track bar
+        start_x = min(times) * scale
+        end_x = max(times) * scale
+        if end_x - start_x < self.note_width:
+            end_x = start_x + self.note_width
+        track_rect = QRectF(start_x, y, end_x - start_x, height)
+
+        channel = get_first_channel(self.track)
+        bg_color = generate_track_colors(16)[int(self.track_number) % 16]
+        if muted:
+            bg_color.setAlpha(50)
+        painter.setBrush(bg_color)
+        painter.drawRect(track_rect)
+
+        # Notes
+        for norm_time, channel in rects:
+            x = norm_time * scale
+            if x + self.note_width < 0 or x > width:
+                continue  # Skip offscreen
+            color = MIDI_CHANNEL_COLORS.get(channel, QColor(100, 100, 255, 150))
+            if channel in self.muted_channels:
+                color.setAlpha(100)
+            painter.setBrush(color)
+            painter.drawRect(QRectF(x, y, self.note_width, height))
+
+        # Label
+        painter.setPen(QColor(200, 200, 200))
+        painter.drawText(5, int(y + 15), label)
+
+        painter.end()
+        return pixmap
 
     def change_track_channel(self, track_index: int, new_channel: int) -> None:
         """

@@ -16,12 +16,14 @@ class TimeRulerWidget(QWidget):
     """
     def __init__(self, midi_file: mido.MidiFile = None, parent: QWidget = None):
         super().__init__(parent)
+        self.midi_file_cached_total_length = None
         self.midi_file = midi_file
         self.setMinimumHeight(20)
         self.setMaximumHeight(JDXiStyle.MAX_RULER_HEIGHT)
 
     def set_midi_file(self, midi_file: mido.MidiFile) -> None:
         self.midi_file = midi_file
+        self.midi_file_cached_total_length = self.midi_file.length
         self.update()
 
     def paintEvent(self, event: QPaintEvent) -> None:
@@ -31,7 +33,7 @@ class TimeRulerWidget(QWidget):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
 
-        duration = self.midi_file.length
+        duration = self.midi_file_cached_total_length
         width = self.width()
         height = self.height()
 
