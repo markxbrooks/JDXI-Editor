@@ -20,6 +20,7 @@ class MidiPlaybackWorker(QObject):
 
     def __init__(self):
         super().__init__()
+        self.should_stop = False
         self.buffered_msgs = []
         self.midi_out_port = None
         self.play_program_changes = True
@@ -36,6 +37,13 @@ class MidiPlaybackWorker(QObject):
         self.play_program_changes = play_program_changes
         self.index = 0
         self.start_time = time.time()
+        self.should_stop = False
+
+        # existing setup...
+
+    def stop(self):
+        with self.lock:
+            self.should_stop = True
 
     def update_tempo(self, new_tempo: int) -> None:
         """
@@ -52,6 +60,8 @@ class MidiPlaybackWorker(QObject):
     @Slot()
     def do_work(self):
         """ do_work """
+        if self.should_stop:
+            return
         now = time.time()
         elapsed = now - self.start_time
 

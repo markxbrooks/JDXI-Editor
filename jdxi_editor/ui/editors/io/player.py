@@ -23,6 +23,7 @@ from PySide6.QtWidgets import (
 )
 import qtawesome as qta
 
+from jdxi_editor.globals import PROFILING
 from jdxi_editor.jdxi.midi.constant import JDXiConstant, MidiConstant
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.channel.channel import MidiChannel
@@ -72,8 +73,6 @@ class MidiFileEditor(SynthEditor):
     """
 
     BUFFER_WINDOW_SECONDS = 30.0
-
-    PROFILING = True
 
     def __init__(
             self,
@@ -295,6 +294,25 @@ class MidiFileEditor(SynthEditor):
 
         self.midi_playback_thread.start()
 
+    def stop_worker(self):
+        """
+        stop_worker
+
+        :return:
+        """
+        if self.midi_timer.isActive():
+            self.midi_timer.stop()
+
+        if self.midi_playback_worker:
+            self.midi_playback_worker.stop()  # signal to stop processing
+
+        if self.midi_playback_thread:
+            self.midi_playback_thread.quit()
+            self.midi_playback_thread.wait()
+            self.midi_playback_thread.deleteLater()
+            self.midi_playback_thread = None
+            self.midi_playback_worker = None
+
     def on_suppress_program_changes_toggled(self, state: Qt.CheckState):
         """
         on_suppress_program_changes_toggled
@@ -512,7 +530,7 @@ class MidiFileEditor(SynthEditor):
         """
         # In setup_worker or midi_start_playback
 
-        if self.PROFILING:
+        if PROFILING:
             self.profiler = cProfile.Profile()
             self.profiler.enable()
 
@@ -649,6 +667,8 @@ class MidiFileEditor(SynthEditor):
         Stop the playback and reset everything.
         """
         self.midi_timer.stop()
+        self.stop_worker()
+
         try:
             self.midi_timer.timeout.disconnect(self.midi_playback_worker.do_work)
         except Exception as ex:
@@ -658,15 +678,16 @@ class MidiFileEditor(SynthEditor):
         except Exception as ex:
             log.warning(f"⚠️ Could not disconnect midi_play_next_event: {ex}")
 
+        self.midi_paused = False
+        self.midi_event_index = 0
+        self.position_slider.setValue(0)
+        self.position_label.setText(f"0:00 / {format_time(self.midi_duration_seconds)}")
+
         # Turn off all notes just in case
         if self.midi_helper:
             for ch in range(16):
                 for note in range(128):
                     self.midi_helper.send_mido_message(mido.Message("note_off", note=note, velocity=0, channel=ch))
-
-        self.midi_event_index = 0
-        self.position_slider.setValue(0)
-        self.position_label.setText(f"0:00 / {format_time(self.midi_duration_seconds)}")
 
         self.active_notes.clear()
         self.usb_stop_recording()
@@ -675,7 +696,7 @@ class MidiFileEditor(SynthEditor):
         for t, msg in self.midi_event_buffer[:20]:
             log.message(f"Queued @ {t:.3f}s: {msg}")
 
-        if self.PROFILING:
+        if PROFILING:
             self.profiler.disable()
             s = io.StringIO()
             sortby = 'cumtime'  # or 'tottime'

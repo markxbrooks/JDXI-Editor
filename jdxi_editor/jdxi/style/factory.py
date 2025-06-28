@@ -516,6 +516,7 @@ def generate_editor_style(
             margin-left: 5px;
             margin-right: 5px;
         }}
+        QLabel {{ width: 100px; }}
     """
 
 
