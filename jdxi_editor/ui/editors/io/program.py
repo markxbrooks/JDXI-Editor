@@ -160,6 +160,7 @@ class ProgramEditor(BasicEditor):
 
         self.title_vlayout = QVBoxLayout()
         self.title_hlayout = QHBoxLayout()
+        self.title_vlayout.addStretch()
         self.title_vlayout.addLayout(self.title_hlayout)
         self.title_hlayout.addStretch()
 
