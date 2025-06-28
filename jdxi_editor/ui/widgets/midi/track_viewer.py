@@ -286,19 +286,20 @@ class MidiTrackViewer(QWidget):
         self.ruler.set_midi_file(midi_file)
 
         # Clear existing selectors if reloading
-        if hasattr(self, "channel_controls_layout"):
-            old_layout = self.channel_controls_layout
+        if hasattr(self, "channel_controls_vlayout"):
+            old_layout = self.channel_controls_vlayout
             while old_layout.count():
                 item = old_layout.takeAt(0)
                 widget = item.widget()
                 if widget:
                     widget.deleteLater()
             self.scroll_content.layout().removeItem(old_layout)
-            del self.channel_controls_layout
+            del self.channel_controls_vlayout
 
         # else:
-        self.channel_controls_layout = QVBoxLayout()
-        self.scroll_content.layout().addLayout(self.channel_controls_layout)
+        self.channel_controls_vlayout = QVBoxLayout()
+        # self.setStyleSheet("QLabel { width: 100px; }")
+        self.scroll_content.layout().addLayout(self.channel_controls_vlayout)
 
         self.midi_track_widgets = {}
         # Create each track widget and add it to the layout
@@ -330,18 +331,19 @@ class MidiTrackViewer(QWidget):
             )
             # hlayout.addWidget(mute_button)
 
-            mute_button = QPushButton("Delete")
-            mute_button.setFixedWidth(30)
-            mute_button.setCheckable(True)
-            mute_button.clicked.connect(lambda _, tr=i: self.delete_track(tr))  # Send internal value (0–15)
-            hlayout.addWidget(mute_button)
+            delete_button = QPushButton("Delete")
+            delete_button.setFixedWidth(30)
+            delete_button.setCheckable(True)
+            delete_button.clicked.connect(lambda _, tr=i: self.delete_track(tr))  # Send internal value (0–15)
+            hlayout.addWidget(delete_button)
 
             # Add the MidiTrackWidget for the specific track
             self.midi_track_widgets[i] = MidiTrackWidget(track=track, track_number=i, total_length=midi_file.length)  # Initialize the dictionary
             hlayout.addWidget(self.midi_track_widgets[i])
-            self.setStyleSheet("QLabel { width: 100px; }")  # Set background color for the layout
-            self.channel_controls_layout.addLayout(hlayout)
-            self.channel_controls_layout.addStretch()
+
+            self.channel_controls_vlayout.addLayout(hlayout)
+            self.channel_controls_vlayout.addStretch()
+
 
     def refresh_track_list(self):
         """
@@ -350,4 +352,7 @@ class MidiTrackViewer(QWidget):
         :return:
         """
         self.update()
+
+    def toggle_track_mute(self, tr, checked):
+        pass
 
