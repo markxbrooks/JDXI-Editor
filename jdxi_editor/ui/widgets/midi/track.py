@@ -43,6 +43,7 @@ class MidiTrackWidget(QWidget):
         self.setMinimumHeight(JDXiStyle.TRACK_HEIGHT_MINIMUM)  # Adjust as needed
         self.track_data = None  # Dict: {rects: [...], label: str, channels: set}
         self.muted_channels = set()  # Set of muted channels
+        self.muted_tracks = set()  # Set of muted channels
         self.cached_pixmap = None
         self.cached_width = 0
 
@@ -97,12 +98,25 @@ class MidiTrackWidget(QWidget):
         if program_changes:
             label += f" | Prog: {', '.join(map(str, program_changes))}"
 
-        # self.track_data = {"rects": rects, "label": label, "channels": {first_channel}}
         self.track_data = {"rects": rects, "label": label, "channels": {first_channel}}
         self.cached_pixmap = None
         self.cached_width = 0
         self.update()
         log.message(f"rects: {rects}")
+
+    def update_muted_tracks(self, muted_tracks: set[int]) -> None:
+        """
+        Called when the global mute state is updated.
+        """
+        self.muted_tracks = muted_tracks
+        self.update()  # trigger repaint or UI change if needed
+
+    def update_muted_channels(self, muted_channels: set[int]) -> None:
+        """
+        Called when the global mute state is updated.
+        """
+        self.muted_channels = muted_channels
+        self.update()  # trigger repaint or UI change if needed
 
     def paintEvent(self, event: QPaintEvent) -> None:
         """

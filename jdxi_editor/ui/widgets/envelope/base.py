@@ -8,6 +8,7 @@ from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.parameter import AddressParameter
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.utils.conversions import midi_value_to_ms, ms_to_midi_value
+from jdxi_editor.ui.widgets.slider import Slider
 
 TOOLTIPS = {
     "attack_time": "Time taken for the pitch to reach peak after note-on.",
@@ -31,7 +32,7 @@ class EnvelopeWidgetBase(QWidget):
                  create_parameter_slider: Callable,
                  midi_helper: Optional[MidiIOHelper] = None,
                  address: Optional[RolandSysExAddress] = None,
-                 controls: Optional[dict[AddressParameter, QWidget]] = None,
+                 controls: Optional[dict[AddressParameter, Slider]] = None,
                  parent: Optional[QWidget] = None):
         super().__init__(parent)
         self.plot = None
@@ -108,10 +109,22 @@ class EnvelopeWidgetBase(QWidget):
         try:
             for param, slider in self.controls.items():
                 key = param.get_envelope_param_type()
-                if isinstance(self.envelope.get(key), float) and key.endswith("_level"):
-                    slider.setValue(self.envelope[key])
-                else:
-                    slider.setValue(int(ms_to_midi_value(self.envelope[key])))
+                if key is None:
+                    log.info(f"parameter {param.name} is not in envelope, skipping update")
+                elif hasattr(slider, 'setValue'):
+                    if param.name in ["OSC_WAVE"]:
+                        continue
+                    elif isinstance(self.envelope.get(key), float) and key.endswith("_level"):
+                        if hasattr(slider, 'setValue'):
+                            slider.setValue(self.envelope[key])
+                    elif isinstance(self.envelope.get(key), float) and key.endswith("_width"):
+                        if hasattr(slider, 'setValue'):
+                            slider.setValue(self.envelope[key])
+                    elif isinstance(self.envelope.get(key), float):
+                        if hasattr(slider, 'setValue'):
+                            slider.setValue(self.envelope[key])
+                    else:
+                        pass  # Not in envelope or not a float
         except Exception as ex:
             log.error(f"Error updating controls from envelope: {ex}")
         if hasattr(self, "plot") and self.plot:

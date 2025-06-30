@@ -109,7 +109,25 @@ class PWMSliderSpinbox(QWidget):
         self.spinbox.valueChanged.connect(self._spinbox_changed)
 
     def convert_to_envelope(self, value: float):
+        """
+        convert_to_envelope
+
+        :param value:
+        :return:
+        Convert the slider value to envelope value based on parameter type
+        """
+        if self.param is None:
+            log.error("Parameter is None, cannot convert to envelope")
+            return 0.0
+        if value is None:
+            log.error("Value is None, cannot convert to envelope")
+            return 0.0
         param_type = self.param.get_envelope_param_type()
+        if param_type is None:
+            log.error(f"Parameter type for {self.param.name} is None, cannot convert to envelope")
+            return 0.0
+        if param_type in ["filter_cutoff", "filter_resonance"]:
+            return value
         if param_type == "mod_depth":
             return value / self.factor
         if param_type == "pulse_width":
@@ -120,6 +138,11 @@ class PWMSliderSpinbox(QWidget):
 
     def convert_from_envelope(self, value: float):
         param_type = self.param.get_envelope_param_type()
+        if param_type is None:
+            log.error(f"Parameter type for {self.param.name} is None, cannot convert from envelope")
+            return 0.0
+        if param_type in ["filter_cutoff", "filter_resonance"]:
+            return value
         if param_type in ["mod_depth"]:
             return int(value * self.factor)
         if param_type in ["pulse_width"]:

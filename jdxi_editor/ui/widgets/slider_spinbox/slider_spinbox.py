@@ -121,7 +121,16 @@ class AdsrSliderSpinbox(QWidget):
         :param value: float
         :return: float
         """
+        if self.param is None:
+            log.error("Parameter is None, cannot convert to envelope")
+            return 0.0
+        if value is None:
+            log.error("Value is None, cannot convert to envelope")
+            return 0.0
         param_type = self.param.get_envelope_param_type()
+        if param_type is None:
+            log.error(f"Parameter type for {self.param.name} is None, cannot convert to envelope")
+            return 0.0
         if param_type == "sustain_level":
             converted_value = value / self.factor
             log.message(f"convert_to_envelope param type: {param_type} value {value} -> env {converted_value}")

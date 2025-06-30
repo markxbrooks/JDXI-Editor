@@ -5,6 +5,7 @@ ENVELOPE_MAPPING = {
     "FILTER_ENV_SUSTAIN_LEVEL": "sustain_level",
     "FILTER_ENV_RELEASE_TIME": "release_time",
     "FILTER_ENV_DEPTH": "peak_level",
+    "FILTER_CUTOFF": "filter_cutoff",
     # AMP ADSR
     "AMP_ENV_ATTACK_TIME": "attack_time",
     "AMP_ENV_DECAY_TIME": "decay_time",

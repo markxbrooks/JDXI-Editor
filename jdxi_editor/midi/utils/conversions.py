@@ -46,6 +46,8 @@ def ms_to_midi_value(ms_time: float,
     midi_byte_range = MidiConstant.VALUE_MAX_SEVEN_BIT  # 127
     conversion_factor = time_range / midi_byte_range
     midi_value = int((ms_time / conversion_factor) - min_time)
+    if not midi_value or midi_value is None:
+        midi_value = 0
     return midi_value
 
 

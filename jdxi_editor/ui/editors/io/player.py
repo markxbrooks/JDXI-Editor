@@ -559,15 +559,19 @@ class MidiFileEditor(SynthEditor):
             self.midi_buffer_end_time = 0
             self.midi_start_time = time.time()
             self.midi_event_index = 0
-            self.midi_refill_buffer()
+            # self.midi_refill_buffer()
 
             # Setup worker if not already initialized
             if not self.midi_playback_thread or not self.midi_playback_worker:
                 self.setup_worker()
 
             # === Prepare the buffered events for the worker ===
-            buffered_msgs = buffer_midi_tracks(self.midi_file)
+            muted_channels = self.get_muted_channels()
+
+            muted_tracks = self.get_muted_tracks()
+            buffered_msgs = buffer_midi_tracks(self.midi_file, muted_tracks, muted_channels)
             self.midi_playback_worker.setup(
+                # buffered_msgs=self.midi_event_buffer.copy(),
                 buffered_msgs=buffered_msgs,
                 midi_out_port=self.midi_helper.midi_out,
                 ticks_per_beat=self.midi_file.ticks_per_beat,
@@ -581,13 +585,79 @@ class MidiFileEditor(SynthEditor):
 
     def midi_refill_buffer(self):
         """
+        Load events into the buffer for the next BUFFER_WINDOW seconds,
+        skipping muted tracks and channels.
+        """
+        try:
+            if self.midi_event_index is None:
+                return
+
+            muted_channels = self.get_muted_channels()
+
+            muted_tracks = self.get_muted_tracks()
+
+            now = time.time()
+            buffer_target_time = now - self.midi_start_time + self.BUFFER_WINDOW_SECONDS
+
+            while self.midi_event_index < len(self.midi_events):
+                tick_time, msg, track = self.midi_events[self.midi_event_index]
+                scheduled_time = tick_time * self.tick_duration
+
+                if scheduled_time > buffer_target_time:
+                    break
+
+                log.parameter("track_index", self.midi_event_index)
+                log.parameter("track", track)
+                log.parameter("msg.channel", getattr(msg, "channel", None))
+                log.parameter("msg", msg)
+
+                if track in muted_tracks:
+                    log.message(f"🚫 Skipping muted track {track}")
+                    self.midi_event_index += 1
+                    continue
+
+                if hasattr(msg, "channel"):
+                    log.message(f"🔍 Checking msg.channel={msg.channel} in muted_channels={muted_channels}")
+                    if msg.channel in muted_channels:
+                        log.message(f"🚫 Skipping muted channel {msg.channel}")
+                        self.midi_event_index += 1
+                        continue
+
+                log.message(f"🎵 Adding midi msg to buffer: {msg}")
+                self.midi_event_buffer.append((scheduled_time, msg))
+                self.midi_event_index += 1
+
+            # Update buffer end time
+            self.midi_buffer_end_time = buffer_target_time
+
+        except Exception as ex:
+            log.error(f"Error {ex} occurred playing next event")
+
+    def get_muted_tracks(self):
+        muted_tracks_raw = self.midi_track_viewer.get_muted_tracks()
+        muted_tracks = {int(t) for t in muted_tracks_raw if not isinstance(t, set)}
+        for track in muted_tracks:
+            log.parameter("Muted track", track)
+        return muted_tracks
+
+    def get_muted_channels(self):
+        muted_channels_raw = self.midi_track_viewer.get_muted_channels()
+        muted_channels = {int(c) for c in muted_channels_raw if not isinstance(c, set)}
+        log.parameter("Muted channels", muted_channels)
+        for channel in muted_channels:
+            log.parameter("Muted channel", channel)
+        return muted_channels
+
+    def midi_refill_buffer_old(self):
+        """
         Load events into the buffer for the next BUFFER_WINDOW seconds
         """
         try:
             if self.midi_event_index is None:
                 # log.message(f"No midi_event_index, returning")
                 return
-
+            muted_channels = self.midi_track_viewer.get_muted_channels()
+            muted_tracks = self.midi_track_viewer.get_muted_tracks()
             now = time.time()
             # log.parameter("now", now)
             buffer_target_time = now - self.midi_start_time + self.BUFFER_WINDOW_SECONDS
@@ -656,7 +726,7 @@ class MidiFileEditor(SynthEditor):
         if self.midi_helper:
             for ch in range(16):
                 for note in range(128):
-                    self.midi_helper.send_mido_message(mido.Message("note_off", note=note, velocity=0, channel=ch))
+                    self.midi_helper.midi_out.send(mido.Message("note_off", note=note, velocity=0, channel=ch))
 
         # ✅ Critical: refill buffer so playback resumes correctly
         self.midi_event_buffer.clear()
@@ -687,7 +757,7 @@ class MidiFileEditor(SynthEditor):
         if self.midi_helper:
             for ch in range(16):
                 for note in range(128):
-                    self.midi_helper.send_mido_message(mido.Message("note_off", note=note, velocity=0, channel=ch))
+                    self.midi_helper.midi_out.send_message(mido.Message("note_off", note=note, velocity=0, channel=ch).bytes())
 
         self.active_notes.clear()
         self.usb_stop_recording()
