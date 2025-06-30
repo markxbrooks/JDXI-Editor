@@ -29,6 +29,7 @@ import cProfile
 import pstats
 import io
 
+from PySide6.QtCore import QSettings
 from PySide6.QtWidgets import (
     QApplication,
     QProgressBar,
@@ -46,6 +47,7 @@ from jdxi_editor.project import __program__, __version__
 from jdxi_editor.resources import resource_path
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.ui.windows.jdxi.instrument import JDXiInstrument
+from jdxi_editor.project import __version__, __program__, __organization_name__
 
 os.environ["QT_LOGGING_RULES"] = "qt.qpa.fonts=false"
 
@@ -53,7 +55,9 @@ os.environ["QT_LOGGING_RULES"] = "qt.qpa.fonts=false"
 def main():
     try:
         # Set up logging first
-        logger = setup_logging()
+        settings = QSettings(__organization_name__, __program__)
+        log_level = settings.value("log_level", logging.DEBUG)
+        logger = setup_logging(log_level=log_level)
 
         # Create application
         app = QApplication(sys.argv)

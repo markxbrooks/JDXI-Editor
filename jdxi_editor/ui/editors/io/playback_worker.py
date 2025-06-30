@@ -9,6 +9,7 @@ import threading
 import time
 
 from jdxi_editor.jdxi.midi.constant import MidiConstant
+from jdxi_editor.jdxi.sysex.bitmask import BitMask
 from jdxi_editor.ui.widgets.midi.utils import ticks_to_seconds
 
 
@@ -52,6 +53,8 @@ class MidiPlaybackWorker(QObject):
         :param new_tempo: int
         :return: None
         """
+        if new_tempo is None:
+            return  # No change in tempo
         print(f"Emitting {new_tempo}")
         self.set_tempo.emit(new_tempo)
         with self.lock:
@@ -59,6 +62,40 @@ class MidiPlaybackWorker(QObject):
 
     @Slot()
     def do_work(self):
+        if self.should_stop:
+            return
+
+        now = time.time()
+        elapsed = now - self.start_time
+
+        while self.index < len(self.buffered_msgs):
+            abs_ticks, raw_bytes, msg_tempo = self.buffered_msgs[self.index]
+
+            tempo = msg_tempo
+            msg_time_sec = ticks_to_seconds(abs_ticks, tempo, self.ticks_per_beat)
+
+            if msg_time_sec > elapsed:
+                break
+
+            if raw_bytes is not None:
+                status_byte = raw_bytes[0]
+                message_type = status_byte & BitMask.HIGH_4_BITS
+
+                if message_type == MidiConstant.PROGRAM_CHANGE and not self.play_program_changes:
+                    # 0xC0 = program_change
+                    pass  # Skip
+                else:
+                    self.midi_out_port.send_message(raw_bytes)
+            else:
+                self.update_tempo(msg_tempo)
+
+            self.index += 1
+
+        if self.index >= len(self.buffered_msgs):
+            self.finished.emit()
+
+    @Slot()
+    def do_work_old(self):
         """ do_work """
         if self.should_stop:
             return
@@ -66,24 +103,27 @@ class MidiPlaybackWorker(QObject):
         elapsed = now - self.start_time
 
         while self.index < len(self.buffered_msgs):
-            abs_ticks, msg, msg_tempo = self.buffered_msgs[self.index]
+            # abs_ticks, msg, msg_tempo = self.buffered_msgs[self.index]
+            abs_ticks, raw_bytes, msg_tempo = self.buffered_msgs[self.index]
 
-            with self.lock:
-                tempo = msg_tempo if msg.type == 'set_tempo' else self.current_tempo
+            #with self.lock:
+            tempo = msg_tempo # if msg.type == 'set_tempo' else self.current_tempo
 
             msg_time_sec = ticks_to_seconds(abs_ticks, tempo, self.ticks_per_beat)
 
             if msg_time_sec > elapsed:
                 break
 
-            if not msg.is_meta:
-                if msg.type == 'program_change' and not self.play_program_changes:
-                    pass  # Skip
-                else:
-                    self.midi_out_port.send_message(msg.bytes())
-
-            if msg.type == 'set_tempo':
-                self.update_tempo(msg.tempo)
+            #if not msg.is_meta:
+            #    if msg.type == 'program_change' and not self.play_program_changes:
+            #        pass  # Skip
+            #    else:
+            if raw_bytes is not None:
+                # Send the raw MIDI bytes
+                self.midi_out_port.send_message(raw_bytes)
+                #if msg.type == 'set_tempo':
+            else:
+                self.update_tempo(msg_tempo)
 
             self.index += 1
 

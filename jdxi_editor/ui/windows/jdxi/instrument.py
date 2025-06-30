@@ -68,6 +68,7 @@ from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.midi.program.helper import JDXiProgramHelper
 from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
 from jdxi_editor.ui.dialogs.about import UiAboutDialog
+from jdxi_editor.ui.dialogs.settings import UiPreferencesDialog
 from jdxi_editor.ui.editors import (
     AnalogSynthEditor,
     DigitalSynthEditor,
@@ -604,6 +605,16 @@ class JDXiInstrument(JDXiUi):
             os_file_open(html_file)
         except Exception as ex:
             log.exception(f"Error {ex} occurred opening documentation")
+
+    def on_preferences(self):
+        """
+        on_preferences
+        :return:
+        """
+        preferences_dialog = UiPreferencesDialog(self)
+        preferences_dialog.ui_setup(preferences_dialog)
+        preferences_dialog.setAttribute(Qt.WA_DeleteOnClose)
+        preferences_dialog.exec()
 
     def get_existing_editor(self, editor_class) -> Optional[SynthEditor]:
         """

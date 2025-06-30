@@ -25,7 +25,7 @@ class MidiTrackViewer(QWidget):
         self.event_index = None
         self.ruler = TimeRulerWidget()
         self.midi_track_widgets = {}  # MidiTrackWidget()
-        self.muted_tracks = set()  # To track muted tracks
+        self.muted_tracks: set[int]  = set()  # To track muted tracks
 
         # To track muted channels
         self.muted_channels: set[int] = set()
@@ -96,6 +96,7 @@ class MidiTrackViewer(QWidget):
             if btn.isChecked():
                 btn.setChecked(False)
         self.muted_channels.clear()
+        self.muted_tracks.clear()
 
         # Remove track widgets
         for track_key, track_widget in self.midi_track_widgets.copy().items():
@@ -131,12 +132,40 @@ class MidiTrackViewer(QWidget):
         # Notify all track widgets
         for widget in self.midi_track_widgets.values():
             widget.update_muted_channels(self.muted_channels)
+        print(f"Muted channels updated: {self.muted_channels}")
 
     def update_muted_channels(self, muted_channels: set[int]) -> None:
         """
         Called when the global mute state is updated.
         """
         self.muted_channels = muted_channels
+        print(f"Muted channels updated: {self.muted_channels}")
+        self.update()  # trigger repaint or UI change if needed
+
+    def toggle_track_mute(self, track: int, is_muted: bool) -> None:
+        """
+        Toggle mute state for a specific MIDI track.
+
+        :param track: int MIDI channel (1-16)
+        :param is_muted: bool is the channel muted?
+        :return: None
+        """
+        if is_muted:
+            self.muted_tracks.add(track)
+        else:
+            self.muted_tracks.discard(track)
+
+        # Notify all track widgets
+        for widget in self.midi_track_widgets.values():
+            widget.update_muted_tracks(self.muted_tracks)
+        print(f"Muted tracks updated: {self.muted_tracks}")
+
+    def update_muted_tracks(self, muted_tracks: set[int]) -> None:
+        """
+        Called when the global mute state is updated.
+        """
+        self.muted_tracks = muted_tracks
+        print(f"Muted tracks updated: {self.muted_tracks}")
         self.update()  # trigger repaint or UI change if needed
 
     """
@@ -198,6 +227,7 @@ class MidiTrackViewer(QWidget):
 
         track_widget = self.midi_track_widgets[track_index]
         track_widget.muted = not track_widget.muted
+        self.toggle_track_mute(track_index, track_widget.muted)
 
     def delete_track(self, track_index: int) -> None:
         """
@@ -306,8 +336,12 @@ class MidiTrackViewer(QWidget):
         for i, track in enumerate(midi_file.tracks):
             hlayout = QHBoxLayout()
 
+            # Optional: Get the track name to show in dialog
+            track = self.midi_file.tracks[i]
+            track_name = getattr(track, 'name', f"Track {i + MidiConstant.CHANNEL_BINARY_TO_DISPLAY}")
+
             # Add QLabel for track number and channel
-            label = QLabel(f"Track {i+1} Channel:")
+            label = QLabel(f"{i+1}:{track_name},Ch:")
             label.setFixedWidth(100)
             hlayout.addWidget(label)
             # Add QSpinBox for selecting the MIDI channel
@@ -329,7 +363,7 @@ class MidiTrackViewer(QWidget):
             mute_button.toggled.connect(
                 lambda checked, tr=i: self.toggle_track_mute(tr, checked)
             )
-            # hlayout.addWidget(mute_button)
+            hlayout.addWidget(mute_button)
 
             delete_button = QPushButton("Delete")
             delete_button.setFixedWidth(30)
@@ -344,7 +378,6 @@ class MidiTrackViewer(QWidget):
             self.channel_controls_vlayout.addLayout(hlayout)
             self.channel_controls_vlayout.addStretch()
 
-
     def refresh_track_list(self):
         """
         refresh_track_list
@@ -353,6 +386,8 @@ class MidiTrackViewer(QWidget):
         """
         self.update()
 
-    def toggle_track_mute(self, tr, checked):
-        pass
+    def get_muted_channels(self):
+        return self.muted_channels
 
+    def get_muted_tracks(self):
+        return self.muted_tracks

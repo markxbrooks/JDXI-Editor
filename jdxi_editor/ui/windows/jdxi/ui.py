@@ -346,9 +346,15 @@ class JDXiUi(QMainWindow):
         about_help_action.triggered.connect(self._show_about_help)
         self.help_menu.addAction(about_help_action)
 
-        documentation_action = QAction(qta.icon("mdi6.help-rhombus-outline"),"Documentation", self,
-            statusTip=f"Show {__program__} documentation",
-            triggered=self.on_documentation)
+        preferences_action = QAction(qta.icon("msc.settings"), "Preferences", self)
+        preferences_action.setStatusTip("Show the Preferences window")
+        preferences_action.triggered.connect(self.on_preferences)
+        self.help_menu.addAction(preferences_action)
+
+        documentation_action = QAction(qta.icon("mdi6.help-rhombus-outline"),"Documentation", self)
+        documentation_action.setStatusTip(f"Show {__program__} documentation")
+        documentation_action.triggered.connect(self.on_documentation)
+
         self.help_menu.addAction(documentation_action)
 
         # Add Main Editor window action
@@ -529,6 +535,9 @@ class JDXiUi(QMainWindow):
         raise NotImplementedError("to be implemented in subclass")
 
     def on_documentation(self):
+        raise NotImplementedError("to be implemented in subclass")
+
+    def on_preferences(self):
         raise NotImplementedError("to be implemented in subclass")
 
     def show_editor(self, param: str):

@@ -3,7 +3,11 @@
 import json
 import logging
 from typing import Optional, Any
+from PySide6.QtCore import QSettings
 
+from jdxi_editor.project import __version__, __program__, __package_name__, __organization_name__, __project__
+
+from jdxi_editor.project import __package_name__
 from jdxi_editor.globals import LOG_PADDING_WIDTH, LOGGING
 from jdxi_editor.log.decorator import decorate_log_message
 
@@ -92,8 +96,11 @@ class Logger:
         Log a plain message with optional formatting.
         """
         full_message = decorate_log_message(message, level)
-        if LOGGING and not silent:
-            logging.log(level, full_message, stacklevel=stacklevel)
+        settings = QSettings(__organization_name__, __program__)
+        logging_enabled = bool(settings.value("logging", True, type=bool))
+        if logging_enabled and not silent:
+            logger = logging.getLogger(__package_name__)
+            logger.log(level, full_message, stacklevel=stacklevel)
 
     info = message
 
