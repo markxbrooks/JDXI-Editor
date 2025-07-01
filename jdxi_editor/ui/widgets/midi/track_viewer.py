@@ -5,7 +5,8 @@ Midi Track Viewer
 import mido
 import qtawesome as qta
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QScrollArea, QSlider, QMessageBox
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QScrollArea, QSlider, QMessageBox, \
+    QLineEdit, QLayout
 
 from jdxi_editor.jdxi.midi.constant import MidiConstant
 from jdxi_editor.jdxi.style import JDXiStyle
@@ -100,6 +101,60 @@ class MidiTrackViewer(QWidget):
         self.setLayout(main_layout)
 
     def clear(self):
+        """Clear the MIDI track view and reset state."""
+        # Clear MIDI data
+        self.midi_file = None
+        self.event_index = None
+
+        # Unmute all channels
+        for ch, btn in self.mute_buttons.items():
+            if btn.isChecked():
+                btn.setChecked(False)
+        self.muted_channels.clear()
+        self.muted_tracks.clear()
+
+        # Remove track widgets
+        for track_key, track_widget in self.midi_track_widgets.copy().items():
+            track_widget.setParent(None)
+            track_widget.deleteLater()
+        self.midi_track_widgets.clear()
+
+        # Remove layouts/items from the channel controls layout
+        if hasattr(self, "channel_controls_vlayout"):
+            layout = self.channel_controls_vlayout
+            while layout.count():
+                item = layout.takeAt(0)
+                widget = item.widget()
+                if widget:
+                    widget.setParent(None)
+                    widget.deleteLater()
+                elif item.layout():
+                    self._clear_layout(item.layout())  # See helper below
+
+        # Reset zoom slider to default
+        self.track_zoom_slider.setValue(50)
+
+        # Optional: force a redraw
+        self.update()
+
+    def _clear_layout(self, layout: QLayout):
+        """
+        _clear_layout
+
+        :param layout:
+        :return:
+        Recursively clear a layout and its children.
+        """
+        while layout.count():
+            item = layout.takeAt(0)
+            widget = item.widget()
+            if widget:
+                widget.setParent(None)
+                widget.deleteLater()
+            elif item.layout():
+                self._clear_layout(item.layout())
+
+    def clear_old(self):
         """Clear the MIDI track view and reset state."""
         # Clear MIDI data
         self.midi_file = None
@@ -225,6 +280,28 @@ class MidiTrackViewer(QWidget):
             # Optional: update UI if needed
             self.refresh_track_list()
 
+    def change_track_name(self, track_index: int, new_name: str) -> None:
+        """
+        Change the MIDI channel of a specific track.
+
+        :param track_index: int
+        :param new_name: str
+        :return: None
+        """
+        if not (0 <= track_index < len(self.midi_file.tracks)):
+            raise IndexError("Invalid track index")
+
+        track = self.midi_file.tracks[track_index]
+        for msg in track:
+            if msg.type == "track_name":
+                msg.name = new_name
+                break
+        else:
+            # If not found, insert a new track name at the top
+            track.insert(0, mido.MetaMessage("track_name", name=new_name, time=0))
+
+        log.message(f"Renamed track {track_index} to {new_name}")
+
     def change_track_channel(self, track_index: int, new_channel: int) -> None:
         """
         Change the MIDI channel of a specific track.
@@ -272,6 +349,19 @@ class MidiTrackViewer(QWidget):
             track_index, spin_box.value() + MidiConstant.CHANNEL_DISPLAY_TO_BINARY
         )
 
+    def make_apply_name(self, track_name: str, text_edit: QLineEdit) -> callable:
+        """
+        Create a slot for applying changes to the track channel.
+
+        :param track_name: str Track name to modify
+        :param text_edit: QLineEdit for selecting the name
+        :return: callable function to apply changes
+        """
+        log.message(f"Track index: {track_name}, Text: {text_edit.text()}")
+        return lambda: self.change_track_name(
+            track_name, text_edit.text()
+        )
+
     def set_midi_file(self, midi_file: mido.MidiFile) -> None:
         """
         Set the MIDI file for the widget and create channel controls.
@@ -313,21 +403,44 @@ class MidiTrackViewer(QWidget):
             color = colors.get(first_channel, JDXiStyle.ACCENT)  # Default color if not specified
             icon_name = icon_names.get(first_channel, "mdi.piano",)  # Default icon if not specified
             # Add QLabel for track number and channel
-            pixmap = qta.icon(icon_name, color=color).pixmap(JDXiStyle.ICON_PIXMAP_SIZE, JDXiStyle.ICON_PIXMAP_SIZE)
+            pixmap = qta.icon(icon_name, color=color).pixmap(JDXiStyle.TRACK_ICON_PIXMAP_SIZE, JDXiStyle.TRACK_ICON_PIXMAP_SIZE)
             icon_label = QLabel()
             icon_label.setPixmap(pixmap)
-            icon_label.setFixedWidth(JDXiStyle.ICON_PIXMAP_SIZE)  # Add some padding
+            icon_label.setFixedWidth(JDXiStyle.TRACK_ICON_PIXMAP_SIZE)  # Add some padding
             hlayout.addWidget(icon_label)
 
-            label = QLabel(f"{i+1}:{track_name},Ch:")
-            label.setFixedWidth(JDXiStyle.TRACK_LABEL_WIDTH)
-            hlayout.addWidget(label)
+            label_vlayout = QVBoxLayout()
+            label_vlayout.setContentsMargins(0, 0, 0, 0)
+            label_vlayout.setSpacing(0)
+            hlayout.addLayout(label_vlayout)
+            line_label_row = QHBoxLayout()
+            #line_label_row.setContentsMargins(0, 0, 0, 0)
+            #line_label_row.setSpacing(0)
+            label_vlayout.addLayout(line_label_row)
+
+            # Add QLineEdit for track label
+            track_name_line_edit = QLineEdit()
+            track_name_line_edit.setText(track_name)
+            track_number_label = QLabel(f"{i+1}")
+            track_channel_label = QLabel("Ch:")
+            track_name_line_edit.setFixedWidth(JDXiStyle.TRACK_LABEL_WIDTH)
+            track_name_line_edit.setToolTip("Track Name")
+            track_name_line_edit.setStyleSheet("QLineEdit { background-color: transparent; border: none; }")
+            track_name_line_edit.setAlignment(Qt.AlignLeft)
+            label_vlayout.addLayout(line_label_row)
+            # line_label_row.addWidget(track_number_label)
+            line_label_row.addWidget(track_name_line_edit)
+            # line_label_row.addWidget(track_channel_label)
+            # hlayout.addWidget(label)
             # Add QSpinBox for selecting the MIDI channel
             spin = MidiSpinBox()
             spin.setToolTip("Select MIDI Channel for Track, then click 'Apply' to save changes")
             spin.setValue(first_channel)  # Offset for display
             spin.setFixedWidth(JDXiStyle.TRACK_SPINBOX_WIDTH)
-            hlayout.addWidget(spin)
+            line_label_row.addWidget(spin)
+
+            button_hlayout = QHBoxLayout()
+            label_vlayout.addLayout(button_hlayout)
 
             apply_icon = qta.icon("fa.save",
                                   color=JDXiStyle.FOREGROUND)
@@ -336,7 +449,15 @@ class MidiTrackViewer(QWidget):
             apply_button.setToolTip("Apply changes to Track Channel")
             apply_button.setFixedWidth(JDXiStyle.TRACK_SPINBOX_WIDTH)
             apply_button.clicked.connect(self.make_apply_slot(i, spin))
-            hlayout.addWidget(apply_button)
+            # apply_button.clicked.connect(self.make_apply_name(i, track_name_line_edit))
+            apply_button.clicked.connect(lambda _, tr=i, le=track_name_line_edit: self.change_track_name(tr, le.text()))
+            """
+            apply_button.clicked.connect(lambda _, tr=i, le=track_name_line_edit, sp=spin: (
+            self.change_track_name(tr, le.text()),
+            self.change_channel(tr, sp.value())
+            ))
+            """
+            button_hlayout.addWidget(apply_button)
 
             mute_icon = qta.icon("msc.mute",
                                   color=JDXiStyle.FOREGROUND)
@@ -349,7 +470,7 @@ class MidiTrackViewer(QWidget):
             mute_button.toggled.connect(
                 lambda checked, tr=i: self.toggle_track_mute(tr, checked)
             )
-            hlayout.addWidget(mute_button)
+            button_hlayout.addWidget(mute_button)
 
             delete_icon = qta.icon("mdi.delete-empty-outline",
                                   color=JDXiStyle.FOREGROUND)
@@ -359,7 +480,7 @@ class MidiTrackViewer(QWidget):
             delete_button.setFixedWidth(JDXiStyle.TRACK_BUTTON_WIDTH)
             delete_button.setCheckable(True)
             delete_button.clicked.connect(lambda _, tr=i: self.delete_track(tr))  # Send internal value (0–15)
-            hlayout.addWidget(delete_button)
+            button_hlayout.addWidget(delete_button)
 
             # Add the MidiTrackWidget for the specific track
             self.midi_track_widgets[i] = MidiTrackWidget(track=track, track_number=i, total_length=midi_file.length)  # Initialize the dictionary
