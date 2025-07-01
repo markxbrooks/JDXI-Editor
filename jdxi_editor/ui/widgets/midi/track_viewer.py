@@ -3,10 +3,12 @@ Midi Track Viewer
 """
 
 import mido
+import qtawesome as qta
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QScrollArea, QSlider, QMessageBox
 
 from jdxi_editor.jdxi.midi.constant import MidiConstant
+from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.ui.widgets.midi.spin_box.spin_box import MidiSpinBox
 from jdxi_editor.ui.widgets.midi.time_ruler import TimeRulerWidget
@@ -40,7 +42,19 @@ class MidiTrackViewer(QWidget):
         scroll_layout = QVBoxLayout(self.scroll_content)
         scroll_layout.setSpacing(0)
         scroll_layout.setContentsMargins(0, 0, 0, 0)
-        scroll_layout.addWidget(self.ruler)
+        # scroll_layout.addWidget(self.ruler)
+        ruler_container = QWidget()
+        ruler_layout = QHBoxLayout(ruler_container)
+        ruler_layout.setContentsMargins(0, 0, 0, 0)
+        ruler_layout.setSpacing(0)
+
+        left_spacer = QWidget()
+        left_spacer.setFixedWidth(self.get_track_controls_width())  # same width as controls
+        ruler_layout.addWidget(left_spacer)
+
+        ruler_layout.addWidget(self.ruler, stretch=1)
+
+        scroll_layout.addWidget(ruler_container)
 
 
         # Add Mute Buttons for channels 1-16
@@ -335,18 +349,30 @@ class MidiTrackViewer(QWidget):
         # Create each track widget and add it to the layout
         for i, track in enumerate(midi_file.tracks):
             hlayout = QHBoxLayout()
-
+            first_channel = get_first_channel(track) + MidiConstant.CHANNEL_BINARY_TO_DISPLAY
             # Optional: Get the track name to show in dialog
             track = self.midi_file.tracks[i]
             track_name = getattr(track, 'name', f"Track {i + MidiConstant.CHANNEL_BINARY_TO_DISPLAY}")
-
+            icon_names = {
+                10: "fa5s.drum",
+            }
+            colors = { 3: JDXiStyle.ACCENT_ANALOG }
+            color = colors.get(first_channel, JDXiStyle.ACCENT)  # Default color if not specified
+            icon_name = icon_names.get(first_channel, "mdi.piano",)  # Default icon if not specified
             # Add QLabel for track number and channel
+            icon = qta.icon(icon_name, color=color)
+            icon_label = QLabel()
+            pixmap = icon.pixmap(24, 24)  # Using fixed icon size
+            icon_label.setPixmap(pixmap)
+            icon_label.setFixedWidth(25)
+            hlayout.addWidget(icon_label)
+
             label = QLabel(f"{i+1}:{track_name},Ch:")
             label.setFixedWidth(100)
             hlayout.addWidget(label)
             # Add QSpinBox for selecting the MIDI channel
             spin = MidiSpinBox()
-            spin.setValue(get_first_channel(track) + MidiConstant.CHANNEL_BINARY_TO_DISPLAY)  # Offset for display
+            spin.setValue(first_channel)  # Offset for display
             spin.setFixedWidth(30)
             hlayout.addWidget(spin)
 
@@ -377,6 +403,14 @@ class MidiTrackViewer(QWidget):
 
             self.channel_controls_vlayout.addLayout(hlayout)
             self.channel_controls_vlayout.addStretch()
+
+    def get_track_controls_width(self) -> int:
+        """
+        Returns the estimated total width of all controls to the left of the MidiTrackWidget.
+        """
+        # Fixed widths from layout:
+        # QLabels: 25, 100 , QSpinBox: 30, Apply: 30, Mute: 30, Delete: 30 + margins (~10)
+        return 25 + 100 + 30 + 30 + 30 + 30 + 10  # = 230
 
     def refresh_track_list(self):
         """

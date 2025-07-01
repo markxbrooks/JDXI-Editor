@@ -15,6 +15,7 @@ default_tempo = MidiConstant.TEMPO_120_BPM_USEC  # microseconds per beat (120 BP
 # default_tempo = MidiConstant.TEMPO_100_BPM_USEC  # microseconds per beat (100 BPM)
 # default_tempo = MidiConstant.TEMPO_150_BPM_USEC  # microseconds per beat (120 BPM)
 
+
 def buffer_midi_tracks(midi_file: mido.MidiFile, muted_tracks=None, muted_channels=None):
     """
     Preprocess MIDI tracks into a sorted list of (absolute_ticks, raw_bytes, tempo) tuples.
