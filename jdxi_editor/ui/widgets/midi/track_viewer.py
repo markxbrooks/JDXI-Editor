@@ -27,7 +27,7 @@ class MidiTrackViewer(QWidget):
         self.event_index = None
         self.ruler = TimeRulerWidget()
         self.midi_track_widgets = {}  # MidiTrackWidget()
-        self.muted_tracks: set[int]  = set()  # To track muted tracks
+        self.muted_tracks: set[int] = set()  # To track muted tracks
 
         # To track muted channels
         self.muted_channels: set[int] = set()
@@ -182,53 +182,6 @@ class MidiTrackViewer(QWidget):
         print(f"Muted tracks updated: {self.muted_tracks}")
         self.update()  # trigger repaint or UI change if needed
 
-    """
-    def toggle_track_mute(self, track: int, is_muted: bool) -> None:
-        ""
-        Toggle mute state for a specific track.
-
-        :param track: int - Track index (0-based)
-        :param is_muted: bool - True to mute, False to unmute
-        ""
-        log.message(f"Toggling mute for track {track}: {'Muted' if is_muted else 'Unmuted'}")
-
-        if is_muted:
-            self.muted_channels.add(track)
-        else:
-            self.muted_channels.discard(track)
-
-        # Optional: Immediately apply mute state (e.g., for live playback)
-        self.apply_mute_state(track)"""
-
-    """
-    def apply_mute_state(self, track: int) -> None:
-        if track in self.muted_channels:
-            self.silence_track(track)
-        else:
-            self.unsilence_track(track)
-
-    def silence_track(self, track: int) -> None:
-        # Stop sending note-on messages or send all-notes-off
-        self.midi_out.send_control_change(123, 0, channel=track)
-
-    def unsilence_track(self, track: int) -> None:
-        # Resume normal playback (nothing needed unless you pre-buffer notes)
-        pass
-
-    def play_next_event(self):
-        ""Override or add the logic to handle muted channels.""
-        if self.event_index >= len(self.midi_events):
-            return
-
-        tick, msg = self.midi_events[self.event_index]
-
-        if hasattr(msg, "channel") and (msg.channel + 1) in self.muted_channels:
-            return  # Skip muted channel
-        else:
-            self.send_midi_message(msg)  # Your MIDI playback logic
-
-        self.event_index += 1"""
-
     def mute_track(self, track_index: int) -> None:
         """
         Mute a specific track
@@ -360,30 +313,37 @@ class MidiTrackViewer(QWidget):
             color = colors.get(first_channel, JDXiStyle.ACCENT)  # Default color if not specified
             icon_name = icon_names.get(first_channel, "mdi.piano",)  # Default icon if not specified
             # Add QLabel for track number and channel
-            icon = qta.icon(icon_name, color=color)
+            pixmap = qta.icon(icon_name, color=color).pixmap(JDXiStyle.ICON_PIXMAP_SIZE, JDXiStyle.ICON_PIXMAP_SIZE)
             icon_label = QLabel()
-            pixmap = icon.pixmap(24, 24)  # Using fixed icon size
             icon_label.setPixmap(pixmap)
-            icon_label.setFixedWidth(25)
+            icon_label.setFixedWidth(JDXiStyle.ICON_PIXMAP_SIZE)  # Add some padding
             hlayout.addWidget(icon_label)
 
             label = QLabel(f"{i+1}:{track_name},Ch:")
-            label.setFixedWidth(100)
+            label.setFixedWidth(JDXiStyle.TRACK_LABEL_WIDTH)
             hlayout.addWidget(label)
             # Add QSpinBox for selecting the MIDI channel
             spin = MidiSpinBox()
+            spin.setToolTip("Select MIDI Channel for Track, then click 'Apply' to save changes")
             spin.setValue(first_channel)  # Offset for display
-            spin.setFixedWidth(30)
+            spin.setFixedWidth(JDXiStyle.TRACK_SPINBOX_WIDTH)
             hlayout.addWidget(spin)
 
-            # Add QPushButton for applying the changes
-            apply_button = QPushButton("Apply")
-            apply_button.setFixedWidth(30)
+            apply_icon = qta.icon("fa.save",
+                                  color=JDXiStyle.FOREGROUND)
+            apply_button = QPushButton()
+            apply_button.setIcon(apply_icon)
+            apply_button.setToolTip("Apply changes to Track Channel")
+            apply_button.setFixedWidth(JDXiStyle.TRACK_SPINBOX_WIDTH)
             apply_button.clicked.connect(self.make_apply_slot(i, spin))
             hlayout.addWidget(apply_button)
 
-            mute_button = QPushButton("Mute")
-            mute_button.setFixedWidth(30)
+            mute_icon = qta.icon("msc.mute",
+                                  color=JDXiStyle.FOREGROUND)
+            mute_button = QPushButton()
+            mute_button.setIcon(mute_icon)
+            mute_button.setToolTip("Mute Track")
+            mute_button.setFixedWidth(JDXiStyle.TRACK_BUTTON_WIDTH)
             mute_button.setCheckable(True)
             mute_button.clicked.connect(lambda _, tr=i: self.mute_track(tr))  # Send internal value (0–15)
             mute_button.toggled.connect(
@@ -391,8 +351,12 @@ class MidiTrackViewer(QWidget):
             )
             hlayout.addWidget(mute_button)
 
-            delete_button = QPushButton("Delete")
-            delete_button.setFixedWidth(30)
+            delete_icon = qta.icon("mdi.delete-empty-outline",
+                                  color=JDXiStyle.FOREGROUND)
+            delete_button = QPushButton()
+            delete_button.setIcon(delete_icon)
+            delete_button.setToolTip("Delete Track")
+            delete_button.setFixedWidth(JDXiStyle.TRACK_BUTTON_WIDTH)
             delete_button.setCheckable(True)
             delete_button.clicked.connect(lambda _, tr=i: self.delete_track(tr))  # Send internal value (0–15)
             hlayout.addWidget(delete_button)
@@ -402,15 +366,16 @@ class MidiTrackViewer(QWidget):
             hlayout.addWidget(self.midi_track_widgets[i])
 
             self.channel_controls_vlayout.addLayout(hlayout)
-            self.channel_controls_vlayout.addStretch()
+
+        self.channel_controls_vlayout.addStretch()
 
     def get_track_controls_width(self) -> int:
         """
         Returns the estimated total width of all controls to the left of the MidiTrackWidget.
         """
         # Fixed widths from layout:
-        # QLabels: 25, 100 , QSpinBox: 30, Apply: 30, Mute: 30, Delete: 30 + margins (~10)
-        return 25 + 100 + 30 + 30 + 30 + 30 + 10  # = 230
+        # QLabels: JDXiStyle.ICON_PIXMAP_SIZE, JDXiStyle.TRACK_LABEL_WIDTH , QSpinBox: JDXiStyle.TRACK_MUTE_BUTTON_WIDTH, Apply: JDXiStyle.TRACK_MUTE_BUTTON_WIDTH, Mute: JDXiStyle.TRACK_MUTE_BUTTON_WIDTH, Delete: JDXiStyle.TRACK_MUTE_BUTTON_WIDTH + margins (~10)
+        return JDXiStyle.ICON_PIXMAP_SIZE + JDXiStyle.TRACK_LABEL_WIDTH + (JDXiStyle.TRACK_BUTTON_WIDTH * 4) + 10  # = 2JDXiStyle.TRACK_MUTE_BUTTON_WIDTH
 
     def refresh_track_list(self):
         """
