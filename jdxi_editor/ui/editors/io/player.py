@@ -87,6 +87,7 @@ class MidiFileEditor(SynthEditor):
         :param preset_helper: Optional[JDXIPresetHelper]
         """
         super().__init__()
+        self.tempo = MidiConstant.TEMPO_120_BPM_USEC  # Default tempo in microseconds
         self.midi_track_viewer = None
         self.muted_tracks = None
         self.muted_channels = None
@@ -277,8 +278,8 @@ class MidiFileEditor(SynthEditor):
         :return: None
         """
         self.tempo = tempo_us
-        bpm = tempo2bpm(tempo_us)
-        self.tempo_spin.setValue(round(bpm))
+        # self.refill_midi_message_buffer()
+        bpm = self.set_display_tempo(tempo_us)
         log.parameter("bpm", bpm)
 
     def setup_worker(self):
@@ -491,9 +492,7 @@ class MidiFileEditor(SynthEditor):
         self.selected_channel = selected_channel
         log.parameter("Selected MIDI playback channel", self.selected_channel)
         initial_tempo = MidiConstant.TEMPO_120_BPM_USEC
-        bpm = tempo2bpm(initial_tempo)
-        log.parameter("bpm", bpm)
-        self.tempo_spin.setValue(round(bpm))
+        bpm = self.set_display_tempo(initial_tempo)
         self.tempo = initial_tempo
 
         # === MIDI Event Collection ===
@@ -517,6 +516,20 @@ class MidiFileEditor(SynthEditor):
         self.position_slider.setEnabled(True)
         self.position_slider.setRange(0, int(self.midi_duration_seconds))
         self.position_label.setText(f"Playback Position: 0:00 / {format_time(self.midi_duration_seconds)}")
+
+    def set_display_tempo(self, tempo_usecs: int) -> float:
+        """
+        set_display_tempo
+
+        :param tempo_usecs: int tempo in microseconds
+        :return: float bpm
+        Set the tempo in the UI and log it.
+        """
+        self.on_tempo_changed(tempo_usecs)
+        bpm = tempo2bpm(tempo_usecs)
+        self.tempo_spin.setValue(round(bpm))
+        log.parameter("bpm", bpm)
+        return bpm
 
     def on_usb_recording_finished(self, output_file: str):
         """
@@ -611,14 +624,15 @@ class MidiFileEditor(SynthEditor):
                 log.message(f"🚫 Skipping muted track {i + MidiConstant.CHANNEL_DISPLAY_TO_BINARY} ({track.name})")
                 continue
             absolute_time_ticks = 0
-            current_tempo = default_tempo
+            self.tempo = default_tempo
 
             for msg in track:
                 absolute_time_ticks += msg.time
 
                 if msg.type == 'set_tempo':
-                    current_tempo = msg.tempo
-                    self.buffered_msgs.append((absolute_time_ticks, None, current_tempo))
+                    self.tempo = msg.tempo
+                    self.set_display_tempo(self.tempo)
+                    self.buffered_msgs.append((absolute_time_ticks, None, self.tempo))
                 elif not msg.is_meta:
                     if hasattr(msg, "channel"):
                         log.message(
@@ -628,7 +642,7 @@ class MidiFileEditor(SynthEditor):
                             continue
                     log.message(f"🎵 Adding midi msg to buffer: {msg}")
                     raw_bytes = msg.bytes()
-                    self.buffered_msgs.append((absolute_time_ticks, raw_bytes, current_tempo))
+                    self.buffered_msgs.append((absolute_time_ticks, raw_bytes, self.tempo))
 
         self.buffered_msgs.sort(key=lambda x: x[0])
 
