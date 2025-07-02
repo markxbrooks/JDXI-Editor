@@ -94,38 +94,3 @@ class MidiPlaybackWorker(QObject):
         if self.index >= len(self.buffered_msgs):
             self.finished.emit()
 
-    @Slot()
-    def do_work_old(self):
-        """ do_work """
-        if self.should_stop:
-            return
-        now = time.time()
-        elapsed = now - self.start_time
-
-        while self.index < len(self.buffered_msgs):
-            # abs_ticks, msg, msg_tempo = self.buffered_msgs[self.index]
-            abs_ticks, raw_bytes, msg_tempo = self.buffered_msgs[self.index]
-
-            #with self.lock:
-            tempo = msg_tempo # if msg.type == 'set_tempo' else self.current_tempo
-
-            msg_time_sec = ticks_to_seconds(abs_ticks, tempo, self.ticks_per_beat)
-
-            if msg_time_sec > elapsed:
-                break
-
-            #if not msg.is_meta:
-            #    if msg.type == 'program_change' and not self.play_program_changes:
-            #        pass  # Skip
-            #    else:
-            if raw_bytes is not None:
-                # Send the raw MIDI bytes
-                self.midi_out_port.send_message(raw_bytes)
-                #if msg.type == 'set_tempo':
-            else:
-                self.update_tempo(msg_tempo)
-
-            self.index += 1
-
-        if self.index >= len(self.buffered_msgs):
-            self.finished.emit()
