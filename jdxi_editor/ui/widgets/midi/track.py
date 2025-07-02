@@ -102,7 +102,7 @@ class MidiTrackWidget(QWidget):
         self.cached_pixmap = None
         self.cached_width = 0
         self.update()
-        log.message(f"rects: {rects}")
+        # log.message(f"rects: {rects}")
 
     def update_muted_tracks(self, muted_tracks: set[int]) -> None:
         """
