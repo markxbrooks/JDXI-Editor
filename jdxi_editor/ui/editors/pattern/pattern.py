@@ -475,7 +475,7 @@ class PatternSequenceEditor(SynthEditor):
                             event.type == "set_tempo"
                         ):  # Compare with the string "set_tempo"
                             bpm = int(
-                                tempo2bpm(event.tempo)
+                                tempo2bpm(event.position_tempo)
                             )  # Use .tempo instead of .data
                             self.tempo_spinbox.setValue(bpm)
                             break
@@ -638,7 +638,7 @@ class PatternSequenceEditor(SynthEditor):
 
             for event in midi_file.tracks[0]:
                 if event.type == "set_tempo":
-                    bpm = int(tempo2bpm(event.tempo))
+                    bpm = int(tempo2bpm(event.position_tempo))
                     self.tempo_spinbox.setValue(bpm)
 
         except Exception as ex:

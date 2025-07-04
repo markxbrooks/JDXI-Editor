@@ -24,6 +24,7 @@ class MidiConstant:
     TEMPO_100_BPM_USEC = 600_000
     TEMPO_120_BPM_USEC = 500_000
     TEMPO_150_BPM_USEC = 400_000
+    TEMPO_162_BPM_USEC = 370_370
 
     # SysEx framing
     CONTROL_CHANGE_NRPN_MSB = 99 # Controller number for NRPN MSB
