@@ -660,8 +660,6 @@ class MidiFileEditor(SynthEditor):
             self.muted_channels = set()
 
         self.buffered_msgs = []
-        self.force_custom_tempo = True
-        self.custom_tempo = MidiConstant.TEMPO_162_BPM_USEC  # Custom tempo in microseconds per beat
 
         for i, track in enumerate(self.midi_file.tracks):
             if i + MidiConstant.CHANNEL_DISPLAY_TO_BINARY in self.muted_tracks:
@@ -691,8 +689,6 @@ class MidiFileEditor(SynthEditor):
                     log.message(f"🎵 Adding midi msg to buffer: {msg}")
                     raw_bytes = msg.bytes()
                     log.message(f"Tick: {absolute_time_ticks}, Tempo: {self.position_tempo}")
-
-                    # self.buffered_msgs.append((absolute_time_ticks, raw_bytes, MidiConstant.TEMPO_162_BPM_USEC))
                     self.buffered_msgs.append((absolute_time_ticks, raw_bytes, self.position_tempo))
 
         self.buffered_msgs.sort(key=lambda x: x[0])
@@ -783,7 +779,7 @@ class MidiFileEditor(SynthEditor):
         if self.midi_helper:
             for ch in range(16):
                 for note in range(128):
-                    self.midi_helper.midi_out.send(mido.Message("note_off", note=note, velocity=0, channel=ch))
+                    self.midi_helper.midi_out.send_message(mido.Message("note_off", note=note, velocity=0, channel=ch).bytes())
         # Clear the event buffer and refill it
         self.midi_event_buffer.clear()
         self.refill_midi_message_buffer()
