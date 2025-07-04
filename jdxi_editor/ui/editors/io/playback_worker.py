@@ -19,15 +19,16 @@ class MidiPlaybackWorker(QObject):
     result_ready = Signal(str)  # optional
     finished = Signal()
 
-    def __init__(self):
+    def __init__(self, parent=None):
         super().__init__()
+        self.parent = parent
+        self.position_tempo = None
         self.should_stop = False
         self.buffered_msgs = []
         self.midi_out_port = None
         self.play_program_changes = True
         self.ticks_per_beat = 480
         self.lock = threading.Lock()
-        self.current_tempo = MidiConstant.TEMPO_120_BPM_USEC  # default 120 BPM
         self.index = 0
         self.start_time = time.time()
 
@@ -58,7 +59,12 @@ class MidiPlaybackWorker(QObject):
         print(f"Emitting {new_tempo}")
         self.set_tempo.emit(new_tempo)
         with self.lock:
-            self.current_tempo = new_tempo
+            self.position_tempo = new_tempo
+        if self.parent is not None:
+            if hasattr(self.parent, 'set_display_tempo_usecs'):
+                # Assuming parent has a method to update display tempo
+                print(f"Updating display tempo to {new_tempo}")
+                self.parent.set_display_tempo_usecs(new_tempo)
 
     @Slot()
     def do_work(self):

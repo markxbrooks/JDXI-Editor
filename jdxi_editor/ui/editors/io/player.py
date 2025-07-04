@@ -9,6 +9,8 @@ import mido
 import time
 from pathlib import Path
 from typing import Optional
+
+import pyaudio
 from mido import MidiFile, bpm2tempo
 from PySide6.QtCore import Qt, QTimer, QThread
 from PySide6.QtWidgets import (
@@ -87,14 +89,21 @@ class MidiFileEditor(SynthEditor):
         :param preset_helper: Optional[JDXIPresetHelper]
         """
         super().__init__()
-        self.tempo = MidiConstant.TEMPO_120_BPM_USEC  # Default tempo in microseconds
+        self.force_custom_tempo = False
+        self.custom_tempo = MidiConstant.TEMPO_162_BPM_USEC  # Default custom tempo in microseconds
+        self.rates = None
+        self.initial_tempo = MidiConstant.TEMPO_120_BPM_USEC  # Default tempo in microseconds
+        self.position_tempo = MidiConstant.TEMPO_120_BPM_USEC  # Default tempo in microseconds
         self.midi_track_viewer = None
         self.muted_tracks = None
         self.muted_channels = None
         self.buffered_msgs = None
         self.profiler = None
         self.selected_channel = MidiChannel.DIGITAL_SYNTH_1  # Default channel for playback
-        self.tempo = MidiConstant.TEMPO_DEFAULT_120_BPM  # Default of 120 bpm
+        if self.force_custom_tempo:
+            self.position_tempo = self.custom_tempo  # Use custom tempo if forced
+        else:
+            self.position_tempo = MidiConstant.TEMPO_DEFAULT_120_BPM  # Default of 120 bpm
         self.digital_title_file_name = None
         self.parent = parent
 
@@ -129,8 +138,8 @@ class MidiFileEditor(SynthEditor):
         self.usb_port_input_device_index = None
         # self.usb_recording_thread = None
         self.usb_recorder = USBRecorder()
-        self.midi_playback_worker = MidiPlaybackWorker()
-        self.midi_playback_worker.set_tempo.connect(self.update_tempo_us)
+        self.midi_playback_worker = MidiPlaybackWorker(parent=self)
+        self.midi_playback_worker.set_tempo.connect(self.update_tempo_us_from_worker)
 
         self.init_ui()
 
@@ -218,7 +227,7 @@ class MidiFileEditor(SynthEditor):
         vlayout.addLayout(tempo_layout)
         self.tempo_spin = QDoubleSpinBox()
         self.tempo_spin.setRange(20, 300)
-        self.tempo_spin.setValue(self.tempo)
+        self.tempo_spin.setValue(self.position_tempo)
         self.tempo_spin.setSuffix(" BPM")
 
         tempo_layout.addWidget(QLabel("Tempo"))
@@ -270,17 +279,29 @@ class MidiFileEditor(SynthEditor):
         layout.addWidget(transport_group)
         self.setLayout(layout)
 
-    def update_tempo_us(self, tempo_us: int) -> None:
+    def update_tempo_us_from_worker(self, tempo_us: int) -> None:
         """
         update_tempo_us
 
         :param tempo_us: tempo in microseconds e.g  500_000
         :return: None
         """
-        self.tempo = tempo_us
+        log.parameter("tempo_us", tempo_us)
+        log.message(f"Updating tempo to {tempo_us} microseconds from worker")
         # self.refill_midi_message_buffer()
-        bpm = self.set_display_tempo(tempo_us)
-        log.parameter("bpm", bpm)
+        self.set_display_tempo_usecs(tempo_us)
+
+    def update_playback_worker_tempo_us(self, tempo_us: int) -> None:
+        """
+        update_tempo_us
+
+        :param tempo_us: tempo in microseconds e.g  500_000
+        :return: None
+        """
+        log.parameter("tempo_us", tempo_us)
+        log.message(f"Updating tempo to {tempo_us} microseconds from editor")
+        if self.midi_playback_worker:
+            self.midi_playback_worker.update_tempo(tempo_us)
 
     def setup_worker(self):
         """
@@ -293,7 +314,7 @@ class MidiFileEditor(SynthEditor):
             self.midi_playback_thread.deleteLater()
             self.midi_playback_worker = None
 
-        self.midi_playback_worker = MidiPlaybackWorker()
+        self.midi_playback_worker = MidiPlaybackWorker(parent=self)
         # self.midi_playback_worker.set_editor(self)
 
         self.midi_playback_thread = QThread()
@@ -384,7 +405,7 @@ class MidiFileEditor(SynthEditor):
                 log.message(f"Auto-selected {item}")
                 break
 
-    def usb_start_recording(self):
+    def usb_start_recording(self, recording_rate=pyaudio.paInt16):
         """Start recording in a separate thread."""
         try:
             if not self.usb_file_output_name:
@@ -393,10 +414,11 @@ class MidiFileEditor(SynthEditor):
 
             selected_index = self.usb_port_select_combo.currentIndex()
             self.usb_recorder.input_device_index = selected_index  # self.input_device_index
-
             self.usb_recording_thread = WavRecordingThread(recorder=self.usb_recorder,
                                                            duration=self.midi_duration_seconds + 10,
-                                                           output_file=self.usb_file_output_name)
+                                                           output_file=self.usb_file_output_name,
+                                                           recording_rate=recording_rate,  # e.g. pyaudio.paInt16
+                                                           )
             self.usb_recording_thread.recording_finished.connect(self.on_usb_recording_finished)
             self.usb_recording_thread.recording_error.connect(self.on_usb_recording_error)
             self.usb_recording_thread.start()
@@ -459,17 +481,22 @@ class MidiFileEditor(SynthEditor):
         self.ticks_per_beat = self.midi_file.ticks_per_beat
 
         # === Detect Initial Tempo ===
-        self.tempo = MidiConstant.TEMPO_120_BPM_USEC
-        for track in self.midi_file.tracks:
+        self.initial_tempo = MidiConstant.TEMPO_120_BPM_USEC
+        initial_track_tempos = dict()
+        for track_number, track in enumerate(self.midi_file.tracks):
             for msg in track:
                 if msg.type == "set_tempo":
-                    self.tempo = msg.tempo
-                    log.parameter("self.tempo", self.tempo)
+                    self.initial_tempo = msg.tempo
+                    log.parameter("self.tempo", self.initial_tempo)
+                    initial_track_tempos[track_number] = self.initial_tempo
                     break
             else:
                 continue  # no tempo message in this track
             break  # found tempo, break outer loop
 
+        self.set_display_tempo_usecs(self.initial_tempo)
+        self.position_tempo = self.initial_tempo  # Set initial tempo for playback
+        log.parameter("Initial track tempos", initial_track_tempos)
         # === Detect a "reasonable" playback channel ===
         preferred_channels = {MidiChannel.DIGITAL_SYNTH_1,
                               MidiChannel.DIGITAL_SYNTH_2,
@@ -491,9 +518,6 @@ class MidiFileEditor(SynthEditor):
 
         self.selected_channel = selected_channel
         log.parameter("Selected MIDI playback channel", self.selected_channel)
-        initial_tempo = MidiConstant.TEMPO_120_BPM_USEC
-        bpm = self.set_display_tempo(initial_tempo)
-        self.tempo = initial_tempo
 
         # === MIDI Event Collection ===
         events = []
@@ -502,7 +526,7 @@ class MidiFileEditor(SynthEditor):
             for msg in track:
                 abs_time += msg.time
                 events.append((abs_time, msg, track_index))
-        self.tick_duration = self.tempo / MidiConstant.TEMPO_CONVERT_SEC_TO_USEC / self.ticks_per_beat
+        self.tick_duration = self.position_tempo / MidiConstant.TEMPO_CONVERT_SEC_TO_USEC / self.ticks_per_beat
         self.midi_events = sorted(events, key=lambda x: x[0])
         self.setup_worker()
 
@@ -510,26 +534,39 @@ class MidiFileEditor(SynthEditor):
         self.total_ticks = max(t for t, _, _ in self.midi_events)
         self.midi_duration_seconds = get_total_duration_in_seconds(self.midi_file)
 
-        self.tick_duration = self.tempo / MidiConstant.TEMPO_CONVERT_SEC_TO_USEC / self.ticks_per_beat
+        self.tick_duration = self.position_tempo / MidiConstant.TEMPO_CONVERT_SEC_TO_USEC / self.ticks_per_beat
 
         # === UI Updates ===
         self.position_slider.setEnabled(True)
         self.position_slider.setRange(0, int(self.midi_duration_seconds))
         self.position_label.setText(f"Playback Position: 0:00 / {format_time(self.midi_duration_seconds)}")
 
-    def set_display_tempo(self, tempo_usecs: int) -> float:
+    def set_display_tempo_usecs(self, tempo_usecs: int) -> None:
         """
         set_display_tempo
 
         :param tempo_usecs: int tempo in microseconds
-        :return: float bpm
+        :return: None
         Set the tempo in the UI and log it.
         """
-        self.on_tempo_changed(tempo_usecs)
+        log.message(f"Setting tempo to {tempo_usecs} microseconds on UI")
+        self.on_tempo_usecs_changed(tempo_usecs)
         bpm = tempo2bpm(tempo_usecs)
-        self.tempo_spin.setValue(round(bpm))
-        log.parameter("bpm", bpm)
-        return bpm
+        log.parameter("tempo_bpm", bpm)
+        log.message(f"Setting tempo to {bpm} BPM on UI")
+        self.set_display_tempo_bpm(bpm)
+
+    def set_display_tempo_bpm(self, tempo_bpm: float) -> None:
+        """
+        set_display_tempo_bpm
+
+        :param tempo_bpm: int tempo in microseconds
+        :return: None
+        Set the tempo in the UI and log it.
+        """
+        self.tempo_spin.setValue(round(tempo_bpm))
+        log.parameter("tempo_bpm", tempo_bpm)
+        return None
 
     def on_usb_recording_finished(self, output_file: str):
         """
@@ -573,8 +610,14 @@ class MidiFileEditor(SynthEditor):
             return
 
         if self.usb_file_save_recording:
+            recording_rate = "32bit"  # Default to 16-bit recording
             try:
-                self.usb_start_recording()
+                self.rates = {
+                    "16bit": pyaudio.paInt16,
+                    "32bit": pyaudio.paInt32
+                }
+                rate = self.rates.get(recording_rate, pyaudio.paInt16)
+                self.usb_start_recording(recording_rate=rate)
             except Exception as ex:
                 log.error(f"Error {ex} occurred starting USB recording")
 
@@ -617,22 +660,27 @@ class MidiFileEditor(SynthEditor):
             self.muted_channels = set()
 
         self.buffered_msgs = []
-        default_tempo = MidiConstant.TEMPO_120_BPM_USEC  # 120 BPM in microseconds per beat
+        self.force_custom_tempo = True
+        self.custom_tempo = MidiConstant.TEMPO_162_BPM_USEC  # Custom tempo in microseconds per beat
 
         for i, track in enumerate(self.midi_file.tracks):
             if i + MidiConstant.CHANNEL_DISPLAY_TO_BINARY in self.muted_tracks:
                 log.message(f"🚫 Skipping muted track {i + MidiConstant.CHANNEL_DISPLAY_TO_BINARY} ({track.name})")
                 continue
             absolute_time_ticks = 0
-            self.tempo = default_tempo
 
             for msg in track:
                 absolute_time_ticks += msg.time
 
                 if msg.type == 'set_tempo':
-                    self.tempo = msg.tempo
-                    self.set_display_tempo(self.tempo)
-                    self.buffered_msgs.append((absolute_time_ticks, None, self.tempo))
+                    if self.force_custom_tempo:
+                        self.position_tempo = self.custom_tempo
+                        log.message(f"🔄 Forcing custom tempo: {self.position_tempo} usec")
+                    else:
+                        self.position_tempo = msg.tempo
+                    # self.set_display_tempo_usecs(self.tempo)
+                    self.update_playback_worker_tempo_us(self.position_tempo)
+                    self.buffered_msgs.append((absolute_time_ticks, None, self.position_tempo))  # Store tempo change
                 elif not msg.is_meta:
                     if hasattr(msg, "channel"):
                         log.message(
@@ -642,11 +690,20 @@ class MidiFileEditor(SynthEditor):
                             continue
                     log.message(f"🎵 Adding midi msg to buffer: {msg}")
                     raw_bytes = msg.bytes()
-                    self.buffered_msgs.append((absolute_time_ticks, raw_bytes, self.tempo))
+                    log.message(f"Tick: {absolute_time_ticks}, Tempo: {self.position_tempo}")
+
+                    # self.buffered_msgs.append((absolute_time_ticks, raw_bytes, MidiConstant.TEMPO_162_BPM_USEC))
+                    self.buffered_msgs.append((absolute_time_ticks, raw_bytes, self.position_tempo))
 
         self.buffered_msgs.sort(key=lambda x: x[0])
 
     def get_muted_tracks(self):
+        """
+        get_muted_tracks
+
+        :return: None
+        Get the muted tracks from the MIDI track viewer.
+        """
         muted_tracks_raw = self.midi_track_viewer.get_muted_tracks()
         muted_tracks = {int(t) for t in muted_tracks_raw if not isinstance(t, set)}
         for track in muted_tracks:
@@ -654,6 +711,12 @@ class MidiFileEditor(SynthEditor):
         return muted_tracks
 
     def get_muted_channels(self):
+        """
+        get_muted_channels
+
+        :return: None
+        Get the muted channels from the MIDI track viewer.
+        """
         muted_channels_raw = self.midi_track_viewer.get_muted_channels()
         muted_channels = {int(c) for c in muted_channels_raw if not isinstance(c, set)}
         log.parameter("Muted channels", muted_channels)
@@ -661,12 +724,24 @@ class MidiFileEditor(SynthEditor):
             log.parameter("Muted channel", channel)
         return muted_channels
 
-    def on_tempo_changed(self, bpm: float):
-        tempo = bpm2tempo(bpm)
-        self.tempo = tempo
+    def on_tempo_usecs_changed(self, tempo: int):
+        """
+        on_tempo_usecs_changed
 
-        if self.midi_playback_worker:
-            self.midi_playback_worker.update_tempo(tempo)
+        :param tempo: int
+        :return: None
+        """
+        self.position_tempo = tempo
+
+    def on_tempo_bpm_changed(self, bpm: float):
+        """
+        on_tempo_bpm_changed
+
+        :param bpm: float
+        :return: None
+        """
+        tempo = bpm2tempo(bpm)
+        self.on_tempo_usecs_changed(tempo)
 
     def midi_play_next_event(self):
         """
@@ -709,8 +784,7 @@ class MidiFileEditor(SynthEditor):
             for ch in range(16):
                 for note in range(128):
                     self.midi_helper.midi_out.send(mido.Message("note_off", note=note, velocity=0, channel=ch))
-
-        # ✅ Critical: refill buffer so playback resumes correctly
+        # Clear the event buffer and refill it
         self.midi_event_buffer.clear()
         self.refill_midi_message_buffer()
 
@@ -722,7 +796,9 @@ class MidiFileEditor(SynthEditor):
         self.stop_worker()
 
         try:
-            self.midi_timer.timeout.disconnect(self.midi_playback_worker.do_work)
+            if hasattr(self, "midi_playback_worker"):
+                if self.midi_playback_worker is not None:
+                    self.midi_timer.timeout.disconnect(self.midi_playback_worker.do_work)
         except Exception as ex:
             log.warning(f"⚠️ Could not disconnect do_work: {ex}")
         try:
@@ -741,6 +817,7 @@ class MidiFileEditor(SynthEditor):
                 for note in range(128):
                     self.midi_helper.midi_out.send_message(mido.Message("note_off", note=note, velocity=0, channel=ch).bytes())
 
+        self.set_display_tempo_usecs(self.initial_tempo)
         self.active_notes.clear()
         self.usb_stop_recording()
 

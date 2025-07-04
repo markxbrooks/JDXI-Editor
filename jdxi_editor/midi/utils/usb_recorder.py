@@ -34,13 +34,18 @@ class USBRecorder:
             device_list.append(device_info)
         return device_list
 
-    def record(self, duration, output_file):
+    def record(self, duration, output_file, rate="16bit"):
         """
         Records audio for the specified duration and saves to a .wav file.
         """
+        rates = {
+            "16bit": pyaudio.paInt16,
+            "32bit": pyaudio.paInt32
+        }
+        rate = rates.get(rate, pyaudio.paInt16)
         print("Recording...")
         try:
-            stream = self.p.open(format=pyaudio.paInt16,
+            stream = self.p.open(format=rate,
                                  channels=self.channels,
                                  rate=self.rate,
                                  input=True,
