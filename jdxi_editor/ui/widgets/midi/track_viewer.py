@@ -489,7 +489,6 @@ class MidiTrackViewer(QWidget):
             self.channel_controls_vlayout.addLayout(hlayout)
 
         self.channel_controls_vlayout.addStretch()
-        print(f"[DEBUG] Total widgets in scroll_content: {self.scroll_content.findChildren(QWidget)}")
 
     def get_track_controls_width(self) -> int:
         """

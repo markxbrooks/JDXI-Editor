@@ -22,6 +22,7 @@ class JDXiSynth:
     ANALOG_SYNTH = "ANALOG_SYNTH"
     DIGITAL_SYNTH_1 = "DIGITAL_SYNTH_1"  # Main digital synth
     DIGITAL_SYNTH_2 = "DIGITAL_SYNTH_2"  # Second digital synth
+    DIGITAL_SYNTH_3 = "DIGITAL_SYNTH_3"  # 3rd digital synth (!) cheat code
     DRUM_KIT = "DRUM_KIT"
     VOCAL_FX = "VOCAL_FX"
 
