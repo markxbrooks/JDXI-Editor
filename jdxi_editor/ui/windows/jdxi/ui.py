@@ -219,6 +219,16 @@ class JDXiUi(QMainWindow):
         # File menu
         file_menu = menubar.addMenu("File")
 
+        load_midi_file_action = QAction("Load MIDI file", self)
+        load_midi_file_action.triggered.connect(self._midi_file_load)
+        file_menu.addAction(load_midi_file_action)
+
+        save_midi_file_action = QAction("Save MIDI file", self)
+        save_midi_file_action.triggered.connect(self._midi_file_save)
+        file_menu.addAction(save_midi_file_action)
+
+        file_menu.addSeparator()
+
         load_program_action = QAction(
             qta.icon("msc.folder-opened"), "Load Program...", self
         )
@@ -261,6 +271,10 @@ class JDXiUi(QMainWindow):
         digital2_action = QAction("Digital Synth 2", self)
         digital2_action.triggered.connect(lambda: self.show_editor("digital2"))
         self.parts_menu.addAction(digital2_action)
+
+        digital3_action = QAction("Digital Synth 3", self)
+        digital3_action.triggered.connect(lambda: self.show_editor("digital3"))
+        self.parts_menu.addAction(digital3_action)
 
         drums_action = QAction("Drums", self)
         drums_action.triggered.connect(lambda: self.show_editor("drums"))
@@ -582,6 +596,12 @@ class JDXiUi(QMainWindow):
         raise NotImplementedError("Should be implemented in subclass")
 
     def _save_favorite(self, button, idx):
+        raise NotImplementedError("to be implemented in subclass")
+
+    def _midi_file_load(self):
+        raise NotImplementedError("to be implemented in subclass")
+
+    def _midi_file_save(self):
         raise NotImplementedError("to be implemented in subclass")
 
     def _patch_load(self):

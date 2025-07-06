@@ -93,9 +93,9 @@ class DigitalSynthEditor(SynthEditor):
             Union[AddressParameterDigitalPartial, AddressParameterDigitalCommon],
             QWidget,
         ] = {}
-        synth_map = {1: JDXiSynth.DIGITAL_SYNTH_1, 2: JDXiSynth.DIGITAL_SYNTH_2}
+        synth_map = {1: JDXiSynth.DIGITAL_SYNTH_1, 2: JDXiSynth.DIGITAL_SYNTH_2, 3: JDXiSynth.DIGITAL_SYNTH_3}
         if synth_number not in synth_map:
-            raise ValueError(f"Invalid synth_number: {synth_number}. Must be 1 or 2.")
+            raise ValueError(f"Invalid synth_number: {synth_number}. Must be 1, 2 or 3.")
         self.synth_number = synth_number
         self._init_synth_data(synth_map[synth_number])
         self.setup_ui()
@@ -731,6 +731,26 @@ class DigitalSynth2Editor(DigitalSynthEditor):
             midi_helper: Optional[MidiIOHelper] = None,
             preset_helper: JDXiPresetHelper = None,
             synth_number: int = 2,
+            parent: QWidget = None,
+    ):
+        super().__init__(
+            midi_helper=midi_helper,
+            synth_number=synth_number,
+            preset_helper=preset_helper,
+            parent=parent,
+        )
+
+
+class DigitalSynth3Editor(DigitalSynthEditor):
+    """class for Digital Synth Editor containing 3 partials"""
+
+    preset_changed = Signal(int, str, int)
+
+    def __init__(
+            self,
+            midi_helper: Optional[MidiIOHelper] = None,
+            preset_helper: JDXiPresetHelper = None,
+            synth_number: int = 3,
             parent: QWidget = None,
     ):
         super().__init__(

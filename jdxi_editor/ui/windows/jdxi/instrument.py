@@ -80,7 +80,7 @@ from jdxi_editor.ui.editors import (
     SynthEditor,
 )
 from jdxi_editor.ui.editors.config import EditorConfig
-from jdxi_editor.ui.editors.digital.editor import DigitalSynth2Editor
+from jdxi_editor.ui.editors.digital.editor import DigitalSynth2Editor, DigitalSynth3Editor
 from jdxi_editor.ui.editors.helpers.program import (
     get_program_id_by_name,
 )
@@ -153,6 +153,14 @@ class JDXiInstrument(JDXiUi):
                 kwargs={"synth_number": 2},
                 icon="mdi.piano"
             ),
+            "digital3": EditorConfig(
+                title="Digital Synth 3",
+                editor_class=DigitalSynth3Editor,
+                synth_type=JDXiSynth.DIGITAL_SYNTH_3,
+                midi_channel=MidiChannel.ANALOG_SYNTH,
+                kwargs={"synth_number": 3},
+                icon="mdi.piano"
+            ),
             "analog": EditorConfig(
                 title="Analog Synth",
                 editor_class=AnalogSynthEditor,
@@ -220,6 +228,11 @@ class JDXiInstrument(JDXiUi):
                 JDXiSynth.DIGITAL_SYNTH_2,
                 JDXiPresetToneList.DIGITAL_ENUMERATED,
                 MidiChannel.DIGITAL_SYNTH_2,
+            ),
+            (
+                JDXiSynth.DIGITAL_SYNTH_3,
+                JDXiPresetToneList.DIGITAL_ENUMERATED,
+                MidiChannel.ANALOG_SYNTH,
             ),
             (
                 JDXiSynth.ANALOG_SYNTH,
@@ -563,6 +576,7 @@ class JDXiInstrument(JDXiUi):
         self.show_editor("program")
         self.show_editor("digital1")
         self.show_editor("digital2")
+        self.show_editor("digital3")
         self.show_editor("drums")
         self.show_editor("analog")
         self.show_editor("arpeggio")
@@ -650,7 +664,7 @@ class JDXiInstrument(JDXiUi):
             preset_helper = (
                 self.get_preset_helper_for_current_synth()
                 if editor_class in {
-                    ArpeggioEditor, DigitalSynthEditor, DigitalSynth2Editor,
+                    ArpeggioEditor, DigitalSynthEditor, DigitalSynth2Editor, DigitalSynth3Editor,
                     AnalogSynthEditor, DrumCommonEditor, PatternSequenceEditor,
                     ProgramEditor, PresetEditor, MidiFileEditor,
                     VocalFXEditor, EffectsCommonEditor,
@@ -690,65 +704,6 @@ class JDXiInstrument(JDXiUi):
 
         except Exception as ex:
             log.error(f"Error showing {title} editor", exception=ex)
-
-    def show_editor_old(self, editor_type: str) -> None:
-        """
-        Show editor of given type
-
-        :param editor_type: str
-        :return: None
-        """
-        self.editor_registry = {
-            "vocal_fx": (
-                "Vocal Effects",
-                VocalFXEditor,
-                JDXiSynth.VOCAL_FX,
-                MidiChannel.VOCAL_FX,
-            ),
-            "digital1": (
-                "Digital Synth 1",
-                DigitalSynthEditor,
-                JDXiSynth.DIGITAL_SYNTH_1,
-                MidiChannel.DIGITAL_SYNTH_1,
-                {"synth_number": 1},
-            ),
-            "digital2": (
-                "Digital Synth 2",
-                DigitalSynth2Editor,
-                JDXiSynth.DIGITAL_SYNTH_2,
-                MidiChannel.DIGITAL_SYNTH_2,
-                {"synth_number": 2},
-            ),
-            "analog": (
-                "Analog Synth",
-                AnalogSynthEditor,
-                JDXiSynth.ANALOG_SYNTH,
-                MidiChannel.ANALOG_SYNTH,
-            ),
-            "drums": ("Drums", DrumCommonEditor, JDXiSynth.DRUM_KIT, MidiChannel.DRUM_KIT),
-            "arpeggio": ("Arpeggiator", ArpeggioEditor, None, None),
-            "effects": ("Effects", EffectsCommonEditor, None, None),
-            "pattern": ("Pattern", PatternSequenceEditor, None, None),
-            "preset": ("Preset", PresetEditor, None, None),
-            "program": ("Program", ProgramEditor, None, None),
-            "midi_file": ("MIDI File", MidiFileEditor, None, None),
-        }
-
-        config = self.editor_registry.get(editor_type)
-        if not config:
-            logging.warning(f"Unknown editor type: {editor_type}")
-            return
-
-        title, editor_class, synth_type, midi_channel, kwargs = (
-            (*config, {}) if len(config) == 4 else config
-        )
-
-        if synth_type:
-            self.current_synth_type = synth_type
-        if midi_channel:
-            self.channel = midi_channel
-
-        self._show_editor(title, editor_class, **kwargs)
 
     def _show_editor(self, title: str, editor_class, **kwargs) -> None:
         """
@@ -883,6 +838,36 @@ class JDXiInstrument(JDXiUi):
             self.main_editor = MainEditor(self)
         self.main_editor.show()
         self.main_editor.raise_()
+
+    def _midi_file_load(self):
+        """
+        _midi_file_load
+
+        :return: None
+        Load a MIDI file and process it
+        1. Load the current MIDI file using the MidiFileEditor.
+        2. If the editor does not exist, create and show it.
+        3. After saving, show the editor again.
+        """
+        self.midi_file_editor = self.get_existing_editor(MidiFileEditor)
+        if not self.midi_file_editor:
+            self.show_editor("midi_file")
+        self.midi_file_editor.midi_load_file()
+        self.show_editor("midi_file")
+
+    def _midi_file_save(self):
+        """
+        _midi_file_save
+        :return:
+        1. Save the current MIDI file using the MidiFileEditor.
+        2. If the editor does not exist, create and show it.
+        3. After saving, show the editor again.
+        """
+        self.midi_file_editor = self.get_existing_editor(MidiFileEditor)
+        if not self.midi_file_editor:
+            self.show_editor("midi_file")
+        self.midi_file_editor.midi_save_file()
+        self.show_editor("midi_file")
 
     def _patch_load(self) -> None:
         """Show load patch dialog"""

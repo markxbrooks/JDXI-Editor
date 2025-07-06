@@ -4,21 +4,13 @@ Preferences Dialog
 Sets settings for various biotoolkit features
 """
 import logging
-import os
-# import darkdetect
 import qtawesome as qta
 from PySide6 import QtCore, QtWidgets
-from PySide6.QtGui import QFont, QFontInfo, QIcon, QPixmap
-from PySide6.QtWidgets import QDialog, QCheckBox, QVBoxLayout, QHBoxLayout, QPushButton, QComboBox, QLabel, QWidget, \
-    QFontDialog, QTabWidget
+from PySide6.QtWidgets import QDialog, QCheckBox, QVBoxLayout, QHBoxLayout, QPushButton, QComboBox, QLabel, QWidget
 from PySide6.QtCore import QSettings, QSize
-from pubsub import pub
 
-from jdxi_editor.jdxi.midi.constant import JDXiConstant
-from jdxi_editor.log.setup import setup_logging
 from jdxi_editor.project import __version__, __program__, __package_name__, __organization_name__, __project__
-from jdxi_editor.resources import resource_path
-from jdxi_editor.jdxi.style import JDXiStyle
+
 from jdxi_editor.log.logger import Logger as log
 
 
@@ -95,6 +87,21 @@ class UiPreferencesDialog(QDialog):
         self.logging_layout.addWidget(self.logging_label)
         self.logging_layout.addWidget(self.logging_checkbox)
 
+
+        self.analog_cheat_mode_layout = QHBoxLayout(self)
+        self.analog_cheat_mode_icon = QLabel()
+        self.analog_cheat_mode_checkbox = QCheckBox("Enable Analog Cheat Mode?")
+        self.analog_cheat_mode_checkbox.setToolTip("Enable Analog Cheat Mode to allow for more flexible sound design."
+                                                   "\nUse the Digital 2 Editor to load Digital sounds into the Analog Synth (!). "
+                                                   "\nRequires restart on changes")
+        self.analog_cheat_mode_checkbox.setLayoutDirection(QtCore.Qt.RightToLeft)
+        self.analog_cheat_mode_checkbox.setChecked(bool(self.settings.value("analog_cheat_mode", type=bool)))
+        self.analog_cheat_mode_icon.setPixmap(qta.icon("msc.report").pixmap(self.icon_size))
+        self.analog_cheat_mode_label = QLabel("Analog Cheat Mode On or Off:")
+        self.analog_cheat_mode_layout.addWidget(self.analog_cheat_mode_icon)
+        self.analog_cheat_mode_layout.addWidget(self.analog_cheat_mode_label)
+        self.analog_cheat_mode_layout.addWidget(self.analog_cheat_mode_checkbox)
+
         self.buttonBox = QtWidgets.QDialogButtonBox(self)
         self.buttonBox.setGeometry(QtCore.QRect(150, 250, 341, 32))
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
@@ -111,6 +118,7 @@ class UiPreferencesDialog(QDialog):
         main_content_layout = QVBoxLayout()
         main_content_layout.addLayout(self.log_level_layout)
         main_content_layout.addLayout(self.logging_layout)
+        main_content_layout.addLayout(self.analog_cheat_mode_layout)
         main_widget.setLayout(main_content_layout)
         main_layout.addWidget(self.buttonBox)
         self.setLayout(main_layout)
@@ -168,49 +176,6 @@ class UiPreferencesDialog(QDialog):
         self.settings.sync()
         print(f"✅ Updated log level to {logging.getLevelName(level)}")
 
-    def update_log_level_old2(self, index):
-        """
-        Update the log level from a dropdown or other widget
-        :param index: int (index into self.log_levels)
-        """
-        try:
-            log_level_name = list(self.log_levels.keys())[index]
-            log_level = self.log_levels[log_level_name]  # e.g. logging.DEBUG
-
-            # Save the string name to settings
-            self.settings.setValue("log_level", log_level_name)
-
-            # Apply to logger
-            logger = logging.getLogger(__package_name__)
-            logger.setLevel(log_level)
-
-            print(f"[LOG] Updated level to {log_level_name} ({log_level})")
-
-        except Exception as ex:
-            print(f"Error occurred setting log level: {ex}")
-
-    def update_log_level_old(self, index):
-        """
-        update_log_level
-        :param index: int
-        :return:
-        """
-        settings = self.settings
-        try:
-            log_level = settings.value("log_level", logging.DEBUG, type=int)
-            print(f"log_level from settings: {log_level}")
-
-            log_level = list(self.log_levels.keys())[index]
-            settings.setValue("log_level", log_level)
-
-            print(f"level from updated settings:")
-            print(settings.value("log_level", type=int))
-
-            logging.getLogger(__package_name__).setLevel(log_level)
-            log_settings()
-        except Exception as ex:
-            print(f"Error {ex} occurred setting log level")
-
     def on_save_settings(self):
         """
         on_save_settings
@@ -219,6 +184,7 @@ class UiPreferencesDialog(QDialog):
         settings = self.settings
         try:
             settings.setValue("logging", bool(self.logging_checkbox.isChecked()))
+            settings.setValue("analog_cheat_mode", bool(self.analog_cheat_mode_checkbox.isChecked()))
             settings.sync()
             log_settings()
         except Exception as ex:
