@@ -114,6 +114,14 @@ class DigitalDisplayBase(QWidget):
         self.display_texts = texts
         self.update()
 
+    def set_upper_display_text(self, text: str) -> None:
+        """Update the display text and trigger repaint.
+
+        :param text: list
+        """
+        self.display_texts[0] = text
+        self.update()
+
 
 class DigitalTitle(DigitalDisplayBase):
     """Simplified display showing only the current tone name."""
@@ -144,6 +152,7 @@ class DigitalTitle(DigitalDisplayBase):
             self.update_display(["Currently Editing:", tone_name])
         else:
             self.update_display([tone_name])
+
 
     @property
     def text(self) -> str:
