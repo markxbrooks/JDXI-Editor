@@ -21,7 +21,7 @@ def os_file_open(file_name: str) -> None:
     os_file_open
 
     :param file_name:  str
-    :return None:
+    :return: None
     Opens a file using default program from the OS
     """
     if not os.path.exists(file_name):
