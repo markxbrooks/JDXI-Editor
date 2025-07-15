@@ -15,7 +15,7 @@ class WavRecordingThread(QThread):
 
     def __init__(self,
                  recorder: USBRecorder,
-                 duration: int = None,
+                 duration: float = None,
                  output_file: str = None,
                  recording_rate=pyaudio.paInt16,
                  parent: QWidget = None):

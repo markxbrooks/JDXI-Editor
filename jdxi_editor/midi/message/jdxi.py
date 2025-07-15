@@ -9,8 +9,8 @@ Constants Used:
     - RolandID: Roland ID constants
 
 Usage Example:
-    >>> from jdxi_editor.midi.data.address.address import ModelID
-    >>> from jdxi_editor.midi.data.address.sysex import RolandID
+    >>> from jdxi_editor.midi_state.data.address.address import ModelID
+    >>> from jdxi_editor.midi_state.data.address.sysex import RolandID
     >>> JD_XI_MODEL_ID
     [ModelID.MODEL_ID_1, ModelID.MODEL_ID_2, ModelID.MODEL_ID_3, ModelID.MODEL_ID_4]
     >>> JD_XI_HEADER_LIST
