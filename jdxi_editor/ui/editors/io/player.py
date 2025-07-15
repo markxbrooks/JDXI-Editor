@@ -6,24 +6,21 @@ import cProfile
 import io
 import pstats
 import re
-from collections import defaultdict
-from dataclasses import dataclass, field
 
 import mido
 import time
 from pathlib import Path
-from typing import Optional, Callable
+from typing import Optional
 import pyaudio
 from mido import MidiFile, bpm2tempo
 
-from PySide6.QtCore import Qt, QTimer, QThread, QObject
+from PySide6.QtCore import Qt, QTimer, QThread
 from PySide6.QtWidgets import (
     QVBoxLayout,
     QPushButton,
     QComboBox,
     QFileDialog,
     QLabel,
-    QDoubleSpinBox,
     QSlider,
     QGroupBox, QHBoxLayout, QWidget, QCheckBox,
 )
@@ -35,112 +32,17 @@ from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.channel.channel import MidiChannel
-from jdxi_editor.midi.data.programs.digital import DIGITAL_PRESET_LIST
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.utils.usb_recorder import USBRecorder
 from jdxi_editor.ui.editors import SynthEditor
+from jdxi_editor.ui.editors.io.midi_playback_state import MidiPlaybackState
 from jdxi_editor.ui.editors.io.playback_worker import MidiPlaybackWorker
 from jdxi_editor.ui.editors.io.recording_thread import WavRecordingThread
-from jdxi_editor.ui.editors.io.utils import format_time
+from jdxi_editor.ui.editors.io.ui_midi_player import UiMidi
+from jdxi_editor.ui.editors.io.utils import format_time, tempo2bpm
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 from jdxi_editor.ui.widgets.midi.track_viewer import MidiTrackViewer
 from jdxi_editor.ui.widgets.midi.utils import get_total_duration_in_seconds
-
-
-def tempo2bpm(tempo: int) -> float:
-    """
-    tempo2bpm
-
-    :param tempo: float
-    :return: float
-    """
-    return 60_000_000 / tempo
-
-
-def get_last_tempo(midi_file: MidiFile) -> int:
-    """
-    get_last_tempo
-
-    :param midi_file: MidiFile
-    :return: int
-    """
-    tempo = MidiConstant.TEMPO_120_BPM_USEC  # 500_000 default
-    for track in midi_file.tracks:
-        for msg in track:
-            if msg.type == 'set_tempo':
-                tempo = msg.tempo
-    return tempo
-
-
-class MidiTimerManager:
-    def __init__(self, parent: QObject, timeout_callback: Callable):
-        self.timer = QTimer(parent)
-        self.callback = timeout_callback
-        self.reset()
-
-    def reset(self):
-        try:
-            self.timer.stop()
-            self.timer.timeout.disconnect()
-        except Exception:
-            pass
-        self.timer.timeout.connect(self.callback)
-
-    def start(self, interval: int = 30):
-        self.timer.setInterval(interval)
-        self.timer.start()
-
-    def stop(self):
-        self.timer.stop()
-
-
-class MidiUI:
-    def __init__(self):
-        self.digital_title_file_name = DigitalTitle("No file loaded")
-        self.load_button = QPushButton()
-        self.save_button = QPushButton()
-        self.play_button = QPushButton()
-        self.stop_button = QPushButton()
-        self.pause_button = QPushButton()
-        self.midi_file_position_slider = QSlider()
-        self.midi_suppress_program_changes_checkbox = QCheckBox()
-        self.midi_suppress_control_changes_checkbox = QCheckBox()
-        self.position_label = QLabel()
-        self.midi_track_viewer = MidiTrackViewer()
-        self.usb_file_select = QPushButton()
-        self.usb_file_output_name = ""
-        self.usb_file_record_checkbox = QCheckBox()
-        self.usb_port_select_combo = QComboBox()
-        self.usb_port_refresh_devices_button = QPushButton()
-
-
-@dataclass
-class MidiPlaybackState:
-    active_notes: dict = field(default_factory=lambda: defaultdict(set))
-    buffered_msgs: list = field(default_factory=list)
-    buffer_end_time: float = 0.0
-    channel_selected: MidiChannel = MidiChannel.DIGITAL_SYNTH_1
-    events: list = field(default_factory=list)
-    event_index_current: int = 0
-    event_index: Optional[int] = None
-    event_buffer: list = field(default_factory=list)
-    file: Optional[MidiFile] = None
-    file_duration_seconds: float = 0.0
-    # New attributes for playback state
-    suppress_control_changes: bool = field(default=True)
-    suppress_program_changes: bool = field(default=True)
-    custom_tempo_force: bool = field(default=False)
-    custom_tempo: int = field(default=MidiConstant.TEMPO_162_BPM_USEC)  # Default custom tempo in microseconds
-    tempo_initial: int = field(default=MidiConstant.TEMPO_120_BPM_USEC)
-    tempo_at_position: int = field(default=MidiConstant.TEMPO_120_BPM_USEC)
-    timer: Optional[QTimer] = field(default=None)
-    # end of new attributes
-    muted_tracks: set[int] = field(default_factory=set)
-    muted_channels: set[int] = field(default_factory=set)
-    playback_thread: Optional[QThread] = None
-    playback_paused_time: Optional[float] = None
-    playback_start_time: Optional[float] = None
-    paused: bool = False
 
 
 class MidiFileEditor(SynthEditor):
@@ -185,22 +87,7 @@ class MidiFileEditor(SynthEditor):
         # self.usb_recording_thread = None
         self.usb_recorder = USBRecorder()
         # Initialize UI attributes
-        self.ui_digital_title_file_name = None
-        self.ui_load_button = None
-        self.ui_midi_file_position_slider = None
-        self.ui_midi_suppress_program_changes_checkbox = None
-        self.ui_midi_suppress_control_changes_checkbox = None
-        self.ui_midi_track_viewer = None
-        self.ui_pause_button = None
-        self.ui_play_button = None
-        self.ui_position_label = None
-        self.ui_stop_button = None
-        self.ui_save_button = None
-        self.ui_usb_file_select = None
-        self.ui_usb_file_output_name = None
-        self.ui_usb_file_record_checkbox = None
-        self.ui_usb_port_select_combo = None
-        self.ui_usb_port_refresh_devices_button = None
+        self.ui = UiMidi()
         self.ui_init()
 
     def midi_timer_init(self):
@@ -245,8 +132,8 @@ class MidiFileEditor(SynthEditor):
         """
         # Top horizontal layout: file title and right-hand controls
         header_layout = QHBoxLayout()
-        self.ui_digital_title_file_name = DigitalTitle("No file loaded")
-        header_layout.addWidget(self.ui_digital_title_file_name)
+        self.ui.digital_title_file_name = DigitalTitle("No file loaded")
+        header_layout.addWidget(self.ui.digital_title_file_name)
 
         right_panel_layout = QVBoxLayout()
         header_layout.addLayout(right_panel_layout)
@@ -260,135 +147,102 @@ class MidiFileEditor(SynthEditor):
         main_layout = QVBoxLayout()
         main_layout.addLayout(header_layout)
         main_layout.addWidget(self.init_ruler())
-        main_layout.addWidget(self.ui_midi_track_viewer)
+        main_layout.addWidget(self.ui.midi_track_viewer)
         main_layout.addWidget(self.init_transport_controls())
 
         self.setLayout(main_layout)
 
     def init_ruler(self) -> QWidget:
-        """
-        init_ruler
-
-        :return: QWidget
-        """
         ruler_container = QWidget()
         ruler_layout = QHBoxLayout(ruler_container)
         ruler_layout.setContentsMargins(0, 0, 0, 0)
         ruler_layout.setSpacing(0)
-        self.ui_position_label = QLabel("Playback Position: 0:00 / 0:00")
-        self.ui_midi_track_viewer = MidiTrackViewer()
-        self.ui_position_label.setFixedWidth(self.ui_midi_track_viewer.get_track_controls_width())  # same width as controls
-        ruler_layout.addWidget(self.ui_position_label)
-        self.ui_midi_file_position_slider = QSlider(Qt.Horizontal)
-        self.ui_midi_file_position_slider.setEnabled(False)
-        self.ui_midi_file_position_slider.sliderReleased.connect(self.midi_scrub_position)
-        ruler_layout.addWidget(self.ui_midi_file_position_slider, stretch=1)
+
+        self.ui.position_label = QLabel("Playback Position: 0:00 / 0:00")
+        self.ui.midi_track_viewer = MidiTrackViewer()
+        self.ui.position_label.setFixedWidth(self.ui.midi_track_viewer.get_track_controls_width())
+        ruler_layout.addWidget(self.ui.position_label)
+
+        self.ui.midi_file_position_slider = QSlider(Qt.Horizontal)
+        self.ui.midi_file_position_slider.setEnabled(False)
+        self.ui.midi_file_position_slider.sliderReleased.connect(self.midi_scrub_position)
+        ruler_layout.addWidget(self.ui.midi_file_position_slider, stretch=1)
+
         return ruler_container
 
     def init_midi_file_controls(self) -> QHBoxLayout:
-        """
-        init_midi_file_controls
+        layout = QHBoxLayout()
 
-        :return: QHBoxLayout
-        """
-        # file load / save selection
-        midi_file_layout = QHBoxLayout()
+        self.ui.load_button = QPushButton(qta.icon("mdi.midi-port", color=JDXiStyle.FOREGROUND), "Load MIDI File")
+        self.ui.load_button.clicked.connect(self.midi_load_file)
+        layout.addWidget(self.ui.load_button)
 
-        self.ui_load_button = QPushButton(
-            qta.icon("mdi.midi-port", color=JDXiStyle.FOREGROUND), "Load MIDI File"
-        )
-        self.ui_load_button.clicked.connect(self.midi_load_file)
-        midi_file_layout.addWidget(self.ui_load_button)
+        self.ui.save_button = QPushButton(qta.icon("mdi.midi-port", color=JDXiStyle.FOREGROUND), "Save MIDI File")
+        self.ui.save_button.clicked.connect(self.midi_save_file)
+        layout.addWidget(self.ui.save_button)
 
-        self.ui_save_button = QPushButton("Save MIDI File")
-        self.ui_save_button = QPushButton(
-            qta.icon("mdi.midi-port", color=JDXiStyle.FOREGROUND), "Save MIDI File"
-        )
-        self.ui_save_button.clicked.connect(self.midi_save_file)
-        midi_file_layout.addWidget(self.ui_save_button)
+        layout.addWidget(QLabel("Suppress MIDI Events:"))
 
-        midi_file_layout.addWidget(QLabel("Suppress MIDI Events:"))
-        self.ui_midi_suppress_program_changes_checkbox = QCheckBox("Program Changes")
-        self.ui_midi_suppress_program_changes_checkbox.setChecked(self.midi_state.suppress_program_changes)
-        midi_file_layout.addWidget(self.ui_midi_suppress_program_changes_checkbox)
-        self.ui_midi_suppress_program_changes_checkbox.stateChanged.connect(
-            self.on_suppress_program_changes_toggled
-        )
+        self.ui.midi_suppress_program_changes_checkbox = QCheckBox("Program Changes")
+        self.ui.midi_suppress_program_changes_checkbox.setChecked(self.midi_state.suppress_program_changes)
+        self.ui.midi_suppress_program_changes_checkbox.stateChanged.connect(self.on_suppress_program_changes_toggled)
+        layout.addWidget(self.ui.midi_suppress_program_changes_checkbox)
 
-        self.ui_midi_suppress_control_changes_checkbox = QCheckBox("Control Changes")
-        self.ui_midi_suppress_control_changes_checkbox.setChecked(self.midi_state.suppress_control_changes)
-        midi_file_layout.addWidget(self.ui_midi_suppress_control_changes_checkbox)
-        # Then connect signals to these methods:
+        self.ui.midi_suppress_control_changes_checkbox = QCheckBox("Control Changes")
+        self.ui.midi_suppress_control_changes_checkbox.setChecked(self.midi_state.suppress_control_changes)
+        self.ui.midi_suppress_control_changes_checkbox.stateChanged.connect(self.on_suppress_control_changes_toggled)
+        layout.addWidget(self.ui.midi_suppress_control_changes_checkbox)
 
-        self.ui_midi_suppress_control_changes_checkbox.stateChanged.connect(
-            self.on_suppress_control_changes_toggled
-        )
-        return midi_file_layout
+        return layout
 
     def init_usb_port_controls(self) -> QHBoxLayout:
-        """
-        init_usb_port_controls
+        layout = QHBoxLayout()
+        layout.addWidget(QLabel("USB Port for recording"))
 
-        :return: QHBoxLayout
-        """
-        ui_usb_port_layout = QHBoxLayout()
-        ui_usb_port_layout.addWidget(QLabel("USB Port for recording"))
-        self.ui_usb_port_select_combo = QComboBox()
+        self.ui.usb_port_select_combo = QComboBox()
         self.usb_populate_devices()
-        ui_usb_port_layout.addWidget(self.ui_usb_port_select_combo)
+        layout.addWidget(self.ui.usb_port_select_combo)
 
-        self.ui_usb_port_refresh_devices_button = QPushButton("Refresh USB device list")
-        self.ui_usb_port_refresh_devices_button.pressed.connect(self.usb_populate_devices)
-        ui_usb_port_layout.addWidget(self.ui_usb_port_refresh_devices_button)
-        return ui_usb_port_layout
+        self.ui.usb_port_refresh_devices_button = QPushButton("Refresh USB device list")
+        self.ui.usb_port_refresh_devices_button.pressed.connect(self.usb_populate_devices)
+        layout.addWidget(self.ui.usb_port_refresh_devices_button)
+
+        return layout
 
     def init_usb_file_controls(self) -> QHBoxLayout:
-        """
-        init_usb_controls
+        layout = QHBoxLayout()
+        layout.addWidget(QLabel("USB file to save recording"))
 
-        :return: QHBoxLayout
-        Initialize the file controls for loading and saving MIDI files
-        """
-        ui_usb_file_layout = QHBoxLayout()
-        ui_usb_file_layout.addWidget(QLabel("USB file to save recording"))
-        self.ui_usb_file_select = QPushButton("No File Selected")
-        ui_usb_file_layout.addWidget(self.ui_usb_file_select)
-        self.ui_usb_file_record_checkbox = QCheckBox("Save USB recording to file")
-        self.ui_usb_file_record_checkbox.setChecked(self.usb_file_save_recording)
-        ui_usb_file_layout.addWidget(self.ui_usb_file_record_checkbox)
-        self.ui_usb_file_select.clicked.connect(self.usb_select_recording_file)
-        self.ui_usb_file_record_checkbox.stateChanged.connect(self.on_usb_save_recording_toggled)
-        self.ui_usb_file_output_name = ""
-        return ui_usb_file_layout
+        self.ui.usb_file_select = QPushButton("No File Selected")
+        self.ui.usb_file_select.clicked.connect(self.usb_select_recording_file)
+        layout.addWidget(self.ui.usb_file_select)
+
+        self.ui.usb_file_record_checkbox = QCheckBox("Save USB recording to file")
+        self.ui.usb_file_record_checkbox.setChecked(self.usb_file_save_recording)
+        self.ui.usb_file_record_checkbox.stateChanged.connect(self.on_usb_save_recording_toggled)
+        layout.addWidget(self.ui.usb_file_record_checkbox)
+
+        self.ui.usb_file_output_name = ""  # Set externally
+
+        return layout
 
     def init_transport_controls(self) -> QGroupBox:
-        """
-        init_transport_controls
+        group = QGroupBox("Transport")
+        layout = QHBoxLayout(group)
 
-        :return:
-        Initialize the transport controls for playback
-        """
-        transport_group = QGroupBox("Transport")
-        transport_layout = QHBoxLayout()
-        transport_group.setLayout(transport_layout)
-        # self.play_button = QPushButton("Play")
-        self.ui_play_button = QPushButton(
-            qta.icon("ri.play-line", color=JDXiStyle.FOREGROUND), "Play"
-        )
-        self.ui_play_button.clicked.connect(self.midi_playback_start)
-        transport_layout.addWidget(self.ui_play_button)
+        self.ui.play_button = QPushButton(qta.icon("ri.play-line", color=JDXiStyle.FOREGROUND), "Play")
+        self.ui.play_button.clicked.connect(self.midi_playback_start)
+        layout.addWidget(self.ui.play_button)
 
-        self.ui_stop_button = QPushButton(
-            qta.icon("ri.stop-line", color=JDXiStyle.FOREGROUND), "Stop"
-        )
-        self.ui_pause_button = QPushButton(
-            qta.icon("ri.pause-line", color=JDXiStyle.FOREGROUND), "Pause"
-        )
-        self.ui_stop_button.clicked.connect(self.midi_stop_playback)
-        self.ui_pause_button.clicked.connect(self.midi_playback_pause_toggle)
-        transport_layout.addWidget(self.ui_stop_button)
-        transport_layout.addWidget(self.ui_pause_button)
-        return transport_group
+        self.ui.stop_button = QPushButton(qta.icon("ri.stop-line", color=JDXiStyle.FOREGROUND), "Stop")
+        self.ui.stop_button.clicked.connect(self.midi_stop_playback)
+        layout.addWidget(self.ui.stop_button)
+
+        self.ui.pause_button = QPushButton(qta.icon("ri.pause-line", color=JDXiStyle.FOREGROUND), "Pause")
+        self.ui.pause_button.clicked.connect(self.midi_playback_pause_toggle)
+        layout.addWidget(self.ui.pause_button)
+
+        return group
 
     def update_tempo_us_from_worker(self, tempo_us: int) -> None:
         """
@@ -495,8 +349,8 @@ class MidiFileEditor(SynthEditor):
         :return: None
         """
         usb_devices = self.usb_recorder.list_devices()
-        self.ui_usb_port_select_combo.clear()
-        self.ui_usb_port_select_combo.addItems(usb_devices)
+        self.ui.usb_port_select_combo.clear()
+        self.ui.usb_port_select_combo.addItems(usb_devices)
         self.usb_port_jdxi_auto_connect(usb_devices)
         return usb_devices
 
@@ -511,7 +365,7 @@ class MidiFileEditor(SynthEditor):
         pattern = re.compile(r'jd-?xi', re.IGNORECASE)
         for i, item in enumerate(usb_devices):
             if pattern.search(item):
-                self.ui_usb_port_select_combo.setCurrentIndex(i)
+                self.ui.usb_port_select_combo.setCurrentIndex(i)
                 self.usb_port_input_device_index = i
                 log.message(f"Auto-selected {item}")
                 break
@@ -519,15 +373,15 @@ class MidiFileEditor(SynthEditor):
     def usb_start_recording(self, recording_rate=pyaudio.paInt16):
         """Start recording in a separate thread."""
         try:
-            if not self.ui_usb_file_output_name:
+            if not self.ui.usb_file_output_name:
                 log.message("No output file selected.")
                 return
 
-            selected_index = self.ui_usb_port_select_combo.currentIndex()
+            selected_index = self.ui.usb_port_select_combo.currentIndex()
             self.usb_recorder.input_device_index = selected_index  # self.input_device_index
             self.usb_recording_thread = WavRecordingThread(recorder=self.usb_recorder,
                                                            duration=self.midi_state.file_duration_seconds + 10,
-                                                           output_file=self.ui_usb_file_output_name,
+                                                           output_file=self.ui.usb_file_output_name,
                                                            recording_rate=recording_rate,  # e.g. pyaudio.paInt16
                                                            )
             self.usb_recording_thread.recording_finished.connect(self.on_usb_recording_finished)
@@ -558,10 +412,10 @@ class MidiFileEditor(SynthEditor):
             "WAV files (*.wav)",  # filter
         )
         if file_name:
-            self.ui_usb_file_select.setText(file_name)
-            self.ui_usb_file_output_name = file_name
+            self.ui.usb_file_select.setText(file_name)
+            self.ui.usb_file_output_name = file_name
         else:
-            self.ui_usb_file_output_name = ""
+            self.ui.usb_file_output_name = ""
 
     def midi_save_file(self):
         """
@@ -571,8 +425,8 @@ class MidiFileEditor(SynthEditor):
             self, "Save MIDI File", "", "MIDI Files (*.mid)"
         )
         if file_path:
-            self.ui_midi_track_viewer.midi_file.save(file_path)
-            self.ui_digital_title_file_name.setText(f"Saved: {Path(file_path).name}")
+            self.ui.midi_track_viewer.midi_file.save(file_path)
+            self.ui.digital_title_file_name.setText(f"Saved: {Path(file_path).name}")
 
     def midi_load_file(self):
         """
@@ -585,9 +439,9 @@ class MidiFileEditor(SynthEditor):
             return
 
         self.midi_state.file = MidiFile(file_path)
-        self.ui_digital_title_file_name.setText(f"Loaded: {Path(file_path).name}")
-        self.ui_midi_track_viewer.clear()
-        self.ui_midi_track_viewer.set_midi_file(self.midi_state.file)
+        self.ui.digital_title_file_name.setText(f"Loaded: {Path(file_path).name}")
+        self.ui.midi_track_viewer.clear()
+        self.ui.midi_track_viewer.set_midi_file(self.midi_state.file)
 
         self.ticks_per_beat = self.midi_state.file.ticks_per_beat
 
@@ -673,7 +527,7 @@ class MidiFileEditor(SynthEditor):
         :return: None
         Set the tempo in the UI and log it.
         """
-        self.ui_digital_title_file_name.set_upper_display_text(
+        self.ui.digital_title_file_name.set_upper_display_text(
             f"Tempo: {round(tempo_bpm)} BPM"
         )
         log.parameter("tempo_bpm", tempo_bpm)
@@ -823,7 +677,7 @@ class MidiFileEditor(SynthEditor):
         :return: None
         Get the muted tracks from the MIDI track viewer.
         """
-        muted_tracks_raw = self.ui_midi_track_viewer.get_muted_tracks()
+        muted_tracks_raw = self.ui.midi_track_viewer.get_muted_tracks()
         muted_tracks = {int(t) for t in muted_tracks_raw if not isinstance(t, set)}
         for track in muted_tracks:
             log.parameter("Muted track", track)
@@ -836,7 +690,7 @@ class MidiFileEditor(SynthEditor):
         :return: None
         Get the muted channels from the MIDI track viewer.
         """
-        muted_channels_raw = self.ui_midi_track_viewer.get_muted_channels()
+        muted_channels_raw = self.ui.midi_track_viewer.get_muted_channels()
         muted_channels = {int(c) for c in muted_channels_raw if not isinstance(c, set)}
         log.parameter("Muted channels", muted_channels)
         for channel in muted_channels:
@@ -875,20 +729,20 @@ class MidiFileEditor(SynthEditor):
 
     def ui_midi_file_position_slider_set_position(self, elapsed_time: float) -> None:
         """
-        ui_midi_file_position_slider_set_position
+        ui.midi_file_position_slider_set_position
 
         :param elapsed_time: float
         :return: None
         Update the slider position and label based on elapsed time.
         """
-        if self.ui_midi_file_position_slider.isSliderDown():
+        if self.ui.midi_file_position_slider.isSliderDown():
             return  # Don't update while user is dragging
 
         new_value = int(elapsed_time)
-        current_value = self.ui_midi_file_position_slider.value()
+        current_value = self.ui.midi_file_position_slider.value()
 
         if abs(new_value - current_value) >= 1:  # Only update if full second has passed
-            self.ui_midi_file_position_slider.setValue(new_value)
+            self.ui.midi_file_position_slider.setValue(new_value)
             self.ui_position_label_set_time(elapsed_time)
 
     def midi_scrub_position(self):
@@ -900,7 +754,7 @@ class MidiFileEditor(SynthEditor):
             log.message("Either self.midi.file or self.midi.events not present, returning")
             return
 
-        target_time = self.ui_midi_file_position_slider.value()
+        target_time = self.ui.midi_file_position_slider.value()
         log.parameter("target_time", target_time)
         self.midi_state.playback_start_time = time.time() - target_time
         self.midi_state.event_index = 0
@@ -986,10 +840,10 @@ class MidiFileEditor(SynthEditor):
         :return: None
         Reset the position slider and label to initial state.
         """
-        self.ui_midi_file_position_slider.setEnabled(False)
-        self.ui_midi_file_position_slider.setValue(0)
-        self.ui_midi_file_position_slider.setEnabled(True)
-        self.ui_midi_file_position_slider.setRange(0, int(self.midi_state.file_duration_seconds))
+        self.ui.midi_file_position_slider.setEnabled(False)
+        self.ui.midi_file_position_slider.setValue(0)
+        self.ui.midi_file_position_slider.setEnabled(True)
+        self.ui.midi_file_position_slider.setRange(0, int(self.midi_state.file_duration_seconds))
         self.ui_position_label_set_time()
 
     def ui_position_label_update_time(self, time_seconds: Optional[float] = None) -> None:
@@ -1000,7 +854,7 @@ class MidiFileEditor(SynthEditor):
         :return: None
         """
         if time_seconds is None:
-            self.ui_position_label.setText(f"Playback Position: 0:00 / {format_time(self.midi_state.file_duration_seconds)}")
+            self.ui.position_label.setText(f"Playback Position: 0:00 / {format_time(self.midi_state.file_duration_seconds)}")
 
     def ui_position_label_set_time(self, elapsed_time: Optional[float] = None) -> None:
         """
@@ -1017,7 +871,7 @@ class MidiFileEditor(SynthEditor):
         total_str = format_time(total)
         label_text = f"Playback Position: {elapsed_str} / {total_str}"
         if getattr(self, "_last_position_label", "") != label_text:
-            self.ui_position_label.setText(label_text)
+            self.ui.position_label.setText(label_text)
             self._last_position_label = label_text
 
     def midi_playback_pause_toggle(self):
@@ -1035,7 +889,7 @@ class MidiFileEditor(SynthEditor):
             self.midi_state.playback_paused_time = time.time()
             self.midi_state.timer.stop()
             self.midi_state.playback_paused = True
-            self.ui_pause_button.setText("Resume")
+            self.ui.pause_button.setText("Resume")
         else:
             # Resuming playback
             if self.midi_state.playback_paused_time and self.midi_state.playback_start_time:
@@ -1043,7 +897,7 @@ class MidiFileEditor(SynthEditor):
                 self.midi_state.playback_start_time += pause_duration  # Adjust start time
             self.midi_state.timer.start()
             self.midi_state.playback_paused = False
-            self.ui_pause_button.setText("Pause")
+            self.ui.pause_button.setText("Pause")
 
     def midi_playback_worker_handle_result(self, result=None):
         """
