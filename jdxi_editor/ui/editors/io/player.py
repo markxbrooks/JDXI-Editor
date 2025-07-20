@@ -43,6 +43,7 @@ from jdxi_editor.ui.editors.io.utils import format_time, tempo2bpm
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 from jdxi_editor.ui.widgets.midi.track_viewer import MidiTrackViewer
 from jdxi_editor.ui.widgets.midi.utils import get_total_duration_in_seconds
+from jdxi_editor.ui.windows.jdxi.utils import show_message_box
 
 
 class MidiFileEditor(SynthEditor):
@@ -390,6 +391,7 @@ class MidiFileEditor(SynthEditor):
             print("Recording started in background thread.")
         except Exception as ex:
             log.error(f"Error {ex} occurred starting recording")
+            show_message_box("Error Saving File", f"Error {ex} occurred starting recording")
 
     def usb_stop_recording(self):
         """
@@ -540,6 +542,9 @@ class MidiFileEditor(SynthEditor):
         :param output_file: str
         :return: None
         """
+        if not output_file:
+            log.error("Recording finished, but no output file returned.")
+            return
         log.message(f"Recording finished. File successfully saved to {output_file}")
 
     def on_usb_recording_error(self, message: str):
@@ -658,14 +663,16 @@ class MidiFileEditor(SynthEditor):
                     self.midi_state.buffered_msgs.append((absolute_time_ticks, None, self.midi_state.tempo_at_position))  # Store tempo change
                 elif not msg.is_meta:
                     if hasattr(msg, "channel"):
-                        log.message(
-                            f"🔍 Checking msg.channel={msg.channel + MidiConstant.CHANNEL_BINARY_TO_DISPLAY} in muted_channels={self.midi_state.muted_channels}")
+                        # log.message(
+                        #    f"🔍 Checking msg.channel={msg.channel +
+                        #    MidiConstant.CHANNEL_BINARY_TO_DISPLAY} in
+                        #    muted_channels={self.midi_state.muted_channels}")
                         if msg.channel + MidiConstant.CHANNEL_BINARY_TO_DISPLAY in self.midi_state.muted_channels:
-                            log.message(f"🚫 Skipping muted channel {msg.channel}")
+                            # log.message(f"🚫 Skipping muted channel {msg.channel}")
                             continue
-                    log.message(f"🎵 Adding midi msg to buffer: {msg}")
+                    # log.message(f"🎵 Adding midi msg to buffer: {msg}")
                     raw_bytes = msg.bytes()
-                    log.message(f"Tick: {absolute_time_ticks}, Tempo: {self.midi_state.tempo_at_position}")
+                    # log.message(f"Tick: {absolute_time_ticks}, Tempo: {self.midi_state.tempo_at_position}")
                     self.midi_state.buffered_msgs.append((absolute_time_ticks, raw_bytes, self.midi_state.tempo_at_position))
 
         self.midi_state.buffered_msgs.sort(key=lambda x: x[0])
