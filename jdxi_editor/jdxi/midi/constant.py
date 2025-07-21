@@ -9,6 +9,8 @@ class MidiConstant:
     """Miscellaneous MIDI constants for JD-Xi communication."""
 
     # User Banks
+    MIDI_CHANNELS_NUMBER = 16
+    MIDI_NOTES_NUMBER = 128
     CONTROL_CHANGE_BANK_SELECT_MSB = 85
     CONTROL_CHANGE_BANK_SELECT_LSB_BANK_E_AND_F = 0
     CONTROL_CHANGE_BANK_SELECT_LSB_BANK_G_AND_H = 1

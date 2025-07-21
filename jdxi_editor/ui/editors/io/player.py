@@ -606,28 +606,36 @@ class MidiFileEditor(SynthEditor):
             self.midi_state.event_buffer.clear()
             self.midi_state.buffer_end_time = 0
             self.midi_state.event_index = 0
-
-            # Setup worker if not already initialized
-            if not self.midi_state.playback_thread or not self.midi_playback_worker:
-                self.setup_worker()
-            self.ui_ensure_timer_connected()
-
-            # === Prepare the buffered events for the worker ===
-            self.midi_state.muted_channels = self.get_muted_channels()
-
-            self.midi_state.muted_tracks = self.get_muted_tracks()
-            self.midi_message_buffer_refill()
-            self.midi_playback_worker.setup(
-                buffered_msgs=self.midi_state.buffered_msgs,
-                midi_out_port=self.midi_helper.midi_out,
-                ticks_per_beat=self.midi_state.file.ticks_per_beat,
-                play_program_changes=not self.midi_state.suppress_program_changes
-            )
             self.midi_state.playback_start_time = time.time()
-            self.midi_state.timer.start()
+
+            self.setup_and_start_playback_worker()
 
         except Exception as ex:
             log.error(f"Error {ex} occurred starting playback")
+
+    def setup_and_start_playback_worker(self):
+        """
+        setup_and_start_playback_worker
+
+        :return: None
+        Setup the MIDI playback worker and start the timer.
+        """
+        # Setup worker if not already initialized
+        if not self.midi_state.playback_thread or not self.midi_playback_worker:
+            self.setup_worker()
+        self.ui_ensure_timer_connected()
+        # === Prepare the buffered events for the worker ===
+        self.midi_state.muted_channels = self.get_muted_channels()
+        self.midi_state.muted_tracks = self.get_muted_tracks()
+        self.midi_message_buffer_refill()
+        self.midi_playback_worker.setup(
+            buffered_msgs=self.midi_state.buffered_msgs,
+            midi_out_port=self.midi_helper.midi_out,
+            ticks_per_beat=self.midi_state.file.ticks_per_beat,
+            play_program_changes=not self.midi_state.suppress_program_changes,
+            start_time=self.midi_state.playback_start_time,
+        )
+        self.midi_state.timer.start()
 
     def midi_message_buffer_refill(self) -> None:
         """
@@ -641,8 +649,19 @@ class MidiFileEditor(SynthEditor):
             self.midi_state.muted_tracks = set()
         if self.midi_state.muted_channels is None:
             self.midi_state.muted_channels = set()
-
         self.midi_state.buffered_msgs = []
+
+        try:
+            elapsed_time_secs = time.time() - self.midi_state.playback_start_time
+            start_tick = int(mido.second2tick(
+                second=elapsed_time_secs,
+                ticks_per_beat=self.midi_state.file.ticks_per_beat,
+                tempo=self.midi_state.tempo_at_position
+            ))
+            log.parameter("start_tick", start_tick)
+        except Exception as ex:
+            log.error(f"Error converting playback start time to ticks: {ex}")
+            return
 
         for i, track in enumerate(self.midi_state.file.tracks):
             if i + MidiConstant.CHANNEL_DISPLAY_TO_BINARY in self.midi_state.muted_tracks:
@@ -652,6 +671,9 @@ class MidiFileEditor(SynthEditor):
 
             for msg in track:
                 absolute_time_ticks += msg.time
+
+                if absolute_time_ticks < start_tick:
+                    continue  # Skip messages before the start time
 
                 if msg.type == 'set_tempo':
                     if self.midi_state.custom_tempo_force:
@@ -753,34 +775,58 @@ class MidiFileEditor(SynthEditor):
             self.ui_position_label_set_time(elapsed_time)
 
     def midi_scrub_position(self):
-        """
-        Scrub to a new position in the file using the slider.
-        Resets start time and event index to match new slider position.
-        """
         if not self.midi_state.file or not self.midi_state.events:
             log.message("Either self.midi.file or self.midi.events not present, returning")
             return
 
+        # ❗ Stop playback before seeking
+        self.midi_playback_worker_stop()
+        self.midi_playback_worker_disconnect()
+        self.midi_state.playback_paused = False  # Optional: reset paused state
+
+        # Get new scrub position
         target_time = self.ui.midi_file_position_slider.value()
         log.parameter("target_time", target_time)
-        self.midi_state.playback_start_time = time.time() - target_time
-        self.midi_state.event_index = 0
 
-        log.parameter("self.midi.event_index was", self.midi_state.event_index)
+        # Update playback state
+        # Get new scrub position from slider (in seconds)
+        target_time = self.ui.midi_file_position_slider.value()
+        log.parameter("target_time", target_time)
+
+        # Find event index at or after target_time
+        self.midi_state.event_index = 0
         for i, (tick, _, _) in enumerate(self.midi_state.events):
             if tick * self.tick_duration >= target_time:
                 self.midi_state.event_index = i
-                log.parameter("self.midi.event_index now", self.midi_state.event_index)
                 break
 
-        # Stop all notes to avoid hanging
+        # Calculate time offset from beginning of selected event
+        scrub_tick = self.midi_state.events[self.midi_state.event_index][0]
+        scrub_time = scrub_tick * self.tick_duration
+
+        # Adjust playback_start_time so that:
+        # current_time - playback_start_time == scrub_time
+        self.midi_state.playback_start_time = time.time() - scrub_time
+
+        self.midi_state.event_index = 0
+
+        for i, (tick, _, _) in enumerate(self.midi_state.events):
+            if tick * self.tick_duration >= target_time:
+                self.midi_state.event_index = i
+                log.parameter("self.midi_state.event_index now", self.midi_state.event_index)
+                break
+
+        # Stop all notes
         if self.midi_helper:
-            for ch in range(16):
-                for note in range(128):
-                    self.midi_helper.midi_out.send_message(mido.Message("note_off", note=note, velocity=0, channel=ch).bytes())
-        # Clear the event buffer and refill it
+            for ch in range(MidiConstant.MIDI_CHANNELS_NUMBER):
+                self.midi_helper.midi_out.send_message(
+                    mido.Message("control_change", control=123, value=0, channel=ch).bytes())
+                for note in range(MidiConstant.MIDI_NOTES_NUMBER):
+                    self.midi_helper.midi_out.send_message(
+                        mido.Message("note_off", note=note, velocity=0, channel=ch).bytes())
+
         self.midi_state.event_buffer.clear()
-        self.midi_message_buffer_refill()
+        self.setup_and_start_playback_worker()
 
     def midi_stop_playback(self):
         """

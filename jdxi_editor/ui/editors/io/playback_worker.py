@@ -32,13 +32,16 @@ class MidiPlaybackWorker(QObject):
         self.index = 0
         self.start_time = time.time()
 
-    def setup(self, buffered_msgs, midi_out_port, ticks_per_beat=480, play_program_changes=True):
+    def setup(self, buffered_msgs, midi_out_port, ticks_per_beat=480, play_program_changes=True, start_time=None):
         self.buffered_msgs = buffered_msgs
         self.midi_out_port = midi_out_port
         self.ticks_per_beat = ticks_per_beat
         self.play_program_changes = play_program_changes
         self.index = 0
-        self.start_time = time.time()
+        if start_time is None:
+            self.start_time = time.time()
+        else:
+            self.start_time = start_time
         self.should_stop = False
 
         # existing setup...
