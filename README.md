@@ -138,6 +138,13 @@ JDXI-Editor provides preset selection, synth editing, drum part customization, e
 
 ---
 
+### 💡 Contribute and Share Feedback
+JDXI-Editor is a growing project! 
+- ⭐ Star this repository to support its development.
+- 🛠️ Contribute features or report issues via [GitHub Issues](https://github.com/markxbrooks/JDXI-Editor/issues).
+
+---
+
 ## 🙏 Credits
 
 - [Qt](https://www.qt.io/)
