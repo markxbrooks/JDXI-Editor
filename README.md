@@ -10,6 +10,19 @@ It’s designed to implement as many features as possible from Roland’s MIDI i
 
 ---
 
+## 🎛️ Features of JDXI-Editor for Roland JD-Xi Synthesizer
+- **On-Screen Keyboard**: Easily play and test sounds from your JD-Xi.
+- **Preset Selection with Search**: Quickly find and load presets.
+- **Octave Shifting**: Adjust octave ranges for precise sound control.
+- **Digital & Analog Synth Editors**: Edit JD-Xi's digital and analog synths directly.
+- **Drum Part Editor**: Customize drum sounds and patterns 🥁.
+- **Effects Editor**: Edit reverb, delay, vocoder, and arpeggiator settings.
+- **MIDI Debugger**: Monitor and debug MIDI messages efficiently.
+
+---
+
+Designed for musicians, sound designers, and MIDI enthusiasts looking to unlock the full potential of the Roland JD-Xi synthesizer!
+
 ### 🖥️ Current App Preview
 
 <a href="./resources/main_window_0.6.gif" rel="Current view of the Roland JD-Xi Editor App">
