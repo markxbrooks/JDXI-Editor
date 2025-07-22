@@ -122,6 +122,16 @@ $ python -m jdxi_editor.main
 
 ---
 
+## ❓ Frequently Asked Questions
+### What is JDXI-Editor?
+JDXI-Editor is a Python-based MIDI editor for the Roland JD-Xi synthesizer, built with the Qt Framework and RtMidi.
+### Does JDXI-Editor work on MacOS and Windows?
+Yes, JDXI-Editor supports MacOS, and a Windows version is coming soon!
+### What features does JDXI-Editor offer?
+JDXI-Editor provides preset selection, synth editing, drum part customization, effects editing, and more.
+
+---
+
 ## 🙏 Credits
 
 - [Qt](https://www.qt.io/)
