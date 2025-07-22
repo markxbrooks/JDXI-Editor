@@ -17,8 +17,8 @@ It’s designed to implement as many features as possible from Roland’s MIDI i
 </a>
 
 ---
-
-### 📺 Video Demo
+## 📺 Roland JD-Xi MIDI Editor Video Demo
+Watch how **JDXI-Editor** simplifies sound design and MIDI editing for the **Roland JD-Xi synthesizer**:
 [![Watch the demo](https://img.youtube.com/vi/vw-T-9LJkng/0.jpg)](https://www.youtube.com/watch?v=vw-T-9LJkng)
 
 
