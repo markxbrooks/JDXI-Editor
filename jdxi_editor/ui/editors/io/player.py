@@ -869,8 +869,87 @@ class MidiFileEditor(SynthEditor):
         if abs(new_value - current_value) >= 1:  # Only update if full second has passed
             self.ui.midi_file_position_slider.setValue(new_value)
             self.ui_position_label_set_time(elapsed_time)
-
+            
     def midi_scrub_position(self):
+        """
+        Updates the MIDI playback state based on the scrub position.
+        """
+        if not self.is_midi_ready():
+            log.message("Either self.midi.file or self.midi.events not present, returning")
+            return
+    
+        self.stop_playback()
+        target_time = self.get_target_time()
+        self.update_event_index(target_time)
+        self.update_playback_start_time(target_time)
+        self.stop_all_notes()
+        self.prepare_for_playback()
+    
+    def is_midi_ready(self) -> bool:
+        """
+        Checks if the MIDI file and events are available.
+        """
+        return bool(self.midi_state.file and self.midi_state.events)
+
+    def stop_playback(self) -> None:
+        """
+        Stops playback and resets the paused state.
+        """
+        self.midi_playback_worker_stop()
+        self.midi_playback_worker_disconnect()
+        self.midi_state.playback_paused = False  # Optional: reset paused state
+    
+    def get_target_time(self) -> float:
+        """
+        Retrieves the target time from the slider and logs it.
+        """
+        target_time = self.ui.midi_file_position_slider.value()
+        log.parameter("target_time", target_time)
+        return target_time
+
+    def update_event_index(self, target_time: float) -> None:
+        """
+        Finds and updates the event index based on the target time.
+        """
+        for i, (tick, _, _) in enumerate(self.midi_state.events):
+            if tick * self.tick_duration >= target_time:
+                self.midi_state.event_index = i
+                log.parameter("self.midi_state.event_index now", self.midi_state.event_index)
+                return
+        self.midi_state.event_index = 0  # Default to the start if no match
+        
+    def update_playback_start_time(self, target_time: float) -> None:
+        """
+        Adjusts the playback start time based on the scrub position.
+        """
+        scrub_tick = self.midi_state.events[self.midi_state.event_index][0]
+        scrub_time = scrub_tick * self.tick_duration
+        self.midi_state.playback_start_time = time.time() - scrub_time
+        
+    def stop_all_notes(self) -> None:
+        """
+        Stops all active MIDI notes.
+        """
+        if not self.midi_helper:
+            return
+    
+        for ch in range(MidiConstant.MIDI_CHANNELS_NUMBER):
+            self.midi_helper.midi_out.send_message(
+                mido.Message("control_change", control=123, value=0, channel=ch).bytes()
+            )
+            for note in range(MidiConstant.MIDI_NOTES_NUMBER):
+                self.midi_helper.midi_out.send_message(
+                    mido.Message("note_off", note=note, velocity=0, channel=ch).bytes()
+                )
+    
+    def prepare_for_playback(self) -> None:
+        """
+        Clears the event buffer and starts the playback worker.
+        """
+        self.midi_state.event_buffer.clear()
+        self.setup_and_start_playback_worker()
+
+    def midi_scrub_position_old(self):
         if not self.midi_state.file or not self.midi_state.events:
             log.message("Either self.midi.file or self.midi.events not present, returning")
             return
