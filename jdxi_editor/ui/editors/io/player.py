@@ -636,19 +636,6 @@ class MidiFileEditor(SynthEditor):
             start_time=self.midi_state.playback_start_time,
         )
         self.midi_state.timer.start()
-        
-    def midi_message_buffer_refill(self) -> None:
-        """
-        Preprocess MIDI tracks into a sorted list of (absolute_ticks, raw_bytes, tempo) tuples.
-        Meta messages are excluded except for set_tempo.
-        """
-        self.initialize_midi_state()
-        
-        start_tick = self.calculate_start_tick()
-        if start_tick is None:
-            return
-    
-        self.process_tracks(start_tick)
 
     def initialize_midi_state(self) -> None:
         """
@@ -676,54 +663,44 @@ class MidiFileEditor(SynthEditor):
             log.error(f"Error converting playback start time to ticks: {ex}")
             return None
     
-    def process_tracks(self, start_tick: int) -> None:
-        """
-        Process each MIDI track to populate the buffered messages.
-        :param start_tick: The tick from which to start processing messages.
-        """
-        for i, track in enumerate(self.midi_state.file.tracks):
-            if self.is_track_muted(i):
-                log.message(f"🚫 Skipping muted track {i + MidiConstant.CHANNEL_DISPLAY_TO_BINARY} ({track.name})")
-                continue
-    
-            self.process_track_messages(track, start_tick)
-    
     def is_track_muted(self, track_index: int) -> bool:
         """
-        Check if the track is muted.
+        is_track_muted
+
         :param track_index: Index of the track to check.
         :return: True if the track is muted, otherwise False.
+
+        Check if the track is muted.
         """
-        return track_index + MidiConstant.CHANNEL_DISPLAY_TO_BINARY in self.midi_state.muted_tracks
-    
-    def process_track_messages(self, track: mido.MidiTrack, start_tick: int) -> None:
+        return track_index in self.midi_state.muted_tracks
+
+    def is_channel_muted(self, channel_index: int) -> bool:
         """
-        Process messages in a MIDI track.
-        :param track: The MIDI track to process.
-        :param start_tick: The tick from which to start processing messages.
+        is_channel_muted
+
+        :param channel_index: Index of the track to check.
+        :return: True if the channel is muted, otherwise False.
+
+        Check if the channel is muted.
         """
-        absolute_time_ticks = 0
-        for msg in track:
-            absolute_time_ticks += msg.time
+        return channel_index + MidiConstant.CHANNEL_BINARY_TO_DISPLAY in self.midi_state.muted_channels
     
-            if absolute_time_ticks < start_tick:
-                continue  # Skip messages before the start time
-    
-            if msg.type == 'set_tempo':
-                self.handle_set_tempo(msg)
-            else:
-                self.buffer_message(absolute_time_ticks, msg)
-    
-    def handle_set_tempo(self, msg: mido.Message) -> None:
+    def handle_set_tempo(self, msg: mido.Message, absolute_time_ticks: int) -> None:
         """
-        Handle 'set_tempo' messages in a MIDI track.
+        handle_set_tempo
+
+        :param absolute_time_ticks: int
         :param msg: The MIDI message to process.
+        Handle 'set_tempo' messages in a MIDI track.
         """
         if self.midi_state.custom_tempo_force:
             self.midi_state.tempo_at_position = self.midi_state.custom_tempo
-            log.message(f"🔄 Forcing custom tempo: {self.midi_state.tempo_at_position} usec")
+            log.message(f"🔄 Forcing custom tempo: {self.midi_state.tempo_at_position} usec / quarter note")
         else:
             self.midi_state.tempo_at_position = msg.tempo
+        self.update_playback_worker_tempo_us(self.midi_state.tempo_at_position)
+        self.midi_state.buffered_msgs.append(
+            (absolute_time_ticks, None, self.midi_state.tempo_at_position))  # Store tempo change
 
     def buffer_message(self, absolute_time_ticks: int, msg: mido.Message) -> None:
         """
@@ -733,7 +710,7 @@ class MidiFileEditor(SynthEditor):
         """
         self.midi_state.buffered_msgs.append((absolute_time_ticks, msg.bytes(), self.midi_state.tempo_at_position))
     
-    def midi_message_buffer_refill_old(self) -> None:
+    def midi_message_buffer_refill(self) -> None:
         """
         midi_message_buffer_refill
 
@@ -741,59 +718,54 @@ class MidiFileEditor(SynthEditor):
         Preprocess MIDI tracks into a sorted list of (absolute_ticks, raw_bytes, tempo) tuples.
         Meta messages are excluded except for set_tempo.
         """
-        if self.midi_state.muted_tracks is None:
-            self.midi_state.muted_tracks = set()
-        if self.midi_state.muted_channels is None:
-            self.midi_state.muted_channels = set()
-        self.midi_state.buffered_msgs = []
 
-        try:
-            elapsed_time_secs = time.time() - self.midi_state.playback_start_time
-            start_tick = int(mido.second2tick(
-                second=elapsed_time_secs,
-                ticks_per_beat=self.midi_state.file.ticks_per_beat,
-                tempo=self.midi_state.tempo_at_position
-            ))
-            log.parameter("start_tick", start_tick)
-        except Exception as ex:
-            log.error(f"Error converting playback start time to ticks: {ex}")
+        self.initialize_midi_state()
+
+        start_tick = self.calculate_start_tick()
+        if start_tick is None:
             return
 
-        for i, track in enumerate(self.midi_state.file.tracks):
-            if i + MidiConstant.CHANNEL_DISPLAY_TO_BINARY in self.midi_state.muted_tracks:
-                log.message(f"🚫 Skipping muted track {i + MidiConstant.CHANNEL_DISPLAY_TO_BINARY} ({track.name})")
-                continue
-            absolute_time_ticks = 0
-
-            for msg in track:
-                absolute_time_ticks += msg.time
-
-                if absolute_time_ticks < start_tick:
-                    continue  # Skip messages before the start time
-
-                if msg.type == 'set_tempo':
-                    if self.midi_state.custom_tempo_force:
-                        self.midi_state.tempo_at_position = self.midi_state.custom_tempo
-                        log.message(f"🔄 Forcing custom tempo: {self.midi_state.tempo_at_position} usec")
-                    else:
-                        self.midi_state.tempo_at_position = msg.tempo
-                    self.update_playback_worker_tempo_us(self.midi_state.tempo_at_position)
-                    self.midi_state.buffered_msgs.append((absolute_time_ticks, None, self.midi_state.tempo_at_position))  # Store tempo change
-                elif not msg.is_meta:
-                    if hasattr(msg, "channel"):
-                        # log.message(
-                        #    f"🔍 Checking msg.channel={msg.channel +
-                        #    MidiConstant.CHANNEL_BINARY_TO_DISPLAY} in
-                        #    muted_channels={self.midi_state.muted_channels}")
-                        if msg.channel + MidiConstant.CHANNEL_BINARY_TO_DISPLAY in self.midi_state.muted_channels:
-                            # log.message(f"🚫 Skipping muted channel {msg.channel}")
-                            continue
-                    # log.message(f"🎵 Adding midi msg to buffer: {msg}")
-                    raw_bytes = msg.bytes()
-                    # log.message(f"Tick: {absolute_time_ticks}, Tempo: {self.midi_state.tempo_at_position}")
-                    self.midi_state.buffered_msgs.append((absolute_time_ticks, raw_bytes, self.midi_state.tempo_at_position))
+        self.process_tracks(start_tick)
 
         self.midi_state.buffered_msgs.sort(key=lambda x: x[0])
+
+    def process_tracks(self, start_tick: int) -> None:
+        """
+        process_tracks
+
+        :param start_tick: int
+        :return:
+        """
+        for i, track in enumerate(self.midi_state.file.tracks):
+            if self.is_track_muted(i):
+                log.message(f"🚫 Skipping muted track {i + MidiConstant.CHANNEL_DISPLAY_TO_BINARY} ({track.name})")
+                continue
+            self.process_track_messages(start_tick, track)
+
+    def process_track_messages(self, start_tick: int, track: mido.MidiTrack) -> None:
+        """
+        process_track_messages
+
+        :param start_tick: int The starting tick from which to begin processing.
+        :param track: mido.MidiTrack The MIDI track to process.
+        :return: None
+
+        Process messages in a MIDI track from a given starting tick.
+        """
+        absolute_time_ticks = 0
+        for msg in track:
+            absolute_time_ticks += msg.time
+
+            if absolute_time_ticks < start_tick:
+                continue  # Skip messages before the start tick
+
+            if msg.type == 'set_tempo':
+                self.handle_set_tempo(msg, absolute_time_ticks)
+            elif not msg.is_meta:
+                if hasattr(msg, "channel") and self.is_channel_muted(msg.channel):
+                    continue
+                self.buffer_message(absolute_time_ticks, msg)
+
 
     def get_muted_tracks(self):
         """
@@ -854,7 +826,7 @@ class MidiFileEditor(SynthEditor):
 
     def ui_midi_file_position_slider_set_position(self, elapsed_time: float) -> None:
         """
-        ui.midi_file_position_slider_set_position
+        ui_midi_file_position_slider_set_position
 
         :param elapsed_time: float
         :return: None
@@ -949,60 +921,6 @@ class MidiFileEditor(SynthEditor):
         self.midi_state.event_buffer.clear()
         self.setup_and_start_playback_worker()
 
-    def midi_scrub_position_old(self):
-        if not self.midi_state.file or not self.midi_state.events:
-            log.message("Either self.midi.file or self.midi.events not present, returning")
-            return
-
-        # ❗ Stop playback before seeking
-        self.midi_playback_worker_stop()
-        self.midi_playback_worker_disconnect()
-        self.midi_state.playback_paused = False  # Optional: reset paused state
-
-        # Get new scrub position
-        target_time = self.ui.midi_file_position_slider.value()
-        log.parameter("target_time", target_time)
-
-        # Update playback state
-        # Get new scrub position from slider (in seconds)
-        target_time = self.ui.midi_file_position_slider.value()
-        log.parameter("target_time", target_time)
-
-        # Find event index at or after target_time
-        self.midi_state.event_index = 0
-        for i, (tick, _, _) in enumerate(self.midi_state.events):
-            if tick * self.tick_duration >= target_time:
-                self.midi_state.event_index = i
-                break
-
-        # Calculate time offset from beginning of selected event
-        scrub_tick = self.midi_state.events[self.midi_state.event_index][0]
-        scrub_time = scrub_tick * self.tick_duration
-
-        # Adjust playback_start_time so that:
-        # current_time - playback_start_time == scrub_time
-        self.midi_state.playback_start_time = time.time() - scrub_time
-
-        self.midi_state.event_index = 0
-
-        for i, (tick, _, _) in enumerate(self.midi_state.events):
-            if tick * self.tick_duration >= target_time:
-                self.midi_state.event_index = i
-                log.parameter("self.midi_state.event_index now", self.midi_state.event_index)
-                break
-
-        # Stop all notes
-        if self.midi_helper:
-            for ch in range(MidiConstant.MIDI_CHANNELS_NUMBER):
-                self.midi_helper.midi_out.send_message(
-                    mido.Message("control_change", control=123, value=0, channel=ch).bytes())
-                for note in range(MidiConstant.MIDI_NOTES_NUMBER):
-                    self.midi_helper.midi_out.send_message(
-                        mido.Message("note_off", note=note, velocity=0, channel=ch).bytes())
-
-        self.midi_state.event_buffer.clear()
-        self.setup_and_start_playback_worker()
-            
     def midi_stop_playback(self):
         """
         Stops playback and resets everything.
@@ -1067,39 +985,6 @@ class MidiFileEditor(SynthEditor):
         """
         Performs profiling and logs the results.
         """
-        if PROFILING:
-            self.profiler.disable()
-            s = io.StringIO()
-            sortby = 'cumtime'  # or 'tottime'
-            ps = pstats.Stats(self.profiler, stream=s).sort_stats(sortby)
-            ps.print_stats(50)  # Top 50 entries
-            log.message(s.getvalue())
-
-    def midi_stop_playback_old(self):
-        """
-        Stop the playback and reset everything.
-        """
-        self.ui_position_slider_reset()
-        self.midi_playback_worker_stop()
-        self.midi_playback_worker_disconnect()
-        self.midi_play_next_event_disconnect()
-        self.midi_state.playback_paused = False
-        self.midi_state.event_index = 0
-
-        # Turn off all notes just in case
-        if self.midi_helper:
-            for ch in range(16):
-                for note in range(128):
-                    self.midi_helper.midi_out.send_message(mido.Message("note_off", note=note, velocity=0, channel=ch).bytes())
-
-        self.ui_display_set_tempo_usecs(self.midi_state.tempo_initial)
-        self.midi_state.active_notes.clear()
-        self.usb_stop_recording()
-
-        log.parameter("self.midi.event_buffer", self.midi_state.event_buffer)
-        for t, msg in self.midi_state.event_buffer[:20]:
-            log.message(f"Queued @ {t:.3f}s: {msg}")
-
         if PROFILING:
             self.profiler.disable()
             s = io.StringIO()
