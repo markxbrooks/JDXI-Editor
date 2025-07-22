@@ -73,20 +73,15 @@ class MidiFileEditor(SynthEditor):
         self.profiler = None
         # Midi-related
         self.midi_state = MidiPlaybackState()
-        #if self.midi_state.custom_tempo_force:
-        #   self.midi_state.tempo_at_position = self.midi_state.custom_tempo  # Use custom tempo if forced
-        # else:
-        #    self.midi_state.tempo_at_position = MidiConstant.TEMPO_DEFAULT_120_BPM  # Default of 120 bpm
         self.midi_playback_worker = MidiPlaybackWorker(parent=self)
         self.midi_playback_worker.set_tempo.connect(self.update_tempo_us_from_worker)
         self.midi_port = self.midi_helper.midi_out
         self.midi_timer_init()
         # USB-related attributes
-        self.usb_recording_rates = None
-        self.usb_file_save_recording = True
-        self.usb_port_input_device_index = None
-        # self.usb_recording_thread = None
         self.usb_recorder = USBRecorder()
+        # self.usb_recorder.recording_rates = None
+        # self.usb_recorder.file_save_recording = True
+        self.usb_recorder.port_input_device_index = None
         # Initialize UI attributes
         self.ui = UiMidi()
         self.ui_init()
@@ -219,7 +214,7 @@ class MidiFileEditor(SynthEditor):
         layout.addWidget(self.ui.usb_file_select)
 
         self.ui.usb_file_record_checkbox = QCheckBox("Save USB recording to file")
-        self.ui.usb_file_record_checkbox.setChecked(self.usb_file_save_recording)
+        self.ui.usb_file_record_checkbox.setChecked(self.usb_recorder.file_save_recording)
         self.ui.usb_file_record_checkbox.stateChanged.connect(self.on_usb_save_recording_toggled)
         layout.addWidget(self.ui.usb_file_record_checkbox)
 
@@ -338,10 +333,10 @@ class MidiFileEditor(SynthEditor):
         on_usb_save_recording_toggled
 
         :param state: : Qt.CheckState
-        :return:
+        :return: None
         """
-        self.usb_file_save_recording = (state == JDXiConstant.CHECKED)
-        print(f"save USB recording = {self.usb_file_save_recording}")
+        self.usb_recorder.file_save_recording = (state == JDXiConstant.CHECKED)
+        print(f"save USB recording = {self.usb_recorder.file_save_recording}")
 
     def usb_populate_devices(self) -> None:
         """
@@ -367,31 +362,55 @@ class MidiFileEditor(SynthEditor):
         for i, item in enumerate(usb_devices):
             if pattern.search(item):
                 self.ui.usb_port_select_combo.setCurrentIndex(i)
-                self.usb_port_input_device_index = i
+                self.usb_recorder.port_input_device_index = i
                 log.message(f"Auto-selected {item}")
                 break
 
     def usb_start_recording(self, recording_rate=pyaudio.paInt16):
-        """Start recording in a separate thread."""
+        """
+        usb_start_recording
+
+        :param recording_rate: int
+        :return:
+        Start recording in a separate thread
+        """
         try:
             if not self.ui.usb_file_output_name:
                 log.message("No output file selected.")
                 return
 
             selected_index = self.ui.usb_port_select_combo.currentIndex()
-            self.usb_recorder.input_device_index = selected_index  # self.input_device_index
-            self.usb_recording_thread = WavRecordingThread(recorder=self.usb_recorder,
-                                                           duration=self.midi_state.file_duration_seconds + 10,
-                                                           output_file=self.ui.usb_file_output_name,
-                                                           recording_rate=recording_rate,  # e.g. pyaudio.paInt16
-                                                           )
-            self.usb_recording_thread.recording_finished.connect(self.on_usb_recording_finished)
-            self.usb_recording_thread.recording_error.connect(self.on_usb_recording_error)
-            self.usb_recording_thread.start()
-            print("Recording started in background thread.")
+            self.start_recording(recording_rate, selected_index, self.midi_state.file_duration_seconds, self.ui.usb_file_output_name)
         except Exception as ex:
             log.error(f"Error {ex} occurred starting recording")
             show_message_box("Error Saving File", f"Error {ex} occurred starting recording")
+
+    def start_recording(self,
+                        usb_recorder: USBRecorder,
+                        recording_rate: int,
+                        selected_index: int,
+                        file_duration_seconds: float,
+                        usb_file_output_name: str) -> None:
+        """
+        start_recording
+
+        :param usb_recorder:
+        :param usb_file_output_name: str
+        :param file_duration_seconds: float
+        :param recording_rate: int
+        :param selected_index: int
+        :return: None
+        """
+        self.usb_recorder.input_device_index = selected_index  # self.input_device_index
+        self.usb_recorder.recording_thread = WavRecordingThread(recorder=usb_recorder,
+                                                                duration=file_duration_seconds + 10,
+                                                                output_file=usb_file_output_name,
+                                                                recording_rate=recording_rate,  # e.g. pyaudio.paInt16
+                                                                )
+        self.usb_recorder.recording_thread.recording_finished.connect(self.on_usb_recording_finished)
+        self.usb_recorder.recording_thread.recording_error.connect(self.on_usb_recording_error)
+        self.usb_recorder.recording_thread.start()
+        log.message("Recording started in background thread.")
 
     def usb_stop_recording(self):
         """
@@ -401,7 +420,7 @@ class MidiFileEditor(SynthEditor):
         """
         try:
             if hasattr(self, "usb_recording_thread"):
-                self.usb_recording_thread.stop_recording()
+                self.usb_recorder.recording_thread.stop_recording()
         except Exception as ex:
             log.error(f"Error {ex} occurred stopping USB recording")
 
@@ -589,14 +608,10 @@ class MidiFileEditor(SynthEditor):
         if not self.midi_state.file or not self.midi_state.events:
             return
 
-        if self.usb_file_save_recording:
+        if self.usb_recorder.file_save_recording:
             recording_rate = "32bit"  # Default to 32-bit recording
             try:
-                self.usb_recording_rates = {
-                    "16bit": pyaudio.paInt16,
-                    "32bit": pyaudio.paInt32
-                }
-                rate = self.usb_recording_rates.get(recording_rate, pyaudio.paInt16)
+                rate = self.usb_recorder.recording_rates.get(recording_rate, pyaudio.paInt16)
                 self.usb_start_recording(recording_rate=rate)
             except Exception as ex:
                 log.error(f"Error {ex} occurred starting USB recording")

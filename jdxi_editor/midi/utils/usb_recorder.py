@@ -22,6 +22,13 @@ class USBRecorder:
         self.channels = channels
         self.rate = rate
         self.frames_per_buffer = frames_per_buffer
+        self.recording_rates = None
+        self.file_save_recording = True  # Whether to save the recording to a file, True by default
+        self.port_input_device_index = None
+        self.recording_rates = {
+            "16bit": pyaudio.paInt16,
+            "32bit": pyaudio.paInt32
+        }
 
     def list_devices(self):
         """ Prints a list of available audio input devices. """
