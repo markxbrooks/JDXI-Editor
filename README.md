@@ -2,10 +2,9 @@
 
 ![Roland JD-Xi Cartoon](./resources/jdxi_cartoon_600.png)
 
-**JDXI-Editor** is an editor for the **Roland JD-Xi** synthesizer, written in **Python** using the **Qt Framework** and **RtMidi**.
+**JDXI-Editor**: A powerful MIDI editor for the **Roland JD-Xi synthesizer**, built with **Python**, **Qt Framework**, and **RtMidi**. Simplify MIDI editing, preset selection, and sound design without hardware menus. Perfect for musicians and sound designers!
 
 It’s designed to implement as many features as possible from Roland’s MIDI implementation—without the need to dive through hardware menus. 🎛️
-**JDXI-Editor**: A powerful MIDI editor for the **Roland JD-Xi synthesizer**, built with **Python**, **Qt Framework**, and **RtMidi**. Simplify MIDI editing, preset selection, and sound design without hardware menus. Perfect for musicians and sound designers!
 > ⚠️ This app is a work in progress and not yet feature-complete—but feel free to try it out and share your feedback!
 
 ---
