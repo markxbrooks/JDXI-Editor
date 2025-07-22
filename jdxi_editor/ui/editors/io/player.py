@@ -1002,8 +1002,80 @@ class MidiFileEditor(SynthEditor):
 
         self.midi_state.event_buffer.clear()
         self.setup_and_start_playback_worker()
-
+            
     def midi_stop_playback(self):
+        """
+        Stops playback and resets everything.
+        """
+        self.ui_position_slider_reset()
+        self.stop_playback_worker()
+        self.reset_midi_state()
+        self.turn_off_all_notes()
+        self.reset_tempo()
+        self.clear_active_notes()
+        self.usb_stop_recording()
+        self.log_event_buffer()
+        self.perform_profiling()
+    
+    def stop_playback_worker(self):
+        """
+        Stops and disconnects the playback worker.
+        """
+        self.midi_playback_worker_stop()
+        self.midi_playback_worker_disconnect()
+        self.midi_play_next_event_disconnect()
+
+    def reset_midi_state(self):
+        """
+        Resets MIDI state variables.
+        """
+        self.midi_state.playback_paused = False
+        self.midi_state.event_index = 0
+
+    def turn_off_all_notes(self):
+        """
+        Sends 'note_off' messages for all channels and notes.
+        """
+        if self.midi_helper:
+            for ch in range(16):
+                for note in range(128):
+                    self.midi_helper.midi_out.send_message(
+                        mido.Message("note_off", note=note, velocity=0, channel=ch).bytes()
+                    )
+
+    def reset_tempo(self):
+        """
+        Resets the tempo to the initial value.
+        """
+        self.ui_display_set_tempo_usecs(self.midi_state.tempo_initial)
+    
+    def clear_active_notes(self):
+        """
+        Clears the active notes.
+        """
+        self.midi_state.active_notes.clear()
+    
+    def log_event_buffer(self):
+        """
+        Logs the event buffer for debugging.
+        """
+        log.parameter("self.midi.event_buffer", self.midi_state.event_buffer)
+        for t, msg in self.midi_state.event_buffer[:20]:
+            log.message(f"Queued @ {t:.3f}s: {msg}")
+
+    def perform_profiling(self):
+        """
+        Performs profiling and logs the results.
+        """
+        if PROFILING:
+            self.profiler.disable()
+            s = io.StringIO()
+            sortby = 'cumtime'  # or 'tottime'
+            ps = pstats.Stats(self.profiler, stream=s).sort_stats(sortby)
+            ps.print_stats(50)  # Top 50 entries
+            log.message(s.getvalue())
+
+    def midi_stop_playback_old(self):
         """
         Stop the playback and reset everything.
         """
