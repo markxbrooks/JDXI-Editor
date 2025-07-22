@@ -73,10 +73,10 @@ class MidiFileEditor(SynthEditor):
         self.profiler = None
         # Midi-related
         self.midi_state = MidiPlaybackState()
-        if self.midi_state.custom_tempo_force:
-            self.midi_state.tempo_at_position = self.midi_state.custom_tempo  # Use custom tempo if forced
-        else:
-            self.midi_state.tempo_at_position = MidiConstant.TEMPO_DEFAULT_120_BPM  # Default of 120 bpm
+        #if self.midi_state.custom_tempo_force:
+        #   self.midi_state.tempo_at_position = self.midi_state.custom_tempo  # Use custom tempo if forced
+        # else:
+        #    self.midi_state.tempo_at_position = MidiConstant.TEMPO_DEFAULT_120_BPM  # Default of 120 bpm
         self.midi_playback_worker = MidiPlaybackWorker(parent=self)
         self.midi_playback_worker.set_tempo.connect(self.update_tempo_us_from_worker)
         self.midi_port = self.midi_helper.midi_out
