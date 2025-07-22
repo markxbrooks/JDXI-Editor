@@ -132,6 +132,12 @@ JDXI-Editor provides preset selection, synth editing, drum part customization, e
 
 ---
 
+- Learn more about the [Roland JD-Xi Synthesizer](https://www.roland.com/global/products/jd-xi/).
+- Explore the [Qt Framework](https://www.qt.io/) for building cross-platform apps.
+- Discover [RtMidi](https://www.music.mcgill.ca/~gary/rtmidi/), a real-time MIDI library.
+
+---
+
 ## 🙏 Credits
 
 - [Qt](https://www.qt.io/)
