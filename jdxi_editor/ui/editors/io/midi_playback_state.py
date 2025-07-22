@@ -36,3 +36,10 @@ class MidiPlaybackState:
     playback_paused_time: Optional[float] = None
     playback_start_time: Optional[float] = None
     paused: bool = False
+    
+    def __post_init__(self):
+        if self.custom_tempo_force:
+            self.tempo_at_position = self.custom_tempo  # Use custom tempo if forced
+        else:
+            self.tempo_at_position = MidiConstant.TEMPO_DEFAULT_120_BPM  # Default of 120 bpm
+    
