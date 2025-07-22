@@ -42,4 +42,3 @@ class MidiPlaybackState:
             self.tempo_at_position = self.custom_tempo  # Use custom tempo if forced
         else:
             self.tempo_at_position = MidiConstant.TEMPO_DEFAULT_120_BPM  # Default of 120 bpm
-    
