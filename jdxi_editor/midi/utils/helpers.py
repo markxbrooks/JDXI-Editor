@@ -1,4 +1,5 @@
 from jdxi_editor.log.logger import Logger as log
+from jdxi_editor.midi.utils.usb_recorder import USBRecorder
 from jdxi_editor.ui.editors.io.recording_thread import WavRecordingThread
 from jdxi_editor.ui.windows.jdxi.utils import show_message_box
 
@@ -27,7 +28,7 @@ def on_usb_recording_error(message: str):
 
 
 def start_recording(
-    usb_recorder,
+    usb_recorder: USBRecorder,
     file_duration_seconds: float,
     usb_file_output_name: str,
     recording_rate: int,
