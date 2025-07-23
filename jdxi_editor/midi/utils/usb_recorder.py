@@ -22,6 +22,12 @@ class USBRecorder:
         self.channels = channels
         self.rate = rate
         self.frames_per_buffer = frames_per_buffer
+        self.file_save_recording = True
+        self.usb_port_input_device_index = None
+        self.usb_recording_rates = {
+            "16bit": pyaudio.paInt16,
+            "32bit": pyaudio.paInt32
+        }
 
     def list_devices(self):
         """ Prints a list of available audio input devices. """
@@ -84,6 +90,18 @@ class USBRecorder:
     def close(self):
         """ Closes the PyAudio instance. """
         self.p.terminate()
+
+    def usb_stop_recording(self):
+        """
+        stop_recording
+
+        :return: None
+        """
+        try:
+            if hasattr(self, "usb_recording_thread"):
+                self.usb_recording_thread.stop_recording()
+        except Exception as ex:
+            log.error(f"Error {ex} occurred stopping USB recording")
 
 
 # 🔹 Example usage 🔹
