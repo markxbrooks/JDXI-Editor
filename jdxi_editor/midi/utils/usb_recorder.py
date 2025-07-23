@@ -91,7 +91,7 @@ class USBRecorder:
         """ Closes the PyAudio instance. """
         self.p.terminate()
 
-    def usb_stop_recording(self):
+    def stop_recording(self):
         """
         stop_recording
 
