@@ -52,7 +52,7 @@ class USBRecorder:
         print("Recording...")
         try:
             stream = self.p.open(format=rate,
-                                 channels=self.channels,
+                                 channels=1, # self.channels,
                                  rate=self.rate,
                                  input=True,
                                  input_device_index=self.input_device_index,

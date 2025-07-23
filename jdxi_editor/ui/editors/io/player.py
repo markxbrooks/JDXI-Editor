@@ -87,11 +87,10 @@ class MidiFileEditor(SynthEditor):
             MidiChannel.DRUM_KIT,
         }  # MIDI channels 1, 2, 3, 10 (zero-based)
         # self.usb_recording_thread = None
-        self.usb_recorder = USBRecorder()
+        self.usb_recorder = USBRecorder(channels=1)
         # Initialize UI attributes
         self.ui = UiMidi()
         self.ui_init()
-
 
     def midi_timer_init(self):
         """
