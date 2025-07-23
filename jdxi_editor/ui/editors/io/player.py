@@ -977,60 +977,6 @@ class MidiFileEditor(SynthEditor):
         self.midi_state.event_buffer.clear()
         self.setup_and_start_playback_worker()
 
-    def midi_scrub_position_old(self):
-        if not self.midi_state.file or not self.midi_state.events:
-            log.message("Either self.midi.file or self.midi.events not present, returning")
-            return
-
-        # ❗ Stop playback before seeking
-        self.midi_playback_worker_stop()
-        self.midi_playback_worker_disconnect()
-        self.midi_state.playback_paused = False  # Optional: reset paused state
-
-        # Get new scrub position
-        target_time = self.ui.midi_file_position_slider.value()
-        log.parameter("target_time", target_time)
-
-        # Update playback state
-        # Get new scrub position from slider (in seconds)
-        target_time = self.ui.midi_file_position_slider.value()
-        log.parameter("target_time", target_time)
-
-        # Find event index at or after target_time
-        self.midi_state.event_index = 0
-        for i, (tick, _, _) in enumerate(self.midi_state.events):
-            if tick * self.tick_duration >= target_time:
-                self.midi_state.event_index = i
-                break
-
-        # Calculate time offset from beginning of selected event
-        scrub_tick = self.midi_state.events[self.midi_state.event_index][0]
-        scrub_time = scrub_tick * self.tick_duration
-
-        # Adjust playback_start_time so that:
-        # current_time - playback_start_time == scrub_time
-        self.midi_state.playback_start_time = time.time() - scrub_time
-
-        self.midi_state.event_index = 0
-
-        for i, (tick, _, _) in enumerate(self.midi_state.events):
-            if tick * self.tick_duration >= target_time:
-                self.midi_state.event_index = i
-                log.parameter("self.midi_state.event_index now", self.midi_state.event_index)
-                break
-
-        # Stop all notes
-        if self.midi_helper:
-            for ch in range(MidiConstant.MIDI_CHANNELS_NUMBER):
-                self.midi_helper.midi_out.send_message(
-                    mido.Message("control_change", control=123, value=0, channel=ch).bytes())
-                for note in range(MidiConstant.MIDI_NOTES_NUMBER):
-                    self.midi_helper.midi_out.send_message(
-                        mido.Message("note_off", note=note, velocity=0, channel=ch).bytes())
-
-        self.midi_state.event_buffer.clear()
-        self.setup_and_start_playback_worker()
-
     def midi_stop_playback(self):
         """
         Stops playback and resets everything.
@@ -1095,40 +1041,6 @@ class MidiFileEditor(SynthEditor):
         """
         Performs profiling and logs the results.
         """
-        if PROFILING:
-            self.profiler.disable()
-            s = io.StringIO()
-            sortby = 'cumtime'  # or 'tottime'
-            ps = pstats.Stats(self.profiler, stream=s).sort_stats(sortby)
-            ps.print_stats(50)  # Top 50 entries
-            log.message(s.getvalue())
-
-    def midi_stop_playback_old(self):
-        """
-        Stop the playback and reset everything.
-        """
-        self.ui_position_slider_reset()
-        self.midi_playback_worker_stop()
-        self.midi_playback_worker_disconnect()
-        self.midi_play_next_event_disconnect()
-        self.midi_state.playback_paused = False
-        self.midi_state.event_index = 0
-
-        # Turn off all notes just in case
-        if self.midi_helper:
-            for ch in range(16):
-                for note in range(128):
-                    self.midi_helper.midi_out.send_message(
-                        mido.Message("note_off", note=note, velocity=0, channel=ch).bytes())
-
-        self.ui_display_set_tempo_usecs(self.midi_state.tempo_initial)
-        self.midi_state.active_notes.clear()
-        self.usb_recorder.usb_stop_recording()
-
-        log.parameter("self.midi.event_buffer", self.midi_state.event_buffer)
-        for t, msg in self.midi_state.event_buffer[:20]:
-            log.message(f"Queued @ {t:.3f}s: {msg}")
-
         if PROFILING:
             self.profiler.disable()
             s = io.StringIO()
