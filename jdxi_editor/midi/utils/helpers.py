@@ -1,3 +1,5 @@
+import os.path
+
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.utils.usb_recorder import USBRecorder
 from jdxi_editor.ui.editors.io.recording_thread import WavRecordingThread
@@ -11,7 +13,7 @@ def on_usb_recording_finished(output_file: str):
     :param output_file: str
     :return: None
     """
-    if not output_file:
+    if not os.path.exists(output_file):
         log.error("Recording finished, but no output file returned.")
         return
     log.message(f"Recording finished. File successfully saved to {output_file}")
