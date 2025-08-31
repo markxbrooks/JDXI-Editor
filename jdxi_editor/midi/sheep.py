@@ -1,14 +1,17 @@
-## sheep
+# sheep
+
 import os
 import time
 from mido import MidiFile
 import mido
-from fluidsynth import Synth
+import fluidsynth
 
 # Configuration
-HW_PORT_HINT = "Roland JDXi"            # adjust if your port name differs
-SF2_PATH = os.path.expanduser("~/SoundFonts/FluidR3_GM.sf2")
-MIDI_FILE_PATH = os.path.expanduser("~/MIDI/test.mid")  # optional: provide a test MIDI file
+HW_PORT_HINT = "Roland JDXi"  # adjust if your port name differs
+# SF2_PATH = os.path.expanduser("~/SoundFonts/FluidR3_GM.sf2")
+SF2_PATH = os.path.expanduser("~/SoundFonts/Guitar/Guitar.sf2")
+MIDI_FILE_PATH = os.path.expanduser("~/Desktop/music/Sheep - Pink Floyd.mid")  # optional: provide a test MIDI file
+
 
 def find_hw_output_name(prefer_hw=True):
     outs = mido.get_output_names()
@@ -16,6 +19,7 @@ def find_hw_output_name(prefer_hw=True):
         if HW_PORT_HINT in name:
             return name
     return None
+
 
 def open_hw_output():
     port_name = find_hw_output_name(True)
@@ -25,10 +29,11 @@ def open_hw_output():
     print("[INFO] Hardware MIDI output not found. Will use FluidSynth.")
     return None
 
+
 def setup_fluidsynth(sf2_path):
     if not os.path.exists(sf2_path):
         raise FileNotFoundError(f"SoundFont not found at {sf2_path}")
-    fs = Synth()
+    fs = fluidsynth.Synth()
     # On macOS, default audio driver is typically CoreAudio; pyFluidSynth uses PortAudio by default on some builds.
     # The "driver" parameter is optional; omit if you encounter issues.
     try:
@@ -39,6 +44,7 @@ def setup_fluidsynth(sf2_path):
     fs.program_select(0, 0, 0, 0)  # channel 0, bank 0, preset 0
     print(f"[INFO] FluidSynth started with SF2: {sf2_path}")
     return fs
+
 
 def midi_to_events(in_port, sink_send, use_sw, fs=None):
     # Forward messages from the input port to the sink
@@ -63,7 +69,11 @@ def midi_to_events(in_port, sink_send, use_sw, fs=None):
     finally:
         in_port.close()
 
+
 def main():
+    # Demo the Jupiter 8 string synthesis
+    demo_jupiter8_strings()
+    
     # 1) Try hardware first
     hw_out = open_hw_output()
     use_sw = False
@@ -81,8 +91,6 @@ def main():
         mid = MidiFile(MIDI_FILE_PATH)
         # We'll implement a simple forwarder: replay the file in real-time
         start_time = time.time()
-        with mido.open_output/mido.open_input as dummy:  # placeholder to show intent
-            pass
         # Serialize events with timing
         # We'll create a simple scheduler: wait for delta times
         # This minimal approach keeps dependencies light
@@ -118,6 +126,7 @@ def main():
     if fs:
         fs.delete()
     print("[INFO] Exited cleanly.")
+
 
 if __name__ == "__main__":
     main()
