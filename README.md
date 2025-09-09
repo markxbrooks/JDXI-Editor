@@ -28,22 +28,41 @@ Designed for musicians, sound designers, and MIDI enthusiasts looking to unlock 
   <img src="./resources/main_window_0.6.gif" alt="Roland JD-Xi Main Editor Window" />
 </a>
 
----
+---****
 ## 📺 Roland JD-Xi MIDI Editor Video Demo
 Watch how **JDXI-Editor** simplifies sound design and MIDI editing for the **Roland JD-Xi synthesizer**:
-[![Watch the demo](https://img.youtube.com/vi/vw-T-9LJkng/0.jpg)](https://www.youtube.com/watch?v=vw-T-9LJkng)
 
+## 🎥 Watch JDXI-Editor in Action
+
+Check out some great performances and demos of the Roland JD-Xi:
+
+- 🎹 [Pink Floyd – *Sheep* 🐑 on the Roland JD-Xi](https://www.youtube.com/watch?v=vh-i8eb2SYQ)  
+- 🎹 [Avicii – *Wake Me Up* on the Roland JD-Xi](https://www.youtube.com/watch?v=VyQxaOc6G2Y)  
+- 🎹 [Vangelis – *Blade Runner End Titles* | Synth Cover on the Roland JD-Xi](https://www.youtube.com/watch?v=mGgGibBKm9E)  
+- 🎹 [Underworld – *Born Slippy* on the Roland JD-Xi](https://www.youtube.com/watch?v=xHLttYaMxCw&list=PLVZK_NOytILiQuNulDn-tOdAUQWdNAS-y&index=18)  
+- 🎹 [*Knight Rider Theme* on the Roland JD-Xi](https://www.youtube.com/watch?v=4XpuQm7_Ohs&list=PLVZK_NOytILiQuNulDn-tOdAUQWdNAS-y&index=20)  
+- 🎹 [Twin Peaks – *Laura Palmer's Theme* on the Roland JD-Xi](https://www.youtube.com/watch?v=zSkKNoy8O9Y&list=PLVZK_NOytILiQuNulDn-tOdAUQWdNAS-y&index=29)  
+- 🎹 [The Cure – *A Forest* on the Roland JD-Xi](https://www.youtube.com/watch?v=wejcaIawCMs&list=PLVZK_NOytILiQuNulDn-tOdAUQWdNAS-y&index=25)  
+- 🎹 [Michael Jackson – *Thriller* on the Roland JD-Xi](https://www.youtube.com/watch?v=flFQlFggTug&list=PLVZK_NOytILiQuNulDn-tOdAUQWdNAS-y&index=19)  
+
+---
+
+### 🎬 Featured Demo  
+
+Lady Gaga – *Telephone* performed on the Roland JD-Xi  
+
+[![Watch the demo](https://img.youtube.com/vi/PkUobEa_gyk/0.jpg)](https://www.youtube.com/watch?v=PkUobEa_gyk)
 
 ## 🚀 Getting Started
 
 
-### MacOS
-There is a new build for MacOS Sequoia. See the [releases page:](https://github.com/markxbrooks/JDXI-Editor/releases/tag/v0.0.4)
+### 🖥️ MacOS
+📥 There is a new build for MacOS Sequoia. See the [releases page:](https://github.com/markxbrooks/JDXI-Editor/releases/tag/v0.0.4)
 
-### Windows 
-There are no packaged builds yet for Windows, but one is coming soon!
+### 📦 Windows 
+📥 There is a new build for Windows see the [releases page](https://github.com/markxbrooks/JDXI-Editor/releases/tag/v0.0.8)
 
-For now, you'll need to run the app from a Python environment:
+### Python 🐍 If you're a developer, you may want to run it from a Python Environment :
 
 ```bash
 $ git clone https://github.com/markxbrooks/JDXI-Editor.git

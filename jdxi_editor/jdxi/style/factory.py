@@ -210,6 +210,11 @@ def generate_tab_style(
                 font-family: "{font_family}";
                 font-size: {font_size};
             }}
+            
+            QTabBar {{
+                qproperty-drawBase: 0;
+                alignment: center;
+            }}
 
             QTabBar::tab:hover {{
                 background: {hover_bg};
