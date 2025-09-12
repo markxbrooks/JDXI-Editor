@@ -8,6 +8,9 @@
       <excludeFolder url="file://$MODULE_DIR$/../jdxi_editor/dist" />
       <excludeFolder url="file://$MODULE_DIR$/../jdxi_manager.egg-info" />
       <excludeFolder url="file://$MODULE_DIR$/../venv" />
+      <excludeFolder url="file://$MODULE_DIR$/../.eggs" />
+      <excludeFolder url="file://$MODULE_DIR$/build" />
+      <excludeFolder url="file://$MODULE_DIR$/perl/Mac-CoreMIDI-0.04/lib" />
       <excludeFolder url="file://$MODULE_DIR$/../jdxi_dmg" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.10 virtualenv at ~/projects/JDXI-Editor/venv" jdkType="Python SDK" />
