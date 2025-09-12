@@ -29,8 +29,8 @@ class MidiConstant:
     TEMPO_162_BPM_USEC = 370_370
 
     # SysEx framing
-    CONTROL_CHANGE_NRPN_MSB = 99 # Controller number for NRPN MSB
-    CONTROL_CHANGE_NRPN_LSB = 98 # Controller number for NRPN LSB
+    CONTROL_CHANGE_NRPN_MSB = 99  # Controller number for NRPN MSB
+    CONTROL_CHANGE_NRPN_LSB = 98  # Controller number for NRPN LSB
     SONG_STOP = 0xFC
     SONG_START = 0xFA
     START_OF_SYSEX = 0xF0
