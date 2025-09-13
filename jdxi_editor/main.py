@@ -53,6 +53,9 @@ os.environ["QT_LOGGING_RULES"] = "qt.qpa.fonts=false"
 
 
 def main():
+    import faulthandler
+    faulthandler.enable()
+
     try:
         # Set up logging first
         settings = QSettings(__organization_name__, __program__)

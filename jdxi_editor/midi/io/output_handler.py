@@ -49,7 +49,56 @@ class MidiOutHandler(MidiIOController):
         self.channel = 1
         self.sysex_parser = JDXiSysExParser()
 
-    def send_raw_message(self,
+    import threading
+
+    # Global lock for all MIDI output operations
+    _midi_send_lock = threading.RLock()
+
+    def send_raw_message(self, message: Iterable[int]) -> bool:
+        """
+        Thread-safe version of sending a raw MIDI message.
+        Handles logging, validation, and exceptions safely.
+        """
+        with self._midi_send_lock:
+            try:
+                if not validate_midi_message(message):
+                    log.message("MIDI message validation failed.")
+                    return False
+
+                formatted_message = format_midi_message_to_hex_string(message)
+
+                if not self.midi_out.is_port_open():
+                    log.message("MIDI output port is not open.")
+                    return False
+
+                # Parse SysEx safely
+                try:
+                    parsed_data = self.sysex_parser.parse_bytes(bytes(message))
+                    filtered_data = {
+                        k: v for k, v in parsed_data.items() if k not in OUTBOUND_MESSAGE_IGNORED_KEYS
+                    }
+                except Exception as parse_ex:
+                    log.message(f"SysEx parsing failed: {parse_ex}", level=logging.WARNING)
+                    filtered_data = {}
+
+                # Log safely
+                log.message(
+                    f"[MIDI QC passed] — [ Sending message: {formatted_message} ] {filtered_data}",
+                    level=logging.INFO,
+                    silent=False
+                )
+
+                # Send the message
+                self.midi_out.send_message(message)
+                self.midi_message_outgoing.emit(message)
+                return True
+
+            except Exception as ex:
+                # Catch everything to prevent C-level crash from propagating
+                log.error(f"Unexpected error sending MIDI message: {ex}")
+                return False
+
+    def send_raw_message_old(self,
                          message: Iterable[int]) -> bool:
         """
         Send a validated raw MIDI message through the output port.

@@ -6,7 +6,8 @@ from jdxi_editor.project import __version__, __program__, __package_name__, __or
 
 settings = QSettings(__organization_name__, __program__)
 
-LOGGING = bool(settings.value("logging", True, type=bool))
+# LOGGING = bool(settings.value("logging", True, type=bool))
+LOGGING = False
 PROFILING = False
 logger = logging.getLogger(__package_name__)
 
