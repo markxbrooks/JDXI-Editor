@@ -442,7 +442,7 @@ class MidiTrackViewer(QWidget):
             button_hlayout = QHBoxLayout()
             label_vlayout.addLayout(button_hlayout)
 
-            apply_icon = qta.icon("fa.save",
+            apply_icon = qta.icon("fa5.save",
                                   color=JDXiStyle.FOREGROUND)
             apply_button = QPushButton()
             apply_button.setIcon(apply_icon)
