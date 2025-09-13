@@ -37,13 +37,14 @@ Watch how **JDXI-Editor** simplifies sound design and MIDI editing for the **Rol
 ## 🚀 Getting Started
 
 
-### MacOS
-There is a new build for MacOS Sequoia. See the [releases page:](https://github.com/markxbrooks/JDXI-Editor/releases/tag/v0.0.4)
+### MacOS 🖥️
+There is a new build for MacOS Sequoia. See the [releases page:](https://github.com/markxbrooks/JDXI-Editor/releases/tag/v0.0.8)
 
-### Windows 
-There are no packaged builds yet for Windows, but one is coming soon!
+### Windows 📦
+There is a new build for Windows See the [releases page:](https://github.com/markxbrooks/JDXI-Editor/releases/tag/v0.0.8)
 
-For now, you'll need to run the app from a Python environment:
+### Python 🐍
+If you're a Python , you may wish to run the program from a Python environment:
 
 ```bash
 $ git clone https://github.com/markxbrooks/JDXI-Editor.git
