@@ -15,20 +15,20 @@ Each editor represents a dedicated workspace optimized for specific aspects of s
 Core Architecture & Design
 ===========================
 
-**🎛️ Modular Editor System**
+** Modular Editor System**
    The Editor Windows feature a sophisticated modular architecture:
    - **Specialized Editors**: Each editor is purpose-built for specific synthesizer sections
    - **Real-time Synchronization**: All editors maintain live communication with your JD-Xi hardware
    - **Unified Interface**: Consistent design language and interaction patterns across all editors
    - **Contextual Controls**: Dynamic parameter sets that adapt based on current selections and modes
 
-**🎹 Advanced Parameter Management**
+** Advanced Parameter Management**
    - **Comprehensive Parameter Mapping**: Every JD-Xi parameter is accessible through intuitive controls
    - **Real-time Updates**: Instant parameter changes with immediate hardware response
    - **Visual Feedback**: Live parameter displays, value indicators, and status monitoring
    - **Preset Integration**: Seamless loading, saving, and management of your custom sounds
 
-**🎵 Professional Workflow Tools**
+** Professional Workflow Tools**
    - **Multi-Editor Support**: Work with multiple synthesizer sections simultaneously
    - **Advanced Organization**: Categorize, search, and manage your sound library
    - **Project Integration**: Export and import settings for use in your DAW
@@ -37,26 +37,26 @@ Core Architecture & Design
 Available Editors
 =================
 
-**🎹 Synthesizer Editors**
+** Synthesizer Editors**
    Comprehensive control over all JD-Xi synthesis engines:
 
    - **Digital Synth Editors (Parts 1 & 2)**: Multi-partial digital synthesis with advanced oscillator, filter, and envelope control
    - **Analog Synth Editor**: Classic analog synthesis with warm, organic sound and vintage character
    - **Drum Kit Editor**: Professional drum sound design with 36 individual drum voices
 
-**🎛️ Effects & Processing Editors**
+** Effects & Processing Editors**
    Professional-grade effects processing and sound manipulation:
 
    - **Effects Editor**: Master effects processing with reverb, delay, distortion, and compression
    - **Vocal Effects Editor**: Advanced vocal processing and voice transformation with vocoder capabilities
 
-**🎵 Performance & Sequencing Editors**
+** Performance & Sequencing Editors**
    Advanced performance tools and pattern creation:
 
    - **Arpeggiator Editor**: Sophisticated pattern generation and sequencing with musical intelligence
    - **Pattern Sequencer**: Multi-part sequencing with step-by-step editing and real-time recording
 
-**🎼 Project & File Management Editors**
+** Project & File Management Editors**
    Professional project organization and file handling:
 
    - **MIDI File Player & Recorder**: Comprehensive MIDI and audio file handling with production tools

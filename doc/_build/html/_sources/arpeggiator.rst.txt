@@ -15,20 +15,20 @@ The editor represents a dedicated workspace optimized for pattern creation and s
 Core Architecture & Design
 ===========================
 
-**🎵 Sophisticated Pattern Generation**
+** Sophisticated Pattern Generation**
    The Arpeggiator Editor features an advanced pattern generation system:
    - **Advanced Arpeggios**: Sophisticated arpeggio pattern creation and editing
    - **Real-time Control**: Live pattern switching and parameter manipulation
    - **Musical Intelligence**: Smart pattern generation based on chord progressions
    - **Performance Features**: Velocity sensitivity, timing control, and pattern variation
 
-**🎹 Advanced Parameter Management**
+** Advanced Parameter Management**
    - **Comprehensive Parameter Mapping**: Every arpeggiator parameter is accessible through intuitive controls
    - **Real-time Updates**: Instant parameter changes with immediate hardware response
    - **Visual Feedback**: Live parameter displays, value indicators, and status monitoring
    - **Preset Integration**: Seamless loading, saving, and management of your custom patterns
 
-**🎵 Professional Workflow Tools**
+** Professional Workflow Tools**
    - **Multi-Pattern Support**: Work with multiple patterns simultaneously
    - **Advanced Organization**: Categorize, search, and manage your pattern library
    - **Project Integration**: Export and import patterns for use in your DAW

@@ -15,20 +15,20 @@ The editor represents a dedicated workspace optimized for file handling and prod
 Core Architecture & Design
 ===========================
 
-**🎼 Comprehensive File Handling**
+** Comprehensive File Handling**
    The MIDI File Player & Recorder features a sophisticated file handling system:
    - **MIDI Playback**: Direct playback of MIDI files through your JD-Xi
    - **Audio Recording**: High-quality recording of your JD-Xi's output
    - **Project Integration**: Seamless workflow with your DAW and recording software
    - **Format Support**: Compatibility with all major MIDI and audio formats
 
-**🎹 Advanced Parameter Management**
+** Advanced Parameter Management**
    - **Comprehensive Parameter Mapping**: Every file handling parameter is accessible through intuitive controls
    - **Real-time Updates**: Instant parameter changes with immediate hardware response
    - **Visual Feedback**: Live parameter displays, value indicators, and status monitoring
    - **Preset Integration**: Seamless loading, saving, and management of your custom file settings
 
-**🎵 Professional Workflow Tools**
+** Professional Workflow Tools**
    - **Multi-Format Support**: Work with multiple file formats simultaneously
    - **Advanced Organization**: Categorize, search, and manage your file library
    - **Project Integration**: Export and import files for use in your DAW

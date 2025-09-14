@@ -1,11 +1,11 @@
 # Fdb version 4
-["makeindex jd-xieditor.idx"] 1757863696.84359 "jd-xieditor.idx" "jd-xieditor.ind" "jd-xieditor" 1757863716.6338 0
-  "jd-xieditor.idx" 1757863697.33593 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
+["makeindex jd-xieditor.idx"] 0 "jd-xieditor.idx" "jd-xieditor.ind" "jd-xieditor" 0 -1
+  "jd-xieditor.idx" 1757866928.32139 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
   (generated)
   "jd-xieditor.ilg"
   "jd-xieditor.ind"
   (rewritten before read)
-["pdflatex"] 1757863696.89152 "jd-xieditor.tex" "jd-xieditor.pdf" "jd-xieditor" 1757863716.63387 2
+["pdflatex"] 1757866927.85652 "jd-xieditor.tex" "jd-xieditor.pdf" "jd-xieditor" 1757866935.8937 2
   "/usr/local/texlive/2025basic/texmf-dist/fonts/enc/dvips/fontawesome5/fa5free1.enc" 1622837620 3042 0e2b14b9be7d01075a4c4591d5d1781b ""
   "/usr/local/texlive/2025basic/texmf-dist/fonts/enc/dvips/tex-gyre/q-ec.enc" 1529098226 2457 aaabbccba4df2a7f7371410ee4e075a3 ""
   "/usr/local/texlive/2025basic/texmf-dist/fonts/enc/dvips/tex-gyre/q-ts1.enc" 1529098226 3124 3813fd4c981d99822890a2861b0d274c ""
@@ -157,11 +157,10 @@
   "/usr/local/texlive/2025basic/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1757256915 377981 5fe902cb70d57b4417b025e6d8e52136 ""
   "/usr/local/texlive/2025basic/texmf-var/web2c/pdftex/pdflatex.fmt" 1741448339 2663854 a6f6b8c904d47faabe5d94cfdac61310 ""
   "/usr/local/texlive/2025basic/texmf.cnf" 1741448314 628 81d1ada0f601fb1ffa62f1323192d946 ""
-  "jd-xieditor.aux" 1757863716.49421 20148 b36eac7c94c453f255f3139b522c064b "pdflatex"
-  "jd-xieditor.ind" 1757863696.86498 0 d41d8cd98f00b204e9800998ecf8427e "makeindex jd-xieditor.idx"
-  "jd-xieditor.out" 1757863716.4944 10046 64c78f8e1b3bc887ac1859cde668a9a4 "pdflatex"
-  "jd-xieditor.tex" 1757863685.65148 9229131 f209fdc24fdb9fce38dbadbd14456414 ""
-  "jd-xieditor.toc" 1757863697.44372 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
+  "jd-xieditor.aux" 1757866935.7117 20148 b36eac7c94c453f255f3139b522c064b "pdflatex"
+  "jd-xieditor.ind" 0 -1 0 "makeindex jd-xieditor.idx"
+  "jd-xieditor.tex" 1757866728.90352 9229037 f62c83ad133709cf3b111c34b860f436 ""
+  "jd-xieditor.toc" 1757866928.44302 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
   "jdxi-analog-synth.png" 1757770392.0693 391574 363430ae4170b491babf307b62a485eb ""
   "jdxi-digital-synth1.png" 1757770889.55991 538006 69f60be33cf125f44839b59e4278cccf ""
   "jdxi-drum-kit.png" 1749605199.66892 125503 9dbc1c01d46fd9c53dda536be1fc7234 ""
@@ -170,7 +169,7 @@
   "midi.png" 1749648767.37889 2683 c04ca7f0b3fe8c6104ddf3e448e018b8 ""
   "midi_config_200.png" 1741841202.37909 11464 564f5691c36cbeb5eead8658ec910261 ""
   "sphinx.sty" 1757857610.23105 54119 967a674353157928503df7cae9b6165e ""
-  "sphinxhighlight.sty" 1757863672.07806 7553 83fb52292c17957d9f4aadcb28c57a87 ""
+  "sphinxhighlight.sty" 1757866715.53587 7553 83fb52292c17957d9f4aadcb28c57a87 ""
   "sphinxlatexadmonitions.sty" 1757857610.23226 19110 2855832b1a32f04033523b9919260ac9 ""
   "sphinxlatexcontainers.sty" 1757857610.2324 900 d61f923db071a7b54d3cee8a1e6935d3 ""
   "sphinxlatexgraphics.sty" 1757857610.23255 4918 c9266041d02bc615d54b890e96e3acd3 ""
@@ -185,7 +184,7 @@
   "sphinxlatexstyletext.sty" 1757857610.23405 6759 9e932c65374cfb62686485d331bc975c ""
   "sphinxlatextables.sty" 1757857610.23423 57643 7f1013c2fa11942370d867527bdda568 ""
   "sphinxmanual.cls" 1757857610.23435 4241 7b0d7a37df7b5715fb0dbd585c52ecdb ""
-  "sphinxmessages.sty" 1757863685.67086 745 3f5fcd6cdd7964ed608767954a8ced6f ""
+  "sphinxmessages.sty" 1757866728.92344 745 3f5fcd6cdd7964ed608767954a8ced6f ""
   "sphinxoptionsgeometry.sty" 1757857610.23448 2060 6c27b3eba37bde592ae8908ab2c1ac0f ""
   "sphinxoptionshyperref.sty" 1757857610.23459 1093 e468489bae7631a7f387b4b0f7bc15d4 ""
   "sphinxpackageboxes.sty" 1757857610.23475 36106 1be2053eb1cb9b083b3a75e3657bcb24 ""

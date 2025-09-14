@@ -15,20 +15,20 @@ Each editor represents a dedicated workspace optimized for digital sound design,
 Core Architecture & Design
 ===========================
 
-**🎛️ Multi-Partial Architecture**
+** Multi-Partial Architecture**
    The Digital Synth Editors feature a sophisticated multi-partial system:
    - **3 Partial Control**: Individual control over each of the 3 partials per digital synth
    - **Layer Blending**: Sophisticated mixing and blending of multiple partials
    - **Cross-Modulation**: Advanced modulation routing between partials
    - **Real-time Visualization**: Live display of partial relationships and interactions
 
-**🎹 Advanced Parameter Management**
+** Advanced Parameter Management**
    - **Comprehensive Parameter Mapping**: Every digital synth parameter is accessible through intuitive controls
    - **Real-time Updates**: Instant parameter changes with immediate hardware response
    - **Visual Feedback**: Live parameter displays, value indicators, and status monitoring
    - **Preset Integration**: Seamless loading, saving, and management of your custom sounds
 
-**🎵 Professional Workflow Tools**
+** Professional Workflow Tools**
    - **Multi-Editor Support**: Work with both digital synth parts simultaneously
    - **Advanced Organization**: Categorize, search, and manage your sound library
    - **Project Integration**: Export and import settings for use in your DAW
