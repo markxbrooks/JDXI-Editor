@@ -55,6 +55,16 @@ $ python -m pip install -r requirements.txt
 $ python -m jdxi_editor.main
 ```
 
+# 📖 Documentation
+Access JD-Xi documentation in the format that works best for you:
+
+## ℹ Available Formats:
+### 📃 HTML Documentation:
+
+https://markxbrooks.github.io/JDXI-Editor/
+
+### 📃 PDF Documentation:
+Coming soon!
 ---
 
 ### 🎹 UI Previews
