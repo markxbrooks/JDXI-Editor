@@ -39,12 +39,15 @@ Functions
 .. autoapisummary::
 
    jdxi_editor.main.main
+   jdxi_editor.main.setup_splash_screen
 
 
 Module Contents
 ---------------
 
 .. py:function:: main()
+
+.. py:function:: setup_splash_screen(app)
 
 .. py:data:: profiling
    :value: False

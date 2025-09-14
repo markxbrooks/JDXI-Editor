@@ -19,20 +19,20 @@ Built with modern Qt6 technology, the window features a responsive, professional
 Core Architecture & Components
 ==============================
 
-**🎹 Visual Instrument Representation**
+** Visual Instrument Representation**
    The window displays a high-fidelity, interactive representation of your JD-Xi synthesizer, complete with:
    - **Real-time Status Indicators**: Visual feedback for MIDI communication, preset loading, and parameter changes
    - **Dynamic Part Selection**: Interactive buttons for each synthesizer section (Digital 1, Digital 2, Analog, Drums)
    - **Live Parameter Display**: Real-time visualization of current settings and values
    - **Customizable Layout**: Adaptable interface that scales to your workflow preferences
 
-**🎛️ Comprehensive Control System**
+** Comprehensive Control System**
    - **Multi-Part Management**: Simultaneous control over all four synthesizer parts
    - **Real-time Parameter Updates**: Instant synchronization between software and hardware
    - **Bidirectional Communication**: Full read/write capabilities for all JD-Xi parameters
    - **State Management**: Automatic saving and recall of your favorite settings
 
-**🎵 Performance Integration**
+** Performance Integration**
    - **On-Screen Piano Keyboard**: Full-featured virtual keyboard for testing and performance
    - **MIDI Controller Support**: Seamless integration with external MIDI controllers
    - **Live Performance Mode**: Optimized for real-time sound design and live performance
@@ -41,25 +41,25 @@ Core Architecture & Components
 Key Features & Capabilities
 ===========================
 
-**🎹 Complete Synthesizer Control**
+** Complete Synthesizer Control**
    - **Digital Synth Parts 1 & 2**: Full editing capabilities for both digital synthesizer parts, including 3 partials per part
    - **Analog Synth Editor**: Comprehensive control over the analog synthesizer section with real-time parameter updates
    - **Drum Kit Editor**: Customize drum sounds, patterns, and kit parameters with visual feedback
    - **Multi-Part Mixing**: Advanced mixer controls for volume, panning, and routing
 
-**🎛️ Advanced Effects Processing**
+** Advanced Effects Processing**
    - **Reverb & Delay**: Professional-quality time-based effects with real-time parameter control
    - **Vocal Effects**: Vocoder and voice processing capabilities with live monitoring
    - **Arpeggiator**: Sophisticated pattern generation and sequencing with visual pattern display
    - **Multi-effects Chain**: Layer multiple effects for complex sound design
 
-**🎵 Performance & Workflow Features**
+** Performance & Workflow Features**
    - **On-Screen Keyboard**: Full 88-key virtual piano with velocity sensitivity and octave shifting
    - **Preset Management**: Advanced search, categorization, and organization of your sound library
    - **Favorites System**: Quick access to your most-used presets and settings
    - **Real-time Monitoring**: Live visualization of MIDI data, parameter changes, and audio levels
 
-**🔧 Professional Tools & Utilities**
+** Professional Tools & Utilities**
    - **MIDI Debugger**: Comprehensive monitoring and troubleshooting of MIDI communication
    - **Parameter Logging**: Detailed tracking of all changes for analysis and recall
    - **Visual Displays**: ADSR envelopes, pitch modulation, and waveform visualization

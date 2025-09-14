@@ -15,20 +15,20 @@ The editor represents a dedicated workspace optimized for effects processing, fr
 Core Architecture & Design
 ===========================
 
-**🎛️ Professional Effects Processing**
+** Professional Effects Processing**
    The Effects Editor features a sophisticated effects processing system:
    - **High-Quality Algorithms**: Professional-grade effect processing with minimal latency
    - **Real-time Parameter Control**: Live manipulation of all effect parameters
    - **Effect Chaining**: Complex multi-effects routing and processing
    - **Preset Management**: Save and recall your favorite effect combinations
 
-**🎹 Advanced Parameter Management**
+** Advanced Parameter Management**
    - **Comprehensive Parameter Mapping**: Every effects parameter is accessible through intuitive controls
    - **Real-time Updates**: Instant parameter changes with immediate hardware response
    - **Visual Feedback**: Live parameter displays, value indicators, and status monitoring
    - **Preset Integration**: Seamless loading, saving, and management of your custom effects
 
-**🎵 Professional Workflow Tools**
+** Professional Workflow Tools**
    - **Multi-Effects Support**: Work with multiple effects simultaneously
    - **Advanced Organization**: Categorize, search, and manage your effects library
    - **Project Integration**: Export and import effects for use in your DAW

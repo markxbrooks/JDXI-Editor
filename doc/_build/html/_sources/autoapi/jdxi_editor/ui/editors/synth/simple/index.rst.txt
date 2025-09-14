@@ -23,16 +23,16 @@ jdxi_editor.ui.editors.synth.simple
        - Supports dynamic visualization and interaction through sliders and combo boxes.
 
    Usage:
-       ```python
-       from PySide6.QtWidgets import QApplication
-       from midi_helper import MIDIHelper
+       .. code-block:: python
 
-       app = QApplication([])
-       midi_helper = MIDIHelper()
-       editor = ArpeggioEditor(midi_helper=midi_helper)
-       editor.show()
-       app.exec()
-       ```
+           from PySide6.QtWidgets import QApplication
+           from midi_helper import MIDIHelper
+
+           app = QApplication([])
+           midi_helper = MIDIHelper()
+           editor = ArpeggioEditor(midi_helper=midi_helper)
+           editor.show()
+           app.exec()
 
    Dependencies:
        - PySide6 (for UI components)

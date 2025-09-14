@@ -15,20 +15,20 @@ The editor represents a dedicated workspace optimized for pattern creation and s
 Core Architecture & Design
 ===========================
 
-**🎵 Multi-Part Sequencing**
+** Multi-Part Sequencing**
    The Pattern Sequencer features a sophisticated multi-part sequencing system:
    - **4-Part Control**: Independent pattern creation for each synthesizer part
    - **Step-by-Step Editing**: Precise control over timing, velocity, and note placement
    - **Real-time Recording**: Live pattern creation and editing
    - **Pattern Management**: Organization, storage, and recall of your sequences
 
-**🎹 Advanced Parameter Management**
+** Advanced Parameter Management**
    - **Comprehensive Parameter Mapping**: Every sequencer parameter is accessible through intuitive controls
    - **Real-time Updates**: Instant parameter changes with immediate hardware response
    - **Visual Feedback**: Live parameter displays, value indicators, and status monitoring
    - **Preset Integration**: Seamless loading, saving, and management of your custom patterns
 
-**🎵 Professional Workflow Tools**
+** Professional Workflow Tools**
    - **Multi-Pattern Support**: Work with multiple patterns simultaneously
    - **Advanced Organization**: Categorize, search, and manage your pattern library
    - **Project Integration**: Export and import patterns for use in your DAW

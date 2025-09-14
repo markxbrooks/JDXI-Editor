@@ -6,7 +6,7 @@ JDXI-Editor
 
 **JDXI-Editor**: A powerful MIDI editor for the **Roland JD-Xi synthesizer**, built with **Python**, **Qt Framework**, and **RtMidi**. Simplify MIDI editing, preset selection, and sound design without hardware menus. Perfect for musicians and sound designers!
 
-It's designed to implement as many features as possible from Roland's MIDI implementation—without the need to dive through hardware menus. 🎛️
+It's designed to implement as many features as possible from Roland's MIDI implementation—without the need to dive through hardware menus. 
 
 .. warning::
    This app is a work in progress and not yet feature-complete—but feel free to try it out and share your feedback!
@@ -17,7 +17,7 @@ Features of JDXI-Editor for Roland JD-Xi Synthesizer
 - **Preset Selection with Search**: Quickly find and load presets.
 - **Octave Shifting**: Adjust octave ranges for precise sound control.
 - **Digital & Analog Synth Editors**: Edit JD-Xi's digital and analog synths directly.
-- **Drum Part Editor**: Customize drum sounds and patterns 🥁.
+- **Drum Part Editor**: Customize drum sounds and patterns .
 - **Effects Editor**: Edit reverb, delay, vocoder, and arpeggiator settings.
 - **MIDI Debugger**: Monitor and debug MIDI messages efficiently.
 
@@ -40,15 +40,15 @@ Watch how **JDXI-Editor** simplifies sound design and MIDI editing for the **Rol
 Getting Started
 ===============
 
-MacOS 🖥️
+MacOS 
 ---------
 There is a new build for MacOS Sequoia. See the `releases page <https://github.com/markxbrooks/JDXI-Editor/releases/tag/v0.0.8>`_
 
-Windows 📦
+Windows 
 ----------
 There is a new build for Windows See the `releases page <https://github.com/markxbrooks/JDXI-Editor/releases/tag/v0.0.8>`_
 
-Python 🐍
+Python 
 ---------
 If you're a Python developer, you may wish to run the program from a Python environment:
 
@@ -143,7 +143,7 @@ Features
 - Pitch ENV displays
 - Digital Synth Parts 1 & 2 (including 3 partials per part)
 - Analog Synth Editor
-- Drum Part Editor 🥁
+- Drum Part Editor 
 - Effects: Reverb, Delay, Vocoder
 - Arpeggiator Editor
 
@@ -178,8 +178,8 @@ Links
 Contribute and Share Feedback
 =============================
 JDXI-Editor is a growing project! 
-- ⭐ Star this repository to support its development.
-- 🛠️ Contribute features or report issues via `GitHub Issues <https://github.com/markxbrooks/JDXI-Editor/issues>`_.
+-  Star this repository to support its development.
+-  Contribute features or report issues via `GitHub Issues <https://github.com/markxbrooks/JDXI-Editor/issues>`_.
 
 Credits
 =======
@@ -192,4 +192,4 @@ Credits
 - **Roland**, for creating such a powerful little synth!
 
 .. note::
-   Made with 🎹 and ☕ by @markxbrooks
+   Made with  and  by @markxbrooks
