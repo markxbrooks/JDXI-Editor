@@ -12,11 +12,11 @@ sys.path.insert(0, os.path.abspath('..'))
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = 'PicoGL'
-copyright = '2025, PicoGL Contributors'
+project = 'JD-Xi Editor'
+copyright = '2025, Mark Mrooks'
 author = 'PicoGL Contributors'
-release = '0.2.0'
-version = '0.2.0'
+release = '0.8.0'
+version = '0.8.0'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -38,7 +38,7 @@ extensions = [
 
 # Document Python Code
 autoapi_type = 'python'
-autoapi_dirs = ['../picogl']
+autoapi_dirs = ['../jdxi_editor']
 autosummary_generate = True  # Turn on sphinx.ext.autosummary
 
 templates_path = ['_templates']
@@ -95,7 +95,7 @@ latex_elements = {
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-latex-output
 
 pdf_documents = [
-    ('index', 'PicoGL', 'PicoGL Documentation', 'PicoGL Contributors'),
+    ('index', 'JD-Xi Editor', 'JD-Xi Editor Documentation', 'JD-Xi Editor Contributors'),
 ]
 
 # -- Options for intersphinx extension ---------------------------------------
