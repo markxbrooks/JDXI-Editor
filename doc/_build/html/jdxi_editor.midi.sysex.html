@@ -1,0 +1,960 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>jdxi_editor.midi.sysex package &mdash; JD-Xi Editor 0.8.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=486e5634"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="jdxi_editor.midi.sysex.parser package" href="jdxi_editor.midi.sysex.parser.html" />
+    <link rel="prev" title="jdxi_editor.midi.program package" href="jdxi_editor.midi.program.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            JD-Xi Editor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Quick Start</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#connection-of-the-jd-xi-hardware-instrument-to-the-computer">Connection of the JD-Xi Hardware Instrument to the Computer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="instrument.html">JDXi Instrument Window</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="instrument.html#features">Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="instrument.html#using-the-instrument-window">Using the Instrument Window</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="editor.html">Editor Window</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="editor.html#program-mixer-section">Program/Mixer Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="editor.html#digital-1-section">Digital 1 Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="editor.html#digital-2-section">Digital 2 Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="editor.html#drum-kit-section">Drum Kit Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="editor.html#analog-section">Analog Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="editor.html#effect-controls">Effect Controls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="editor.html#vocal-transformer">Vocal Transformer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="editor.html#arpeggiator">Arpeggiator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="editor.html#midi-file-player-and-recorder">MIDI File Player and Recorder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="editor.html#pattern-sequencer">Pattern Sequencer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html#general-problems">General Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html#macos">MacOS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html#windows">Windows</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="legal.html">Legal Disclaimer</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">jdxi_editor</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="jdxi_editor.html">jdxi_editor package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="jdxi_editor.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.html">jdxi_editor.jdxi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.log.html">jdxi_editor.log package</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="jdxi_editor.midi.html">jdxi_editor.midi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.ui.html">jdxi_editor.ui package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.html#module-jdxi_editor.globals">jdxi_editor.globals module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.html#module-jdxi_editor.main">jdxi_editor.main module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.html#jdxi_editor.main.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.html#module-jdxi_editor.project">jdxi_editor.project module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.html#module-jdxi_editor.resources">jdxi_editor.resources module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.html#jdxi_editor.resources.resource_path"><code class="docutils literal notranslate"><span class="pre">resource_path()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.html#module-jdxi_editor">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="autoapi/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/midi/index.html">midi</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/midi/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/midi/colors/index.html">midi.colors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/midi/slider/index.html">midi.slider</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/midi/spin_box/index.html">midi.spin_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/midi/time_ruler/index.html">midi.time_ruler</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/midi/track/index.html">midi.track</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/midi/track_viewer/index.html">midi.track_viewer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/midi/utils/index.html">midi.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/adsr/index.html">adsr</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/adsr/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/adsr/adsr/index.html">adsr.adsr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/adsr/graph/index.html">adsr.graph</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/adsr/parameter/index.html">adsr.parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/adsr/plot/index.html">adsr.plot</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/pitch/index.html">pitch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/pitch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/pitch/envelope/index.html">pitch.envelope</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/pitch/envelope_plot/index.html">pitch.envelope_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/pitch/pwm_plot/index.html">pitch.pwm_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/pitch/slider_spinbox/index.html">pitch.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/piano/index.html">piano</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/piano/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/piano/key/index.html">piano.key</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/piano/keyboard/index.html">piano.keyboard</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/panel/index.html">panel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/panel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/panel/partial/index.html">panel.partial</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/wheel/index.html">wheel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/wheel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/wheel/mod/index.html">wheel.mod</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/wheel/pitch/index.html">wheel.pitch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/wheel/wheel/index.html">wheel.wheel</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/preset/index.html">preset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/preset/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/preset/combo_box/index.html">preset.combo_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/preset/panel/index.html">preset.panel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/preset/patch_name/index.html">preset.patch_name</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/slider/index.html">slider</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/slider/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/slider/slider/index.html">slider.slider</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/slider/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/slider/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/slider/index.html#slider.Slider"><code class="docutils literal notranslate"><span class="pre">Slider</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/dialog/index.html">dialog</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/dialog/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/dialog/progress/index.html">dialog.progress</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/viewer/index.html">viewer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/viewer/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/viewer/log/index.html">viewer.log</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/button/index.html">button</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/button/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/button/channel/index.html">button.channel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/button/favorite/index.html">button.favorite</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/button/sequencer/index.html">button.sequencer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/button/waveform/index.html">button.waveform</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/button/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/button/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/button/index.html#button.ChannelButton"><code class="docutils literal notranslate"><span class="pre">ChannelButton</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/button/index.html#button.SequencerSquare"><code class="docutils literal notranslate"><span class="pre">SequencerSquare</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/switch/index.html">switch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/switch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/switch/partial/index.html">switch.partial</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/switch/switch/index.html">switch.switch</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/filter/index.html">filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/filter/index.html#filter.FilterWidget"><code class="docutils literal notranslate"><span class="pre">FilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/display/index.html">display</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/display/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/display/digital/index.html">display.digital</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/display/pattern/index.html">display.pattern</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/display/value/index.html">display.value</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/pattern/index.html">pattern</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/pattern/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/pattern/measure/index.html">pattern.measure</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/spin_box/index.html">spin_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/spin_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/spin_box/spin_box/index.html">spin_box.spin_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/envelope/index.html">envelope</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/envelope/base/index.html">envelope.base</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/indicator/index.html">indicator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/indicator/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/indicator/led/index.html">indicator.led</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/indicator/midi/index.html">indicator.midi</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/combo_box/index.html">combo_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/combo_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/combo_box/combo_box/index.html">combo_box.combo_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/jdxi_editor/index.html">jdxi_editor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/jdxi_editor/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/globals/index.html">jdxi_editor.globals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/jdxi/index.html">jdxi_editor.jdxi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/log/index.html">jdxi_editor.log</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/main/index.html">jdxi_editor.main</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/midi/index.html">jdxi_editor.midi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/project/index.html">jdxi_editor.project</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/resources/index.html">jdxi_editor.resources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/ui/index.html">jdxi_editor.ui</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/filter_plot/index.html">filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/filter_plot/index.html#filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/filter_plot/index.html#filter_plot.FilterPlot"><code class="docutils literal notranslate"><span class="pre">FilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/envelope_plot/index.html">envelope_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope_plot/index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/envelope_plot/index.html#envelope_plot.midi_value_to_float"><code class="docutils literal notranslate"><span class="pre">midi_value_to_float()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/envelope_plot/index.html#envelope_plot.WMTEnvPlot"><code class="docutils literal notranslate"><span class="pre">WMTEnvPlot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/envelope_plot/index.html#envelope_plot.app"><code class="docutils literal notranslate"><span class="pre">app</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/wave_selector/index.html">wave_selector</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/wave_selector/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/wave_selector/wave_selector/index.html">wave_selector.wave_selector</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/analog_filter/index.html">analog_filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/analog_filter/index.html#analog_filter.AnalogFilterWidget"><code class="docutils literal notranslate"><span class="pre">AnalogFilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/slider_spinbox/index.html">slider_spinbox</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/slider_spinbox/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/slider_spinbox/slider_spinbox/index.html">slider_spinbox.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/analog_filter_plot/index.html">analog_filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#analog_filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#analog_filter_plot.AnalogFilterPlot"><code class="docutils literal notranslate"><span class="pre">AnalogFilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">JD-Xi Editor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">jdxi_editor</a></li>
+          <li class="breadcrumb-item"><a href="jdxi_editor.html">jdxi_editor package</a></li>
+          <li class="breadcrumb-item"><a href="jdxi_editor.midi.html">jdxi_editor.midi package</a></li>
+      <li class="breadcrumb-item active">jdxi_editor.midi.sysex package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/jdxi_editor.midi.sysex.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="jdxi-editor-midi-sysex-package">
+<h1>jdxi_editor.midi.sysex package<a class="headerlink" href="#jdxi-editor-midi-sysex-package" title="Link to this heading"></a></h1>
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="jdxi_editor.midi.sysex.parser.html">jdxi_editor.midi.sysex.parser package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.midi.sysex.parser.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.midi.sysex.parser.html#module-jdxi_editor.midi.sysex.parser.dynamic">jdxi_editor.midi.sysex.parser.dynamic module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.midi.sysex.parser.html#jdxi_editor.midi.sysex.parser.dynamic.dynamic_map_resolver"><code class="docutils literal notranslate"><span class="pre">dynamic_map_resolver()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.midi.sysex.parser.html#jdxi_editor.midi.sysex.parser.dynamic.parse_sysex_with_dynamic_mapping"><code class="docutils literal notranslate"><span class="pre">parse_sysex_with_dynamic_mapping()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.midi.sysex.parser.html#module-jdxi_editor.midi.sysex.parser.json">jdxi_editor.midi.sysex.parser.json module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.midi.sysex.parser.html#jdxi_editor.midi.sysex.parser.json.JDXiJsonSysexParser"><code class="docutils literal notranslate"><span class="pre">JDXiJsonSysexParser</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.midi.sysex.parser.html#jdxi_editor.midi.sysex.parser.json.JDXiJsonSysexParser.__init__"><code class="docutils literal notranslate"><span class="pre">JDXiJsonSysexParser.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.midi.sysex.parser.html#jdxi_editor.midi.sysex.parser.json.JDXiJsonSysexParser.from_json"><code class="docutils literal notranslate"><span class="pre">JDXiJsonSysexParser.from_json()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.midi.sysex.parser.html#jdxi_editor.midi.sysex.parser.json.JDXiJsonSysexParser.parse"><code class="docutils literal notranslate"><span class="pre">JDXiJsonSysexParser.parse()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.midi.sysex.parser.html#jdxi_editor.midi.sysex.parser.json.JDXiJsonSysexParser.parse_json"><code class="docutils literal notranslate"><span class="pre">JDXiJsonSysexParser.parse_json()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.midi.sysex.parser.html#module-jdxi_editor.midi.sysex.parser.sysex">jdxi_editor.midi.sysex.parser.sysex module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.midi.sysex.parser.html#jdxi_editor.midi.sysex.parser.sysex.JDXiSysExParser"><code class="docutils literal notranslate"><span class="pre">JDXiSysExParser</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.midi.sysex.parser.html#jdxi_editor.midi.sysex.parser.sysex.JDXiSysExParser.__init__"><code class="docutils literal notranslate"><span class="pre">JDXiSysExParser.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.midi.sysex.parser.html#jdxi_editor.midi.sysex.parser.sysex.JDXiSysExParser.from_bytes"><code class="docutils literal notranslate"><span class="pre">JDXiSysExParser.from_bytes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.midi.sysex.parser.html#jdxi_editor.midi.sysex.parser.sysex.JDXiSysExParser.parse"><code class="docutils literal notranslate"><span class="pre">JDXiSysExParser.parse()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.midi.sysex.parser.html#jdxi_editor.midi.sysex.parser.sysex.JDXiSysExParser.parse_bytes"><code class="docutils literal notranslate"><span class="pre">JDXiSysExParser.parse_bytes()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.midi.sysex.parser.html#module-jdxi_editor.midi.sysex.parser.tone_mapper">jdxi_editor.midi.sysex.parser.tone_mapper module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.midi.sysex.parser.html#jdxi_editor.midi.sysex.parser.tone_mapper.get_temporary_area"><code class="docutils literal notranslate"><span class="pre">get_temporary_area()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.midi.sysex.parser.html#jdxi_editor.midi.sysex.parser.tone_mapper.get_partial_address"><code class="docutils literal notranslate"><span class="pre">get_partial_address()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.midi.sysex.parser.html#jdxi_editor.midi.sysex.parser.tone_mapper.get_drum_tone"><code class="docutils literal notranslate"><span class="pre">get_drum_tone()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.midi.sysex.parser.html#jdxi_editor.midi.sysex.parser.tone_mapper.get_synth_tone"><code class="docutils literal notranslate"><span class="pre">get_synth_tone()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.midi.sysex.parser.html#module-jdxi_editor.midi.sysex.parser.utils">jdxi_editor.midi.sysex.parser.utils module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.midi.sysex.parser.html#jdxi_editor.midi.sysex.parser.utils.get_byte_offset_by_tone_name"><code class="docutils literal notranslate"><span class="pre">get_byte_offset_by_tone_name()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.midi.sysex.parser.html#jdxi_editor.midi.sysex.parser.utils.extract_hex"><code class="docutils literal notranslate"><span class="pre">extract_hex()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.midi.sysex.parser.html#jdxi_editor.midi.sysex.parser.utils.extract_tone_name"><code class="docutils literal notranslate"><span class="pre">extract_tone_name()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.midi.sysex.parser.html#jdxi_editor.midi.sysex.parser.utils.parse_parameters"><code class="docutils literal notranslate"><span class="pre">parse_parameters()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.midi.sysex.parser.html#jdxi_editor.midi.sysex.parser.utils.parse_single_parameter"><code class="docutils literal notranslate"><span class="pre">parse_single_parameter()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.midi.sysex.parser.html#jdxi_editor.midi.sysex.parser.utils.safe_extract"><code class="docutils literal notranslate"><span class="pre">safe_extract()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.midi.sysex.parser.html#jdxi_editor.midi.sysex.parser.utils.address_to_index"><code class="docutils literal notranslate"><span class="pre">address_to_index()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.midi.sysex.parser.html#jdxi_editor.midi.sysex.parser.utils.initialize_parameters"><code class="docutils literal notranslate"><span class="pre">initialize_parameters()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.midi.sysex.parser.html#jdxi_editor.midi.sysex.parser.utils.parse_sysex"><code class="docutils literal notranslate"><span class="pre">parse_sysex()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.midi.sysex.parser.html#jdxi_editor.midi.sysex.parser.utils.update_data_with_parsed_parameters"><code class="docutils literal notranslate"><span class="pre">update_data_with_parsed_parameters()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.midi.sysex.parser.html#jdxi_editor.midi.sysex.parser.utils.update_short_data_with_parsed_parameters"><code class="docutils literal notranslate"><span class="pre">update_short_data_with_parsed_parameters()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.midi.sysex.parser.html#module-jdxi_editor.midi.sysex.parser">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="jdxi_editor.midi.sysex.request.html">jdxi_editor.midi.sysex.request package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.midi.sysex.request.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.midi.sysex.request.html#module-jdxi_editor.midi.sysex.request.data">jdxi_editor.midi.sysex.request.data module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.midi.sysex.request.html#module-jdxi_editor.midi.sysex.request.factory">jdxi_editor.midi.sysex.request.factory module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.midi.sysex.request.html#jdxi_editor.midi.sysex.request.factory.roland_checksum"><code class="docutils literal notranslate"><span class="pre">roland_checksum()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.midi.sysex.request.html#jdxi_editor.midi.sysex.request.factory.create_request"><code class="docutils literal notranslate"><span class="pre">create_request()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.midi.sysex.request.html#module-jdxi_editor.midi.sysex.request.hex">jdxi_editor.midi.sysex.request.hex module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.midi.sysex.request.html#jdxi_editor.midi.sysex.request.hex.JDXISysExHex"><code class="docutils literal notranslate"><span class="pre">JDXISysExHex</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.midi.sysex.request.html#jdxi_editor.midi.sysex.request.hex.JDXISysExHex.JDXI_HEADER"><code class="docutils literal notranslate"><span class="pre">JDXISysExHex.JDXI_HEADER</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.midi.sysex.request.html#jdxi_editor.midi.sysex.request.hex.JDXISysExHex.START"><code class="docutils literal notranslate"><span class="pre">JDXISysExHex.START</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.midi.sysex.request.html#jdxi_editor.midi.sysex.request.hex.JDXISysExHex.END"><code class="docutils literal notranslate"><span class="pre">JDXISysExHex.END</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.midi.sysex.request.html#jdxi_editor.midi.sysex.request.hex.JDXISysExHex.RQ1_COMMAND_11"><code class="docutils literal notranslate"><span class="pre">JDXISysExHex.RQ1_COMMAND_11</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.midi.sysex.request.html#jdxi_editor.midi.sysex.request.hex.JDXISysExHex.TEMPORARY_PROGRAM_AREA"><code class="docutils literal notranslate"><span class="pre">JDXISysExHex.TEMPORARY_PROGRAM_AREA</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.midi.sysex.request.html#jdxi_editor.midi.sysex.request.hex.JDXISysExHex.TEMPORARY_TONE_AREA"><code class="docutils literal notranslate"><span class="pre">JDXISysExHex.TEMPORARY_TONE_AREA</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.midi.sysex.request.html#jdxi_editor.midi.sysex.request.hex.JDXISysExHex.PROGRAM_COMMON_AREA"><code class="docutils literal notranslate"><span class="pre">JDXISysExHex.PROGRAM_COMMON_AREA</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.midi.sysex.request.html#jdxi_editor.midi.sysex.request.hex.JDXISysExHex.DIGITAL1_COMMON"><code class="docutils literal notranslate"><span class="pre">JDXISysExHex.DIGITAL1_COMMON</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.midi.sysex.request.html#jdxi_editor.midi.sysex.request.hex.JDXISysExHex.DIGITAL2_COMMON"><code class="docutils literal notranslate"><span class="pre">JDXISysExHex.DIGITAL2_COMMON</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.midi.sysex.request.html#jdxi_editor.midi.sysex.request.hex.JDXISysExHex.ANALOG"><code class="docutils literal notranslate"><span class="pre">JDXISysExHex.ANALOG</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.midi.sysex.request.html#jdxi_editor.midi.sysex.request.hex.JDXISysExHex.DRUMS"><code class="docutils literal notranslate"><span class="pre">JDXISysExHex.DRUMS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.midi.sysex.request.html#jdxi_editor.midi.sysex.request.hex.JDXISysExHex.FOUR_ZERO_BYTES"><code class="docutils literal notranslate"><span class="pre">JDXISysExHex.FOUR_ZERO_BYTES</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.midi.sysex.request.html#module-jdxi_editor.midi.sysex.request.midi_requests">jdxi_editor.midi.sysex.request.midi_requests module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.midi.sysex.request.html#jdxi_editor.midi.sysex.request.midi_requests.MidiRequests"><code class="docutils literal notranslate"><span class="pre">MidiRequests</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.midi.sysex.request.html#jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.PROGRAM_COMMON"><code class="docutils literal notranslate"><span class="pre">MidiRequests.PROGRAM_COMMON</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.midi.sysex.request.html#jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.DIGITAL1_COMMON"><code class="docutils literal notranslate"><span class="pre">MidiRequests.DIGITAL1_COMMON</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.midi.sysex.request.html#jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.DIGITAL1_PARTIAL1"><code class="docutils literal notranslate"><span class="pre">MidiRequests.DIGITAL1_PARTIAL1</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.midi.sysex.request.html#jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.DIGITAL1_PARTIAL2"><code class="docutils literal notranslate"><span class="pre">MidiRequests.DIGITAL1_PARTIAL2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.midi.sysex.request.html#jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.DIGITAL1_PARTIAL3"><code class="docutils literal notranslate"><span class="pre">MidiRequests.DIGITAL1_PARTIAL3</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.midi.sysex.request.html#jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.DIGITAL1_MODIFY"><code class="docutils literal notranslate"><span class="pre">MidiRequests.DIGITAL1_MODIFY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.midi.sysex.request.html#jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.DIGITAL2_COMMON"><code class="docutils literal notranslate"><span class="pre">MidiRequests.DIGITAL2_COMMON</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.midi.sysex.request.html#jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.DIGITAL2_PARTIAL1"><code class="docutils literal notranslate"><span class="pre">MidiRequests.DIGITAL2_PARTIAL1</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.midi.sysex.request.html#jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.DIGITAL2_PARTIAL2"><code class="docutils literal notranslate"><span class="pre">MidiRequests.DIGITAL2_PARTIAL2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.midi.sysex.request.html#jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.DIGITAL2_PARTIAL3"><code class="docutils literal notranslate"><span class="pre">MidiRequests.DIGITAL2_PARTIAL3</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.midi.sysex.request.html#jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.DIGITAL2_MODIFY"><code class="docutils literal notranslate"><span class="pre">MidiRequests.DIGITAL2_MODIFY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.midi.sysex.request.html#jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.ANALOG"><code class="docutils literal notranslate"><span class="pre">MidiRequests.ANALOG</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.midi.sysex.request.html#jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.DRUMS"><code class="docutils literal notranslate"><span class="pre">MidiRequests.DRUMS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.midi.sysex.request.html#jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.DRUMS_BD1"><code class="docutils literal notranslate"><span class="pre">MidiRequests.DRUMS_BD1</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.midi.sysex.request.html#jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.DRUMS_RIM"><code class="docutils literal notranslate"><span class="pre">MidiRequests.DRUMS_RIM</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.midi.sysex.request.html#jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.DRUMS_BD2"><code class="docutils literal notranslate"><span class="pre">MidiRequests.DRUMS_BD2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.midi.sysex.request.html#jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.DRUMS_CLAP"><code class="docutils literal notranslate"><span class="pre">MidiRequests.DRUMS_CLAP</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.midi.sysex.request.html#jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.DRUMS_BD3"><code class="docutils literal notranslate"><span class="pre">MidiRequests.DRUMS_BD3</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.midi.sysex.request.html#jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.DRUMS_BD1_RIM_BD2_CLAP_BD3"><code class="docutils literal notranslate"><span class="pre">MidiRequests.DRUMS_BD1_RIM_BD2_CLAP_BD3</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.midi.sysex.request.html#jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.DIGITAL1"><code class="docutils literal notranslate"><span class="pre">MidiRequests.DIGITAL1</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.midi.sysex.request.html#jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.DIGITAL2"><code class="docutils literal notranslate"><span class="pre">MidiRequests.DIGITAL2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.midi.sysex.request.html#jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.PROGRAM_TONE_NAME_PARTIAL"><code class="docutils literal notranslate"><span class="pre">MidiRequests.PROGRAM_TONE_NAME_PARTIAL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.midi.sysex.request.html#jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.PROGRAM_TONE_NAME"><code class="docutils literal notranslate"><span class="pre">MidiRequests.PROGRAM_TONE_NAME</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.midi.sysex.request.html#module-jdxi_editor.midi.sysex.request">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-jdxi_editor.midi.sysex.composer">
+<span id="jdxi-editor-midi-sysex-composer-module"></span><h2>jdxi_editor.midi.sysex.composer module<a class="headerlink" href="#module-jdxi_editor.midi.sysex.composer" title="Link to this heading"></a></h2>
+<p>JDXiSysExComposer</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.composer.apply_lmb_offset">
+<span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.sysex.composer.</span></span><span class="sig-name descname"><span class="pre">apply_lmb_offset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="jdxi_editor.midi.data.address.html#jdxi_editor.midi.data.address.address.RolandSysExAddress" title="jdxi_editor.midi.data.address.address.RolandSysExAddress"><span class="pre">RolandSysExAddress</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">param</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.synth.AddressParameter" title="jdxi_editor.midi.data.parameter.synth.AddressParameter"><span class="pre">AddressParameter</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="jdxi_editor.midi.data.address.html#jdxi_editor.midi.data.address.address.RolandSysExAddress" title="jdxi_editor.midi.data.address.address.RolandSysExAddress"><span class="pre">RolandSysExAddress</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/composer.html#apply_lmb_offset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.composer.apply_lmb_offset" title="Link to this definition"></a></dt>
+<dd><p>Set the LMB (Logical Memory Block) of the address depending on the parameter type.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.composer.JDXiSysExComposer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.sysex.composer.</span></span><span class="sig-name descname"><span class="pre">JDXiSysExComposer</span></span><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/composer.html#JDXiSysExComposer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.composer.JDXiSysExComposer" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>SysExComposer</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.composer.JDXiSysExComposer.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/composer.html#JDXiSysExComposer.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.composer.JDXiSysExComposer.__init__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.composer.JDXiSysExComposer.compose_message">
+<span class="sig-name descname"><span class="pre">compose_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="jdxi_editor.midi.data.address.html#jdxi_editor.midi.data.address.address.RolandSysExAddress" title="jdxi_editor.midi.data.address.address.RolandSysExAddress"><span class="pre">RolandSysExAddress</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">param</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.synth.AddressParameter" title="jdxi_editor.midi.data.parameter.synth.AddressParameter"><span class="pre">AddressParameter</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.RolandSysEx" title="jdxi_editor.midi.message.roland.RolandSysEx"><span class="pre">RolandSysEx</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/composer.html#JDXiSysExComposer.compose_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.composer.JDXiSysExComposer.compose_message" title="Link to this definition"></a></dt>
+<dd><p>Compose a SysEx message for the given address and parameter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>address</strong> – RolandSysExAddress</p></li>
+<li><p><strong>param</strong> – AddressParameter</p></li>
+<li><p><strong>value</strong> – Parameter display value</p></li>
+<li><p><strong>size</strong> – Optional, number of bytes (1 or 4)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>RolandSysEx object or None on failure</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-jdxi_editor.midi.sysex.data">
+<span id="jdxi-editor-midi-sysex-data-module"></span><h2>jdxi_editor.midi.sysex.data module<a class="headerlink" href="#module-jdxi_editor.midi.sysex.data" title="Link to this heading"></a></h2>
+</section>
+<section id="module-jdxi_editor.midi.sysex.device">
+<span id="jdxi-editor-midi-sysex-device-module"></span><h2>jdxi_editor.midi.sysex.device module<a class="headerlink" href="#module-jdxi_editor.midi.sysex.device" title="Link to this heading"></a></h2>
+<p>JD-Xi Device Information Module</p>
+<p>This module defines the <cite>DeviceInfo</cite> class, which represents identity information
+for a Roland JD-Xi synthesizer. It provides utilities for checking manufacturer
+and model identity, extracting firmware version, and constructing an instance
+from a MIDI Identity Reply message.</p>
+<section id="usage-example">
+<h3>Usage Example:<a class="headerlink" href="#usage-example" title="Link to this heading"></a></h3>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">device_info</span><span class="w"> </span><span class="kn">import</span> <span class="n">DeviceInfo</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">identity_data</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">([</span><span class="mh">0xF0</span><span class="p">,</span> <span class="mh">0x7E</span><span class="p">,</span> <span class="mh">0x10</span><span class="p">,</span> <span class="mh">0x06</span><span class="p">,</span> <span class="mh">0x02</span><span class="p">,</span> <span class="mh">0x41</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x0E</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x01</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0xF7</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">device</span> <span class="o">=</span> <span class="n">DeviceInfo</span><span class="o">.</span><span class="n">from_identity_reply</span><span class="p">(</span><span class="n">identity_data</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">if</span> <span class="n">device</span><span class="p">:</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Device: JD-Xi, Version: </span><span class="si">{</span><span class="n">device</span><span class="o">.</span><span class="n">version_string</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="expected-output">
+<h3>Expected Output:<a class="headerlink" href="#expected-output" title="Link to this heading"></a></h3>
+<p>Device: JD-Xi, Version: v1.00</p>
+</section>
+<section id="classes">
+<h3>Classes:<a class="headerlink" href="#classes" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>DeviceInfo: Represents JD-Xi device information, including manufacturer, model,
+and firmware version. Provides utility properties for checking if the device
+is a JD-Xi and formatting the version string.</p></li>
+</ul>
+</section>
+<section id="methods">
+<h3>Methods:<a class="headerlink" href="#methods" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><dl class="simple">
+<dt><cite>from_identity_reply(data: bytes) -&gt; Optional[DeviceInfo]</cite></dt><dd><p>Parses a MIDI Identity Reply message to create a <cite>DeviceInfo</cite> instance.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><cite>is_roland -&gt; bool</cite></dt><dd><p>Returns <cite>True</cite> if the device manufacturer is Roland.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><cite>is_jdxi -&gt; bool</cite></dt><dd><p>Returns <cite>True</cite> if the device is identified as a JD-Xi.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><cite>version_string -&gt; str</cite></dt><dd><p>Returns the firmware version as a formatted string.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</section>
+<section id="dependencies">
+<h3>Dependencies:<a class="headerlink" href="#dependencies" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>dataclasses</p></li>
+<li><p>typing (List, Optional)</p></li>
+</ul>
+</section>
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.device.DeviceInfo">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.sysex.device.</span></span><span class="sig-name descname"><span class="pre">DeviceInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">manufacturer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">family</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/device.html#DeviceInfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.device.DeviceInfo" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>JD-Xi device information parser from MIDI Identity Reply.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.device.DeviceInfo.device_id">
+<span class="sig-name descname"><span class="pre">device_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/device.html#DeviceInfo.device_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.device.DeviceInfo.device_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.device.DeviceInfo.manufacturer">
+<span class="sig-name descname"><span class="pre">manufacturer</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></em><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/device.html#DeviceInfo.manufacturer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.device.DeviceInfo.manufacturer" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.device.DeviceInfo.family">
+<span class="sig-name descname"><span class="pre">family</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></em><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/device.html#DeviceInfo.family"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.device.DeviceInfo.family" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.device.DeviceInfo.model">
+<span class="sig-name descname"><span class="pre">model</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></em><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/device.html#DeviceInfo.model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.device.DeviceInfo.model" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.device.DeviceInfo.version">
+<span class="sig-name descname"><span class="pre">version</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></em><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/device.html#DeviceInfo.version"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.device.DeviceInfo.version" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.device.DeviceInfo.is_roland">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_roland</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/device.html#DeviceInfo.is_roland"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.device.DeviceInfo.is_roland" title="Link to this definition"></a></dt>
+<dd><p>Check if the device is from Roland.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.device.DeviceInfo.is_jdxi">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_jdxi</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/device.html#DeviceInfo.is_jdxi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.device.DeviceInfo.is_jdxi" title="Link to this definition"></a></dt>
+<dd><p>Check if the device is a JD-Xi.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.device.DeviceInfo.version_string">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">version_string</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/device.html#DeviceInfo.version_string"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.device.DeviceInfo.version_string" title="Link to this definition"></a></dt>
+<dd><p>Format the version number as a string (e.g., ‘v1.03’).</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.device.DeviceInfo.to_string">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">to_string</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/device.html#DeviceInfo.to_string"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.device.DeviceInfo.to_string" title="Link to this definition"></a></dt>
+<dd><p>Generate a readable string describing the device.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.device.DeviceInfo.from_identity_reply">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_identity_reply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><span class="pre">bytes</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#jdxi_editor.midi.sysex.device.DeviceInfo" title="jdxi_editor.midi.sysex.device.DeviceInfo"><span class="pre">DeviceInfo</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/device.html#DeviceInfo.from_identity_reply"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.device.DeviceInfo.from_identity_reply" title="Link to this definition"></a></dt>
+<dd><p>Parse an Identity Reply SysEx message into a DeviceInfo object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> – bytes</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DeviceInfo</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.device.DeviceInfo.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">manufacturer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">family</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#jdxi_editor.midi.sysex.device.DeviceInfo.__init__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-jdxi_editor.midi.sysex.json_composer">
+<span id="jdxi-editor-midi-sysex-json-composer-module"></span><h2>jdxi_editor.midi.sysex.json_composer module<a class="headerlink" href="#module-jdxi_editor.midi.sysex.json_composer" title="Link to this heading"></a></h2>
+<p>JDXiSysExComposer</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.json_composer.JDXiJSONComposer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.sysex.json_composer.</span></span><span class="sig-name descname"><span class="pre">JDXiJSONComposer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">editor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="jdxi_editor.ui.editors.synth.html#jdxi_editor.ui.editors.synth.editor.SynthEditor" title="jdxi_editor.ui.editors.synth.editor.SynthEditor"><span class="pre">SynthEditor</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/json_composer.html#JDXiJSONComposer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.json_composer.JDXiJSONComposer" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>JSON SysExComposer</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.json_composer.JDXiJSONComposer.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">editor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="jdxi_editor.ui.editors.synth.html#jdxi_editor.ui.editors.synth.editor.SynthEditor" title="jdxi_editor.ui.editors.synth.editor.SynthEditor"><span class="pre">SynthEditor</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/json_composer.html#JDXiJSONComposer.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.json_composer.JDXiJSONComposer.__init__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.json_composer.JDXiJSONComposer.compose_message">
+<span class="sig-name descname"><span class="pre">compose_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">editor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="jdxi_editor.ui.editors.synth.html#jdxi_editor.ui.editors.synth.editor.SynthEditor" title="jdxi_editor.ui.editors.synth.editor.SynthEditor"><span class="pre">SynthEditor</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/json_composer.html#JDXiJSONComposer.compose_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.json_composer.JDXiJSONComposer.compose_message" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>editor</strong> – SynthEditor Editor instance to process</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>str JSON SysEx message</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.json_composer.JDXiJSONComposer.save_json">
+<span class="sig-name descname"><span class="pre">save_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/json_composer.html#JDXiJSONComposer.save_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.json_composer.JDXiJSONComposer.save_json" title="Link to this definition"></a></dt>
+<dd><p>Save the JSON string to a file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>file_path</strong> – str File path to save the JSON</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.json_composer.JDXiJSONComposer.process_editor">
+<span class="sig-name descname"><span class="pre">process_editor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">editor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="jdxi_editor.ui.editors.synth.html#jdxi_editor.ui.editors.synth.editor.SynthEditor" title="jdxi_editor.ui.editors.synth.editor.SynthEditor"><span class="pre">SynthEditor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.13)"><span class="pre">Path</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.13)"><span class="pre">Path</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/json_composer.html#JDXiJSONComposer.process_editor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.json_composer.JDXiJSONComposer.process_editor" title="Link to this definition"></a></dt>
+<dd><p>Process the editor and save the JSON</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>editor</strong> – SynthEditor Editor instance to process</p></li>
+<li><p><strong>temp_folder</strong> – str Temporary folder to save the JSON</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-jdxi_editor.midi.sysex.lexer">
+<span id="jdxi-editor-midi-sysex-lexer-module"></span><h2>jdxi_editor.midi.sysex.lexer module<a class="headerlink" href="#module-jdxi_editor.midi.sysex.lexer" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.lexer.lex_addresses">
+<span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.sysex.lexer.</span></span><span class="sig-name descname"><span class="pre">lex_addresses</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/lexer.html#lex_addresses"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.lexer.lex_addresses" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.lexer.map_tokens_all">
+<span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.sysex.lexer.</span></span><span class="sig-name descname"><span class="pre">map_tokens_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tokens</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/lexer.html#map_tokens_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.lexer.map_tokens_all" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-jdxi_editor.midi.sysex.lexer2">
+<span id="jdxi-editor-midi-sysex-lexer2-module"></span><h2>jdxi_editor.midi.sysex.lexer2 module<a class="headerlink" href="#module-jdxi_editor.midi.sysex.lexer2" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.lexer2.lex_addresses">
+<span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.sysex.lexer2.</span></span><span class="sig-name descname"><span class="pre">lex_addresses</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/lexer2.html#lex_addresses"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.lexer2.lex_addresses" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.lexer2.map_tokens_all">
+<span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.sysex.lexer2.</span></span><span class="sig-name descname"><span class="pre">map_tokens_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tokens</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/lexer2.html#map_tokens_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.lexer2.map_tokens_all" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-jdxi_editor.midi.sysex.tokenizer">
+<span id="jdxi-editor-midi-sysex-tokenizer-module"></span><h2>jdxi_editor.midi.sysex.tokenizer module<a class="headerlink" href="#module-jdxi_editor.midi.sysex.tokenizer" title="Link to this heading"></a></h2>
+<p>Tokeniser for lexing
+# Example input
+# input_data = “DIGITAL_SYNTH_1 COMMON”
+# mapping = generate_mapping(input_data)
+# print(mapping)</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.tokenizer.tokenize">
+<span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.sysex.tokenizer.</span></span><span class="sig-name descname"><span class="pre">tokenize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_string</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/tokenizer.html#tokenize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.tokenizer.tokenize" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>input_string</strong> – str</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict[str,str] tokens</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.tokenizer.generate_mapping">
+<span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.sysex.tokenizer.</span></span><span class="sig-name descname"><span class="pre">generate_mapping</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_string</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/tokenizer.html#generate_mapping"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.tokenizer.generate_mapping" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>input_string</strong> – str</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Optional[dict[str, str]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-jdxi_editor.midi.sysex.utils">
+<span id="jdxi-editor-midi-sysex-utils-module"></span><h2>jdxi_editor.midi.sysex.utils module<a class="headerlink" href="#module-jdxi_editor.midi.sysex.utils" title="Link to this heading"></a></h2>
+<section id="midi-sysex-utils">
+<h3>MIDI SysEx Utils<a class="headerlink" href="#midi-sysex-utils" title="Link to this heading"></a></h3>
+<p>This module provides utility functions for handling MIDI SysEx messages.</p>
+<dl class="simple">
+<dt>Functions:</dt><dd><ul class="simple">
+<li><p>get_parameter_from_address: Map address to DigitalParameter</p></li>
+<li><p>validate_sysex_message: Validate JD-Xi SysEx message format</p></li>
+<li><p>calculate_checksum: Calculate Roland checksum for parameter messages</p></li>
+<li><p>bytes_to_hex_string: Convert a list of byte values to a space-separated hex string</p></li>
+<li><p>to_hex_string: Convert an integer value to a hexadecimal string representation</p></li>
+</ul>
+</dd>
+</dl>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.utils.map_range">
+<span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.sysex.utils.</span></span><span class="sig-name descname"><span class="pre">map_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_min</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_min</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">54</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">74</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/utils.html#map_range"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.utils.map_range" title="Link to this definition"></a></dt>
+<dd><p>Map range
+Convert value to range
+:param value: int, float
+:param in_min: int
+:param in_max: int
+:param out_min: int
+:param out_max: int
+:return: int</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.utils.calculate_checksum">
+<span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.sysex.utils.</span></span><span class="sig-name descname"><span class="pre">calculate_checksum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><span class="pre">tuple</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/utils.html#calculate_checksum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.utils.calculate_checksum" title="Link to this definition"></a></dt>
+<dd><p>Calculate Roland checksum for parameter messages.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> – tuple of integers (bytes) to calculate checksum for.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.utils.bytes_to_hex">
+<span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.sysex.utils.</span></span><span class="sig-name descname"><span class="pre">bytes_to_hex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">byte_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'F0'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/utils.html#bytes_to_hex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.utils.bytes_to_hex" title="Link to this definition"></a></dt>
+<dd><p>Convert a list of byte values to a space-separated hex string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>byte_list</strong> – List of integers (bytes).</p></li>
+<li><p><strong>prefix</strong> – Optional prefix (default is “F0” for SysEx messages).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>str Formatted hex string.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.utils.int_to_hex">
+<span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.sysex.utils.</span></span><span class="sig-name descname"><span class="pre">int_to_hex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/utils.html#int_to_hex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.utils.int_to_hex" title="Link to this definition"></a></dt>
+<dd><p>Converts an integer value to a hexadecimal string representation.
+The result is formatted in uppercase and without the ‘0x’ prefix.
+:param value: int The integer value to be converted to hex.
+:return: str The hexadecimal string representation.</p>
+</dd></dl>
+
+</section>
+<section id="module-jdxi_editor.midi.sysex.validation">
+<span id="jdxi-editor-midi-sysex-validation-module"></span><h2>jdxi_editor.midi.sysex.validation module<a class="headerlink" href="#module-jdxi_editor.midi.sysex.validation" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.validation.validate_raw_sysex_message">
+<span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.sysex.validation.</span></span><span class="sig-name descname"><span class="pre">validate_raw_sysex_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/validation.html#validate_raw_sysex_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.validation.validate_raw_sysex_message" title="Link to this definition"></a></dt>
+<dd><p>Validate JD-Xi SysEx message format</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.validation.validate_raw_midi_message">
+<span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.sysex.validation.</span></span><span class="sig-name descname"><span class="pre">validate_raw_midi_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.13)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/validation.html#validate_raw_midi_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.validation.validate_raw_midi_message" title="Link to this definition"></a></dt>
+<dd><p>Validate a raw MIDI message.</p>
+<p>This function checks that the message is non-empty and all values are
+within the valid MIDI byte range (0–255).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>message</strong> (<em>Iterable</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>]</em><em>, </em><em>can be a list</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><em>bytes</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><em>tuple</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.13)"><em>set</em></a>) – A MIDI message represented as a list of integers or a bytes object.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the message is valid, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.validation.validate_midi_message">
+<span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.sysex.validation.</span></span><span class="sig-name descname"><span class="pre">validate_midi_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.13)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/validation.html#validate_midi_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.validation.validate_midi_message" title="Link to this definition"></a></dt>
+<dd><p>Validate a raw MIDI message.</p>
+<p>This function checks that the message is non-empty and all values are
+within the valid MIDI byte range (0–255).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>message</strong> (<em>Iterable</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>]</em><em>, </em><em>can be a list</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><em>bytes</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><em>tuple</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.13)"><em>set</em></a>) – A MIDI message represented as a list of integers or a bytes object.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the message is valid, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-jdxi_editor.midi.sysex">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-jdxi_editor.midi.sysex" title="Link to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="jdxi_editor.midi.program.html" class="btn btn-neutral float-left" title="jdxi_editor.midi.program package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="jdxi_editor.midi.sysex.parser.html" class="btn btn-neutral float-right" title="jdxi_editor.midi.sysex.parser package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Mark Mrooks.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

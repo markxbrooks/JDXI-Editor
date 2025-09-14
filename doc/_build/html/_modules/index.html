@@ -1,0 +1,721 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Overview: module code &mdash; JD-Xi Editor 0.8.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=486e5634"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            JD-Xi Editor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Quick Start</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../usage.html#connection-of-the-jd-xi-hardware-instrument-to-the-computer">Connection of the JD-Xi Hardware Instrument to the Computer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../instrument.html">JDXi Instrument Window</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../instrument.html#features">Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../instrument.html#using-the-instrument-window">Using the Instrument Window</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../editor.html">Editor Window</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../editor.html#program-mixer-section">Program/Mixer Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../editor.html#digital-1-section">Digital 1 Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../editor.html#digital-2-section">Digital 2 Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../editor.html#drum-kit-section">Drum Kit Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../editor.html#analog-section">Analog Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../editor.html#effect-controls">Effect Controls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../editor.html#vocal-transformer">Vocal Transformer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../editor.html#arpeggiator">Arpeggiator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../editor.html#midi-file-player-and-recorder">MIDI File Player and Recorder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../editor.html#pattern-sequencer">Pattern Sequencer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../troubleshooting.html">Troubleshooting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../troubleshooting.html#general-problems">General Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../troubleshooting.html#macos">MacOS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../troubleshooting.html#windows">Windows</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../legal.html">Legal Disclaimer</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">jdxi_editor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../jdxi_editor.html">jdxi_editor package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jdxi_editor.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jdxi_editor.jdxi.html">jdxi_editor.jdxi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jdxi_editor.log.html">jdxi_editor.log package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jdxi_editor.midi.html">jdxi_editor.midi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jdxi_editor.ui.html">jdxi_editor.ui package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../jdxi_editor.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jdxi_editor.html#module-jdxi_editor.globals">jdxi_editor.globals module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jdxi_editor.html#module-jdxi_editor.main">jdxi_editor.main module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jdxi_editor.html#jdxi_editor.main.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../jdxi_editor.html#module-jdxi_editor.project">jdxi_editor.project module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jdxi_editor.html#module-jdxi_editor.resources">jdxi_editor.resources module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jdxi_editor.html#jdxi_editor.resources.resource_path"><code class="docutils literal notranslate"><span class="pre">resource_path()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../jdxi_editor.html#module-jdxi_editor">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../autoapi/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../autoapi/midi/index.html">midi</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/midi/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/midi/colors/index.html">midi.colors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/midi/slider/index.html">midi.slider</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/midi/spin_box/index.html">midi.spin_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/midi/time_ruler/index.html">midi.time_ruler</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/midi/track/index.html">midi.track</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/midi/track_viewer/index.html">midi.track_viewer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/midi/utils/index.html">midi.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../autoapi/adsr/index.html">adsr</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/adsr/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/adsr/adsr/index.html">adsr.adsr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/adsr/graph/index.html">adsr.graph</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/adsr/parameter/index.html">adsr.parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/adsr/plot/index.html">adsr.plot</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../autoapi/pitch/index.html">pitch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/pitch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/pitch/envelope/index.html">pitch.envelope</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/pitch/envelope_plot/index.html">pitch.envelope_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/pitch/pwm_plot/index.html">pitch.pwm_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/pitch/slider_spinbox/index.html">pitch.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../autoapi/piano/index.html">piano</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/piano/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/piano/key/index.html">piano.key</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/piano/keyboard/index.html">piano.keyboard</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../autoapi/panel/index.html">panel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/panel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/panel/partial/index.html">panel.partial</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../autoapi/wheel/index.html">wheel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/wheel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/wheel/mod/index.html">wheel.mod</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/wheel/pitch/index.html">wheel.pitch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/wheel/wheel/index.html">wheel.wheel</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../autoapi/preset/index.html">preset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/preset/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/preset/combo_box/index.html">preset.combo_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/preset/panel/index.html">preset.panel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/preset/patch_name/index.html">preset.patch_name</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../autoapi/slider/index.html">slider</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/slider/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/slider/slider/index.html">slider.slider</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/slider/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/slider/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/slider/index.html#slider.Slider"><code class="docutils literal notranslate"><span class="pre">Slider</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../autoapi/dialog/index.html">dialog</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/dialog/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/dialog/progress/index.html">dialog.progress</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../autoapi/viewer/index.html">viewer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/viewer/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/viewer/log/index.html">viewer.log</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../autoapi/button/index.html">button</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/button/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/button/channel/index.html">button.channel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/button/favorite/index.html">button.favorite</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/button/sequencer/index.html">button.sequencer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/button/waveform/index.html">button.waveform</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/button/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/button/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/button/index.html#button.ChannelButton"><code class="docutils literal notranslate"><span class="pre">ChannelButton</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/button/index.html#button.SequencerSquare"><code class="docutils literal notranslate"><span class="pre">SequencerSquare</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../autoapi/switch/index.html">switch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/switch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/switch/partial/index.html">switch.partial</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/switch/switch/index.html">switch.switch</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../autoapi/filter/index.html">filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/filter/index.html#filter.FilterWidget"><code class="docutils literal notranslate"><span class="pre">FilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../autoapi/display/index.html">display</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/display/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/display/digital/index.html">display.digital</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/display/pattern/index.html">display.pattern</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/display/value/index.html">display.value</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../autoapi/pattern/index.html">pattern</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/pattern/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/pattern/measure/index.html">pattern.measure</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../autoapi/spin_box/index.html">spin_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/spin_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/spin_box/spin_box/index.html">spin_box.spin_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../autoapi/envelope/index.html">envelope</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/envelope/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/envelope/base/index.html">envelope.base</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../autoapi/indicator/index.html">indicator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/indicator/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/indicator/led/index.html">indicator.led</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/indicator/midi/index.html">indicator.midi</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../autoapi/combo_box/index.html">combo_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/combo_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/combo_box/combo_box/index.html">combo_box.combo_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../autoapi/jdxi_editor/index.html">jdxi_editor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/jdxi_editor/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/jdxi_editor/globals/index.html">jdxi_editor.globals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/jdxi_editor/jdxi/index.html">jdxi_editor.jdxi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/jdxi_editor/log/index.html">jdxi_editor.log</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/jdxi_editor/main/index.html">jdxi_editor.main</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/jdxi_editor/midi/index.html">jdxi_editor.midi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/jdxi_editor/project/index.html">jdxi_editor.project</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/jdxi_editor/resources/index.html">jdxi_editor.resources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/jdxi_editor/ui/index.html">jdxi_editor.ui</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../autoapi/filter_plot/index.html">filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/filter_plot/index.html#filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/filter_plot/index.html#filter_plot.FilterPlot"><code class="docutils literal notranslate"><span class="pre">FilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../autoapi/envelope_plot/index.html">envelope_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/envelope_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/envelope_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/envelope_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/envelope_plot/index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/envelope_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/envelope_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/envelope_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/envelope_plot/index.html#envelope_plot.midi_value_to_float"><code class="docutils literal notranslate"><span class="pre">midi_value_to_float()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/envelope_plot/index.html#envelope_plot.WMTEnvPlot"><code class="docutils literal notranslate"><span class="pre">WMTEnvPlot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/envelope_plot/index.html#envelope_plot.app"><code class="docutils literal notranslate"><span class="pre">app</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../autoapi/wave_selector/index.html">wave_selector</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/wave_selector/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/wave_selector/wave_selector/index.html">wave_selector.wave_selector</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../autoapi/analog_filter/index.html">analog_filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/analog_filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/analog_filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/analog_filter/index.html#analog_filter.AnalogFilterWidget"><code class="docutils literal notranslate"><span class="pre">AnalogFilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../autoapi/slider_spinbox/index.html">slider_spinbox</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/slider_spinbox/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/slider_spinbox/slider_spinbox/index.html">slider_spinbox.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../autoapi/analog_filter_plot/index.html">analog_filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/analog_filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/analog_filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/analog_filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/analog_filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/analog_filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/analog_filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/analog_filter_plot/index.html#analog_filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/analog_filter_plot/index.html#analog_filter_plot.AnalogFilterPlot"><code class="docutils literal notranslate"><span class="pre">AnalogFilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">JD-Xi Editor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Overview: module code</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>All modules for which code is available</h1>
+<ul><li><a href="PySide6/QtCore.html">PySide6.QtCore</a></li>
+<li><a href="adsr/adsr.html">adsr.adsr</a></li>
+<li><a href="adsr/graph.html">adsr.graph</a></li>
+<li><a href="adsr/parameter.html">adsr.parameter</a></li>
+<li><a href="adsr/plot.html">adsr.plot</a></li>
+<li><a href="analog_filter.html">analog_filter</a></li>
+<li><a href="analog_filter_plot.html">analog_filter_plot</a></li>
+<li><a href="button/channel.html">button.channel</a></li>
+<li><a href="button/favorite.html">button.favorite</a></li>
+<li><a href="button/sequencer.html">button.sequencer</a></li>
+<li><a href="button/waveform/analog.html">button.waveform.analog</a></li>
+<li><a href="button/waveform/digital.html">button.waveform.digital</a></li>
+<li><a href="button/waveform/waveform.html">button.waveform.waveform</a></li>
+<li><a href="combo_box/combo_box.html">combo_box.combo_box</a></li>
+<li><a href="dialog/progress.html">dialog.progress</a></li>
+<li><a href="display/digital.html">display.digital</a></li>
+<li><a href="display/pattern.html">display.pattern</a></li>
+<li><a href="display/value.html">display.value</a></li>
+<li><a href="envelope/base.html">envelope.base</a></li>
+<li><a href="envelope_plot.html">envelope_plot</a></li>
+<li><a href="filter.html">filter</a></li>
+<li><a href="filter_plot.html">filter_plot</a></li>
+<li><a href="indicator/led.html">indicator.led</a></li>
+<li><a href="indicator/midi.html">indicator.midi</a></li>
+<li><a href="jdxi_editor/globals.html">jdxi_editor.globals</a></li>
+<li><a href="jdxi_editor/jdxi/file/utils.html">jdxi_editor.jdxi.file.utils</a></li>
+<li><a href="jdxi_editor/jdxi/midi/constant.html">jdxi_editor.jdxi.midi.constant</a></li>
+<li><a href="jdxi_editor/jdxi/preset/button.html">jdxi_editor.jdxi.preset.button</a></li>
+<li><a href="jdxi_editor/jdxi/preset/data.html">jdxi_editor.jdxi.preset.data</a></li>
+<li><a href="jdxi_editor/jdxi/preset/helper.html">jdxi_editor.jdxi.preset.helper</a></li>
+<li><a href="jdxi_editor/jdxi/preset/incoming_data.html">jdxi_editor.jdxi.preset.incoming_data</a></li>
+<li><a href="jdxi_editor/jdxi/preset/lists.html">jdxi_editor.jdxi.preset.lists</a></li>
+<li><a href="jdxi_editor/jdxi/preset/manager.html">jdxi_editor.jdxi.preset.manager</a></li>
+<li><a href="jdxi_editor/jdxi/preset/save.html">jdxi_editor.jdxi.preset.save</a></li>
+<li><a href="jdxi_editor/jdxi/preset/utils.html">jdxi_editor.jdxi.preset.utils</a></li>
+<li><a href="jdxi_editor/jdxi/program/program.html">jdxi_editor.jdxi.program.program</a></li>
+<li><a href="jdxi_editor/jdxi/style.html">jdxi_editor.jdxi.style</a></li>
+<ul><li><a href="jdxi_editor/jdxi/style/factory.html">jdxi_editor.jdxi.style.factory</a></li>
+<li><a href="jdxi_editor/jdxi/style/jdxi.html">jdxi_editor.jdxi.style.jdxi</a></li>
+</ul><li><a href="jdxi_editor/jdxi/synth/analog.html">jdxi_editor.jdxi.synth.analog</a></li>
+<li><a href="jdxi_editor/jdxi/synth/data.html">jdxi_editor.jdxi.synth.data</a></li>
+<li><a href="jdxi_editor/jdxi/synth/digital.html">jdxi_editor.jdxi.synth.digital</a></li>
+<li><a href="jdxi_editor/jdxi/synth/drum.html">jdxi_editor.jdxi.synth.drum</a></li>
+<li><a href="jdxi_editor/jdxi/synth/factory.html">jdxi_editor.jdxi.synth.factory</a></li>
+<li><a href="jdxi_editor/jdxi/synth/instrument_display.html">jdxi_editor.jdxi.synth.instrument_display</a></li>
+<li><a href="jdxi_editor/jdxi/synth/midi_config.html">jdxi_editor.jdxi.synth.midi_config</a></li>
+<li><a href="jdxi_editor/jdxi/synth/type.html">jdxi_editor.jdxi.synth.type</a></li>
+<li><a href="jdxi_editor/jdxi/sysex/bitmask.html">jdxi_editor.jdxi.sysex.bitmask</a></li>
+<li><a href="jdxi_editor/jdxi/sysex/offset.html">jdxi_editor.jdxi.sysex.offset</a></li>
+<li><a href="jdxi_editor/log/adsr.html">jdxi_editor.log.adsr</a></li>
+<li><a href="jdxi_editor/log/debug_info.html">jdxi_editor.log.debug_info</a></li>
+<li><a href="jdxi_editor/log/decorator.html">jdxi_editor.log.decorator</a></li>
+<li><a href="jdxi_editor/log/emoji.html">jdxi_editor.log.emoji</a></li>
+<li><a href="jdxi_editor/log/error.html">jdxi_editor.log.error</a></li>
+<li><a href="jdxi_editor/log/footer.html">jdxi_editor.log.footer</a></li>
+<li><a href="jdxi_editor/log/header.html">jdxi_editor.log.header</a></li>
+<li><a href="jdxi_editor/log/json.html">jdxi_editor.log.json</a></li>
+<li><a href="jdxi_editor/log/logger.html">jdxi_editor.log.logger</a></li>
+<li><a href="jdxi_editor/log/message.html">jdxi_editor.log.message</a></li>
+<li><a href="jdxi_editor/log/midi_info.html">jdxi_editor.log.midi_info</a></li>
+<li><a href="jdxi_editor/log/parameter.html">jdxi_editor.log.parameter</a></li>
+<li><a href="jdxi_editor/log/setup.html">jdxi_editor.log.setup</a></li>
+<li><a href="jdxi_editor/log/slider_parameter.html">jdxi_editor.log.slider_parameter</a></li>
+<li><a href="jdxi_editor/main.html">jdxi_editor.main</a></li>
+<li><a href="jdxi_editor/midi/channel/channel.html">jdxi_editor.midi.channel.channel</a></li>
+<li><a href="jdxi_editor/midi/data/address/address.html">jdxi_editor.midi.data.address.address</a></li>
+<li><a href="jdxi_editor/midi/data/address/address_map.html">jdxi_editor.midi.data.address.address_map</a></li>
+<li><a href="jdxi_editor/midi/data/address/arpeggio.html">jdxi_editor.midi.data.address.arpeggio</a></li>
+<li><a href="jdxi_editor/midi/data/address/helpers.html">jdxi_editor.midi.data.address.helpers</a></li>
+<li><a href="jdxi_editor/midi/data/address/jdxi_addresses.html">jdxi_editor.midi.data.address.jdxi_addresses</a></li>
+<li><a href="jdxi_editor/midi/data/address/parser.html">jdxi_editor.midi.data.address.parser</a></li>
+<li><a href="jdxi_editor/midi/data/address/program.html">jdxi_editor.midi.data.address.program</a></li>
+<li><a href="jdxi_editor/midi/data/address/sysex.html">jdxi_editor.midi.data.address.sysex</a></li>
+<li><a href="jdxi_editor/midi/data/address/sysex_byte.html">jdxi_editor.midi.data.address.sysex_byte</a></li>
+<li><a href="jdxi_editor/midi/data/analog/filter.html">jdxi_editor.midi.data.analog.filter</a></li>
+<li><a href="jdxi_editor/midi/data/analog/lfo.html">jdxi_editor.midi.data.analog.lfo</a></li>
+<li><a href="jdxi_editor/midi/data/analog/oscillator.html">jdxi_editor.midi.data.analog.oscillator</a></li>
+<li><a href="jdxi_editor/midi/data/arpeggio/arpeggio.html">jdxi_editor.midi.data.arpeggio.arpeggio</a></li>
+<li><a href="jdxi_editor/midi/data/arpeggio/data.html">jdxi_editor.midi.data.arpeggio.data</a></li>
+<li><a href="jdxi_editor/midi/data/control_change/analog.html">jdxi_editor.midi.data.control_change.analog</a></li>
+<li><a href="jdxi_editor/midi/data/control_change/bank_select.html">jdxi_editor.midi.data.control_change.bank_select</a></li>
+<li><a href="jdxi_editor/midi/data/control_change/base.html">jdxi_editor.midi.data.control_change.base</a></li>
+<li><a href="jdxi_editor/midi/data/control_change/digital.html">jdxi_editor.midi.data.control_change.digital</a></li>
+<li><a href="jdxi_editor/midi/data/control_change/drum.html">jdxi_editor.midi.data.control_change.drum</a></li>
+<li><a href="jdxi_editor/midi/data/control_change/sustain.html">jdxi_editor.midi.data.control_change.sustain</a></li>
+<li><a href="jdxi_editor/midi/data/digital/filter.html">jdxi_editor.midi.data.digital.filter</a></li>
+<li><a href="jdxi_editor/midi/data/digital/lfo.html">jdxi_editor.midi.data.digital.lfo</a></li>
+<li><a href="jdxi_editor/midi/data/digital/oscillator.html">jdxi_editor.midi.data.digital.oscillator</a></li>
+<li><a href="jdxi_editor/midi/data/digital/partial.html">jdxi_editor.midi.data.digital.partial</a></li>
+<li><a href="jdxi_editor/midi/data/drum/data.html">jdxi_editor.midi.data.drum.data</a></li>
+<li><a href="jdxi_editor/midi/data/drum/drum.html">jdxi_editor.midi.data.drum.drum</a></li>
+<li><a href="jdxi_editor/midi/data/drum/utils.html">jdxi_editor.midi.data.drum.utils</a></li>
+<li><a href="jdxi_editor/midi/data/effects/data.html">jdxi_editor.midi.data.effects.data</a></li>
+<li><a href="jdxi_editor/midi/data/effects/effects.html">jdxi_editor.midi.data.effects.effects</a></li>
+<li><a href="jdxi_editor/midi/data/lfo/lfo.html">jdxi_editor.midi.data.lfo.lfo</a></li>
+<li><a href="jdxi_editor/midi/data/parameter/analog.html">jdxi_editor.midi.data.parameter.analog</a></li>
+<li><a href="jdxi_editor/midi/data/parameter/areas/setup.html">jdxi_editor.midi.data.parameter.areas.setup</a></li>
+<li><a href="jdxi_editor/midi/data/parameter/arpeggio.html">jdxi_editor.midi.data.parameter.arpeggio</a></li>
+<li><a href="jdxi_editor/midi/data/parameter/digital/common.html">jdxi_editor.midi.data.parameter.digital.common</a></li>
+<li><a href="jdxi_editor/midi/data/parameter/digital/helpers/digital.html">jdxi_editor.midi.data.parameter.digital.helpers.digital</a></li>
+<li><a href="jdxi_editor/midi/data/parameter/digital/helpers/digital_common.html">jdxi_editor.midi.data.parameter.digital.helpers.digital_common</a></li>
+<li><a href="jdxi_editor/midi/data/parameter/digital/mapping.html">jdxi_editor.midi.data.parameter.digital.mapping</a></li>
+<li><a href="jdxi_editor/midi/data/parameter/digital/modify.html">jdxi_editor.midi.data.parameter.digital.modify</a></li>
+<li><a href="jdxi_editor/midi/data/parameter/digital/partial.html">jdxi_editor.midi.data.parameter.digital.partial</a></li>
+<li><a href="jdxi_editor/midi/data/parameter/drum/addresses.html">jdxi_editor.midi.data.parameter.drum.addresses</a></li>
+<li><a href="jdxi_editor/midi/data/parameter/drum/common.html">jdxi_editor.midi.data.parameter.drum.common</a></li>
+<li><a href="jdxi_editor/midi/data/parameter/drum/helper.html">jdxi_editor.midi.data.parameter.drum.helper</a></li>
+<li><a href="jdxi_editor/midi/data/parameter/drum/partial.html">jdxi_editor.midi.data.parameter.drum.partial</a></li>
+<li><a href="jdxi_editor/midi/data/parameter/effects/common.html">jdxi_editor.midi.data.parameter.effects.common</a></li>
+<li><a href="jdxi_editor/midi/data/parameter/effects/effects.html">jdxi_editor.midi.data.parameter.effects.effects</a></li>
+<li><a href="jdxi_editor/midi/data/parameter/program/common.html">jdxi_editor.midi.data.parameter.program.common</a></li>
+<li><a href="jdxi_editor/midi/data/parameter/program/controller.html">jdxi_editor.midi.data.parameter.program.controller</a></li>
+<li><a href="jdxi_editor/midi/data/parameter/program/zone.html">jdxi_editor.midi.data.parameter.program.zone</a></li>
+<li><a href="jdxi_editor/midi/data/parameter/synth.html">jdxi_editor.midi.data.parameter.synth</a></li>
+<li><a href="jdxi_editor/midi/data/parameter/system/common.html">jdxi_editor.midi.data.parameter.system.common</a></li>
+<li><a href="jdxi_editor/midi/data/parameter/vocal_fx.html">jdxi_editor.midi.data.parameter.vocal_fx</a></li>
+<li><a href="jdxi_editor/midi/data/parsers/util.html">jdxi_editor.midi.data.parsers.util</a></li>
+<li><a href="jdxi_editor/midi/data/pcm/waves.html">jdxi_editor.midi.data.pcm.waves</a></li>
+<li><a href="jdxi_editor/midi/data/piano/keyboard.html">jdxi_editor.midi.data.piano.keyboard</a></li>
+<li><a href="jdxi_editor/midi/data/programs.html">jdxi_editor.midi.data.programs</a></li>
+<ul><li><a href="jdxi_editor/midi/data/programs/analog.html">jdxi_editor.midi.data.programs.analog</a></li>
+<li><a href="jdxi_editor/midi/data/programs/digital.html">jdxi_editor.midi.data.programs.digital</a></li>
+<li><a href="jdxi_editor/midi/data/programs/drum.html">jdxi_editor.midi.data.programs.drum</a></li>
+<li><a href="jdxi_editor/midi/data/programs/programs.html">jdxi_editor.midi.data.programs.programs</a></li>
+<li><a href="jdxi_editor/midi/data/programs/t.html">jdxi_editor.midi.data.programs.t</a></li>
+</ul><li><a href="jdxi_editor/midi/data/sysex/length.html">jdxi_editor.midi.data.sysex.length</a></li>
+<li><a href="jdxi_editor/midi/data/vocal_effects/vocal.html">jdxi_editor.midi.data.vocal_effects.vocal</a></li>
+<li><a href="jdxi_editor/midi/io/connection.html">jdxi_editor.midi.io.connection</a></li>
+<li><a href="jdxi_editor/midi/io/controller.html">jdxi_editor.midi.io.controller</a></li>
+<li><a href="jdxi_editor/midi/io/delay.html">jdxi_editor.midi.io.delay</a></li>
+<li><a href="jdxi_editor/midi/io/helper.html">jdxi_editor.midi.io.helper</a></li>
+<li><a href="jdxi_editor/midi/io/input_handler.html">jdxi_editor.midi.io.input_handler</a></li>
+<li><a href="jdxi_editor/midi/io/output_handler.html">jdxi_editor.midi.io.output_handler</a></li>
+<li><a href="jdxi_editor/midi/io/utils.html">jdxi_editor.midi.io.utils</a></li>
+<li><a href="jdxi_editor/midi/map/drum_tone.html">jdxi_editor.midi.map.drum_tone</a></li>
+<li><a href="jdxi_editor/midi/map/parameter_address.html">jdxi_editor.midi.map.parameter_address</a></li>
+<li><a href="jdxi_editor/midi/map/synth_tone.html">jdxi_editor.midi.map.synth_tone</a></li>
+<li><a href="jdxi_editor/midi/map/synth_type.html">jdxi_editor.midi.map.synth_type</a></li>
+<li><a href="jdxi_editor/midi/map/temporary_area.html">jdxi_editor.midi.map.temporary_area</a></li>
+<li><a href="jdxi_editor/midi/message/areas/digital_tone.html">jdxi_editor.midi.message.areas.digital_tone</a></li>
+<li><a href="jdxi_editor/midi/message/areas/setup.html">jdxi_editor.midi.message.areas.setup</a></li>
+<li><a href="jdxi_editor/midi/message/areas/system_common.html">jdxi_editor.midi.message.areas.system_common</a></li>
+<li><a href="jdxi_editor/midi/message/areas/system_controller.html">jdxi_editor.midi.message.areas.system_controller</a></li>
+<li><a href="jdxi_editor/midi/message/areas/zone.html">jdxi_editor.midi.message.areas.zone</a></li>
+<li><a href="jdxi_editor/midi/message/channel.html">jdxi_editor.midi.message.channel</a></li>
+<li><a href="jdxi_editor/midi/message/control_change.html">jdxi_editor.midi.message.control_change</a></li>
+<li><a href="jdxi_editor/midi/message/effects/delay.html">jdxi_editor.midi.message.effects.delay</a></li>
+<li><a href="jdxi_editor/midi/message/effects/reverb.html">jdxi_editor.midi.message.effects.reverb</a></li>
+<li><a href="jdxi_editor/midi/message/effects/vocal.html">jdxi_editor.midi.message.effects.vocal</a></li>
+<li><a href="jdxi_editor/midi/message/identity_request.html">jdxi_editor.midi.message.identity_request</a></li>
+<li><a href="jdxi_editor/midi/message/jdxi.html">jdxi_editor.midi.message.jdxi</a></li>
+<li><a href="jdxi_editor/midi/message/midi.html">jdxi_editor.midi.message.midi</a></li>
+<li><a href="jdxi_editor/midi/message/program/common.html">jdxi_editor.midi.message.program.common</a></li>
+<li><a href="jdxi_editor/midi/message/program_change.html">jdxi_editor.midi.message.program_change</a></li>
+<li><a href="jdxi_editor/midi/message/roland.html">jdxi_editor.midi.message.roland</a></li>
+<li><a href="jdxi_editor/midi/message/synths/drum.html">jdxi_editor.midi.message.synths.drum</a></li>
+<li><a href="jdxi_editor/midi/message/sysex.html">jdxi_editor.midi.message.sysex</a></li>
+<li><a href="jdxi_editor/midi/nrpn/map.html">jdxi_editor.midi.nrpn.map</a></li>
+<li><a href="jdxi_editor/midi/parameter/handler.html">jdxi_editor.midi.parameter.handler</a></li>
+<li><a href="jdxi_editor/midi/program/helper.html">jdxi_editor.midi.program.helper</a></li>
+<li><a href="jdxi_editor/midi/program/utils.html">jdxi_editor.midi.program.utils</a></li>
+<li><a href="jdxi_editor/midi/sleep.html">jdxi_editor.midi.sleep</a></li>
+<li><a href="jdxi_editor/midi/sysex/composer.html">jdxi_editor.midi.sysex.composer</a></li>
+<li><a href="jdxi_editor/midi/sysex/device.html">jdxi_editor.midi.sysex.device</a></li>
+<li><a href="jdxi_editor/midi/sysex/json_composer.html">jdxi_editor.midi.sysex.json_composer</a></li>
+<li><a href="jdxi_editor/midi/sysex/lexer.html">jdxi_editor.midi.sysex.lexer</a></li>
+<li><a href="jdxi_editor/midi/sysex/lexer2.html">jdxi_editor.midi.sysex.lexer2</a></li>
+<li><a href="jdxi_editor/midi/sysex/parser/dynamic.html">jdxi_editor.midi.sysex.parser.dynamic</a></li>
+<li><a href="jdxi_editor/midi/sysex/parser/json.html">jdxi_editor.midi.sysex.parser.json</a></li>
+<li><a href="jdxi_editor/midi/sysex/parser/sysex.html">jdxi_editor.midi.sysex.parser.sysex</a></li>
+<li><a href="jdxi_editor/midi/sysex/parser/tone_mapper.html">jdxi_editor.midi.sysex.parser.tone_mapper</a></li>
+<li><a href="jdxi_editor/midi/sysex/parser/utils.html">jdxi_editor.midi.sysex.parser.utils</a></li>
+<li><a href="jdxi_editor/midi/sysex/request/data.html">jdxi_editor.midi.sysex.request.data</a></li>
+<li><a href="jdxi_editor/midi/sysex/request/factory.html">jdxi_editor.midi.sysex.request.factory</a></li>
+<li><a href="jdxi_editor/midi/sysex/request/hex.html">jdxi_editor.midi.sysex.request.hex</a></li>
+<li><a href="jdxi_editor/midi/sysex/request/midi_requests.html">jdxi_editor.midi.sysex.request.midi_requests</a></li>
+<li><a href="jdxi_editor/midi/sysex/tokenizer.html">jdxi_editor.midi.sysex.tokenizer</a></li>
+<li><a href="jdxi_editor/midi/sysex/utils.html">jdxi_editor.midi.sysex.utils</a></li>
+<li><a href="jdxi_editor/midi/sysex/validation.html">jdxi_editor.midi.sysex.validation</a></li>
+<li><a href="jdxi_editor/midi/utils/byte.html">jdxi_editor.midi.utils.byte</a></li>
+<li><a href="jdxi_editor/midi/utils/conversions.html">jdxi_editor.midi.utils.conversions</a></li>
+<li><a href="jdxi_editor/midi/utils/helpers.html">jdxi_editor.midi.utils.helpers</a></li>
+<li><a href="jdxi_editor/midi/utils/json.html">jdxi_editor.midi.utils.json</a></li>
+<li><a href="jdxi_editor/midi/utils/play_buffered.html">jdxi_editor.midi.utils.play_buffered</a></li>
+<li><a href="jdxi_editor/midi/utils/usb_recorder.html">jdxi_editor.midi.utils.usb_recorder</a></li>
+<li><a href="jdxi_editor/midi/wave/form.html">jdxi_editor.midi.wave.form</a></li>
+<li><a href="jdxi_editor/project.html">jdxi_editor.project</a></li>
+<li><a href="jdxi_editor/resources.html">jdxi_editor.resources</a></li>
+<li><a href="jdxi_editor/ui/dialogs/about.html">jdxi_editor.ui.dialogs.about</a></li>
+<li><a href="jdxi_editor/ui/dialogs/settings.html">jdxi_editor.ui.dialogs.settings</a></li>
+<li><a href="jdxi_editor/ui/editors/analog/amp.html">jdxi_editor.ui.editors.analog.amp</a></li>
+<li><a href="jdxi_editor/ui/editors/analog/common.html">jdxi_editor.ui.editors.analog.common</a></li>
+<li><a href="jdxi_editor/ui/editors/analog/editor.html">jdxi_editor.ui.editors.analog.editor</a></li>
+<li><a href="jdxi_editor/ui/editors/analog/filter.html">jdxi_editor.ui.editors.analog.filter</a></li>
+<li><a href="jdxi_editor/ui/editors/analog/lfo.html">jdxi_editor.ui.editors.analog.lfo</a></li>
+<li><a href="jdxi_editor/ui/editors/analog/oscillator.html">jdxi_editor.ui.editors.analog.oscillator</a></li>
+<li><a href="jdxi_editor/ui/editors/arpeggio/arpeggio.html">jdxi_editor.ui.editors.arpeggio.arpeggio</a></li>
+<li><a href="jdxi_editor/ui/editors/config.html">jdxi_editor.ui.editors.config</a></li>
+<li><a href="jdxi_editor/ui/editors/digital/common.html">jdxi_editor.ui.editors.digital.common</a></li>
+<li><a href="jdxi_editor/ui/editors/digital/editor.html">jdxi_editor.ui.editors.digital.editor</a></li>
+<li><a href="jdxi_editor/ui/editors/digital/partial/amp.html">jdxi_editor.ui.editors.digital.partial.amp</a></li>
+<li><a href="jdxi_editor/ui/editors/digital/partial/editor.html">jdxi_editor.ui.editors.digital.partial.editor</a></li>
+<li><a href="jdxi_editor/ui/editors/digital/partial/filter.html">jdxi_editor.ui.editors.digital.partial.filter</a></li>
+<li><a href="jdxi_editor/ui/editors/digital/partial/lfo.html">jdxi_editor.ui.editors.digital.partial.lfo</a></li>
+<li><a href="jdxi_editor/ui/editors/digital/partial/mod_lfo.html">jdxi_editor.ui.editors.digital.partial.mod_lfo</a></li>
+<li><a href="jdxi_editor/ui/editors/digital/partial/oscillator.html">jdxi_editor.ui.editors.digital.partial.oscillator</a></li>
+<li><a href="jdxi_editor/ui/editors/digital/partial/pwm.html">jdxi_editor.ui.editors.digital.partial.pwm</a></li>
+<li><a href="jdxi_editor/ui/editors/digital/tone_modify.html">jdxi_editor.ui.editors.digital.tone_modify</a></li>
+<li><a href="jdxi_editor/ui/editors/digital/utils.html">jdxi_editor.ui.editors.digital.utils</a></li>
+<li><a href="jdxi_editor/ui/editors/drum/common.html">jdxi_editor.ui.editors.drum.common</a></li>
+<li><a href="jdxi_editor/ui/editors/drum/editor.html">jdxi_editor.ui.editors.drum.editor</a></li>
+<li><a href="jdxi_editor/ui/editors/drum/partial/editor.html">jdxi_editor.ui.editors.drum.partial.editor</a></li>
+<li><a href="jdxi_editor/ui/editors/drum/partial/output.html">jdxi_editor.ui.editors.drum.partial.output</a></li>
+<li><a href="jdxi_editor/ui/editors/drum/partial/pitch.html">jdxi_editor.ui.editors.drum.partial.pitch</a></li>
+<li><a href="jdxi_editor/ui/editors/drum/partial/pitch_env.html">jdxi_editor.ui.editors.drum.partial.pitch_env</a></li>
+<li><a href="jdxi_editor/ui/editors/drum/partial/tva.html">jdxi_editor.ui.editors.drum.partial.tva</a></li>
+<li><a href="jdxi_editor/ui/editors/drum/partial/tvf.html">jdxi_editor.ui.editors.drum.partial.tvf</a></li>
+<li><a href="jdxi_editor/ui/editors/drum/partial/wmt.html">jdxi_editor.ui.editors.drum.partial.wmt</a></li>
+<li><a href="jdxi_editor/ui/editors/effects/common.html">jdxi_editor.ui.editors.effects.common</a></li>
+<li><a href="jdxi_editor/ui/editors/effects/data.html">jdxi_editor.ui.editors.effects.data</a></li>
+<li><a href="jdxi_editor/ui/editors/effects/vocal.html">jdxi_editor.ui.editors.effects.vocal</a></li>
+<li><a href="jdxi_editor/ui/editors/helpers/analog.html">jdxi_editor.ui.editors.helpers.analog</a></li>
+<li><a href="jdxi_editor/ui/editors/helpers/preset.html">jdxi_editor.ui.editors.helpers.preset</a></li>
+<li><a href="jdxi_editor/ui/editors/helpers/program.html">jdxi_editor.ui.editors.helpers.program</a></li>
+<li><a href="jdxi_editor/ui/editors/helpers/widgets.html">jdxi_editor.ui.editors.helpers.widgets</a></li>
+<li><a href="jdxi_editor/ui/editors/io/data/options.html">jdxi_editor.ui.editors.io.data.options</a></li>
+<li><a href="jdxi_editor/ui/editors/io/midi_playback_state.html">jdxi_editor.ui.editors.io.midi_playback_state</a></li>
+<li><a href="jdxi_editor/ui/editors/io/playback_worker.html">jdxi_editor.ui.editors.io.playback_worker</a></li>
+<li><a href="jdxi_editor/ui/editors/io/player.html">jdxi_editor.ui.editors.io.player</a></li>
+<li><a href="jdxi_editor/ui/editors/io/preset.html">jdxi_editor.ui.editors.io.preset</a></li>
+<li><a href="jdxi_editor/ui/editors/io/profiling_decorator.html">jdxi_editor.ui.editors.io.profiling_decorator</a></li>
+<li><a href="jdxi_editor/ui/editors/io/program.html">jdxi_editor.ui.editors.io.program</a></li>
+<li><a href="jdxi_editor/ui/editors/io/recording_thread.html">jdxi_editor.ui.editors.io.recording_thread</a></li>
+<li><a href="jdxi_editor/ui/editors/io/timer_manager.html">jdxi_editor.ui.editors.io.timer_manager</a></li>
+<li><a href="jdxi_editor/ui/editors/io/ui_midi_player.html">jdxi_editor.ui.editors.io.ui_midi_player</a></li>
+<li><a href="jdxi_editor/ui/editors/io/utils.html">jdxi_editor.ui.editors.io.utils</a></li>
+<li><a href="jdxi_editor/ui/editors/main.html">jdxi_editor.ui.editors.main</a></li>
+<li><a href="jdxi_editor/ui/editors/pattern/measure.html">jdxi_editor.ui.editors.pattern.measure</a></li>
+<li><a href="jdxi_editor/ui/editors/pattern/pattern.html">jdxi_editor.ui.editors.pattern.pattern</a></li>
+<li><a href="jdxi_editor/ui/editors/synth/base.html">jdxi_editor.ui.editors.synth.base</a></li>
+<li><a href="jdxi_editor/ui/editors/synth/controller.html">jdxi_editor.ui.editors.synth.controller</a></li>
+<li><a href="jdxi_editor/ui/editors/synth/editor.html">jdxi_editor.ui.editors.synth.editor</a></li>
+<li><a href="jdxi_editor/ui/editors/synth/partial.html">jdxi_editor.ui.editors.synth.partial</a></li>
+<li><a href="jdxi_editor/ui/editors/synth/simple.html">jdxi_editor.ui.editors.synth.simple</a></li>
+<li><a href="jdxi_editor/ui/image/instrument.html">jdxi_editor.ui.image.instrument</a></li>
+<li><a href="jdxi_editor/ui/image/utils.html">jdxi_editor.ui.image.utils</a></li>
+<li><a href="jdxi_editor/ui/image/waveform.html">jdxi_editor.ui.image.waveform</a></li>
+<li><a href="jdxi_editor/ui/io/controls.html">jdxi_editor.ui.io.controls</a></li>
+<li><a href="jdxi_editor/ui/windows/jdxi/containers/arpeggiator.html">jdxi_editor.ui.windows.jdxi.containers.arpeggiator</a></li>
+<li><a href="jdxi_editor/ui/windows/jdxi/containers/digital_display.html">jdxi_editor.ui.windows.jdxi.containers.digital_display</a></li>
+<li><a href="jdxi_editor/ui/windows/jdxi/containers/effects.html">jdxi_editor.ui.windows.jdxi.containers.effects</a></li>
+<li><a href="jdxi_editor/ui/windows/jdxi/containers/octave.html">jdxi_editor.ui.windows.jdxi.containers.octave</a></li>
+<li><a href="jdxi_editor/ui/windows/jdxi/containers/parts.html">jdxi_editor.ui.windows.jdxi.containers.parts</a></li>
+<li><a href="jdxi_editor/ui/windows/jdxi/containers/program.html">jdxi_editor.ui.windows.jdxi.containers.program</a></li>
+<li><a href="jdxi_editor/ui/windows/jdxi/containers/sequencer.html">jdxi_editor.ui.windows.jdxi.containers.sequencer</a></li>
+<li><a href="jdxi_editor/ui/windows/jdxi/containers/sliders.html">jdxi_editor.ui.windows.jdxi.containers.sliders</a></li>
+<li><a href="jdxi_editor/ui/windows/jdxi/containers/title.html">jdxi_editor.ui.windows.jdxi.containers.title</a></li>
+<li><a href="jdxi_editor/ui/windows/jdxi/containers/tone.html">jdxi_editor.ui.windows.jdxi.containers.tone</a></li>
+<li><a href="jdxi_editor/ui/windows/jdxi/containers/wheels.html">jdxi_editor.ui.windows.jdxi.containers.wheels</a></li>
+<li><a href="jdxi_editor/ui/windows/jdxi/dimensions.html">jdxi_editor.ui.windows.jdxi.dimensions</a></li>
+<li><a href="jdxi_editor/ui/windows/jdxi/helpers/button_row.html">jdxi_editor.ui.windows.jdxi.helpers.button_row</a></li>
+<li><a href="jdxi_editor/ui/windows/jdxi/helpers/port.html">jdxi_editor.ui.windows.jdxi.helpers.port</a></li>
+<li><a href="jdxi_editor/ui/windows/jdxi/instrument.html">jdxi_editor.ui.windows.jdxi.instrument</a></li>
+<li><a href="jdxi_editor/ui/windows/jdxi/ui.html">jdxi_editor.ui.windows.jdxi.ui</a></li>
+<li><a href="jdxi_editor/ui/windows/jdxi/utils.html">jdxi_editor.ui.windows.jdxi.utils</a></li>
+<li><a href="jdxi_editor/ui/windows/midi/config_dialog.html">jdxi_editor.ui.windows.midi.config_dialog</a></li>
+<li><a href="jdxi_editor/ui/windows/midi/debugger.html">jdxi_editor.ui.windows.midi.debugger</a></li>
+<li><a href="jdxi_editor/ui/windows/midi/helpers/debugger.html">jdxi_editor.ui.windows.midi.helpers.debugger</a></li>
+<li><a href="jdxi_editor/ui/windows/midi/monitor.html">jdxi_editor.ui.windows.midi.monitor</a></li>
+<li><a href="jdxi_editor/ui/windows/patch/manager.html">jdxi_editor.ui.windows.patch.manager</a></li>
+<li><a href="jdxi_editor/ui/windows/patch/name_editor.html">jdxi_editor.ui.windows.patch.name_editor</a></li>
+<li><a href="midi/colors.html">midi.colors</a></li>
+<li><a href="midi/slider/amp/envelope.html">midi.slider.amp.envelope</a></li>
+<li><a href="midi/slider/amp/level.html">midi.slider.amp.level</a></li>
+<li><a href="midi/slider/control_change.html">midi.slider.control_change</a></li>
+<li><a href="midi/slider/effects/delay.html">midi.slider.effects.delay</a></li>
+<li><a href="midi/slider/effects/effect1.html">midi.slider.effects.effect1</a></li>
+<li><a href="midi/slider/effects/effect2.html">midi.slider.effects.effect2</a></li>
+<li><a href="midi/slider/effects/reverb.html">midi.slider.effects.reverb</a></li>
+<li><a href="midi/slider/filter/cutoff.html">midi.slider.filter.cutoff</a></li>
+<li><a href="midi/slider/filter/resonance.html">midi.slider.filter.resonance</a></li>
+<li><a href="midi/slider/lfo/amp_depth.html">midi.slider.lfo.amp_depth</a></li>
+<li><a href="midi/slider/lfo/filter_depth.html">midi.slider.lfo.filter_depth</a></li>
+<li><a href="midi/slider/lfo/pitch_depth.html">midi.slider.lfo.pitch_depth</a></li>
+<li><a href="midi/slider/lfo/rate.html">midi.slider.lfo.rate</a></li>
+<li><a href="midi/slider/lfo/shape.html">midi.slider.lfo.shape</a></li>
+<li><a href="midi/slider/nrpn.html">midi.slider.nrpn</a></li>
+<li><a href="midi/spin_box/spin_box.html">midi.spin_box.spin_box</a></li>
+<li><a href="midi/time_ruler.html">midi.time_ruler</a></li>
+<li><a href="midi/track.html">midi.track</a></li>
+<li><a href="midi/track_viewer.html">midi.track_viewer</a></li>
+<li><a href="midi/utils.html">midi.utils</a></li>
+<li><a href="panel/partial.html">panel.partial</a></li>
+<li><a href="pattern/measure.html">pattern.measure</a></li>
+<li><a href="piano/key.html">piano.key</a></li>
+<li><a href="piano/keyboard.html">piano.keyboard</a></li>
+<li><a href="pitch/envelope.html">pitch.envelope</a></li>
+<li><a href="pitch/envelope_plot.html">pitch.envelope_plot</a></li>
+<li><a href="pitch/pwm_plot.html">pitch.pwm_plot</a></li>
+<li><a href="pitch/slider_spinbox.html">pitch.slider_spinbox</a></li>
+<li><a href="preset/combo_box.html">preset.combo_box</a></li>
+<li><a href="preset/panel.html">preset.panel</a></li>
+<li><a href="preset/patch_name.html">preset.patch_name</a></li>
+<li><a href="slider/slider.html">slider.slider</a></li>
+<li><a href="slider_spinbox/slider_spinbox.html">slider_spinbox.slider_spinbox</a></li>
+<li><a href="spin_box/spin_box.html">spin_box.spin_box</a></li>
+<li><a href="switch/partial.html">switch.partial</a></li>
+<li><a href="switch/switch.html">switch.switch</a></li>
+<li><a href="viewer/log.html">viewer.log</a></li>
+<li><a href="wave_selector/wave_selector.html">wave_selector.wave_selector</a></li>
+<li><a href="wheel/mod.html">wheel.mod</a></li>
+<li><a href="wheel/pitch.html">wheel.pitch</a></li>
+<li><a href="wheel/wheel.html">wheel.wheel</a></li>
+</ul>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Mark Mrooks.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

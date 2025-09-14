@@ -1,0 +1,1284 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>jdxi_editor.ui.editors.digital.editor &mdash; JD-Xi Editor 0.8.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../../_static/documentation_options.js?v=486e5634"></script>
+      <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../../index.html" class="icon icon-home">
+            JD-Xi Editor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../usage.html">Quick Start</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../usage.html#connection-of-the-jd-xi-hardware-instrument-to-the-computer">Connection of the JD-Xi Hardware Instrument to the Computer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../instrument.html">JDXi Instrument Window</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../instrument.html#features">Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../instrument.html#using-the-instrument-window">Using the Instrument Window</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../editor.html">Editor Window</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../editor.html#program-mixer-section">Program/Mixer Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../editor.html#digital-1-section">Digital 1 Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../editor.html#digital-2-section">Digital 2 Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../editor.html#drum-kit-section">Drum Kit Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../editor.html#analog-section">Analog Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../editor.html#effect-controls">Effect Controls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../editor.html#vocal-transformer">Vocal Transformer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../editor.html#arpeggiator">Arpeggiator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../editor.html#midi-file-player-and-recorder">MIDI File Player and Recorder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../editor.html#pattern-sequencer">Pattern Sequencer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../troubleshooting.html">Troubleshooting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../troubleshooting.html#general-problems">General Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../troubleshooting.html#macos">MacOS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../troubleshooting.html#windows">Windows</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../legal.html">Legal Disclaimer</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../modules.html">jdxi_editor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../jdxi_editor.html">jdxi_editor package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.jdxi.html">jdxi_editor.jdxi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.log.html">jdxi_editor.log package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.midi.html">jdxi_editor.midi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.ui.html">jdxi_editor.ui package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.globals">jdxi_editor.globals module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.main">jdxi_editor.main module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.html#jdxi_editor.main.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.project">jdxi_editor.project module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.resources">jdxi_editor.resources module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.html#jdxi_editor.resources.resource_path"><code class="docutils literal notranslate"><span class="pre">resource_path()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../autoapi/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/midi/index.html">midi</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/midi/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/colors/index.html">midi.colors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/slider/index.html">midi.slider</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/spin_box/index.html">midi.spin_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/time_ruler/index.html">midi.time_ruler</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/track/index.html">midi.track</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/track_viewer/index.html">midi.track_viewer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/utils/index.html">midi.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/adsr/index.html">adsr</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/adsr/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/adsr/adsr/index.html">adsr.adsr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/adsr/graph/index.html">adsr.graph</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/adsr/parameter/index.html">adsr.parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/adsr/plot/index.html">adsr.plot</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/pitch/index.html">pitch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/pitch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pitch/envelope/index.html">pitch.envelope</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pitch/envelope_plot/index.html">pitch.envelope_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pitch/pwm_plot/index.html">pitch.pwm_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pitch/slider_spinbox/index.html">pitch.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/piano/index.html">piano</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/piano/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/piano/key/index.html">piano.key</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/piano/keyboard/index.html">piano.keyboard</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/panel/index.html">panel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/panel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/panel/partial/index.html">panel.partial</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/wheel/index.html">wheel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/wheel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/wheel/mod/index.html">wheel.mod</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/wheel/pitch/index.html">wheel.pitch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/wheel/wheel/index.html">wheel.wheel</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/preset/index.html">preset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/preset/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/preset/combo_box/index.html">preset.combo_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/preset/panel/index.html">preset.panel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/preset/patch_name/index.html">preset.patch_name</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/slider/index.html">slider</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/slider/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/slider/slider/index.html">slider.slider</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/slider/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/slider/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/slider/index.html#slider.Slider"><code class="docutils literal notranslate"><span class="pre">Slider</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/dialog/index.html">dialog</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/dialog/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/dialog/progress/index.html">dialog.progress</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/viewer/index.html">viewer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/viewer/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/viewer/log/index.html">viewer.log</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/button/index.html">button</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/button/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/channel/index.html">button.channel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/favorite/index.html">button.favorite</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/sequencer/index.html">button.sequencer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/waveform/index.html">button.waveform</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/button/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/button/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/index.html#button.ChannelButton"><code class="docutils literal notranslate"><span class="pre">ChannelButton</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/index.html#button.SequencerSquare"><code class="docutils literal notranslate"><span class="pre">SequencerSquare</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/switch/index.html">switch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/switch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/switch/partial/index.html">switch.partial</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/switch/switch/index.html">switch.switch</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/filter/index.html">filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/filter/index.html#filter.FilterWidget"><code class="docutils literal notranslate"><span class="pre">FilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/display/index.html">display</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/display/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/display/digital/index.html">display.digital</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/display/pattern/index.html">display.pattern</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/display/value/index.html">display.value</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/pattern/index.html">pattern</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/pattern/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pattern/measure/index.html">pattern.measure</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/spin_box/index.html">spin_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/spin_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/spin_box/spin_box/index.html">spin_box.spin_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/envelope/index.html">envelope</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/envelope/base/index.html">envelope.base</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/indicator/index.html">indicator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/indicator/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/indicator/led/index.html">indicator.led</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/indicator/midi/index.html">indicator.midi</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/combo_box/index.html">combo_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/combo_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/combo_box/combo_box/index.html">combo_box.combo_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/index.html">jdxi_editor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/globals/index.html">jdxi_editor.globals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/jdxi/index.html">jdxi_editor.jdxi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/log/index.html">jdxi_editor.log</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/main/index.html">jdxi_editor.main</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/midi/index.html">jdxi_editor.midi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/project/index.html">jdxi_editor.project</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/resources/index.html">jdxi_editor.resources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/ui/index.html">jdxi_editor.ui</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html">filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#filter_plot.FilterPlot"><code class="docutils literal notranslate"><span class="pre">FilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html">envelope_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#envelope_plot.midi_value_to_float"><code class="docutils literal notranslate"><span class="pre">midi_value_to_float()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#envelope_plot.WMTEnvPlot"><code class="docutils literal notranslate"><span class="pre">WMTEnvPlot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#envelope_plot.app"><code class="docutils literal notranslate"><span class="pre">app</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/wave_selector/index.html">wave_selector</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/wave_selector/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/wave_selector/wave_selector/index.html">wave_selector.wave_selector</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/analog_filter/index.html">analog_filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/analog_filter/index.html#analog_filter.AnalogFilterWidget"><code class="docutils literal notranslate"><span class="pre">AnalogFilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/slider_spinbox/index.html">slider_spinbox</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/slider_spinbox/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/slider_spinbox/slider_spinbox/index.html">slider_spinbox.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html">analog_filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#analog_filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#analog_filter_plot.AnalogFilterPlot"><code class="docutils literal notranslate"><span class="pre">AnalogFilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">JD-Xi Editor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">jdxi_editor.ui.editors.digital.editor</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for jdxi_editor.ui.editors.digital.editor</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Digital Synth Editor for the Roland JD-Xi.</span>
+
+<span class="sd">This module provides the UI components for editing digital synth parameters on the Roland JD-Xi.</span>
+<span class="sd">The editor supports three partials (voices) with individual parameter control and common parameters</span>
+<span class="sd">that affect all partials.</span>
+
+<span class="sd">Classes:</span>
+<span class="sd">    DigitalSynthEditor: Main editor class for digital synth parameters</span>
+<span class="sd">        - Handles MIDI communication for parameter changes</span>
+<span class="sd">        - Manages UI state for all digital synth controls</span>
+<span class="sd">        - Provides preset loading and management</span>
+<span class="sd">        - Supports real-time parameter updates via SysEx</span>
+
+<span class="sd">Features:</span>
+<span class="sd">    - Three independent partial editors</span>
+<span class="sd">    - Common parameter controls (portamento, unison, legato, etc.)</span>
+<span class="sd">    - Preset management and loading</span>
+<span class="sd">    - Real-time MIDI parameter updates</span>
+<span class="sd">    - ADSR envelope controls for both amplitude and filter</span>
+<span class="sd">    - Oscillator waveform selection</span>
+<span class="sd">    - Partial enabling/disabling and selection</span>
+
+<span class="sd">Dependencies:</span>
+<span class="sd">    - PySide6 for UI components</span>
+<span class="sd">    - qtawesome for icons</span>
+<span class="sd">    - Custom MIDI handling classes</span>
+<span class="sd">    - Digital synth parameter definitions</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">PySide6.QtWidgets</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">QWidget</span><span class="p">,</span>
+    <span class="n">QVBoxLayout</span><span class="p">,</span>
+    <span class="n">QHBoxLayout</span><span class="p">,</span>
+    <span class="n">QTabWidget</span><span class="p">,</span>
+    <span class="n">QScrollArea</span><span class="p">,</span>
+    <span class="n">QSplitter</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PySide6.QtCore</span><span class="w"> </span><span class="kn">import</span> <span class="n">Qt</span><span class="p">,</span> <span class="n">Signal</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PySide6.QtGui</span><span class="w"> </span><span class="kn">import</span> <span class="n">QShortcut</span><span class="p">,</span> <span class="n">QKeySequence</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.jdxi.preset.helper</span><span class="w"> </span><span class="kn">import</span> <span class="n">JDXiPresetHelper</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.jdxi.synth.factory</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_synth_data</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.jdxi.synth.type</span><span class="w"> </span><span class="kn">import</span> <span class="n">JDXiSynth</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.jdxi.style</span><span class="w"> </span><span class="kn">import</span> <span class="n">JDXiStyle</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.log.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">Logger</span> <span class="k">as</span> <span class="n">log</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.log.slider_parameter</span><span class="w"> </span><span class="kn">import</span> <span class="n">log_slider_parameters</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.data.address.address</span><span class="w"> </span><span class="kn">import</span> <span class="n">AddressOffsetSuperNATURALLMB</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.data.digital</span><span class="w"> </span><span class="kn">import</span> <span class="n">DigitalOscWave</span><span class="p">,</span> <span class="n">DigitalPartial</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.data.parameter</span><span class="w"> </span><span class="kn">import</span> <span class="n">AddressParameter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.data.parameter.digital</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">AddressParameterDigitalCommon</span><span class="p">,</span>
+    <span class="n">AddressParameterDigitalPartial</span><span class="p">,</span>
+    <span class="n">AddressParameterDigitalModify</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.io.helper</span><span class="w"> </span><span class="kn">import</span> <span class="n">MidiIOHelper</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.utils.conversions</span><span class="w"> </span><span class="kn">import</span> <span class="n">midi_value_to_ms</span><span class="p">,</span> <span class="n">midi_value_to_fraction</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.ui.editors.digital</span><span class="w"> </span><span class="kn">import</span> <span class="n">DigitalCommonSection</span><span class="p">,</span> <span class="n">DigitalToneModifySection</span><span class="p">,</span> <span class="n">DigitalPartialEditor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.ui.editors.synth.editor</span><span class="w"> </span><span class="kn">import</span> <span class="n">SynthEditor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.ui.widgets.panel.partial</span><span class="w"> </span><span class="kn">import</span> <span class="n">PartialsPanel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.ui.windows.jdxi.dimensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">JDXiDimensions</span>
+
+
+<div class="viewcode-block" id="DigitalSynthEditor">
+<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.digital.html#jdxi_editor.ui.editors.digital.editor.DigitalSynthEditor">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DigitalSynthEditor</span><span class="p">(</span><span class="n">SynthEditor</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;class for Digital Synth Editor containing 3 partials&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="DigitalSynthEditor.preset_changed">
+<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.digital.html#jdxi_editor.ui.editors.digital.editor.DigitalSynthEditor.preset_changed">[docs]</a>
+    <span class="n">preset_changed</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DigitalSynthEditor.__init__">
+<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.digital.html#jdxi_editor.ui.editors.digital.editor.DigitalSynthEditor.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">midi_helper</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">MidiIOHelper</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">preset_helper</span><span class="p">:</span> <span class="n">JDXiPresetHelper</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">synth_number</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="n">parent</span><span class="p">:</span> <span class="n">QWidget</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+<div class="viewcode-block" id="DigitalSynthEditor.instrument_image_group">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/digital/editor/index.html#jdxi_editor.ui.editors.digital.editor.DigitalSynthEditor.instrument_image_group">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">instrument_image_group</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="DigitalSynthEditor.instrument_title_label">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/digital/editor/index.html#jdxi_editor.ui.editors.digital.editor.DigitalSynthEditor.instrument_title_label">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">instrument_title_label</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="DigitalSynthEditor.partial_number">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/digital/editor/index.html#jdxi_editor.ui.editors.digital.editor.DigitalSynthEditor.partial_number">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">partial_number</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="DigitalSynthEditor.current_data">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/digital/editor/index.html#jdxi_editor.ui.editors.digital.editor.DigitalSynthEditor.current_data">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_data</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="DigitalSynthEditor.midi_helper">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/digital/editor/index.html#jdxi_editor.ui.editors.digital.editor.DigitalSynthEditor.midi_helper">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span> <span class="o">=</span> <span class="n">midi_helper</span></div>
+
+<div class="viewcode-block" id="DigitalSynthEditor.preset_helper">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/digital/editor/index.html#jdxi_editor.ui.editors.digital.editor.DigitalSynthEditor.preset_helper">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">preset_helper</span> <span class="o">=</span> <span class="n">preset_helper</span> <span class="ow">or</span> <span class="p">(</span>
+            <span class="n">parent</span><span class="o">.</span><span class="n">digital_1_preset_helper</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">preset_type</span> <span class="o">==</span> <span class="n">JDXiSynth</span><span class="o">.</span><span class="n">DIGITAL_SYNTH_1</span>
+            <span class="k">else</span> <span class="n">parent</span><span class="o">.</span><span class="n">digital_2_preset_helper</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="DigitalSynthEditor.main_window">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/digital/editor/index.html#jdxi_editor.ui.editors.digital.editor.DigitalSynthEditor.main_window">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_window</span> <span class="o">=</span> <span class="n">parent</span></div>
+
+<div class="viewcode-block" id="DigitalSynthEditor.controls">
+<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.digital.html#jdxi_editor.ui.editors.digital.editor.DigitalSynthEditor.controls">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span>
+            <span class="n">Union</span><span class="p">[</span><span class="n">AddressParameterDigitalPartial</span><span class="p">,</span> <span class="n">AddressParameterDigitalCommon</span><span class="p">],</span>
+            <span class="n">QWidget</span><span class="p">,</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="p">{}</span></div>
+
+        <span class="n">synth_map</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="n">JDXiSynth</span><span class="o">.</span><span class="n">DIGITAL_SYNTH_1</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="n">JDXiSynth</span><span class="o">.</span><span class="n">DIGITAL_SYNTH_2</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span> <span class="n">JDXiSynth</span><span class="o">.</span><span class="n">DIGITAL_SYNTH_3</span><span class="p">}</span>
+        <span class="k">if</span> <span class="n">synth_number</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">synth_map</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid synth_number: </span><span class="si">{</span><span class="n">synth_number</span><span class="si">}</span><span class="s2">. Must be 1, 2 or 3.&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="DigitalSynthEditor.synth_number">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/digital/editor/index.html#jdxi_editor.ui.editors.digital.editor.DigitalSynthEditor.synth_number">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">synth_number</span> <span class="o">=</span> <span class="n">synth_number</span></div>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_synth_data</span><span class="p">(</span><span class="n">synth_map</span><span class="p">[</span><span class="n">synth_number</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setup_ui</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_instrument_image</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_partial_states</span><span class="p">()</span>
+        <span class="c1"># Connect signals</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span><span class="o">.</span><span class="n">midi_program_changed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_handle_program_change</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span><span class="o">.</span><span class="n">midi_control_changed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_handle_control_change</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span><span class="o">.</span><span class="n">midi_sysex_json</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dispatch_sysex_to_area</span><span class="p">)</span>
+<div class="viewcode-block" id="DigitalSynthEditor.refresh_shortcut">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/digital/editor/index.html#jdxi_editor.ui.editors.digital.editor.DigitalSynthEditor.refresh_shortcut">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">refresh_shortcut</span> <span class="o">=</span> <span class="n">QShortcut</span><span class="p">(</span><span class="n">QKeySequence</span><span class="o">.</span><span class="n">StandardKey</span><span class="o">.</span><span class="n">Refresh</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span></div>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">refresh_shortcut</span><span class="o">.</span><span class="n">activated</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_request</span><span class="p">)</span>
+        <span class="c1"># Request data from the synth for initialization of state and show the editor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_request</span><span class="p">()</span>
+        <span class="c1"># self.show()</span>
+<div class="viewcode-block" id="DigitalSynthEditor.adsr_parameters">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/digital/editor/index.html#jdxi_editor.ui.editors.digital.editor.DigitalSynthEditor.adsr_parameters">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">adsr_parameters</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">AddressParameterDigitalPartial</span><span class="o">.</span><span class="n">AMP_ENV_ATTACK_TIME</span><span class="p">,</span>
+            <span class="n">AddressParameterDigitalPartial</span><span class="o">.</span><span class="n">AMP_ENV_DECAY_TIME</span><span class="p">,</span>
+            <span class="n">AddressParameterDigitalPartial</span><span class="o">.</span><span class="n">AMP_ENV_SUSTAIN_LEVEL</span><span class="p">,</span>
+            <span class="n">AddressParameterDigitalPartial</span><span class="o">.</span><span class="n">AMP_ENV_RELEASE_TIME</span><span class="p">,</span>
+            <span class="n">AddressParameterDigitalPartial</span><span class="o">.</span><span class="n">FILTER_ENV_ATTACK_TIME</span><span class="p">,</span>
+            <span class="n">AddressParameterDigitalPartial</span><span class="o">.</span><span class="n">FILTER_ENV_DECAY_TIME</span><span class="p">,</span>
+            <span class="n">AddressParameterDigitalPartial</span><span class="o">.</span><span class="n">FILTER_ENV_SUSTAIN_LEVEL</span><span class="p">,</span>
+            <span class="n">AddressParameterDigitalPartial</span><span class="o">.</span><span class="n">FILTER_ENV_RELEASE_TIME</span><span class="p">,</span>
+        <span class="p">]</span></div>
+
+<div class="viewcode-block" id="DigitalSynthEditor.pitch_env_parameters">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/digital/editor/index.html#jdxi_editor.ui.editors.digital.editor.DigitalSynthEditor.pitch_env_parameters">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pitch_env_parameters</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">AddressParameterDigitalPartial</span><span class="o">.</span><span class="n">OSC_PITCH_ENV_ATTACK_TIME</span><span class="p">,</span>
+            <span class="n">AddressParameterDigitalPartial</span><span class="o">.</span><span class="n">OSC_PITCH_ENV_DECAY_TIME</span><span class="p">,</span>
+            <span class="n">AddressParameterDigitalPartial</span><span class="o">.</span><span class="n">OSC_PITCH_ENV_DEPTH</span><span class="p">,</span>
+        <span class="p">]</span></div>
+
+<div class="viewcode-block" id="DigitalSynthEditor.pwm_parameters">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/digital/editor/index.html#jdxi_editor.ui.editors.digital.editor.DigitalSynthEditor.pwm_parameters">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pwm_parameters</span> <span class="o">=</span> <span class="p">[</span><span class="n">AddressParameterDigitalPartial</span><span class="o">.</span><span class="n">OSC_PULSE_WIDTH</span><span class="p">,</span>
+                               <span class="n">AddressParameterDigitalPartial</span><span class="o">.</span><span class="n">OSC_PULSE_WIDTH_MOD_DEPTH</span><span class="p">]</span></div>
+
+
+        <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">preset_type</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">preset_type</span><span class="si">}</span><span class="s2">&quot;</span></div>
+
+
+<div class="viewcode-block" id="DigitalSynthEditor.setup_ui">
+<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.digital.html#jdxi_editor.ui.editors.digital.editor.DigitalSynthEditor.setup_ui">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;set up user interface&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMinimumSize</span><span class="p">(</span><span class="mi">850</span><span class="p">,</span> <span class="mi">300</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="mi">1030</span><span class="p">,</span> <span class="mi">600</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">TABS</span> <span class="o">+</span> <span class="n">JDXiStyle</span><span class="o">.</span><span class="n">EDITOR</span><span class="p">)</span>
+
+        <span class="c1"># Main layout</span>
+        <span class="n">main_layout</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">main_layout</span><span class="p">)</span>
+
+        <span class="c1"># Splitter</span>
+        <span class="n">splitter</span> <span class="o">=</span> <span class="n">QSplitter</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">Orientation</span><span class="o">.</span><span class="n">Vertical</span><span class="p">)</span>
+        <span class="n">main_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">splitter</span><span class="p">)</span>
+
+        <span class="c1"># === Top half ===</span>
+        <span class="n">instrument_widget</span> <span class="o">=</span> <span class="n">QWidget</span><span class="p">()</span>
+        <span class="n">instrument_layout</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">()</span>
+        <span class="n">instrument_widget</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">instrument_layout</span><span class="p">)</span>
+
+        <span class="c1"># Partials panel only</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">partials_panel</span> <span class="o">=</span> <span class="n">PartialsPanel</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">partials_panel</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">TABS</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">switch</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">partials_panel</span><span class="o">.</span><span class="n">switches</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">switch</span><span class="o">.</span><span class="n">stateChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_on_partial_state_changed</span><span class="p">)</span>
+
+        <span class="n">scroll</span> <span class="o">=</span> <span class="n">QScrollArea</span><span class="p">()</span>
+        <span class="n">scroll</span><span class="o">.</span><span class="n">setWidgetResizable</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">container</span> <span class="o">=</span> <span class="n">QWidget</span><span class="p">()</span>
+        <span class="n">container_layout</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">()</span>
+        <span class="n">container</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">container_layout</span><span class="p">)</span>
+        <span class="n">instrument_hrow_layout</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+        <span class="c1"># instrument_hrow_layout.addStretch()</span>
+        <span class="n">instrument_layout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">instrument_hrow_layout</span><span class="p">)</span>
+        <span class="c1"># top_layout.addWidget(self.partials_panel)</span>
+        <span class="n">instrument_preset_group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_instrument_preset_group</span><span class="p">(</span>
+            <span class="n">synth_type</span><span class="o">=</span><span class="s2">&quot;Digital&quot;</span>
+        <span class="p">)</span>
+        <span class="n">instrument_hrow_layout</span><span class="o">.</span><span class="n">addStretch</span><span class="p">()</span>
+        <span class="n">instrument_hrow_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">instrument_preset_group</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_instrument_image_group</span><span class="p">()</span>
+        <span class="n">instrument_hrow_layout</span><span class="o">.</span><span class="n">addStretch</span><span class="p">()</span>
+        <span class="n">instrument_hrow_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instrument_image_group</span><span class="p">)</span>
+        <span class="n">instrument_hrow_layout</span><span class="o">.</span><span class="n">addStretch</span><span class="p">()</span>
+        <span class="n">instrument_layout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">instrument_hrow_layout</span><span class="p">)</span>
+        <span class="n">instrument_layout</span><span class="o">.</span><span class="n">addStretch</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_instrument_image</span><span class="p">()</span>
+        <span class="n">container_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">partials_panel</span><span class="p">)</span>
+        <span class="n">container_layout</span><span class="o">.</span><span class="n">addStretch</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">partial_tab_widget</span> <span class="o">=</span> <span class="n">QTabWidget</span><span class="p">()</span>
+        <span class="n">instrument_widget</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">instrument_layout</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">partial_tab_widget</span><span class="o">.</span><span class="n">addTab</span><span class="p">(</span><span class="n">instrument_widget</span><span class="p">,</span> <span class="s2">&quot;Presets&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_partial_tab_widget</span><span class="p">(</span><span class="n">container_layout</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span><span class="p">)</span>
+        <span class="n">scroll</span><span class="o">.</span><span class="n">setWidget</span><span class="p">(</span><span class="n">container</span><span class="p">)</span>
+        <span class="n">splitter</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">scroll</span><span class="p">)</span>
+        <span class="n">splitter</span><span class="o">.</span><span class="n">setSizes</span><span class="p">(</span><span class="n">JDXiDimensions</span><span class="o">.</span><span class="n">EDITOR_DIGITAL_SPLITTER_SIZES</span><span class="p">)</span>  <span class="c1"># give more room to bottom</span>
+
+        <span class="n">splitter</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">SPLITTER</span><span class="p">)</span></div>
+
+        <span class="c1"># self.show()</span>
+
+<div class="viewcode-block" id="DigitalSynthEditor._create_partial_tab_widget">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/index.html#jdxi_editor.ui.editors.digital.editor.DigitalSynthEditor._create_partial_tab_widget">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_partial_tab_widget</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">container_layout</span><span class="p">:</span> <span class="n">QVBoxLayout</span><span class="p">,</span> <span class="n">midi_helper</span><span class="p">:</span> <span class="n">MidiIOHelper</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create the partial tab widget for the digital synth editor.</span>
+
+<span class="sd">        :param container_layout: QVBoxLayout for the main container</span>
+<span class="sd">        :param midi_helper: MiodiIOHelper instance for MIDI communication</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">partial_tab_widget</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">TABS</span> <span class="o">+</span> <span class="n">JDXiStyle</span><span class="o">.</span><span class="n">EDITOR</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">partial_editors</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c1"># Create editor for each partial</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">):</span>
+            <span class="n">editor</span> <span class="o">=</span> <span class="n">DigitalPartialEditor</span><span class="p">(</span>
+                <span class="n">midi_helper</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">synth_number</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">preset_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">preset_type</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">self</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">partial_editors</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">editor</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">partial_tab_widget</span><span class="o">.</span><span class="n">addTab</span><span class="p">(</span><span class="n">editor</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Partial </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">common_section</span> <span class="o">=</span> <span class="n">DigitalCommonSection</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_slider</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_switch</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_combo_box</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">partial_tab_widget</span><span class="o">.</span><span class="n">addTab</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">common_section</span><span class="p">,</span> <span class="s2">&quot;Common&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tone_modify_section</span> <span class="o">=</span> <span class="n">DigitalToneModifySection</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_slider</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_combo_box</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_switch</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">partial_tab_widget</span><span class="o">.</span><span class="n">addTab</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tone_modify_section</span><span class="p">,</span> <span class="s2">&quot;Misc&quot;</span><span class="p">)</span>
+        <span class="n">container_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">partial_tab_widget</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DigitalSynthEditor._on_partial_state_changed">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/index.html#jdxi_editor.ui.editors.digital.editor.DigitalSynthEditor._on_partial_state_changed">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_on_partial_state_changed</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">partial</span><span class="p">:</span> <span class="n">DigitalPartial</span><span class="p">,</span> <span class="n">enabled</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">selected</span><span class="p">:</span> <span class="nb">bool</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Handle the state change of a partial (enabled/disabled and selected/unselected).</span>
+
+<span class="sd">        :param partial: The partial to modify</span>
+<span class="sd">        :param enabled: Whether the partial is enabled (ON/OFF)</span>
+<span class="sd">        :param selected: Whether the partial is selected</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_partial_state</span><span class="p">(</span><span class="n">partial</span><span class="p">,</span> <span class="n">enabled</span><span class="p">,</span> <span class="n">selected</span><span class="p">)</span>
+
+        <span class="c1"># Enable/disable corresponding tab</span>
+        <span class="n">partial_num</span> <span class="o">=</span> <span class="n">partial</span><span class="o">.</span><span class="n">value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">partial_tab_widget</span><span class="o">.</span><span class="n">setTabEnabled</span><span class="p">(</span><span class="n">partial_num</span><span class="p">,</span> <span class="n">enabled</span><span class="p">)</span>
+
+        <span class="c1"># Switch to selected partial&#39;s tab</span>
+        <span class="k">if</span> <span class="n">selected</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">partial_tab_widget</span><span class="o">.</span><span class="n">setCurrentIndex</span><span class="p">(</span><span class="n">partial_num</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DigitalSynthEditor.set_partial_state">
+<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.digital.html#jdxi_editor.ui.editors.digital.editor.DigitalSynthEditor.set_partial_state">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_partial_state</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">partial</span><span class="p">:</span> <span class="n">DigitalPartial</span><span class="p">,</span> <span class="n">enabled</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">selected</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the state of a partial (enabled/disabled and selected/unselected).</span>
+
+<span class="sd">        :param partial: The partial to modify</span>
+<span class="sd">        :param enabled: Whether the partial is enabled (ON/OFF)</span>
+<span class="sd">        :param selected: Whether the partial is selected</span>
+<span class="sd">        :return: True if successful, False otherwise</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">parameter</span><span class="p">(</span><span class="s2">&quot;Setting partial:&quot;</span><span class="p">,</span> <span class="n">partial</span><span class="o">.</span><span class="n">switch_param</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">parameter</span><span class="p">(</span><span class="s2">&quot;Partial state enabled (Yes/No):&quot;</span><span class="p">,</span> <span class="n">enabled</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">parameter</span><span class="p">(</span><span class="s2">&quot;Partial selected (Yes/No):&quot;</span><span class="p">,</span> <span class="n">selected</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">send_midi_parameter</span><span class="p">(</span>
+                <span class="n">param</span><span class="o">=</span><span class="n">partial</span><span class="o">.</span><span class="n">switch_param</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">1</span> <span class="k">if</span> <span class="n">enabled</span> <span class="k">else</span> <span class="mi">0</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">send_midi_parameter</span><span class="p">(</span>
+                <span class="n">param</span><span class="o">=</span><span class="n">partial</span><span class="o">.</span><span class="n">select_param</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">1</span> <span class="k">if</span> <span class="n">selected</span> <span class="k">else</span> <span class="mi">0</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error setting partial </span><span class="si">{</span><span class="n">partial</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> state: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="DigitalSynthEditor._initialize_partial_states">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/index.html#jdxi_editor.ui.editors.digital.editor.DigitalSynthEditor._initialize_partial_states">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_initialize_partial_states</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize partial states with defaults</span>
+<span class="sd">        Default: Partial 1 enabled and selected, others disabled</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">partial</span> <span class="ow">in</span> <span class="n">DigitalPartial</span><span class="o">.</span><span class="n">get_partials</span><span class="p">():</span>
+            <span class="n">enabled</span> <span class="o">=</span> <span class="n">partial</span> <span class="o">==</span> <span class="n">DigitalPartial</span><span class="o">.</span><span class="n">PARTIAL_1</span>
+            <span class="n">selected</span> <span class="o">=</span> <span class="n">enabled</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">partials_panel</span><span class="o">.</span><span class="n">switches</span><span class="p">[</span><span class="n">partial</span><span class="p">]</span><span class="o">.</span><span class="n">setState</span><span class="p">(</span><span class="n">enabled</span><span class="p">,</span> <span class="n">selected</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">partial_tab_widget</span><span class="o">.</span><span class="n">setTabEnabled</span><span class="p">(</span><span class="n">partial</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">enabled</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">partial_tab_widget</span><span class="o">.</span><span class="n">setCurrentIndex</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DigitalSynthEditor._handle_special_params">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/index.html#jdxi_editor.ui.editors.digital.editor.DigitalSynthEditor._handle_special_params">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_handle_special_params</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">partial_no</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">param</span><span class="p">:</span> <span class="n">AddressParameter</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Handle special parameters that require additional UI updates.</span>
+
+<span class="sd">        :param partial_no: int</span>
+<span class="sd">        :param param: AddressParameter</span>
+<span class="sd">        :param value: int</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">param</span> <span class="o">==</span> <span class="n">AddressParameterDigitalPartial</span><span class="o">.</span><span class="n">OSC_WAVE</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_waveform_buttons</span><span class="p">(</span><span class="n">partial_no</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">parameter</span><span class="p">(</span><span class="s2">&quot;Updated waveform buttons for OSC_WAVE&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">param</span> <span class="o">==</span> <span class="n">AddressParameterDigitalPartial</span><span class="o">.</span><span class="n">FILTER_MODE_SWITCH</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">partial_editors</span><span class="p">[</span><span class="n">partial_no</span><span class="p">]</span><span class="o">.</span><span class="n">filter_tab</span><span class="o">.</span><span class="n">filter_mode_switch</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span>
+                <span class="n">value</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_filter_state</span><span class="p">(</span><span class="n">partial_no</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">parameter</span><span class="p">(</span><span class="s2">&quot;Updated filter state for FILTER_MODE_SWITCH&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DigitalSynthEditor._update_partial_controls">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/index.html#jdxi_editor.ui.editors.digital.editor.DigitalSynthEditor._update_partial_controls">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_partial_controls</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">partial_no</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">sysex_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">successes</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">failures</span><span class="p">:</span> <span class="nb">list</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Apply updates to the UI components based on the received SysEx data.</span>
+
+<span class="sd">        :param partial_no: int</span>
+<span class="sd">        :param sysex_data: dict</span>
+<span class="sd">        :param successes: list</span>
+<span class="sd">        :param failures: list</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">param_value</span> <span class="ow">in</span> <span class="n">sysex_data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">param</span> <span class="o">=</span> <span class="n">AddressParameterDigitalPartial</span><span class="o">.</span><span class="n">get_by_name</span><span class="p">(</span><span class="n">param_name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">param</span><span class="p">:</span>
+                <span class="n">failures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">param_name</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="n">param</span> <span class="o">==</span> <span class="n">AddressParameterDigitalPartial</span><span class="o">.</span><span class="n">OSC_WAVE</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_update_waveform_buttons</span><span class="p">(</span><span class="n">partial_no</span><span class="p">,</span> <span class="n">param_value</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">param</span> <span class="o">==</span> <span class="n">AddressParameterDigitalPartial</span><span class="o">.</span><span class="n">FILTER_MODE_SWITCH</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_update_filter_state</span><span class="p">(</span><span class="n">partial_no</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">param_value</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">adsr_parameters</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_update_partial_adsr_widgets</span><span class="p">(</span>
+                    <span class="n">partial_no</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">param_value</span><span class="p">,</span> <span class="n">successes</span><span class="p">,</span> <span class="n">failures</span>
+                <span class="p">)</span>
+            <span class="k">elif</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pitch_env_parameters</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_update_partial_pitch_env_widgets</span><span class="p">(</span>
+                    <span class="n">partial_no</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">param_value</span><span class="p">,</span> <span class="n">successes</span><span class="p">,</span> <span class="n">failures</span>
+                <span class="p">)</span>
+            <span class="k">elif</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pwm_parameters</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_update_pulse_width_widgets</span><span class="p">(</span>
+                    <span class="n">partial_no</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">param_value</span><span class="p">,</span> <span class="n">successes</span><span class="p">,</span> <span class="n">failures</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_update_partial_slider</span><span class="p">(</span>
+                    <span class="n">partial_no</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">param_value</span><span class="p">,</span> <span class="n">successes</span><span class="p">,</span> <span class="n">failures</span>
+                <span class="p">)</span>
+
+        <span class="n">log</span><span class="o">.</span><span class="n">debug_info</span><span class="p">(</span><span class="n">successes</span><span class="p">,</span> <span class="n">failures</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DigitalSynthEditor._update_filter_state">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/index.html#jdxi_editor.ui.editors.digital.editor.DigitalSynthEditor._update_filter_state">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_filter_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">partial_no</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update the filter state of a partial based on the given value.</span>
+
+<span class="sd">        :param partial_no: int</span>
+<span class="sd">        :param value: int</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">partial_editors</span><span class="p">[</span><span class="n">partial_no</span><span class="p">]</span><span class="o">.</span><span class="n">update_filter_controls_state</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DigitalSynthEditor._update_common_controls">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/index.html#jdxi_editor.ui.editors.digital.editor.DigitalSynthEditor._update_common_controls">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_common_controls</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">partial_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">sysex_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
+            <span class="n">successes</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">failures</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update the UI components for tone common and modify parameters.</span>
+
+<span class="sd">        :param partial_number: int partial number</span>
+<span class="sd">        :param sysex_data: Dictionary containing SysEx data</span>
+<span class="sd">        :param successes: List of successful parameters</span>
+<span class="sd">        :param failures: List of failed parameters</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">control</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">parameter</span><span class="p">(</span><span class="s2">&quot;control&quot;</span><span class="p">,</span> <span class="n">control</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">sysex_data</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;SYNTH_TONE&quot;</span><span class="p">)</span>
+        <span class="n">sysex_data</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;TONE_CATEGORY&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">param_value</span> <span class="ow">in</span> <span class="n">sysex_data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">parameter</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">param_name</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">param_value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">param_value</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">param</span> <span class="o">=</span> <span class="n">AddressParameterDigitalCommon</span><span class="o">.</span><span class="n">get_by_name</span><span class="p">(</span><span class="n">param_name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">param</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">parameter</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;param not found: </span><span class="si">{</span><span class="n">param_name</span><span class="si">}</span><span class="s2"> &quot;</span><span class="p">,</span> <span class="n">param_value</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="kc">True</span>
+                <span class="p">)</span>
+                <span class="n">failures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">param_name</span><span class="p">)</span>
+                <span class="k">continue</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">parameter</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;found </span><span class="si">{</span><span class="n">param_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="p">[</span>
+                    <span class="s2">&quot;PARTIAL1_SWITCH&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;PARTIAL2_SWITCH&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;PARTIAL3_SWITCH&quot;</span><span class="p">,</span>
+                <span class="p">]:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_update_partial_selection_switch</span><span class="p">(</span>
+                        <span class="n">param</span><span class="p">,</span> <span class="n">param_value</span><span class="p">,</span> <span class="n">successes</span><span class="p">,</span> <span class="n">failures</span>
+                    <span class="p">)</span>
+                <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="p">[</span>
+                    <span class="s2">&quot;PARTIAL1_SELECT&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;PARTIAL2_SELECT&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;PARTIAL3_SELECT&quot;</span><span class="p">,</span>
+                <span class="p">]:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_update_partial_selected_state</span><span class="p">(</span>
+                        <span class="n">param</span><span class="p">,</span> <span class="n">param_value</span><span class="p">,</span> <span class="n">successes</span><span class="p">,</span> <span class="n">failures</span>
+                    <span class="p">)</span>
+                <span class="k">elif</span> <span class="s2">&quot;SWITCH&quot;</span> <span class="ow">in</span> <span class="n">param_name</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_update_switch</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">param_value</span><span class="p">,</span> <span class="n">successes</span><span class="p">,</span> <span class="n">failures</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_update_slider</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">param_value</span><span class="p">,</span> <span class="n">successes</span><span class="p">,</span> <span class="n">failures</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error </span><span class="si">{</span><span class="n">ex</span><span class="si">}</span><span class="s2"> occurred&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DigitalSynthEditor._update_modify_controls">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/index.html#jdxi_editor.ui.editors.digital.editor.DigitalSynthEditor._update_modify_controls">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_modify_controls</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">partial_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">sysex_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+            <span class="n">successes</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">failures</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update the UI components for tone common and modify parameters.</span>
+
+<span class="sd">        :param partial_number: int partial number</span>
+<span class="sd">        :param sysex_data: dict Dictionary containing SysEx data</span>
+<span class="sd">        :param successes: list List of successful parameters</span>
+<span class="sd">        :param failures: list List of failed parameters</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">control</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">parameter</span><span class="p">(</span><span class="s2">&quot;control&quot;</span><span class="p">,</span> <span class="n">control</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">sysex_data</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;SYNTH_TONE&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">param_value</span> <span class="ow">in</span> <span class="n">sysex_data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">parameter</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">param_name</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">param_value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">param_value</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">param</span> <span class="o">=</span> <span class="n">AddressParameterDigitalModify</span><span class="o">.</span><span class="n">get_by_name</span><span class="p">(</span><span class="n">param_name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">param</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">parameter</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;param not found: </span><span class="si">{</span><span class="n">param_name</span><span class="si">}</span><span class="s2"> &quot;</span><span class="p">,</span> <span class="n">param_value</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="kc">True</span>
+                <span class="p">)</span>
+                <span class="n">failures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">param_name</span><span class="p">)</span>
+                <span class="k">continue</span>
+            <span class="k">elif</span> <span class="s2">&quot;SWITCH&quot;</span> <span class="ow">in</span> <span class="n">param_name</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_update_switch</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">param_value</span><span class="p">,</span> <span class="n">successes</span><span class="p">,</span> <span class="n">failures</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">parameter</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;found </span><span class="si">{</span><span class="n">param_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="o">.</span><span class="n">lmb</span> <span class="o">=</span> <span class="n">AddressOffsetSuperNATURALLMB</span><span class="o">.</span><span class="n">MODIFY</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_update_slider</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">param_value</span><span class="p">,</span> <span class="n">successes</span><span class="p">,</span> <span class="n">failures</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DigitalSynthEditor._update_partial_adsr_widgets">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/index.html#jdxi_editor.ui.editors.digital.editor.DigitalSynthEditor._update_partial_adsr_widgets">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_partial_adsr_widgets</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">partial_no</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">param</span><span class="p">:</span> <span class="n">AddressParameterDigitalPartial</span><span class="p">,</span>
+            <span class="n">midi_value</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">successes</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">failures</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update the ADSR widget for a specific partial based on the parameter and value.</span>
+
+<span class="sd">        :param partial_no: int Partial number</span>
+<span class="sd">        :param param: AddressParameter address</span>
+<span class="sd">        :param midi_value: int value</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">use_fraction</span> <span class="o">=</span> <span class="n">param</span> <span class="ow">in</span> <span class="p">{</span>
+            <span class="n">AddressParameterDigitalPartial</span><span class="o">.</span><span class="n">AMP_ENV_SUSTAIN_LEVEL</span><span class="p">,</span>
+            <span class="n">AddressParameterDigitalPartial</span><span class="o">.</span><span class="n">FILTER_ENV_SUSTAIN_LEVEL</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">control_value</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">midi_value_to_fraction</span><span class="p">(</span><span class="n">midi_value</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">use_fraction</span>
+            <span class="k">else</span> <span class="n">midi_value_to_ms</span><span class="p">(</span><span class="n">midi_value</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">adsr_map</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">AddressParameterDigitalPartial</span><span class="o">.</span><span class="n">AMP_ENV_ATTACK_TIME</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">partial_editors</span><span class="p">[</span>
+                <span class="n">partial_no</span>
+            <span class="p">]</span><span class="o">.</span><span class="n">amp_tab</span><span class="o">.</span><span class="n">amp_env_adsr_widget</span><span class="o">.</span><span class="n">attack_control</span><span class="p">,</span>
+            <span class="n">AddressParameterDigitalPartial</span><span class="o">.</span><span class="n">AMP_ENV_DECAY_TIME</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">partial_editors</span><span class="p">[</span>
+                <span class="n">partial_no</span>
+            <span class="p">]</span><span class="o">.</span><span class="n">amp_tab</span><span class="o">.</span><span class="n">amp_env_adsr_widget</span><span class="o">.</span><span class="n">decay_control</span><span class="p">,</span>
+            <span class="n">AddressParameterDigitalPartial</span><span class="o">.</span><span class="n">AMP_ENV_SUSTAIN_LEVEL</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">partial_editors</span><span class="p">[</span>
+                <span class="n">partial_no</span>
+            <span class="p">]</span><span class="o">.</span><span class="n">amp_tab</span><span class="o">.</span><span class="n">amp_env_adsr_widget</span><span class="o">.</span><span class="n">sustain_control</span><span class="p">,</span>
+            <span class="n">AddressParameterDigitalPartial</span><span class="o">.</span><span class="n">AMP_ENV_RELEASE_TIME</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">partial_editors</span><span class="p">[</span>
+                <span class="n">partial_no</span>
+            <span class="p">]</span><span class="o">.</span><span class="n">amp_tab</span><span class="o">.</span><span class="n">amp_env_adsr_widget</span><span class="o">.</span><span class="n">release_control</span><span class="p">,</span>
+            <span class="n">AddressParameterDigitalPartial</span><span class="o">.</span><span class="n">FILTER_ENV_ATTACK_TIME</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">partial_editors</span><span class="p">[</span>
+                <span class="n">partial_no</span>
+            <span class="p">]</span><span class="o">.</span><span class="n">filter_tab</span><span class="o">.</span><span class="n">filter_adsr_widget</span><span class="o">.</span><span class="n">attack_control</span><span class="p">,</span>
+            <span class="n">AddressParameterDigitalPartial</span><span class="o">.</span><span class="n">FILTER_ENV_DECAY_TIME</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">partial_editors</span><span class="p">[</span>
+                <span class="n">partial_no</span>
+            <span class="p">]</span><span class="o">.</span><span class="n">filter_tab</span><span class="o">.</span><span class="n">filter_adsr_widget</span><span class="o">.</span><span class="n">decay_control</span><span class="p">,</span>
+            <span class="n">AddressParameterDigitalPartial</span><span class="o">.</span><span class="n">FILTER_ENV_SUSTAIN_LEVEL</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">partial_editors</span><span class="p">[</span>
+                <span class="n">partial_no</span>
+            <span class="p">]</span><span class="o">.</span><span class="n">filter_tab</span><span class="o">.</span><span class="n">filter_adsr_widget</span><span class="o">.</span><span class="n">sustain_control</span><span class="p">,</span>
+            <span class="n">AddressParameterDigitalPartial</span><span class="o">.</span><span class="n">FILTER_ENV_RELEASE_TIME</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">partial_editors</span><span class="p">[</span>
+                <span class="n">partial_no</span>
+            <span class="p">]</span><span class="o">.</span><span class="n">filter_tab</span><span class="o">.</span><span class="n">filter_adsr_widget</span><span class="o">.</span><span class="n">release_control</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">spinbox</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adsr_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">spinbox</span><span class="p">:</span>
+            <span class="n">failures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="n">spinbox</span><span class="p">:</span>
+            <span class="n">spinbox</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">control_value</span><span class="p">)</span>
+            <span class="n">synth_data</span> <span class="o">=</span> <span class="n">create_synth_data</span><span class="p">(</span><span class="n">JDXiSynth</span><span class="o">.</span><span class="n">DIGITAL_SYNTH_1</span><span class="p">,</span> <span class="n">partial_no</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="o">.</span><span class="n">lmb</span> <span class="o">=</span> <span class="n">synth_data</span><span class="o">.</span><span class="n">lmb</span>
+            <span class="n">log_slider_parameters</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">midi_value</span><span class="p">,</span> <span class="n">control_value</span><span class="p">)</span>
+            <span class="n">successes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">name</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DigitalSynthEditor._update_partial_pitch_env_widgets">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/index.html#jdxi_editor.ui.editors.digital.editor.DigitalSynthEditor._update_partial_pitch_env_widgets">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_partial_pitch_env_widgets</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">partial_no</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">param</span><span class="p">:</span> <span class="n">AddressParameterDigitalPartial</span><span class="p">,</span>
+            <span class="n">midi_value</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">successes</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">failures</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update the Pitch Env widget for a specific partial based on the parameter and value.</span>
+
+<span class="sd">        :param partial_no: int Partial number</span>
+<span class="sd">        :param param: AddressParameter address</span>
+<span class="sd">        :param midi_value: int value</span>
+<span class="sd">        :param successes: list = None,</span>
+<span class="sd">        :param failures: list = None,</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">use_fraction</span> <span class="o">=</span> <span class="n">param</span> <span class="ow">in</span> <span class="p">{</span>
+            <span class="n">AddressParameterDigitalPartial</span><span class="o">.</span><span class="n">OSC_PITCH_ENV_DEPTH</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">new_value</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">midi_value_to_fraction</span><span class="p">(</span><span class="n">midi_value</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">use_fraction</span>
+            <span class="k">else</span> <span class="n">midi_value_to_ms</span><span class="p">(</span><span class="n">midi_value</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">5000</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pitch_env_map</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">AddressParameterDigitalPartial</span><span class="o">.</span><span class="n">OSC_PITCH_ENV_ATTACK_TIME</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">partial_editors</span><span class="p">[</span>
+                <span class="n">partial_no</span>
+            <span class="p">]</span><span class="o">.</span><span class="n">oscillator_tab</span><span class="o">.</span><span class="n">pitch_env_widget</span><span class="o">.</span><span class="n">attack_control</span><span class="p">,</span>
+            <span class="n">AddressParameterDigitalPartial</span><span class="o">.</span><span class="n">OSC_PITCH_ENV_DECAY_TIME</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">partial_editors</span><span class="p">[</span>
+                <span class="n">partial_no</span>
+            <span class="p">]</span><span class="o">.</span><span class="n">oscillator_tab</span><span class="o">.</span><span class="n">pitch_env_widget</span><span class="o">.</span><span class="n">decay_control</span><span class="p">,</span>
+            <span class="n">AddressParameterDigitalPartial</span><span class="o">.</span><span class="n">OSC_PITCH_ENV_DEPTH</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">partial_editors</span><span class="p">[</span>
+                <span class="n">partial_no</span>
+            <span class="p">]</span><span class="o">.</span><span class="n">oscillator_tab</span><span class="o">.</span><span class="n">pitch_env_widget</span><span class="o">.</span><span class="n">depth_control</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">control</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pitch_env_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">control</span><span class="p">:</span>
+            <span class="n">control</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">new_value</span><span class="p">)</span>
+            <span class="n">successes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">failures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">name</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DigitalSynthEditor._update_pulse_width_widgets">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/index.html#jdxi_editor.ui.editors.digital.editor.DigitalSynthEditor._update_pulse_width_widgets">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_pulse_width_widgets</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">partial_no</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">param</span><span class="p">:</span> <span class="n">AddressParameterDigitalPartial</span><span class="p">,</span>
+            <span class="n">midi_value</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">successes</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">failures</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update the Pitch Env widget for a specific partial based on the parameter and value.</span>
+
+<span class="sd">        :param partial_no: int Partial number</span>
+<span class="sd">        :param param: AddressParameter address</span>
+<span class="sd">        :param midi_value: int value</span>
+<span class="sd">        :param successes: list = None,</span>
+<span class="sd">        :param failures: list = None,</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">use_fraction</span> <span class="o">=</span> <span class="n">param</span> <span class="ow">in</span> <span class="p">{</span>
+            <span class="n">AddressParameterDigitalPartial</span><span class="o">.</span><span class="n">OSC_PULSE_WIDTH</span><span class="p">,</span>
+            <span class="n">AddressParameterDigitalPartial</span><span class="o">.</span><span class="n">OSC_PULSE_WIDTH_MOD_DEPTH</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">new_value</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">midi_value_to_fraction</span><span class="p">(</span><span class="n">midi_value</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">use_fraction</span>
+            <span class="k">else</span> <span class="n">midi_value_to_ms</span><span class="p">(</span><span class="n">midi_value</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">5000</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pitch_env_map</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">AddressParameterDigitalPartial</span><span class="o">.</span><span class="n">OSC_PULSE_WIDTH</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">partial_editors</span><span class="p">[</span>
+                <span class="n">partial_no</span>
+            <span class="p">]</span><span class="o">.</span><span class="n">oscillator_tab</span><span class="o">.</span><span class="n">pwm_widget</span><span class="o">.</span><span class="n">pulse_width_control</span><span class="p">,</span>
+            <span class="n">AddressParameterDigitalPartial</span><span class="o">.</span><span class="n">OSC_PULSE_WIDTH_MOD_DEPTH</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">partial_editors</span><span class="p">[</span>
+                <span class="n">partial_no</span>
+            <span class="p">]</span><span class="o">.</span><span class="n">oscillator_tab</span><span class="o">.</span><span class="n">pwm_widget</span><span class="o">.</span><span class="n">mod_depth_control</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">control</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pitch_env_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">control</span><span class="p">:</span>
+            <span class="n">control</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">new_value</span><span class="p">)</span>
+            <span class="n">successes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">failures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">name</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DigitalSynthEditor._update_partial_selection_switch">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/index.html#jdxi_editor.ui.editors.digital.editor.DigitalSynthEditor._update_partial_selection_switch">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_partial_selection_switch</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">param</span><span class="p">:</span> <span class="n">AddressParameter</span><span class="p">,</span>
+            <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">successes</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+            <span class="n">failures</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update the partial selection switches based on parameter and value.</span>
+
+<span class="sd">        :param param: AddressParameter</span>
+<span class="sd">        :param value: int</span>
+<span class="sd">        :param successes: list</span>
+<span class="sd">        :param failures: list</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">param_name</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">partial_switch_map</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;PARTIAL1_SWITCH&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s2">&quot;PARTIAL2_SWITCH&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="s2">&quot;PARTIAL3_SWITCH&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">partial_number</span> <span class="o">=</span> <span class="n">partial_switch_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">param_name</span><span class="p">)</span>
+        <span class="n">check_box</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">partials_panel</span><span class="o">.</span><span class="n">switches</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">partial_number</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">parameter</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Updating switch for: </span><span class="si">{</span><span class="n">param_name</span><span class="si">}</span><span class="s2">, checkbox:&quot;</span><span class="p">,</span> <span class="n">check_box</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">check_box</span><span class="p">:</span>
+            <span class="n">check_box</span><span class="o">.</span><span class="n">blockSignals</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">check_box</span><span class="o">.</span><span class="n">setState</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="n">value</span><span class="p">),</span> <span class="kc">False</span><span class="p">)</span>
+            <span class="n">check_box</span><span class="o">.</span><span class="n">blockSignals</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">successes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">failures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">name</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DigitalSynthEditor._update_partial_selected_state">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/index.html#jdxi_editor.ui.editors.digital.editor.DigitalSynthEditor._update_partial_selected_state">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_partial_selected_state</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">param</span><span class="p">:</span> <span class="n">AddressParameter</span><span class="p">,</span>
+            <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">successes</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+            <span class="n">failures</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update the partial selected state based on parameter and value.</span>
+
+<span class="sd">        :param param: AddressParameter</span>
+<span class="sd">        :param value: int</span>
+<span class="sd">        :param successes: list</span>
+<span class="sd">        :param failures: list</span>
+<span class="sd">        :param debug: bool</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">param_name</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">partial_switch_map</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;PARTIAL1_SELECT&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s2">&quot;PARTIAL2_SELECT&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="s2">&quot;PARTIAL3_SELECT&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">partial_number</span> <span class="o">=</span> <span class="n">partial_switch_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">param_name</span><span class="p">)</span>
+        <span class="n">check_box</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">partials_panel</span><span class="o">.</span><span class="n">switches</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">partial_number</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">check_box</span><span class="p">:</span>
+            <span class="n">check_box</span><span class="o">.</span><span class="n">blockSignals</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">check_box</span><span class="o">.</span><span class="n">setSelected</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+            <span class="n">check_box</span><span class="o">.</span><span class="n">blockSignals</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">successes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="c1"># log.message(f&quot;Updated: {param.name:50} {value}&quot;)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">failures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">name</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DigitalSynthEditor._update_waveform_buttons">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/index.html#jdxi_editor.ui.editors.digital.editor.DigitalSynthEditor._update_waveform_buttons">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_waveform_buttons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">partial_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">         Update the waveform buttons based on the OSC_WAVE value with visual feedback</span>
+
+<span class="sd">        :param partial_number: int</span>
+<span class="sd">        :param value: int</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">parameter</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Updating waveform buttons for partial </span><span class="si">{</span><span class="n">partial_number</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">partial_number</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">waveform_map</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="mi">0</span><span class="p">:</span> <span class="n">DigitalOscWave</span><span class="o">.</span><span class="n">SAW</span><span class="p">,</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="n">DigitalOscWave</span><span class="o">.</span><span class="n">SQUARE</span><span class="p">,</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="n">DigitalOscWave</span><span class="o">.</span><span class="n">PW_SQUARE</span><span class="p">,</span>
+            <span class="mi">3</span><span class="p">:</span> <span class="n">DigitalOscWave</span><span class="o">.</span><span class="n">TRIANGLE</span><span class="p">,</span>
+            <span class="mi">4</span><span class="p">:</span> <span class="n">DigitalOscWave</span><span class="o">.</span><span class="n">SINE</span><span class="p">,</span>
+            <span class="mi">5</span><span class="p">:</span> <span class="n">DigitalOscWave</span><span class="o">.</span><span class="n">NOISE</span><span class="p">,</span>
+            <span class="mi">6</span><span class="p">:</span> <span class="n">DigitalOscWave</span><span class="o">.</span><span class="n">SUPER_SAW</span><span class="p">,</span>
+            <span class="mi">7</span><span class="p">:</span> <span class="n">DigitalOscWave</span><span class="o">.</span><span class="n">PCM</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="n">selected_waveform</span> <span class="o">=</span> <span class="n">waveform_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">selected_waveform</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Unknown waveform value: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">log</span><span class="o">.</span><span class="n">parameter</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Waveform value </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> found, selecting&quot;</span><span class="p">,</span> <span class="n">selected_waveform</span><span class="p">)</span>
+
+        <span class="c1"># Retrieve waveform buttons for the given partial</span>
+        <span class="k">if</span> <span class="n">partial_number</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">partial_editors</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Partial editor </span><span class="si">{</span><span class="n">partial_number</span><span class="si">}</span><span class="s2"> not found&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">wave_buttons</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">partial_editors</span><span class="p">[</span><span class="n">partial_number</span><span class="p">]</span><span class="o">.</span><span class="n">oscillator_tab</span><span class="o">.</span><span class="n">wave_buttons</span>
+
+        <span class="c1"># Reset all buttons to default style</span>
+        <span class="k">for</span> <span class="n">btn</span> <span class="ow">in</span> <span class="n">wave_buttons</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">btn</span><span class="o">.</span><span class="n">setChecked</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">btn</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">BUTTON_RECT</span><span class="p">)</span>
+
+        <span class="c1"># Apply active style to the selected waveform button</span>
+        <span class="n">selected_btn</span> <span class="o">=</span> <span class="n">wave_buttons</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">selected_waveform</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">selected_btn</span><span class="p">:</span>
+            <span class="n">selected_btn</span><span class="o">.</span><span class="n">setChecked</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">selected_btn</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">BUTTON_RECT</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Waveform button not found for: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">selected_waveform</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="DigitalSynth2Editor">
+<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.digital.html#jdxi_editor.ui.editors.digital.editor.DigitalSynth2Editor">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DigitalSynth2Editor</span><span class="p">(</span><span class="n">DigitalSynthEditor</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;class for Digital Synth Editor containing 3 partials&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="DigitalSynth2Editor.preset_changed">
+<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.digital.html#jdxi_editor.ui.editors.digital.editor.DigitalSynth2Editor.preset_changed">[docs]</a>
+    <span class="n">preset_changed</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DigitalSynth2Editor.__init__">
+<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.digital.html#jdxi_editor.ui.editors.digital.editor.DigitalSynth2Editor.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">midi_helper</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">MidiIOHelper</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">preset_helper</span><span class="p">:</span> <span class="n">JDXiPresetHelper</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">synth_number</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="n">parent</span><span class="p">:</span> <span class="n">QWidget</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">midi_helper</span><span class="o">=</span><span class="n">midi_helper</span><span class="p">,</span>
+            <span class="n">synth_number</span><span class="o">=</span><span class="n">synth_number</span><span class="p">,</span>
+            <span class="n">preset_helper</span><span class="o">=</span><span class="n">preset_helper</span><span class="p">,</span>
+            <span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">,</span>
+        <span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="DigitalSynth3Editor">
+<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.digital.html#jdxi_editor.ui.editors.digital.editor.DigitalSynth3Editor">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DigitalSynth3Editor</span><span class="p">(</span><span class="n">DigitalSynthEditor</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;class for Digital Synth Editor containing 3 partials&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="DigitalSynth3Editor.preset_changed">
+<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.digital.html#jdxi_editor.ui.editors.digital.editor.DigitalSynth3Editor.preset_changed">[docs]</a>
+    <span class="n">preset_changed</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DigitalSynth3Editor.__init__">
+<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.digital.html#jdxi_editor.ui.editors.digital.editor.DigitalSynth3Editor.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">midi_helper</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">MidiIOHelper</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">preset_helper</span><span class="p">:</span> <span class="n">JDXiPresetHelper</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">synth_number</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+            <span class="n">parent</span><span class="p">:</span> <span class="n">QWidget</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">midi_helper</span><span class="o">=</span><span class="n">midi_helper</span><span class="p">,</span>
+            <span class="n">synth_number</span><span class="o">=</span><span class="n">synth_number</span><span class="p">,</span>
+            <span class="n">preset_helper</span><span class="o">=</span><span class="n">preset_helper</span><span class="p">,</span>
+            <span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">,</span>
+        <span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Mark Mrooks.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

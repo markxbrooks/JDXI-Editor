@@ -1,0 +1,976 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>jdxi_editor.ui.editors.drum.partial.wmt &mdash; JD-Xi Editor 0.8.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../../../_static/documentation_options.js?v=486e5634"></script>
+      <script src="../../../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../../../index.html" class="icon icon-home">
+            JD-Xi Editor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../usage.html">Quick Start</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../usage.html#connection-of-the-jd-xi-hardware-instrument-to-the-computer">Connection of the JD-Xi Hardware Instrument to the Computer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../instrument.html">JDXi Instrument Window</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../instrument.html#features">Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../instrument.html#using-the-instrument-window">Using the Instrument Window</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../editor.html">Editor Window</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../editor.html#program-mixer-section">Program/Mixer Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../editor.html#digital-1-section">Digital 1 Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../editor.html#digital-2-section">Digital 2 Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../editor.html#drum-kit-section">Drum Kit Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../editor.html#analog-section">Analog Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../editor.html#effect-controls">Effect Controls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../editor.html#vocal-transformer">Vocal Transformer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../editor.html#arpeggiator">Arpeggiator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../editor.html#midi-file-player-and-recorder">MIDI File Player and Recorder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../editor.html#pattern-sequencer">Pattern Sequencer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../troubleshooting.html">Troubleshooting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../troubleshooting.html#general-problems">General Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../troubleshooting.html#macos">MacOS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../troubleshooting.html#windows">Windows</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../legal.html">Legal Disclaimer</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../modules.html">jdxi_editor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../jdxi_editor.html">jdxi_editor package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../jdxi_editor.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../jdxi_editor.jdxi.html">jdxi_editor.jdxi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../jdxi_editor.log.html">jdxi_editor.log package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../jdxi_editor.midi.html">jdxi_editor.midi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../jdxi_editor.ui.html">jdxi_editor.ui package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../jdxi_editor.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../jdxi_editor.html#module-jdxi_editor.globals">jdxi_editor.globals module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../jdxi_editor.html#module-jdxi_editor.main">jdxi_editor.main module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../jdxi_editor.html#jdxi_editor.main.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../jdxi_editor.html#module-jdxi_editor.project">jdxi_editor.project module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../jdxi_editor.html#module-jdxi_editor.resources">jdxi_editor.resources module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../jdxi_editor.html#jdxi_editor.resources.resource_path"><code class="docutils literal notranslate"><span class="pre">resource_path()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../jdxi_editor.html#module-jdxi_editor">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../autoapi/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/midi/index.html">midi</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/midi/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/midi/colors/index.html">midi.colors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/midi/slider/index.html">midi.slider</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/midi/spin_box/index.html">midi.spin_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/midi/time_ruler/index.html">midi.time_ruler</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/midi/track/index.html">midi.track</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/midi/track_viewer/index.html">midi.track_viewer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/midi/utils/index.html">midi.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/adsr/index.html">adsr</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/adsr/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/adsr/adsr/index.html">adsr.adsr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/adsr/graph/index.html">adsr.graph</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/adsr/parameter/index.html">adsr.parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/adsr/plot/index.html">adsr.plot</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/pitch/index.html">pitch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/pitch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/pitch/envelope/index.html">pitch.envelope</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/pitch/envelope_plot/index.html">pitch.envelope_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/pitch/pwm_plot/index.html">pitch.pwm_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/pitch/slider_spinbox/index.html">pitch.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/piano/index.html">piano</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/piano/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/piano/key/index.html">piano.key</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/piano/keyboard/index.html">piano.keyboard</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/panel/index.html">panel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/panel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/panel/partial/index.html">panel.partial</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/wheel/index.html">wheel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/wheel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/wheel/mod/index.html">wheel.mod</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/wheel/pitch/index.html">wheel.pitch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/wheel/wheel/index.html">wheel.wheel</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/preset/index.html">preset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/preset/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/preset/combo_box/index.html">preset.combo_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/preset/panel/index.html">preset.panel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/preset/patch_name/index.html">preset.patch_name</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/slider/index.html">slider</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/slider/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/slider/slider/index.html">slider.slider</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/slider/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/slider/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/slider/index.html#slider.Slider"><code class="docutils literal notranslate"><span class="pre">Slider</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/dialog/index.html">dialog</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/dialog/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/dialog/progress/index.html">dialog.progress</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/viewer/index.html">viewer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/viewer/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/viewer/log/index.html">viewer.log</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/button/index.html">button</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/button/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/button/channel/index.html">button.channel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/button/favorite/index.html">button.favorite</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/button/sequencer/index.html">button.sequencer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/button/waveform/index.html">button.waveform</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/button/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/button/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/button/index.html#button.ChannelButton"><code class="docutils literal notranslate"><span class="pre">ChannelButton</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/button/index.html#button.SequencerSquare"><code class="docutils literal notranslate"><span class="pre">SequencerSquare</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/switch/index.html">switch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/switch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/switch/partial/index.html">switch.partial</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/switch/switch/index.html">switch.switch</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/filter/index.html">filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/filter/index.html#filter.FilterWidget"><code class="docutils literal notranslate"><span class="pre">FilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/display/index.html">display</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/display/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/display/digital/index.html">display.digital</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/display/pattern/index.html">display.pattern</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/display/value/index.html">display.value</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/pattern/index.html">pattern</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/pattern/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/pattern/measure/index.html">pattern.measure</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/spin_box/index.html">spin_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/spin_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/spin_box/spin_box/index.html">spin_box.spin_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/envelope/index.html">envelope</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/envelope/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/envelope/base/index.html">envelope.base</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/indicator/index.html">indicator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/indicator/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/indicator/led/index.html">indicator.led</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/indicator/midi/index.html">indicator.midi</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/combo_box/index.html">combo_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/combo_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/combo_box/combo_box/index.html">combo_box.combo_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/jdxi_editor/index.html">jdxi_editor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/jdxi_editor/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/jdxi_editor/globals/index.html">jdxi_editor.globals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/jdxi_editor/jdxi/index.html">jdxi_editor.jdxi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/jdxi_editor/log/index.html">jdxi_editor.log</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/jdxi_editor/main/index.html">jdxi_editor.main</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/jdxi_editor/midi/index.html">jdxi_editor.midi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/jdxi_editor/project/index.html">jdxi_editor.project</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/jdxi_editor/resources/index.html">jdxi_editor.resources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/jdxi_editor/ui/index.html">jdxi_editor.ui</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/filter_plot/index.html">filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/filter_plot/index.html#filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/filter_plot/index.html#filter_plot.FilterPlot"><code class="docutils literal notranslate"><span class="pre">FilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/envelope_plot/index.html">envelope_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/envelope_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/envelope_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/envelope_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/envelope_plot/index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/envelope_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/envelope_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/envelope_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/envelope_plot/index.html#envelope_plot.midi_value_to_float"><code class="docutils literal notranslate"><span class="pre">midi_value_to_float()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/envelope_plot/index.html#envelope_plot.WMTEnvPlot"><code class="docutils literal notranslate"><span class="pre">WMTEnvPlot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/envelope_plot/index.html#envelope_plot.app"><code class="docutils literal notranslate"><span class="pre">app</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/wave_selector/index.html">wave_selector</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/wave_selector/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/wave_selector/wave_selector/index.html">wave_selector.wave_selector</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/analog_filter/index.html">analog_filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/analog_filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/analog_filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/analog_filter/index.html#analog_filter.AnalogFilterWidget"><code class="docutils literal notranslate"><span class="pre">AnalogFilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/slider_spinbox/index.html">slider_spinbox</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/slider_spinbox/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/slider_spinbox/slider_spinbox/index.html">slider_spinbox.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/analog_filter_plot/index.html">analog_filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/analog_filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/analog_filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/analog_filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/analog_filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/analog_filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/analog_filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/analog_filter_plot/index.html#analog_filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/analog_filter_plot/index.html#analog_filter_plot.AnalogFilterPlot"><code class="docutils literal notranslate"><span class="pre">AnalogFilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../../index.html">JD-Xi Editor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">jdxi_editor.ui.editors.drum.partial.wmt</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for jdxi_editor.ui.editors.drum.partial.wmt</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Module: drum_wmt</span>
+<span class="sd">================</span>
+
+<span class="sd">This module defines the `DrumWMTSection` class, which provides a PySide6-based</span>
+<span class="sd">user interface for editing drum WMT parameters in the Roland JD-Xi synthesizer.</span>
+<span class="sd">It extends the `QWidget` base class and integrates MIDI communication for real-time</span>
+<span class="sd">parameter adjustments and preset management.</span>
+
+<span class="sd">Key Features:</span>
+<span class="sd">-------------</span>
+<span class="sd">- Provides a graphical editor for modifying drum WMT parameters, including</span>
+<span class="sd">  wave selection, gain, FXM color, depth, tempo sync, coarse tune, fine tune, pan,</span>
+<span class="sd">  random pan switch, alternate pan switch, velocity range lower, velocity range upper,</span>
+<span class="sd">  velocity fade width lower, velocity fade width upper, and wave level.</span>
+
+<span class="sd">Dependencies:</span>
+<span class="sd">-------------</span>
+<span class="sd">- PySide6 (for UI components and event handling)</span>
+<span class="sd">- MIDIHelper (for handling MIDI communication)</span>
+<span class="sd">- PresetHandler (for managing synth presets)</span>
+<span class="sd">- Various custom enums and helper classes (AnalogParameter, AnalogCommonParameter, etc.)</span>
+
+<span class="sd">Usage:</span>
+<span class="sd">------</span>
+<span class="sd">The `DrumWMTSection` class can be instantiated as part of a larger PySide6 application.</span>
+<span class="sd">It requires a `MIDIHelper` instance for proper communication with the synthesizer.</span>
+
+<span class="sd">Example:</span>
+<span class="sd">--------</span>
+<span class="sd">    midi_helper = MIDIHelper()</span>
+<span class="sd">    editor = DrumWMTSection(midi_helper)</span>
+<span class="sd">    editor.show()</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">PySide6.QtWidgets</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">QGroupBox</span><span class="p">,</span>
+    <span class="n">QFormLayout</span><span class="p">,</span>
+    <span class="n">QWidget</span><span class="p">,</span>
+    <span class="n">QVBoxLayout</span><span class="p">,</span>
+    <span class="n">QScrollArea</span><span class="p">,</span>
+    <span class="n">QTabWidget</span><span class="p">,</span>
+    <span class="n">QComboBox</span><span class="p">,</span>
+    <span class="n">QLabel</span><span class="p">,</span>
+    <span class="n">QLineEdit</span><span class="p">,</span>
+    <span class="n">QHBoxLayout</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.jdxi.style</span><span class="w"> </span><span class="kn">import</span> <span class="n">JDXiStyle</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.log.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">Logger</span> <span class="k">as</span> <span class="n">log</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.data.drum.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">rm_waves</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.data.parameter.drum.common</span><span class="w"> </span><span class="kn">import</span> <span class="n">AddressParameterDrumCommon</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.data.parameter.drum.partial</span><span class="w"> </span><span class="kn">import</span> <span class="n">AddressParameterDrumPartial</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.ui.widgets.adsr.adsr</span><span class="w"> </span><span class="kn">import</span> <span class="n">ADSR</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.ui.widgets.wmt.envelope</span><span class="w"> </span><span class="kn">import</span> <span class="n">WMTEnvelopeWidget</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.ui.windows.jdxi.dimensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">JDXiDimensions</span>
+
+
+<div class="viewcode-block" id="DrumWMTSection">
+<a class="viewcode-back" href="../../../../../../jdxi_editor.ui.editors.drum.partial.html#jdxi_editor.ui.editors.drum.partial.wmt.DrumWMTSection">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DrumWMTSection</span><span class="p">(</span><span class="n">QWidget</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Drum TVF Section for the JDXI Editor&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="DrumWMTSection.__init__">
+<a class="viewcode-back" href="../../../../../../jdxi_editor.ui.editors.drum.partial.html#jdxi_editor.ui.editors.drum.partial.wmt.DrumWMTSection.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">controls</span><span class="p">,</span>
+            <span class="n">create_parameter_combo_box</span><span class="p">,</span>
+            <span class="n">create_parameter_slider</span><span class="p">,</span>
+            <span class="n">create_parameter_switch</span><span class="p">,</span>
+            <span class="n">midi_helper</span><span class="p">,</span>
+            <span class="n">address</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the DrumWMTSection</span>
+
+<span class="sd">        :param controls: dict</span>
+<span class="sd">        :param create_parameter_combo_box: Callable</span>
+<span class="sd">        :param create_parameter_slider: Callable</span>
+<span class="sd">        :param midi_helper: MidiIOHelper</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="DrumWMTSection.l_wave_combos">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/ui/editors/drum/partial/wmt/index.html#jdxi_editor.ui.editors.drum.partial.wmt.DrumWMTSection.l_wave_combos">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">l_wave_combos</span> <span class="o">=</span> <span class="p">{}</span></div>
+
+<div class="viewcode-block" id="DrumWMTSection.l_wave_search_boxes">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/ui/editors/drum/partial/wmt/index.html#jdxi_editor.ui.editors.drum.partial.wmt.DrumWMTSection.l_wave_search_boxes">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">l_wave_search_boxes</span> <span class="o">=</span> <span class="p">{}</span></div>
+
+<div class="viewcode-block" id="DrumWMTSection.l_wave_selectors">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/ui/editors/drum/partial/wmt/index.html#jdxi_editor.ui.editors.drum.partial.wmt.DrumWMTSection.l_wave_selectors">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">l_wave_selectors</span> <span class="o">=</span> <span class="p">{}</span></div>
+
+<div class="viewcode-block" id="DrumWMTSection.r_wave_combos">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/ui/editors/drum/partial/wmt/index.html#jdxi_editor.ui.editors.drum.partial.wmt.DrumWMTSection.r_wave_combos">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">r_wave_combos</span> <span class="o">=</span> <span class="p">{}</span></div>
+
+<div class="viewcode-block" id="DrumWMTSection.r_wave_search_boxes">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/ui/editors/drum/partial/wmt/index.html#jdxi_editor.ui.editors.drum.partial.wmt.DrumWMTSection.r_wave_search_boxes">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">r_wave_search_boxes</span> <span class="o">=</span> <span class="p">{}</span></div>
+
+<div class="viewcode-block" id="DrumWMTSection.r_wave_selectors">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/ui/editors/drum/partial/wmt/index.html#jdxi_editor.ui.editors.drum.partial.wmt.DrumWMTSection.r_wave_selectors">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">r_wave_selectors</span> <span class="o">=</span> <span class="p">{}</span></div>
+
+<div class="viewcode-block" id="DrumWMTSection.wmt_tab_widget">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/ui/editors/drum/partial/wmt/index.html#jdxi_editor.ui.editors.drum.partial.wmt.DrumWMTSection.wmt_tab_widget">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wmt_tab_widget</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="DrumWMTSection.controls">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/ui/editors/drum/partial/wmt/index.html#jdxi_editor.ui.editors.drum.partial.wmt.DrumWMTSection.controls">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">controls</span> <span class="o">=</span> <span class="n">controls</span></div>
+
+<div class="viewcode-block" id="DrumWMTSection._create_parameter_slider">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/ui/editors/drum/partial/wmt/index.html#jdxi_editor.ui.editors.drum.partial.wmt.DrumWMTSection._create_parameter_slider">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_slider</span> <span class="o">=</span> <span class="n">create_parameter_slider</span></div>
+
+<div class="viewcode-block" id="DrumWMTSection._create_parameter_combo_box">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/ui/editors/drum/partial/wmt/index.html#jdxi_editor.ui.editors.drum.partial.wmt.DrumWMTSection._create_parameter_combo_box">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_combo_box</span> <span class="o">=</span> <span class="n">create_parameter_combo_box</span></div>
+
+<div class="viewcode-block" id="DrumWMTSection._create_parameter_switch">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/ui/editors/drum/partial/wmt/index.html#jdxi_editor.ui.editors.drum.partial.wmt.DrumWMTSection._create_parameter_switch">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_switch</span> <span class="o">=</span> <span class="n">create_parameter_switch</span></div>
+
+<div class="viewcode-block" id="DrumWMTSection.midi_helper">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/ui/editors/drum/partial/wmt/index.html#jdxi_editor.ui.editors.drum.partial.wmt.DrumWMTSection.midi_helper">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span> <span class="o">=</span> <span class="n">midi_helper</span></div>
+
+<div class="viewcode-block" id="DrumWMTSection.address">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/ui/editors/drum/partial/wmt/index.html#jdxi_editor.ui.editors.drum.partial.wmt.DrumWMTSection.address">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">=</span> <span class="n">address</span></div>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setup_ui</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="DrumWMTSection.setup_ui">
+<a class="viewcode-back" href="../../../../../../jdxi_editor.ui.editors.drum.partial.html#jdxi_editor.ui.editors.drum.partial.wmt.DrumWMTSection.setup_ui">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;setup UI&quot;&quot;&quot;</span>
+        <span class="n">layout</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="n">scroll_area</span> <span class="o">=</span> <span class="n">QScrollArea</span><span class="p">()</span>
+        <span class="n">scroll_area</span><span class="o">.</span><span class="n">setMinimumHeight</span><span class="p">(</span><span class="n">JDXiDimensions</span><span class="o">.</span><span class="n">SCROLL_AREA_HEIGHT</span><span class="p">)</span>
+        <span class="n">scroll_area</span><span class="o">.</span><span class="n">setWidgetResizable</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># Important for resizing behavior</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">scroll_area</span><span class="p">)</span>
+
+        <span class="n">scrolled_widget</span> <span class="o">=</span> <span class="n">QWidget</span><span class="p">()</span>
+        <span class="n">scrolled_layout</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">(</span><span class="n">scrolled_widget</span><span class="p">)</span>
+
+        <span class="c1"># Add widgets to scrolled_layout here if needed</span>
+
+        <span class="n">scroll_area</span><span class="o">.</span><span class="n">setWidget</span><span class="p">(</span><span class="n">scrolled_widget</span><span class="p">)</span>
+
+        <span class="c1"># WMT Group</span>
+        <span class="n">wmt_group</span> <span class="o">=</span> <span class="n">QGroupBox</span><span class="p">(</span><span class="s2">&quot;WMT&quot;</span><span class="p">)</span>
+        <span class="n">wmt_layout</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">()</span>
+        <span class="n">wmt_group</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">wmt_layout</span><span class="p">)</span>
+
+        <span class="c1"># WMT Velocity Control</span>
+        <span class="n">wmt_velocity_control_combo_row_layout</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+        <span class="n">wmt_layout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">wmt_velocity_control_combo_row_layout</span><span class="p">)</span>
+        <span class="n">wmt_velocity_control_combo_row_layout</span><span class="o">.</span><span class="n">addStretch</span><span class="p">()</span>
+        <span class="n">wmt_velocity_control_combo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_switch</span><span class="p">(</span><span class="n">AddressParameterDrumPartial</span><span class="o">.</span><span class="n">WMT_VELOCITY_CONTROL</span><span class="p">,</span>
+                                                                   <span class="s2">&quot;Velocity control&quot;</span><span class="p">,</span>
+                                                                   <span class="p">[</span><span class="s2">&quot;OFF&quot;</span><span class="p">,</span> <span class="s2">&quot;ON&quot;</span><span class="p">,</span> <span class="s2">&quot;RANDOM&quot;</span><span class="p">])</span>
+        <span class="n">wmt_velocity_control_combo_row_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">wmt_velocity_control_combo</span><span class="p">)</span>
+        <span class="n">wmt_velocity_control_combo_row_layout</span><span class="o">.</span><span class="n">addStretch</span><span class="p">()</span>
+
+        <span class="c1"># WMT Tabbed Widget</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wmt_tab_widget</span> <span class="o">=</span> <span class="n">QTabWidget</span><span class="p">()</span>
+        <span class="n">wmt_tabs</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;WMT1&quot;</span><span class="p">,</span> <span class="s2">&quot;WMT2&quot;</span><span class="p">,</span> <span class="s2">&quot;WMT3&quot;</span><span class="p">,</span> <span class="s2">&quot;WMT4&quot;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">wmt_tab</span> <span class="ow">in</span> <span class="n">wmt_tabs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">wmt_tab_widget</span><span class="o">.</span><span class="n">addTab</span><span class="p">(</span><span class="n">QWidget</span><span class="p">(),</span> <span class="n">wmt_tab</span><span class="p">)</span>
+        <span class="n">wmt_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wmt_tab_widget</span><span class="p">)</span>
+        <span class="n">wmt1_tab</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wmt_tab_widget</span><span class="o">.</span><span class="n">widget</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">wmt1_layout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_wmt1_layout</span><span class="p">()</span>
+        <span class="n">wmt1_tab</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">wmt1_layout</span><span class="p">)</span>
+
+        <span class="c1"># Add controls to WMT2 tab</span>
+        <span class="n">wmt2_tab</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wmt_tab_widget</span><span class="o">.</span><span class="n">widget</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">wmt2_layout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_wmt2_layout</span><span class="p">()</span>
+        <span class="n">wmt2_tab</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">wmt2_layout</span><span class="p">)</span>
+
+        <span class="c1"># Add controls to WMT2 tab</span>
+        <span class="n">wmt3_tab</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wmt_tab_widget</span><span class="o">.</span><span class="n">widget</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">wmt3_layout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_wmt3_layout</span><span class="p">()</span>
+        <span class="n">wmt3_tab</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">wmt3_layout</span><span class="p">)</span>
+
+        <span class="c1"># Add controls to WMT2 tab</span>
+        <span class="n">wmt4_tab</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wmt_tab_widget</span><span class="o">.</span><span class="n">widget</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+        <span class="n">wmt4_layout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_wmt4_layout</span><span class="p">()</span>
+        <span class="n">wmt4_tab</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">wmt4_layout</span><span class="p">)</span>
+        <span class="n">scrolled_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">wmt_group</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DrumWMTSection._create_wmt_layout">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/ui/editors/drum/partial/wmt/index.html#jdxi_editor.ui.editors.drum.partial.wmt.DrumWMTSection._create_wmt_layout">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_wmt_layout</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wmt_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">QFormLayout</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        _create_wmt_layout</span>
+
+<span class="sd">        :param wmt_index: int</span>
+<span class="sd">        :return: QFormLayout</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">main_row_hlayout</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+        <span class="n">main_row_hlayout</span><span class="o">.</span><span class="n">addStretch</span><span class="p">()</span>
+        <span class="n">form_layout</span> <span class="o">=</span> <span class="n">QFormLayout</span><span class="p">()</span>
+        <span class="n">main_row_hlayout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">form_layout</span><span class="p">)</span>
+        <span class="n">prefix</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;WMT</span><span class="si">{</span><span class="n">wmt_index</span><span class="si">}</span><span class="s2">_&quot;</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">p</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>  <span class="c1"># helper to get DrumPartialParameter by name</span>
+            <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">AddressParameterDrumPartial</span><span class="p">,</span> <span class="n">prefix</span> <span class="o">+</span> <span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wave_switch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_switch</span><span class="p">(</span>
+            <span class="n">p</span><span class="p">(</span><span class="s2">&quot;WAVE_SWITCH&quot;</span><span class="p">),</span> <span class="s2">&quot;Wave Switch&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;OFF&quot;</span><span class="p">,</span> <span class="s2">&quot;ON&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="n">form_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wave_switch</span><span class="p">)</span>
+
+        <span class="n">rm_wave_groups</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;&quot;</span><span class="p">,</span>  <span class="c1"># Empty string for the first item</span>
+            <span class="c1"># === Drum Machine Sources ===</span>
+            <span class="s2">&quot;Drum Machines&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    606&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    626&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    707&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    808&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    909&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    78&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    106&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    TM-2&quot;</span><span class="p">,</span>
+            <span class="c1"># === Musical Genres &amp; Styles ===</span>
+            <span class="s2">&quot;Genres/Styles&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    Ballad&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    Break&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    Dance&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    DanceHall&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    Hip-Hop&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    HipHop&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    Jazz&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    Jungle&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    Ragga&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    Reggae&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    Rock&quot;</span><span class="p">,</span>
+            <span class="c1"># === Sound Character &amp; Texture ===</span>
+            <span class="s2">&quot;Character&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    Analog&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    Bright&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    Dry&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    Hard&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    Lite&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    Lo-Bit&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    Lo-Fi&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    Old&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    Plastic&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    Power&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    Tight&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    Turbo&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    Vint&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    Warm&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    Wet&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    Wide&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    Wild&quot;</span><span class="p">,</span>
+            <span class="c1"># === Instrument Types ===</span>
+            <span class="s2">&quot;Instruments&quot;</span> <span class="s2">&quot;    Kick&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    Snare&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    Tom&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    Clap&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    Cymbal&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    Crash&quot;</span><span class="p">,</span>
+            <span class="c1"># === Percussion Types ===</span>
+            <span class="s2">&quot;Percussion&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    Bongo&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    Brush&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    Brsh&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    Conga&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    Cowbell&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    Piccolo&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    Rim&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    Rimshot&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    Stick&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    Cstick&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    Swish&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    Swish&amp;Trn&quot;</span><span class="p">,</span>
+            <span class="c1"># === Hi-Hats ===</span>
+            <span class="s2">&quot;Hi-Hats&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    CHH&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    OHH&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    PHH&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    C&amp;OHH&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    Tip&quot;</span><span class="p">,</span>
+            <span class="c1"># === Layer/Expression/Technique Tags ===</span>
+            <span class="s2">&quot;Layer Tags&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    Jazz Rim&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    Jazz Snare&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    Jz&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    HphpJazz&quot;</span><span class="p">,</span>
+            <span class="c1"># === Synthesis &amp; Processing ===</span>
+            <span class="s2">&quot;Synthesis&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    Dst&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    Hush&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    Hash&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    LD&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    MG&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    Mix&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    PurePhat&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    SF&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    Sim&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    SimV&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    Synth&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    TY&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    WD&quot;</span><span class="p">,</span>
+        <span class="p">]</span>
+
+        <span class="c1"># --- Combo and Search Controls for L Wave ---</span>
+        <span class="n">form_layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="n">QLabel</span><span class="p">(</span><span class="s2">&quot;Search L waves:&quot;</span><span class="p">))</span>
+
+        <span class="c1"># Search box</span>
+        <span class="n">l_wave_search_box</span> <span class="o">=</span> <span class="n">QLineEdit</span><span class="p">()</span>
+        <span class="n">l_wave_search_box</span><span class="o">.</span><span class="n">setPlaceholderText</span><span class="p">(</span><span class="s2">&quot;Search L waves...&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">l_wave_search_boxes</span><span class="p">[</span><span class="n">wmt_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">l_wave_search_box</span>
+
+        <span class="c1"># Group selector</span>
+        <span class="n">l_wave_selector</span> <span class="o">=</span> <span class="n">QComboBox</span><span class="p">()</span>
+        <span class="n">l_wave_selector</span><span class="o">.</span><span class="n">addItems</span><span class="p">(</span><span class="n">rm_wave_groups</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">l_wave_selectors</span><span class="p">[</span><span class="n">wmt_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">l_wave_selector</span>
+
+        <span class="c1"># Combo box (wave list)</span>
+        <span class="n">l_wave_combo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_combo_box</span><span class="p">(</span>
+            <span class="n">p</span><span class="p">(</span><span class="s2">&quot;WAVE_NUMBER_L&quot;</span><span class="p">),</span> <span class="s2">&quot;Wave Number L/Mono&quot;</span><span class="p">,</span> <span class="n">rm_waves</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">453</span><span class="p">))</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">l_wave_combos</span><span class="p">[</span><span class="n">wmt_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">l_wave_combo</span>
+
+        <span class="c1"># Connect both search &amp; selector to populate method</span>
+        <span class="n">l_wave_search_box</span><span class="o">.</span><span class="n">textChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">_</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="n">wmt_index</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_populate_l_waves</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">l_wave_selector</span><span class="o">.</span><span class="n">currentTextChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">_</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="n">wmt_index</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_populate_l_waves</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Add widgets to layout</span>
+        <span class="n">search_row</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+        <span class="n">search_row</span><span class="o">.</span><span class="n">addStretch</span><span class="p">()</span>
+        <span class="n">search_row</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">QLabel</span><span class="p">(</span><span class="s2">&quot;Group:&quot;</span><span class="p">))</span>
+        <span class="n">search_row</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">l_wave_selector</span><span class="p">)</span>
+        <span class="n">search_row</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">QLabel</span><span class="p">(</span><span class="s2">&quot;Search:&quot;</span><span class="p">))</span>
+        <span class="n">search_row</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">l_wave_search_box</span><span class="p">)</span>
+        <span class="n">search_row</span><span class="o">.</span><span class="n">addStretch</span><span class="p">()</span>
+        <span class="n">form_layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="n">search_row</span><span class="p">)</span>
+        <span class="n">form_layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="n">l_wave_combo</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">l_wave_combos</span><span class="p">[</span><span class="n">wmt_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">l_wave_combo</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">l_wave_search_boxes</span><span class="p">[</span><span class="n">wmt_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">l_wave_search_box</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">l_wave_selectors</span><span class="p">[</span><span class="n">wmt_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">l_wave_selector</span>
+
+        <span class="c1"># --- Combo and Search Controls for R Wave ---</span>
+        <span class="n">form_layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="n">QLabel</span><span class="p">(</span><span class="s2">&quot;Search R waves:&quot;</span><span class="p">))</span>
+
+        <span class="c1"># Search box</span>
+        <span class="n">r_wave_search_box</span> <span class="o">=</span> <span class="n">QLineEdit</span><span class="p">()</span>
+        <span class="n">r_wave_search_box</span><span class="o">.</span><span class="n">setPlaceholderText</span><span class="p">(</span><span class="s2">&quot;Search R waves...&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">r_wave_search_boxes</span><span class="p">[</span><span class="n">wmt_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">r_wave_search_box</span>
+
+        <span class="c1"># Group selector</span>
+        <span class="n">r_wave_selector</span> <span class="o">=</span> <span class="n">QComboBox</span><span class="p">()</span>
+        <span class="n">r_wave_selector</span><span class="o">.</span><span class="n">addItems</span><span class="p">(</span><span class="n">rm_wave_groups</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">r_wave_selectors</span><span class="p">[</span><span class="n">wmt_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">r_wave_selector</span>
+
+        <span class="c1"># Combo box (wave list)</span>
+        <span class="n">r_wave_combo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_combo_box</span><span class="p">(</span>
+            <span class="n">p</span><span class="p">(</span><span class="s2">&quot;WAVE_NUMBER_R&quot;</span><span class="p">),</span> <span class="s2">&quot;Wave Number R&quot;</span><span class="p">,</span> <span class="n">rm_waves</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">453</span><span class="p">))</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">r_wave_combos</span><span class="p">[</span><span class="n">wmt_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">r_wave_combo</span>
+
+        <span class="c1"># Connect both search &amp; selector to populate method</span>
+        <span class="n">r_wave_search_box</span><span class="o">.</span><span class="n">textChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">_</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="n">wmt_index</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_populate_r_waves</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">r_wave_selector</span><span class="o">.</span><span class="n">currentTextChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">_</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="n">wmt_index</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_populate_r_waves</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Add widgets to layout</span>
+        <span class="n">r_search_row</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+        <span class="n">r_search_row</span><span class="o">.</span><span class="n">addStretch</span><span class="p">()</span>
+        <span class="n">r_search_row</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">QLabel</span><span class="p">(</span><span class="s2">&quot;Group:&quot;</span><span class="p">))</span>
+        <span class="n">r_search_row</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">r_wave_selector</span><span class="p">)</span>
+        <span class="n">r_search_row</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">QLabel</span><span class="p">(</span><span class="s2">&quot;Search:&quot;</span><span class="p">))</span>
+        <span class="n">r_search_row</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">r_wave_search_box</span><span class="p">)</span>
+        <span class="n">r_search_row</span><span class="o">.</span><span class="n">addStretch</span><span class="p">()</span>
+        <span class="n">form_layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="n">r_search_row</span><span class="p">)</span>
+        <span class="n">form_layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="n">r_wave_combo</span><span class="p">)</span>
+
+        <span class="n">form_layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_combo_box</span><span class="p">(</span>
+                <span class="n">p</span><span class="p">(</span><span class="s2">&quot;WAVE_GAIN&quot;</span><span class="p">),</span> <span class="s2">&quot;Wave Gain&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;-6&quot;</span><span class="p">,</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="s2">&quot;6&quot;</span><span class="p">,</span> <span class="s2">&quot;12&quot;</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">form_layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_combo_box</span><span class="p">(</span>
+                <span class="n">p</span><span class="p">(</span><span class="s2">&quot;WAVE_GAIN&quot;</span><span class="p">),</span> <span class="s2">&quot;Wave FXM Switch&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;OFF&quot;</span><span class="p">,</span> <span class="s2">&quot;ON&quot;</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="p">)</span>
+        <span class="p">)</span>  <span class="c1"># If this is correct — maybe it’s a typo?</span>
+
+        <span class="c1"># Sliders</span>
+        <span class="n">form_layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_slider</span><span class="p">(</span><span class="n">p</span><span class="p">(</span><span class="s2">&quot;WAVE_FXM_COLOR&quot;</span><span class="p">),</span> <span class="s2">&quot;Wave FXM Color&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">form_layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_slider</span><span class="p">(</span><span class="n">p</span><span class="p">(</span><span class="s2">&quot;WAVE_FXM_DEPTH&quot;</span><span class="p">),</span> <span class="s2">&quot;Wave FXM Depth&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">form_layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_slider</span><span class="p">(</span><span class="n">p</span><span class="p">(</span><span class="s2">&quot;WAVE_TEMPO_SYNC&quot;</span><span class="p">),</span> <span class="s2">&quot;Wave Tempo Sync&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">form_layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_slider</span><span class="p">(</span><span class="n">p</span><span class="p">(</span><span class="s2">&quot;WAVE_COARSE_TUNE&quot;</span><span class="p">),</span> <span class="s2">&quot;Wave Coarse Tune&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">form_layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_slider</span><span class="p">(</span><span class="n">p</span><span class="p">(</span><span class="s2">&quot;WAVE_FINE_TUNE&quot;</span><span class="p">),</span> <span class="s2">&quot;Wave Fine Tune&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">form_layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_slider</span><span class="p">(</span><span class="n">p</span><span class="p">(</span><span class="s2">&quot;WAVE_PAN&quot;</span><span class="p">),</span> <span class="s2">&quot;Wave Pan&quot;</span><span class="p">))</span>
+
+        <span class="c1"># More combo boxes</span>
+        <span class="n">form_layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_combo_box</span><span class="p">(</span>
+                <span class="n">p</span><span class="p">(</span><span class="s2">&quot;WAVE_RANDOM_PAN_SWITCH&quot;</span><span class="p">),</span>
+                <span class="s2">&quot;Wave Random Pan Switch&quot;</span><span class="p">,</span>
+                <span class="p">[</span><span class="s2">&quot;OFF&quot;</span><span class="p">,</span> <span class="s2">&quot;ON&quot;</span><span class="p">],</span>
+                <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">form_layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_combo_box</span><span class="p">(</span>
+                <span class="n">p</span><span class="p">(</span><span class="s2">&quot;WAVE_ALTERNATE_PAN_SWITCH&quot;</span><span class="p">),</span>
+                <span class="s2">&quot;Wave Alternate Pan Switch&quot;</span><span class="p">,</span>
+                <span class="p">[</span><span class="s2">&quot;OFF&quot;</span><span class="p">,</span> <span class="s2">&quot;ON&quot;</span><span class="p">,</span> <span class="s2">&quot;REVERSE&quot;</span><span class="p">],</span>
+                <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="c1"># More sliders</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        layout.addRow(self._create_parameter_slider(p(&quot;WAVE_LEVEL&quot;), &quot;Wave Level&quot;))</span>
+<span class="sd">        layout.addRow(</span>
+<span class="sd">            self._create_parameter_slider(</span>
+<span class="sd">                p(&quot;VELOCITY_RANGE_LOWER&quot;), &quot;Velocity Range Lower&quot;</span>
+<span class="sd">            )</span>
+<span class="sd">        )</span>
+<span class="sd">        layout.addRow(</span>
+<span class="sd">            self._create_parameter_slider(</span>
+<span class="sd">                p(&quot;VELOCITY_RANGE_UPPER&quot;), &quot;Velocity Range Upper&quot;</span>
+<span class="sd">            )</span>
+<span class="sd">        )</span>
+<span class="sd">        layout.addRow(</span>
+<span class="sd">            self._create_parameter_slider(</span>
+<span class="sd">                p(&quot;VELOCITY_FADE_WIDTH_LOWER&quot;), &quot;Velocity Fade Width Lower&quot;</span>
+<span class="sd">            )</span>
+<span class="sd">        )</span>
+<span class="sd">        layout.addRow(</span>
+<span class="sd">            self._create_parameter_slider(</span>
+<span class="sd">                p(&quot;VELOCITY_FADE_WIDTH_UPPER&quot;), &quot;Velocity Fade Width Upper&quot;</span>
+<span class="sd">            )</span>
+<span class="sd">        )&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+
+            <span class="n">adsr_widget</span> <span class="o">=</span> <span class="n">WMTEnvelopeWidget</span><span class="p">(</span><span class="n">fade_lower_param</span><span class="o">=</span><span class="n">p</span><span class="p">(</span><span class="s2">&quot;VELOCITY_FADE_WIDTH_LOWER&quot;</span><span class="p">),</span>
+                                            <span class="n">range_lower_param</span><span class="o">=</span><span class="n">p</span><span class="p">(</span><span class="s2">&quot;VELOCITY_RANGE_LOWER&quot;</span><span class="p">),</span>
+                                            <span class="n">range_upper_param</span><span class="o">=</span><span class="n">p</span><span class="p">(</span><span class="s2">&quot;VELOCITY_RANGE_UPPER&quot;</span><span class="p">),</span>
+                                            <span class="n">depth_param</span><span class="o">=</span><span class="n">p</span><span class="p">(</span><span class="s2">&quot;WAVE_LEVEL&quot;</span><span class="p">),</span>
+                                            <span class="n">fade_upper_param</span><span class="o">=</span><span class="n">p</span><span class="p">(</span><span class="s2">&quot;VELOCITY_FADE_WIDTH_UPPER&quot;</span><span class="p">),</span>
+                                            <span class="n">create_parameter_slider</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_slider</span><span class="p">,</span>
+                                            <span class="n">controls</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="p">,</span>
+                                            <span class="n">midi_helper</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span><span class="p">,</span>
+                                            <span class="n">address</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span>
+                                            <span class="p">)</span>
+            <span class="n">adsr_widget</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">ADSR</span><span class="p">)</span>
+            <span class="n">form_layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="n">adsr_widget</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;WMT</span><span class="si">{</span><span class="n">wmt_index</span><span class="si">}</span><span class="s2">: Error creating ADSR:&quot;</span><span class="p">,</span> <span class="n">exception</span><span class="o">=</span><span class="n">ex</span><span class="p">)</span>
+        <span class="n">main_row_hlayout</span><span class="o">.</span><span class="n">addStretch</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">main_row_hlayout</span></div>
+
+
+<div class="viewcode-block" id="DrumWMTSection._populate_l_waves">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/ui/editors/drum/partial/wmt/index.html#jdxi_editor.ui.editors.drum.partial.wmt.DrumWMTSection._populate_l_waves">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_populate_l_waves</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wmt_index</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">search_box</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">l_wave_search_boxes</span><span class="p">[</span><span class="n">wmt_index</span><span class="p">]</span>
+            <span class="n">selector</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">l_wave_selectors</span><span class="p">[</span><span class="n">wmt_index</span><span class="p">]</span>
+            <span class="n">combo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">l_wave_combos</span><span class="p">[</span><span class="n">wmt_index</span><span class="p">]</span>
+
+            <span class="n">search_text</span> <span class="o">=</span> <span class="n">search_box</span><span class="o">.</span><span class="n">text</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">group_filter</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="n">currentText</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+            <span class="n">filtered</span> <span class="o">=</span> <span class="n">rm_waves</span>
+            <span class="k">if</span> <span class="n">search_text</span><span class="p">:</span>
+                <span class="n">filtered</span> <span class="o">=</span> <span class="p">[</span><span class="n">w</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">filtered</span> <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">search_text</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span><span class="p">)]</span>
+            <span class="k">if</span> <span class="n">group_filter</span><span class="p">:</span>
+                <span class="n">filtered</span> <span class="o">=</span> <span class="p">[</span><span class="n">w</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">filtered</span> <span class="k">if</span> <span class="n">group_filter</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">w</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span>
+
+            <span class="n">combo</span><span class="o">.</span><span class="n">combo_box</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">wave</span> <span class="ow">in</span> <span class="n">filtered</span><span class="p">:</span>
+                <span class="n">index_in_rm_waves</span> <span class="o">=</span> <span class="n">rm_waves</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">wave</span><span class="p">)</span>
+                <span class="n">combo</span><span class="o">.</span><span class="n">combo_box</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="n">wave</span><span class="p">,</span> <span class="n">index_in_rm_waves</span><span class="p">)</span>
+
+            <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;WMT</span><span class="si">{</span><span class="n">wmt_index</span><span class="si">}</span><span class="s2">: Showing </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">filtered</span><span class="p">)</span><span class="si">}</span><span class="s2"> results for group &#39;</span><span class="si">{</span><span class="n">group_filter</span><span class="si">}</span><span class="s2">&#39; + search &#39;</span><span class="si">{</span><span class="n">search_text</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;WMT</span><span class="si">{</span><span class="n">wmt_index</span><span class="si">}</span><span class="s2">: Error filtering L waves:&quot;</span><span class="p">,</span> <span class="n">exception</span><span class="o">=</span><span class="n">ex</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DrumWMTSection._populate_r_waves">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/ui/editors/drum/partial/wmt/index.html#jdxi_editor.ui.editors.drum.partial.wmt.DrumWMTSection._populate_r_waves">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_populate_r_waves</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wmt_index</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">search_box</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">r_wave_search_boxes</span><span class="p">[</span><span class="n">wmt_index</span><span class="p">]</span>
+            <span class="n">selector</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">r_wave_selectors</span><span class="p">[</span><span class="n">wmt_index</span><span class="p">]</span>
+            <span class="n">combo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">r_wave_combos</span><span class="p">[</span><span class="n">wmt_index</span><span class="p">]</span>
+
+            <span class="n">search_text</span> <span class="o">=</span> <span class="n">search_box</span><span class="o">.</span><span class="n">text</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">group_filter</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="n">currentText</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+            <span class="n">filtered</span> <span class="o">=</span> <span class="n">rm_waves</span>
+            <span class="k">if</span> <span class="n">search_text</span><span class="p">:</span>
+                <span class="n">filtered</span> <span class="o">=</span> <span class="p">[</span><span class="n">w</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">filtered</span> <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">search_text</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span><span class="p">)]</span>
+            <span class="k">if</span> <span class="n">group_filter</span><span class="p">:</span>
+                <span class="n">filtered</span> <span class="o">=</span> <span class="p">[</span><span class="n">w</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">filtered</span> <span class="k">if</span> <span class="n">group_filter</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">w</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span>
+
+            <span class="n">combo</span><span class="o">.</span><span class="n">combo_box</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">wave</span> <span class="ow">in</span> <span class="n">filtered</span><span class="p">:</span>
+                <span class="n">index_in_rm_waves</span> <span class="o">=</span> <span class="n">rm_waves</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">wave</span><span class="p">)</span>
+                <span class="n">combo</span><span class="o">.</span><span class="n">combo_box</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="n">wave</span><span class="p">,</span> <span class="n">index_in_rm_waves</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;WMT</span><span class="si">{</span><span class="n">wmt_index</span><span class="si">}</span><span class="s2">: Showing </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">filtered</span><span class="p">)</span><span class="si">}</span><span class="s2"> R wave results for group &#39;</span><span class="si">{</span><span class="n">group_filter</span><span class="si">}</span><span class="s2">&#39; + search &#39;</span><span class="si">{</span><span class="n">search_text</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;WMT</span><span class="si">{</span><span class="n">wmt_index</span><span class="si">}</span><span class="s2">: Error filtering R waves: </span><span class="si">{</span><span class="n">ex</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DrumWMTSection._create_wmt1_layout">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/ui/editors/drum/partial/wmt/index.html#jdxi_editor.ui.editors.drum.partial.wmt.DrumWMTSection._create_wmt1_layout">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_wmt1_layout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_wmt_layout</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DrumWMTSection._create_wmt2_layout">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/ui/editors/drum/partial/wmt/index.html#jdxi_editor.ui.editors.drum.partial.wmt.DrumWMTSection._create_wmt2_layout">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_wmt2_layout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_wmt_layout</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DrumWMTSection._create_wmt3_layout">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/ui/editors/drum/partial/wmt/index.html#jdxi_editor.ui.editors.drum.partial.wmt.DrumWMTSection._create_wmt3_layout">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_wmt3_layout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_wmt_layout</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DrumWMTSection._create_wmt4_layout">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/ui/editors/drum/partial/wmt/index.html#jdxi_editor.ui.editors.drum.partial.wmt.DrumWMTSection._create_wmt4_layout">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_wmt4_layout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_wmt_layout</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Mark Mrooks.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,1620 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>jdxi_editor.midi.message.roland &mdash; JD-Xi Editor 0.8.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=486e5634"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            JD-Xi Editor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage.html">Quick Start</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../usage.html#connection-of-the-jd-xi-hardware-instrument-to-the-computer">Connection of the JD-Xi Hardware Instrument to the Computer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../instrument.html">JDXi Instrument Window</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../instrument.html#features">Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../instrument.html#using-the-instrument-window">Using the Instrument Window</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../editor.html">Editor Window</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../editor.html#program-mixer-section">Program/Mixer Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../editor.html#digital-1-section">Digital 1 Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../editor.html#digital-2-section">Digital 2 Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../editor.html#drum-kit-section">Drum Kit Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../editor.html#analog-section">Analog Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../editor.html#effect-controls">Effect Controls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../editor.html#vocal-transformer">Vocal Transformer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../editor.html#arpeggiator">Arpeggiator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../editor.html#midi-file-player-and-recorder">MIDI File Player and Recorder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../editor.html#pattern-sequencer">Pattern Sequencer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../troubleshooting.html">Troubleshooting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../troubleshooting.html#general-problems">General Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../troubleshooting.html#macos">MacOS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../troubleshooting.html#windows">Windows</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../legal.html">Legal Disclaimer</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules.html">jdxi_editor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../jdxi_editor.html">jdxi_editor package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../jdxi_editor.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../jdxi_editor.jdxi.html">jdxi_editor.jdxi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../jdxi_editor.log.html">jdxi_editor.log package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../jdxi_editor.midi.html">jdxi_editor.midi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../jdxi_editor.ui.html">jdxi_editor.ui package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../jdxi_editor.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../jdxi_editor.html#module-jdxi_editor.globals">jdxi_editor.globals module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../jdxi_editor.html#module-jdxi_editor.main">jdxi_editor.main module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../jdxi_editor.html#jdxi_editor.main.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../jdxi_editor.html#module-jdxi_editor.project">jdxi_editor.project module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../jdxi_editor.html#module-jdxi_editor.resources">jdxi_editor.resources module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../jdxi_editor.html#jdxi_editor.resources.resource_path"><code class="docutils literal notranslate"><span class="pre">resource_path()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../jdxi_editor.html#module-jdxi_editor">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../autoapi/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/midi/index.html">midi</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/midi/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/midi/colors/index.html">midi.colors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/midi/slider/index.html">midi.slider</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/midi/spin_box/index.html">midi.spin_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/midi/time_ruler/index.html">midi.time_ruler</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/midi/track/index.html">midi.track</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/midi/track_viewer/index.html">midi.track_viewer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/midi/utils/index.html">midi.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/adsr/index.html">adsr</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/adsr/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/adsr/adsr/index.html">adsr.adsr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/adsr/graph/index.html">adsr.graph</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/adsr/parameter/index.html">adsr.parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/adsr/plot/index.html">adsr.plot</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/pitch/index.html">pitch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/pitch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/pitch/envelope/index.html">pitch.envelope</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/pitch/envelope_plot/index.html">pitch.envelope_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/pitch/pwm_plot/index.html">pitch.pwm_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/pitch/slider_spinbox/index.html">pitch.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/piano/index.html">piano</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/piano/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/piano/key/index.html">piano.key</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/piano/keyboard/index.html">piano.keyboard</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/panel/index.html">panel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/panel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/panel/partial/index.html">panel.partial</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/wheel/index.html">wheel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/wheel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/wheel/mod/index.html">wheel.mod</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/wheel/pitch/index.html">wheel.pitch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/wheel/wheel/index.html">wheel.wheel</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/preset/index.html">preset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/preset/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/preset/combo_box/index.html">preset.combo_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/preset/panel/index.html">preset.panel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/preset/patch_name/index.html">preset.patch_name</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/slider/index.html">slider</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/slider/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/slider/slider/index.html">slider.slider</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/slider/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/slider/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/slider/index.html#slider.Slider"><code class="docutils literal notranslate"><span class="pre">Slider</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/dialog/index.html">dialog</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/dialog/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/dialog/progress/index.html">dialog.progress</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/viewer/index.html">viewer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/viewer/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/viewer/log/index.html">viewer.log</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/button/index.html">button</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/button/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/button/channel/index.html">button.channel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/button/favorite/index.html">button.favorite</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/button/sequencer/index.html">button.sequencer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/button/waveform/index.html">button.waveform</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/button/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/button/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/button/index.html#button.ChannelButton"><code class="docutils literal notranslate"><span class="pre">ChannelButton</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/button/index.html#button.SequencerSquare"><code class="docutils literal notranslate"><span class="pre">SequencerSquare</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/switch/index.html">switch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/switch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/switch/partial/index.html">switch.partial</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/switch/switch/index.html">switch.switch</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/filter/index.html">filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/filter/index.html#filter.FilterWidget"><code class="docutils literal notranslate"><span class="pre">FilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/display/index.html">display</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/display/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/display/digital/index.html">display.digital</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/display/pattern/index.html">display.pattern</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/display/value/index.html">display.value</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/pattern/index.html">pattern</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/pattern/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/pattern/measure/index.html">pattern.measure</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/spin_box/index.html">spin_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/spin_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/spin_box/spin_box/index.html">spin_box.spin_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/envelope/index.html">envelope</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/envelope/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/envelope/base/index.html">envelope.base</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/indicator/index.html">indicator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/indicator/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/indicator/led/index.html">indicator.led</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/indicator/midi/index.html">indicator.midi</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/combo_box/index.html">combo_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/combo_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/combo_box/combo_box/index.html">combo_box.combo_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/jdxi_editor/index.html">jdxi_editor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/jdxi_editor/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/jdxi_editor/globals/index.html">jdxi_editor.globals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/jdxi_editor/jdxi/index.html">jdxi_editor.jdxi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/jdxi_editor/log/index.html">jdxi_editor.log</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/jdxi_editor/main/index.html">jdxi_editor.main</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/jdxi_editor/midi/index.html">jdxi_editor.midi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/jdxi_editor/project/index.html">jdxi_editor.project</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/jdxi_editor/resources/index.html">jdxi_editor.resources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/jdxi_editor/ui/index.html">jdxi_editor.ui</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/filter_plot/index.html">filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/filter_plot/index.html#filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/filter_plot/index.html#filter_plot.FilterPlot"><code class="docutils literal notranslate"><span class="pre">FilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/envelope_plot/index.html">envelope_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/envelope_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/envelope_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/envelope_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/envelope_plot/index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/envelope_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/envelope_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/envelope_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/envelope_plot/index.html#envelope_plot.midi_value_to_float"><code class="docutils literal notranslate"><span class="pre">midi_value_to_float()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/envelope_plot/index.html#envelope_plot.WMTEnvPlot"><code class="docutils literal notranslate"><span class="pre">WMTEnvPlot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/envelope_plot/index.html#envelope_plot.app"><code class="docutils literal notranslate"><span class="pre">app</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/wave_selector/index.html">wave_selector</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/wave_selector/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/wave_selector/wave_selector/index.html">wave_selector.wave_selector</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/analog_filter/index.html">analog_filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/analog_filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/analog_filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/analog_filter/index.html#analog_filter.AnalogFilterWidget"><code class="docutils literal notranslate"><span class="pre">AnalogFilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/slider_spinbox/index.html">slider_spinbox</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/slider_spinbox/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/slider_spinbox/slider_spinbox/index.html">slider_spinbox.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/analog_filter_plot/index.html">analog_filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/analog_filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/analog_filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/analog_filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/analog_filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/analog_filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/analog_filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/analog_filter_plot/index.html#analog_filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/analog_filter_plot/index.html#analog_filter_plot.AnalogFilterPlot"><code class="docutils literal notranslate"><span class="pre">AnalogFilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">JD-Xi Editor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">jdxi_editor.midi.message.roland</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for jdxi_editor.midi.message.roland</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">roland_sysex.py</span>
+<span class="sd">===============</span>
+
+<span class="sd">This module provides a class for constructing and parsing Roland System Exclusive (SysEx) messages. The `RolandSysEx` class allows for easy creation of messages to be sent to Roland devices, as well as the ability to parse incoming SysEx messages.</span>
+
+<span class="sd">Usage Example:</span>
+
+<span class="sd">```python</span>
+<span class="sd">from roland_sysex import RolandSysEx</span>
+
+<span class="sd"># Creating a SysEx message</span>
+<span class="sd">message = RolandSysEx(command=0x12, area=0x01, section=0x02, group=0x03, param=0x04, value=0x05)</span>
+<span class="sd">message_bytes = message.to_bytes()</span>
+<span class="sd">print(&quot;Generated SysEx Message (bytes):&quot;, message_bytes)</span>
+
+<span class="sd"># Parsing a SysEx message from bytes</span>
+<span class="sd">received_bytes = b&#39;\xF0\x41\x10\x12\x00\x01\x02\x03\x04\x05\xF7&#39;  # Example received SysEx message</span>
+<span class="sd">parsed_message = RolandSysEx.from_bytes(received_bytes)</span>
+<span class="sd">print(&quot;Parsed Command:&quot;, parsed_message.command)</span>
+<span class="sd">print(&quot;Parsed Address:&quot;, parsed_message.address)</span>
+<span class="sd">print(&quot;Parsed Value:&quot;, parsed_message.value)</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span>
+
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.jdxi.midi.constant</span><span class="w"> </span><span class="kn">import</span> <span class="n">MidiConstant</span><span class="p">,</span> <span class="n">JDXiConstant</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.jdxi.sysex.bitmask</span><span class="w"> </span><span class="kn">import</span> <span class="n">BitMask</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.jdxi.sysex.offset</span><span class="w"> </span><span class="kn">import</span> <span class="n">JDXiSysExOffset</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.log.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">Logger</span> <span class="k">as</span> <span class="n">log</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.data.address.address</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">ModelID</span><span class="p">,</span>
+    <span class="n">CommandID</span><span class="p">,</span>
+    <span class="n">AddressStartMSB</span><span class="p">,</span>
+    <span class="n">RolandSysExAddress</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.data.address.sysex</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">START_OF_SYSEX</span><span class="p">,</span>
+    <span class="n">END_OF_SYSEX</span><span class="p">,</span>
+    <span class="n">ZERO_BYTE</span><span class="p">,</span>
+    <span class="n">RolandID</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.message.sysex</span><span class="w"> </span><span class="kn">import</span> <span class="n">SysExMessage</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.utils.byte</span><span class="w"> </span><span class="kn">import</span> <span class="n">split_16bit_value_to_nibbles</span>
+
+
+<span class="nd">@dataclass</span>
+<div class="viewcode-block" id="RolandSysExMessage">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.RolandSysExMessage">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">RolandSysExMessage</span><span class="p">(</span><span class="n">SysExMessage</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Specialized class for Roland JD-Xi SysEx messages.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="RolandSysExMessage.manufacturer_id">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.RolandSysExMessage.manufacturer_id">[docs]</a>
+    <span class="n">manufacturer_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">RolandID</span><span class="o">.</span><span class="n">ROLAND_ID</span></div>
+
+<div class="viewcode-block" id="RolandSysExMessage.device_id">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.RolandSysExMessage.device_id">[docs]</a>
+    <span class="n">device_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">RolandID</span><span class="o">.</span><span class="n">DEVICE_ID</span></div>
+
+<div class="viewcode-block" id="RolandSysExMessage.model_id">
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/message/roland/index.html#jdxi_editor.midi.message.roland.RolandSysExMessage.model_id">[docs]</a>
+    <span class="n">model_id</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[</span>
+            <span class="n">ModelID</span><span class="o">.</span><span class="n">MODEL_ID_1</span><span class="p">,</span>
+            <span class="n">ModelID</span><span class="o">.</span><span class="n">MODEL_ID_2</span><span class="p">,</span>
+            <span class="n">ModelID</span><span class="o">.</span><span class="n">MODEL_ID_3</span><span class="p">,</span>
+            <span class="n">ModelID</span><span class="o">.</span><span class="n">MODEL_ID_4</span><span class="p">,</span>
+        <span class="p">]</span>
+    <span class="p">)</span></div>
+
+<div class="viewcode-block" id="RolandSysExMessage.command">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.RolandSysExMessage.command">[docs]</a>
+    <span class="n">command</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">CommandID</span><span class="o">.</span><span class="n">DT1</span></div>
+
+
+<div class="viewcode-block" id="RolandSysExMessage.sysex_address">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.RolandSysExMessage.sysex_address">[docs]</a>
+    <span class="n">sysex_address</span><span class="p">:</span> <span class="n">RolandSysExAddress</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">RolandSysExAddress</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RolandSysExMessage.value">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.RolandSysExMessage.value">[docs]</a>
+    <span class="n">value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="n">MidiConstant</span><span class="o">.</span><span class="n">ZERO_BYTE</span></div>
+
+<div class="viewcode-block" id="RolandSysExMessage.size">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.RolandSysExMessage.size">[docs]</a>
+    <span class="n">size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span></div>
+
+
+    <span class="c1"># These attributes should not be set in `__init__`</span>
+<div class="viewcode-block" id="RolandSysExMessage.synth_type">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.RolandSysExMessage.synth_type">[docs]</a>
+    <span class="n">synth_type</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RolandSysExMessage.part">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.RolandSysExMessage.part">[docs]</a>
+    <span class="n">part</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RolandSysExMessage.dt1_command">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.RolandSysExMessage.dt1_command">[docs]</a>
+    <span class="n">dt1_command</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">CommandID</span><span class="o">.</span><span class="n">DT1</span></div>
+
+<div class="viewcode-block" id="RolandSysExMessage.rq1_command">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.RolandSysExMessage.rq1_command">[docs]</a>
+    <span class="n">rq1_command</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">CommandID</span><span class="o">.</span><span class="n">RQ1</span></div>
+
+
+<div class="viewcode-block" id="RolandSysExMessage.__post_init__">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.RolandSysExMessage.__post_init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize data and resolve address bytes.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sysex_address</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
+        <span class="p">)</span>  <span class="c1"># Assuming this method returns [msb, umb, lmb, lsb]</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">split_16bit_value_to_nibbles</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span></div>
+
+
+<div class="viewcode-block" id="RolandSysExMessage.to_message_list">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.RolandSysExMessage.to_message_list">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_message_list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert the SysEx message to a list of integers.</span>
+
+<span class="sd">        :return: list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="p">[</span><span class="n">MidiConstant</span><span class="o">.</span><span class="n">START_OF_SYSEX</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">manufacturer_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">device_id</span><span class="p">]</span>
+                <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_id</span><span class="p">)</span>
+                <span class="o">+</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">command</span><span class="p">]</span>
+                <span class="o">+</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">sysex_address</span><span class="o">.</span><span class="n">msb</span><span class="p">]</span>
+                <span class="o">+</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">sysex_address</span><span class="o">.</span><span class="n">umb</span><span class="p">]</span>
+                <span class="o">+</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">sysex_address</span><span class="o">.</span><span class="n">lmb</span><span class="p">]</span>
+                <span class="o">+</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">sysex_address</span><span class="o">.</span><span class="n">lsb</span><span class="p">]</span>
+                <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
+        <span class="p">)</span>
+        <span class="n">msg</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">calculate_checksum</span><span class="p">())</span>
+        <span class="n">msg</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">end_of_sysex</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">msg</span></div>
+</div>
+
+
+
+<span class="nd">@dataclass</span>
+<div class="viewcode-block" id="RolandSysEx">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.RolandSysEx">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">RolandSysEx</span><span class="p">(</span><span class="n">SysExMessage</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Specialized class for Roland JD-Xi SysEx messages.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="RolandSysEx.manufacturer_id">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.RolandSysEx.manufacturer_id">[docs]</a>
+    <span class="n">manufacturer_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">RolandID</span><span class="o">.</span><span class="n">ROLAND_ID</span></div>
+
+<div class="viewcode-block" id="RolandSysEx.device_id">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.RolandSysEx.device_id">[docs]</a>
+    <span class="n">device_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">RolandID</span><span class="o">.</span><span class="n">DEVICE_ID</span></div>
+
+<div class="viewcode-block" id="RolandSysEx.model_id">
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/message/roland/index.html#jdxi_editor.midi.message.roland.RolandSysEx.model_id">[docs]</a>
+    <span class="n">model_id</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[</span>
+            <span class="n">ModelID</span><span class="o">.</span><span class="n">MODEL_ID_1</span><span class="p">,</span>
+            <span class="n">ModelID</span><span class="o">.</span><span class="n">MODEL_ID_2</span><span class="p">,</span>
+            <span class="n">ModelID</span><span class="o">.</span><span class="n">MODEL_ID_3</span><span class="p">,</span>
+            <span class="n">ModelID</span><span class="o">.</span><span class="n">MODEL_ID_4</span><span class="p">,</span>
+        <span class="p">]</span>
+    <span class="p">)</span></div>
+
+<div class="viewcode-block" id="RolandSysEx.command">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.RolandSysEx.command">[docs]</a>
+    <span class="n">command</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">CommandID</span><span class="o">.</span><span class="n">DT1</span></div>
+
+<div class="viewcode-block" id="RolandSysEx.sysex_address">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.RolandSysEx.sysex_address">[docs]</a>
+    <span class="n">sysex_address</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">RolandSysExAddress</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="RolandSysEx.msb">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.RolandSysEx.msb">[docs]</a>
+    <span class="n">msb</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">MidiConstant</span><span class="o">.</span><span class="n">ZERO_BYTE</span></div>
+
+<div class="viewcode-block" id="RolandSysEx.umb">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.RolandSysEx.umb">[docs]</a>
+    <span class="n">umb</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">MidiConstant</span><span class="o">.</span><span class="n">ZERO_BYTE</span></div>
+
+<div class="viewcode-block" id="RolandSysEx.lmb">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.RolandSysEx.lmb">[docs]</a>
+    <span class="n">lmb</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">MidiConstant</span><span class="o">.</span><span class="n">ZERO_BYTE</span></div>
+
+<div class="viewcode-block" id="RolandSysEx.lsb">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.RolandSysEx.lsb">[docs]</a>
+    <span class="n">lsb</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">MidiConstant</span><span class="o">.</span><span class="n">ZERO_BYTE</span></div>
+
+<div class="viewcode-block" id="RolandSysEx.value">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.RolandSysEx.value">[docs]</a>
+    <span class="n">value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="n">MidiConstant</span><span class="o">.</span><span class="n">ZERO_BYTE</span></div>
+
+<div class="viewcode-block" id="RolandSysEx.size">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.RolandSysEx.size">[docs]</a>
+    <span class="n">size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span></div>
+
+
+<div class="viewcode-block" id="RolandSysEx.synth_type">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.RolandSysEx.synth_type">[docs]</a>
+    <span class="n">synth_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RolandSysEx.part">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.RolandSysEx.part">[docs]</a>
+    <span class="n">part</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RolandSysEx.dt1_command">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.RolandSysEx.dt1_command">[docs]</a>
+    <span class="n">dt1_command</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">CommandID</span><span class="o">.</span><span class="n">DT1</span></div>
+
+<div class="viewcode-block" id="RolandSysEx.rq1_command">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.RolandSysEx.rq1_command">[docs]</a>
+    <span class="n">rq1_command</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">CommandID</span><span class="o">.</span><span class="n">RQ1</span></div>
+
+
+<div class="viewcode-block" id="RolandSysEx.__post_init__">
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/message/roland/index.html#jdxi_editor.midi.message.roland.RolandSysEx.__post_init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sysex_address</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sysex_address</span><span class="o">.</span><span class="n">msb</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">umb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sysex_address</span><span class="o">.</span><span class="n">umb</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lmb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sysex_address</span><span class="o">.</span><span class="n">lmb</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lsb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sysex_address</span><span class="o">.</span><span class="n">lsb</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">msb</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">umb</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lmb</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lsb</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">split_16bit_value_to_nibbles</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span></div>
+
+
+<div class="viewcode-block" id="RolandSysEx.from_sysex_address">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.RolandSysEx.from_sysex_address">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_sysex_address</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sysex_address</span><span class="p">:</span> <span class="n">RolandSysExAddress</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;from_sysex_address</span>
+<span class="sd">        :param sysex_address: RolandSysExAddress</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msb</span> <span class="o">=</span> <span class="n">sysex_address</span><span class="o">.</span><span class="n">msb</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">umb</span> <span class="o">=</span> <span class="n">sysex_address</span><span class="o">.</span><span class="n">umb</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lmb</span> <span class="o">=</span> <span class="n">sysex_address</span><span class="o">.</span><span class="n">lmb</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lsb</span> <span class="o">=</span> <span class="n">sysex_address</span><span class="o">.</span><span class="n">lsb</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">msb</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">umb</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lmb</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lsb</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="RolandSysEx.to_message_list">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.RolandSysEx.to_message_list">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_message_list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        to_message_list</span>
+
+<span class="sd">        :return: List[int]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">[</span><span class="n">MidiConstant</span><span class="o">.</span><span class="n">START_OF_SYSEX</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">manufacturer_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">device_id</span><span class="p">]</span>
+            <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_id</span><span class="p">)</span>
+            <span class="o">+</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">command</span><span class="p">]</span>
+            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span>
+            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
+        <span class="p">)</span>
+        <span class="n">msg</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">calculate_checksum</span><span class="p">())</span>
+        <span class="n">msg</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">end_of_sysex</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">msg</span></div>
+
+
+<div class="viewcode-block" id="RolandSysEx.construct_sysex">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.RolandSysEx.construct_sysex">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">construct_sysex</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">address</span><span class="p">:</span> <span class="n">RolandSysExAddress</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">data_bytes</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="nb">int</span><span class="p">],</span>
+        <span class="n">request</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Construct a SysEx message based on the provided address and data bytes.</span>
+
+<span class="sd">        :param address: RolandSysExAddress</span>
+<span class="sd">        :param data_bytes: list of data bytes</span>
+<span class="sd">        :param request: bool is this a request?</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;address: </span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2"> data_bytes: </span><span class="si">{</span><span class="n">data_bytes</span><span class="si">}</span><span class="s2"> request: </span><span class="si">{</span><span class="n">request</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Handle address fields directly</span>
+        <span class="n">addr_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">address</span><span class="o">.</span><span class="n">msb</span><span class="p">,</span> <span class="n">address</span><span class="o">.</span><span class="n">umb</span><span class="p">,</span> <span class="n">address</span><span class="o">.</span><span class="n">lmb</span><span class="p">,</span> <span class="n">address</span><span class="o">.</span><span class="n">lsb</span><span class="p">]</span>
+
+        <span class="c1"># Flatten and normalize data_bytes</span>
+        <span class="n">flat_data</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">db</span> <span class="ow">in</span> <span class="n">data_bytes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="n">flat_data</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">db</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">flat_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">db</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">flat_data</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parameter</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">flat_data</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">flat_data</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">flat_data</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parameter</span> <span class="o">=</span> <span class="n">flat_data</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="p">[</span><span class="n">flat_data</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">flat_data</span><span class="p">)</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parameter</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">flat_data</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid data_bytes length. Must be 1, 2+, or 4.&quot;</span><span class="p">)</span>
+
+        <span class="n">command</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rq1_command</span> <span class="k">if</span> <span class="n">request</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt1_command</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameter</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Parameter list must contain only integers.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Value list must contain only integers.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameter</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Both parameter and value cannot be empty.&quot;</span><span class="p">)</span>
+
+        <span class="n">required_values</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;manufacturer_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">manufacturer_id</span><span class="p">,</span>
+            <span class="s2">&quot;device_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">device_id</span><span class="p">,</span>
+            <span class="s2">&quot;model_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_id</span><span class="p">,</span>
+            <span class="s2">&quot;command&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">command</span><span class="p">,</span>
+            <span class="s2">&quot;address&quot;</span><span class="p">:</span> <span class="n">addr_list</span><span class="p">,</span>
+            <span class="s2">&quot;parameter&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameter</span><span class="p">,</span>
+            <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">required_values</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Missing required value: </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> cannot be None.&quot;</span><span class="p">)</span>
+
+        <span class="n">sysex_msg</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">[</span><span class="n">START_OF_SYSEX</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">manufacturer_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">device_id</span><span class="p">]</span>
+            <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_id</span><span class="p">)</span>
+            <span class="o">+</span> <span class="p">[</span><span class="n">command</span><span class="p">]</span>
+            <span class="o">+</span> <span class="n">addr_list</span>
+            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameter</span>
+            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span>
+        <span class="p">)</span>
+
+        <span class="n">sysex_msg</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">calculate_checksum</span><span class="p">())</span>
+        <span class="n">sysex_msg</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">END_OF_SYSEX</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">sysex_msg</span></div>
+</div>
+
+
+
+<span class="nd">@dataclass</span>
+<div class="viewcode-block" id="JDXiSysEx">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.JDXiSysEx">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">JDXiSysEx</span><span class="p">(</span><span class="n">RolandSysEx</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;JD-Xi specific SysEx message&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="JDXiSysEx.model_id">
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/message/roland/index.html#jdxi_editor.midi.message.roland.JDXiSysEx.model_id">[docs]</a>
+    <span class="n">model_id</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[</span>
+            <span class="n">ModelID</span><span class="o">.</span><span class="n">MODEL_ID_1</span><span class="p">,</span>
+            <span class="n">ModelID</span><span class="o">.</span><span class="n">MODEL_ID_2</span><span class="p">,</span>
+            <span class="n">ModelID</span><span class="o">.</span><span class="n">MODEL_ID_3</span><span class="p">,</span>
+            <span class="n">ModelID</span><span class="o">.</span><span class="n">MODEL_ID_4</span><span class="p">,</span>
+        <span class="p">]</span>
+    <span class="p">)</span>  <span class="c1"># JD-Xi model ID</span></div>
+
+<div class="viewcode-block" id="JDXiSysEx.device_id">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.JDXiSysEx.device_id">[docs]</a>
+    <span class="n">device_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mh">0x10</span>  <span class="c1"># Default device ID</span></div>
+
+<div class="viewcode-block" id="JDXiSysEx.command">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.JDXiSysEx.command">[docs]</a>
+    <span class="n">command</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">CommandID</span><span class="o">.</span><span class="n">DT1</span>  <span class="c1"># Default to DT1 command</span></div>
+
+<div class="viewcode-block" id="JDXiSysEx.address">
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/message/roland/index.html#jdxi_editor.midi.message.roland.JDXiSysEx.address">[docs]</a>
+    <span class="n">address</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[</span><span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">]</span>
+    <span class="p">)</span>  <span class="c1"># 4-byte address</span></div>
+
+<div class="viewcode-block" id="JDXiSysEx.data">
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/message/roland/index.html#jdxi_editor.midi.message.roland.JDXiSysEx.data">[docs]</a>
+    <span class="n">data</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>  <span class="c1"># Data bytes</span></div>
+
+
+<div class="viewcode-block" id="JDXiSysEx.__post_init__">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.JDXiSysEx.__post_init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate message components&quot;&quot;&quot;</span>
+        <span class="c1"># Validate device ID</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="mh">0x00</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">device_id</span> <span class="o">&lt;=</span> <span class="mh">0x1F</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">device_id</span> <span class="o">!=</span> <span class="mh">0x7F</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid device ID: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">device_id</span><span class="si">:</span><span class="s2">02X</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Validate model ID</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_id</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Model ID must be 4 bytes&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_id</span> <span class="o">!=</span> <span class="p">[</span><span class="n">ModelID</span><span class="o">.</span><span class="n">MODEL_ID_1</span><span class="p">,</span>
+                             <span class="n">ModelID</span><span class="o">.</span><span class="n">MODEL_ID_2</span><span class="p">,</span>
+                             <span class="n">ModelID</span><span class="o">.</span><span class="n">MODEL_ID_3</span><span class="p">,</span>
+                             <span class="n">ModelID</span><span class="o">.</span><span class="n">MODEL_ID_4</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid model ID: </span><span class="si">{</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">x</span><span class="si">:</span><span class="s1">02X</span><span class="si">}</span><span class="s1">&#39;</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">model_id</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Validate address</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Address must be 4 bytes&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">ZERO_BYTE</span> <span class="o">&lt;=</span> <span class="n">x</span> <span class="o">&lt;=</span> <span class="n">BitMask</span><span class="o">.</span><span class="n">FULL_BYTE</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Invalid address bytes: </span><span class="si">{</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">x</span><span class="si">:</span><span class="s1">02X</span><span class="si">}</span><span class="s1">&#39;</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="JDXiSysEx.to_bytes">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.JDXiSysEx.to_bytes">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert message to bytes for sending&quot;&quot;&quot;</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">START_OF_SYSEX</span><span class="p">,</span>  <span class="c1"># Start of SysEx</span>
+            <span class="n">RolandID</span><span class="o">.</span><span class="n">ROLAND_ID</span><span class="p">,</span>  <span class="c1"># Roland ID</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">device_id</span><span class="p">,</span>  <span class="c1"># Device ID</span>
+            <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">model_id</span><span class="p">,</span>  <span class="c1"># Model ID (4 bytes)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">command</span><span class="p">,</span>  <span class="c1"># Command ID</span>
+            <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span>  <span class="c1"># Address (4 bytes)</span>
+            <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>  <span class="c1"># Data bytes</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">calculate_checksum</span><span class="p">(),</span>  <span class="c1"># Checksum</span>
+            <span class="n">END_OF_SYSEX</span><span class="p">,</span>  <span class="c1"># End of SysEx</span>
+        <span class="p">]</span>
+        <span class="k">return</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="JDXiSysEx.calculate_checksum">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.JDXiSysEx.calculate_checksum">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calculate_checksum</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate Roland checksum for the message&quot;&quot;&quot;</span>
+        <span class="c1"># Checksum = 128 - (sum of address and data bytes % 128)</span>
+        <span class="n">checksum</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">)</span> <span class="o">+</span> <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="mi">128</span> <span class="o">-</span> <span class="p">(</span><span class="n">checksum</span> <span class="o">%</span> <span class="mi">128</span><span class="p">))</span> <span class="o">&amp;</span> <span class="n">BitMask</span><span class="o">.</span><span class="n">LOW_7_BITS</span></div>
+
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="JDXiSysEx.from_bytes">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.JDXiSysEx.from_bytes">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_bytes</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create message from received bytes&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+                <span class="o">&lt;</span> <span class="n">JDXiConstant</span><span class="o">.</span><span class="n">SYSEX_LENGTH_ONE_BYTE_DATA</span>  <span class="c1"># Minimum length: F0 + ID + dev + model(4) + cmd + addr(4) + sum + F7</span>
+                <span class="ow">or</span> <span class="n">data</span><span class="p">[</span><span class="n">JDXiSysExOffset</span><span class="o">.</span><span class="n">SYSEX_START</span><span class="p">]</span> <span class="o">!=</span> <span class="n">START_OF_SYSEX</span>
+                <span class="ow">or</span> <span class="n">data</span><span class="p">[</span><span class="n">JDXiSysExOffset</span><span class="o">.</span><span class="n">ROLAND_ID</span><span class="p">]</span> <span class="o">!=</span> <span class="n">ModelID</span><span class="o">.</span><span class="n">ROLAND_ID</span>  <span class="c1"># Roland ID</span>
+                <span class="ow">or</span> <span class="n">data</span><span class="p">[</span><span class="n">JDXiSysExOffset</span><span class="o">.</span><span class="n">MODEL_ID_1</span><span class="p">:</span><span class="n">JDXiSysExOffset</span><span class="o">.</span><span class="n">COMMAND_ID</span><span class="p">]</span> <span class="o">!=</span> <span class="nb">bytes</span><span class="p">([</span><span class="n">ModelID</span><span class="o">.</span><span class="n">MODEL_ID_1</span><span class="p">,</span>
+                                                                                         <span class="n">ModelID</span><span class="o">.</span><span class="n">MODEL_ID_2</span><span class="p">,</span>
+                                                                                         <span class="n">ModelID</span><span class="o">.</span><span class="n">MODEL_ID_3</span><span class="p">,</span>
+                                                                                         <span class="n">ModelID</span><span class="o">.</span><span class="n">MODEL_ID_4</span><span class="p">])</span>
+        <span class="p">):</span>  <span class="c1"># JD-Xi model ID</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid JD-Xi SysEx message&quot;</span><span class="p">)</span>
+
+        <span class="n">device_id</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">JDXiSysExOffset</span><span class="o">.</span><span class="n">DEVICE_ID</span><span class="p">]</span>
+        <span class="n">command</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">JDXiSysExOffset</span><span class="o">.</span><span class="n">COMMAND_ID</span><span class="p">]</span>
+        <span class="n">address</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">JDXiSysExOffset</span><span class="o">.</span><span class="n">ADDRESS_MSB</span><span class="p">:</span><span class="n">JDXiSysExOffset</span><span class="o">.</span><span class="n">TONE_NAME_START</span><span class="p">])</span>
+        <span class="n">message_data</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+            <span class="n">data</span><span class="p">[</span><span class="n">JDXiSysExOffset</span><span class="o">.</span><span class="n">TONE_NAME_START</span><span class="p">:</span><span class="n">JDXiSysExOffset</span><span class="o">.</span><span class="n">CHECKSUM</span><span class="p">])</span>  <span class="c1"># Everything between address and checksum</span>
+        <span class="n">received_checksum</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">JDXiSysExOffset</span><span class="o">.</span><span class="n">CHECKSUM</span><span class="p">]</span>
+
+        <span class="c1"># Create message and verify checksum</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span>
+            <span class="n">device_id</span><span class="o">=</span><span class="n">device_id</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="n">command</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="n">address</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">message_data</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">message</span><span class="o">.</span><span class="n">calculate_checksum</span><span class="p">()</span> <span class="o">!=</span> <span class="n">received_checksum</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid checksum&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">message</span></div>
+</div>
+
+
+
+<span class="nd">@dataclass</span>
+<div class="viewcode-block" id="ParameterMessage">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.ParameterMessage">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ParameterMessage</span><span class="p">(</span><span class="n">JDXiSysEx</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for parameter messages&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ParameterMessage.command">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.ParameterMessage.command">[docs]</a>
+    <span class="n">command</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">CommandID</span><span class="o">.</span><span class="n">DT1</span></div>
+
+
+<div class="viewcode-block" id="ParameterMessage.__post_init__">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.ParameterMessage.__post_init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Handle parameter value conversion&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
+
+        <span class="c1"># Convert parameter value if needed</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;convert_value&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">convert_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ParameterMessage.convert_value">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.ParameterMessage.convert_value">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">convert_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert parameter value to data bytes</span>
+
+<span class="sd">        :param value: int</span>
+<span class="sd">        :return: list[int]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Default implementation just returns single byte</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">value</span><span class="p">]</span></div>
+
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="ParameterMessage.from_bytes">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.ParameterMessage.from_bytes">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_bytes</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JDXiSysEx</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create message from received bytes&quot;&quot;&quot;</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">from_bytes</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="c1"># Convert data back to value if needed</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;convert_data&quot;</span><span class="p">):</span>
+            <span class="n">msg</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">convert_data</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">msg</span></div>
+
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="ParameterMessage.convert_data">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.ParameterMessage.convert_data">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">convert_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert data bytes back to parameter value&quot;&quot;&quot;</span>
+        <span class="c1"># Default implementation just returns first byte</span>
+        <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">data</span> <span class="k">else</span> <span class="mi">0</span></div>
+</div>
+
+
+
+<span class="nd">@dataclass</span>
+<div class="viewcode-block" id="SystemMessage">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.SystemMessage">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SystemMessage</span><span class="p">(</span><span class="n">ParameterMessage</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;System parameter message&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="SystemMessage.msb">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.SystemMessage.msb">[docs]</a>
+    <span class="n">msb</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mh">0x02</span>  <span class="c1"># System area</span></div>
+</div>
+
+
+
+<span class="nd">@dataclass</span>
+<div class="viewcode-block" id="ProgramMessage">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.ProgramMessage">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ProgramMessage</span><span class="p">(</span><span class="n">ParameterMessage</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Program parameter message&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ProgramMessage.msb">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.ProgramMessage.msb">[docs]</a>
+    <span class="n">msb</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mh">0x18</span>  <span class="c1"># Program area</span></div>
+</div>
+
+
+
+<span class="c1"># Update other message classes to inherit from ParameterMessage</span>
+<span class="nd">@dataclass</span>
+<div class="viewcode-block" id="Effect1Message">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.Effect1Message">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Effect1Message</span><span class="p">(</span><span class="n">ParameterMessage</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Effect 1 parameter message&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Effect1Message.msb">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.Effect1Message.msb">[docs]</a>
+    <span class="n">msb</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mh">0x18</span>  <span class="c1"># Program area</span></div>
+
+<div class="viewcode-block" id="Effect1Message.umb">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.Effect1Message.umb">[docs]</a>
+    <span class="n">umb</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mh">0x02</span>  <span class="c1"># Effect 1 section</span></div>
+</div>
+
+
+
+<span class="nd">@dataclass</span>
+<div class="viewcode-block" id="Effect2Message">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.Effect2Message">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Effect2Message</span><span class="p">(</span><span class="n">ParameterMessage</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Effect 2 parameter message&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Effect2Message.msb">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.Effect2Message.msb">[docs]</a>
+    <span class="n">msb</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mh">0x18</span>  <span class="c1"># Program area</span></div>
+
+<div class="viewcode-block" id="Effect2Message.umb">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.Effect2Message.umb">[docs]</a>
+    <span class="n">umb</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mh">0x04</span>  <span class="c1"># Effect 2 section</span></div>
+</div>
+
+
+
+<span class="nd">@dataclass</span>
+<div class="viewcode-block" id="DelayMessage">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.DelayMessage">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DelayMessage</span><span class="p">(</span><span class="n">ParameterMessage</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Delay parameter message&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="DelayMessage.msb">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.DelayMessage.msb">[docs]</a>
+    <span class="n">msb</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mh">0x18</span>  <span class="c1"># Program area</span></div>
+
+<div class="viewcode-block" id="DelayMessage.umb">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.DelayMessage.umb">[docs]</a>
+    <span class="n">umb</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mh">0x06</span>  <span class="c1"># Delay section</span></div>
+</div>
+
+
+
+<span class="nd">@dataclass</span>
+<div class="viewcode-block" id="ReverbMessage">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.ReverbMessage">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ReverbMessage</span><span class="p">(</span><span class="n">ParameterMessage</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Reverb parameter message&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ReverbMessage.msb">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.ReverbMessage.msb">[docs]</a>
+    <span class="n">msb</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mh">0x18</span>  <span class="c1"># Program area</span></div>
+
+<div class="viewcode-block" id="ReverbMessage.umb">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.ReverbMessage.umb">[docs]</a>
+    <span class="n">umb</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mh">0x08</span>  <span class="c1"># Reverb section</span></div>
+</div>
+
+
+
+<span class="nd">@dataclass</span>
+<div class="viewcode-block" id="PartMessage">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.PartMessage">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">PartMessage</span><span class="p">(</span><span class="n">ParameterMessage</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Program Part parameter message&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="PartMessage.msb">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.PartMessage.msb">[docs]</a>
+    <span class="n">msb</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mh">0x18</span>  <span class="c1"># Program area</span></div>
+
+<div class="viewcode-block" id="PartMessage.umb">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.PartMessage.umb">[docs]</a>
+    <span class="n">umb</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mh">0x00</span>  <span class="c1"># Part section</span></div>
+
+
+<div class="viewcode-block" id="PartMessage.convert_value">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.PartMessage.convert_value">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">convert_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert parameter value based on parameter preset_type&quot;&quot;&quot;</span>
+        <span class="c1"># Parameters that need special conversion</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lsb</span> <span class="o">==</span> <span class="mh">0x0B</span><span class="p">:</span>  <span class="c1"># Part Coarse Tune</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">value</span> <span class="o">+</span> <span class="mi">64</span><span class="p">]</span>  <span class="c1"># Convert -48/+48 to 16-112</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">lsb</span> <span class="o">==</span> <span class="mh">0x0C</span><span class="p">:</span>  <span class="c1"># Part Fine Tune</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">value</span> <span class="o">+</span> <span class="mi">64</span><span class="p">]</span>  <span class="c1"># Convert -50/+50 to 14-114</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">lsb</span> <span class="o">==</span> <span class="mh">0x13</span><span class="p">:</span>  <span class="c1"># Part Cutoff Offset</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">value</span> <span class="o">+</span> <span class="mi">64</span><span class="p">]</span>  <span class="c1"># Convert -64/+63 to 0-127</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">lsb</span> <span class="o">==</span> <span class="mh">0x14</span><span class="p">:</span>  <span class="c1"># Part Resonance Offset</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">value</span> <span class="o">+</span> <span class="mi">64</span><span class="p">]</span>  <span class="c1"># Convert -64/+63 to 0-127</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">lsb</span> <span class="o">==</span> <span class="mh">0x15</span><span class="p">:</span>  <span class="c1"># Part Attack Time Offset</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">value</span> <span class="o">+</span> <span class="mi">64</span><span class="p">]</span>  <span class="c1"># Convert -64/+63 to 0-127</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">lsb</span> <span class="o">==</span> <span class="mh">0x16</span><span class="p">:</span>  <span class="c1"># Part Decay Time Offset</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">value</span> <span class="o">+</span> <span class="mi">64</span><span class="p">]</span>  <span class="c1"># Convert -64/+63 to 0-127</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">lsb</span> <span class="o">==</span> <span class="mh">0x17</span><span class="p">:</span>  <span class="c1"># Part Release Time Offset</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">value</span> <span class="o">+</span> <span class="mi">64</span><span class="p">]</span>  <span class="c1"># Convert -64/+63 to 0-127</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">lsb</span> <span class="o">==</span> <span class="mh">0x18</span><span class="p">:</span>  <span class="c1"># Part Vibrato Rate</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">value</span> <span class="o">+</span> <span class="mi">64</span><span class="p">]</span>  <span class="c1"># Convert -64/+63 to 0-127</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">lsb</span> <span class="o">==</span> <span class="mh">0x19</span><span class="p">:</span>  <span class="c1"># Part Vibrato Depth</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">value</span> <span class="o">+</span> <span class="mi">64</span><span class="p">]</span>  <span class="c1"># Convert -64/+63 to 0-127</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">lsb</span> <span class="o">==</span> <span class="mh">0x1A</span><span class="p">:</span>  <span class="c1"># Part Vibrato Delay</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">value</span> <span class="o">+</span> <span class="mi">64</span><span class="p">]</span>  <span class="c1"># Convert -64/+63 to 0-127</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">lsb</span> <span class="o">==</span> <span class="mh">0x1B</span><span class="p">:</span>  <span class="c1"># Part Octave Shift</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">value</span> <span class="o">+</span> <span class="mi">64</span><span class="p">]</span>  <span class="c1"># Convert -3/+3 to 61-67</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">lsb</span> <span class="o">==</span> <span class="mh">0x1C</span><span class="p">:</span>  <span class="c1"># Part Velocity Sens Offset</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">value</span> <span class="o">+</span> <span class="mi">64</span><span class="p">]</span>  <span class="c1"># Convert -63/+63 to 1-127</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">lsb</span> <span class="o">==</span> <span class="mh">0x11</span><span class="p">:</span>  <span class="c1"># Part Portamento Time (2 bytes)</span>
+            <span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="mi">128</span><span class="p">:</span>  <span class="c1"># TONE setting</span>
+                <span class="k">return</span> <span class="p">[</span><span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x80</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">[</span><span class="mh">0x00</span><span class="p">,</span> <span class="n">value</span> <span class="o">&amp;</span> <span class="mh">0x7F</span><span class="p">]</span>
+
+        <span class="c1"># Default handling for other parameters</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">convert_value</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="PartMessage.convert_data">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.PartMessage.convert_data">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">convert_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert data bytes back to parameter value&quot;&quot;&quot;</span>
+        <span class="n">param</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">lsb</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;param&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="mi">0</span>
+
+        <span class="c1"># Parameters that need special conversion</span>
+        <span class="k">if</span> <span class="n">param</span> <span class="o">==</span> <span class="mh">0x0B</span><span class="p">:</span>  <span class="c1"># Part Coarse Tune</span>
+            <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">64</span>  <span class="c1"># Convert 16-112 to -48/+48</span>
+        <span class="k">elif</span> <span class="n">param</span> <span class="o">==</span> <span class="mh">0x0C</span><span class="p">:</span>  <span class="c1"># Part Fine Tune</span>
+            <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">64</span>  <span class="c1"># Convert 14-114 to -50/+50</span>
+        <span class="k">elif</span> <span class="n">param</span> <span class="ow">in</span> <span class="p">[</span><span class="mh">0x13</span><span class="p">,</span> <span class="mh">0x14</span><span class="p">,</span> <span class="mh">0x15</span><span class="p">,</span> <span class="mh">0x16</span><span class="p">,</span> <span class="mh">0x17</span><span class="p">,</span> <span class="mh">0x18</span><span class="p">,</span> <span class="mh">0x19</span><span class="p">,</span> <span class="mh">0x1A</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">64</span>  <span class="c1"># Convert 0-127 to -64/+63</span>
+        <span class="k">elif</span> <span class="n">param</span> <span class="o">==</span> <span class="mh">0x1B</span><span class="p">:</span>  <span class="c1"># Part Octave Shift</span>
+            <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">64</span>  <span class="c1"># Convert 61-67 to -3/+3</span>
+        <span class="k">elif</span> <span class="n">param</span> <span class="o">==</span> <span class="mh">0x1C</span><span class="p">:</span>  <span class="c1"># Part Velocity Sens Offset</span>
+            <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">64</span>  <span class="c1"># Convert 1-127 to -63/+63</span>
+        <span class="k">elif</span> <span class="n">param</span> <span class="o">==</span> <span class="mh">0x11</span><span class="p">:</span>  <span class="c1"># Part Portamento Time</span>
+            <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&amp;</span> <span class="mh">0x80</span><span class="p">:</span>  <span class="c1"># TONE setting</span>
+                <span class="k">return</span> <span class="mi">128</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&amp;</span> <span class="mh">0x7F</span>
+
+        <span class="c1"># Default handling for other parameters</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">convert_data</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
+</div>
+
+
+
+<span class="nd">@dataclass</span>
+<div class="viewcode-block" id="ZoneMessage">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.ZoneMessage">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ZoneMessage</span><span class="p">(</span><span class="n">ParameterMessage</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Program Zone parameter message&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ZoneMessage.msb">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.ZoneMessage.msb">[docs]</a>
+    <span class="n">msb</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mh">0x18</span>  <span class="c1"># Program area</span></div>
+
+<div class="viewcode-block" id="ZoneMessage.umb">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.ZoneMessage.umb">[docs]</a>
+    <span class="n">umb</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mh">0x01</span>  <span class="c1"># Zone section</span></div>
+
+
+<div class="viewcode-block" id="ZoneMessage.convert_value">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.ZoneMessage.convert_value">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">convert_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert parameter value based on parameter preset_type&quot;&quot;&quot;</span>
+        <span class="c1"># Parameters that need special conversion</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lsb</span> <span class="o">==</span> <span class="mh">0x19</span><span class="p">:</span>  <span class="c1"># Zone Octave Shift</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">value</span> <span class="o">+</span> <span class="mi">64</span><span class="p">]</span>  <span class="c1"># Convert -3/+3 to 61-67</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">lsb</span> <span class="o">==</span> <span class="mh">0x03</span><span class="p">:</span>  <span class="c1"># Arpeggio Switch</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">value</span> <span class="o">&amp;</span> <span class="mh">0x01</span><span class="p">]</span>  <span class="c1"># Ensure boolean value</span>
+
+        <span class="c1"># Default handling for other parameters</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">convert_value</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="ZoneMessage.convert_data">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.ZoneMessage.convert_data">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">convert_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert data bytes back to parameter value&quot;&quot;&quot;</span>
+        <span class="n">param</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">lsb</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;param&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="mi">0</span>
+
+        <span class="c1"># Parameters that need special conversion</span>
+        <span class="k">if</span> <span class="n">param</span> <span class="o">==</span> <span class="mh">0x19</span><span class="p">:</span>  <span class="c1"># Zone Octave Shift</span>
+            <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">64</span>  <span class="c1"># Convert 61-67 to -3/+3</span>
+        <span class="k">elif</span> <span class="n">param</span> <span class="o">==</span> <span class="mh">0x03</span><span class="p">:</span>  <span class="c1"># Arpeggio Switch</span>
+            <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&amp;</span> <span class="mh">0x01</span>  <span class="c1"># Ensure boolean value</span>
+
+        <span class="c1"># Default handling for other parameters</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">convert_data</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
+</div>
+
+
+
+<span class="nd">@dataclass</span>
+<div class="viewcode-block" id="ControllerMessage">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.ControllerMessage">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ControllerMessage</span><span class="p">(</span><span class="n">ParameterMessage</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Program Controller parameter message&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ControllerMessage.msb">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.ControllerMessage.msb">[docs]</a>
+    <span class="n">msb</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">AddressStartMSB</span><span class="o">.</span><span class="n">TEMPORARY_PROGRAM</span>  <span class="c1"># Program area</span></div>
+
+<div class="viewcode-block" id="ControllerMessage.umb">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.ControllerMessage.umb">[docs]</a>
+    <span class="n">umb</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mh">0x40</span>  <span class="c1"># Controller section</span></div>
+
+
+<div class="viewcode-block" id="ControllerMessage.convert_value">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.ControllerMessage.convert_value">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">convert_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert parameter value based on parameter preset_type</span>
+
+<span class="sd">        :param value:</span>
+<span class="sd">        :return: List[int]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Parameters that need special conversion</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lsb</span> <span class="o">==</span> <span class="mh">0x07</span><span class="p">:</span>  <span class="c1"># Arpeggio Octave Range</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">value</span> <span class="o">+</span> <span class="mi">64</span><span class="p">]</span>  <span class="c1"># Convert -3/+3 to 61-67</span>
+
+        <span class="c1"># Default handling for other parameters</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">convert_value</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="ControllerMessage.convert_data">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.ControllerMessage.convert_data">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">convert_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert data bytes back to parameter value</span>
+
+<span class="sd">        :param data: List</span>
+<span class="sd">        :return: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">param</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">lsb</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;param&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="mi">0</span>
+
+        <span class="c1"># Parameters that need special conversion</span>
+        <span class="k">if</span> <span class="n">param</span> <span class="o">==</span> <span class="mh">0x07</span><span class="p">:</span>  <span class="c1"># Arpeggio Octave Range</span>
+            <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">64</span>  <span class="c1"># Convert 61-67 to -3/+3</span>
+
+        <span class="c1"># Default handling for other parameters</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">convert_data</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
+</div>
+
+
+
+<span class="nd">@dataclass</span>
+<div class="viewcode-block" id="DigitalToneCommonMessage">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.DigitalToneCommonMessage">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DigitalToneCommonMessage</span><span class="p">(</span><span class="n">ParameterMessage</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;SuperNATURAL Synth Tone Common parameter message&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="DigitalToneCommonMessage.msb">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.DigitalToneCommonMessage.msb">[docs]</a>
+    <span class="n">msb</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">AddressStartMSB</span><span class="o">.</span><span class="n">TEMPORARY_TONE</span>  <span class="c1"># Temporary area</span></div>
+
+<div class="viewcode-block" id="DigitalToneCommonMessage.umb">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.DigitalToneCommonMessage.umb">[docs]</a>
+    <span class="n">umb</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">ZERO_BYTE</span>  <span class="c1"># Common section</span></div>
+
+
+<div class="viewcode-block" id="DigitalToneCommonMessage.convert_value">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.DigitalToneCommonMessage.convert_value">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">convert_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert parameter value based on parameter preset_type</span>
+
+<span class="sd">        :param value:</span>
+<span class="sd">        :return: List[int]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Parameters that need special conversion</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lsb</span> <span class="o">==</span> <span class="mh">0x15</span><span class="p">:</span>  <span class="c1"># Octave Shift</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">value</span> <span class="o">+</span> <span class="mi">64</span><span class="p">]</span>  <span class="c1"># Convert -3/+3 to 61-67</span>
+
+        <span class="c1"># Default handling for other parameters</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">convert_value</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="DigitalToneCommonMessage.convert_data">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.DigitalToneCommonMessage.convert_data">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">convert_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert data bytes back to parameter value</span>
+
+<span class="sd">        :param data: List</span>
+<span class="sd">        :return: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">param</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">lsb</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;param&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="mi">0</span>
+
+        <span class="c1"># Parameters that need special conversion</span>
+        <span class="k">if</span> <span class="n">param</span> <span class="o">==</span> <span class="mh">0x15</span><span class="p">:</span>  <span class="c1"># Octave Shift</span>
+            <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">64</span>  <span class="c1"># Convert 61-67 to -3/+3</span>
+
+        <span class="c1"># Default handling for other parameters</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">convert_data</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
+</div>
+
+
+
+<span class="nd">@dataclass</span>
+<div class="viewcode-block" id="DigitalToneModifyMessage">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.DigitalToneModifyMessage">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DigitalToneModifyMessage</span><span class="p">(</span><span class="n">ParameterMessage</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;SuperNATURAL Synth Tone Modify parameter message&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="DigitalToneModifyMessage.msb">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.DigitalToneModifyMessage.msb">[docs]</a>
+    <span class="n">msb</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">AddressStartMSB</span><span class="o">.</span><span class="n">TEMPORARY_TONE</span>  <span class="c1"># Temporary area</span></div>
+
+<div class="viewcode-block" id="DigitalToneModifyMessage.umb">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.DigitalToneModifyMessage.umb">[docs]</a>
+    <span class="n">umb</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mh">0x50</span>  <span class="c1"># Modify section @@@ looks incorrect - should be lmb</span></div>
+
+
+<div class="viewcode-block" id="DigitalToneModifyMessage.convert_value">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.DigitalToneModifyMessage.convert_value">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">convert_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert parameter value based on parameter preset_type</span>
+
+<span class="sd">        :param value:</span>
+<span class="sd">        :return: List[int]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># No special conversion needed for modify parameters</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">convert_value</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="DigitalToneModifyMessage.convert_data">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.DigitalToneModifyMessage.convert_data">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">convert_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert data bytes back to parameter value</span>
+
+<span class="sd">        :param data: List</span>
+<span class="sd">        :return: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># No special conversion needed for modify parameters</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">convert_data</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
+</div>
+
+
+
+<span class="nd">@dataclass</span>
+<div class="viewcode-block" id="DigitalTonePartialMessage">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.DigitalTonePartialMessage">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DigitalTonePartialMessage</span><span class="p">(</span><span class="n">ParameterMessage</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;SuperNATURAL Synth Tone Partial parameter message&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="DigitalTonePartialMessage.msb">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.DigitalTonePartialMessage.msb">[docs]</a>
+    <span class="n">msb</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">AddressStartMSB</span><span class="o">.</span><span class="n">TEMPORARY_TONE</span>  <span class="c1"># Temporary area</span></div>
+
+<div class="viewcode-block" id="DigitalTonePartialMessage.umb">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.DigitalTonePartialMessage.umb">[docs]</a>
+    <span class="n">umb</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mh">0x20</span>  <span class="c1"># Partial 1 section (0x20, 0x21, 0x22 for Partials 1-3)</span></div>
+
+
+<div class="viewcode-block" id="DigitalTonePartialMessage.convert_value">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.DigitalTonePartialMessage.convert_value">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">convert_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert parameter value based on parameter preset_type</span>
+
+<span class="sd">        :param value:</span>
+<span class="sd">        :return: List[int]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Parameters that need special conversion</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lsb</span> <span class="o">==</span> <span class="mh">0x00</span><span class="p">:</span>  <span class="c1"># OSC Wave</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">value</span> <span class="o">&amp;</span> <span class="mh">0x07</span><span class="p">]</span>  <span class="c1"># Ensure 3-bit value (0-7)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">lsb</span> <span class="o">==</span> <span class="mh">0x01</span><span class="p">:</span>  <span class="c1"># OSC Wave Variation</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">value</span> <span class="o">&amp;</span> <span class="mh">0x03</span><span class="p">]</span>  <span class="c1"># Ensure 2-bit value (0-2)</span>
+
+        <span class="c1"># Default handling for other parameters</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">convert_value</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="DigitalTonePartialMessage.convert_data">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.DigitalTonePartialMessage.convert_data">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">convert_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert data bytes back to parameter value</span>
+
+<span class="sd">        :param data: List</span>
+<span class="sd">        :return: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">param</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">lsb</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;param&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="mi">0</span>
+
+        <span class="c1"># Parameters that need special conversion</span>
+        <span class="k">if</span> <span class="n">param</span> <span class="o">==</span> <span class="mh">0x00</span><span class="p">:</span>  <span class="c1"># OSC Wave</span>
+            <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&amp;</span> <span class="mh">0x07</span>  <span class="c1"># Extract 3-bit value</span>
+        <span class="k">elif</span> <span class="n">param</span> <span class="o">==</span> <span class="mh">0x01</span><span class="p">:</span>  <span class="c1"># OSC Wave Variation</span>
+            <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&amp;</span> <span class="mh">0x03</span>  <span class="c1"># Extract 2-bit value</span>
+
+        <span class="c1"># Default handling for other parameters</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">convert_data</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
+</div>
+
+
+
+<span class="nd">@dataclass</span>
+<div class="viewcode-block" id="AnalogToneMessage">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.AnalogToneMessage">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">AnalogToneMessage</span><span class="p">(</span><span class="n">ParameterMessage</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Message for analog tone parameters&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="AnalogToneMessage.msb">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.AnalogToneMessage.msb">[docs]</a>
+    <span class="n">msb</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="AnalogToneMessage.umb">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.AnalogToneMessage.umb">[docs]</a>
+    <span class="n">umb</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="AnalogToneMessage.lmb">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.AnalogToneMessage.lmb">[docs]</a>
+    <span class="n">lmb</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="AnalogToneMessage.lsb">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.AnalogToneMessage.lsb">[docs]</a>
+    <span class="n">lsb</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="AnalogToneMessage.value">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.AnalogToneMessage.value">[docs]</a>
+    <span class="n">value</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span></div>
+
+
+<div class="viewcode-block" id="AnalogToneMessage.to_message_list">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.AnalogToneMessage.to_message_list">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_message_list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert to SysEx message bytes&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="n">START_OF_SYSEX</span><span class="p">,</span>  <span class="c1"># Start of SysEx</span>
+            <span class="n">RolandID</span><span class="o">.</span><span class="n">ROLAND_ID</span><span class="p">,</span>  <span class="c1"># Roland ID</span>
+            <span class="n">RolandID</span><span class="o">.</span><span class="n">DEVICE_ID</span><span class="p">,</span>  <span class="c1"># Device ID</span>
+            <span class="n">ModelID</span><span class="o">.</span><span class="n">MODEL_ID_1</span><span class="p">,</span>
+            <span class="n">ModelID</span><span class="o">.</span><span class="n">MODEL_ID_2</span><span class="p">,</span>
+            <span class="n">ModelID</span><span class="o">.</span><span class="n">MODEL_ID_3</span><span class="p">,</span>
+            <span class="n">ModelID</span><span class="o">.</span><span class="n">MODEL_ID_4</span><span class="p">,</span>  <span class="c1"># Model ID</span>
+            <span class="n">CommandID</span><span class="o">.</span><span class="n">DT1</span><span class="p">,</span>  <span class="c1"># DT1 Command</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msb</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">umb</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lmb</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lsb</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+            <span class="n">ZERO_BYTE</span><span class="p">,</span>  <span class="c1"># Checksum placeholder</span>
+            <span class="n">END_OF_SYSEX</span><span class="p">,</span>  <span class="c1"># End of SysEx</span>
+        <span class="p">]</span></div>
+</div>
+
+
+
+<span class="nd">@dataclass</span>
+<div class="viewcode-block" id="DrumKitCommonMessage">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.DrumKitCommonMessage">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DrumKitCommonMessage</span><span class="p">(</span><span class="n">ParameterMessage</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Drum Kit Common parameter message&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="DrumKitCommonMessage.msb">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.DrumKitCommonMessage.msb">[docs]</a>
+    <span class="n">msb</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">AddressStartMSB</span><span class="o">.</span><span class="n">TEMPORARY_TONE</span>  <span class="c1"># Temporary area</span></div>
+
+<div class="viewcode-block" id="DrumKitCommonMessage.umb">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.DrumKitCommonMessage.umb">[docs]</a>
+    <span class="n">umb</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mh">0x10</span>  <span class="c1"># Drum Kit section</span></div>
+
+<div class="viewcode-block" id="DrumKitCommonMessage.lmb">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.DrumKitCommonMessage.lmb">[docs]</a>
+    <span class="n">lmb</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mh">0x00</span>  <span class="c1"># Common area</span></div>
+
+
+<div class="viewcode-block" id="DrumKitCommonMessage.convert_value">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.DrumKitCommonMessage.convert_value">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">convert_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert parameter value based on parameter preset_type</span>
+
+<span class="sd">        :param value:</span>
+<span class="sd">        :return: List[int]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># No special conversion needed for drum kit common parameters</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">convert_value</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="DrumKitCommonMessage.convert_data">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.DrumKitCommonMessage.convert_data">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">convert_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert data bytes back to parameter value</span>
+
+<span class="sd">        :param data: List</span>
+<span class="sd">        :return: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># No special conversion needed for drum kit common parameters</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">convert_data</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
+</div>
+
+
+
+<span class="nd">@dataclass</span>
+<div class="viewcode-block" id="DrumKitPartialMessage">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.DrumKitPartialMessage">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DrumKitPartialMessage</span><span class="p">(</span><span class="n">ParameterMessage</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Drum Kit Partial parameter message&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="DrumKitPartialMessage.msb">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.DrumKitPartialMessage.msb">[docs]</a>
+    <span class="n">msb</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">AddressStartMSB</span><span class="o">.</span><span class="n">TEMPORARY_TONE</span>  <span class="c1"># Temporary area</span></div>
+
+<div class="viewcode-block" id="DrumKitPartialMessage.umb">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.DrumKitPartialMessage.umb">[docs]</a>
+    <span class="n">umb</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mh">0x10</span>  <span class="c1"># Drum Kit section</span></div>
+
+<div class="viewcode-block" id="DrumKitPartialMessage.lmb">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.DrumKitPartialMessage.lmb">[docs]</a>
+    <span class="n">lmb</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mh">0x01</span>  <span class="c1"># Partial area</span></div>
+
+
+<div class="viewcode-block" id="DrumKitPartialMessage.convert_value">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.DrumKitPartialMessage.convert_value">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">convert_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert parameter value based on parameter preset_type</span>
+
+<span class="sd">        :param value:</span>
+<span class="sd">        :return: List[int]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Parameters that need special conversion</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lsb</span> <span class="o">==</span> <span class="mh">0x10</span><span class="p">:</span>  <span class="c1"># Fine Tune</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">value</span> <span class="o">+</span> <span class="mi">64</span><span class="p">]</span>  <span class="c1"># Convert -50/+50 to 14-114</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">lsb</span> <span class="o">==</span> <span class="mh">0x14</span><span class="p">:</span>  <span class="c1"># Alternate Pan</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">value</span> <span class="o">+</span> <span class="mi">64</span><span class="p">]</span>  <span class="c1"># Convert L63-63R to 1-127</span>
+
+        <span class="c1"># Default handling for other parameters</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">convert_value</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="DrumKitPartialMessage.convert_data">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.DrumKitPartialMessage.convert_data">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">convert_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert data bytes back to parameter value</span>
+
+<span class="sd">        :param data: List</span>
+<span class="sd">        :return: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">param</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">lsb</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;param&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="mi">0</span>
+
+        <span class="c1"># Parameters that need special conversion</span>
+        <span class="k">if</span> <span class="n">param</span> <span class="o">==</span> <span class="mh">0x10</span><span class="p">:</span>  <span class="c1"># Fine Tune</span>
+            <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">64</span>  <span class="c1"># Convert 14-114 to -50/+50</span>
+        <span class="k">elif</span> <span class="n">param</span> <span class="o">==</span> <span class="mh">0x14</span><span class="p">:</span>  <span class="c1"># Alternate Pan</span>
+            <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">64</span>  <span class="c1"># Convert 1-127 to L63-63R</span>
+
+        <span class="c1"># Default handling for other parameters</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">convert_data</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="create_sysex_message">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.create_sysex_message">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_sysex_message</span><span class="p">(</span>
+        <span class="n">msb</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">umb</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">lmb</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">lsb</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JDXiSysEx</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create address JD-Xi SysEx message with the given parameters&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">JDXiSysEx</span><span class="p">(</span>
+        <span class="n">command</span><span class="o">=</span><span class="n">CommandID</span><span class="o">.</span><span class="n">DT1</span><span class="p">,</span>
+        <span class="n">msb</span><span class="o">=</span><span class="n">msb</span><span class="p">,</span>
+        <span class="n">umb</span><span class="o">=</span><span class="n">umb</span><span class="p">,</span>
+        <span class="n">lmb</span><span class="o">=</span><span class="n">lmb</span><span class="p">,</span>
+        <span class="n">lsb</span><span class="o">=</span><span class="n">lsb</span><span class="p">,</span>
+        <span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="create_patch_load_message">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.create_patch_load_message">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_patch_load_message</span><span class="p">(</span>
+        <span class="n">bank_msb</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">bank_lsb</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">program</span><span class="p">:</span> <span class="nb">int</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">JDXiSysEx</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create messages to load address patch (bank select + program change)&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">[</span>
+        <span class="c1"># Bank Select MSB</span>
+        <span class="n">JDXiSysEx</span><span class="p">(</span>
+            <span class="n">command</span><span class="o">=</span><span class="n">CommandID</span><span class="o">.</span><span class="n">DT1</span><span class="p">,</span>
+            <span class="n">msb</span><span class="o">=</span><span class="n">AddressStartMSB</span><span class="o">.</span><span class="n">SYSTEM</span><span class="p">,</span>  <span class="c1"># Setup area 0x01</span>
+            <span class="n">umb</span><span class="o">=</span><span class="mh">0x00</span><span class="p">,</span>
+            <span class="n">lmb</span><span class="o">=</span><span class="mh">0x00</span><span class="p">,</span>
+            <span class="n">lsb</span><span class="o">=</span><span class="mh">0x04</span><span class="p">,</span>  <span class="c1"># Bank MSB parameter</span>
+            <span class="n">value</span><span class="o">=</span><span class="n">bank_msb</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="c1"># Bank Select LSB</span>
+        <span class="n">JDXiSysEx</span><span class="p">(</span>
+            <span class="n">command</span><span class="o">=</span><span class="n">CommandID</span><span class="o">.</span><span class="n">DT1</span><span class="p">,</span>
+            <span class="n">msb</span><span class="o">=</span><span class="n">AddressStartMSB</span><span class="o">.</span><span class="n">SYSTEM</span><span class="p">,</span>  <span class="c1"># Setup area</span>
+            <span class="n">umb</span><span class="o">=</span><span class="mh">0x00</span><span class="p">,</span>
+            <span class="n">lmb</span><span class="o">=</span><span class="mh">0x00</span><span class="p">,</span>
+            <span class="n">lsb</span><span class="o">=</span><span class="mh">0x05</span><span class="p">,</span>  <span class="c1"># Bank LSB parameter</span>
+            <span class="n">value</span><span class="o">=</span><span class="n">bank_lsb</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="c1"># Program Change</span>
+        <span class="n">JDXiSysEx</span><span class="p">(</span>
+            <span class="n">command</span><span class="o">=</span><span class="n">CommandID</span><span class="o">.</span><span class="n">DT1</span><span class="p">,</span>
+            <span class="n">msb</span><span class="o">=</span><span class="n">AddressStartMSB</span><span class="o">.</span><span class="n">SYSTEM</span><span class="p">,</span>  <span class="c1"># Setup area</span>
+            <span class="n">umb</span><span class="o">=</span><span class="mh">0x00</span><span class="p">,</span>
+            <span class="n">lmb</span><span class="o">=</span><span class="mh">0x00</span><span class="p">,</span>
+            <span class="n">lsb</span><span class="o">=</span><span class="mh">0x06</span><span class="p">,</span>  <span class="c1"># Program number parameter</span>
+            <span class="n">value</span><span class="o">=</span><span class="n">program</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="create_patch_request_message">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.roland.create_patch_request_message">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_patch_request_message</span><span class="p">(</span><span class="n">msb</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">umb</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mh">0x00</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JDXiSysEx</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create address message to request patch data&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">JDXiSysEx</span><span class="p">(</span>
+        <span class="n">command</span><span class="o">=</span><span class="n">CommandID</span><span class="o">.</span><span class="n">RQ1</span><span class="p">,</span>  <span class="c1"># Data request command</span>
+        <span class="n">msb</span><span class="o">=</span><span class="n">msb</span><span class="p">,</span>
+        <span class="n">umb</span><span class="o">=</span><span class="n">umb</span><span class="p">,</span>
+        <span class="n">lmb</span><span class="o">=</span><span class="mh">0x00</span><span class="p">,</span>
+        <span class="n">lsb</span><span class="o">=</span><span class="mh">0x00</span><span class="p">,</span>
+        <span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="n">size</span><span class="p">]</span> <span class="k">if</span> <span class="n">size</span> <span class="k">else</span> <span class="p">[],</span>  <span class="c1"># Some requests need address size parameter</span>
+    <span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Mark Mrooks.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

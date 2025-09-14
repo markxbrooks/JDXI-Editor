@@ -1,0 +1,839 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>jdxi_editor.ui.windows.midi.debugger &mdash; JD-Xi Editor 0.8.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../../_static/documentation_options.js?v=486e5634"></script>
+      <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../../index.html" class="icon icon-home">
+            JD-Xi Editor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../usage.html">Quick Start</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../usage.html#connection-of-the-jd-xi-hardware-instrument-to-the-computer">Connection of the JD-Xi Hardware Instrument to the Computer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../instrument.html">JDXi Instrument Window</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../instrument.html#features">Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../instrument.html#using-the-instrument-window">Using the Instrument Window</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../editor.html">Editor Window</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../editor.html#program-mixer-section">Program/Mixer Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../editor.html#digital-1-section">Digital 1 Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../editor.html#digital-2-section">Digital 2 Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../editor.html#drum-kit-section">Drum Kit Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../editor.html#analog-section">Analog Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../editor.html#effect-controls">Effect Controls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../editor.html#vocal-transformer">Vocal Transformer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../editor.html#arpeggiator">Arpeggiator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../editor.html#midi-file-player-and-recorder">MIDI File Player and Recorder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../editor.html#pattern-sequencer">Pattern Sequencer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../troubleshooting.html">Troubleshooting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../troubleshooting.html#general-problems">General Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../troubleshooting.html#macos">MacOS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../troubleshooting.html#windows">Windows</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../legal.html">Legal Disclaimer</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../modules.html">jdxi_editor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../jdxi_editor.html">jdxi_editor package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.jdxi.html">jdxi_editor.jdxi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.log.html">jdxi_editor.log package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.midi.html">jdxi_editor.midi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.ui.html">jdxi_editor.ui package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.globals">jdxi_editor.globals module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.main">jdxi_editor.main module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.html#jdxi_editor.main.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.project">jdxi_editor.project module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.resources">jdxi_editor.resources module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.html#jdxi_editor.resources.resource_path"><code class="docutils literal notranslate"><span class="pre">resource_path()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../autoapi/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/midi/index.html">midi</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/midi/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/colors/index.html">midi.colors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/slider/index.html">midi.slider</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/spin_box/index.html">midi.spin_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/time_ruler/index.html">midi.time_ruler</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/track/index.html">midi.track</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/track_viewer/index.html">midi.track_viewer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/utils/index.html">midi.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/adsr/index.html">adsr</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/adsr/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/adsr/adsr/index.html">adsr.adsr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/adsr/graph/index.html">adsr.graph</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/adsr/parameter/index.html">adsr.parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/adsr/plot/index.html">adsr.plot</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/pitch/index.html">pitch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/pitch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pitch/envelope/index.html">pitch.envelope</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pitch/envelope_plot/index.html">pitch.envelope_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pitch/pwm_plot/index.html">pitch.pwm_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pitch/slider_spinbox/index.html">pitch.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/piano/index.html">piano</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/piano/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/piano/key/index.html">piano.key</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/piano/keyboard/index.html">piano.keyboard</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/panel/index.html">panel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/panel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/panel/partial/index.html">panel.partial</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/wheel/index.html">wheel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/wheel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/wheel/mod/index.html">wheel.mod</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/wheel/pitch/index.html">wheel.pitch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/wheel/wheel/index.html">wheel.wheel</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/preset/index.html">preset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/preset/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/preset/combo_box/index.html">preset.combo_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/preset/panel/index.html">preset.panel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/preset/patch_name/index.html">preset.patch_name</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/slider/index.html">slider</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/slider/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/slider/slider/index.html">slider.slider</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/slider/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/slider/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/slider/index.html#slider.Slider"><code class="docutils literal notranslate"><span class="pre">Slider</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/dialog/index.html">dialog</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/dialog/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/dialog/progress/index.html">dialog.progress</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/viewer/index.html">viewer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/viewer/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/viewer/log/index.html">viewer.log</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/button/index.html">button</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/button/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/channel/index.html">button.channel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/favorite/index.html">button.favorite</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/sequencer/index.html">button.sequencer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/waveform/index.html">button.waveform</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/button/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/button/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/index.html#button.ChannelButton"><code class="docutils literal notranslate"><span class="pre">ChannelButton</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/index.html#button.SequencerSquare"><code class="docutils literal notranslate"><span class="pre">SequencerSquare</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/switch/index.html">switch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/switch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/switch/partial/index.html">switch.partial</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/switch/switch/index.html">switch.switch</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/filter/index.html">filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/filter/index.html#filter.FilterWidget"><code class="docutils literal notranslate"><span class="pre">FilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/display/index.html">display</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/display/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/display/digital/index.html">display.digital</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/display/pattern/index.html">display.pattern</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/display/value/index.html">display.value</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/pattern/index.html">pattern</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/pattern/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pattern/measure/index.html">pattern.measure</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/spin_box/index.html">spin_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/spin_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/spin_box/spin_box/index.html">spin_box.spin_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/envelope/index.html">envelope</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/envelope/base/index.html">envelope.base</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/indicator/index.html">indicator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/indicator/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/indicator/led/index.html">indicator.led</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/indicator/midi/index.html">indicator.midi</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/combo_box/index.html">combo_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/combo_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/combo_box/combo_box/index.html">combo_box.combo_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/index.html">jdxi_editor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/globals/index.html">jdxi_editor.globals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/jdxi/index.html">jdxi_editor.jdxi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/log/index.html">jdxi_editor.log</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/main/index.html">jdxi_editor.main</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/midi/index.html">jdxi_editor.midi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/project/index.html">jdxi_editor.project</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/resources/index.html">jdxi_editor.resources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/ui/index.html">jdxi_editor.ui</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html">filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#filter_plot.FilterPlot"><code class="docutils literal notranslate"><span class="pre">FilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html">envelope_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#envelope_plot.midi_value_to_float"><code class="docutils literal notranslate"><span class="pre">midi_value_to_float()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#envelope_plot.WMTEnvPlot"><code class="docutils literal notranslate"><span class="pre">WMTEnvPlot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#envelope_plot.app"><code class="docutils literal notranslate"><span class="pre">app</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/wave_selector/index.html">wave_selector</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/wave_selector/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/wave_selector/wave_selector/index.html">wave_selector.wave_selector</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/analog_filter/index.html">analog_filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/analog_filter/index.html#analog_filter.AnalogFilterWidget"><code class="docutils literal notranslate"><span class="pre">AnalogFilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/slider_spinbox/index.html">slider_spinbox</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/slider_spinbox/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/slider_spinbox/slider_spinbox/index.html">slider_spinbox.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html">analog_filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#analog_filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#analog_filter_plot.AnalogFilterPlot"><code class="docutils literal notranslate"><span class="pre">AnalogFilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">JD-Xi Editor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">jdxi_editor.ui.windows.midi.debugger</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for jdxi_editor.ui.windows.midi.debugger</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">debugger module</span>
+<span class="sd">====================</span>
+<span class="sd">MIDI Debugger for monitoring and interacting with MIDI commands and SysEx messages.</span>
+
+<span class="sd">This class provides a graphical user interface (GUI) for sending, decoding,</span>
+<span class="sd">and logging MIDI messages, including SysEx messages. It allows the user to input</span>
+<span class="sd">MIDI commands in hexadecimal format, send them to a connected MIDI device,</span>
+<span class="sd">and view the decoded output for further analysis. The debugger supports both</span>
+<span class="sd">standard MIDI messages and Roland-specific address-based SysEx messages,</span>
+<span class="sd">including their parameters, values, and checksums.</span>
+
+<span class="sd">Key Features:</span>
+<span class="sd">- Send MIDI messages in hexadecimal format to a MIDI device.</span>
+<span class="sd">- Decode Roland SysEx messages with detailed information, including areas, commands, and parameters.</span>
+<span class="sd">- Display decoded message data in a readable table format.</span>
+<span class="sd">- Log responses from MIDI devices, including message sending success and failure information.</span>
+<span class="sd">- Validate checksum for SysEx messages to ensure message integrity.</span>
+<span class="sd">- Provides an easy-to-use interface with instructions, buttons, and output areas for effective debugging.</span>
+
+<span class="sd">Attributes:</span>
+<span class="sd">    SYSEX_AREAS (dict): Mappings for SysEx area IDs to their human-readable names.</span>
+<span class="sd">    COMMANDS (dict): Mappings for SysEx command IDs to their human-readable names.</span>
+<span class="sd">    SECTIONS (dict): Mappings for SysEx section IDs to their human-readable names.</span>
+<span class="sd">    GROUPS (dict): Mappings for SysEx group IDs to their human-readable names.</span>
+<span class="sd">    PARAMETERS (dict): Mappings for SysEx parameter IDs to their human-readable names.</span>
+
+<span class="sd">Methods:</span>
+<span class="sd">    __init__(self, midi_helper, parent=None): Initializes the MIDI debugger with a MIDI helper.</span>
+<span class="sd">    _decode_sysex_new(self, message): Decodes a SysEx message in the new format.</span>
+<span class="sd">    _decode_sysex_15(self, message): Decodes a 15-byte SysEx address message.</span>
+<span class="sd">    _decode_sysex(self, message): Decodes a general SysEx message.</span>
+<span class="sd">    _decode_current(self): Decodes the currently entered MIDI message from the input field.</span>
+<span class="sd">    _send_commands(self): Sends the entered MIDI commands to the connected MIDI device.</span>
+<span class="sd">    log_response(self, text): Logs a response message to the response log.</span>
+<span class="sd">    handle_midi_response(self, message): Handles incoming MIDI messages and logs them.</span>
+
+<span class="sd">This class is useful for MIDI developers, musicians, and anyone working with MIDI devices, providing both real-time MIDI debugging and SysEx message analysis capabilities.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Protocol</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">PySide6.QtWidgets</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">QMainWindow</span><span class="p">,</span>
+    <span class="n">QWidget</span><span class="p">,</span>
+    <span class="n">QVBoxLayout</span><span class="p">,</span>
+    <span class="n">QHBoxLayout</span><span class="p">,</span>
+    <span class="n">QSplitter</span><span class="p">,</span>
+    <span class="n">QPushButton</span><span class="p">,</span>
+    <span class="n">QTextEdit</span><span class="p">,</span>
+    <span class="n">QLabel</span><span class="p">,</span>
+    <span class="n">QPlainTextEdit</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PySide6.QtCore</span><span class="w"> </span><span class="kn">import</span> <span class="n">Qt</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.jdxi.sysex.offset</span><span class="w"> </span><span class="kn">import</span> <span class="n">JDXiSysExOffset</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.log.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">Logger</span> <span class="k">as</span> <span class="n">log</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.data.address.address</span><span class="w"> </span><span class="kn">import</span> <span class="n">CommandID</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.jdxi.style</span><span class="w"> </span><span class="kn">import</span> <span class="n">JDXiStyle</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.data.parameter.synth</span><span class="w"> </span><span class="kn">import</span> <span class="n">AddressParameter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.io.helper</span><span class="w"> </span><span class="kn">import</span> <span class="n">MidiIOHelper</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.sysex.parser.sysex</span><span class="w"> </span><span class="kn">import</span> <span class="n">JDXiSysExParser</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.ui.windows.midi.helpers.debugger</span><span class="w"> </span><span class="kn">import</span> <span class="n">validate_checksum</span>
+
+<div class="viewcode-block" id="T">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/midi/debugger/index.html#jdxi_editor.ui.windows.midi.debugger.T">[docs]</a>
+<span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="s2">&quot;EnumWithAddress&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="EnumWithAddress">
+<a class="viewcode-back" href="../../../../../jdxi_editor.ui.windows.midi.html#jdxi_editor.ui.windows.midi.debugger.EnumWithAddress">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">EnumWithAddress</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="EnumWithAddress.message_position">
+<a class="viewcode-back" href="../../../../../jdxi_editor.ui.windows.midi.html#jdxi_editor.ui.windows.midi.debugger.EnumWithAddress.message_position">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">message_position</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;        Get the position of the message in the SysEx message.</span>
+<span class="sd">        :return: int - the position of the message</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="o">...</span></div>
+
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="EnumWithAddress.get_parameter_by_address">
+<a class="viewcode-back" href="../../../../../jdxi_editor.ui.windows.midi.html#jdxi_editor.ui.windows.midi.debugger.EnumWithAddress.get_parameter_by_address">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_parameter_by_address</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;        Get the enum member by address.</span>
+<span class="sd">        :param address: int</span>
+<span class="sd">        :return: Optional[T] - the enum member or None if not found</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="o">...</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="parse_sysex_byte">
+<a class="viewcode-back" href="../../../../../jdxi_editor.ui.windows.midi.html#jdxi_editor.ui.windows.midi.debugger.parse_sysex_byte">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">parse_sysex_byte</span><span class="p">(</span><span class="n">byte_value</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">enum_cls</span><span class="p">:</span> <span class="n">EnumWithAddress</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the name of a SysEx byte value using a given enum class.</span>
+
+<span class="sd">    :param byte_value: int</span>
+<span class="sd">    :param enum_cls: EnumWithAddress</span>
+<span class="sd">    :return: name of the parameter or &quot;Unknown&quot; if not found</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">enum_member</span> <span class="o">=</span> <span class="n">enum_cls</span><span class="o">.</span><span class="n">get_parameter_by_address</span><span class="p">(</span><span class="n">byte_value</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">enum_member</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="n">enum_member</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;COMMON (</span><span class="si">{</span><span class="nb">hex</span><span class="p">(</span><span class="n">byte_value</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
+    <span class="k">return</span> <span class="n">name</span></div>
+
+
+
+<div class="viewcode-block" id="parse_sysex_message">
+<a class="viewcode-back" href="../../../../../jdxi_editor.ui.windows.midi.html#jdxi_editor.ui.windows.midi.debugger.parse_sysex_message">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">parse_sysex_message</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">enum_cls</span><span class="p">:</span> <span class="n">EnumWithAddress</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parse a SysEx message and return the name and byte value of the specified parameter.</span>
+
+<span class="sd">    :param message: str</span>
+<span class="sd">    :param enum_cls: EnumWithAddress</span>
+<span class="sd">    :return: Tuple containing the name and byte value</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">byte_value</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">message</span><span class="p">[</span><span class="n">enum_cls</span><span class="o">.</span><span class="n">message_position</span><span class="p">()])</span>
+    <span class="n">enum_member</span> <span class="o">=</span> <span class="n">enum_cls</span><span class="o">.</span><span class="n">get_parameter_by_address</span><span class="p">(</span><span class="n">byte_value</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">enum_member</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="n">enum_member</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;Unknown (</span><span class="si">{</span><span class="nb">hex</span><span class="p">(</span><span class="n">byte_value</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
+    <span class="k">return</span> <span class="n">name</span><span class="p">,</span> <span class="n">byte_value</span></div>
+
+
+
+<div class="viewcode-block" id="parse_parameter">
+<a class="viewcode-back" href="../../../../../jdxi_editor.ui.windows.midi.html#jdxi_editor.ui.windows.midi.debugger.parse_parameter">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">parse_parameter</span><span class="p">(</span><span class="n">offset</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">parameter_type</span><span class="p">:</span> <span class="n">AddressParameter</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parses JD-Xi tone parameters from SysEx data for Digital, Analog, and Digital Common types.</span>
+
+<span class="sd">    :param offset: int - The offset in the SysEx message where the parameter starts.</span>
+<span class="sd">    :param parameter_type: AddressParameter - The parameter type to parse.</span>
+<span class="sd">    :return: str name</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">parameter_type</span><span class="o">.</span><span class="n">get_name_by_address</span><span class="p">(</span><span class="n">offset</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="MIDIDebugger">
+<a class="viewcode-back" href="../../../../../jdxi_editor.ui.windows.midi.html#jdxi_editor.ui.windows.midi.debugger.MIDIDebugger">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">MIDIDebugger</span><span class="p">(</span><span class="n">QMainWindow</span><span class="p">):</span>
+    <span class="c1"># SysEx message structure constants</span>
+
+<div class="viewcode-block" id="MIDIDebugger.__init__">
+<a class="viewcode-back" href="../../../../../jdxi_editor.ui.windows.midi.html#jdxi_editor.ui.windows.midi.debugger.MIDIDebugger.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">midi_helper</span><span class="p">:</span> <span class="n">MidiIOHelper</span><span class="p">,</span> <span class="n">parent</span><span class="p">:</span> <span class="n">QWidget</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        init method</span>
+
+<span class="sd">        :param midi_helper: MidiIOHelper</span>
+<span class="sd">        :param parent: QWidget main window</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+<div class="viewcode-block" id="MIDIDebugger.midi_helper">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/midi/debugger/index.html#jdxi_editor.ui.windows.midi.debugger.MIDIDebugger.midi_helper">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span> <span class="o">=</span> <span class="n">midi_helper</span></div>
+
+
+        <span class="c1"># Set window properties</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setWindowTitle</span><span class="p">(</span><span class="s2">&quot;MIDI Debugger&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMinimumSize</span><span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">600</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">DEBUGGER</span><span class="p">)</span>
+
+        <span class="c1"># Create central widget</span>
+        <span class="n">central</span> <span class="o">=</span> <span class="n">QWidget</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setCentralWidget</span><span class="p">(</span><span class="n">central</span><span class="p">)</span>
+        <span class="n">layout</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">(</span><span class="n">central</span><span class="p">)</span>
+
+        <span class="c1"># Create splitter for hex and decoded views</span>
+        <span class="n">splitter</span> <span class="o">=</span> <span class="n">QSplitter</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">Vertical</span><span class="p">)</span>
+
+        <span class="c1"># Top section - Hex input and buttons</span>
+        <span class="n">top_widget</span> <span class="o">=</span> <span class="n">QWidget</span><span class="p">()</span>
+        <span class="n">top_layout</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">(</span><span class="n">top_widget</span><span class="p">)</span>
+
+        <span class="c1"># Instructions</span>
+        <span class="n">instructions</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">(</span>
+            <span class="s2">&quot;Enter MIDI commands (one per line) in hex format:</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;Example: F0 41 10 00 00 00 0E 12 19 01 20 00 01 F7&quot;</span>
+        <span class="p">)</span>
+        <span class="n">instructions</span><span class="o">.</span><span class="n">setWordWrap</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">top_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">instructions</span><span class="p">)</span>
+
+        <span class="c1"># Command input</span>
+<div class="viewcode-block" id="MIDIDebugger.command_input">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/midi/debugger/index.html#jdxi_editor.ui.windows.midi.debugger.MIDIDebugger.command_input">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">command_input</span> <span class="o">=</span> <span class="n">QPlainTextEdit</span><span class="p">()</span></div>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">command_input</span><span class="o">.</span><span class="n">setPlaceholderText</span><span class="p">(</span><span class="s2">&quot;Enter MIDI commands here...&quot;</span><span class="p">)</span>
+        <span class="n">top_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">command_input</span><span class="p">)</span>
+
+        <span class="c1"># Buttons</span>
+        <span class="n">button_layout</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+
+<div class="viewcode-block" id="MIDIDebugger.send_button">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/midi/debugger/index.html#jdxi_editor.ui.windows.midi.debugger.MIDIDebugger.send_button">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send_button</span> <span class="o">=</span> <span class="n">QPushButton</span><span class="p">(</span><span class="s2">&quot;Send Commands&quot;</span><span class="p">)</span></div>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">send_button</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_send_commands</span><span class="p">)</span>
+        <span class="n">button_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">send_button</span><span class="p">)</span>
+
+<div class="viewcode-block" id="MIDIDebugger.clear_button">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/midi/debugger/index.html#jdxi_editor.ui.windows.midi.debugger.MIDIDebugger.clear_button">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clear_button</span> <span class="o">=</span> <span class="n">QPushButton</span><span class="p">(</span><span class="s2">&quot;Clear&quot;</span><span class="p">)</span></div>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">clear_button</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">command_input</span><span class="o">.</span><span class="n">clear</span><span class="p">)</span>
+        <span class="n">button_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clear_button</span><span class="p">)</span>
+
+<div class="viewcode-block" id="MIDIDebugger.decode_button">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/midi/debugger/index.html#jdxi_editor.ui.windows.midi.debugger.MIDIDebugger.decode_button">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">decode_button</span> <span class="o">=</span> <span class="n">QPushButton</span><span class="p">(</span><span class="s2">&quot;Decode&quot;</span><span class="p">)</span></div>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">decode_button</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_decode_current</span><span class="p">)</span>
+        <span class="n">button_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">decode_button</span><span class="p">)</span>
+
+        <span class="n">top_layout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">button_layout</span><span class="p">)</span>
+
+        <span class="c1"># Bottom section - Decoded view</span>
+        <span class="n">bottom_widget</span> <span class="o">=</span> <span class="n">QWidget</span><span class="p">()</span>
+        <span class="n">bottom_layout</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">(</span><span class="n">bottom_widget</span><span class="p">)</span>
+
+        <span class="c1"># Decoded output</span>
+        <span class="n">bottom_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">QLabel</span><span class="p">(</span><span class="s2">&quot;Decoded Message:&quot;</span><span class="p">))</span>
+<div class="viewcode-block" id="MIDIDebugger.decoded_text">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/midi/debugger/index.html#jdxi_editor.ui.windows.midi.debugger.MIDIDebugger.decoded_text">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">decoded_text</span> <span class="o">=</span> <span class="n">QTextEdit</span><span class="p">()</span></div>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">decoded_text</span><span class="o">.</span><span class="n">setReadOnly</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">bottom_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">decoded_text</span><span class="p">)</span>
+
+        <span class="c1"># Response log</span>
+        <span class="n">bottom_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">QLabel</span><span class="p">(</span><span class="s2">&quot;Response Log:&quot;</span><span class="p">))</span>
+<div class="viewcode-block" id="MIDIDebugger.response_log">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/midi/debugger/index.html#jdxi_editor.ui.windows.midi.debugger.MIDIDebugger.response_log">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">response_log</span> <span class="o">=</span> <span class="n">QTextEdit</span><span class="p">()</span></div>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">response_log</span><span class="o">.</span><span class="n">setReadOnly</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">bottom_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">response_log</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">clear_button</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">decoded_text</span><span class="o">.</span><span class="n">clear</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clear_button</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">response_log</span><span class="o">.</span><span class="n">clear</span><span class="p">)</span>
+
+        <span class="c1"># Add widgets to splitter</span>
+        <span class="n">splitter</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">top_widget</span><span class="p">)</span>
+        <span class="n">splitter</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">bottom_widget</span><span class="p">)</span>
+
+        <span class="c1"># Add splitter to main layout</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">splitter</span><span class="p">)</span>
+<div class="viewcode-block" id="MIDIDebugger.sysex_parser">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/midi/debugger/index.html#jdxi_editor.ui.windows.midi.debugger.MIDIDebugger.sysex_parser">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sysex_parser</span> <span class="o">=</span> <span class="n">JDXiSysExParser</span><span class="p">()</span></div>
+</div>
+
+
+<div class="viewcode-block" id="MIDIDebugger._decode_current">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/midi/debugger/index.html#jdxi_editor.ui.windows.midi.debugger.MIDIDebugger._decode_current">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_decode_current</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Decode the currently entered SysEx message(s)&quot;&quot;&quot;</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">command_input</span><span class="o">.</span><span class="n">toPlainText</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">text</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">decoded_text</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">hex_values</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">hex_values</span><span class="p">]</span>
+                <span class="n">decoded</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_decode_sysex_15</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">decoded_text</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">decoded</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">decoded_text</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error parsing line: &#39;</span><span class="si">{</span><span class="n">line</span><span class="si">}</span><span class="s2">&#39; -&gt; </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">decoded_text</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error decoding line: &#39;</span><span class="si">{</span><span class="n">line</span><span class="si">}</span><span class="s2">&#39; -&gt; </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MIDIDebugger._decode_sysex_15">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/midi/debugger/index.html#jdxi_editor.ui.windows.midi.debugger.MIDIDebugger._decode_sysex_15">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_decode_sysex_15</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Decode a 15-byte Roland address SysEx message.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">message</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">15</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;Invalid SysEx message (must be 15 bytes)&quot;</span>
+        <span class="k">if</span> <span class="n">message</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mh">0xF0</span> <span class="ow">or</span> <span class="n">message</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="mh">0x41</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;Not a Roland address SysEx message&quot;</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">fmt_row</span><span class="p">(</span><span class="n">byte</span><span class="p">,</span> <span class="n">desc</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">notes</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;| </span><span class="si">{</span><span class="n">byte</span><span class="si">:</span><span class="s2">&lt;5</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">desc</span><span class="si">:</span><span class="s2">&lt;28</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">val</span><span class="si">:</span><span class="s2">&lt;17</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">notes</span><span class="si">:</span><span class="s2">&lt;30</span><span class="si">}</span><span class="s2"> |</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">sysex_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sysex_parser</span><span class="o">.</span><span class="n">parse_bytes</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="n">message</span><span class="p">))</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">parameter</span><span class="p">(</span><span class="s2">&quot;sysex_dict&quot;</span><span class="p">,</span> <span class="n">sysex_dict</span><span class="p">)</span>
+
+            <span class="n">command_id</span><span class="p">,</span> <span class="n">command_byte</span> <span class="o">=</span> <span class="n">parse_sysex_message</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">CommandID</span><span class="p">)</span>
+            <span class="n">temporary_area</span> <span class="o">=</span> <span class="n">sysex_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;TEMPORARY_AREA&quot;</span><span class="p">,</span> <span class="s2">&quot;Unknown&quot;</span><span class="p">)</span>
+            <span class="n">synth_tone</span> <span class="o">=</span> <span class="n">sysex_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;SYNTH_TONE&quot;</span><span class="p">,</span> <span class="s2">&quot;Unknown&quot;</span><span class="p">)</span>
+            <span class="n">param_name</span> <span class="o">=</span> <span class="n">sysex_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;PARAM&quot;</span><span class="p">,</span> <span class="s2">&quot;Unknown&quot;</span><span class="p">)</span>
+
+            <span class="n">address_msb</span> <span class="o">=</span> <span class="n">message</span><span class="p">[</span><span class="n">JDXiSysExOffset</span><span class="o">.</span><span class="n">ADDRESS_MSB</span><span class="p">]</span>
+            <span class="n">address_umb</span> <span class="o">=</span> <span class="n">message</span><span class="p">[</span><span class="n">JDXiSysExOffset</span><span class="o">.</span><span class="n">ADDRESS_UMB</span><span class="p">]</span>
+            <span class="n">address_lsb</span> <span class="o">=</span> <span class="n">message</span><span class="p">[</span><span class="n">JDXiSysExOffset</span><span class="o">.</span><span class="n">ADDRESS_LSB</span><span class="p">]</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">message</span><span class="p">[</span><span class="n">JDXiSysExOffset</span><span class="o">.</span><span class="n">VALUE</span><span class="p">]</span>
+            <span class="n">checksum</span> <span class="o">=</span> <span class="n">message</span><span class="p">[</span><span class="n">JDXiSysExOffset</span><span class="o">.</span><span class="n">CHECKSUM</span><span class="p">]</span>
+            <span class="n">checksum_valid</span> <span class="o">=</span> <span class="n">validate_checksum</span><span class="p">(</span><span class="n">message</span><span class="p">[</span><span class="n">JDXiSysExOffset</span><span class="o">.</span><span class="n">ADDRESS_MSB</span><span class="p">:</span><span class="n">JDXiSysExOffset</span><span class="o">.</span><span class="n">CHECKSUM</span><span class="p">],</span> <span class="n">checksum</span><span class="p">)</span>
+
+            <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="sa">f</span><span class="s2">&quot;|</span><span class="si">{</span><span class="s1">&#39;-&#39;</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">7</span><span class="si">}</span><span class="s2">|</span><span class="si">{</span><span class="s1">&#39;-&#39;</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">30</span><span class="si">}</span><span class="s2">|</span><span class="si">{</span><span class="s1">&#39;-&#39;</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">19</span><span class="si">}</span><span class="s2">|</span><span class="si">{</span><span class="s1">&#39;-&#39;</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">32</span><span class="si">}</span><span class="s2">|</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">fmt_row</span><span class="p">(</span><span class="s2">&quot;Byte&quot;</span><span class="p">,</span> <span class="s2">&quot;Description&quot;</span><span class="p">,</span> <span class="s2">&quot;Value&quot;</span><span class="p">,</span> <span class="s2">&quot;Notes&quot;</span><span class="p">),</span>
+                <span class="sa">f</span><span class="s2">&quot;|</span><span class="si">{</span><span class="s1">&#39;-&#39;</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">7</span><span class="si">}</span><span class="s2">|</span><span class="si">{</span><span class="s1">&#39;-&#39;</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">30</span><span class="si">}</span><span class="s2">|</span><span class="si">{</span><span class="s1">&#39;-&#39;</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">19</span><span class="si">}</span><span class="s2">|</span><span class="si">{</span><span class="s1">&#39;-&#39;</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">32</span><span class="si">}</span><span class="s2">|</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">fmt_row</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;Start of SysEx&quot;</span><span class="p">,</span> <span class="nb">hex</span><span class="p">(</span><span class="n">message</span><span class="p">[</span><span class="n">JDXiSysExOffset</span><span class="o">.</span><span class="n">SYSEX_START</span><span class="p">])),</span>
+                <span class="n">fmt_row</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Manufacturer ID&quot;</span><span class="p">,</span> <span class="nb">hex</span><span class="p">(</span><span class="n">message</span><span class="p">[</span><span class="n">JDXiSysExOffset</span><span class="o">.</span><span class="n">ROLAND_ID</span><span class="p">]),</span> <span class="s2">&quot;Roland&quot;</span><span class="p">),</span>
+                <span class="n">fmt_row</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;Device ID&quot;</span><span class="p">,</span> <span class="nb">hex</span><span class="p">(</span><span class="n">message</span><span class="p">[</span><span class="n">JDXiSysExOffset</span><span class="o">.</span><span class="n">DEVICE_ID</span><span class="p">])),</span>
+                <span class="n">fmt_row</span><span class="p">(</span><span class="s2">&quot;3-6&quot;</span><span class="p">,</span> <span class="s2">&quot;Model ID&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">hex</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">message</span><span class="p">[</span><span class="n">JDXiSysExOffset</span><span class="o">.</span><span class="n">MODEL_ID_1</span><span class="p">:</span><span class="n">JDXiSysExOffset</span><span class="o">.</span><span class="n">COMMAND_ID</span><span class="p">])),</span>
+                <span class="n">fmt_row</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="s2">&quot;Command ID&quot;</span><span class="p">,</span> <span class="nb">hex</span><span class="p">(</span><span class="n">command_byte</span><span class="p">),</span> <span class="n">command_id</span><span class="p">),</span>
+                <span class="n">fmt_row</span><span class="p">(</span><span class="s2">&quot;8-9&quot;</span><span class="p">,</span> <span class="s2">&quot;Synth Area&quot;</span><span class="p">,</span> <span class="nb">hex</span><span class="p">(</span><span class="n">address_msb</span><span class="p">),</span> <span class="n">temporary_area</span><span class="p">),</span>
+                <span class="n">fmt_row</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="s2">&quot;Synth Part&quot;</span><span class="p">,</span> <span class="nb">hex</span><span class="p">(</span><span class="n">address_umb</span><span class="p">),</span> <span class="n">synth_tone</span><span class="p">),</span>
+                <span class="n">fmt_row</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="s2">&quot;Parameter Address Low&quot;</span><span class="p">,</span> <span class="n">address_lsb</span><span class="p">,</span> <span class="n">param_name</span><span class="p">),</span>
+                <span class="n">fmt_row</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="s2">&quot;Parameter Value&quot;</span><span class="p">,</span> <span class="nb">hex</span><span class="p">(</span><span class="n">value</span><span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="nb">hex</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">),</span>
+                <span class="n">fmt_row</span><span class="p">(</span><span class="mi">13</span><span class="p">,</span> <span class="s2">&quot;Checksum&quot;</span><span class="p">,</span> <span class="nb">hex</span><span class="p">(</span><span class="n">checksum</span><span class="p">),</span> <span class="s2">&quot;Valid&quot;</span> <span class="k">if</span> <span class="n">checksum_valid</span> <span class="k">else</span> <span class="s2">&quot;Invalid&quot;</span><span class="p">),</span>
+                <span class="n">fmt_row</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="s2">&quot;End of SysEx&quot;</span><span class="p">,</span> <span class="nb">hex</span><span class="p">(</span><span class="n">message</span><span class="p">[</span><span class="n">JDXiSysExOffset</span><span class="o">.</span><span class="n">SYSEX_END</span><span class="p">])),</span>
+                <span class="sa">f</span><span class="s2">&quot;|</span><span class="si">{</span><span class="s1">&#39;-&#39;</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">7</span><span class="si">}</span><span class="s2">|</span><span class="si">{</span><span class="s1">&#39;-&#39;</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">30</span><span class="si">}</span><span class="s2">|</span><span class="si">{</span><span class="s1">&#39;-&#39;</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">19</span><span class="si">}</span><span class="s2">|</span><span class="si">{</span><span class="s1">&#39;-&#39;</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">32</span><span class="si">}</span><span class="s2">|</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="p">]</span>
+
+            <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Error decoding message: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span></div>
+
+
+<div class="viewcode-block" id="MIDIDebugger._send_commands">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/midi/debugger/index.html#jdxi_editor.ui.windows.midi.debugger.MIDIDebugger._send_commands">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_send_commands</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Send all valid SysEx MIDI messages from user-entered text input.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_response</span><span class="p">(</span><span class="s2">&quot;Error: MIDI helper not initialized&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span><span class="o">.</span><span class="n">midi_out</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_response</span><span class="p">(</span><span class="s2">&quot;Error: No MIDI output port available&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Get all input text</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">command_input</span><span class="o">.</span><span class="n">toPlainText</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">text</span><span class="p">:</span>
+                <span class="k">return</span>
+
+            <span class="c1"># Normalize line breaks and whitespace</span>
+            <span class="n">normalized</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\s+&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+
+            <span class="c1"># Regex pattern to match all SysEx messages (F0 ... F7)</span>
+            <span class="n">sysex_pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;F0(?:\s[0-9A-Fa-f]</span><span class="si">{2}</span><span class="s2">)+?\sF7&quot;</span>
+            <span class="n">matches</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">sysex_pattern</span><span class="p">,</span> <span class="n">normalized</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">matches</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log_response</span><span class="p">(</span><span class="s2">&quot;No valid SysEx messages found.&quot;</span><span class="p">)</span>
+                <span class="k">return</span>
+
+            <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">matches</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span><span class="n">match</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_response</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unhandled error in _send_commands: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MIDIDebugger.send_message">
+<a class="viewcode-back" href="../../../../../jdxi_editor.ui.windows.midi.html#jdxi_editor.ui.windows.midi.debugger.MIDIDebugger.send_message">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">send_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">match</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Send a SysEx message based on the provided hex string.</span>
+
+<span class="sd">        :param match: str - Hex string representing the SysEx message</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Convert hex string to list of ints</span>
+            <span class="n">hex_values</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_response</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Converting hex values: </span><span class="si">{</span><span class="n">hex_values</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="n">message</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">hex_values</span><span class="p">]</span>
+
+            <span class="c1"># Send the message</span>
+            <span class="n">success</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span><span class="o">.</span><span class="n">send_raw_message</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+
+            <span class="n">hex_str</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">b</span><span class="si">:</span><span class="s2">02X</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">message</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">success</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log_response</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Successfully sent: </span><span class="si">{</span><span class="n">hex_str</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log_response</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to send: </span><span class="si">{</span><span class="n">hex_str</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Sent SysEx: </span><span class="si">{</span><span class="n">hex_str</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_response</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error parsing message: </span><span class="si">{</span><span class="n">match</span><span class="si">}</span><span class="se">\n</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_response</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unexpected error: </span><span class="si">{</span><span class="n">match</span><span class="si">}</span><span class="se">\n</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MIDIDebugger.log_response">
+<a class="viewcode-back" href="../../../../../jdxi_editor.ui.windows.midi.html#jdxi_editor.ui.windows.midi.debugger.MIDIDebugger.log_response">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">log_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add text to response log&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">response_log</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">text</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MIDIDebugger.handle_midi_response">
+<a class="viewcode-back" href="../../../../../jdxi_editor.ui.windows.midi.html#jdxi_editor.ui.windows.midi.debugger.MIDIDebugger.handle_midi_response">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_midi_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Handle incoming MIDI message&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Convert message to hex string</span>
+            <span class="n">hex_str</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">b</span><span class="si">:</span><span class="s2">02X</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">message</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_response</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Received: </span><span class="si">{</span><span class="n">hex_str</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_response</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error handling response: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Mark Mrooks.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
