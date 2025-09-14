@@ -1,0 +1,1024 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>midi.track_viewer &mdash; JD-Xi Editor 0.8.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=486e5634"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            JD-Xi Editor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Quick Start</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../usage.html#connection-of-the-jd-xi-hardware-instrument-to-the-computer">Connection of the JD-Xi Hardware Instrument to the Computer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../instrument.html">JDXi Instrument Window</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../instrument.html#features">Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../instrument.html#using-the-instrument-window">Using the Instrument Window</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../editor.html">Editor Window</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../editor.html#program-mixer-section">Program/Mixer Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../editor.html#digital-1-section">Digital 1 Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../editor.html#digital-2-section">Digital 2 Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../editor.html#drum-kit-section">Drum Kit Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../editor.html#analog-section">Analog Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../editor.html#effect-controls">Effect Controls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../editor.html#vocal-transformer">Vocal Transformer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../editor.html#arpeggiator">Arpeggiator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../editor.html#midi-file-player-and-recorder">MIDI File Player and Recorder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../editor.html#pattern-sequencer">Pattern Sequencer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../troubleshooting.html">Troubleshooting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../troubleshooting.html#general-problems">General Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../troubleshooting.html#macos">MacOS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../troubleshooting.html#windows">Windows</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../legal.html">Legal Disclaimer</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">jdxi_editor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../jdxi_editor.html">jdxi_editor package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../jdxi_editor.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../jdxi_editor.jdxi.html">jdxi_editor.jdxi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../jdxi_editor.log.html">jdxi_editor.log package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../jdxi_editor.midi.html">jdxi_editor.midi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../jdxi_editor.ui.html">jdxi_editor.ui package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../jdxi_editor.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../jdxi_editor.html#module-jdxi_editor.globals">jdxi_editor.globals module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../jdxi_editor.html#module-jdxi_editor.main">jdxi_editor.main module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../jdxi_editor.html#jdxi_editor.main.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../jdxi_editor.html#module-jdxi_editor.project">jdxi_editor.project module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../jdxi_editor.html#module-jdxi_editor.resources">jdxi_editor.resources module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../jdxi_editor.html#jdxi_editor.resources.resource_path"><code class="docutils literal notranslate"><span class="pre">resource_path()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../jdxi_editor.html#module-jdxi_editor">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../autoapi/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/midi/index.html">midi</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/midi/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/midi/colors/index.html">midi.colors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/midi/slider/index.html">midi.slider</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/midi/spin_box/index.html">midi.spin_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/midi/time_ruler/index.html">midi.time_ruler</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/midi/track/index.html">midi.track</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/midi/track_viewer/index.html">midi.track_viewer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/midi/utils/index.html">midi.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/adsr/index.html">adsr</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/adsr/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/adsr/adsr/index.html">adsr.adsr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/adsr/graph/index.html">adsr.graph</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/adsr/parameter/index.html">adsr.parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/adsr/plot/index.html">adsr.plot</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/pitch/index.html">pitch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/pitch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/pitch/envelope/index.html">pitch.envelope</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/pitch/envelope_plot/index.html">pitch.envelope_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/pitch/pwm_plot/index.html">pitch.pwm_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/pitch/slider_spinbox/index.html">pitch.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/piano/index.html">piano</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/piano/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/piano/key/index.html">piano.key</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/piano/keyboard/index.html">piano.keyboard</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/panel/index.html">panel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/panel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/panel/partial/index.html">panel.partial</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/wheel/index.html">wheel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/wheel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/wheel/mod/index.html">wheel.mod</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/wheel/pitch/index.html">wheel.pitch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/wheel/wheel/index.html">wheel.wheel</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/preset/index.html">preset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/preset/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/preset/combo_box/index.html">preset.combo_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/preset/panel/index.html">preset.panel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/preset/patch_name/index.html">preset.patch_name</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/slider/index.html">slider</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/slider/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/slider/slider/index.html">slider.slider</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/slider/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/slider/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/slider/index.html#slider.Slider"><code class="docutils literal notranslate"><span class="pre">Slider</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/dialog/index.html">dialog</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/dialog/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/dialog/progress/index.html">dialog.progress</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/viewer/index.html">viewer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/viewer/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/viewer/log/index.html">viewer.log</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/button/index.html">button</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/button/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/button/channel/index.html">button.channel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/button/favorite/index.html">button.favorite</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/button/sequencer/index.html">button.sequencer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/button/waveform/index.html">button.waveform</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/button/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/button/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/button/index.html#button.ChannelButton"><code class="docutils literal notranslate"><span class="pre">ChannelButton</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/button/index.html#button.SequencerSquare"><code class="docutils literal notranslate"><span class="pre">SequencerSquare</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/switch/index.html">switch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/switch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/switch/partial/index.html">switch.partial</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/switch/switch/index.html">switch.switch</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/filter/index.html">filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/filter/index.html#filter.FilterWidget"><code class="docutils literal notranslate"><span class="pre">FilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/display/index.html">display</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/display/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/display/digital/index.html">display.digital</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/display/pattern/index.html">display.pattern</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/display/value/index.html">display.value</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/pattern/index.html">pattern</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/pattern/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/pattern/measure/index.html">pattern.measure</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/spin_box/index.html">spin_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/spin_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/spin_box/spin_box/index.html">spin_box.spin_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/envelope/index.html">envelope</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/envelope/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/envelope/base/index.html">envelope.base</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/indicator/index.html">indicator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/indicator/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/indicator/led/index.html">indicator.led</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/indicator/midi/index.html">indicator.midi</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/combo_box/index.html">combo_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/combo_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/combo_box/combo_box/index.html">combo_box.combo_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/jdxi_editor/index.html">jdxi_editor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/jdxi_editor/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/jdxi_editor/globals/index.html">jdxi_editor.globals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/jdxi_editor/jdxi/index.html">jdxi_editor.jdxi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/jdxi_editor/log/index.html">jdxi_editor.log</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/jdxi_editor/main/index.html">jdxi_editor.main</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/jdxi_editor/midi/index.html">jdxi_editor.midi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/jdxi_editor/project/index.html">jdxi_editor.project</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/jdxi_editor/resources/index.html">jdxi_editor.resources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/jdxi_editor/ui/index.html">jdxi_editor.ui</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/filter_plot/index.html">filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/filter_plot/index.html#filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/filter_plot/index.html#filter_plot.FilterPlot"><code class="docutils literal notranslate"><span class="pre">FilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/envelope_plot/index.html">envelope_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/envelope_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/envelope_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/envelope_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/envelope_plot/index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/envelope_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/envelope_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/envelope_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/envelope_plot/index.html#envelope_plot.midi_value_to_float"><code class="docutils literal notranslate"><span class="pre">midi_value_to_float()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/envelope_plot/index.html#envelope_plot.WMTEnvPlot"><code class="docutils literal notranslate"><span class="pre">WMTEnvPlot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/envelope_plot/index.html#envelope_plot.app"><code class="docutils literal notranslate"><span class="pre">app</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/wave_selector/index.html">wave_selector</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/wave_selector/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/wave_selector/wave_selector/index.html">wave_selector.wave_selector</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/analog_filter/index.html">analog_filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/analog_filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/analog_filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/analog_filter/index.html#analog_filter.AnalogFilterWidget"><code class="docutils literal notranslate"><span class="pre">AnalogFilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/slider_spinbox/index.html">slider_spinbox</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/slider_spinbox/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/slider_spinbox/slider_spinbox/index.html">slider_spinbox.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/analog_filter_plot/index.html">analog_filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/analog_filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/analog_filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/analog_filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/analog_filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/analog_filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/analog_filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/analog_filter_plot/index.html#analog_filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/analog_filter_plot/index.html#analog_filter_plot.AnalogFilterPlot"><code class="docutils literal notranslate"><span class="pre">AnalogFilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">JD-Xi Editor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">midi.track_viewer</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for midi.track_viewer</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Midi Track Viewer</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">mido</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">qtawesome</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">qta</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PySide6.QtCore</span><span class="w"> </span><span class="kn">import</span> <span class="n">Qt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PySide6.QtWidgets</span><span class="w"> </span><span class="kn">import</span> <span class="n">QWidget</span><span class="p">,</span> <span class="n">QVBoxLayout</span><span class="p">,</span> <span class="n">QHBoxLayout</span><span class="p">,</span> <span class="n">QLabel</span><span class="p">,</span> <span class="n">QPushButton</span><span class="p">,</span> <span class="n">QScrollArea</span><span class="p">,</span> <span class="n">QSlider</span><span class="p">,</span> <span class="n">QMessageBox</span><span class="p">,</span> \
+    <span class="n">QLineEdit</span><span class="p">,</span> <span class="n">QLayout</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.jdxi.midi.constant</span><span class="w"> </span><span class="kn">import</span> <span class="n">MidiConstant</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.jdxi.style</span><span class="w"> </span><span class="kn">import</span> <span class="n">JDXiStyle</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.log.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">Logger</span> <span class="k">as</span> <span class="n">log</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.ui.widgets.midi.spin_box.spin_box</span><span class="w"> </span><span class="kn">import</span> <span class="n">MidiSpinBox</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.ui.widgets.midi.time_ruler</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeRulerWidget</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.ui.widgets.midi.track</span><span class="w"> </span><span class="kn">import</span> <span class="n">MidiTrackWidget</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.ui.widgets.midi.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_first_channel</span>
+
+
+<div class="viewcode-block" id="MidiTrackViewer">
+<a class="viewcode-back" href="../../autoapi/midi/track_viewer/index.html#midi.track_viewer.MidiTrackViewer">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">MidiTrackViewer</span><span class="p">(</span><span class="n">QWidget</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    MidiTrackViewer</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">:</span> <span class="n">QWidget</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+
+<div class="viewcode-block" id="MidiTrackViewer.midi_file">
+<a class="viewcode-back" href="../../autoapi/midi/track_viewer/index.html#midi.track_viewer.MidiTrackViewer.midi_file">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">midi_file</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="MidiTrackViewer.event_index">
+<a class="viewcode-back" href="../../autoapi/midi/track_viewer/index.html#midi.track_viewer.MidiTrackViewer.event_index">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">event_index</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="MidiTrackViewer.ruler">
+<a class="viewcode-back" href="../../autoapi/midi/track_viewer/index.html#midi.track_viewer.MidiTrackViewer.ruler">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ruler</span> <span class="o">=</span> <span class="n">TimeRulerWidget</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="MidiTrackViewer.midi_track_widgets">
+<a class="viewcode-back" href="../../autoapi/midi/track_viewer/index.html#midi.track_viewer.MidiTrackViewer.midi_track_widgets">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">midi_track_widgets</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># MidiTrackWidget()</span></div>
+
+<div class="viewcode-block" id="MidiTrackViewer.muted_tracks">
+<a class="viewcode-back" href="../../autoapi/midi/track_viewer/index.html#midi.track_viewer.MidiTrackViewer.muted_tracks">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">muted_tracks</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>  <span class="c1"># To track muted tracks</span></div>
+
+
+        <span class="c1"># To track muted channels</span>
+<div class="viewcode-block" id="MidiTrackViewer.muted_channels">
+<a class="viewcode-back" href="../../autoapi/midi/track_viewer/index.html#midi.track_viewer.MidiTrackViewer.muted_channels">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">muted_channels</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span></div>
+
+
+        <span class="c1"># Main layout</span>
+        <span class="n">main_layout</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">main_layout</span><span class="o">.</span><span class="n">setSpacing</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">main_layout</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="c1"># Scrollable content widget</span>
+<div class="viewcode-block" id="MidiTrackViewer.scroll_content">
+<a class="viewcode-back" href="../../autoapi/midi/track_viewer/index.html#midi.track_viewer.MidiTrackViewer.scroll_content">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scroll_content</span> <span class="o">=</span> <span class="n">QWidget</span><span class="p">()</span></div>
+
+        <span class="n">scroll_layout</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scroll_content</span><span class="p">)</span>
+        <span class="n">scroll_layout</span><span class="o">.</span><span class="n">setSpacing</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">scroll_layout</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="c1"># scroll_layout.addWidget(self.ruler)</span>
+        <span class="n">ruler_container</span> <span class="o">=</span> <span class="n">QWidget</span><span class="p">()</span>
+        <span class="n">ruler_layout</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">(</span><span class="n">ruler_container</span><span class="p">)</span>
+        <span class="n">ruler_layout</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">ruler_layout</span><span class="o">.</span><span class="n">setSpacing</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="n">left_spacer</span> <span class="o">=</span> <span class="n">QWidget</span><span class="p">()</span>
+        <span class="n">left_spacer</span><span class="o">.</span><span class="n">setFixedWidth</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_track_controls_width</span><span class="p">())</span>  <span class="c1"># same width as controls</span>
+        <span class="n">ruler_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">left_spacer</span><span class="p">)</span>
+
+        <span class="n">ruler_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ruler</span><span class="p">,</span> <span class="n">stretch</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">scroll_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">ruler_container</span><span class="p">)</span>
+
+
+        <span class="c1"># Add Mute Buttons for channels 1-16</span>
+<div class="viewcode-block" id="MidiTrackViewer.mute_buttons">
+<a class="viewcode-back" href="../../autoapi/midi/track_viewer/index.html#midi.track_viewer.MidiTrackViewer.mute_buttons">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mute_buttons</span> <span class="o">=</span> <span class="p">{}</span></div>
+
+        <span class="n">mute_layout</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+        <span class="n">mute_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">QLabel</span><span class="p">(</span><span class="s2">&quot;Mute Channels:&quot;</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">17</span><span class="p">):</span>
+            <span class="n">btn</span> <span class="o">=</span> <span class="n">QPushButton</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ch</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">btn</span><span class="o">.</span><span class="n">setCheckable</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">btn</span><span class="o">.</span><span class="n">setFixedWidth</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span>
+            <span class="n">btn</span><span class="o">.</span><span class="n">toggled</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+                <span class="k">lambda</span> <span class="n">checked</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">ch</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">toggle_channel_mute</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">checked</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">btn</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span>
+                <span class="s2">&quot;QPushButton:checked { background-color: #cc0000; color: white; }&quot;</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mute_buttons</span><span class="p">[</span><span class="n">ch</span><span class="p">]</span> <span class="o">=</span> <span class="n">btn</span>
+            <span class="n">mute_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">btn</span><span class="p">)</span>
+
+        <span class="n">scroll_layout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">mute_layout</span><span class="p">)</span>
+
+        <span class="c1"># Scroll area</span>
+        <span class="n">scroll_area</span> <span class="o">=</span> <span class="n">QScrollArea</span><span class="p">()</span>
+        <span class="n">scroll_area</span><span class="o">.</span><span class="n">setWidgetResizable</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">scroll_area</span><span class="o">.</span><span class="n">setVerticalScrollBarPolicy</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">ScrollBarAlwaysOn</span><span class="p">)</span>
+        <span class="n">scroll_area</span><span class="o">.</span><span class="n">setHorizontalScrollBarPolicy</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">ScrollBarAlwaysOn</span><span class="p">)</span>
+        <span class="n">scroll_area</span><span class="o">.</span><span class="n">setWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scroll_content</span><span class="p">)</span>
+
+        <span class="c1"># Add scroll area to main layout</span>
+        <span class="n">main_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">scroll_area</span><span class="p">)</span>
+
+        <span class="c1"># Track zoom slider</span>
+<div class="viewcode-block" id="MidiTrackViewer.track_zoom_slider">
+<a class="viewcode-back" href="../../autoapi/midi/track_viewer/index.html#midi.track_viewer.MidiTrackViewer.track_zoom_slider">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">track_zoom_slider</span> <span class="o">=</span> <span class="n">QSlider</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">Horizontal</span><span class="p">)</span></div>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">track_zoom_slider</span><span class="o">.</span><span class="n">setRange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">track_zoom_slider</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">track_zoom_slider</span><span class="o">.</span><span class="n">valueChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_track_zoom</span><span class="p">)</span>
+
+        <span class="c1"># Add zoom slider to layout</span>
+        <span class="n">main_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">QLabel</span><span class="p">(</span><span class="s2">&quot;Track Zoom&quot;</span><span class="p">))</span>
+        <span class="n">main_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">track_zoom_slider</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">main_layout</span><span class="p">)</span>
+
+<div class="viewcode-block" id="MidiTrackViewer.clear">
+<a class="viewcode-back" href="../../autoapi/midi/track_viewer/index.html#midi.track_viewer.MidiTrackViewer.clear">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Clear the MIDI track view and reset state.&quot;&quot;&quot;</span>
+        <span class="c1"># Clear MIDI data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">midi_file</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">event_index</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Unmute all channels</span>
+        <span class="k">for</span> <span class="n">ch</span><span class="p">,</span> <span class="n">btn</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mute_buttons</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">btn</span><span class="o">.</span><span class="n">isChecked</span><span class="p">():</span>
+                <span class="n">btn</span><span class="o">.</span><span class="n">setChecked</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">muted_channels</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">muted_tracks</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+        <span class="c1"># Remove track widgets</span>
+        <span class="k">for</span> <span class="n">track_key</span><span class="p">,</span> <span class="n">track_widget</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">midi_track_widgets</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">track_widget</span><span class="o">.</span><span class="n">setParent</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+            <span class="n">track_widget</span><span class="o">.</span><span class="n">deleteLater</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">midi_track_widgets</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+        <span class="c1"># Remove layouts/items from the channel controls layout</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;channel_controls_vlayout&quot;</span><span class="p">):</span>
+            <span class="n">layout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_controls_vlayout</span>
+            <span class="k">while</span> <span class="n">layout</span><span class="o">.</span><span class="n">count</span><span class="p">():</span>
+                <span class="n">item</span> <span class="o">=</span> <span class="n">layout</span><span class="o">.</span><span class="n">takeAt</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                <span class="n">widget</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">widget</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">widget</span><span class="p">:</span>
+                    <span class="n">widget</span><span class="o">.</span><span class="n">setParent</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+                    <span class="n">widget</span><span class="o">.</span><span class="n">deleteLater</span><span class="p">()</span>
+                <span class="k">elif</span> <span class="n">item</span><span class="o">.</span><span class="n">layout</span><span class="p">():</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_clear_layout</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">layout</span><span class="p">())</span>  <span class="c1"># See helper below</span>
+
+        <span class="c1"># Reset zoom slider to default</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">track_zoom_slider</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span>
+
+        <span class="c1"># Optional: force a redraw</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="MidiTrackViewer._clear_layout">
+<a class="viewcode-back" href="../../autoapi/midi/track_viewer/index.html#midi.track_viewer.MidiTrackViewer._clear_layout">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_clear_layout</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layout</span><span class="p">:</span> <span class="n">QLayout</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        _clear_layout</span>
+
+<span class="sd">        :param layout:</span>
+<span class="sd">        :return:</span>
+<span class="sd">        Recursively clear a layout and its children.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">while</span> <span class="n">layout</span><span class="o">.</span><span class="n">count</span><span class="p">():</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="n">layout</span><span class="o">.</span><span class="n">takeAt</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">widget</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">widget</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">widget</span><span class="p">:</span>
+                <span class="n">widget</span><span class="o">.</span><span class="n">setParent</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+                <span class="n">widget</span><span class="o">.</span><span class="n">deleteLater</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="n">item</span><span class="o">.</span><span class="n">layout</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_clear_layout</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">layout</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="MidiTrackViewer.clear_old">
+<a class="viewcode-back" href="../../autoapi/midi/track_viewer/index.html#midi.track_viewer.MidiTrackViewer.clear_old">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">clear_old</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Clear the MIDI track view and reset state.&quot;&quot;&quot;</span>
+        <span class="c1"># Clear MIDI data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">midi_file</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">event_index</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Unmute all channels</span>
+        <span class="k">for</span> <span class="n">ch</span><span class="p">,</span> <span class="n">btn</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mute_buttons</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">btn</span><span class="o">.</span><span class="n">isChecked</span><span class="p">():</span>
+                <span class="n">btn</span><span class="o">.</span><span class="n">setChecked</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">muted_channels</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">muted_tracks</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+        <span class="c1"># Remove track widgets</span>
+        <span class="k">for</span> <span class="n">track_key</span><span class="p">,</span> <span class="n">track_widget</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">midi_track_widgets</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">track_widget</span><span class="o">.</span><span class="n">setParent</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+            <span class="n">track_widget</span><span class="o">.</span><span class="n">deleteLater</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">midi_track_widgets</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+        <span class="c1"># Reset zoom slider to default</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">track_zoom_slider</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MidiTrackViewer.update_track_zoom">
+<a class="viewcode-back" href="../../autoapi/midi/track_viewer/index.html#midi.track_viewer.MidiTrackViewer.update_track_zoom">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_track_zoom</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">width</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        update_track_zoom</span>
+
+<span class="sd">        :param width: int</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scroll_content</span><span class="o">.</span><span class="n">setFixedWidth</span><span class="p">(</span><span class="n">width</span> <span class="o">*</span> <span class="mi">80</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MidiTrackViewer.toggle_channel_mute">
+<a class="viewcode-back" href="../../autoapi/midi/track_viewer/index.html#midi.track_viewer.MidiTrackViewer.toggle_channel_mute">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">toggle_channel_mute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">is_muted</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Toggle mute state for a specific MIDI channel.</span>
+
+<span class="sd">        :param channel: int MIDI channel (1-16)</span>
+<span class="sd">        :param is_muted: bool is the channel muted?</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">is_muted</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">muted_channels</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">muted_channels</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span>
+
+        <span class="c1"># Notify all track widgets</span>
+        <span class="k">for</span> <span class="n">widget</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">midi_track_widgets</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">widget</span><span class="o">.</span><span class="n">update_muted_channels</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">muted_channels</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Muted channels updated: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">muted_channels</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MidiTrackViewer.update_muted_channels">
+<a class="viewcode-back" href="../../autoapi/midi/track_viewer/index.html#midi.track_viewer.MidiTrackViewer.update_muted_channels">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_muted_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">muted_channels</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when the global mute state is updated.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">muted_channels</span> <span class="o">=</span> <span class="n">muted_channels</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Muted channels updated: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">muted_channels</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>  <span class="c1"># trigger repaint or UI change if needed</span></div>
+
+
+<div class="viewcode-block" id="MidiTrackViewer.toggle_track_mute">
+<a class="viewcode-back" href="../../autoapi/midi/track_viewer/index.html#midi.track_viewer.MidiTrackViewer.toggle_track_mute">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">toggle_track_mute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">track</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">is_muted</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Toggle mute state for a specific MIDI track.</span>
+
+<span class="sd">        :param track: int MIDI channel (1-16)</span>
+<span class="sd">        :param is_muted: bool is the channel muted?</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">is_muted</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">muted_tracks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">track</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">muted_tracks</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">track</span><span class="p">)</span>
+
+        <span class="c1"># Notify all track widgets</span>
+        <span class="k">for</span> <span class="n">widget</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">midi_track_widgets</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">widget</span><span class="o">.</span><span class="n">update_muted_tracks</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">muted_tracks</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Muted tracks updated: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">muted_tracks</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MidiTrackViewer.update_muted_tracks">
+<a class="viewcode-back" href="../../autoapi/midi/track_viewer/index.html#midi.track_viewer.MidiTrackViewer.update_muted_tracks">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_muted_tracks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">muted_tracks</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when the global mute state is updated.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">muted_tracks</span> <span class="o">=</span> <span class="n">muted_tracks</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Muted tracks updated: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">muted_tracks</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>  <span class="c1"># trigger repaint or UI change if needed</span></div>
+
+
+<div class="viewcode-block" id="MidiTrackViewer.mute_track">
+<a class="viewcode-back" href="../../autoapi/midi/track_viewer/index.html#midi.track_viewer.MidiTrackViewer.mute_track">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">mute_track</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">track_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Mute a specific track</span>
+
+<span class="sd">        :param track_index: int</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">track_index</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">midi_file</span><span class="o">.</span><span class="n">tracks</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s2">&quot;Invalid track index&quot;</span><span class="p">)</span>
+
+        <span class="n">track_widget</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">midi_track_widgets</span><span class="p">[</span><span class="n">track_index</span><span class="p">]</span>
+        <span class="n">track_widget</span><span class="o">.</span><span class="n">muted</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">track_widget</span><span class="o">.</span><span class="n">muted</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">toggle_track_mute</span><span class="p">(</span><span class="n">track_index</span><span class="p">,</span> <span class="n">track_widget</span><span class="o">.</span><span class="n">muted</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MidiTrackViewer.delete_track">
+<a class="viewcode-back" href="../../autoapi/midi/track_viewer/index.html#midi.track_viewer.MidiTrackViewer.delete_track">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">delete_track</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">track_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Ask user to confirm and delete a specific MIDI track and its widget.</span>
+
+<span class="sd">        :param track_index: int</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">track_index</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">midi_file</span><span class="o">.</span><span class="n">tracks</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s2">&quot;Invalid track index&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Optional: Get the track name to show in dialog</span>
+        <span class="n">track</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">midi_file</span><span class="o">.</span><span class="n">tracks</span><span class="p">[</span><span class="n">track_index</span><span class="p">]</span>
+        <span class="n">track_name</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">track</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Track </span><span class="si">{</span><span class="n">track_index</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Show confirmation dialog</span>
+        <span class="n">reply</span> <span class="o">=</span> <span class="n">QMessageBox</span><span class="o">.</span><span class="n">question</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="s2">&quot;Delete Track?&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;Are you sure you want to delete &#39;</span><span class="si">{</span><span class="n">track_name</span><span class="si">}</span><span class="s2">&#39;?&quot;</span><span class="p">,</span>
+            <span class="n">QMessageBox</span><span class="o">.</span><span class="n">StandardButton</span><span class="o">.</span><span class="n">Yes</span> <span class="o">|</span> <span class="n">QMessageBox</span><span class="o">.</span><span class="n">StandardButton</span><span class="o">.</span><span class="n">No</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">reply</span> <span class="o">==</span> <span class="n">QMessageBox</span><span class="o">.</span><span class="n">StandardButton</span><span class="o">.</span><span class="n">Yes</span><span class="p">:</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">midi_file</span><span class="o">.</span><span class="n">tracks</span><span class="p">[</span><span class="n">track_index</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">midi_track_widgets</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">track_index</span><span class="p">)</span>
+
+            <span class="c1"># Optional: update UI if needed</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">refresh_track_list</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="MidiTrackViewer.change_track_name">
+<a class="viewcode-back" href="../../autoapi/midi/track_viewer/index.html#midi.track_viewer.MidiTrackViewer.change_track_name">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">change_track_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">track_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">new_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Change the name of a specific MIDI track.</span>
+
+<span class="sd">        :param track_index: int</span>
+<span class="sd">        :param new_name: str</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">track_index</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">midi_file</span><span class="o">.</span><span class="n">tracks</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s2">&quot;Invalid track index&quot;</span><span class="p">)</span>
+
+        <span class="n">midi_file_copy</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">midi_file</span><span class="p">)</span>  <span class="c1"># Deep copy of the MIDI file</span>
+        <span class="n">track_copy</span> <span class="o">=</span> <span class="n">midi_file_copy</span><span class="o">.</span><span class="n">tracks</span><span class="p">[</span><span class="n">track_index</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_track_name</span><span class="p">(</span><span class="n">track_copy</span><span class="p">,</span> <span class="n">new_name</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Renamed track </span><span class="si">{</span><span class="n">track_index</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">new_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_midi_file</span><span class="p">(</span><span class="n">midi_file_copy</span><span class="p">)</span>  <span class="c1"># Replace with modified file</span></div>
+
+
+<div class="viewcode-block" id="MidiTrackViewer.set_track_name">
+<a class="viewcode-back" href="../../autoapi/midi/track_viewer/index.html#midi.track_viewer.MidiTrackViewer.set_track_name">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_track_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">track</span><span class="p">,</span> <span class="n">new_name</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">msg</span> <span class="ow">in</span> <span class="n">track</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">msg</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">&#39;track_name&#39;</span><span class="p">:</span>
+                <span class="n">msg</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">new_name</span>
+        <span class="c1"># If not found, insert it at the beginning</span>
+        <span class="n">track</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">mido</span><span class="o">.</span><span class="n">MetaMessage</span><span class="p">(</span><span class="s1">&#39;track_name&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">new_name</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">track</span></div>
+
+
+<div class="viewcode-block" id="MidiTrackViewer.change_track_channel">
+<a class="viewcode-back" href="../../autoapi/midi/track_viewer/index.html#midi.track_viewer.MidiTrackViewer.change_track_channel">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">change_track_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">track_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">new_channel</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Change the MIDI channel of a specific track.</span>
+
+<span class="sd">        :param track_index: int</span>
+<span class="sd">        :param new_channel: int</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">new_channel</span> <span class="o">&lt;=</span> <span class="mi">15</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;MIDI channel must be between 0 and 15&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">track_index</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">midi_file</span><span class="o">.</span><span class="n">tracks</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s2">&quot;Invalid track index&quot;</span><span class="p">)</span>
+
+        <span class="n">old_channel</span> <span class="o">=</span> <span class="n">get_first_channel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">midi_file</span><span class="o">.</span><span class="n">tracks</span><span class="p">[</span><span class="n">track_index</span><span class="p">])</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Changing track </span><span class="si">{</span><span class="n">track_index</span><span class="si">}</span><span class="s2"> channel from </span><span class="si">{</span><span class="n">old_channel</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">new_channel</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">new_midi</span> <span class="o">=</span> <span class="n">mido</span><span class="o">.</span><span class="n">MidiFile</span><span class="p">()</span>
+        <span class="n">new_midi</span><span class="o">.</span><span class="n">ticks_per_beat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">midi_file</span><span class="o">.</span><span class="n">ticks_per_beat</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">midi_file</span><span class="o">.</span><span class="n">tracks</span><span class="p">):</span>
+            <span class="n">new_track</span> <span class="o">=</span> <span class="n">mido</span><span class="o">.</span><span class="n">MidiTrack</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">msg</span> <span class="ow">in</span> <span class="n">t</span><span class="p">:</span>
+                <span class="n">msg_copy</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="c1"># Only change channel for channel messages</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">track_index</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">msg_copy</span><span class="p">,</span> <span class="s2">&quot;channel&quot;</span><span class="p">):</span>
+                    <span class="n">msg_copy</span><span class="o">.</span><span class="n">channel</span> <span class="o">=</span> <span class="n">new_channel</span>
+                <span class="n">new_track</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg_copy</span><span class="p">)</span>
+            <span class="n">new_midi</span><span class="o">.</span><span class="n">tracks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_track</span><span class="p">)</span>
+
+        <span class="n">new_channel_tested</span> <span class="o">=</span> <span class="n">get_first_channel</span><span class="p">(</span><span class="n">new_midi</span><span class="o">.</span><span class="n">tracks</span><span class="p">[</span><span class="n">track_index</span><span class="p">])</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Changed track </span><span class="si">{</span><span class="n">track_index</span><span class="si">}</span><span class="s2"> channel from </span><span class="si">{</span><span class="n">old_channel</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">new_channel_tested</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_midi_file</span><span class="p">(</span><span class="n">new_midi</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MidiTrackViewer.make_apply_slot">
+<a class="viewcode-back" href="../../autoapi/midi/track_viewer/index.html#midi.track_viewer.MidiTrackViewer.make_apply_slot">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">make_apply_slot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">track_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">spin_box</span><span class="p">:</span> <span class="n">MidiSpinBox</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">callable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a slot for applying changes to the track channel.</span>
+
+<span class="sd">        :param track_index: int Track index to modify</span>
+<span class="sd">        :param spin_box: MidiSpinBox Spin box for selecting the channel</span>
+<span class="sd">        :return: callable function to apply changes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Track index: </span><span class="si">{</span><span class="n">track_index</span><span class="si">}</span><span class="s2">, Spin box value: </span><span class="si">{</span><span class="n">spin_box</span><span class="o">.</span><span class="n">value</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">change_track_channel</span><span class="p">(</span>
+            <span class="n">track_index</span><span class="p">,</span> <span class="n">spin_box</span><span class="o">.</span><span class="n">value</span><span class="p">()</span> <span class="o">+</span> <span class="n">MidiConstant</span><span class="o">.</span><span class="n">CHANNEL_DISPLAY_TO_BINARY</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MidiTrackViewer.make_apply_name">
+<a class="viewcode-back" href="../../autoapi/midi/track_viewer/index.html#midi.track_viewer.MidiTrackViewer.make_apply_name">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">make_apply_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">track_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">text_edit</span><span class="p">:</span> <span class="n">QLineEdit</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">callable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a slot for applying changes to the track channel.</span>
+
+<span class="sd">        :param track_name: str Track name to modify</span>
+<span class="sd">        :param text_edit: QLineEdit for selecting the name</span>
+<span class="sd">        :return: callable function to apply changes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Track index: </span><span class="si">{</span><span class="n">track_name</span><span class="si">}</span><span class="s2">, Text: </span><span class="si">{</span><span class="n">text_edit</span><span class="o">.</span><span class="n">text</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">change_track_name</span><span class="p">(</span>
+            <span class="n">track_name</span><span class="p">,</span> <span class="n">text_edit</span><span class="o">.</span><span class="n">text</span><span class="p">()</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MidiTrackViewer.set_midi_file">
+<a class="viewcode-back" href="../../autoapi/midi/track_viewer/index.html#midi.track_viewer.MidiTrackViewer.set_midi_file">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_midi_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">midi_file</span><span class="p">:</span> <span class="n">mido</span><span class="o">.</span><span class="n">MidiFile</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the MIDI file for the widget and create channel controls.</span>
+
+<span class="sd">        :param midi_file:</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">midi_file</span> <span class="o">=</span> <span class="n">midi_file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ruler</span><span class="o">.</span><span class="n">set_midi_file</span><span class="p">(</span><span class="n">midi_file</span><span class="p">)</span>
+
+        <span class="c1"># Clear existing selectors if reloading</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;channel_controls_vlayout&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">channel_controls_vlayout</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scroll_content</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">channel_controls_vlayout</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">clear_layout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">channel_controls_vlayout</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">midi_track_widgets</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c1"># Create each track widget and add it to the layout</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">track</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">midi_file</span><span class="o">.</span><span class="n">tracks</span><span class="p">):</span>
+            <span class="n">hlayout</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+            <span class="n">first_channel</span> <span class="o">=</span> <span class="n">get_first_channel</span><span class="p">(</span><span class="n">track</span><span class="p">)</span> <span class="o">+</span> <span class="n">MidiConstant</span><span class="o">.</span><span class="n">CHANNEL_BINARY_TO_DISPLAY</span>
+            <span class="c1"># Optional: Get the track name to show in dialog</span>
+            <span class="n">track</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">midi_file</span><span class="o">.</span><span class="n">tracks</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">track_name</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">track</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Track </span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">MidiConstant</span><span class="o">.</span><span class="n">CHANNEL_BINARY_TO_DISPLAY</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">icon_names</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="mi">10</span><span class="p">:</span> <span class="s2">&quot;fa5s.drum&quot;</span><span class="p">,</span>
+            <span class="p">}</span>
+            <span class="n">colors</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">3</span><span class="p">:</span> <span class="n">JDXiStyle</span><span class="o">.</span><span class="n">ACCENT_ANALOG</span> <span class="p">}</span>
+            <span class="n">color</span> <span class="o">=</span> <span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">first_channel</span><span class="p">,</span> <span class="n">JDXiStyle</span><span class="o">.</span><span class="n">ACCENT</span><span class="p">)</span>  <span class="c1"># Default color if not specified</span>
+            <span class="n">icon_name</span> <span class="o">=</span> <span class="n">icon_names</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">first_channel</span><span class="p">,</span> <span class="s2">&quot;mdi.piano&quot;</span><span class="p">,)</span>  <span class="c1"># Default icon if not specified</span>
+            <span class="c1"># Add QLabel for track number and channel</span>
+            <span class="n">pixmap</span> <span class="o">=</span> <span class="n">qta</span><span class="o">.</span><span class="n">icon</span><span class="p">(</span><span class="n">icon_name</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span><span class="o">.</span><span class="n">pixmap</span><span class="p">(</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">TRACK_ICON_PIXMAP_SIZE</span><span class="p">,</span> <span class="n">JDXiStyle</span><span class="o">.</span><span class="n">TRACK_ICON_PIXMAP_SIZE</span><span class="p">)</span>
+
+            <span class="n">track_number_label</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">track_number_label</span><span class="o">.</span><span class="n">setFixedWidth</span><span class="p">(</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">TRACK_BUTTON_WIDTH</span><span class="p">)</span>
+            <span class="n">hlayout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">track_number_label</span><span class="p">)</span>
+
+            <span class="n">icon_label</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">()</span>
+            <span class="n">icon_label</span><span class="o">.</span><span class="n">setPixmap</span><span class="p">(</span><span class="n">pixmap</span><span class="p">)</span>
+            <span class="n">icon_label</span><span class="o">.</span><span class="n">setFixedWidth</span><span class="p">(</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">TRACK_ICON_PIXMAP_SIZE</span><span class="p">)</span>  <span class="c1"># Add some padding</span>
+            <span class="n">hlayout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">icon_label</span><span class="p">)</span>
+
+            <span class="n">label_vlayout</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">()</span>
+            <span class="n">label_vlayout</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">label_vlayout</span><span class="o">.</span><span class="n">setSpacing</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">hlayout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">label_vlayout</span><span class="p">)</span>
+            <span class="n">line_label_row</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+            <span class="n">label_vlayout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">line_label_row</span><span class="p">)</span>
+
+            <span class="c1"># Add QLineEdit for track label</span>
+            <span class="n">track_name_line_edit</span> <span class="o">=</span> <span class="n">QLineEdit</span><span class="p">()</span>
+            <span class="n">track_name_line_edit</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">track_name</span><span class="p">)</span>
+            <span class="n">track_name_line_edit</span><span class="o">.</span><span class="n">setFixedWidth</span><span class="p">(</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">TRACK_LABEL_WIDTH</span><span class="p">)</span>
+            <span class="n">track_name_line_edit</span><span class="o">.</span><span class="n">setToolTip</span><span class="p">(</span><span class="s2">&quot;Track Name&quot;</span><span class="p">)</span>
+            <span class="n">track_name_line_edit</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="s2">&quot;QLineEdit { background-color: transparent; border: none; }&quot;</span><span class="p">)</span>
+            <span class="n">track_name_line_edit</span><span class="o">.</span><span class="n">setAlignment</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignLeft</span><span class="p">)</span>
+            <span class="n">temp_row</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+            <span class="n">line_label_row</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">temp_row</span><span class="p">)</span>
+            <span class="c1"># temp_row.addWidget(track_number_label)</span>
+            <span class="n">temp_row</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">track_name_line_edit</span><span class="p">)</span>
+            <span class="c1"># temp_row.addWidget(track_channel_label)</span>
+
+            <span class="c1"># Add QSpinBox for selecting the MIDI channel</span>
+            <span class="n">spin</span> <span class="o">=</span> <span class="n">MidiSpinBox</span><span class="p">()</span>
+            <span class="n">spin</span><span class="o">.</span><span class="n">setToolTip</span><span class="p">(</span><span class="s2">&quot;Select MIDI Channel for Track, then click &#39;Apply&#39; to save changes&quot;</span><span class="p">)</span>
+            <span class="n">spin</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">first_channel</span><span class="p">)</span>  <span class="c1"># Offset for display</span>
+            <span class="n">spin</span><span class="o">.</span><span class="n">setFixedWidth</span><span class="p">(</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">TRACK_SPINBOX_WIDTH</span><span class="p">)</span>
+            <span class="n">spin</span><span class="o">.</span><span class="n">setPrefix</span><span class="p">(</span><span class="s2">&quot;Ch&quot;</span><span class="p">)</span>
+            <span class="n">line_label_row</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">spin</span><span class="p">)</span>
+
+            <span class="n">button_hlayout</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+            <span class="n">label_vlayout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">button_hlayout</span><span class="p">)</span>
+
+            <span class="n">apply_icon</span> <span class="o">=</span> <span class="n">qta</span><span class="o">.</span><span class="n">icon</span><span class="p">(</span><span class="s2">&quot;fa5.save&quot;</span><span class="p">,</span>
+                                  <span class="n">color</span><span class="o">=</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">FOREGROUND</span><span class="p">)</span>
+            <span class="n">apply_button</span> <span class="o">=</span> <span class="n">QPushButton</span><span class="p">()</span>
+            <span class="n">apply_button</span><span class="o">.</span><span class="n">setIcon</span><span class="p">(</span><span class="n">apply_icon</span><span class="p">)</span>
+            <span class="n">apply_button</span><span class="o">.</span><span class="n">setToolTip</span><span class="p">(</span><span class="s2">&quot;Apply changes to Track Channel&quot;</span><span class="p">)</span>
+            <span class="n">apply_button</span><span class="o">.</span><span class="n">setFixedWidth</span><span class="p">(</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">TRACK_SPINBOX_WIDTH</span><span class="p">)</span>
+            <span class="n">apply_button</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">make_apply_slot</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">spin</span><span class="p">))</span>
+            <span class="c1"># apply_button.clicked.connect(self.make_apply_name(i, track_name_line_edit))</span>
+            <span class="n">apply_button</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="k">lambda</span> <span class="n">_</span><span class="p">,</span> <span class="n">tr</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="n">track_name_line_edit</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">change_track_name</span><span class="p">(</span><span class="n">tr</span><span class="p">,</span> <span class="n">le</span><span class="o">.</span><span class="n">text</span><span class="p">()))</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            apply_button.clicked.connect(lambda _, tr=i, le=track_name_line_edit, sp=spin: (</span>
+<span class="sd">            self.change_track_name(tr, le.text()),</span>
+<span class="sd">            self.change_channel(tr, sp.value())</span>
+<span class="sd">            ))</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="n">button_hlayout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">apply_button</span><span class="p">)</span>
+
+            <span class="n">mute_icon</span> <span class="o">=</span> <span class="n">qta</span><span class="o">.</span><span class="n">icon</span><span class="p">(</span><span class="s2">&quot;msc.mute&quot;</span><span class="p">,</span>
+                                  <span class="n">color</span><span class="o">=</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">FOREGROUND</span><span class="p">)</span>
+            <span class="n">mute_button</span> <span class="o">=</span> <span class="n">QPushButton</span><span class="p">()</span>
+            <span class="n">mute_button</span><span class="o">.</span><span class="n">setIcon</span><span class="p">(</span><span class="n">mute_icon</span><span class="p">)</span>
+            <span class="n">mute_button</span><span class="o">.</span><span class="n">setToolTip</span><span class="p">(</span><span class="s2">&quot;Mute Track&quot;</span><span class="p">)</span>
+            <span class="n">mute_button</span><span class="o">.</span><span class="n">setFixedWidth</span><span class="p">(</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">TRACK_BUTTON_WIDTH</span><span class="p">)</span>
+            <span class="n">mute_button</span><span class="o">.</span><span class="n">setCheckable</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">mute_button</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="k">lambda</span> <span class="n">_</span><span class="p">,</span> <span class="n">tr</span><span class="o">=</span><span class="n">i</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">mute_track</span><span class="p">(</span><span class="n">tr</span><span class="p">))</span>  <span class="c1"># Send internal value (0–15)</span>
+            <span class="n">mute_button</span><span class="o">.</span><span class="n">toggled</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+                <span class="k">lambda</span> <span class="n">checked</span><span class="p">,</span> <span class="n">tr</span><span class="o">=</span><span class="n">i</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">toggle_track_mute</span><span class="p">(</span><span class="n">tr</span><span class="p">,</span> <span class="n">checked</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">button_hlayout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">mute_button</span><span class="p">)</span>
+
+            <span class="n">delete_icon</span> <span class="o">=</span> <span class="n">qta</span><span class="o">.</span><span class="n">icon</span><span class="p">(</span><span class="s2">&quot;mdi.delete-empty-outline&quot;</span><span class="p">,</span>
+                                  <span class="n">color</span><span class="o">=</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">FOREGROUND</span><span class="p">)</span>
+            <span class="n">delete_button</span> <span class="o">=</span> <span class="n">QPushButton</span><span class="p">()</span>
+            <span class="n">delete_button</span><span class="o">.</span><span class="n">setIcon</span><span class="p">(</span><span class="n">delete_icon</span><span class="p">)</span>
+            <span class="n">delete_button</span><span class="o">.</span><span class="n">setToolTip</span><span class="p">(</span><span class="s2">&quot;Delete Track&quot;</span><span class="p">)</span>
+            <span class="n">delete_button</span><span class="o">.</span><span class="n">setFixedWidth</span><span class="p">(</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">TRACK_BUTTON_WIDTH</span><span class="p">)</span>
+            <span class="n">delete_button</span><span class="o">.</span><span class="n">setCheckable</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">delete_button</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="k">lambda</span> <span class="n">_</span><span class="p">,</span> <span class="n">tr</span><span class="o">=</span><span class="n">i</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">delete_track</span><span class="p">(</span><span class="n">tr</span><span class="p">))</span>  <span class="c1"># Send internal value (0–15)</span>
+            <span class="n">button_hlayout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">delete_button</span><span class="p">)</span>
+
+            <span class="c1"># Add the MidiTrackWidget for the specific track</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">midi_track_widgets</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">MidiTrackWidget</span><span class="p">(</span><span class="n">track</span><span class="o">=</span><span class="n">track</span><span class="p">,</span> <span class="n">track_number</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">total_length</span><span class="o">=</span><span class="n">midi_file</span><span class="o">.</span><span class="n">length</span><span class="p">)</span>  <span class="c1"># Initialize the dictionary</span>
+            <span class="n">hlayout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">midi_track_widgets</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">channel_controls_vlayout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">hlayout</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">channel_controls_vlayout</span><span class="o">.</span><span class="n">addStretch</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="MidiTrackViewer.get_track_controls_width">
+<a class="viewcode-back" href="../../autoapi/midi/track_viewer/index.html#midi.track_viewer.MidiTrackViewer.get_track_controls_width">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_track_controls_width</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the estimated total width of all controls to the left of the MidiTrackWidget.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Fixed widths from layout:</span>
+        <span class="c1"># QLabels: JDXiStyle.ICON_PIXMAP_SIZE, JDXiStyle.TRACK_LABEL_WIDTH , QSpinBox: JDXiStyle.TRACK_MUTE_BUTTON_WIDTH, Apply: JDXiStyle.TRACK_MUTE_BUTTON_WIDTH, Mute: JDXiStyle.TRACK_MUTE_BUTTON_WIDTH, Delete: JDXiStyle.TRACK_MUTE_BUTTON_WIDTH + margins (~10)</span>
+        <span class="k">return</span> <span class="n">JDXiStyle</span><span class="o">.</span><span class="n">ICON_PIXMAP_SIZE</span> <span class="o">+</span> <span class="n">JDXiStyle</span><span class="o">.</span><span class="n">TRACK_LABEL_WIDTH</span> <span class="o">+</span> <span class="p">(</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">TRACK_BUTTON_WIDTH</span> <span class="o">*</span> <span class="mi">4</span><span class="p">)</span> <span class="o">+</span> <span class="mi">10</span>  <span class="c1"># = 2JDXiStyle.TRACK_MUTE_BUTTON_WIDTH</span></div>
+
+
+<div class="viewcode-block" id="MidiTrackViewer.clear_layout">
+<a class="viewcode-back" href="../../autoapi/midi/track_viewer/index.html#midi.track_viewer.MidiTrackViewer.clear_layout">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">clear_layout</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layout</span><span class="p">:</span> <span class="n">QLayout</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">while</span> <span class="n">layout</span><span class="o">.</span><span class="n">count</span><span class="p">():</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="n">layout</span><span class="o">.</span><span class="n">takeAt</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">widget</span><span class="p">():</span>
+                <span class="n">item</span><span class="o">.</span><span class="n">widget</span><span class="p">()</span><span class="o">.</span><span class="n">setParent</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+                <span class="n">item</span><span class="o">.</span><span class="n">widget</span><span class="p">()</span><span class="o">.</span><span class="n">deleteLater</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="n">item</span><span class="o">.</span><span class="n">layout</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">clear_layout</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">layout</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="MidiTrackViewer.refresh_track_list">
+<a class="viewcode-back" href="../../autoapi/midi/track_viewer/index.html#midi.track_viewer.MidiTrackViewer.refresh_track_list">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">refresh_track_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        refresh_track_list</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="MidiTrackViewer.get_muted_channels">
+<a class="viewcode-back" href="../../autoapi/midi/track_viewer/index.html#midi.track_viewer.MidiTrackViewer.get_muted_channels">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_muted_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">muted_channels</span></div>
+
+
+<div class="viewcode-block" id="MidiTrackViewer.get_muted_tracks">
+<a class="viewcode-back" href="../../autoapi/midi/track_viewer/index.html#midi.track_viewer.MidiTrackViewer.get_muted_tracks">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_muted_tracks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">muted_tracks</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Mark Mrooks.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

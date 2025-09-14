@@ -1,0 +1,1336 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>jdxi_editor.ui.windows.jdxi package &mdash; JD-Xi Editor 0.8.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=486e5634"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="jdxi_editor.ui.windows.jdxi.containers package" href="jdxi_editor.ui.windows.jdxi.containers.html" />
+    <link rel="prev" title="jdxi_editor.ui.windows package" href="jdxi_editor.ui.windows.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            JD-Xi Editor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Quick Start</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#connection-of-the-jd-xi-hardware-instrument-to-the-computer">Connection of the JD-Xi Hardware Instrument to the Computer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="instrument.html">JDXi Instrument Window</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="instrument.html#features">Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="instrument.html#using-the-instrument-window">Using the Instrument Window</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="editor.html">Editor Window</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="editor.html#program-mixer-section">Program/Mixer Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="editor.html#digital-1-section">Digital 1 Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="editor.html#digital-2-section">Digital 2 Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="editor.html#drum-kit-section">Drum Kit Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="editor.html#analog-section">Analog Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="editor.html#effect-controls">Effect Controls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="editor.html#vocal-transformer">Vocal Transformer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="editor.html#arpeggiator">Arpeggiator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="editor.html#midi-file-player-and-recorder">MIDI File Player and Recorder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="editor.html#pattern-sequencer">Pattern Sequencer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html#general-problems">General Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html#macos">MacOS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html#windows">Windows</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="legal.html">Legal Disclaimer</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">jdxi_editor</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="jdxi_editor.html">jdxi_editor package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="jdxi_editor.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.html">jdxi_editor.jdxi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.log.html">jdxi_editor.log package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.midi.html">jdxi_editor.midi package</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="jdxi_editor.ui.html">jdxi_editor.ui package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.html#module-jdxi_editor.globals">jdxi_editor.globals module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.html#module-jdxi_editor.main">jdxi_editor.main module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.html#jdxi_editor.main.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.html#module-jdxi_editor.project">jdxi_editor.project module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.html#module-jdxi_editor.resources">jdxi_editor.resources module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.html#jdxi_editor.resources.resource_path"><code class="docutils literal notranslate"><span class="pre">resource_path()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.html#module-jdxi_editor">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="autoapi/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/midi/index.html">midi</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/midi/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/midi/colors/index.html">midi.colors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/midi/slider/index.html">midi.slider</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/midi/spin_box/index.html">midi.spin_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/midi/time_ruler/index.html">midi.time_ruler</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/midi/track/index.html">midi.track</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/midi/track_viewer/index.html">midi.track_viewer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/midi/utils/index.html">midi.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/adsr/index.html">adsr</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/adsr/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/adsr/adsr/index.html">adsr.adsr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/adsr/graph/index.html">adsr.graph</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/adsr/parameter/index.html">adsr.parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/adsr/plot/index.html">adsr.plot</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/pitch/index.html">pitch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/pitch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/pitch/envelope/index.html">pitch.envelope</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/pitch/envelope_plot/index.html">pitch.envelope_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/pitch/pwm_plot/index.html">pitch.pwm_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/pitch/slider_spinbox/index.html">pitch.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/piano/index.html">piano</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/piano/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/piano/key/index.html">piano.key</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/piano/keyboard/index.html">piano.keyboard</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/panel/index.html">panel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/panel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/panel/partial/index.html">panel.partial</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/wheel/index.html">wheel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/wheel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/wheel/mod/index.html">wheel.mod</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/wheel/pitch/index.html">wheel.pitch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/wheel/wheel/index.html">wheel.wheel</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/preset/index.html">preset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/preset/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/preset/combo_box/index.html">preset.combo_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/preset/panel/index.html">preset.panel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/preset/patch_name/index.html">preset.patch_name</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/slider/index.html">slider</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/slider/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/slider/slider/index.html">slider.slider</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/slider/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/slider/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/slider/index.html#slider.Slider"><code class="docutils literal notranslate"><span class="pre">Slider</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/dialog/index.html">dialog</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/dialog/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/dialog/progress/index.html">dialog.progress</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/viewer/index.html">viewer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/viewer/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/viewer/log/index.html">viewer.log</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/button/index.html">button</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/button/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/button/channel/index.html">button.channel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/button/favorite/index.html">button.favorite</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/button/sequencer/index.html">button.sequencer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/button/waveform/index.html">button.waveform</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/button/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/button/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/button/index.html#button.ChannelButton"><code class="docutils literal notranslate"><span class="pre">ChannelButton</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/button/index.html#button.SequencerSquare"><code class="docutils literal notranslate"><span class="pre">SequencerSquare</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/switch/index.html">switch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/switch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/switch/partial/index.html">switch.partial</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/switch/switch/index.html">switch.switch</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/filter/index.html">filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/filter/index.html#filter.FilterWidget"><code class="docutils literal notranslate"><span class="pre">FilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/display/index.html">display</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/display/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/display/digital/index.html">display.digital</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/display/pattern/index.html">display.pattern</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/display/value/index.html">display.value</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/pattern/index.html">pattern</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/pattern/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/pattern/measure/index.html">pattern.measure</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/spin_box/index.html">spin_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/spin_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/spin_box/spin_box/index.html">spin_box.spin_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/envelope/index.html">envelope</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/envelope/base/index.html">envelope.base</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/indicator/index.html">indicator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/indicator/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/indicator/led/index.html">indicator.led</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/indicator/midi/index.html">indicator.midi</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/combo_box/index.html">combo_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/combo_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/combo_box/combo_box/index.html">combo_box.combo_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/jdxi_editor/index.html">jdxi_editor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/jdxi_editor/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/globals/index.html">jdxi_editor.globals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/jdxi/index.html">jdxi_editor.jdxi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/log/index.html">jdxi_editor.log</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/main/index.html">jdxi_editor.main</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/midi/index.html">jdxi_editor.midi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/project/index.html">jdxi_editor.project</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/resources/index.html">jdxi_editor.resources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/ui/index.html">jdxi_editor.ui</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/filter_plot/index.html">filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/filter_plot/index.html#filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/filter_plot/index.html#filter_plot.FilterPlot"><code class="docutils literal notranslate"><span class="pre">FilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/envelope_plot/index.html">envelope_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope_plot/index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/envelope_plot/index.html#envelope_plot.midi_value_to_float"><code class="docutils literal notranslate"><span class="pre">midi_value_to_float()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/envelope_plot/index.html#envelope_plot.WMTEnvPlot"><code class="docutils literal notranslate"><span class="pre">WMTEnvPlot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/envelope_plot/index.html#envelope_plot.app"><code class="docutils literal notranslate"><span class="pre">app</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/wave_selector/index.html">wave_selector</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/wave_selector/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/wave_selector/wave_selector/index.html">wave_selector.wave_selector</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/analog_filter/index.html">analog_filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/analog_filter/index.html#analog_filter.AnalogFilterWidget"><code class="docutils literal notranslate"><span class="pre">AnalogFilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/slider_spinbox/index.html">slider_spinbox</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/slider_spinbox/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/slider_spinbox/slider_spinbox/index.html">slider_spinbox.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/analog_filter_plot/index.html">analog_filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#analog_filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#analog_filter_plot.AnalogFilterPlot"><code class="docutils literal notranslate"><span class="pre">AnalogFilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">JD-Xi Editor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">jdxi_editor</a></li>
+          <li class="breadcrumb-item"><a href="jdxi_editor.html">jdxi_editor package</a></li>
+          <li class="breadcrumb-item"><a href="jdxi_editor.ui.html">jdxi_editor.ui package</a></li>
+          <li class="breadcrumb-item"><a href="jdxi_editor.ui.windows.html">jdxi_editor.ui.windows package</a></li>
+      <li class="breadcrumb-item active">jdxi_editor.ui.windows.jdxi package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/jdxi_editor.ui.windows.jdxi.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="jdxi-editor-ui-windows-jdxi-package">
+<h1>jdxi_editor.ui.windows.jdxi package<a class="headerlink" href="#jdxi-editor-ui-windows-jdxi-package" title="Link to this heading"></a></h1>
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="jdxi_editor.ui.windows.jdxi.containers.html">jdxi_editor.ui.windows.jdxi.containers package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.ui.windows.jdxi.containers.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.ui.windows.jdxi.containers.html#module-jdxi_editor.ui.windows.jdxi.containers.arpeggiator">jdxi_editor.ui.windows.jdxi.containers.arpeggiator module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.ui.windows.jdxi.containers.html#jdxi_editor.ui.windows.jdxi.containers.arpeggiator.add_arpeggiator_buttons"><code class="docutils literal notranslate"><span class="pre">add_arpeggiator_buttons()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.ui.windows.jdxi.containers.html#module-jdxi_editor.ui.windows.jdxi.containers.digital_display">jdxi_editor.ui.windows.jdxi.containers.digital_display module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.ui.windows.jdxi.containers.html#jdxi_editor.ui.windows.jdxi.containers.digital_display.add_digital_display"><code class="docutils literal notranslate"><span class="pre">add_digital_display()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.ui.windows.jdxi.containers.html#module-jdxi_editor.ui.windows.jdxi.containers.effects">jdxi_editor.ui.windows.jdxi.containers.effects module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.ui.windows.jdxi.containers.html#jdxi_editor.ui.windows.jdxi.containers.effects.add_effects_container"><code class="docutils literal notranslate"><span class="pre">add_effects_container()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.ui.windows.jdxi.containers.html#module-jdxi_editor.ui.windows.jdxi.containers.octave">jdxi_editor.ui.windows.jdxi.containers.octave module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.ui.windows.jdxi.containers.html#jdxi_editor.ui.windows.jdxi.containers.octave.add_octave_buttons"><code class="docutils literal notranslate"><span class="pre">add_octave_buttons()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.ui.windows.jdxi.containers.html#module-jdxi_editor.ui.windows.jdxi.containers.parts">jdxi_editor.ui.windows.jdxi.containers.parts module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.ui.windows.jdxi.containers.html#jdxi_editor.ui.windows.jdxi.containers.parts.create_parts_container"><code class="docutils literal notranslate"><span class="pre">create_parts_container()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.ui.windows.jdxi.containers.html#module-jdxi_editor.ui.windows.jdxi.containers.program">jdxi_editor.ui.windows.jdxi.containers.program module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.ui.windows.jdxi.containers.html#jdxi_editor.ui.windows.jdxi.containers.program.add_program_container"><code class="docutils literal notranslate"><span class="pre">add_program_container()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.ui.windows.jdxi.containers.html#jdxi_editor.ui.windows.jdxi.containers.program.create_program_buttons_row"><code class="docutils literal notranslate"><span class="pre">create_program_buttons_row()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.ui.windows.jdxi.containers.html#module-jdxi_editor.ui.windows.jdxi.containers.sequencer">jdxi_editor.ui.windows.jdxi.containers.sequencer module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.ui.windows.jdxi.containers.html#jdxi_editor.ui.windows.jdxi.containers.sequencer.create_sequencer_buttons_row"><code class="docutils literal notranslate"><span class="pre">create_sequencer_buttons_row()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.ui.windows.jdxi.containers.html#jdxi_editor.ui.windows.jdxi.containers.sequencer.add_sequencer_container"><code class="docutils literal notranslate"><span class="pre">add_sequencer_container()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.ui.windows.jdxi.containers.html#jdxi_editor.ui.windows.jdxi.containers.sequencer.add_favorite_button_container"><code class="docutils literal notranslate"><span class="pre">add_favorite_button_container()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.ui.windows.jdxi.containers.html#module-jdxi_editor.ui.windows.jdxi.containers.sliders">jdxi_editor.ui.windows.jdxi.containers.sliders module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.ui.windows.jdxi.containers.html#jdxi_editor.ui.windows.jdxi.containers.sliders.add_slider_container"><code class="docutils literal notranslate"><span class="pre">add_slider_container()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.ui.windows.jdxi.containers.html#module-jdxi_editor.ui.windows.jdxi.containers.title">jdxi_editor.ui.windows.jdxi.containers.title module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.ui.windows.jdxi.containers.html#jdxi_editor.ui.windows.jdxi.containers.title.add_title_container"><code class="docutils literal notranslate"><span class="pre">add_title_container()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.ui.windows.jdxi.containers.html#module-jdxi_editor.ui.windows.jdxi.containers.tone">jdxi_editor.ui.windows.jdxi.containers.tone module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.ui.windows.jdxi.containers.html#jdxi_editor.ui.windows.jdxi.containers.tone.add_tone_container"><code class="docutils literal notranslate"><span class="pre">add_tone_container()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.ui.windows.jdxi.containers.html#jdxi_editor.ui.windows.jdxi.containers.tone.create_tone_buttons_row"><code class="docutils literal notranslate"><span class="pre">create_tone_buttons_row()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.ui.windows.jdxi.containers.html#module-jdxi_editor.ui.windows.jdxi.containers.wheels">jdxi_editor.ui.windows.jdxi.containers.wheels module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.ui.windows.jdxi.containers.html#jdxi_editor.ui.windows.jdxi.containers.wheels.build_wheel_label_row"><code class="docutils literal notranslate"><span class="pre">build_wheel_label_row()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.ui.windows.jdxi.containers.html#jdxi_editor.ui.windows.jdxi.containers.wheels.build_wheel_row"><code class="docutils literal notranslate"><span class="pre">build_wheel_row()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.ui.windows.jdxi.containers.html#module-jdxi_editor.ui.windows.jdxi.containers">Module contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.ui.windows.jdxi.containers.html#jdxi_editor.ui.windows.jdxi.containers.add_arpeggiator_buttons"><code class="docutils literal notranslate"><span class="pre">add_arpeggiator_buttons()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.ui.windows.jdxi.containers.html#jdxi_editor.ui.windows.jdxi.containers.add_digital_display"><code class="docutils literal notranslate"><span class="pre">add_digital_display()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.ui.windows.jdxi.containers.html#jdxi_editor.ui.windows.jdxi.containers.add_effects_container"><code class="docutils literal notranslate"><span class="pre">add_effects_container()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.ui.windows.jdxi.containers.html#jdxi_editor.ui.windows.jdxi.containers.add_octave_buttons"><code class="docutils literal notranslate"><span class="pre">add_octave_buttons()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.ui.windows.jdxi.containers.html#jdxi_editor.ui.windows.jdxi.containers.create_parts_container"><code class="docutils literal notranslate"><span class="pre">create_parts_container()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.ui.windows.jdxi.containers.html#jdxi_editor.ui.windows.jdxi.containers.add_program_container"><code class="docutils literal notranslate"><span class="pre">add_program_container()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.ui.windows.jdxi.containers.html#jdxi_editor.ui.windows.jdxi.containers.create_program_buttons_row"><code class="docutils literal notranslate"><span class="pre">create_program_buttons_row()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.ui.windows.jdxi.containers.html#jdxi_editor.ui.windows.jdxi.containers.add_sequencer_container"><code class="docutils literal notranslate"><span class="pre">add_sequencer_container()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.ui.windows.jdxi.containers.html#jdxi_editor.ui.windows.jdxi.containers.add_favorite_button_container"><code class="docutils literal notranslate"><span class="pre">add_favorite_button_container()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.ui.windows.jdxi.containers.html#jdxi_editor.ui.windows.jdxi.containers.create_sequencer_buttons_row"><code class="docutils literal notranslate"><span class="pre">create_sequencer_buttons_row()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.ui.windows.jdxi.containers.html#jdxi_editor.ui.windows.jdxi.containers.add_title_container"><code class="docutils literal notranslate"><span class="pre">add_title_container()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.ui.windows.jdxi.containers.html#jdxi_editor.ui.windows.jdxi.containers.add_tone_container"><code class="docutils literal notranslate"><span class="pre">add_tone_container()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.ui.windows.jdxi.containers.html#jdxi_editor.ui.windows.jdxi.containers.create_tone_buttons_row"><code class="docutils literal notranslate"><span class="pre">create_tone_buttons_row()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.ui.windows.jdxi.containers.html#jdxi_editor.ui.windows.jdxi.containers.build_wheel_row"><code class="docutils literal notranslate"><span class="pre">build_wheel_row()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.ui.windows.jdxi.containers.html#jdxi_editor.ui.windows.jdxi.containers.build_wheel_label_row"><code class="docutils literal notranslate"><span class="pre">build_wheel_label_row()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.ui.windows.jdxi.containers.html#jdxi_editor.ui.windows.jdxi.containers.add_slider_container"><code class="docutils literal notranslate"><span class="pre">add_slider_container()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="jdxi_editor.ui.windows.jdxi.helpers.html">jdxi_editor.ui.windows.jdxi.helpers package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.ui.windows.jdxi.helpers.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.ui.windows.jdxi.helpers.html#module-jdxi_editor.ui.windows.jdxi.helpers.button_row">jdxi_editor.ui.windows.jdxi.helpers.button_row module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.ui.windows.jdxi.helpers.html#jdxi_editor.ui.windows.jdxi.helpers.button_row.create_button_row"><code class="docutils literal notranslate"><span class="pre">create_button_row()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.ui.windows.jdxi.helpers.html#module-jdxi_editor.ui.windows.jdxi.helpers.port">jdxi_editor.ui.windows.jdxi.helpers.port module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.ui.windows.jdxi.helpers.html#jdxi_editor.ui.windows.jdxi.helpers.port.find_jdxi_port"><code class="docutils literal notranslate"><span class="pre">find_jdxi_port()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.ui.windows.jdxi.helpers.html#module-jdxi_editor.ui.windows.jdxi.helpers">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-jdxi_editor.ui.windows.jdxi.dimensions">
+<span id="jdxi-editor-ui-windows-jdxi-dimensions-module"></span><h2>jdxi_editor.ui.windows.jdxi.dimensions module<a class="headerlink" href="#module-jdxi_editor.ui.windows.jdxi.dimensions" title="Link to this heading"></a></h2>
+<p>class JDXIDimensions</p>
+<p>Class to store dimensions of a Roland JDXi instrument</p>
+<section id="example-usage">
+<h3># Example usage:<a class="headerlink" href="#example-usage" title="Link to this heading"></a></h3>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">JDXIDimensions</span><span class="o">.</span><span class="n">HEIGHT</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">JDXIDimensions</span><span class="o">.</span><span class="n">DISPLAY_WIDTH</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.ui.windows.jdxi.dimensions.</span></span><span class="sig-name descname"><span class="pre">JDXiDimensions</span></span><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>A class to store dimensions for the JD-Xi editor UI.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.HEIGHT">
+<span class="sig-name descname"><span class="pre">HEIGHT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">400</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.HEIGHT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.HEIGHT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.WIDTH">
+<span class="sig-name descname"><span class="pre">WIDTH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1000</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.WIDTH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.WIDTH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.MARGIN">
+<span class="sig-name descname"><span class="pre">MARGIN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">15</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.MARGIN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.MARGIN" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.DISPLAY_WIDTH">
+<span class="sig-name descname"><span class="pre">DISPLAY_WIDTH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">210</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.DISPLAY_WIDTH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.DISPLAY_WIDTH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.DISPLAY_HEIGHT">
+<span class="sig-name descname"><span class="pre">DISPLAY_HEIGHT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">70</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.DISPLAY_HEIGHT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.DISPLAY_HEIGHT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.DISPLAY_X">
+<span class="sig-name descname"><span class="pre">DISPLAY_X</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">35</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.DISPLAY_X"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.DISPLAY_X" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.DISPLAY_Y">
+<span class="sig-name descname"><span class="pre">DISPLAY_Y</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">50</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.DISPLAY_Y"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.DISPLAY_Y" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.DIGITAL_TITLE_WIDTH">
+<span class="sig-name descname"><span class="pre">DIGITAL_TITLE_WIDTH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">330</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.DIGITAL_TITLE_WIDTH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.DIGITAL_TITLE_WIDTH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.DIGITAL_TITLE_HEIGHT">
+<span class="sig-name descname"><span class="pre">DIGITAL_TITLE_HEIGHT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">70</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.DIGITAL_TITLE_HEIGHT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.DIGITAL_TITLE_HEIGHT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.EDITOR_DIGITAL_SPLITTER_SIZES">
+<span class="sig-name descname"><span class="pre">EDITOR_DIGITAL_SPLITTER_SIZES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[100,</span> <span class="pre">600]</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.EDITOR_DIGITAL_SPLITTER_SIZES"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.EDITOR_DIGITAL_SPLITTER_SIZES" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.EDITOR_DRUM_ANALOG_SPLITTER_SIZES">
+<span class="sig-name descname"><span class="pre">EDITOR_DRUM_ANALOG_SPLITTER_SIZES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[200,</span> <span class="pre">400]</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.EDITOR_DRUM_ANALOG_SPLITTER_SIZES"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.EDITOR_DRUM_ANALOG_SPLITTER_SIZES" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.EDITOR_ANALOG_MIN_WIDTH">
+<span class="sig-name descname"><span class="pre">EDITOR_ANALOG_MIN_WIDTH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">330</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.EDITOR_ANALOG_MIN_WIDTH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.EDITOR_ANALOG_MIN_WIDTH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.EDITOR_ANALOG_MIN_HEIGHT">
+<span class="sig-name descname"><span class="pre">EDITOR_ANALOG_MIN_HEIGHT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">330</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.EDITOR_ANALOG_MIN_HEIGHT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.EDITOR_ANALOG_MIN_HEIGHT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.EDITOR_ANALOG_WIDTH">
+<span class="sig-name descname"><span class="pre">EDITOR_ANALOG_WIDTH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">950</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.EDITOR_ANALOG_WIDTH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.EDITOR_ANALOG_WIDTH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.EDITOR_ANALOG_HEIGHT">
+<span class="sig-name descname"><span class="pre">EDITOR_ANALOG_HEIGHT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">600</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.EDITOR_ANALOG_HEIGHT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.EDITOR_ANALOG_HEIGHT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.PWM_WIDGET_X">
+<span class="sig-name descname"><span class="pre">PWM_WIDGET_X</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">100</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.PWM_WIDGET_X"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.PWM_WIDGET_X" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.PWM_WIDGET_Y">
+<span class="sig-name descname"><span class="pre">PWM_WIDGET_Y</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">100</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.PWM_WIDGET_Y"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.PWM_WIDGET_Y" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.PWM_WIDGET_WIDTH">
+<span class="sig-name descname"><span class="pre">PWM_WIDGET_WIDTH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">300</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.PWM_WIDGET_WIDTH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.PWM_WIDGET_WIDTH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.PWM_WIDGET_HEIGHT">
+<span class="sig-name descname"><span class="pre">PWM_WIDGET_HEIGHT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">500</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.PWM_WIDGET_HEIGHT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.PWM_WIDGET_HEIGHT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.TITLE_X">
+<span class="sig-name descname"><span class="pre">TITLE_X</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">35</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.TITLE_X"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.TITLE_X" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.TITLE_Y">
+<span class="sig-name descname"><span class="pre">TITLE_Y</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">15</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.TITLE_Y"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.TITLE_Y" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.TITLE_WIDTH">
+<span class="sig-name descname"><span class="pre">TITLE_WIDTH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">200</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.TITLE_WIDTH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.TITLE_WIDTH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.TITLE_HEIGHT">
+<span class="sig-name descname"><span class="pre">TITLE_HEIGHT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">50</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.TITLE_HEIGHT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.TITLE_HEIGHT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.WHITE_KEY_HEIGHT">
+<span class="sig-name descname"><span class="pre">WHITE_KEY_HEIGHT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">127</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.WHITE_KEY_HEIGHT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.WHITE_KEY_HEIGHT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.KEYBOARD_WIDTH">
+<span class="sig-name descname"><span class="pre">KEYBOARD_WIDTH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">800</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.KEYBOARD_WIDTH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.KEYBOARD_WIDTH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.SEQUENCER_Y_WINDOWS">
+<span class="sig-name descname"><span class="pre">SEQUENCER_Y_WINDOWS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">293</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.SEQUENCER_Y_WINDOWS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.SEQUENCER_Y_WINDOWS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.SEQUENCER_Y_NON_WINDOWS">
+<span class="sig-name descname"><span class="pre">SEQUENCER_Y_NON_WINDOWS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">293</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.SEQUENCER_Y_NON_WINDOWS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.SEQUENCER_Y_NON_WINDOWS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.SEQUENCER_WIDTH">
+<span class="sig-name descname"><span class="pre">SEQUENCER_WIDTH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">440</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.SEQUENCER_WIDTH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.SEQUENCER_WIDTH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.SEQUENCER_X">
+<span class="sig-name descname"><span class="pre">SEQUENCER_X</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">545</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.SEQUENCER_X"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.SEQUENCER_X" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.SEQUENCER_STEPS">
+<span class="sig-name descname"><span class="pre">SEQUENCER_STEPS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">16</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.SEQUENCER_STEPS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.SEQUENCER_STEPS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.SEQUENCER_STEP_SIZE">
+<span class="sig-name descname"><span class="pre">SEQUENCER_STEP_SIZE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">18</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.SEQUENCER_STEP_SIZE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.SEQUENCER_STEP_SIZE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.SEQUENCER_GRID_WIDTH">
+<span class="sig-name descname"><span class="pre">SEQUENCER_GRID_WIDTH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">300</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.SEQUENCER_GRID_WIDTH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.SEQUENCER_GRID_WIDTH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.SEQUENCER_GRID_HEIGHT">
+<span class="sig-name descname"><span class="pre">SEQUENCER_GRID_HEIGHT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">30</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.SEQUENCER_GRID_HEIGHT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.SEQUENCER_GRID_HEIGHT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.SEQUENCER_SQUARE_SIZE">
+<span class="sig-name descname"><span class="pre">SEQUENCER_SQUARE_SIZE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">25</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.SEQUENCER_SQUARE_SIZE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.SEQUENCER_SQUARE_SIZE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.SEQUENCER_CONTAINER_X">
+<span class="sig-name descname"><span class="pre">SEQUENCER_CONTAINER_X</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">535</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.SEQUENCER_CONTAINER_X"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.SEQUENCER_CONTAINER_X" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.SEQUENCER_CONTAINER_Y">
+<span class="sig-name descname"><span class="pre">SEQUENCER_CONTAINER_Y</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">170</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.SEQUENCER_CONTAINER_Y"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.SEQUENCER_CONTAINER_Y" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.SEQUENCER_CONTAINER_WIDTH">
+<span class="sig-name descname"><span class="pre">SEQUENCER_CONTAINER_WIDTH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">500</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.SEQUENCER_CONTAINER_WIDTH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.SEQUENCER_CONTAINER_WIDTH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.SEQUENCER_CONTAINER_HEIGHT">
+<span class="sig-name descname"><span class="pre">SEQUENCER_CONTAINER_HEIGHT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">80</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.SEQUENCER_CONTAINER_HEIGHT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.SEQUENCER_CONTAINER_HEIGHT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.SLIDER_X">
+<span class="sig-name descname"><span class="pre">SLIDER_X</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">515</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.SLIDER_X"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.SLIDER_X" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.SLIDER_Y">
+<span class="sig-name descname"><span class="pre">SLIDER_Y</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">15</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.SLIDER_Y"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.SLIDER_Y" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.SLIDER_CONTAINER_WIDTH">
+<span class="sig-name descname"><span class="pre">SLIDER_CONTAINER_WIDTH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">360</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.SLIDER_CONTAINER_WIDTH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.SLIDER_CONTAINER_WIDTH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.SLIDER_HEIGHT">
+<span class="sig-name descname"><span class="pre">SLIDER_HEIGHT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">120</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.SLIDER_HEIGHT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.SLIDER_HEIGHT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.SLIDER_CONTAINER_HEIGHT">
+<span class="sig-name descname"><span class="pre">SLIDER_CONTAINER_HEIGHT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">140</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.SLIDER_CONTAINER_HEIGHT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.SLIDER_CONTAINER_HEIGHT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.PARTS_X">
+<span class="sig-name descname"><span class="pre">PARTS_X</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">255</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.PARTS_X"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.PARTS_X" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.PARTS_Y">
+<span class="sig-name descname"><span class="pre">PARTS_Y</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">15</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.PARTS_Y"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.PARTS_Y" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.PARTS_WIDTH">
+<span class="sig-name descname"><span class="pre">PARTS_WIDTH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">180</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.PARTS_WIDTH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.PARTS_WIDTH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.PARTS_HEIGHT">
+<span class="sig-name descname"><span class="pre">PARTS_HEIGHT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">220</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.PARTS_HEIGHT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.PARTS_HEIGHT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.OCTAVE_X">
+<span class="sig-name descname"><span class="pre">OCTAVE_X</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">25</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.OCTAVE_X"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.OCTAVE_X" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.OCTAVE_Y">
+<span class="sig-name descname"><span class="pre">OCTAVE_Y</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">125</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.OCTAVE_Y"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.OCTAVE_Y" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.OCTAVE_WIDTH">
+<span class="sig-name descname"><span class="pre">OCTAVE_WIDTH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">120</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.OCTAVE_WIDTH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.OCTAVE_WIDTH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.OCTAVE_HEIGHT">
+<span class="sig-name descname"><span class="pre">OCTAVE_HEIGHT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">100</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.OCTAVE_HEIGHT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.OCTAVE_HEIGHT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.ARPEGGIATOR_X">
+<span class="sig-name descname"><span class="pre">ARPEGGIATOR_X</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">120</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.ARPEGGIATOR_X"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.ARPEGGIATOR_X" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.ARPEGGIATOR_Y">
+<span class="sig-name descname"><span class="pre">ARPEGGIATOR_Y</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">125</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.ARPEGGIATOR_Y"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.ARPEGGIATOR_Y" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.ARPEGGIATOR_WIDTH">
+<span class="sig-name descname"><span class="pre">ARPEGGIATOR_WIDTH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">120</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.ARPEGGIATOR_WIDTH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.ARPEGGIATOR_WIDTH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.ARPEGGIATOR_HEIGHT">
+<span class="sig-name descname"><span class="pre">ARPEGGIATOR_HEIGHT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">100</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.ARPEGGIATOR_HEIGHT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.ARPEGGIATOR_HEIGHT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.PROGRAM_X">
+<span class="sig-name descname"><span class="pre">PROGRAM_X</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">385</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.PROGRAM_X"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.PROGRAM_X" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.PROGRAM_Y">
+<span class="sig-name descname"><span class="pre">PROGRAM_Y</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">30</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.PROGRAM_Y"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.PROGRAM_Y" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.PROGRAM_WIDTH">
+<span class="sig-name descname"><span class="pre">PROGRAM_WIDTH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">150</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.PROGRAM_WIDTH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.PROGRAM_WIDTH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.PROGRAM_HEIGHT">
+<span class="sig-name descname"><span class="pre">PROGRAM_HEIGHT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">80</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.PROGRAM_HEIGHT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.PROGRAM_HEIGHT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.TONE_X">
+<span class="sig-name descname"><span class="pre">TONE_X</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">385</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.TONE_X"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.TONE_X" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.TONE_Y">
+<span class="sig-name descname"><span class="pre">TONE_Y</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">90</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.TONE_Y"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.TONE_Y" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.TONE_WIDTH">
+<span class="sig-name descname"><span class="pre">TONE_WIDTH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">150</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.TONE_WIDTH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.TONE_WIDTH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.TONE_HEIGHT">
+<span class="sig-name descname"><span class="pre">TONE_HEIGHT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">80</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.TONE_HEIGHT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.TONE_HEIGHT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.EFFECTS_X">
+<span class="sig-name descname"><span class="pre">EFFECTS_X</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">910</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.EFFECTS_X"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.EFFECTS_X" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.EFFECTS_Y">
+<span class="sig-name descname"><span class="pre">EFFECTS_Y</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">15</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.EFFECTS_Y"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.EFFECTS_Y" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.EFFECTS_WIDTH">
+<span class="sig-name descname"><span class="pre">EFFECTS_WIDTH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">80</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.EFFECTS_WIDTH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.EFFECTS_WIDTH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.EFFECTS_HEIGHT">
+<span class="sig-name descname"><span class="pre">EFFECTS_HEIGHT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">120</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.EFFECTS_HEIGHT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.EFFECTS_HEIGHT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.SCROLL_AREA_HEIGHT">
+<span class="sig-name descname"><span class="pre">SCROLL_AREA_HEIGHT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">220</span></em><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/dimensions.html#JDXiDimensions.SCROLL_AREA_HEIGHT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.dimensions.JDXiDimensions.SCROLL_AREA_HEIGHT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-jdxi_editor.ui.windows.jdxi.instrument">
+<span id="jdxi-editor-ui-windows-jdxi-instrument-module"></span><h2>jdxi_editor.ui.windows.jdxi.instrument module<a class="headerlink" href="#module-jdxi_editor.ui.windows.jdxi.instrument" title="Link to this heading"></a></h2>
+<p># Create editor instances
+analog_editor = AnalogSynthEditor(midi_helper, preset_helper)
+digital_editor = DigitalSynthEditor(midi_helper, preset_helper)
+drum_editor = DrumSynthEditor(midi_helper, preset_helper)</p>
+<p># Save all controls to a single JSON file
+save_all_controls_to_single_file(</p>
+<blockquote>
+<div><p>editors=[self.analog_editor, self.digital_synth2_editor self.digital_synth1_editor, analog_editor],
+file_path=”all_controls.json”</p>
+</div></blockquote>
+<p>)
+JD-Xi Instrument class for managing presets and MIDI settings.</p>
+<p>This module defines the <cite>JdxiInstrument</cite> class, which extends from the <cite>JdxiUi</cite> class to manage JD-Xi instrument presets, MIDI communication, and UI interactions. It allows for controlling and modifying different preset types (Digital 1, Digital 2, Analog, Drums) and provides MIDI connectivity for program changes and preset management.</p>
+<p>Key Features:
+- Handles MIDI connectivity and communication, including program change signals.
+- Manages different preset types (Digital, Analog, Drums) with the ability to select and load presets.
+- Provides MIDI indicators to display the status of MIDI input/output ports.
+- Includes functionality for dragging the window and selecting different synth types.
+- Integrates with external MIDI devices for seamless performance control.
+- Includes a custom UI to manage and visualize the instrument’s preset settings.
+- Supports the auto-connection of JD-Xi and provides MIDI configuration if auto-connection fails.</p>
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">-</span> <span class="pre">__init__</span></span></dt>
+<dd><p>Initializes the instrument’s MIDI settings, UI components, and preset handlers.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">-</span> <span class="pre">mousePressEvent,</span> <span class="pre">mouseMoveEvent,</span> <span class="pre">mouseReleaseEvent</span></span></dt>
+<dd><p>Handles window drag events for custom window movement.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">-</span> <span class="pre">_select_synth</span></span></dt>
+<dd><p>Selects the current synth type and updates UI button styles.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">-</span> <span class="pre">_update_synth_button_styles</span></span></dt>
+<dd><p>Updates button styles based on the selected synth type.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">-</span> <span class="pre">_get_presets_for_current_synth</span></span></dt>
+<dd><p>Returns the list of presets based on the selected synth type.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">-</span> <span class="pre">_get_for_current_synth</span></span></dt>
+<dd><p>Returns the appropriate preset handler based on the selected synth type.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">-</span> <span class="pre">_previous_tone</span></span></dt>
+<dd><p>Navigates to the previous tone in the preset list and updates the display.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">-</span> <span class="pre">...</span></span></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.instrument.JDXiInstrument">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.ui.windows.jdxi.instrument.</span></span><span class="sig-name descname"><span class="pre">JDXiInstrument</span></span><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/instrument.html#JDXiInstrument"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.instrument.JDXiInstrument" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#jdxi_editor.ui.windows.jdxi.ui.JDXiUi" title="jdxi_editor.ui.windows.jdxi.ui.JDXiUi"><code class="xref py py-class docutils literal notranslate"><span class="pre">JDXiUi</span></code></a></p>
+<p>class JDXiInstrument</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.instrument.JDXiInstrument.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PySide6.QtWidgets.QWidget</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flags</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PySide6.QtCore.Qt.WindowType</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Default(Qt.WindowFlags)</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iconSize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PySide6.QtCore.QSize</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">toolButtonStyle</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PySide6.QtCore.Qt.ToolButtonStyle</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">animated</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">documentMode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tabShape</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PySide6.QtWidgets.QTabWidget.TabShape</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dockNestingEnabled</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dockOptions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PySide6.QtWidgets.QMainWindow.DockOption</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unifiedTitleAndToolBarOnMac</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/instrument.html#JDXiInstrument.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.instrument.JDXiInstrument.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.instrument.JDXiInstrument.closeEvent">
+<span class="sig-name descname"><span class="pre">closeEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">QCloseEvent</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/instrument.html#JDXiInstrument.closeEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.instrument.JDXiInstrument.closeEvent" title="Link to this definition"></a></dt>
+<dd><p>Handle window close event</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>event</strong> – QCloseEvent</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.instrument.JDXiInstrument.mousePressEvent">
+<span class="sig-name descname"><span class="pre">mousePressEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">QMouseEvent</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/instrument.html#JDXiInstrument.mousePressEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.instrument.JDXiInstrument.mousePressEvent" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>event</strong> – mousePressEvent</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.instrument.JDXiInstrument.mouseMoveEvent">
+<span class="sig-name descname"><span class="pre">mouseMoveEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">QMouseEvent</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/instrument.html#JDXiInstrument.mouseMoveEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.instrument.JDXiInstrument.mouseMoveEvent" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>event</strong> – QMouseEvent</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.instrument.JDXiInstrument.mouseReleaseEvent">
+<span class="sig-name descname"><span class="pre">mouseReleaseEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">QMouseEvent</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/instrument.html#JDXiInstrument.mouseReleaseEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.instrument.JDXiInstrument.mouseReleaseEvent" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>event</strong> – QMouseEvent</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.instrument.JDXiInstrument.data_request">
+<span class="sig-name descname"><span class="pre">data_request</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/instrument.html#JDXiInstrument.data_request"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.instrument.JDXiInstrument.data_request" title="Link to this definition"></a></dt>
+<dd><p>Request the current value of the NRPN parameter from the device.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.instrument.JDXiInstrument.register_editor">
+<span class="sig-name descname"><span class="pre">register_editor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">editor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="jdxi_editor.ui.editors.synth.html#jdxi_editor.ui.editors.synth.editor.SynthEditor" title="jdxi_editor.ui.editors.synth.editor.SynthEditor"><span class="pre">SynthEditor</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/instrument.html#JDXiInstrument.register_editor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.instrument.JDXiInstrument.register_editor" title="Link to this definition"></a></dt>
+<dd><p>register editor</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>editor</strong> – SynthEditor</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.instrument.JDXiInstrument.set_tone_name_by_type">
+<span class="sig-name descname"><span class="pre">set_tone_name_by_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tone_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">synth_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/instrument.html#JDXiInstrument.set_tone_name_by_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.instrument.JDXiInstrument.set_tone_name_by_type" title="Link to this definition"></a></dt>
+<dd><p>set tone name by type</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tone_name</strong> – str Tone name</p></li>
+<li><p><strong>synth_type</strong> – str Synth type</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.instrument.JDXiInstrument.get_preset_helper_for_current_synth">
+<span class="sig-name descname"><span class="pre">get_preset_helper_for_current_synth</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.helper.JDXiPresetHelper" title="jdxi_editor.jdxi.preset.helper.JDXiPresetHelper"><span class="pre">JDXiPresetHelper</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/instrument.html#JDXiInstrument.get_preset_helper_for_current_synth"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.instrument.JDXiInstrument.get_preset_helper_for_current_synth" title="Link to this definition"></a></dt>
+<dd><p>Return the appropriate preset helper based on the current synth preset_type</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>JDXiPresetHelper</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.instrument.JDXiInstrument.set_current_program_name">
+<span class="sig-name descname"><span class="pre">set_current_program_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">program_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/instrument.html#JDXiInstrument.set_current_program_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.instrument.JDXiInstrument.set_current_program_name" title="Link to this definition"></a></dt>
+<dd><p>program name</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>program_name</strong> – str</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.instrument.JDXiInstrument.set_current_program_number">
+<span class="sig-name descname"><span class="pre">set_current_program_number</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">program_number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/instrument.html#JDXiInstrument.set_current_program_number"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.instrument.JDXiInstrument.set_current_program_number" title="Link to this definition"></a></dt>
+<dd><p>program number</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>channel</strong> – int midi channel (discarded)</p></li>
+<li><p><strong>program_number</strong> – int Program number</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.instrument.JDXiInstrument.update_display_callback">
+<span class="sig-name descname"><span class="pre">update_display_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">synth_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.type.JDXiSynth" title="jdxi_editor.jdxi.synth.type.JDXiSynth"><span class="pre">JDXiSynth</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">preset_index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/instrument.html#JDXiInstrument.update_display_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.instrument.JDXiInstrument.update_display_callback" title="Link to this definition"></a></dt>
+<dd><p>Update the display for the given synth preset_type and preset index</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>synth_type</strong> – JDXiSynth</p></li>
+<li><p><strong>preset_index</strong> – int</p></li>
+<li><p><strong>channel</strong> – int</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.instrument.JDXiInstrument.init_main_editor">
+<span class="sig-name descname"><span class="pre">init_main_editor</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/instrument.html#JDXiInstrument.init_main_editor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.instrument.JDXiInstrument.init_main_editor" title="Link to this definition"></a></dt>
+<dd><p>Initialize the UI for the MainEditor</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.instrument.JDXiInstrument.show_editor">
+<span class="sig-name descname"><span class="pre">show_editor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">editor_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/instrument.html#JDXiInstrument.show_editor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.instrument.JDXiInstrument.show_editor" title="Link to this definition"></a></dt>
+<dd><p>Show editor of given type</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>editor_type</strong> – str Editor type</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.instrument.JDXiInstrument.on_documentation">
+<span class="sig-name descname"><span class="pre">on_documentation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/instrument.html#JDXiInstrument.on_documentation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.instrument.JDXiInstrument.on_documentation" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.instrument.JDXiInstrument.on_preferences">
+<span class="sig-name descname"><span class="pre">on_preferences</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/instrument.html#JDXiInstrument.on_preferences"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.instrument.JDXiInstrument.on_preferences" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.instrument.JDXiInstrument.get_existing_editor">
+<span class="sig-name descname"><span class="pre">get_existing_editor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">editor_class</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="jdxi_editor.ui.editors.synth.html#jdxi_editor.ui.editors.synth.editor.SynthEditor" title="jdxi_editor.ui.editors.synth.editor.SynthEditor"><span class="pre">SynthEditor</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/instrument.html#JDXiInstrument.get_existing_editor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.instrument.JDXiInstrument.get_existing_editor" title="Link to this definition"></a></dt>
+<dd><p>Get existing editor instance of the specified class</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>editor_class</strong> – class</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Optional[SynthEditor]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.instrument.JDXiInstrument.load_button_preset">
+<span class="sig-name descname"><span class="pre">load_button_preset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">button</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SequencerSquare</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/instrument.html#JDXiInstrument.load_button_preset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.instrument.JDXiInstrument.load_button_preset" title="Link to this definition"></a></dt>
+<dd><p>load preset data stored on the button</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>button</strong> – SequencerSquare</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.instrument.JDXiInstrument.handle_piano_note_on">
+<span class="sig-name descname"><span class="pre">handle_piano_note_on</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">note_num</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/instrument.html#JDXiInstrument.handle_piano_note_on"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.instrument.JDXiInstrument.handle_piano_note_on" title="Link to this definition"></a></dt>
+<dd><p>Handle piano key press</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>note_num</strong> – int note midi number</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.instrument.JDXiInstrument.handle_piano_note_off">
+<span class="sig-name descname"><span class="pre">handle_piano_note_off</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">note_num</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/instrument.html#JDXiInstrument.handle_piano_note_off"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.instrument.JDXiInstrument.handle_piano_note_off" title="Link to this definition"></a></dt>
+<dd><p>Handle piano key release</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>note_num</strong> – int midi note number</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.instrument.JDXiInstrument.staticMetaObject">
+<span class="sig-name descname"><span class="pre">staticMetaObject</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">PySide6.QtCore.QMetaObject(&quot;JDXiInstrument&quot;</span> <span class="pre">inherits</span> <span class="pre">&quot;JDXiUi&quot;:</span> <span class="pre">)</span></em><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.instrument.JDXiInstrument.staticMetaObject" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-jdxi_editor.ui.windows.jdxi.ui">
+<span id="jdxi-editor-ui-windows-jdxi-ui-module"></span><h2>jdxi_editor.ui.windows.jdxi.ui module<a class="headerlink" href="#module-jdxi_editor.ui.windows.jdxi.ui" title="Link to this heading"></a></h2>
+<p>JD-Xi Editor UI setup.</p>
+<p>This class defines the main user interface for the JD-Xi Editor application, inheriting from QMainWindow. It handles the creation of the UI elements, including the main layout, menus, status bar, and MIDI indicators. It also provides functionality for displaying and managing synth presets, favorites, and MIDI connectivity.</p>
+<p>Key Features:
+- Sets up a frameless window with a customizable layout.
+- Initializes MIDI helper and indicators for MIDI input/output.
+- Loads and displays a digital font for instrument displays.
+- Allows users to manage and load favorite presets.
+- Displays a virtual piano keyboard in the status bar.
+- Integrates with MIDIHelper for MIDI communication.
+- Loads and saves application settings and preferences.</p>
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">-</span> <span class="pre">__init__</span></span></dt>
+<dd><p>Initializes the UI, settings, MIDI components, and layout.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">-</span> <span class="pre">_create_main_layout</span></span></dt>
+<dd><p>Sets up the central layout for displaying instrument images and overlays.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.ui.JDXiUi">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.ui.windows.jdxi.ui.</span></span><span class="sig-name descname"><span class="pre">JDXiUi</span></span><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/ui.html#JDXiUi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.ui.JDXiUi" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QMainWindow</span></code></p>
+<p>JD-Xi UI setup, with as little as possible functionality, which is to be super-classed</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.ui.JDXiUi.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PySide6.QtWidgets.QWidget</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flags</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PySide6.QtCore.Qt.WindowType</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Default(Qt.WindowFlags)</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iconSize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PySide6.QtCore.QSize</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">toolButtonStyle</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PySide6.QtCore.Qt.ToolButtonStyle</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">animated</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">documentMode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tabShape</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PySide6.QtWidgets.QTabWidget.TabShape</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dockNestingEnabled</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dockOptions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PySide6.QtWidgets.QMainWindow.DockOption</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unifiedTitleAndToolBarOnMac</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/ui.html#JDXiUi.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.ui.JDXiUi.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.ui.JDXiUi.update_preset_display">
+<span class="sig-name descname"><span class="pre">update_preset_display</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">preset_number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">preset_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/ui.html#JDXiUi.update_preset_display"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.ui.JDXiUi.update_preset_display" title="Link to this definition"></a></dt>
+<dd><p>Update the current preset display</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.ui.JDXiUi.show_error">
+<span class="sig-name descname"><span class="pre">show_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/ui.html#JDXiUi.show_error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.ui.JDXiUi.show_error" title="Link to this definition"></a></dt>
+<dd><p>Show error message dialog</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>title</strong> – Dialog title</p></li>
+<li><p><strong>message</strong> – Error message</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.ui.JDXiUi.show_warning">
+<span class="sig-name descname"><span class="pre">show_warning</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/ui.html#JDXiUi.show_warning"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.ui.JDXiUi.show_warning" title="Link to this definition"></a></dt>
+<dd><p>Show warning message dialog</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>title</strong> – Dialog title</p></li>
+<li><p><strong>message</strong> – Warning message</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.ui.JDXiUi.show_info">
+<span class="sig-name descname"><span class="pre">show_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/ui.html#JDXiUi.show_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.ui.JDXiUi.show_info" title="Link to this definition"></a></dt>
+<dd><p>Show info message dialog</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>title</strong> – Dialog title</p></li>
+<li><p><strong>message</strong> – Info message</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.ui.JDXiUi.on_documentation">
+<span class="sig-name descname"><span class="pre">on_documentation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/ui.html#JDXiUi.on_documentation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.ui.JDXiUi.on_documentation" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.ui.JDXiUi.on_preferences">
+<span class="sig-name descname"><span class="pre">on_preferences</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/ui.html#JDXiUi.on_preferences"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.ui.JDXiUi.on_preferences" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.ui.JDXiUi.show_editor">
+<span class="sig-name descname"><span class="pre">show_editor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/ui.html#JDXiUi.show_editor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.ui.JDXiUi.show_editor" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.ui.JDXiUi.staticMetaObject">
+<span class="sig-name descname"><span class="pre">staticMetaObject</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">PySide6.QtCore.QMetaObject(&quot;JDXiUi&quot;</span> <span class="pre">inherits</span> <span class="pre">&quot;QMainWindow&quot;:</span> <span class="pre">)</span></em><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.ui.JDXiUi.staticMetaObject" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-jdxi_editor.ui.windows.jdxi.utils">
+<span id="jdxi-editor-ui-windows-jdxi-utils-module"></span><h2>jdxi_editor.ui.windows.jdxi.utils module<a class="headerlink" href="#module-jdxi_editor.ui.windows.jdxi.utils" title="Link to this heading"></a></h2>
+<p>Utility functions for the JDXI editor UI.</p>
+<p>These functions are used to display messages, handle MIDI communication
+and manage MIDI input/output ports.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="jdxi_editor.ui.windows.jdxi.utils.show_message_box">
+<span class="sig-prename descclassname"><span class="pre">jdxi_editor.ui.windows.jdxi.utils.</span></span><span class="sig-name descname"><span class="pre">show_message_box</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">icon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Icon.Critical</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jdxi_editor/ui/windows/jdxi/utils.html#show_message_box"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.windows.jdxi.utils.show_message_box" title="Link to this definition"></a></dt>
+<dd><p>Helper method to display a QMessageBox.</p>
+</dd></dl>
+
+</section>
+<section id="module-jdxi_editor.ui.windows.jdxi">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-jdxi_editor.ui.windows.jdxi" title="Link to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="jdxi_editor.ui.windows.html" class="btn btn-neutral float-left" title="jdxi_editor.ui.windows package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="jdxi_editor.ui.windows.jdxi.containers.html" class="btn btn-neutral float-right" title="jdxi_editor.ui.windows.jdxi.containers package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Mark Mrooks.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

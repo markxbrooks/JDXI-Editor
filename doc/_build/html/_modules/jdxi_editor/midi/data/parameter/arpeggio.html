@@ -1,0 +1,606 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>jdxi_editor.midi.data.parameter.arpeggio &mdash; JD-Xi Editor 0.8.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../../_static/documentation_options.js?v=486e5634"></script>
+      <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../../index.html" class="icon icon-home">
+            JD-Xi Editor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../usage.html">Quick Start</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../usage.html#connection-of-the-jd-xi-hardware-instrument-to-the-computer">Connection of the JD-Xi Hardware Instrument to the Computer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../instrument.html">JDXi Instrument Window</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../instrument.html#features">Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../instrument.html#using-the-instrument-window">Using the Instrument Window</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../editor.html">Editor Window</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../editor.html#program-mixer-section">Program/Mixer Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../editor.html#digital-1-section">Digital 1 Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../editor.html#digital-2-section">Digital 2 Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../editor.html#drum-kit-section">Drum Kit Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../editor.html#analog-section">Analog Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../editor.html#effect-controls">Effect Controls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../editor.html#vocal-transformer">Vocal Transformer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../editor.html#arpeggiator">Arpeggiator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../editor.html#midi-file-player-and-recorder">MIDI File Player and Recorder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../editor.html#pattern-sequencer">Pattern Sequencer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../troubleshooting.html">Troubleshooting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../troubleshooting.html#general-problems">General Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../troubleshooting.html#macos">MacOS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../troubleshooting.html#windows">Windows</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../legal.html">Legal Disclaimer</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../modules.html">jdxi_editor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../jdxi_editor.html">jdxi_editor package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.jdxi.html">jdxi_editor.jdxi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.log.html">jdxi_editor.log package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.midi.html">jdxi_editor.midi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.ui.html">jdxi_editor.ui package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.globals">jdxi_editor.globals module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.main">jdxi_editor.main module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.html#jdxi_editor.main.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.project">jdxi_editor.project module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.resources">jdxi_editor.resources module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.html#jdxi_editor.resources.resource_path"><code class="docutils literal notranslate"><span class="pre">resource_path()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../autoapi/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/midi/index.html">midi</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/midi/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/colors/index.html">midi.colors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/slider/index.html">midi.slider</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/spin_box/index.html">midi.spin_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/time_ruler/index.html">midi.time_ruler</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/track/index.html">midi.track</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/track_viewer/index.html">midi.track_viewer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/utils/index.html">midi.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/adsr/index.html">adsr</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/adsr/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/adsr/adsr/index.html">adsr.adsr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/adsr/graph/index.html">adsr.graph</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/adsr/parameter/index.html">adsr.parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/adsr/plot/index.html">adsr.plot</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/pitch/index.html">pitch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/pitch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pitch/envelope/index.html">pitch.envelope</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pitch/envelope_plot/index.html">pitch.envelope_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pitch/pwm_plot/index.html">pitch.pwm_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pitch/slider_spinbox/index.html">pitch.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/piano/index.html">piano</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/piano/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/piano/key/index.html">piano.key</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/piano/keyboard/index.html">piano.keyboard</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/panel/index.html">panel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/panel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/panel/partial/index.html">panel.partial</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/wheel/index.html">wheel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/wheel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/wheel/mod/index.html">wheel.mod</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/wheel/pitch/index.html">wheel.pitch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/wheel/wheel/index.html">wheel.wheel</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/preset/index.html">preset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/preset/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/preset/combo_box/index.html">preset.combo_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/preset/panel/index.html">preset.panel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/preset/patch_name/index.html">preset.patch_name</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/slider/index.html">slider</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/slider/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/slider/slider/index.html">slider.slider</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/slider/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/slider/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/slider/index.html#slider.Slider"><code class="docutils literal notranslate"><span class="pre">Slider</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/dialog/index.html">dialog</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/dialog/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/dialog/progress/index.html">dialog.progress</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/viewer/index.html">viewer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/viewer/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/viewer/log/index.html">viewer.log</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/button/index.html">button</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/button/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/channel/index.html">button.channel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/favorite/index.html">button.favorite</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/sequencer/index.html">button.sequencer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/waveform/index.html">button.waveform</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/button/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/button/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/index.html#button.ChannelButton"><code class="docutils literal notranslate"><span class="pre">ChannelButton</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/index.html#button.SequencerSquare"><code class="docutils literal notranslate"><span class="pre">SequencerSquare</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/switch/index.html">switch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/switch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/switch/partial/index.html">switch.partial</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/switch/switch/index.html">switch.switch</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/filter/index.html">filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/filter/index.html#filter.FilterWidget"><code class="docutils literal notranslate"><span class="pre">FilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/display/index.html">display</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/display/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/display/digital/index.html">display.digital</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/display/pattern/index.html">display.pattern</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/display/value/index.html">display.value</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/pattern/index.html">pattern</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/pattern/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pattern/measure/index.html">pattern.measure</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/spin_box/index.html">spin_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/spin_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/spin_box/spin_box/index.html">spin_box.spin_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/envelope/index.html">envelope</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/envelope/base/index.html">envelope.base</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/indicator/index.html">indicator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/indicator/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/indicator/led/index.html">indicator.led</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/indicator/midi/index.html">indicator.midi</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/combo_box/index.html">combo_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/combo_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/combo_box/combo_box/index.html">combo_box.combo_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/index.html">jdxi_editor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/globals/index.html">jdxi_editor.globals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/jdxi/index.html">jdxi_editor.jdxi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/log/index.html">jdxi_editor.log</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/main/index.html">jdxi_editor.main</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/midi/index.html">jdxi_editor.midi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/project/index.html">jdxi_editor.project</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/resources/index.html">jdxi_editor.resources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/ui/index.html">jdxi_editor.ui</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html">filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#filter_plot.FilterPlot"><code class="docutils literal notranslate"><span class="pre">FilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html">envelope_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#envelope_plot.midi_value_to_float"><code class="docutils literal notranslate"><span class="pre">midi_value_to_float()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#envelope_plot.WMTEnvPlot"><code class="docutils literal notranslate"><span class="pre">WMTEnvPlot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#envelope_plot.app"><code class="docutils literal notranslate"><span class="pre">app</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/wave_selector/index.html">wave_selector</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/wave_selector/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/wave_selector/wave_selector/index.html">wave_selector.wave_selector</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/analog_filter/index.html">analog_filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/analog_filter/index.html#analog_filter.AnalogFilterWidget"><code class="docutils literal notranslate"><span class="pre">AnalogFilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/slider_spinbox/index.html">slider_spinbox</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/slider_spinbox/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/slider_spinbox/slider_spinbox/index.html">slider_spinbox.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html">analog_filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#analog_filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#analog_filter_plot.AnalogFilterPlot"><code class="docutils literal notranslate"><span class="pre">AnalogFilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">JD-Xi Editor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">jdxi_editor.midi.data.parameter.arpeggio</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for jdxi_editor.midi.data.parameter.arpeggio</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Module: ArpeggioParameter</span>
+<span class="sd">=========================</span>
+
+<span class="sd">This module defines the ArpeggioParameter class, which represents arpeggiator-related parameters</span>
+<span class="sd">in a synthesizer. These parameters control various aspects of arpeggios, such as grid, duration, </span>
+<span class="sd">style, motif, octave range, accent rate, and velocity, as well as pattern, rhythm, and note settings.</span>
+
+<span class="sd">The class provides methods to:</span>
+
+<span class="sd">- Initialize arpeggio parameters with a given address, range, and optional display range.</span>
+<span class="sd">- Store the minimum and maximum values for display and parameter validation.</span>
+<span class="sd">- Define a variety of arpeggio and pattern-related parameters with specific ranges, including:</span>
+<span class="sd">  - Arpeggio grid (e.g., 4_, 8_, 16_)</span>
+<span class="sd">  - Arpeggio duration (e.g., 30, 40, 50, 60)</span>
+<span class="sd">  - Arpeggio style and motif</span>
+<span class="sd">  - Arpeggio octave range (-3 to +3)</span>
+<span class="sd">  - Accent rate and velocity</span>
+<span class="sd">  - Arpeggio pattern, rhythm, and note settings</span>
+
+<span class="sd">Parameters include:</span>
+<span class="sd">- Arpeggio grid, duration, switch, style, motif, octave range, accent rate, and velocity.</span>
+<span class="sd">- Pattern parameters (4 patterns, each with a range from 0 to 127).</span>
+<span class="sd">- Rhythm parameters (4 rhythm settings, each with a range from 0 to 127).</span>
+<span class="sd">- Note parameters (4 note settings, each with a range from 0 to 127).</span>
+
+<span class="sd">```python</span>
+<span class="sd">Usage example:</span>
+<span class="sd">    # Initialize an arpeggio parameter object</span>
+<span class="sd">    param = ArpeggioParameter(address=0x01, min_val=0, max_val=8)</span>
+
+<span class="sd">    # Access display range values</span>
+<span class="sd">    log.message(param.display_min)  # Output: 0</span>
+<span class="sd">    log.message(param.display_max)  # Output: 8</span>
+
+<span class="sd">    # Validate a value for the parameter</span>
+<span class="sd">    valid_value = param.validate_value(5)</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.data.address.arpeggio</span><span class="w"> </span><span class="kn">import</span> <span class="n">ARP_GROUP</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.data.parameter.synth</span><span class="w"> </span><span class="kn">import</span> <span class="n">AddressParameter</span>
+
+
+<div class="viewcode-block" id="AddressParameterArpeggio">
+<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">AddressParameterArpeggio</span><span class="p">(</span><span class="n">AddressParameter</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Arpeggiator parameters with address and range&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="AddressParameterArpeggio.__init__">
+<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">address</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">min_val</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">max_val</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">display_min</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">display_max</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">tooltip</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">min_val</span><span class="p">,</span> <span class="n">max_val</span><span class="p">)</span>
+<div class="viewcode-block" id="AddressParameterArpeggio.display_min">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/parameter/arpeggio/index.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.display_min">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">display_min</span> <span class="o">=</span> <span class="n">display_min</span> <span class="k">if</span> <span class="n">display_min</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">min_val</span></div>
+
+<div class="viewcode-block" id="AddressParameterArpeggio.display_max">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/parameter/arpeggio/index.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.display_max">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">display_max</span> <span class="o">=</span> <span class="n">display_max</span> <span class="k">if</span> <span class="n">display_max</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">max_val</span></div>
+
+<div class="viewcode-block" id="AddressParameterArpeggio.tooltip">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/parameter/arpeggio/index.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.tooltip">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tooltip</span> <span class="o">=</span> <span class="n">tooltip</span></div>
+</div>
+
+
+    <span class="c1"># Common parameters</span>
+<div class="viewcode-block" id="AddressParameterArpeggio.ARPEGGIO_GRID">
+<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.ARPEGGIO_GRID">[docs]</a>
+    <span class="n">ARPEGGIO_GRID</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x01</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="s2">&quot;Specifies the time signature and “swing” of the arpeggio style.</span><span class="se">\n</span><span class="s2">The setting specifies the note value that one grid unit represents, and the degree of shuffle (none, light, or heavy).</span><span class="se">\n</span><span class="s2">1/4: Eighth note (two grid sections = one beat)</span><span class="se">\n</span><span class="s2">1/8: Eighth note (two grid sections = one beat)</span><span class="se">\n</span><span class="s2">1/8L: Eighth note shuffle Light (two grid sections = one beat, with a light shuffle)</span><span class="se">\n</span><span class="s2">1/8H: Eighth note shuffle Heavy (two grid sections = one beat, with a heavy shuffle)</span><span class="se">\n</span><span class="s2">1/12: Eighth note triplet (three grid sections = one beat)</span><span class="se">\n</span><span class="s2">1/16: Sixteenth note (four grid sections = one beat)</span><span class="se">\n</span><span class="s2">1/16L: Sixteenth note shuffle Light (four grid sections = one beat, with a light shuffle)</span><span class="se">\n</span><span class="s2">1/16H: Sixteenth note shuffle Heavy (four grid sections = one beat, with a heavy shuffle)</span><span class="se">\n</span><span class="s2">1/24: Sixteenth note triplet (six grid sections = one beat)&quot;</span><span class="p">)</span>  <span class="c1"># 04_, 08_, 08L, 08H, 08t, 16_, 16L, 16H, 16t</span></div>
+
+
+<div class="viewcode-block" id="AddressParameterArpeggio.ARPEGGIO_DURATION">
+<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.ARPEGGIO_DURATION">[docs]</a>
+    <span class="n">ARPEGGIO_DURATION</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x02</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="s2">&quot;&quot;&quot;Specifies the duration that each note of the arpeggio is sounded.</span>
+<span class="s2">This determines whether the sounds are played staccato (short and clipped), or tenuto (fully drawn out).</span>
+<span class="s2">30–120: For example if you specify “30,” each note on the grid (or in the case of tied notes, the last tied note) has a</span>
+<span class="s2">duration that is 30</span><span class="si">% o</span><span class="s2">f the note value specified by the grid.</span>
+<span class="s2">Full: Even if the linked grid is not connected with a tie, the same note continues to sound until the point at which the</span>
+<span class="s2">next new sound is specified.&quot;&quot;&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AddressParameterArpeggio.ARPEGGIO_SWITCH">
+<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.ARPEGGIO_SWITCH">[docs]</a>
+    <span class="n">ARPEGGIO_SWITCH</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x03</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Arpeggio ON/OFF&quot;</span><span class="p">)</span>  <span class="c1"># OFF, ON</span></div>
+
+<div class="viewcode-block" id="AddressParameterArpeggio.ARPEGGIO_STYLE">
+<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.ARPEGGIO_STYLE">[docs]</a>
+    <span class="n">ARPEGGIO_STYLE</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x05</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">,</span> <span class="s2">&quot;Specifies the style of the arpeggio style.</span><span class="se">\n</span><span class="s2">1 - 128&quot;</span><span class="p">)</span>  <span class="c1"># 1 - 128</span></div>
+
+    
+<div class="viewcode-block" id="AddressParameterArpeggio.ARPEGGIO_MOTIF">
+<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.ARPEGGIO_MOTIF">[docs]</a>
+    <span class="n">ARPEGGIO_MOTIF</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="mh">0x06</span><span class="p">,</span>
+        <span class="mi">0</span><span class="p">,</span>
+        <span class="mi">11</span><span class="p">,</span>
+        <span class="mi">0</span><span class="p">,</span>
+        <span class="mi">11</span><span class="p">,</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Value Explanation</span>
+<span class="sd">Up (L) Only the lowest of the keys pressed is sounded each time, and the notes play in order from the lowest of the pressed keys.</span>
+<span class="sd">Up (L&amp;H) Notes from both the lowest and highest pressed keys are sounded each time, and the notes play in order from the lowest of the pressed keys.</span>
+<span class="sd">Up (_) The notes play in order from the lowest of the pressed keys.</span>
+<span class="sd">Down (L) Only the lowest of the keys pressed is sounded each time, and the notes play in order from the highest of the pressed keys.</span>
+<span class="sd">Down (L&amp;H) Notes from both the lowest and highest pressed keys are sounded each time, and the notes play in order from the highest of the pressed keys.</span>
+<span class="sd">Down (_) The notes play in order from the highest of the pressed keys. No note is played every time.</span>
+<span class="sd">U/D (L) Notes will be sounded from the lowest to the highest key you press and then back down to the lowest key, with only the lowest key sounded each time.</span>
+<span class="sd">U/D (L&amp;H) Notes from both the lowest and highest pressed keys are sounded each time, and the notes play in order from the lowest of the pressed keys and then back</span>
+<span class="sd">again in the reverse order.</span>
+<span class="sd">U/D (_) The notes play in order from the lowest of the pressed keys, and then back again in the reverse order.</span>
+<span class="sd">Rand (L) Notes will be sounded randomly for the keys you press, with only the lowest key sounded each time.</span>
+<span class="sd">Rand (_) Only the lowest of the keys pressed is sounded each time, the notes you press will be sounded randomly.</span>
+<span class="sd">Phrase Pressing just one key will play a phrase based on the pitch of that key. If you press more than one key, the key you press last will be used.&quot;&quot;&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AddressParameterArpeggio.ARPEGGIO_OCTAVE_RANGE">
+<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.ARPEGGIO_OCTAVE_RANGE">[docs]</a>
+    <span class="n">ARPEGGIO_OCTAVE_RANGE</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x07</span><span class="p">,</span> <span class="mi">61</span><span class="p">,</span> <span class="mi">67</span><span class="p">,</span> <span class="mi">61</span><span class="p">,</span> <span class="mi">67</span><span class="p">,</span> <span class="s2">&quot;Specifies the range by which the arpeggio is shifted.</span><span class="se">\n</span><span class="s2">This adds an effect that shifts arpeggios one cycle at a time in octave units (octave range).</span><span class="se">\n</span><span class="s2">You can set the shift range upwards or downwards (up to three octaves up or down).&quot;</span><span class="p">)</span>  <span class="c1"># -3 - +3</span></div>
+
+<div class="viewcode-block" id="AddressParameterArpeggio.ARPEGGIO_ACCENT_RATE">
+<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.ARPEGGIO_ACCENT_RATE">[docs]</a>
+    <span class="n">ARPEGGIO_ACCENT_RATE</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x09</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="s2">&quot;Specifies the accent strength for the arpeggio.</span><span class="se">\n</span><span class="s2">With a setting of “100,” the arpeggiated notes will have the velocities that are programmed by the arpeggio style.</span><span class="se">\n</span><span class="s2">With a setting of “0,” all arpeggiated notes will be sounded at a fixed velocity.&quot;</span><span class="p">)</span>  <span class="c1"># 0 - 100</span></div>
+
+<div class="viewcode-block" id="AddressParameterArpeggio.ARPEGGIO_VELOCITY">
+<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.ARPEGGIO_VELOCITY">[docs]</a>
+    <span class="n">ARPEGGIO_VELOCITY</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x0A</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">,</span> <span class="s2">&quot;Specifies the loudness of the notes that you play.</span><span class="se">\n</span><span class="s2">REAL: If you want the velocity value of each note to depend on how strongly you play the keyboard, set this</span><span class="se">\n</span><span class="s2">parameter to REAL.</span><span class="se">\n</span><span class="s2">1–127: Notes sound at the velocity you specify here, regardless of how strongly you play the keys.&quot;</span><span class="p">)</span>  <span class="c1"># REAL, 1 - 127</span></div>
+
+
+    <span class="c1"># Pattern parameters</span>
+<div class="viewcode-block" id="AddressParameterArpeggio.PATTERN_1">
+<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.PATTERN_1">[docs]</a>
+    <span class="n">PATTERN_1</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x10</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AddressParameterArpeggio.PATTERN_2">
+<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.PATTERN_2">[docs]</a>
+    <span class="n">PATTERN_2</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x11</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AddressParameterArpeggio.PATTERN_3">
+<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.PATTERN_3">[docs]</a>
+    <span class="n">PATTERN_3</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x12</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AddressParameterArpeggio.PATTERN_4">
+<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.PATTERN_4">[docs]</a>
+    <span class="n">PATTERN_4</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x13</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">)</span></div>
+
+
+    <span class="c1"># Rhythm parameters</span>
+<div class="viewcode-block" id="AddressParameterArpeggio.RHYTHM_1">
+<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.RHYTHM_1">[docs]</a>
+    <span class="n">RHYTHM_1</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x20</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AddressParameterArpeggio.RHYTHM_2">
+<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.RHYTHM_2">[docs]</a>
+    <span class="n">RHYTHM_2</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x21</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AddressParameterArpeggio.RHYTHM_3">
+<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.RHYTHM_3">[docs]</a>
+    <span class="n">RHYTHM_3</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x22</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AddressParameterArpeggio.RHYTHM_4">
+<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.RHYTHM_4">[docs]</a>
+    <span class="n">RHYTHM_4</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x23</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">)</span></div>
+
+
+    <span class="c1"># Note parameters</span>
+<div class="viewcode-block" id="AddressParameterArpeggio.NOTE_1">
+<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.NOTE_1">[docs]</a>
+    <span class="n">NOTE_1</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x30</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AddressParameterArpeggio.NOTE_2">
+<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.NOTE_2">[docs]</a>
+    <span class="n">NOTE_2</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x31</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AddressParameterArpeggio.NOTE_3">
+<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.NOTE_3">[docs]</a>
+    <span class="n">NOTE_3</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x32</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AddressParameterArpeggio.NOTE_4">
+<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.NOTE_4">[docs]</a>
+    <span class="n">NOTE_4</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x33</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AddressParameterArpeggio.get_address_for_partial">
+<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.get_address_for_partial">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_address_for_partial</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">partial_number</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">ARP_GROUP</span><span class="p">,</span> <span class="mh">0x00</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Mark Mrooks.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

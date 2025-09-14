@@ -1,0 +1,1149 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>jdxi_editor.ui.editors.effects.common &mdash; JD-Xi Editor 0.8.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../../_static/documentation_options.js?v=486e5634"></script>
+      <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../../index.html" class="icon icon-home">
+            JD-Xi Editor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../usage.html">Quick Start</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../usage.html#connection-of-the-jd-xi-hardware-instrument-to-the-computer">Connection of the JD-Xi Hardware Instrument to the Computer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../instrument.html">JDXi Instrument Window</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../instrument.html#features">Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../instrument.html#using-the-instrument-window">Using the Instrument Window</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../editor.html">Editor Window</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../editor.html#program-mixer-section">Program/Mixer Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../editor.html#digital-1-section">Digital 1 Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../editor.html#digital-2-section">Digital 2 Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../editor.html#drum-kit-section">Drum Kit Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../editor.html#analog-section">Analog Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../editor.html#effect-controls">Effect Controls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../editor.html#vocal-transformer">Vocal Transformer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../editor.html#arpeggiator">Arpeggiator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../editor.html#midi-file-player-and-recorder">MIDI File Player and Recorder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../editor.html#pattern-sequencer">Pattern Sequencer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../troubleshooting.html">Troubleshooting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../troubleshooting.html#general-problems">General Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../troubleshooting.html#macos">MacOS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../troubleshooting.html#windows">Windows</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../legal.html">Legal Disclaimer</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../modules.html">jdxi_editor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../jdxi_editor.html">jdxi_editor package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.jdxi.html">jdxi_editor.jdxi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.log.html">jdxi_editor.log package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.midi.html">jdxi_editor.midi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.ui.html">jdxi_editor.ui package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.globals">jdxi_editor.globals module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.main">jdxi_editor.main module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.html#jdxi_editor.main.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.project">jdxi_editor.project module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.resources">jdxi_editor.resources module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.html#jdxi_editor.resources.resource_path"><code class="docutils literal notranslate"><span class="pre">resource_path()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../autoapi/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/midi/index.html">midi</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/midi/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/colors/index.html">midi.colors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/slider/index.html">midi.slider</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/spin_box/index.html">midi.spin_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/time_ruler/index.html">midi.time_ruler</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/track/index.html">midi.track</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/track_viewer/index.html">midi.track_viewer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/utils/index.html">midi.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/adsr/index.html">adsr</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/adsr/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/adsr/adsr/index.html">adsr.adsr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/adsr/graph/index.html">adsr.graph</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/adsr/parameter/index.html">adsr.parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/adsr/plot/index.html">adsr.plot</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/pitch/index.html">pitch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/pitch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pitch/envelope/index.html">pitch.envelope</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pitch/envelope_plot/index.html">pitch.envelope_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pitch/pwm_plot/index.html">pitch.pwm_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pitch/slider_spinbox/index.html">pitch.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/piano/index.html">piano</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/piano/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/piano/key/index.html">piano.key</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/piano/keyboard/index.html">piano.keyboard</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/panel/index.html">panel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/panel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/panel/partial/index.html">panel.partial</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/wheel/index.html">wheel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/wheel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/wheel/mod/index.html">wheel.mod</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/wheel/pitch/index.html">wheel.pitch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/wheel/wheel/index.html">wheel.wheel</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/preset/index.html">preset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/preset/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/preset/combo_box/index.html">preset.combo_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/preset/panel/index.html">preset.panel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/preset/patch_name/index.html">preset.patch_name</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/slider/index.html">slider</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/slider/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/slider/slider/index.html">slider.slider</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/slider/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/slider/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/slider/index.html#slider.Slider"><code class="docutils literal notranslate"><span class="pre">Slider</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/dialog/index.html">dialog</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/dialog/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/dialog/progress/index.html">dialog.progress</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/viewer/index.html">viewer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/viewer/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/viewer/log/index.html">viewer.log</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/button/index.html">button</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/button/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/channel/index.html">button.channel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/favorite/index.html">button.favorite</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/sequencer/index.html">button.sequencer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/waveform/index.html">button.waveform</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/button/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/button/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/index.html#button.ChannelButton"><code class="docutils literal notranslate"><span class="pre">ChannelButton</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/index.html#button.SequencerSquare"><code class="docutils literal notranslate"><span class="pre">SequencerSquare</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/switch/index.html">switch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/switch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/switch/partial/index.html">switch.partial</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/switch/switch/index.html">switch.switch</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/filter/index.html">filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/filter/index.html#filter.FilterWidget"><code class="docutils literal notranslate"><span class="pre">FilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/display/index.html">display</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/display/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/display/digital/index.html">display.digital</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/display/pattern/index.html">display.pattern</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/display/value/index.html">display.value</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/pattern/index.html">pattern</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/pattern/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pattern/measure/index.html">pattern.measure</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/spin_box/index.html">spin_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/spin_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/spin_box/spin_box/index.html">spin_box.spin_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/envelope/index.html">envelope</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/envelope/base/index.html">envelope.base</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/indicator/index.html">indicator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/indicator/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/indicator/led/index.html">indicator.led</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/indicator/midi/index.html">indicator.midi</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/combo_box/index.html">combo_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/combo_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/combo_box/combo_box/index.html">combo_box.combo_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/index.html">jdxi_editor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/globals/index.html">jdxi_editor.globals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/jdxi/index.html">jdxi_editor.jdxi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/log/index.html">jdxi_editor.log</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/main/index.html">jdxi_editor.main</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/midi/index.html">jdxi_editor.midi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/project/index.html">jdxi_editor.project</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/resources/index.html">jdxi_editor.resources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/ui/index.html">jdxi_editor.ui</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html">filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#filter_plot.FilterPlot"><code class="docutils literal notranslate"><span class="pre">FilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html">envelope_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#envelope_plot.midi_value_to_float"><code class="docutils literal notranslate"><span class="pre">midi_value_to_float()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#envelope_plot.WMTEnvPlot"><code class="docutils literal notranslate"><span class="pre">WMTEnvPlot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#envelope_plot.app"><code class="docutils literal notranslate"><span class="pre">app</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/wave_selector/index.html">wave_selector</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/wave_selector/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/wave_selector/wave_selector/index.html">wave_selector.wave_selector</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/analog_filter/index.html">analog_filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/analog_filter/index.html#analog_filter.AnalogFilterWidget"><code class="docutils literal notranslate"><span class="pre">AnalogFilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/slider_spinbox/index.html">slider_spinbox</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/slider_spinbox/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/slider_spinbox/slider_spinbox/index.html">slider_spinbox.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html">analog_filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#analog_filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#analog_filter_plot.AnalogFilterPlot"><code class="docutils literal notranslate"><span class="pre">AnalogFilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">JD-Xi Editor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">jdxi_editor.ui.editors.effects.common</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for jdxi_editor.ui.editors.effects.common</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Module: effects_editor</span>
+
+<span class="sd">This module defines the `EffectsEditor` class, which provides a PySide6-based user interface</span>
+<span class="sd">for editing effects parameters on the Roland JD-Xi synthesizer. It extends `SynthEditor` and</span>
+<span class="sd">allows users to modify various effects settings, including Effect 1, Effect 2, Delay, and Reverb.</span>
+
+<span class="sd">Classes:</span>
+<span class="sd">    - EffectsEditor: A QWidget subclass for managing and editing JD-Xi effect parameters.</span>
+
+<span class="sd">Dependencies:</span>
+<span class="sd">    - os</span>
+<span class="sd">    - logging</span>
+<span class="sd">    - PySide6.QtWidgets (QWidget, QVBoxLayout, etc.)</span>
+<span class="sd">    - PySide6.QtCore (Qt)</span>
+<span class="sd">    - PySide6.QtGui (QPixmap)</span>
+<span class="sd">    - jdxi_manager modules for MIDI and parameter handling</span>
+
+<span class="sd">Features:</span>
+<span class="sd">    - Displays effects parameters with interactive controls.</span>
+<span class="sd">    - Supports updating instrument images dynamically.</span>
+<span class="sd">    - Sends MIDI messages to update effect settings in real-time.</span>
+<span class="sd">    - Organizes effect parameters into categorized tabs.</span>
+
+<span class="sd">                                AddressParameterEffect1.EFX1_PARAM_17,</span>
+<span class="sd">                                AddressParameterEffect1.EFX1_PARAM_18,</span>
+<span class="sd">                                AddressParameterEffect1.EFX1_PARAM_19,</span>
+<span class="sd">                                AddressParameterEffect1.EFX1_PARAM_20,</span>
+<span class="sd">                                AddressParameterEffect1.EFX1_PARAM_21,</span>
+<span class="sd">                                AddressParameterEffect1.EFX1_PARAM_22,</span>
+<span class="sd">                                AddressParameterEffect1.EFX1_PARAM_23,</span>
+<span class="sd">                                AddressParameterEffect1.EFX1_PARAM_24,</span>
+<span class="sd">                                AddressParameterEffect1.EFX1_PARAM_25,</span>
+<span class="sd">                                AddressParameterEffect1.EFX1_PARAM_26,</span>
+<span class="sd">                                AddressParameterEffect1.EFX1_PARAM_27,</span>
+<span class="sd">                                AddressParameterEffect1.EFX1_PARAM_28,</span>
+<span class="sd">                                AddressParameterEffect1.EFX1_PARAM_29,</span>
+<span class="sd">                                AddressParameterEffect1.EFX1_PARAM_30,</span>
+<span class="sd">                                AddressParameterEffect1.EFX1_PARAM_31,</span>
+
+<span class="sd">                                AddressParameterEffect1.EFX2_PARAM_17,</span>
+<span class="sd">                                AddressParameterEffect1.EFX2_PARAM_18,</span>
+<span class="sd">                                AddressParameterEffect1.EFX2_PARAM_19,</span>
+<span class="sd">                                AddressParameterEffect1.EFX2_PARAM_20,</span>
+<span class="sd">                                AddressParameterEffect1.EFX2_PARAM_21,</span>
+<span class="sd">                                AddressParameterEffect1.EFX2_PARAM_22,</span>
+<span class="sd">                                AddressParameterEffect1.EFX2_PARAM_23,</span>
+<span class="sd">                                AddressParameterEffect1.EFX2_PARAM_24,</span>
+<span class="sd">                                AddressParameterEffect1.EFX2_PARAM_25,</span>
+<span class="sd">                                AddressParameterEffect1.EFX2_PARAM_26,</span>
+<span class="sd">                                AddressParameterEffect1.EFX2_PARAM_27,</span>
+<span class="sd">                                AddressParameterEffect1.EFX2_PARAM_28,</span>
+<span class="sd">                                AddressParameterEffect1.EFX2_PARAM_29,</span>
+<span class="sd">                                AddressParameterEffect1.EFX2_PARAM_30,</span>
+<span class="sd">                                AddressParameterEffect1.EFX2_PARAM_31,</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Dict</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">PySide6.QtWidgets</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">QWidget</span><span class="p">,</span>
+    <span class="n">QVBoxLayout</span><span class="p">,</span>
+    <span class="n">QHBoxLayout</span><span class="p">,</span>
+    <span class="n">QLabel</span><span class="p">,</span>
+    <span class="n">QTabWidget</span><span class="p">,</span>
+    <span class="n">QFormLayout</span><span class="p">,</span> <span class="n">QScrollArea</span><span class="p">,</span> <span class="n">QSlider</span><span class="p">,</span> <span class="n">QSplitter</span><span class="p">,</span> <span class="n">QGroupBox</span><span class="p">,</span> <span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PySide6.QtCore</span><span class="w"> </span><span class="kn">import</span> <span class="n">Qt</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.jdxi.midi.constant</span><span class="w"> </span><span class="kn">import</span> <span class="n">MidiConstant</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.jdxi.preset.helper</span><span class="w"> </span><span class="kn">import</span> <span class="n">JDXiPresetHelper</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.log.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">Logger</span> <span class="k">as</span> <span class="n">log</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.data.address.address</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">AddressStartMSB</span><span class="p">,</span>
+    <span class="n">RolandSysExAddress</span><span class="p">,</span>
+    <span class="n">AddressOffsetSystemUMB</span><span class="p">,</span> <span class="n">AddressOffsetProgramLMB</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.data.parameter.effects.effects</span><span class="w"> </span><span class="kn">import</span> <span class="n">AddressParameterReverb</span><span class="p">,</span> <span class="n">AddressParameterEffect2</span><span class="p">,</span> \
+    <span class="n">AddressParameterDelay</span><span class="p">,</span> <span class="n">AddressParameterEffect1</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.data.parameter.effects.common</span><span class="w"> </span><span class="kn">import</span> <span class="n">AddressParameterEffectCommon</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.data.parameter.synth</span><span class="w"> </span><span class="kn">import</span> <span class="n">AddressParameter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.sysex.composer</span><span class="w"> </span><span class="kn">import</span> <span class="n">JDXiSysExComposer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.ui.editors</span><span class="w"> </span><span class="kn">import</span> <span class="n">SynthEditor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.ui.editors.effects.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">EffectsData</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.ui.editors.synth.simple</span><span class="w"> </span><span class="kn">import</span> <span class="n">BasicEditor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.jdxi.style</span><span class="w"> </span><span class="kn">import</span> <span class="n">JDXiStyle</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.io.helper</span><span class="w"> </span><span class="kn">import</span> <span class="n">MidiIOHelper</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.ui.widgets.display.digital</span><span class="w"> </span><span class="kn">import</span> <span class="n">DigitalTitle</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.ui.windows.jdxi.dimensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">JDXiDimensions</span>
+
+
+<div class="viewcode-block" id="EffectsCommonEditor">
+<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.effects.html#jdxi_editor.ui.editors.effects.common.EffectsCommonEditor">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">EffectsCommonEditor</span><span class="p">(</span><span class="n">BasicEditor</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Effects Editor Window&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="EffectsCommonEditor.__init__">
+<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.effects.html#jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">midi_helper</span><span class="p">:</span> <span class="n">MidiIOHelper</span><span class="p">,</span>
+            <span class="n">preset_helper</span><span class="p">:</span> <span class="n">JDXiPresetHelper</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">midi_helper</span><span class="o">=</span><span class="n">midi_helper</span><span class="p">,</span>
+                         <span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
+
+<div class="viewcode-block" id="EffectsCommonEditor.tab_widget">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/effects/common/index.html#jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.tab_widget">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tab_widget</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="EffectsCommonEditor.midi_helper">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/effects/common/index.html#jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.midi_helper">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span> <span class="o">=</span> <span class="n">midi_helper</span></div>
+
+<div class="viewcode-block" id="EffectsCommonEditor.preset_helper">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/effects/common/index.html#jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.preset_helper">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">preset_helper</span> <span class="o">=</span> <span class="n">preset_helper</span></div>
+
+<div class="viewcode-block" id="EffectsCommonEditor.EFX1_PARAMETERS">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/effects/common/index.html#jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.EFX1_PARAMETERS">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">EFX1_PARAMETERS</span> <span class="o">=</span> <span class="p">[</span><span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_PARAM_1</span><span class="p">,</span>
+                                <span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_PARAM_2</span><span class="p">,</span>
+                                <span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_PARAM_3</span><span class="p">,</span>
+                                <span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_PARAM_4</span><span class="p">,</span>
+                                <span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_PARAM_5</span><span class="p">,</span>
+                                <span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_PARAM_6</span><span class="p">,</span>
+                                <span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_PARAM_7</span><span class="p">,</span>
+                                <span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_PARAM_8</span><span class="p">,</span>
+                                <span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_PARAM_9</span><span class="p">,</span>
+                                <span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_PARAM_10</span><span class="p">,</span>
+                                <span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_PARAM_11</span><span class="p">,</span>
+                                <span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_PARAM_12</span><span class="p">,</span>
+                                <span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_PARAM_13</span><span class="p">,</span>
+                                <span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_PARAM_14</span><span class="p">,</span>
+                                <span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_PARAM_15</span><span class="p">,</span>
+                                <span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_PARAM_16</span><span class="p">,</span>
+                                <span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_PARAM_1_DISTORTION_LEVEL</span><span class="p">,</span>
+                                <span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_PARAM_1_FUZZ_LEVEL</span><span class="p">,</span>
+                                <span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_PARAM_2_DISTORTION_DRIVE</span><span class="p">,</span>
+                                <span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_PARAM_2_FUZZ_DRIVE</span><span class="p">,</span>
+                                <span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_PARAM_3_DISTORTION_TYPE</span><span class="p">,</span>
+                                <span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_PARAM_3_FUZZ_TYPE</span><span class="p">,</span>
+                                <span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_PARAM_32_DISTORTION_PRESENCE</span><span class="p">,</span>
+                                <span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_PARAM_32_FUZZ_PRESENCE</span><span class="p">,</span>
+                                <span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_PARAM_1_COMPRESSOR_THRESHOLD</span><span class="p">,</span>
+                                <span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_PARAM_2_COMPRESSOR_RATIO</span><span class="p">,</span>
+                                <span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_PARAM_3_COMPRESSOR_ATTACK</span><span class="p">,</span>
+                                <span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_PARAM_4_COMPRESSOR_RELEASE</span><span class="p">,</span>
+                                <span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_PARAM_5_COMPRESSOR_LEVEL</span><span class="p">,</span>
+                                <span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_PARAM_7_COMPRESSOR_SIDE_LEVEL</span><span class="p">,</span>
+                                <span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_PARAM_8_COMPRESSOR_SIDE_NOTE</span><span class="p">,</span>
+                                <span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_PARAM_9_COMPRESSOR_SIDE_TIME</span><span class="p">,</span>
+                                <span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_PARAM_10_COMPRESSOR_SIDE_RELEASE</span><span class="p">,</span>
+                                <span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_PARAM_1_BITCRUSHER_LEVEL</span><span class="p">,</span>
+                                <span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_PARAM_2_BITCRUSHER_RATE</span><span class="p">,</span>
+                                <span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_PARAM_3_BITCRUSHER_DEPTH</span><span class="p">,</span>
+                                <span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_PARAM_4_BITCRUSHER_FILTER</span><span class="p">,</span>
+                                <span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_PARAM_32</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="EffectsCommonEditor.EFX2_PARAMETERS">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/effects/common/index.html#jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.EFX2_PARAMETERS">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">EFX2_PARAMETERS</span> <span class="o">=</span> <span class="p">[</span><span class="n">AddressParameterEffect2</span><span class="o">.</span><span class="n">EFX2_PARAM_1</span><span class="p">,</span>
+                                <span class="n">AddressParameterEffect2</span><span class="o">.</span><span class="n">EFX2_PARAM_1_FLANGER_RATE_NOTE_SWITCH</span><span class="p">,</span>
+                                <span class="n">AddressParameterEffect2</span><span class="o">.</span><span class="n">EFX2_PARAM_1_PHASER_RATE_NOTE_SWITCH</span><span class="p">,</span>
+                                <span class="n">AddressParameterEffect2</span><span class="o">.</span><span class="n">EFX2_PARAM_2</span><span class="p">,</span>
+                                <span class="n">AddressParameterEffect2</span><span class="o">.</span><span class="n">EFX2_PARAM_2_FLANGER_RATE</span><span class="p">,</span>
+                                <span class="n">AddressParameterEffect2</span><span class="o">.</span><span class="n">EFX2_PARAM_3</span><span class="p">,</span>
+                                <span class="n">AddressParameterEffect2</span><span class="o">.</span><span class="n">EFX2_PARAM_3_FLANGER_NOTE</span><span class="p">,</span>
+                                <span class="n">AddressParameterEffect2</span><span class="o">.</span><span class="n">EFX2_PARAM_4</span><span class="p">,</span>
+                                <span class="n">AddressParameterEffect2</span><span class="o">.</span><span class="n">EFX2_PARAM_4_FLANGER_DEPTH</span><span class="p">,</span>
+                                <span class="n">AddressParameterEffect2</span><span class="o">.</span><span class="n">EFX2_PARAM_5</span><span class="p">,</span>
+                                <span class="n">AddressParameterEffect2</span><span class="o">.</span><span class="n">EFX2_PARAM_6</span><span class="p">,</span>
+                                <span class="n">AddressParameterEffect2</span><span class="o">.</span><span class="n">EFX2_PARAM_7</span><span class="p">,</span>
+                                <span class="n">AddressParameterEffect2</span><span class="o">.</span><span class="n">EFX2_PARAM_8</span><span class="p">,</span>
+                                <span class="n">AddressParameterEffect2</span><span class="o">.</span><span class="n">EFX2_PARAM_8_FLANGER_LEVEL</span><span class="p">,</span>
+                                <span class="n">AddressParameterEffect2</span><span class="o">.</span><span class="n">EFX2_PARAM_9</span><span class="p">,</span>
+                                <span class="n">AddressParameterEffect2</span><span class="o">.</span><span class="n">EFX2_PARAM_10</span><span class="p">,</span>
+                                <span class="n">AddressParameterEffect2</span><span class="o">.</span><span class="n">EFX2_PARAM_11</span><span class="p">,</span>
+                                <span class="n">AddressParameterEffect2</span><span class="o">.</span><span class="n">EFX2_PARAM_12</span><span class="p">,</span>
+                                <span class="n">AddressParameterEffect2</span><span class="o">.</span><span class="n">EFX2_PARAM_13</span><span class="p">,</span>
+                                <span class="n">AddressParameterEffect2</span><span class="o">.</span><span class="n">EFX2_PARAM_14</span><span class="p">,</span>
+                                <span class="n">AddressParameterEffect2</span><span class="o">.</span><span class="n">EFX2_PARAM_15</span><span class="p">,</span>
+                                <span class="n">AddressParameterEffect2</span><span class="o">.</span><span class="n">EFX2_PARAM_16</span><span class="p">,</span>
+                                <span class="n">AddressParameterEffect2</span><span class="o">.</span><span class="n">EFX2_PARAM_32</span><span class="p">]</span></div>
+
+
+        <span class="c1"># Effect 1 parameter labels</span>
+<div class="viewcode-block" id="EffectsCommonEditor.efx1_param_labels">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/effects/common/index.html#jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.efx1_param_labels">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">efx1_param_labels</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="mi">0</span><span class="p">:</span> <span class="p">{},</span>  <span class="c1"># Thru – no params</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="p">{</span><span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_PARAM_1_DISTORTION_LEVEL</span><span class="p">:</span> <span class="s2">&quot;Level&quot;</span><span class="p">,</span>
+                <span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_PARAM_2_DISTORTION_DRIVE</span><span class="p">:</span> <span class="s2">&quot;Drive&quot;</span><span class="p">,</span>
+                <span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_PARAM_3_DISTORTION_TYPE</span><span class="p">:</span> <span class="s2">&quot;Type&quot;</span><span class="p">,</span>
+                <span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_PARAM_32_DISTORTION_PRESENCE</span><span class="p">:</span> <span class="s2">&quot;Presence&quot;</span><span class="p">},</span>
+            <span class="c1"># DISTORTION &quot;presence&quot; = Parameter 32/1D</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="p">{</span><span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_PARAM_1_FUZZ_LEVEL</span><span class="p">:</span> <span class="s2">&quot;Level&quot;</span><span class="p">,</span>
+                <span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_PARAM_2_FUZZ_DRIVE</span><span class="p">:</span> <span class="s2">&quot;Drive&quot;</span><span class="p">,</span>
+                <span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_PARAM_3_FUZZ_TYPE</span><span class="p">:</span> <span class="s2">&quot;Type&quot;</span><span class="p">,</span>
+                <span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_PARAM_32_FUZZ_PRESENCE</span><span class="p">:</span> <span class="s2">&quot;Presence&quot;</span><span class="p">},</span>  <span class="c1"># FUZZ Type = 19/EFX1_PARAM_3</span>
+            <span class="mi">3</span><span class="p">:</span> <span class="p">{</span><span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_PARAM_1_COMPRESSOR_THRESHOLD</span><span class="p">:</span> <span class="s2">&quot;Threshold&quot;</span><span class="p">,</span>
+                <span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_PARAM_2_COMPRESSOR_RATIO</span><span class="p">:</span> <span class="s2">&quot;Ratio&quot;</span><span class="p">,</span>
+                <span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_PARAM_3_COMPRESSOR_ATTACK</span><span class="p">:</span> <span class="s2">&quot;Attack&quot;</span><span class="p">,</span>
+                <span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_PARAM_4_COMPRESSOR_RELEASE</span><span class="p">:</span> <span class="s2">&quot;Release&quot;</span><span class="p">,</span>
+                <span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_PARAM_5_COMPRESSOR_LEVEL</span><span class="p">:</span> <span class="s2">&quot;Level&quot;</span><span class="p">,</span>
+                <span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_PARAM_7_COMPRESSOR_SIDE_LEVEL</span><span class="p">:</span> <span class="s2">&quot;Side level&quot;</span><span class="p">,</span>
+                <span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_PARAM_8_COMPRESSOR_SIDE_NOTE</span><span class="p">:</span> <span class="s2">&quot;Side note&quot;</span><span class="p">,</span>
+                <span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_PARAM_9_COMPRESSOR_SIDE_TIME</span><span class="p">:</span> <span class="s2">&quot;Side time&quot;</span><span class="p">,</span>
+                <span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_PARAM_10_COMPRESSOR_SIDE_RELEASE</span><span class="p">:</span> <span class="s2">&quot;Side release&quot;</span><span class="p">},</span>
+            <span class="c1"># COMP &quot;Side level = 29/EFX1_PARAM_7, &quot;Side Time = 29/EFX1_PARAM_8, &quot;Side Release = 29/EFX1_PARAM_9</span>
+            <span class="mi">4</span><span class="p">:</span> <span class="p">{</span><span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_PARAM_1_BITCRUSHER_LEVEL</span><span class="p">:</span> <span class="s2">&quot;Output Level&quot;</span><span class="p">,</span>
+                <span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_PARAM_2_BITCRUSHER_RATE</span><span class="p">:</span> <span class="s2">&quot;Sample Rate&quot;</span><span class="p">,</span>
+                <span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_PARAM_3_BITCRUSHER_DEPTH</span><span class="p">:</span> <span class="s2">&quot;Bit Depth&quot;</span><span class="p">,</span>
+                <span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_PARAM_4_BITCRUSHER_FILTER</span><span class="p">:</span> <span class="s2">&quot;Filter&quot;</span><span class="p">}</span>
+            <span class="c1"># [&quot;Bit Depth&quot;, &quot;Sample Rate&quot;, &quot;Tone&quot;, &quot;Noise&quot;, &quot;Mix&quot;, &quot;Output Level&quot;],  # BIT CRUSHER</span>
+        <span class="p">}</span></div>
+
+<div class="viewcode-block" id="EffectsCommonEditor.efx2_param_labels">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/effects/common/index.html#jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.efx2_param_labels">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">efx2_param_labels</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="mi">0</span><span class="p">:</span> <span class="p">{},</span>  <span class="c1"># Thru – no params</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="p">{</span><span class="n">AddressParameterEffect2</span><span class="o">.</span><span class="n">EFX2_PARAM_1_FLANGER_RATE_NOTE_SWITCH</span><span class="p">:</span> <span class="s2">&quot;Rate/Note&quot;</span><span class="p">,</span>  <span class="c1"># Flanger</span>
+                <span class="n">AddressParameterEffect2</span><span class="o">.</span><span class="n">EFX2_PARAM_2_FLANGER_RATE</span><span class="p">:</span> <span class="s2">&quot;Rate&quot;</span><span class="p">,</span>
+                <span class="n">AddressParameterEffect2</span><span class="o">.</span><span class="n">EFX2_PARAM_3_FLANGER_NOTE</span><span class="p">:</span> <span class="s2">&quot;Note&quot;</span><span class="p">,</span>
+                <span class="n">AddressParameterEffect2</span><span class="o">.</span><span class="n">EFX2_PARAM_4_FLANGER_DEPTH</span><span class="p">:</span> <span class="s2">&quot;Depth&quot;</span><span class="p">,</span>
+                <span class="n">AddressParameterEffect2</span><span class="o">.</span><span class="n">EFX2_PARAM_5_FLANGER_FEEDBACK</span><span class="p">:</span> <span class="s2">&quot;Feedback (0=Chorus)&quot;</span><span class="p">,</span>
+                <span class="n">AddressParameterEffect2</span><span class="o">.</span><span class="n">EFX2_PARAM_6_FLANGER_MANUAL</span><span class="p">:</span> <span class="s2">&quot;Manual&quot;</span><span class="p">,</span>
+                <span class="n">AddressParameterEffect2</span><span class="o">.</span><span class="n">EFX2_PARAM_7</span><span class="p">:</span> <span class="s2">&quot;Balance (Dry/Wet)&quot;</span><span class="p">,</span>
+                <span class="n">AddressParameterEffect2</span><span class="o">.</span><span class="n">EFX2_PARAM_8_FLANGER_LEVEL</span><span class="p">:</span> <span class="s2">&quot;Level&quot;</span><span class="p">},</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="p">{</span><span class="n">AddressParameterEffect2</span><span class="o">.</span><span class="n">EFX2_PARAM_1_PHASER_RATE_NOTE_SWITCH</span><span class="p">:</span> <span class="s2">&quot;Rate/Note&quot;</span><span class="p">,</span>  <span class="c1"># Phaser</span>
+                <span class="n">AddressParameterEffect2</span><span class="o">.</span><span class="n">EFX2_PARAM_2_PHASER_RATE</span><span class="p">:</span> <span class="s2">&quot;Rate&quot;</span><span class="p">,</span>
+                <span class="n">AddressParameterEffect2</span><span class="o">.</span><span class="n">EFX2_PARAM_3_PHASER_NOTE</span><span class="p">:</span> <span class="s2">&quot;Note&quot;</span><span class="p">,</span>
+                <span class="n">AddressParameterEffect2</span><span class="o">.</span><span class="n">EFX2_PARAM_4_PHASER_DEPTH</span><span class="p">:</span> <span class="s2">&quot;Depth&quot;</span><span class="p">,</span>
+                <span class="n">AddressParameterEffect2</span><span class="o">.</span><span class="n">EFX2_PARAM_5_PHASER_CENTER_FREQ</span><span class="p">:</span> <span class="s2">&quot;Center Freq&quot;</span><span class="p">,</span>
+                <span class="n">AddressParameterEffect2</span><span class="o">.</span><span class="n">EFX2_PARAM_32_PHASER_EFFECT_LEVEL</span><span class="p">:</span> <span class="s2">&quot;Effect Level&quot;</span><span class="p">},</span>  <span class="c1">#</span>
+            <span class="mi">3</span><span class="p">:</span> <span class="p">{</span><span class="n">AddressParameterEffect2</span><span class="o">.</span><span class="n">EFX2_PARAM_1</span><span class="p">:</span> <span class="s2">&quot;Frequency&quot;</span><span class="p">,</span>
+                <span class="n">AddressParameterEffect2</span><span class="o">.</span><span class="n">EFX2_PARAM_2</span><span class="p">:</span> <span class="s2">&quot;Sensitivity&quot;</span><span class="p">,</span>
+                <span class="n">AddressParameterEffect2</span><span class="o">.</span><span class="n">EFX2_PARAM_3</span><span class="p">:</span> <span class="s2">&quot;Balance (Dry/Wet)&quot;</span><span class="p">,</span>
+                <span class="n">AddressParameterEffect2</span><span class="o">.</span><span class="n">EFX2_PARAM_4</span><span class="p">:</span> <span class="s2">&quot;Level&quot;</span><span class="p">},</span>
+            <span class="c1"># COMP &quot;Side level = 29/EFX1_PARAM_7, &quot;Side Time = 29/EFX1_PARAM_8, &quot;Side Release = 29/EFX1_PARAM_9</span>
+            <span class="mi">4</span><span class="p">:</span> <span class="p">{</span><span class="n">AddressParameterEffect2</span><span class="o">.</span><span class="n">EFX2_PARAM_1</span><span class="p">:</span> <span class="s2">&quot;Timing pattern&quot;</span><span class="p">,</span>
+                <span class="n">AddressParameterEffect2</span><span class="o">.</span><span class="n">EFX2_PARAM_2</span><span class="p">:</span> <span class="s2">&quot;Rate [Note]&quot;</span><span class="p">,</span>
+                <span class="n">AddressParameterEffect2</span><span class="o">.</span><span class="n">EFX2_PARAM_3</span><span class="p">:</span> <span class="s2">&quot;Attack Time&quot;</span><span class="p">,</span>
+                <span class="n">AddressParameterEffect2</span><span class="o">.</span><span class="n">EFX2_PARAM_4</span><span class="p">:</span> <span class="s2">&quot;Trigger Level&quot;</span><span class="p">,</span>
+                <span class="n">AddressParameterEffect2</span><span class="o">.</span><span class="n">EFX2_PARAM_5</span><span class="p">:</span> <span class="s2">&quot;Level&quot;</span><span class="p">}</span>
+            <span class="c1"># [&quot;Bit Depth&quot;, &quot;Sample Rate&quot;, &quot;Tone&quot;, &quot;Noise&quot;, &quot;Mix&quot;, &quot;Output Level&quot;],  # BIT CRUSHER</span>
+        <span class="p">}</span></div>
+
+<div class="viewcode-block" id="EffectsCommonEditor.midi_requests">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/effects/common/index.html#jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.midi_requests">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">midi_requests</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;F0 41 10 00 00 00 0E 12 18 00 02 00 01 7F 32 32 01 00 40 00 40 00 40 00 40 00 00 00 00 08 00 05 00 08 00 06 0E 08 00 00 02 08 00 07 0F 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 50 F7&quot;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="EffectsCommonEditor.delay_params">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/effects/common/index.html#jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.delay_params">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">delay_params</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="EffectsCommonEditor.efx2_additional_params">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/effects/common/index.html#jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.efx2_additional_params">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">efx2_additional_params</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">AddressParameterEffect2</span><span class="o">.</span><span class="n">EFX2_PARAM_1</span><span class="p">,</span>
+            <span class="n">AddressParameterEffect2</span><span class="o">.</span><span class="n">EFX2_PARAM_2</span><span class="p">,</span>
+            <span class="n">AddressParameterEffect2</span><span class="o">.</span><span class="n">EFX2_PARAM_32</span><span class="p">,</span>
+        <span class="p">]</span></div>
+
+<div class="viewcode-block" id="EffectsCommonEditor.default_image">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/effects/common/index.html#jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.default_image">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default_image</span> <span class="o">=</span> <span class="s2">&quot;effects.png&quot;</span></div>
+
+<div class="viewcode-block" id="EffectsCommonEditor.instrument_icon_folder">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/effects/common/index.html#jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.instrument_icon_folder">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">instrument_icon_folder</span> <span class="o">=</span> <span class="s2">&quot;effects&quot;</span></div>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setWindowTitle</span><span class="p">(</span><span class="s2">&quot;Effects&quot;</span><span class="p">)</span>
+        <span class="c1"># Main layout</span>
+        <span class="n">main_layout</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">main_layout</span><span class="p">)</span>
+        <span class="n">main_rows_hlayout</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+        <span class="n">main_layout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">main_rows_hlayout</span><span class="p">)</span>
+
+<div class="viewcode-block" id="EffectsCommonEditor.title_label">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/effects/common/index.html#jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.title_label">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">title_label</span> <span class="o">=</span> <span class="n">DigitalTitle</span><span class="p">(</span><span class="s2">&quot;Effects&quot;</span><span class="p">)</span></div>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">title_label</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">INSTRUMENT_TITLE_LABEL</span><span class="p">)</span>
+<div class="viewcode-block" id="EffectsCommonEditor.image_label">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/effects/common/index.html#jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.image_label">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">image_label</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">()</span></div>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">image_label</span><span class="o">.</span><span class="n">setAlignment</span><span class="p">(</span>
+            <span class="n">Qt</span><span class="o">.</span><span class="n">AlignmentFlag</span><span class="o">.</span><span class="n">AlignCenter</span>
+        <span class="p">)</span>  <span class="c1"># Center align the image</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_instrument_image</span><span class="p">()</span>
+
+        <span class="n">title_group_box</span> <span class="o">=</span> <span class="n">QGroupBox</span><span class="p">()</span>
+        <span class="n">title_group_layout</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+        <span class="n">title_group_box</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">title_group_layout</span><span class="p">)</span>
+        <span class="n">title_group_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">title_label</span><span class="p">)</span>
+        <span class="n">title_group_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">image_label</span><span class="p">)</span>
+
+        <span class="n">main_row_hlayout</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+        <span class="n">main_rows_hlayout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">main_row_hlayout</span><span class="p">)</span>
+        <span class="n">main_row_hlayout</span><span class="o">.</span><span class="n">addStretch</span><span class="p">()</span>
+        <span class="n">rows_layout</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">()</span>
+        <span class="n">main_row_hlayout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">rows_layout</span><span class="p">)</span>
+        <span class="n">rows_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">title_group_box</span><span class="p">)</span>
+
+        <span class="n">main_rows_hlayout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">rows_layout</span><span class="p">)</span>
+        <span class="n">main_row_hlayout</span><span class="o">.</span><span class="n">addStretch</span><span class="p">()</span>
+
+<div class="viewcode-block" id="EffectsCommonEditor.controls">
+<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.effects.html#jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.controls">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">AddressParameterReverb</span><span class="p">,</span>
+        <span class="n">AddressParameterEffectCommon</span><span class="p">,</span>
+        <span class="n">AddressParameterEffect1</span><span class="p">,</span>
+        <span class="n">AddressParameterEffect2</span><span class="p">],</span> <span class="n">QWidget</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="p">{}</span></div>
+
+
+        <span class="c1"># Create address tab widget</span>
+<div class="viewcode-block" id="EffectsCommonEditor.tabs">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/effects/common/index.html#jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.tabs">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tabs</span> <span class="o">=</span> <span class="n">QTabWidget</span><span class="p">()</span></div>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">tabs</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">TABS</span><span class="p">)</span>
+        <span class="n">rows_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tabs</span><span class="p">)</span>
+        <span class="c1"># self.setup_ui()</span>
+
+        <span class="c1"># Add tabs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tabs</span><span class="o">.</span><span class="n">addTab</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_create_effect1_section</span><span class="p">(),</span> <span class="s2">&quot;Effect 1&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tabs</span><span class="o">.</span><span class="n">addTab</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_create_effect2_section</span><span class="p">(),</span> <span class="s2">&quot;Effect 2&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tabs</span><span class="o">.</span><span class="n">addTab</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_create_delay_tab</span><span class="p">(),</span> <span class="s2">&quot;Delay&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tabs</span><span class="o">.</span><span class="n">addTab</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_create_reverb_section</span><span class="p">(),</span> <span class="s2">&quot;Reverb&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="EffectsCommonEditor.address">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/effects/common/index.html#jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.address">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">=</span> <span class="n">RolandSysExAddress</span><span class="p">(</span>
+            <span class="n">AddressStartMSB</span><span class="o">.</span><span class="n">TEMPORARY_PROGRAM</span><span class="p">,</span>
+            <span class="n">AddressOffsetSystemUMB</span><span class="o">.</span><span class="n">COMMON</span><span class="p">,</span>
+            <span class="n">AddressOffsetProgramLMB</span><span class="o">.</span><span class="n">COMMON</span><span class="p">,</span>
+            <span class="n">MidiConstant</span><span class="o">.</span><span class="n">ZERO_BYTE</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="EffectsCommonEditor.sysex_composer">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/effects/common/index.html#jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.sysex_composer">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sysex_composer</span> <span class="o">=</span> <span class="n">JDXiSysExComposer</span><span class="p">()</span></div>
+
+        <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">EFX1_PARAMETERS</span><span class="p">:</span>
+            <span class="n">slider</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">slider</span><span class="p">:</span>
+                <span class="n">slider</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">EFX2_PARAMETERS</span><span class="p">:</span>
+            <span class="n">slider</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">slider</span><span class="p">:</span>
+                <span class="n">slider</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">efx1_type</span><span class="o">.</span><span class="n">combo_box</span><span class="o">.</span><span class="n">currentIndexChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_update_efx1_labels</span><span class="p">)</span>
+        <span class="c1"># self.efx1_type.combo_box.currentIndexChanged.connect(self.data_request)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">efx2_type</span><span class="o">.</span><span class="n">combo_box</span><span class="o">.</span><span class="n">currentIndexChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_update_efx2_labels</span><span class="p">)</span></div>
+
+        <span class="c1"># self.efx2_type.combo_box.currentIndexChanged.connect(self.data_request)</span>
+
+<div class="viewcode-block" id="EffectsCommonEditor.update_flanger_rate_note_controls">
+<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.effects.html#jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.update_flanger_rate_note_controls">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_flanger_rate_note_controls</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update Flanger rate/note controls based on rate note switch.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">switch_param</span> <span class="o">=</span> <span class="n">AddressParameterEffect2</span><span class="o">.</span><span class="n">EFX2_PARAM_1_FLANGER_RATE_NOTE_SWITCH</span>
+            <span class="n">rate_param</span> <span class="o">=</span> <span class="n">AddressParameterEffect2</span><span class="o">.</span><span class="n">EFX2_PARAM_2_FLANGER_RATE</span>
+            <span class="n">note_param</span> <span class="o">=</span> <span class="n">AddressParameterEffect2</span><span class="o">.</span><span class="n">EFX2_PARAM_3_FLANGER_NOTE</span>
+
+            <span class="n">rate_note_switch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">switch_param</span><span class="p">)</span>
+            <span class="n">rate_slider</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">rate_param</span><span class="p">)</span>
+            <span class="n">note_slider</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">note_param</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">([</span><span class="n">rate_note_switch</span><span class="p">,</span> <span class="n">rate_slider</span><span class="p">,</span> <span class="n">note_slider</span><span class="p">]):</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;One or more Flanger rate/note controls are missing.&quot;</span><span class="p">)</span>
+                <span class="k">return</span>
+
+            <span class="n">rate_note_value</span> <span class="o">=</span> <span class="n">rate_note_switch</span><span class="o">.</span><span class="n">value</span><span class="p">()</span>
+            <span class="n">is_note_mode</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">rate_note_value</span><span class="p">)</span>
+
+            <span class="n">rate_slider</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="ow">not</span> <span class="n">is_note_mode</span><span class="p">)</span>
+            <span class="n">note_slider</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="n">is_note_mode</span><span class="p">)</span>
+
+            <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Flanger control updated: Note mode = </span><span class="si">{</span><span class="n">is_note_mode</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to update flanger rate/note controls: </span><span class="si">{</span><span class="n">ex</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="EffectsCommonEditor.update_phaser_rate_note_controls">
+<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.effects.html#jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.update_phaser_rate_note_controls">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_phaser_rate_note_controls</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update Flanger rate/note controls based on rate note switch.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">switch_param</span> <span class="o">=</span> <span class="n">AddressParameterEffect2</span><span class="o">.</span><span class="n">EFX2_PARAM_1_PHASER_RATE_NOTE_SWITCH</span>
+            <span class="n">rate_param</span> <span class="o">=</span> <span class="n">AddressParameterEffect2</span><span class="o">.</span><span class="n">EFX2_PARAM_2_PHASER_RATE</span>
+            <span class="n">note_param</span> <span class="o">=</span> <span class="n">AddressParameterEffect2</span><span class="o">.</span><span class="n">EFX2_PARAM_3_PHASER_NOTE</span>
+
+            <span class="n">rate_note_switch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">switch_param</span><span class="p">)</span>
+            <span class="n">rate_slider</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">rate_param</span><span class="p">)</span>
+            <span class="n">note_slider</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">note_param</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">([</span><span class="n">rate_note_switch</span><span class="p">,</span> <span class="n">rate_slider</span><span class="p">,</span> <span class="n">note_slider</span><span class="p">]):</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;One or more Phaser rate/note controls are missing.&quot;</span><span class="p">)</span>
+                <span class="k">return</span>
+
+            <span class="n">rate_note_value</span> <span class="o">=</span> <span class="n">rate_note_switch</span><span class="o">.</span><span class="n">value</span><span class="p">()</span>
+            <span class="n">is_note_mode</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">rate_note_value</span><span class="p">)</span>
+
+            <span class="n">rate_slider</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="ow">not</span> <span class="n">is_note_mode</span><span class="p">)</span>
+            <span class="n">note_slider</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="n">is_note_mode</span><span class="p">)</span>
+
+            <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Flanger control updated: Note mode = </span><span class="si">{</span><span class="n">is_note_mode</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to update flanger rate/note controls: </span><span class="si">{</span><span class="n">ex</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="EffectsCommonEditor._update_efx1_labels">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/index.html#jdxi_editor.ui.editors.effects.common.EffectsCommonEditor._update_efx1_labels">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_efx1_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">effect_type</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update Effect 1 parameter labels based on selected effect type.</span>
+
+<span class="sd">        :param effect_type: int</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Updating EFX1 labels for effect type </span><span class="si">{</span><span class="n">effect_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">label_map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">efx1_param_labels</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">effect_type</span><span class="p">,</span> <span class="p">{})</span>
+            <span class="k">for</span> <span class="n">param</span><span class="p">,</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">label_map</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">slider</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">slider</span><span class="p">:</span>
+                    <span class="n">slider</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+                    <span class="n">slider</span><span class="o">.</span><span class="n">setLabel</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Updated slider </span><span class="si">{</span><span class="n">param</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with label &#39;</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No slider found for param </span><span class="si">{</span><span class="n">param</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Build a complete set of all known EFX1 parameters</span>
+            <span class="n">all_efx1_params</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">param_dict</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">efx1_param_labels</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="n">all_efx1_params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">param_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+            <span class="c1"># Hide any EFX1 slider not used by the current effect type</span>
+            <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">all_efx1_params</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">param</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">label_map</span><span class="p">:</span>
+                    <span class="n">slider</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">slider</span><span class="p">:</span>
+                        <span class="n">slider</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error updating EFX1 labels: </span><span class="si">{</span><span class="n">ex</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="EffectsCommonEditor._update_efx2_labels">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/index.html#jdxi_editor.ui.editors.effects.common.EffectsCommonEditor._update_efx2_labels">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_efx2_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">effect_type</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update Effect 2 parameter labels based on selected effect type.</span>
+
+<span class="sd">        :param effect_type: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Updating EFX2 labels for effect type </span><span class="si">{</span><span class="n">effect_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">label_map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">efx2_param_labels</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">effect_type</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">label_map</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No label mapping found for effect type </span><span class="si">{</span><span class="n">effect_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">for</span> <span class="n">param</span><span class="p">,</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">label_map</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">control</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">control</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">param</span> <span class="o">==</span> <span class="n">AddressParameterEffect2</span><span class="o">.</span><span class="n">EFX2_PARAM_1_FLANGER_RATE_NOTE_SWITCH</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">control</span><span class="o">.</span><span class="n">valueChanged</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_flanger_rate_note_controls</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+                        <span class="k">pass</span>  <span class="c1"># Already disconnected</span>
+                    <span class="n">control</span><span class="o">.</span><span class="n">valueChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_phaser_rate_note_controls</span><span class="p">)</span>
+
+                <span class="k">elif</span> <span class="n">param</span> <span class="o">==</span> <span class="n">AddressParameterEffect2</span><span class="o">.</span><span class="n">EFX2_PARAM_1_PHASER_RATE_NOTE_SWITCH</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">control</span><span class="o">.</span><span class="n">valueChanged</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_phaser_rate_note_controls</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+                        <span class="k">pass</span>  <span class="c1"># Already disconnected</span>
+                    <span class="n">control</span><span class="o">.</span><span class="n">valueChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_phaser_rate_note_controls</span><span class="p">)</span>
+
+                <span class="n">control</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">control</span><span class="o">.</span><span class="n">setLabel</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Set label &#39;</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">&#39; for </span><span class="si">{</span><span class="n">param</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No slider found for parameter </span><span class="si">{</span><span class="n">param</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Optional: hide unused sliders not in the current label set</span>
+        <span class="n">all_efx2_params</span> <span class="o">=</span> <span class="p">{</span><span class="n">param</span> <span class="k">for</span> <span class="n">param_dict</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">efx2_param_labels</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">param_dict</span><span class="p">}</span>
+        <span class="n">unused_params</span> <span class="o">=</span> <span class="n">all_efx2_params</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">label_map</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+        <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">unused_params</span><span class="p">:</span>
+            <span class="n">control</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">control</span><span class="p">:</span>
+                <span class="n">control</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Hid unused slider for </span><span class="si">{</span><span class="n">param</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="EffectsCommonEditor._create_effect1_section">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/index.html#jdxi_editor.ui.editors.effects.common.EffectsCommonEditor._create_effect1_section">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_effect1_section</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create Effect 1 section&quot;&quot;&quot;</span>
+        <span class="n">widget</span> <span class="o">=</span> <span class="n">QWidget</span><span class="p">()</span>
+        <span class="n">layout</span> <span class="o">=</span> <span class="n">QFormLayout</span><span class="p">()</span>
+        <span class="n">widget</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">layout</span><span class="p">)</span>
+
+        <span class="c1"># Create address combo box for EFX1 preset_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">efx1_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_combo_box</span><span class="p">(</span>
+            <span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_TYPE</span><span class="p">,</span>
+            <span class="s2">&quot;Effect 1 Type&quot;</span><span class="p">,</span>
+            <span class="n">EffectsData</span><span class="o">.</span><span class="n">efx1_types</span><span class="p">,</span>
+            <span class="n">EffectsData</span><span class="o">.</span><span class="n">efx1_type_values</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">efx1_type</span><span class="p">)</span>
+
+        <span class="c1"># Create sliders for EFX1 parameters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">efx1_level</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_slider</span><span class="p">(</span>
+            <span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_LEVEL</span><span class="p">,</span> <span class="s2">&quot;EFX1 Level (0-127)&quot;</span>
+        <span class="p">)</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">efx1_level</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">efx1_delay_send_level</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_slider</span><span class="p">(</span>
+            <span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_DELAY_SEND_LEVEL</span><span class="p">,</span>
+            <span class="s2">&quot;EFX1 Delay Send Level (0-127)&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">efx1_delay_send_level</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">efx1_reverb_send_level</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_slider</span><span class="p">(</span>
+            <span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_REVERB_SEND_LEVEL</span><span class="p">,</span>
+            <span class="s2">&quot;EFX1 Reverb Send Level (0-127)&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">efx1_reverb_send_level</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">efx1_output_assign</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_switch</span><span class="p">(</span>
+            <span class="n">AddressParameterEffect1</span><span class="o">.</span><span class="n">EFX1_OUTPUT_ASSIGN</span><span class="p">,</span> <span class="s2">&quot;Output Assign&quot;</span><span class="p">,</span> <span class="n">EffectsData</span><span class="o">.</span><span class="n">output_assignments</span>
+        <span class="p">)</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">efx1_output_assign</span><span class="p">)</span>
+
+        <span class="c1"># Create sliders for EFX1 parameters</span>
+        <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">EFX1_PARAMETERS</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">param</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="p">:</span>
+
+                <span class="k">if</span> <span class="s2">&quot;TYPE&quot;</span> <span class="ow">in</span> <span class="n">param</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+                    <span class="n">control</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_switch</span><span class="p">(</span><span class="n">param</span><span class="p">,</span>
+                                                            <span class="n">param</span><span class="o">.</span><span class="n">display_name</span><span class="p">,</span>
+                                                            <span class="n">values</span><span class="o">=</span><span class="n">EffectsData</span><span class="o">.</span><span class="n">effects_generic_types</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="s2">&quot;COMPRESSOR_RATIO&quot;</span> <span class="ow">in</span> <span class="n">param</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+                    <span class="n">control</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_switch</span><span class="p">(</span><span class="n">param</span><span class="p">,</span>
+                                                            <span class="n">param</span><span class="o">.</span><span class="n">display_name</span><span class="p">,</span>
+                                                            <span class="n">values</span><span class="o">=</span><span class="n">EffectsData</span><span class="o">.</span><span class="n">compression_ratios</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="s2">&quot;COMPRESSOR_ATTACK&quot;</span> <span class="ow">in</span> <span class="n">param</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+                    <span class="n">control</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_switch</span><span class="p">(</span><span class="n">param</span><span class="p">,</span>
+                                                            <span class="n">param</span><span class="o">.</span><span class="n">display_name</span><span class="p">,</span>
+                                                            <span class="n">values</span><span class="o">=</span><span class="n">EffectsData</span><span class="o">.</span><span class="n">compression_attack_times</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="s2">&quot;COMPRESSOR_RELEASE&quot;</span> <span class="ow">in</span> <span class="n">param</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+                    <span class="n">control</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_switch</span><span class="p">(</span><span class="n">param</span><span class="p">,</span>
+                                                            <span class="n">param</span><span class="o">.</span><span class="n">display_name</span><span class="p">,</span>
+                                                            <span class="n">values</span><span class="o">=</span><span class="n">EffectsData</span><span class="o">.</span><span class="n">compression_release_times</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">control</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_slider</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">param</span><span class="o">.</span><span class="n">display_name</span><span class="p">)</span>
+                <span class="n">layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="n">control</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="p">[</span><span class="n">param</span><span class="p">]</span> <span class="o">=</span> <span class="n">control</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Parameter </span><span class="si">{</span><span class="n">param</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> already exists in controls.&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">widget</span></div>
+
+
+<div class="viewcode-block" id="EffectsCommonEditor._create_effect2_section">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/index.html#jdxi_editor.ui.editors.effects.common.EffectsCommonEditor._create_effect2_section">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_effect2_section</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create Effect 2 section&quot;&quot;&quot;</span>
+
+        <span class="n">widget</span> <span class="o">=</span> <span class="n">QWidget</span><span class="p">()</span>
+        <span class="n">layout</span> <span class="o">=</span> <span class="n">QFormLayout</span><span class="p">()</span>
+        <span class="n">widget</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">layout</span><span class="p">)</span>
+
+        <span class="c1"># Create address combo box for EFX2 preset_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">efx2_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_combo_box</span><span class="p">(</span>
+            <span class="n">AddressParameterEffect2</span><span class="o">.</span><span class="n">EFX2_TYPE</span><span class="p">,</span>
+            <span class="s2">&quot;Effect Type&quot;</span><span class="p">,</span>
+            <span class="n">EffectsData</span><span class="o">.</span><span class="n">efx2_types</span><span class="p">,</span>
+            <span class="n">EffectsData</span><span class="o">.</span><span class="n">efx2_type_values</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">efx2_type</span><span class="p">)</span>
+
+        <span class="c1"># Create sliders for EFX2 parameters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">efx2_level</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_slider</span><span class="p">(</span>
+            <span class="n">AddressParameterEffect2</span><span class="o">.</span><span class="n">EFX2_LEVEL</span><span class="p">,</span> <span class="s2">&quot;EFX2 Level (0-127)&quot;</span>
+        <span class="p">)</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">efx2_level</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">efx2_delay_send_level</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_slider</span><span class="p">(</span>
+            <span class="n">AddressParameterEffect2</span><span class="o">.</span><span class="n">EFX2_DELAY_SEND_LEVEL</span><span class="p">,</span>
+            <span class="s2">&quot;EFX2 Delay Send Level (0-127)&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">efx2_delay_send_level</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">efx2_reverb_send_level</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_slider</span><span class="p">(</span>
+            <span class="n">AddressParameterEffect2</span><span class="o">.</span><span class="n">EFX2_REVERB_SEND_LEVEL</span><span class="p">,</span>
+            <span class="s2">&quot;EFX2 Reverb Send Level (0-127)&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">efx2_reverb_send_level</span><span class="p">)</span>
+
+        <span class="c1"># Create sliders for EFX1 parameters</span>
+        <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">EFX2_PARAMETERS</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">param</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s2">&quot;ER_NOTE&quot;</span> <span class="ow">in</span> <span class="n">param</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+                    <span class="n">control</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_switch</span><span class="p">(</span><span class="n">param</span><span class="p">,</span>
+                                                            <span class="n">param</span><span class="o">.</span><span class="n">display_name</span><span class="p">,</span>
+                                                            <span class="n">values</span><span class="o">=</span><span class="n">EffectsData</span><span class="o">.</span><span class="n">flanger_notes</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="s2">&quot;RATE_NOTE&quot;</span> <span class="ow">in</span> <span class="n">param</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+                    <span class="n">control</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_switch</span><span class="p">(</span><span class="n">param</span><span class="p">,</span>
+                                                            <span class="n">param</span><span class="o">.</span><span class="n">display_name</span><span class="p">,</span>
+                                                            <span class="n">values</span><span class="o">=</span><span class="n">EffectsData</span><span class="o">.</span><span class="n">rate_note_states</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="s2">&quot;SWITCH&quot;</span> <span class="ow">in</span> <span class="n">param</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+                    <span class="n">control</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_switch</span><span class="p">(</span><span class="n">param</span><span class="p">,</span>
+                                                            <span class="n">param</span><span class="o">.</span><span class="n">display_name</span><span class="p">,</span>
+                                                            <span class="n">values</span><span class="o">=</span><span class="n">EffectsData</span><span class="o">.</span><span class="n">switch_states</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">control</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_slider</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">param</span><span class="o">.</span><span class="n">display_name</span><span class="p">)</span>
+                <span class="n">layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="n">control</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="p">[</span><span class="n">param</span><span class="p">]</span> <span class="o">=</span> <span class="n">control</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Parameter </span><span class="si">{</span><span class="n">param</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> already exists in controls.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">widget</span></div>
+
+
+<div class="viewcode-block" id="EffectsCommonEditor._create_delay_tab">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/index.html#jdxi_editor.ui.editors.effects.common.EffectsCommonEditor._create_delay_tab">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_delay_tab</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create Delay tab with parameters&quot;&quot;&quot;</span>
+        <span class="n">widget</span> <span class="o">=</span> <span class="n">QWidget</span><span class="p">()</span>
+        <span class="n">layout</span> <span class="o">=</span> <span class="n">QFormLayout</span><span class="p">()</span>
+        <span class="n">widget</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">layout</span><span class="p">)</span>
+        <span class="c1"># Create address combo box for Delay Type</span>
+        <span class="n">delay_level_slider</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_slider</span><span class="p">(</span>
+            <span class="n">AddressParameterDelay</span><span class="o">.</span><span class="n">DELAY_LEVEL</span><span class="p">,</span> <span class="s2">&quot;Delay Level&quot;</span>
+        <span class="p">)</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="n">delay_level_slider</span><span class="p">)</span>
+
+        <span class="n">delay_reverb_send_level_slider</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_slider</span><span class="p">(</span>
+            <span class="n">AddressParameterDelay</span><span class="o">.</span><span class="n">DELAY_REVERB_SEND_LEVEL</span><span class="p">,</span> <span class="s2">&quot;Delay to Reverb Send Level&quot;</span>
+        <span class="p">)</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="n">delay_reverb_send_level_slider</span><span class="p">)</span>
+
+        <span class="n">delay_parameter1_slider</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_slider</span><span class="p">(</span>
+            <span class="n">AddressParameterDelay</span><span class="o">.</span><span class="n">DELAY_PARAM_1</span><span class="p">,</span> <span class="s2">&quot;Delay Time (ms)&quot;</span>
+        <span class="p">)</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="n">delay_parameter1_slider</span><span class="p">)</span>
+
+        <span class="n">delay_parameter2_slider</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_slider</span><span class="p">(</span>
+            <span class="n">AddressParameterDelay</span><span class="o">.</span><span class="n">DELAY_PARAM_2</span><span class="p">,</span> <span class="s2">&quot;Delay Tap Time (ms)&quot;</span>
+        <span class="p">)</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="n">delay_parameter2_slider</span><span class="p">)</span>
+
+        <span class="n">delay_parameter24_slider</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_slider</span><span class="p">(</span>
+            <span class="n">AddressParameterDelay</span><span class="o">.</span><span class="n">DELAY_PARAM_24</span><span class="p">,</span> <span class="s2">&quot;Feedback (%)&quot;</span>
+        <span class="p">)</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="n">delay_parameter24_slider</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">widget</span></div>
+
+
+<div class="viewcode-block" id="EffectsCommonEditor._create_reverb_section">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/index.html#jdxi_editor.ui.editors.effects.common.EffectsCommonEditor._create_reverb_section">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_reverb_section</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create Reverb section&quot;&quot;&quot;</span>
+        <span class="n">widget</span> <span class="o">=</span> <span class="n">QWidget</span><span class="p">()</span>
+        <span class="n">layout</span> <span class="o">=</span> <span class="n">QFormLayout</span><span class="p">()</span>
+        <span class="n">widget</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">layout</span><span class="p">)</span>
+        <span class="n">reverb_level_slider</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_slider</span><span class="p">(</span>
+            <span class="n">AddressParameterReverb</span><span class="o">.</span><span class="n">REVERB_LEVEL</span><span class="p">,</span> <span class="s2">&quot;Level (0-127)&quot;</span>
+        <span class="p">)</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="n">reverb_level_slider</span><span class="p">)</span>
+        <span class="n">reverb_parameter1_slider</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_slider</span><span class="p">(</span>
+            <span class="n">AddressParameterReverb</span><span class="o">.</span><span class="n">REVERB_PARAM_1</span><span class="p">,</span> <span class="s2">&quot;Parameter 1&quot;</span>
+        <span class="p">)</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="n">reverb_parameter1_slider</span><span class="p">)</span>
+        <span class="n">reverb_parameter2_slider</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_slider</span><span class="p">(</span>
+            <span class="n">AddressParameterReverb</span><span class="o">.</span><span class="n">REVERB_PARAM_2</span><span class="p">,</span> <span class="s2">&quot;Parameter 2&quot;</span>
+        <span class="p">)</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="n">reverb_parameter2_slider</span><span class="p">)</span>
+        <span class="n">reverb_parameter24_slider</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_slider</span><span class="p">(</span>
+            <span class="n">AddressParameterReverb</span><span class="o">.</span><span class="n">REVERB_PARAM_24</span><span class="p">,</span> <span class="s2">&quot;Parameter 24&quot;</span>
+        <span class="p">)</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="n">reverb_parameter24_slider</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">widget</span></div>
+
+
+<div class="viewcode-block" id="EffectsCommonEditor._on_parameter_changed">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/index.html#jdxi_editor.ui.editors.effects.common.EffectsCommonEditor._on_parameter_changed">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_on_parameter_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param</span><span class="p">:</span> <span class="n">AddressParameter</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="n">RolandSysExAddress</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Handle parameter value changes from UI controls.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Send MIDI message</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_midi_parameter</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to send parameter </span><span class="si">{</span><span class="n">param</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error handling parameter </span><span class="si">{</span><span class="n">param</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">ex</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="EffectsCommonEditor.send_midi_parameter">
+<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.effects.html#jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.send_midi_parameter">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">send_midi_parameter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param</span><span class="p">:</span> <span class="n">AddressParameter</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Send MIDI parameter with error handling</span>
+
+<span class="sd">        :param param: AddressParameter</span>
+<span class="sd">        :param value: int value</span>
+<span class="sd">        :return: bool True on success, False otherwise</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">AddressParameterEffect1</span><span class="p">):</span>
+                <span class="n">offset</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">AddressParameterEffect2</span><span class="p">):</span>
+                <span class="n">offset</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">AddressParameterDelay</span><span class="p">):</span>
+                <span class="n">offset</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">AddressParameterReverb</span><span class="p">):</span>
+                <span class="n">offset</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">target_address</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="o">.</span><span class="n">add_offset</span><span class="p">(</span><span class="n">offset</span><span class="p">)</span>
+            <span class="n">sysex_message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sysex_composer</span><span class="o">.</span><span class="n">compose_message</span><span class="p">(</span>
+                <span class="n">address</span><span class="o">=</span><span class="n">target_address</span><span class="p">,</span>
+                <span class="n">param</span><span class="o">=</span><span class="n">param</span><span class="p">,</span>
+                <span class="n">value</span><span class="o">=</span><span class="n">value</span>
+            <span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span><span class="o">.</span><span class="n">send_midi_message</span><span class="p">(</span><span class="n">sysex_message</span><span class="p">)</span>
+            <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;MIDI error setting </span><span class="si">{</span><span class="n">param</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">ex</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Mark Mrooks.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

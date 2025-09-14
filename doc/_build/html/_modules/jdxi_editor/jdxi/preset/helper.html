@@ -1,0 +1,621 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>jdxi_editor.jdxi.preset.helper &mdash; JD-Xi Editor 0.8.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=486e5634"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            JD-Xi Editor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage.html">Quick Start</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../usage.html#connection-of-the-jd-xi-hardware-instrument-to-the-computer">Connection of the JD-Xi Hardware Instrument to the Computer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../instrument.html">JDXi Instrument Window</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../instrument.html#features">Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../instrument.html#using-the-instrument-window">Using the Instrument Window</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../editor.html">Editor Window</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../editor.html#program-mixer-section">Program/Mixer Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../editor.html#digital-1-section">Digital 1 Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../editor.html#digital-2-section">Digital 2 Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../editor.html#drum-kit-section">Drum Kit Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../editor.html#analog-section">Analog Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../editor.html#effect-controls">Effect Controls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../editor.html#vocal-transformer">Vocal Transformer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../editor.html#arpeggiator">Arpeggiator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../editor.html#midi-file-player-and-recorder">MIDI File Player and Recorder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../editor.html#pattern-sequencer">Pattern Sequencer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../troubleshooting.html">Troubleshooting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../troubleshooting.html#general-problems">General Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../troubleshooting.html#macos">MacOS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../troubleshooting.html#windows">Windows</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../legal.html">Legal Disclaimer</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules.html">jdxi_editor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../jdxi_editor.html">jdxi_editor package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../jdxi_editor.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../jdxi_editor.jdxi.html">jdxi_editor.jdxi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../jdxi_editor.log.html">jdxi_editor.log package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../jdxi_editor.midi.html">jdxi_editor.midi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../jdxi_editor.ui.html">jdxi_editor.ui package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../jdxi_editor.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../jdxi_editor.html#module-jdxi_editor.globals">jdxi_editor.globals module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../jdxi_editor.html#module-jdxi_editor.main">jdxi_editor.main module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../jdxi_editor.html#jdxi_editor.main.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../jdxi_editor.html#module-jdxi_editor.project">jdxi_editor.project module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../jdxi_editor.html#module-jdxi_editor.resources">jdxi_editor.resources module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../jdxi_editor.html#jdxi_editor.resources.resource_path"><code class="docutils literal notranslate"><span class="pre">resource_path()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../jdxi_editor.html#module-jdxi_editor">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../autoapi/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/midi/index.html">midi</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/midi/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/midi/colors/index.html">midi.colors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/midi/slider/index.html">midi.slider</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/midi/spin_box/index.html">midi.spin_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/midi/time_ruler/index.html">midi.time_ruler</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/midi/track/index.html">midi.track</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/midi/track_viewer/index.html">midi.track_viewer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/midi/utils/index.html">midi.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/adsr/index.html">adsr</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/adsr/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/adsr/adsr/index.html">adsr.adsr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/adsr/graph/index.html">adsr.graph</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/adsr/parameter/index.html">adsr.parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/adsr/plot/index.html">adsr.plot</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/pitch/index.html">pitch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/pitch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/pitch/envelope/index.html">pitch.envelope</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/pitch/envelope_plot/index.html">pitch.envelope_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/pitch/pwm_plot/index.html">pitch.pwm_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/pitch/slider_spinbox/index.html">pitch.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/piano/index.html">piano</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/piano/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/piano/key/index.html">piano.key</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/piano/keyboard/index.html">piano.keyboard</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/panel/index.html">panel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/panel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/panel/partial/index.html">panel.partial</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/wheel/index.html">wheel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/wheel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/wheel/mod/index.html">wheel.mod</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/wheel/pitch/index.html">wheel.pitch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/wheel/wheel/index.html">wheel.wheel</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/preset/index.html">preset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/preset/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/preset/combo_box/index.html">preset.combo_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/preset/panel/index.html">preset.panel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/preset/patch_name/index.html">preset.patch_name</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/slider/index.html">slider</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/slider/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/slider/slider/index.html">slider.slider</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/slider/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/slider/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/slider/index.html#slider.Slider"><code class="docutils literal notranslate"><span class="pre">Slider</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/dialog/index.html">dialog</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/dialog/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/dialog/progress/index.html">dialog.progress</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/viewer/index.html">viewer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/viewer/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/viewer/log/index.html">viewer.log</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/button/index.html">button</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/button/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/button/channel/index.html">button.channel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/button/favorite/index.html">button.favorite</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/button/sequencer/index.html">button.sequencer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/button/waveform/index.html">button.waveform</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/button/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/button/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/button/index.html#button.ChannelButton"><code class="docutils literal notranslate"><span class="pre">ChannelButton</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/button/index.html#button.SequencerSquare"><code class="docutils literal notranslate"><span class="pre">SequencerSquare</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/switch/index.html">switch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/switch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/switch/partial/index.html">switch.partial</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/switch/switch/index.html">switch.switch</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/filter/index.html">filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/filter/index.html#filter.FilterWidget"><code class="docutils literal notranslate"><span class="pre">FilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/display/index.html">display</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/display/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/display/digital/index.html">display.digital</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/display/pattern/index.html">display.pattern</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/display/value/index.html">display.value</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/pattern/index.html">pattern</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/pattern/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/pattern/measure/index.html">pattern.measure</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/spin_box/index.html">spin_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/spin_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/spin_box/spin_box/index.html">spin_box.spin_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/envelope/index.html">envelope</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/envelope/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/envelope/base/index.html">envelope.base</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/indicator/index.html">indicator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/indicator/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/indicator/led/index.html">indicator.led</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/indicator/midi/index.html">indicator.midi</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/combo_box/index.html">combo_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/combo_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/combo_box/combo_box/index.html">combo_box.combo_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/jdxi_editor/index.html">jdxi_editor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/jdxi_editor/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/jdxi_editor/globals/index.html">jdxi_editor.globals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/jdxi_editor/jdxi/index.html">jdxi_editor.jdxi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/jdxi_editor/log/index.html">jdxi_editor.log</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/jdxi_editor/main/index.html">jdxi_editor.main</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/jdxi_editor/midi/index.html">jdxi_editor.midi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/jdxi_editor/project/index.html">jdxi_editor.project</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/jdxi_editor/resources/index.html">jdxi_editor.resources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/jdxi_editor/ui/index.html">jdxi_editor.ui</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/filter_plot/index.html">filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/filter_plot/index.html#filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/filter_plot/index.html#filter_plot.FilterPlot"><code class="docutils literal notranslate"><span class="pre">FilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/envelope_plot/index.html">envelope_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/envelope_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/envelope_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/envelope_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/envelope_plot/index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/envelope_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/envelope_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/envelope_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/envelope_plot/index.html#envelope_plot.midi_value_to_float"><code class="docutils literal notranslate"><span class="pre">midi_value_to_float()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/envelope_plot/index.html#envelope_plot.WMTEnvPlot"><code class="docutils literal notranslate"><span class="pre">WMTEnvPlot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/envelope_plot/index.html#envelope_plot.app"><code class="docutils literal notranslate"><span class="pre">app</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/wave_selector/index.html">wave_selector</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/wave_selector/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/wave_selector/wave_selector/index.html">wave_selector.wave_selector</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/analog_filter/index.html">analog_filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/analog_filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/analog_filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/analog_filter/index.html#analog_filter.AnalogFilterWidget"><code class="docutils literal notranslate"><span class="pre">AnalogFilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/slider_spinbox/index.html">slider_spinbox</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/slider_spinbox/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/slider_spinbox/slider_spinbox/index.html">slider_spinbox.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/analog_filter_plot/index.html">analog_filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/analog_filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/analog_filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/analog_filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/analog_filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/analog_filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/analog_filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/analog_filter_plot/index.html#analog_filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/analog_filter_plot/index.html#analog_filter_plot.AnalogFilterPlot"><code class="docutils literal notranslate"><span class="pre">AnalogFilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">JD-Xi Editor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">jdxi_editor.jdxi.preset.helper</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for jdxi_editor.jdxi.preset.helper</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Module: preset_helper</span>
+<span class="sd">======================</span>
+
+<span class="sd">This module defines the `PresetHandler` class, which extends `PresetHelper` to manage</span>
+<span class="sd">preset selection and navigation for a MIDI-enabled synthesizer.</span>
+
+<span class="sd">Classes:</span>
+<span class="sd">--------</span>
+<span class="sd">- `PresetHandler`: Handles preset loading, switching, and signaling for UI updates.</span>
+
+<span class="sd">Dependencies:</span>
+<span class="sd">-------------</span>
+<span class="sd">- `PySide6.QtCore` (Signal, QObject) for event-driven UI interaction.</span>
+<span class="sd">- `jdxi_manager.midi.data.presets.type.PresetType` for managing preset types.</span>
+<span class="sd">- `jdxi_manager.midi.preset.loader.PresetLoader` as the base class for preset loading.</span>
+
+<span class="sd">Functionality:</span>
+<span class="sd">--------------</span>
+<span class="sd">- Loads presets via MIDI.</span>
+<span class="sd">- Emits signals when a preset changes (`preset_changed`).</span>
+<span class="sd">- Supports navigation through available presets (`next_tone`, `previous_tone`).</span>
+<span class="sd">- Retrieves current preset details (`get_current_preset`).</span>
+
+<span class="sd">Usage:</span>
+<span class="sd">------</span>
+<span class="sd">This class is typically used within a larger MIDI control application to handle</span>
+<span class="sd">preset changes and communicate them to the UI and MIDI engine.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">PySide6.QtCore</span><span class="w"> </span><span class="kn">import</span> <span class="n">Signal</span><span class="p">,</span> <span class="n">QObject</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.jdxi.preset.button</span><span class="w"> </span><span class="kn">import</span> <span class="n">JDXiPresetButtonData</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.log.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">Logger</span> <span class="k">as</span> <span class="n">log</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.channel.channel</span><span class="w"> </span><span class="kn">import</span> <span class="n">MidiChannel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.data.programs.analog</span><span class="w"> </span><span class="kn">import</span> <span class="n">ANALOG_PRESET_LIST</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.data.programs.drum</span><span class="w"> </span><span class="kn">import</span> <span class="n">DRUM_KIT_LIST</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.data.programs.digital</span><span class="w"> </span><span class="kn">import</span> <span class="n">DIGITAL_PRESET_LIST</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.io.delay</span><span class="w"> </span><span class="kn">import</span> <span class="n">send_with_delay</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.jdxi.synth.type</span><span class="w"> </span><span class="kn">import</span> <span class="n">JDXiSynth</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.jdxi.preset.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_preset_values</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.sysex.request.midi_requests</span><span class="w"> </span><span class="kn">import</span> <span class="n">MidiRequests</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.log.midi_info</span><span class="w"> </span><span class="kn">import</span> <span class="n">log_midi_info</span>
+
+
+<div class="viewcode-block" id="JDXiPresetHelper">
+<a class="viewcode-back" href="../../../../jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.helper.JDXiPresetHelper">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">JDXiPresetHelper</span><span class="p">(</span><span class="n">QObject</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Preset Loading Class&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="JDXiPresetHelper.update_display">
+<a class="viewcode-back" href="../../../../jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.helper.JDXiPresetHelper.update_display">[docs]</a>
+    <span class="n">update_display</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="JDXiPresetHelper.preset_changed">
+<a class="viewcode-back" href="../../../../jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.helper.JDXiPresetHelper.preset_changed">[docs]</a>
+    <span class="n">preset_changed</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>  <span class="c1"># Signal emitted when preset changes</span></div>
+
+
+<div class="viewcode-block" id="JDXiPresetHelper.__init__">
+<a class="viewcode-back" href="../../../../jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.helper.JDXiPresetHelper.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">midi_helper</span><span class="p">,</span> <span class="n">presets</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">preset_type</span><span class="o">=</span><span class="n">JDXiSynth</span><span class="o">.</span><span class="n">DIGITAL_SYNTH_1</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+<div class="viewcode-block" id="JDXiPresetHelper.presets">
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/jdxi/preset/helper/index.html#jdxi_editor.jdxi.preset.helper.JDXiPresetHelper.presets">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">presets</span> <span class="o">=</span> <span class="n">presets</span></div>
+
+<div class="viewcode-block" id="JDXiPresetHelper.channel">
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/jdxi/preset/helper/index.html#jdxi_editor.jdxi.preset.helper.JDXiPresetHelper.channel">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">channel</span> <span class="o">=</span> <span class="n">channel</span></div>
+
+<div class="viewcode-block" id="JDXiPresetHelper.type">
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/jdxi/preset/helper/index.html#jdxi_editor.jdxi.preset.helper.JDXiPresetHelper.type">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">preset_type</span></div>
+
+<div class="viewcode-block" id="JDXiPresetHelper.preset_number">
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/jdxi/preset/helper/index.html#jdxi_editor.jdxi.preset.helper.JDXiPresetHelper.preset_number">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">preset_number</span> <span class="o">=</span> <span class="mi">1</span></div>
+
+<div class="viewcode-block" id="JDXiPresetHelper.current_preset_zero_indexed">
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/jdxi/preset/helper/index.html#jdxi_editor.jdxi.preset.helper.JDXiPresetHelper.current_preset_zero_indexed">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_preset_zero_indexed</span> <span class="o">=</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="JDXiPresetHelper.midi_requests">
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/jdxi/preset/helper/index.html#jdxi_editor.jdxi.preset.helper.JDXiPresetHelper.midi_requests">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">midi_requests</span> <span class="o">=</span> <span class="n">MidiRequests</span><span class="o">.</span><span class="n">PROGRAM_TONE_NAME_PARTIAL</span></div>
+
+<div class="viewcode-block" id="JDXiPresetHelper.midi_helper">
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/jdxi/preset/helper/index.html#jdxi_editor.jdxi.preset.helper.JDXiPresetHelper.midi_helper">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span> <span class="o">=</span> <span class="n">midi_helper</span></div>
+
+<div class="viewcode-block" id="JDXiPresetHelper._initialized">
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/jdxi/preset/helper/index.html#jdxi_editor.jdxi.preset.helper.JDXiPresetHelper._initialized">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="kc">True</span></div>
+</div>
+
+
+<div class="viewcode-block" id="JDXiPresetHelper.get_current_preset">
+<a class="viewcode-back" href="../../../../jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.helper.JDXiPresetHelper.get_current_preset">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_current_preset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the current preset details.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;index&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_preset_zero_indexed</span><span class="p">,</span>
+            <span class="s2">&quot;preset&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">presets</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">current_preset_zero_indexed</span><span class="p">],</span>
+            <span class="s2">&quot;channel&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="p">,</span>
+        <span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="JDXiPresetHelper.get_available_presets">
+<a class="viewcode-back" href="../../../../jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.helper.JDXiPresetHelper.get_available_presets">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_available_presets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the available presets.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">presets</span></div>
+
+
+<div class="viewcode-block" id="JDXiPresetHelper.load_preset_by_program_change">
+<a class="viewcode-back" href="../../../../jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.helper.JDXiPresetHelper.load_preset_by_program_change">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_preset_by_program_change</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">preset_index</span><span class="p">,</span> <span class="n">synth_type</span><span class="o">=</span><span class="n">JDXiSynth</span><span class="o">.</span><span class="n">DIGITAL_SYNTH_1</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load a preset using program change.&quot;&quot;&quot;</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Preset index: </span><span class="si">{</span><span class="n">preset_index</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">preset_list_map</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">JDXiSynth</span><span class="o">.</span><span class="n">DIGITAL_SYNTH_1</span><span class="p">:</span> <span class="n">DIGITAL_PRESET_LIST</span><span class="p">,</span>
+            <span class="n">JDXiSynth</span><span class="o">.</span><span class="n">DIGITAL_SYNTH_2</span><span class="p">:</span> <span class="n">DIGITAL_PRESET_LIST</span><span class="p">,</span>
+            <span class="n">JDXiSynth</span><span class="o">.</span><span class="n">ANALOG_SYNTH</span><span class="p">:</span> <span class="n">ANALOG_PRESET_LIST</span><span class="p">,</span>
+            <span class="n">JDXiSynth</span><span class="o">.</span><span class="n">DRUM_KIT</span><span class="p">:</span> <span class="n">DRUM_KIT_LIST</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">channel_map</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">JDXiSynth</span><span class="o">.</span><span class="n">DIGITAL_SYNTH_1</span><span class="p">:</span> <span class="n">MidiChannel</span><span class="o">.</span><span class="n">DIGITAL_SYNTH_1</span><span class="p">,</span>
+            <span class="n">JDXiSynth</span><span class="o">.</span><span class="n">DIGITAL_SYNTH_2</span><span class="p">:</span> <span class="n">MidiChannel</span><span class="o">.</span><span class="n">DIGITAL_SYNTH_2</span><span class="p">,</span>
+            <span class="n">JDXiSynth</span><span class="o">.</span><span class="n">ANALOG_SYNTH</span><span class="p">:</span> <span class="n">MidiChannel</span><span class="o">.</span><span class="n">ANALOG_SYNTH</span><span class="p">,</span>
+            <span class="n">JDXiSynth</span><span class="o">.</span><span class="n">DRUM_KIT</span><span class="p">:</span> <span class="n">MidiChannel</span><span class="o">.</span><span class="n">DRUM_KIT</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">preset_list</span> <span class="o">=</span> <span class="n">preset_list_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">synth_type</span><span class="p">,</span> <span class="n">DIGITAL_PRESET_LIST</span><span class="p">)</span>
+        <span class="n">channel</span> <span class="o">=</span> <span class="n">channel_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">synth_type</span><span class="p">,</span> <span class="n">MidiChannel</span><span class="o">.</span><span class="n">DIGITAL_SYNTH_1</span><span class="p">)</span>
+
+        <span class="n">msb</span><span class="p">,</span> <span class="n">lsb</span><span class="p">,</span> <span class="n">pc</span> <span class="o">=</span> <span class="n">get_preset_values</span><span class="p">(</span><span class="n">preset_index</span><span class="p">,</span> <span class="n">preset_list</span><span class="p">)</span>
+        <span class="k">if</span> <span class="kc">None</span> <span class="ow">in</span> <span class="p">[</span><span class="n">msb</span><span class="p">,</span> <span class="n">lsb</span><span class="p">,</span> <span class="n">pc</span><span class="p">]:</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">send_program_change</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">msb</span><span class="p">,</span> <span class="n">lsb</span><span class="p">,</span> <span class="n">pc</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="JDXiPresetHelper.load_preset">
+<a class="viewcode-back" href="../../../../jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.helper.JDXiPresetHelper.load_preset">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_preset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">preset_data</span><span class="p">:</span> <span class="n">JDXiPresetButtonData</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load the preset based on the provided data</span>
+
+<span class="sd">        :param preset_data: JDXIPresetData</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loading preset: </span><span class="si">{</span><span class="n">preset_data</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">program_number</span><span class="p">,</span> <span class="n">channel</span> <span class="o">=</span> <span class="n">preset_data</span><span class="o">.</span><span class="n">number</span><span class="p">,</span> <span class="n">preset_data</span><span class="o">.</span><span class="n">channel</span>
+
+        <span class="c1"># Select the correct preset list based on the channel</span>
+        <span class="n">preset_list</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">MidiChannel</span><span class="o">.</span><span class="n">DRUM_KIT</span><span class="p">:</span> <span class="n">DRUM_KIT_LIST</span><span class="p">,</span>
+            <span class="n">MidiChannel</span><span class="o">.</span><span class="n">ANALOG_SYNTH</span><span class="p">:</span> <span class="n">ANALOG_PRESET_LIST</span><span class="p">,</span>
+        <span class="p">}</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">DIGITAL_PRESET_LIST</span><span class="p">)</span>
+
+        <span class="n">msb</span><span class="p">,</span> <span class="n">lsb</span><span class="p">,</span> <span class="n">pc</span> <span class="o">=</span> <span class="n">get_preset_values</span><span class="p">(</span><span class="n">program_number</span><span class="p">,</span> <span class="n">preset_list</span><span class="p">)</span>
+        <span class="k">if</span> <span class="kc">None</span> <span class="ow">in</span> <span class="p">[</span><span class="n">msb</span><span class="p">,</span> <span class="n">lsb</span><span class="p">,</span> <span class="n">pc</span><span class="p">]:</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">send_program_change</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">msb</span><span class="p">,</span> <span class="n">lsb</span><span class="p">,</span> <span class="n">pc</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="JDXiPresetHelper.data_request">
+<a class="viewcode-back" href="../../../../jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.helper.JDXiPresetHelper.data_request">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">data_request</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Request the current value of the NRPN parameter from the device.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span>
+            <span class="n">target</span><span class="o">=</span><span class="n">send_with_delay</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">midi_requests</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="JDXiPresetHelper.send_program_change">
+<a class="viewcode-back" href="../../../../jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.helper.JDXiPresetHelper.send_program_change">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">send_program_change</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">msb</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">lsb</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">pc</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Send a Bank Select and Program Change message</span>
+
+<span class="sd">        :param channel: int</span>
+<span class="sd">        :param msb: int</span>
+<span class="sd">        :param lsb: int</span>
+<span class="sd">        :param pc: int</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">log_midi_info</span><span class="p">(</span><span class="n">msb</span><span class="p">,</span> <span class="n">lsb</span><span class="p">,</span> <span class="n">pc</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">pc</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="s2">&quot;Program Change value is None, aborting.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Convert 1-based PC to 0-based</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span><span class="o">.</span><span class="n">send_bank_select_and_program_change</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">msb</span><span class="p">,</span> <span class="n">lsb</span><span class="p">,</span> <span class="n">pc</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_request</span><span class="p">()</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Mark Mrooks.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

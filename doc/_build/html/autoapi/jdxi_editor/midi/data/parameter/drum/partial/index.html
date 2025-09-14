@@ -1,0 +1,1369 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>jdxi_editor.midi.data.parameter.drum.partial &mdash; JD-Xi Editor 0.8.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../../../../_static/documentation_options.js?v=486e5634"></script>
+      <script src="../../../../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../../search.html" />
+    <link rel="next" title="jdxi_editor.midi.data.parameter.effects" href="../../effects/index.html" />
+    <link rel="prev" title="jdxi_editor.midi.data.parameter.drum.helper" href="../helper/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../../../../index.html" class="icon icon-home">
+            JD-Xi Editor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../usage.html">Quick Start</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../usage.html#connection-of-the-jd-xi-hardware-instrument-to-the-computer">Connection of the JD-Xi Hardware Instrument to the Computer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../instrument.html">JDXi Instrument Window</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../instrument.html#features">Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../instrument.html#using-the-instrument-window">Using the Instrument Window</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../editor.html">Editor Window</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../editor.html#program-mixer-section">Program/Mixer Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../editor.html#digital-1-section">Digital 1 Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../editor.html#digital-2-section">Digital 2 Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../editor.html#drum-kit-section">Drum Kit Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../editor.html#analog-section">Analog Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../editor.html#effect-controls">Effect Controls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../editor.html#vocal-transformer">Vocal Transformer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../editor.html#arpeggiator">Arpeggiator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../editor.html#midi-file-player-and-recorder">MIDI File Player and Recorder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../editor.html#pattern-sequencer">Pattern Sequencer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../troubleshooting.html">Troubleshooting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../troubleshooting.html#general-problems">General Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../troubleshooting.html#macos">MacOS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../troubleshooting.html#windows">Windows</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../legal.html">Legal Disclaimer</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../modules.html">jdxi_editor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../jdxi_editor.html">jdxi_editor package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../../jdxi_editor.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../../jdxi_editor.jdxi.html">jdxi_editor.jdxi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../../jdxi_editor.log.html">jdxi_editor.log package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../../jdxi_editor.midi.html">jdxi_editor.midi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../../jdxi_editor.ui.html">jdxi_editor.ui package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../../jdxi_editor.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../../jdxi_editor.html#module-jdxi_editor.globals">jdxi_editor.globals module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../../jdxi_editor.html#module-jdxi_editor.main">jdxi_editor.main module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../../jdxi_editor.html#jdxi_editor.main.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../../jdxi_editor.html#module-jdxi_editor.project">jdxi_editor.project module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../../jdxi_editor.html#module-jdxi_editor.resources">jdxi_editor.resources module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../../jdxi_editor.html#jdxi_editor.resources.resource_path"><code class="docutils literal notranslate"><span class="pre">resource_path()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../../jdxi_editor.html#module-jdxi_editor">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../../../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../midi/index.html">midi</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../midi/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../midi/colors/index.html">midi.colors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../midi/slider/index.html">midi.slider</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../midi/spin_box/index.html">midi.spin_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../midi/time_ruler/index.html">midi.time_ruler</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../midi/track/index.html">midi.track</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../midi/track_viewer/index.html">midi.track_viewer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../midi/utils/index.html">midi.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../adsr/index.html">adsr</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../adsr/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../adsr/adsr/index.html">adsr.adsr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../adsr/graph/index.html">adsr.graph</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../adsr/parameter/index.html">adsr.parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../adsr/plot/index.html">adsr.plot</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../pitch/index.html">pitch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../pitch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../pitch/envelope/index.html">pitch.envelope</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../pitch/envelope_plot/index.html">pitch.envelope_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../pitch/pwm_plot/index.html">pitch.pwm_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../pitch/slider_spinbox/index.html">pitch.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../piano/index.html">piano</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../piano/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../piano/key/index.html">piano.key</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../piano/keyboard/index.html">piano.keyboard</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../panel/index.html">panel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../panel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../panel/partial/index.html">panel.partial</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../wheel/index.html">wheel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../wheel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../wheel/mod/index.html">wheel.mod</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../wheel/pitch/index.html">wheel.pitch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../wheel/wheel/index.html">wheel.wheel</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../preset/index.html">preset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../preset/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../preset/combo_box/index.html">preset.combo_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../preset/panel/index.html">preset.panel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../preset/patch_name/index.html">preset.patch_name</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../slider/index.html">slider</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../slider/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../slider/slider/index.html">slider.slider</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../slider/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../slider/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../slider/index.html#slider.Slider"><code class="docutils literal notranslate"><span class="pre">Slider</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../dialog/index.html">dialog</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../dialog/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../dialog/progress/index.html">dialog.progress</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../viewer/index.html">viewer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../viewer/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../viewer/log/index.html">viewer.log</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../button/index.html">button</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../button/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../button/channel/index.html">button.channel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../button/favorite/index.html">button.favorite</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../button/sequencer/index.html">button.sequencer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../button/waveform/index.html">button.waveform</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../button/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../button/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../button/index.html#button.ChannelButton"><code class="docutils literal notranslate"><span class="pre">ChannelButton</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../button/index.html#button.SequencerSquare"><code class="docutils literal notranslate"><span class="pre">SequencerSquare</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../switch/index.html">switch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../switch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../switch/partial/index.html">switch.partial</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../switch/switch/index.html">switch.switch</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../filter/index.html">filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../filter/index.html#filter.FilterWidget"><code class="docutils literal notranslate"><span class="pre">FilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../display/index.html">display</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../display/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../display/digital/index.html">display.digital</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../display/pattern/index.html">display.pattern</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../display/value/index.html">display.value</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../pattern/index.html">pattern</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../pattern/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../pattern/measure/index.html">pattern.measure</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../spin_box/index.html">spin_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../spin_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../spin_box/spin_box/index.html">spin_box.spin_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../envelope/index.html">envelope</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../envelope/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../envelope/base/index.html">envelope.base</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../indicator/index.html">indicator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../indicator/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../indicator/led/index.html">indicator.led</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../indicator/midi/index.html">indicator.midi</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../combo_box/index.html">combo_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../combo_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../combo_box/combo_box/index.html">combo_box.combo_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../../../../index.html">jdxi_editor</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../../../../index.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../../../../globals/index.html">jdxi_editor.globals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi/index.html">jdxi_editor.jdxi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../log/index.html">jdxi_editor.log</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../main/index.html">jdxi_editor.main</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../../../../index.html">jdxi_editor.midi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../project/index.html">jdxi_editor.project</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../resources/index.html">jdxi_editor.resources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../ui/index.html">jdxi_editor.ui</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../filter_plot/index.html">filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../filter_plot/index.html#filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../filter_plot/index.html#filter_plot.FilterPlot"><code class="docutils literal notranslate"><span class="pre">FilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../envelope_plot/index.html">envelope_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../envelope_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../envelope_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../envelope_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../envelope_plot/index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../envelope_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../envelope_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../envelope_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../envelope_plot/index.html#envelope_plot.midi_value_to_float"><code class="docutils literal notranslate"><span class="pre">midi_value_to_float()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../envelope_plot/index.html#envelope_plot.WMTEnvPlot"><code class="docutils literal notranslate"><span class="pre">WMTEnvPlot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../envelope_plot/index.html#envelope_plot.app"><code class="docutils literal notranslate"><span class="pre">app</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../wave_selector/index.html">wave_selector</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../wave_selector/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../wave_selector/wave_selector/index.html">wave_selector.wave_selector</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../analog_filter/index.html">analog_filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../analog_filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../analog_filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../analog_filter/index.html#analog_filter.AnalogFilterWidget"><code class="docutils literal notranslate"><span class="pre">AnalogFilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../slider_spinbox/index.html">slider_spinbox</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../slider_spinbox/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../slider_spinbox/slider_spinbox/index.html">slider_spinbox.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../analog_filter_plot/index.html">analog_filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../analog_filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../analog_filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../analog_filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../analog_filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../analog_filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../analog_filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../analog_filter_plot/index.html#analog_filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../analog_filter_plot/index.html#analog_filter_plot.AnalogFilterPlot"><code class="docutils literal notranslate"><span class="pre">AnalogFilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../../../index.html">JD-Xi Editor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../../../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../../../../../index.html">jdxi_editor</a></li>
+          <li class="breadcrumb-item"><a href="../../../../index.html">jdxi_editor.midi</a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">jdxi_editor.midi.data</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">jdxi_editor.midi.data.parameter</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">jdxi_editor.midi.data.parameter.drum</a></li>
+      <li class="breadcrumb-item active">jdxi_editor.midi.data.parameter.drum.partial</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../../../../_sources/autoapi/jdxi_editor/midi/data/parameter/drum/partial/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-jdxi_editor.midi.data.parameter.drum.partial">
+<span id="jdxi-editor-midi-data-parameter-drum-partial"></span><h1>jdxi_editor.midi.data.parameter.drum.partial<a class="headerlink" href="#module-jdxi_editor.midi.data.parameter.drum.partial" title="Link to this heading"></a></h1>
+<p>Module for defining drum kit parameters in the Roland JD-Xi editor.</p>
+<p>This module provides the <cite>DrumPartialParameter</cite> class, which extends <cite>SynthParameter</cite>
+to define the addresses, value ranges, and characteristics of drum partial parameters.
+It includes various attributes representing different drum-related parameters, such as
+tuning, level, panning, and effects settings.</p>
+<dl class="simple">
+<dt>Classes:</dt><dd><dl class="simple">
+<dt>DrumPartialParameter – Represents a drum partial parameter with its address,</dt><dd><p>value range, and optional display range.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">DRUM_GROUP_MAP</span> <span class="pre">--</span> <span class="pre">Mapping</span> <span class="pre">of</span> <span class="pre">drum</span> <span class="pre">groups.</span></span></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">DRUM_ADDRESS_MAP</span> <span class="pre">--</span> <span class="pre">Mapping</span> <span class="pre">of</span> <span class="pre">parameter</span> <span class="pre">names</span> <span class="pre">to</span> <span class="pre">MIDI</span> <span class="pre">addresses.</span></span></dt>
+<dd></dd></dl>
+
+<dl class="simple">
+<dt>Example usage:</dt><dd><p>drum_param = DrumPartialParameter(0x0F, 0, 127)
+print(drum_param.address)  # Output: 0x0F
+print(drum_param.min_val)  # Output: 0
+print(drum_param.max_val)  # Output: 127</p>
+</dd>
+</dl>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../../../../../jdxi_editor.midi.data.parameter.drum.html#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial" title="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AddressParameterDrumPartial</span></code></a></p></td>
+<td><p>Drum kit parameters with their addresses and value ranges</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.data.parameter.drum.partial.</span></span><span class="sig-name descname"><span class="pre">AddressParameterDrumPartial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_val</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_val</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">display_min</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">display_max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tooltip</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../../../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.synth.AddressParameter" title="jdxi_editor.midi.data.parameter.synth.AddressParameter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">jdxi_editor.midi.data.parameter.synth.AddressParameter</span></code></a></p>
+<p>Drum kit parameters with their addresses and value ranges</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.display_min">
+<span class="sig-name descname"><span class="pre">display_min</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.display_min"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.display_min" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.display_max">
+<span class="sig-name descname"><span class="pre">display_max</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.display_max"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.display_max" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.tooltip">
+<span class="sig-name descname"><span class="pre">tooltip</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.tooltip"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.tooltip" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.bipolar_parameters">
+<span class="sig-name descname"><span class="pre">bipolar_parameters</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['PARTIAL_FINE_TUNE',</span> <span class="pre">'PITCH_ENV_DEPTH',</span> <span class="pre">'PARTIAL_PAN',</span> <span class="pre">'PARTIAL_ALTERNATE_PAN_DEPTH',...</span></em><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.bipolar_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.bipolar_parameters" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.CONVERSION_OFFSETS">
+<span class="sig-name descname"><span class="pre">CONVERSION_OFFSETS</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.CONVERSION_OFFSETS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.CONVERSION_OFFSETS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PARTIAL_NAME_1">
+<span class="sig-name descname"><span class="pre">PARTIAL_NAME_1</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(0,</span> <span class="pre">32,</span> <span class="pre">127)</span></em><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.PARTIAL_NAME_1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PARTIAL_NAME_1" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PARTIAL_NAME_2">
+<span class="sig-name descname"><span class="pre">PARTIAL_NAME_2</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(1,</span> <span class="pre">32,</span> <span class="pre">127)</span></em><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.PARTIAL_NAME_2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PARTIAL_NAME_2" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PARTIAL_NAME_3">
+<span class="sig-name descname"><span class="pre">PARTIAL_NAME_3</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(2,</span> <span class="pre">32,</span> <span class="pre">127)</span></em><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.PARTIAL_NAME_3"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PARTIAL_NAME_3" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PARTIAL_NAME_4">
+<span class="sig-name descname"><span class="pre">PARTIAL_NAME_4</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(3,</span> <span class="pre">32,</span> <span class="pre">127)</span></em><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.PARTIAL_NAME_4"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PARTIAL_NAME_4" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PARTIAL_NAME_5">
+<span class="sig-name descname"><span class="pre">PARTIAL_NAME_5</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(4,</span> <span class="pre">32,</span> <span class="pre">127)</span></em><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.PARTIAL_NAME_5"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PARTIAL_NAME_5" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PARTIAL_NAME_6">
+<span class="sig-name descname"><span class="pre">PARTIAL_NAME_6</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(5,</span> <span class="pre">32,</span> <span class="pre">127)</span></em><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.PARTIAL_NAME_6"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PARTIAL_NAME_6" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PARTIAL_NAME_7">
+<span class="sig-name descname"><span class="pre">PARTIAL_NAME_7</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(6,</span> <span class="pre">32,</span> <span class="pre">127)</span></em><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.PARTIAL_NAME_7"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PARTIAL_NAME_7" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PARTIAL_NAME_8">
+<span class="sig-name descname"><span class="pre">PARTIAL_NAME_8</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(7,</span> <span class="pre">32,</span> <span class="pre">127)</span></em><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.PARTIAL_NAME_8"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PARTIAL_NAME_8" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PARTIAL_NAME_9">
+<span class="sig-name descname"><span class="pre">PARTIAL_NAME_9</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(8,</span> <span class="pre">32,</span> <span class="pre">127)</span></em><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.PARTIAL_NAME_9"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PARTIAL_NAME_9" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PARTIAL_NAME_10">
+<span class="sig-name descname"><span class="pre">PARTIAL_NAME_10</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(9,</span> <span class="pre">32,</span> <span class="pre">127)</span></em><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.PARTIAL_NAME_10"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PARTIAL_NAME_10" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PARTIAL_NAME_11">
+<span class="sig-name descname"><span class="pre">PARTIAL_NAME_11</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(10,</span> <span class="pre">32,</span> <span class="pre">127)</span></em><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.PARTIAL_NAME_11"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PARTIAL_NAME_11" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PARTIAL_NAME_12">
+<span class="sig-name descname"><span class="pre">PARTIAL_NAME_12</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(11,</span> <span class="pre">32,</span> <span class="pre">127)</span></em><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.PARTIAL_NAME_12"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PARTIAL_NAME_12" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.ASSIGN_TYPE">
+<span class="sig-name descname"><span class="pre">ASSIGN_TYPE</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.ASSIGN_TYPE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.ASSIGN_TYPE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.MUTE_GROUP">
+<span class="sig-name descname"><span class="pre">MUTE_GROUP</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.MUTE_GROUP"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.MUTE_GROUP" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PARTIAL_LEVEL">
+<span class="sig-name descname"><span class="pre">PARTIAL_LEVEL</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.PARTIAL_LEVEL"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PARTIAL_LEVEL" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PARTIAL_COARSE_TUNE">
+<span class="sig-name descname"><span class="pre">PARTIAL_COARSE_TUNE</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.PARTIAL_COARSE_TUNE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PARTIAL_COARSE_TUNE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PARTIAL_FINE_TUNE">
+<span class="sig-name descname"><span class="pre">PARTIAL_FINE_TUNE</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.PARTIAL_FINE_TUNE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PARTIAL_FINE_TUNE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PARTIAL_RANDOM_PITCH_DEPTH">
+<span class="sig-name descname"><span class="pre">PARTIAL_RANDOM_PITCH_DEPTH</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.PARTIAL_RANDOM_PITCH_DEPTH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PARTIAL_RANDOM_PITCH_DEPTH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PARTIAL_PAN">
+<span class="sig-name descname"><span class="pre">PARTIAL_PAN</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.PARTIAL_PAN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PARTIAL_PAN" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PARTIAL_RANDOM_PAN_DEPTH">
+<span class="sig-name descname"><span class="pre">PARTIAL_RANDOM_PAN_DEPTH</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.PARTIAL_RANDOM_PAN_DEPTH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PARTIAL_RANDOM_PAN_DEPTH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PARTIAL_ALTERNATE_PAN_DEPTH">
+<span class="sig-name descname"><span class="pre">PARTIAL_ALTERNATE_PAN_DEPTH</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.PARTIAL_ALTERNATE_PAN_DEPTH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PARTIAL_ALTERNATE_PAN_DEPTH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PARTIAL_ENV_MODE">
+<span class="sig-name descname"><span class="pre">PARTIAL_ENV_MODE</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.PARTIAL_ENV_MODE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PARTIAL_ENV_MODE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PARTIAL_OUTPUT_LEVEL">
+<span class="sig-name descname"><span class="pre">PARTIAL_OUTPUT_LEVEL</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.PARTIAL_OUTPUT_LEVEL"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PARTIAL_OUTPUT_LEVEL" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PARTIAL_CHORUS_SEND_LEVEL">
+<span class="sig-name descname"><span class="pre">PARTIAL_CHORUS_SEND_LEVEL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(25,</span> <span class="pre">0,</span> <span class="pre">127,</span> <span class="pre">0,</span> <span class="pre">127,</span> <span class="pre">'Specifies</span> <span class="pre">the</span> <span class="pre">level</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">signal</span> <span class="pre">sent</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">chorus</span> <span class="pre">for</span> <span class="pre">each</span> <span class="pre">partial.')</span></em><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.PARTIAL_CHORUS_SEND_LEVEL"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PARTIAL_CHORUS_SEND_LEVEL" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PARTIAL_REVERB_SEND_LEVEL">
+<span class="sig-name descname"><span class="pre">PARTIAL_REVERB_SEND_LEVEL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(26,</span> <span class="pre">0,</span> <span class="pre">127,</span> <span class="pre">0,</span> <span class="pre">127,</span> <span class="pre">'Specifies</span> <span class="pre">the</span> <span class="pre">level</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">signal</span> <span class="pre">sent</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">reverb</span> <span class="pre">for</span> <span class="pre">each</span> <span class="pre">partial.')</span></em><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.PARTIAL_REVERB_SEND_LEVEL"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PARTIAL_REVERB_SEND_LEVEL" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PARTIAL_OUTPUT_ASSIGN">
+<span class="sig-name descname"><span class="pre">PARTIAL_OUTPUT_ASSIGN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(27,</span> <span class="pre">0,</span> <span class="pre">4,</span> <span class="pre">0,</span> <span class="pre">4,</span> <span class="pre">'Specifies</span> <span class="pre">how</span> <span class="pre">the</span> <span class="pre">sound</span> <span class="pre">of</span> <span class="pre">each</span> <span class="pre">partial</span> <span class="pre">will</span> <span class="pre">be</span> <span class="pre">output.</span> <span class="pre">(EFX1,</span> <span class="pre">EFX2,</span> <span class="pre">DLY,</span> <span class="pre">REV,</span> <span class="pre">DIR)')</span></em><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.PARTIAL_OUTPUT_ASSIGN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PARTIAL_OUTPUT_ASSIGN" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PARTIAL_PITCH_BEND_RANGE">
+<span class="sig-name descname"><span class="pre">PARTIAL_PITCH_BEND_RANGE</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.PARTIAL_PITCH_BEND_RANGE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PARTIAL_PITCH_BEND_RANGE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PARTIAL_RECEIVE_EXPRESSION">
+<span class="sig-name descname"><span class="pre">PARTIAL_RECEIVE_EXPRESSION</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.PARTIAL_RECEIVE_EXPRESSION"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PARTIAL_RECEIVE_EXPRESSION" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PARTIAL_RECEIVE_HOLD_1">
+<span class="sig-name descname"><span class="pre">PARTIAL_RECEIVE_HOLD_1</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.PARTIAL_RECEIVE_HOLD_1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PARTIAL_RECEIVE_HOLD_1" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT_VELOCITY_CONTROL">
+<span class="sig-name descname"><span class="pre">WMT_VELOCITY_CONTROL</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT_VELOCITY_CONTROL"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT_VELOCITY_CONTROL" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT1_WAVE_SWITCH">
+<span class="sig-name descname"><span class="pre">WMT1_WAVE_SWITCH</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT1_WAVE_SWITCH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT1_WAVE_SWITCH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT1_WAVE_GROUP_TYPE">
+<span class="sig-name descname"><span class="pre">WMT1_WAVE_GROUP_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(34,</span> <span class="pre">0,</span> <span class="pre">0,</span> <span class="pre">0,</span> <span class="pre">0,</span> <span class="pre">'Only</span> <span class="pre">one</span> <span class="pre">preset_type')</span></em><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT1_WAVE_GROUP_TYPE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT1_WAVE_GROUP_TYPE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT1_WAVE_GROUP_ID">
+<span class="sig-name descname"><span class="pre">WMT1_WAVE_GROUP_ID</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(35,</span> <span class="pre">0,</span> <span class="pre">16384,</span> <span class="pre">0,</span> <span class="pre">16384,</span> <span class="pre">'OFF,</span> <span class="pre">1</span> <span class="pre">-</span> <span class="pre">16384')</span></em><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT1_WAVE_GROUP_ID"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT1_WAVE_GROUP_ID" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT1_WAVE_NUMBER_L">
+<span class="sig-name descname"><span class="pre">WMT1_WAVE_NUMBER_L</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT1_WAVE_NUMBER_L"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT1_WAVE_NUMBER_L" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT1_WAVE_NUMBER_R">
+<span class="sig-name descname"><span class="pre">WMT1_WAVE_NUMBER_R</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT1_WAVE_NUMBER_R"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT1_WAVE_NUMBER_R" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT1_WAVE_GAIN">
+<span class="sig-name descname"><span class="pre">WMT1_WAVE_GAIN</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT1_WAVE_GAIN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT1_WAVE_GAIN" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT1_WAVE_FXM_SWITCH">
+<span class="sig-name descname"><span class="pre">WMT1_WAVE_FXM_SWITCH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(48,</span> <span class="pre">0,</span> <span class="pre">1,</span> <span class="pre">0,</span> <span class="pre">1,</span> <span class="pre">'OFF,</span> <span class="pre">ON')</span></em><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT1_WAVE_FXM_SWITCH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT1_WAVE_FXM_SWITCH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT1_WAVE_FXM_COLOR">
+<span class="sig-name descname"><span class="pre">WMT1_WAVE_FXM_COLOR</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT1_WAVE_FXM_COLOR"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT1_WAVE_FXM_COLOR" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT1_WAVE_FXM_DEPTH">
+<span class="sig-name descname"><span class="pre">WMT1_WAVE_FXM_DEPTH</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT1_WAVE_FXM_DEPTH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT1_WAVE_FXM_DEPTH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT1_WAVE_TEMPO_SYNC">
+<span class="sig-name descname"><span class="pre">WMT1_WAVE_TEMPO_SYNC</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT1_WAVE_TEMPO_SYNC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT1_WAVE_TEMPO_SYNC" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT1_WAVE_COARSE_TUNE">
+<span class="sig-name descname"><span class="pre">WMT1_WAVE_COARSE_TUNE</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT1_WAVE_COARSE_TUNE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT1_WAVE_COARSE_TUNE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT1_WAVE_FINE_TUNE">
+<span class="sig-name descname"><span class="pre">WMT1_WAVE_FINE_TUNE</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT1_WAVE_FINE_TUNE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT1_WAVE_FINE_TUNE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT1_WAVE_PAN">
+<span class="sig-name descname"><span class="pre">WMT1_WAVE_PAN</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT1_WAVE_PAN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT1_WAVE_PAN" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT1_WAVE_RANDOM_PAN_SWITCH">
+<span class="sig-name descname"><span class="pre">WMT1_WAVE_RANDOM_PAN_SWITCH</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT1_WAVE_RANDOM_PAN_SWITCH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT1_WAVE_RANDOM_PAN_SWITCH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT1_WAVE_ALTERNATE_PAN_SWITCH">
+<span class="sig-name descname"><span class="pre">WMT1_WAVE_ALTERNATE_PAN_SWITCH</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT1_WAVE_ALTERNATE_PAN_SWITCH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT1_WAVE_ALTERNATE_PAN_SWITCH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT1_WAVE_LEVEL">
+<span class="sig-name descname"><span class="pre">WMT1_WAVE_LEVEL</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT1_WAVE_LEVEL"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT1_WAVE_LEVEL" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT1_VELOCITY_RANGE_LOWER">
+<span class="sig-name descname"><span class="pre">WMT1_VELOCITY_RANGE_LOWER</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT1_VELOCITY_RANGE_LOWER"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT1_VELOCITY_RANGE_LOWER" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT1_VELOCITY_RANGE_UPPER">
+<span class="sig-name descname"><span class="pre">WMT1_VELOCITY_RANGE_UPPER</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT1_VELOCITY_RANGE_UPPER"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT1_VELOCITY_RANGE_UPPER" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT1_VELOCITY_FADE_WIDTH_LOWER">
+<span class="sig-name descname"><span class="pre">WMT1_VELOCITY_FADE_WIDTH_LOWER</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT1_VELOCITY_FADE_WIDTH_LOWER"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT1_VELOCITY_FADE_WIDTH_LOWER" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT1_VELOCITY_FADE_WIDTH_UPPER">
+<span class="sig-name descname"><span class="pre">WMT1_VELOCITY_FADE_WIDTH_UPPER</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT1_VELOCITY_FADE_WIDTH_UPPER"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT1_VELOCITY_FADE_WIDTH_UPPER" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT2_WAVE_SWITCH">
+<span class="sig-name descname"><span class="pre">WMT2_WAVE_SWITCH</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT2_WAVE_SWITCH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT2_WAVE_SWITCH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT2_WAVE_GROUP_TYPE">
+<span class="sig-name descname"><span class="pre">WMT2_WAVE_GROUP_TYPE</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT2_WAVE_GROUP_TYPE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT2_WAVE_GROUP_TYPE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT2_WAVE_GROUP_ID">
+<span class="sig-name descname"><span class="pre">WMT2_WAVE_GROUP_ID</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT2_WAVE_GROUP_ID"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT2_WAVE_GROUP_ID" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT2_WAVE_NUMBER_L">
+<span class="sig-name descname"><span class="pre">WMT2_WAVE_NUMBER_L</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT2_WAVE_NUMBER_L"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT2_WAVE_NUMBER_L" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT2_WAVE_NUMBER_R">
+<span class="sig-name descname"><span class="pre">WMT2_WAVE_NUMBER_R</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT2_WAVE_NUMBER_R"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT2_WAVE_NUMBER_R" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT2_WAVE_GAIN">
+<span class="sig-name descname"><span class="pre">WMT2_WAVE_GAIN</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT2_WAVE_GAIN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT2_WAVE_GAIN" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT2_WAVE_FXM_SWITCH">
+<span class="sig-name descname"><span class="pre">WMT2_WAVE_FXM_SWITCH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(77,</span> <span class="pre">0,</span> <span class="pre">1,</span> <span class="pre">0,</span> <span class="pre">1,</span> <span class="pre">'Frequency</span> <span class="pre">Cross-Modulation</span> <span class="pre">(FXM),OFF,</span> <span class="pre">ON')</span></em><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT2_WAVE_FXM_SWITCH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT2_WAVE_FXM_SWITCH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT2_WAVE_FXM_COLOR">
+<span class="sig-name descname"><span class="pre">WMT2_WAVE_FXM_COLOR</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT2_WAVE_FXM_COLOR"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT2_WAVE_FXM_COLOR" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT2_WAVE_FXM_DEPTH">
+<span class="sig-name descname"><span class="pre">WMT2_WAVE_FXM_DEPTH</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT2_WAVE_FXM_DEPTH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT2_WAVE_FXM_DEPTH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT2_WAVE_TEMPO_SYNC">
+<span class="sig-name descname"><span class="pre">WMT2_WAVE_TEMPO_SYNC</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT2_WAVE_TEMPO_SYNC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT2_WAVE_TEMPO_SYNC" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT2_WAVE_COARSE_TUNE">
+<span class="sig-name descname"><span class="pre">WMT2_WAVE_COARSE_TUNE</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT2_WAVE_COARSE_TUNE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT2_WAVE_COARSE_TUNE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT2_WAVE_FINE_TUNE">
+<span class="sig-name descname"><span class="pre">WMT2_WAVE_FINE_TUNE</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT2_WAVE_FINE_TUNE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT2_WAVE_FINE_TUNE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT2_WAVE_PAN">
+<span class="sig-name descname"><span class="pre">WMT2_WAVE_PAN</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT2_WAVE_PAN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT2_WAVE_PAN" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT2_WAVE_RANDOM_PAN_SWITCH">
+<span class="sig-name descname"><span class="pre">WMT2_WAVE_RANDOM_PAN_SWITCH</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT2_WAVE_RANDOM_PAN_SWITCH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT2_WAVE_RANDOM_PAN_SWITCH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT2_WAVE_ALTERNATE_PAN_SWITCH">
+<span class="sig-name descname"><span class="pre">WMT2_WAVE_ALTERNATE_PAN_SWITCH</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT2_WAVE_ALTERNATE_PAN_SWITCH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT2_WAVE_ALTERNATE_PAN_SWITCH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT2_WAVE_LEVEL">
+<span class="sig-name descname"><span class="pre">WMT2_WAVE_LEVEL</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT2_WAVE_LEVEL"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT2_WAVE_LEVEL" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT2_VELOCITY_RANGE_LOWER">
+<span class="sig-name descname"><span class="pre">WMT2_VELOCITY_RANGE_LOWER</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT2_VELOCITY_RANGE_LOWER"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT2_VELOCITY_RANGE_LOWER" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT2_VELOCITY_RANGE_UPPER">
+<span class="sig-name descname"><span class="pre">WMT2_VELOCITY_RANGE_UPPER</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT2_VELOCITY_RANGE_UPPER"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT2_VELOCITY_RANGE_UPPER" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT2_VELOCITY_FADE_WIDTH_LOWER">
+<span class="sig-name descname"><span class="pre">WMT2_VELOCITY_FADE_WIDTH_LOWER</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT2_VELOCITY_FADE_WIDTH_LOWER"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT2_VELOCITY_FADE_WIDTH_LOWER" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT2_VELOCITY_FADE_WIDTH_UPPER">
+<span class="sig-name descname"><span class="pre">WMT2_VELOCITY_FADE_WIDTH_UPPER</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT2_VELOCITY_FADE_WIDTH_UPPER"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT2_VELOCITY_FADE_WIDTH_UPPER" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT3_WAVE_SWITCH">
+<span class="sig-name descname"><span class="pre">WMT3_WAVE_SWITCH</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT3_WAVE_SWITCH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT3_WAVE_SWITCH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT3_WAVE_GROUP_TYPE">
+<span class="sig-name descname"><span class="pre">WMT3_WAVE_GROUP_TYPE</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT3_WAVE_GROUP_TYPE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT3_WAVE_GROUP_TYPE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT3_WAVE_GROUP_ID">
+<span class="sig-name descname"><span class="pre">WMT3_WAVE_GROUP_ID</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT3_WAVE_GROUP_ID"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT3_WAVE_GROUP_ID" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT3_WAVE_NUMBER_L">
+<span class="sig-name descname"><span class="pre">WMT3_WAVE_NUMBER_L</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT3_WAVE_NUMBER_L"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT3_WAVE_NUMBER_L" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT3_WAVE_NUMBER_R">
+<span class="sig-name descname"><span class="pre">WMT3_WAVE_NUMBER_R</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT3_WAVE_NUMBER_R"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT3_WAVE_NUMBER_R" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT3_WAVE_GAIN">
+<span class="sig-name descname"><span class="pre">WMT3_WAVE_GAIN</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT3_WAVE_GAIN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT3_WAVE_GAIN" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT3_WAVE_FXM_SWITCH">
+<span class="sig-name descname"><span class="pre">WMT3_WAVE_FXM_SWITCH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(106,</span> <span class="pre">0,</span> <span class="pre">1,</span> <span class="pre">0,</span> <span class="pre">1,</span> <span class="pre">'Frequency</span> <span class="pre">Cross-Modulation</span> <span class="pre">(FXM),OFF,</span> <span class="pre">ON')</span></em><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT3_WAVE_FXM_SWITCH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT3_WAVE_FXM_SWITCH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT3_WAVE_FXM_COLOR">
+<span class="sig-name descname"><span class="pre">WMT3_WAVE_FXM_COLOR</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT3_WAVE_FXM_COLOR"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT3_WAVE_FXM_COLOR" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT3_WAVE_FXM_DEPTH">
+<span class="sig-name descname"><span class="pre">WMT3_WAVE_FXM_DEPTH</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT3_WAVE_FXM_DEPTH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT3_WAVE_FXM_DEPTH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT3_WAVE_TEMPO_SYNC">
+<span class="sig-name descname"><span class="pre">WMT3_WAVE_TEMPO_SYNC</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT3_WAVE_TEMPO_SYNC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT3_WAVE_TEMPO_SYNC" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT3_WAVE_COARSE_TUNE">
+<span class="sig-name descname"><span class="pre">WMT3_WAVE_COARSE_TUNE</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT3_WAVE_COARSE_TUNE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT3_WAVE_COARSE_TUNE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT3_WAVE_FINE_TUNE">
+<span class="sig-name descname"><span class="pre">WMT3_WAVE_FINE_TUNE</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT3_WAVE_FINE_TUNE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT3_WAVE_FINE_TUNE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT3_WAVE_PAN">
+<span class="sig-name descname"><span class="pre">WMT3_WAVE_PAN</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT3_WAVE_PAN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT3_WAVE_PAN" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT3_WAVE_RANDOM_PAN_SWITCH">
+<span class="sig-name descname"><span class="pre">WMT3_WAVE_RANDOM_PAN_SWITCH</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT3_WAVE_RANDOM_PAN_SWITCH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT3_WAVE_RANDOM_PAN_SWITCH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT3_WAVE_ALTERNATE_PAN_SWITCH">
+<span class="sig-name descname"><span class="pre">WMT3_WAVE_ALTERNATE_PAN_SWITCH</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT3_WAVE_ALTERNATE_PAN_SWITCH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT3_WAVE_ALTERNATE_PAN_SWITCH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT3_WAVE_LEVEL">
+<span class="sig-name descname"><span class="pre">WMT3_WAVE_LEVEL</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT3_WAVE_LEVEL"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT3_WAVE_LEVEL" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT3_VELOCITY_RANGE_LOWER">
+<span class="sig-name descname"><span class="pre">WMT3_VELOCITY_RANGE_LOWER</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT3_VELOCITY_RANGE_LOWER"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT3_VELOCITY_RANGE_LOWER" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT3_VELOCITY_RANGE_UPPER">
+<span class="sig-name descname"><span class="pre">WMT3_VELOCITY_RANGE_UPPER</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT3_VELOCITY_RANGE_UPPER"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT3_VELOCITY_RANGE_UPPER" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT3_VELOCITY_FADE_WIDTH_LOWER">
+<span class="sig-name descname"><span class="pre">WMT3_VELOCITY_FADE_WIDTH_LOWER</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT3_VELOCITY_FADE_WIDTH_LOWER"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT3_VELOCITY_FADE_WIDTH_LOWER" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT3_VELOCITY_FADE_WIDTH_UPPER">
+<span class="sig-name descname"><span class="pre">WMT3_VELOCITY_FADE_WIDTH_UPPER</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT3_VELOCITY_FADE_WIDTH_UPPER"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT3_VELOCITY_FADE_WIDTH_UPPER" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT4_WAVE_SWITCH">
+<span class="sig-name descname"><span class="pre">WMT4_WAVE_SWITCH</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT4_WAVE_SWITCH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT4_WAVE_SWITCH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT4_WAVE_GROUP_TYPE">
+<span class="sig-name descname"><span class="pre">WMT4_WAVE_GROUP_TYPE</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT4_WAVE_GROUP_TYPE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT4_WAVE_GROUP_TYPE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT4_WAVE_GROUP_ID">
+<span class="sig-name descname"><span class="pre">WMT4_WAVE_GROUP_ID</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT4_WAVE_GROUP_ID"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT4_WAVE_GROUP_ID" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT4_WAVE_NUMBER_L">
+<span class="sig-name descname"><span class="pre">WMT4_WAVE_NUMBER_L</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT4_WAVE_NUMBER_L"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT4_WAVE_NUMBER_L" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT4_WAVE_NUMBER_R">
+<span class="sig-name descname"><span class="pre">WMT4_WAVE_NUMBER_R</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT4_WAVE_NUMBER_R"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT4_WAVE_NUMBER_R" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT4_WAVE_GAIN">
+<span class="sig-name descname"><span class="pre">WMT4_WAVE_GAIN</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT4_WAVE_GAIN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT4_WAVE_GAIN" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT4_WAVE_FXM_SWITCH">
+<span class="sig-name descname"><span class="pre">WMT4_WAVE_FXM_SWITCH</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT4_WAVE_FXM_SWITCH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT4_WAVE_FXM_SWITCH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT4_WAVE_FXM_COLOR">
+<span class="sig-name descname"><span class="pre">WMT4_WAVE_FXM_COLOR</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT4_WAVE_FXM_COLOR"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT4_WAVE_FXM_COLOR" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT4_WAVE_FXM_DEPTH">
+<span class="sig-name descname"><span class="pre">WMT4_WAVE_FXM_DEPTH</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT4_WAVE_FXM_DEPTH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT4_WAVE_FXM_DEPTH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT4_WAVE_TEMPO_SYNC">
+<span class="sig-name descname"><span class="pre">WMT4_WAVE_TEMPO_SYNC</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT4_WAVE_TEMPO_SYNC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT4_WAVE_TEMPO_SYNC" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT4_WAVE_COARSE_TUNE">
+<span class="sig-name descname"><span class="pre">WMT4_WAVE_COARSE_TUNE</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT4_WAVE_COARSE_TUNE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT4_WAVE_COARSE_TUNE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT4_WAVE_FINE_TUNE">
+<span class="sig-name descname"><span class="pre">WMT4_WAVE_FINE_TUNE</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT4_WAVE_FINE_TUNE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT4_WAVE_FINE_TUNE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT4_WAVE_PAN">
+<span class="sig-name descname"><span class="pre">WMT4_WAVE_PAN</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT4_WAVE_PAN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT4_WAVE_PAN" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT4_WAVE_RANDOM_PAN_SWITCH">
+<span class="sig-name descname"><span class="pre">WMT4_WAVE_RANDOM_PAN_SWITCH</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT4_WAVE_RANDOM_PAN_SWITCH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT4_WAVE_RANDOM_PAN_SWITCH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT4_WAVE_ALTERNATE_PAN_SWITCH">
+<span class="sig-name descname"><span class="pre">WMT4_WAVE_ALTERNATE_PAN_SWITCH</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT4_WAVE_ALTERNATE_PAN_SWITCH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT4_WAVE_ALTERNATE_PAN_SWITCH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT4_WAVE_LEVEL">
+<span class="sig-name descname"><span class="pre">WMT4_WAVE_LEVEL</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT4_WAVE_LEVEL"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT4_WAVE_LEVEL" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT4_VELOCITY_RANGE_LOWER">
+<span class="sig-name descname"><span class="pre">WMT4_VELOCITY_RANGE_LOWER</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT4_VELOCITY_RANGE_LOWER"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT4_VELOCITY_RANGE_LOWER" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT4_VELOCITY_RANGE_UPPER">
+<span class="sig-name descname"><span class="pre">WMT4_VELOCITY_RANGE_UPPER</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT4_VELOCITY_RANGE_UPPER"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT4_VELOCITY_RANGE_UPPER" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT4_VELOCITY_FADE_WIDTH_LOWER">
+<span class="sig-name descname"><span class="pre">WMT4_VELOCITY_FADE_WIDTH_LOWER</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT4_VELOCITY_FADE_WIDTH_LOWER"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT4_VELOCITY_FADE_WIDTH_LOWER" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT4_VELOCITY_FADE_WIDTH_UPPER">
+<span class="sig-name descname"><span class="pre">WMT4_VELOCITY_FADE_WIDTH_UPPER</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.WMT4_VELOCITY_FADE_WIDTH_UPPER"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.WMT4_VELOCITY_FADE_WIDTH_UPPER" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PITCH_ENV_DEPTH">
+<span class="sig-name descname"><span class="pre">PITCH_ENV_DEPTH</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.PITCH_ENV_DEPTH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PITCH_ENV_DEPTH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PITCH_ENV_VELOCITY_SENS">
+<span class="sig-name descname"><span class="pre">PITCH_ENV_VELOCITY_SENS</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.PITCH_ENV_VELOCITY_SENS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PITCH_ENV_VELOCITY_SENS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PITCH_ENV_TIME_1_VELOCITY_SENS">
+<span class="sig-name descname"><span class="pre">PITCH_ENV_TIME_1_VELOCITY_SENS</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.PITCH_ENV_TIME_1_VELOCITY_SENS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PITCH_ENV_TIME_1_VELOCITY_SENS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PITCH_ENV_TIME_4_VELOCITY_SENS">
+<span class="sig-name descname"><span class="pre">PITCH_ENV_TIME_4_VELOCITY_SENS</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.PITCH_ENV_TIME_4_VELOCITY_SENS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PITCH_ENV_TIME_4_VELOCITY_SENS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PITCH_ENV_TIME_1">
+<span class="sig-name descname"><span class="pre">PITCH_ENV_TIME_1</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.PITCH_ENV_TIME_1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PITCH_ENV_TIME_1" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PITCH_ENV_TIME_2">
+<span class="sig-name descname"><span class="pre">PITCH_ENV_TIME_2</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.PITCH_ENV_TIME_2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PITCH_ENV_TIME_2" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PITCH_ENV_TIME_3">
+<span class="sig-name descname"><span class="pre">PITCH_ENV_TIME_3</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.PITCH_ENV_TIME_3"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PITCH_ENV_TIME_3" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PITCH_ENV_TIME_4">
+<span class="sig-name descname"><span class="pre">PITCH_ENV_TIME_4</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.PITCH_ENV_TIME_4"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PITCH_ENV_TIME_4" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PITCH_ENV_LEVEL_0">
+<span class="sig-name descname"><span class="pre">PITCH_ENV_LEVEL_0</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.PITCH_ENV_LEVEL_0"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PITCH_ENV_LEVEL_0" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PITCH_ENV_LEVEL_1">
+<span class="sig-name descname"><span class="pre">PITCH_ENV_LEVEL_1</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.PITCH_ENV_LEVEL_1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PITCH_ENV_LEVEL_1" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PITCH_ENV_LEVEL_2">
+<span class="sig-name descname"><span class="pre">PITCH_ENV_LEVEL_2</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.PITCH_ENV_LEVEL_2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PITCH_ENV_LEVEL_2" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PITCH_ENV_LEVEL_3">
+<span class="sig-name descname"><span class="pre">PITCH_ENV_LEVEL_3</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.PITCH_ENV_LEVEL_3"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PITCH_ENV_LEVEL_3" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PITCH_ENV_LEVEL_4">
+<span class="sig-name descname"><span class="pre">PITCH_ENV_LEVEL_4</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.PITCH_ENV_LEVEL_4"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.PITCH_ENV_LEVEL_4" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVF_FILTER_TYPE">
+<span class="sig-name descname"><span class="pre">TVF_FILTER_TYPE</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.TVF_FILTER_TYPE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVF_FILTER_TYPE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVF_CUTOFF_FREQUENCY">
+<span class="sig-name descname"><span class="pre">TVF_CUTOFF_FREQUENCY</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.TVF_CUTOFF_FREQUENCY"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVF_CUTOFF_FREQUENCY" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVF_CUTOFF_VELOCITY_CURVE">
+<span class="sig-name descname"><span class="pre">TVF_CUTOFF_VELOCITY_CURVE</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.TVF_CUTOFF_VELOCITY_CURVE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVF_CUTOFF_VELOCITY_CURVE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVF_CUTOFF_VELOCITY_SENS">
+<span class="sig-name descname"><span class="pre">TVF_CUTOFF_VELOCITY_SENS</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.TVF_CUTOFF_VELOCITY_SENS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVF_CUTOFF_VELOCITY_SENS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVF_RESONANCE">
+<span class="sig-name descname"><span class="pre">TVF_RESONANCE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(294,</span> <span class="pre">0,</span> <span class="pre">127,</span> <span class="pre">0,</span> <span class="pre">127,</span> <span class="pre">'Sets</span> <span class="pre">the</span> <span class="pre">resonance</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">filter.</span> <span class="pre">Higher</span> <span class="pre">settings</span> <span class="pre">result</span> <span class="pre">in</span> <span class="pre">a</span> <span class="pre">more...</span></em><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.TVF_RESONANCE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVF_RESONANCE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVF_RESONANCE_VELOCITY_SENS">
+<span class="sig-name descname"><span class="pre">TVF_RESONANCE_VELOCITY_SENS</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.TVF_RESONANCE_VELOCITY_SENS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVF_RESONANCE_VELOCITY_SENS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVF_ENV_DEPTH">
+<span class="sig-name descname"><span class="pre">TVF_ENV_DEPTH</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.TVF_ENV_DEPTH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVF_ENV_DEPTH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVF_ENV_VELOCITY_CURVE_TYPE">
+<span class="sig-name descname"><span class="pre">TVF_ENV_VELOCITY_CURVE_TYPE</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.TVF_ENV_VELOCITY_CURVE_TYPE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVF_ENV_VELOCITY_CURVE_TYPE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVF_ENV_VELOCITY_SENS">
+<span class="sig-name descname"><span class="pre">TVF_ENV_VELOCITY_SENS</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.TVF_ENV_VELOCITY_SENS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVF_ENV_VELOCITY_SENS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVF_ENV_TIME_1_VELOCITY_SENS">
+<span class="sig-name descname"><span class="pre">TVF_ENV_TIME_1_VELOCITY_SENS</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.TVF_ENV_TIME_1_VELOCITY_SENS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVF_ENV_TIME_1_VELOCITY_SENS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVF_ENV_TIME_4_VELOCITY_SENS">
+<span class="sig-name descname"><span class="pre">TVF_ENV_TIME_4_VELOCITY_SENS</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.TVF_ENV_TIME_4_VELOCITY_SENS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVF_ENV_TIME_4_VELOCITY_SENS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVF_ENV_TIME_1">
+<span class="sig-name descname"><span class="pre">TVF_ENV_TIME_1</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.TVF_ENV_TIME_1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVF_ENV_TIME_1" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVF_ENV_TIME_2">
+<span class="sig-name descname"><span class="pre">TVF_ENV_TIME_2</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.TVF_ENV_TIME_2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVF_ENV_TIME_2" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVF_ENV_TIME_3">
+<span class="sig-name descname"><span class="pre">TVF_ENV_TIME_3</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.TVF_ENV_TIME_3"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVF_ENV_TIME_3" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVF_ENV_TIME_4">
+<span class="sig-name descname"><span class="pre">TVF_ENV_TIME_4</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.TVF_ENV_TIME_4"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVF_ENV_TIME_4" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVF_ENV_LEVEL_0">
+<span class="sig-name descname"><span class="pre">TVF_ENV_LEVEL_0</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.TVF_ENV_LEVEL_0"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVF_ENV_LEVEL_0" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVF_ENV_LEVEL_1">
+<span class="sig-name descname"><span class="pre">TVF_ENV_LEVEL_1</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.TVF_ENV_LEVEL_1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVF_ENV_LEVEL_1" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVF_ENV_LEVEL_2">
+<span class="sig-name descname"><span class="pre">TVF_ENV_LEVEL_2</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.TVF_ENV_LEVEL_2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVF_ENV_LEVEL_2" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVF_ENV_LEVEL_3">
+<span class="sig-name descname"><span class="pre">TVF_ENV_LEVEL_3</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.TVF_ENV_LEVEL_3"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVF_ENV_LEVEL_3" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVF_ENV_LEVEL_4">
+<span class="sig-name descname"><span class="pre">TVF_ENV_LEVEL_4</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.TVF_ENV_LEVEL_4"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVF_ENV_LEVEL_4" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVA_LEVEL_VELOCITY_CURVE">
+<span class="sig-name descname"><span class="pre">TVA_LEVEL_VELOCITY_CURVE</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.TVA_LEVEL_VELOCITY_CURVE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVA_LEVEL_VELOCITY_CURVE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVA_LEVEL_VELOCITY_SENS">
+<span class="sig-name descname"><span class="pre">TVA_LEVEL_VELOCITY_SENS</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.TVA_LEVEL_VELOCITY_SENS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVA_LEVEL_VELOCITY_SENS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVA_ENV_TIME_1_VELOCITY_SENS">
+<span class="sig-name descname"><span class="pre">TVA_ENV_TIME_1_VELOCITY_SENS</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.TVA_ENV_TIME_1_VELOCITY_SENS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVA_ENV_TIME_1_VELOCITY_SENS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVA_ENV_TIME_4_VELOCITY_SENS">
+<span class="sig-name descname"><span class="pre">TVA_ENV_TIME_4_VELOCITY_SENS</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.TVA_ENV_TIME_4_VELOCITY_SENS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVA_ENV_TIME_4_VELOCITY_SENS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVA_ENV_TIME_1">
+<span class="sig-name descname"><span class="pre">TVA_ENV_TIME_1</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.TVA_ENV_TIME_1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVA_ENV_TIME_1" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVA_ENV_TIME_2">
+<span class="sig-name descname"><span class="pre">TVA_ENV_TIME_2</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.TVA_ENV_TIME_2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVA_ENV_TIME_2" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVA_ENV_TIME_3">
+<span class="sig-name descname"><span class="pre">TVA_ENV_TIME_3</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.TVA_ENV_TIME_3"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVA_ENV_TIME_3" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVA_ENV_TIME_4">
+<span class="sig-name descname"><span class="pre">TVA_ENV_TIME_4</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.TVA_ENV_TIME_4"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVA_ENV_TIME_4" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVA_ENV_LEVEL_1">
+<span class="sig-name descname"><span class="pre">TVA_ENV_LEVEL_1</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.TVA_ENV_LEVEL_1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVA_ENV_LEVEL_1" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVA_ENV_LEVEL_2">
+<span class="sig-name descname"><span class="pre">TVA_ENV_LEVEL_2</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.TVA_ENV_LEVEL_2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVA_ENV_LEVEL_2" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVA_ENV_LEVEL_3">
+<span class="sig-name descname"><span class="pre">TVA_ENV_LEVEL_3</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.TVA_ENV_LEVEL_3"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.TVA_ENV_LEVEL_3" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.ONE_SHOT_MODE">
+<span class="sig-name descname"><span class="pre">ONE_SHOT_MODE</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.ONE_SHOT_MODE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.ONE_SHOT_MODE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.RELATIVE_LEVEL">
+<span class="sig-name descname"><span class="pre">RELATIVE_LEVEL</span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.RELATIVE_LEVEL"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.RELATIVE_LEVEL" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.DRUM_PART">
+<span class="sig-name descname"><span class="pre">DRUM_PART</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(112,</span> <span class="pre">1,</span> <span class="pre">5,</span> <span class="pre">1,</span> <span class="pre">5,</span> <span class="pre">'Sets</span> <span class="pre">the</span> <span class="pre">drum</span> <span class="pre">partial.</span> <span class="pre">1</span> <span class="pre">-</span> <span class="pre">5')</span></em><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.DRUM_PART"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.DRUM_PART" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.DRUM_GROUP">
+<span class="sig-name descname"><span class="pre">DRUM_GROUP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(47,</span> <span class="pre">1,</span> <span class="pre">5,</span> <span class="pre">1,</span> <span class="pre">5,</span> <span class="pre">'Sets</span> <span class="pre">the</span> <span class="pre">drum</span> <span class="pre">group.</span> <span class="pre">1</span> <span class="pre">-</span> <span class="pre">5')</span></em><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.DRUM_GROUP"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.DRUM_GROUP" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.validate_value">
+<span class="sig-name descname"><span class="pre">validate_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.validate_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.validate_value" title="Link to this definition"></a></dt>
+<dd><p>Validate and convert parameter value to MIDI range (0-127)
+:param value: int The value
+:return: int The validated value</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.convert_to_midi_old">
+<span class="sig-name descname"><span class="pre">convert_to_midi_old</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.convert_to_midi_old"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.convert_to_midi_old" title="Link to this definition"></a></dt>
+<dd><p>Convert the value to MIDI range (0-127) for sending via MIDI.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong> – int value to convert</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>int MIDI value</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.convert_from_display">
+<span class="sig-name descname"><span class="pre">convert_from_display</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">display_value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.convert_from_display"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.convert_from_display" title="Link to this definition"></a></dt>
+<dd><p>Convert from display value to MIDI value (0-127)
+:param display_value: int The display value
+:return: int The MIDI value</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.get_display_value">
+<span class="sig-name descname"><span class="pre">get_display_value</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.get_display_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.get_display_value" title="Link to this definition"></a></dt>
+<dd><p>Get the display range for the parameter
+:return: Tuple[int, int] The display range</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.get_address_for_partial">
+<span class="sig-name descname"><span class="pre">get_address_for_partial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">partial_index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><span class="pre">tuple</span></a></span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.get_address_for_partial"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.get_address_for_partial" title="Link to this definition"></a></dt>
+<dd><p>Get the address for address drum partial by index
+:param partial_index: int The partial index
+:return: tuple The address</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.get_address_for_partial_name">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_address_for_partial_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">partial_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.get_address_for_partial_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.get_address_for_partial_name" title="Link to this definition"></a></dt>
+<dd><p>Get parameter area and address adjusted for partial number.
+:param partial_name: str The partial name
+:return: int The address</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.get_by_name">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_by_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><span class="pre">object</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.get_by_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.get_by_name" title="Link to this definition"></a></dt>
+<dd><p>Get the AnalogParameter by name.
+:param param_name: str The parameter name
+:return: Optional[AddressParameterDrumPartial] The parameter
+Return the parameter member by name, or None if not found</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.convert_from_midi">
+<span class="sig-name descname"><span class="pre">convert_from_midi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">midi_value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.convert_from_midi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.convert_from_midi" title="Link to this definition"></a></dt>
+<dd><p>Convert from MIDI value to display value
+:param midi_value: int The MIDI value
+:return: int The display value</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.get_envelope_param_type">
+<span class="sig-name descname"><span class="pre">get_envelope_param_type</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../../../../_modules/jdxi_editor/midi/data/parameter/drum/partial.html#AddressParameterDrumPartial.get_envelope_param_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.drum.partial.AddressParameterDrumPartial.get_envelope_param_type" title="Link to this definition"></a></dt>
+<dd><p>Returns a envelope_param_type, if the parameter is part of an envelope,
+otherwise returns None.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[str] The envelope parameter type</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../helper/index.html" class="btn btn-neutral float-left" title="jdxi_editor.midi.data.parameter.drum.helper" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../../effects/index.html" class="btn btn-neutral float-right" title="jdxi_editor.midi.data.parameter.effects" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Mark Mrooks.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

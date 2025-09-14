@@ -1,0 +1,777 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>jdxi_editor.midi.data.arpeggio.data &mdash; JD-Xi Editor 0.8.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../../_static/documentation_options.js?v=486e5634"></script>
+      <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../../index.html" class="icon icon-home">
+            JD-Xi Editor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../usage.html">Quick Start</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../usage.html#connection-of-the-jd-xi-hardware-instrument-to-the-computer">Connection of the JD-Xi Hardware Instrument to the Computer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../instrument.html">JDXi Instrument Window</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../instrument.html#features">Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../instrument.html#using-the-instrument-window">Using the Instrument Window</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../editor.html">Editor Window</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../editor.html#program-mixer-section">Program/Mixer Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../editor.html#digital-1-section">Digital 1 Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../editor.html#digital-2-section">Digital 2 Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../editor.html#drum-kit-section">Drum Kit Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../editor.html#analog-section">Analog Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../editor.html#effect-controls">Effect Controls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../editor.html#vocal-transformer">Vocal Transformer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../editor.html#arpeggiator">Arpeggiator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../editor.html#midi-file-player-and-recorder">MIDI File Player and Recorder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../editor.html#pattern-sequencer">Pattern Sequencer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../troubleshooting.html">Troubleshooting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../troubleshooting.html#general-problems">General Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../troubleshooting.html#macos">MacOS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../troubleshooting.html#windows">Windows</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../legal.html">Legal Disclaimer</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../modules.html">jdxi_editor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../jdxi_editor.html">jdxi_editor package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.jdxi.html">jdxi_editor.jdxi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.log.html">jdxi_editor.log package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.midi.html">jdxi_editor.midi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.ui.html">jdxi_editor.ui package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.globals">jdxi_editor.globals module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.main">jdxi_editor.main module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.html#jdxi_editor.main.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.project">jdxi_editor.project module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.resources">jdxi_editor.resources module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.html#jdxi_editor.resources.resource_path"><code class="docutils literal notranslate"><span class="pre">resource_path()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../autoapi/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/midi/index.html">midi</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/midi/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/colors/index.html">midi.colors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/slider/index.html">midi.slider</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/spin_box/index.html">midi.spin_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/time_ruler/index.html">midi.time_ruler</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/track/index.html">midi.track</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/track_viewer/index.html">midi.track_viewer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/utils/index.html">midi.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/adsr/index.html">adsr</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/adsr/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/adsr/adsr/index.html">adsr.adsr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/adsr/graph/index.html">adsr.graph</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/adsr/parameter/index.html">adsr.parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/adsr/plot/index.html">adsr.plot</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/pitch/index.html">pitch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/pitch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pitch/envelope/index.html">pitch.envelope</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pitch/envelope_plot/index.html">pitch.envelope_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pitch/pwm_plot/index.html">pitch.pwm_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pitch/slider_spinbox/index.html">pitch.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/piano/index.html">piano</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/piano/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/piano/key/index.html">piano.key</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/piano/keyboard/index.html">piano.keyboard</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/panel/index.html">panel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/panel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/panel/partial/index.html">panel.partial</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/wheel/index.html">wheel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/wheel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/wheel/mod/index.html">wheel.mod</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/wheel/pitch/index.html">wheel.pitch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/wheel/wheel/index.html">wheel.wheel</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/preset/index.html">preset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/preset/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/preset/combo_box/index.html">preset.combo_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/preset/panel/index.html">preset.panel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/preset/patch_name/index.html">preset.patch_name</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/slider/index.html">slider</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/slider/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/slider/slider/index.html">slider.slider</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/slider/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/slider/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/slider/index.html#slider.Slider"><code class="docutils literal notranslate"><span class="pre">Slider</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/dialog/index.html">dialog</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/dialog/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/dialog/progress/index.html">dialog.progress</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/viewer/index.html">viewer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/viewer/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/viewer/log/index.html">viewer.log</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/button/index.html">button</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/button/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/channel/index.html">button.channel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/favorite/index.html">button.favorite</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/sequencer/index.html">button.sequencer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/waveform/index.html">button.waveform</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/button/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/button/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/index.html#button.ChannelButton"><code class="docutils literal notranslate"><span class="pre">ChannelButton</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/index.html#button.SequencerSquare"><code class="docutils literal notranslate"><span class="pre">SequencerSquare</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/switch/index.html">switch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/switch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/switch/partial/index.html">switch.partial</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/switch/switch/index.html">switch.switch</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/filter/index.html">filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/filter/index.html#filter.FilterWidget"><code class="docutils literal notranslate"><span class="pre">FilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/display/index.html">display</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/display/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/display/digital/index.html">display.digital</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/display/pattern/index.html">display.pattern</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/display/value/index.html">display.value</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/pattern/index.html">pattern</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/pattern/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pattern/measure/index.html">pattern.measure</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/spin_box/index.html">spin_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/spin_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/spin_box/spin_box/index.html">spin_box.spin_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/envelope/index.html">envelope</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/envelope/base/index.html">envelope.base</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/indicator/index.html">indicator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/indicator/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/indicator/led/index.html">indicator.led</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/indicator/midi/index.html">indicator.midi</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/combo_box/index.html">combo_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/combo_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/combo_box/combo_box/index.html">combo_box.combo_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/index.html">jdxi_editor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/globals/index.html">jdxi_editor.globals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/jdxi/index.html">jdxi_editor.jdxi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/log/index.html">jdxi_editor.log</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/main/index.html">jdxi_editor.main</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/midi/index.html">jdxi_editor.midi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/project/index.html">jdxi_editor.project</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/resources/index.html">jdxi_editor.resources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/ui/index.html">jdxi_editor.ui</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html">filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#filter_plot.FilterPlot"><code class="docutils literal notranslate"><span class="pre">FilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html">envelope_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#envelope_plot.midi_value_to_float"><code class="docutils literal notranslate"><span class="pre">midi_value_to_float()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#envelope_plot.WMTEnvPlot"><code class="docutils literal notranslate"><span class="pre">WMTEnvPlot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#envelope_plot.app"><code class="docutils literal notranslate"><span class="pre">app</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/wave_selector/index.html">wave_selector</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/wave_selector/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/wave_selector/wave_selector/index.html">wave_selector.wave_selector</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/analog_filter/index.html">analog_filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/analog_filter/index.html#analog_filter.AnalogFilterWidget"><code class="docutils literal notranslate"><span class="pre">AnalogFilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/slider_spinbox/index.html">slider_spinbox</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/slider_spinbox/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/slider_spinbox/slider_spinbox/index.html">slider_spinbox.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html">analog_filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#analog_filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#analog_filter_plot.AnalogFilterPlot"><code class="docutils literal notranslate"><span class="pre">AnalogFilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">JD-Xi Editor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">jdxi_editor.midi.data.arpeggio.data</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for jdxi_editor.midi.data.arpeggio.data</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
+
+<div class="viewcode-block" id="ARPEGGIO_GRID">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/arpeggio/data/index.html#jdxi_editor.midi.data.arpeggio.data.ARPEGGIO_GRID">[docs]</a>
+<span class="n">ARPEGGIO_GRID</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;1/4&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;1/8&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;1/8 L&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;1/8 H&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;1/12&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;1/16&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;1/16 L&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;1/16 H&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;1/24&quot;</span><span class="p">,</span>
+<span class="p">]</span></div>
+
+<div class="viewcode-block" id="ARP_DURATION">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/arpeggio/data/index.html#jdxi_editor.midi.data.arpeggio.data.ARP_DURATION">[docs]</a>
+<span class="n">ARP_DURATION</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;30%&quot;</span><span class="p">,</span> <span class="s2">&quot;40%&quot;</span><span class="p">,</span> <span class="s2">&quot;50%&quot;</span><span class="p">,</span> <span class="s2">&quot;60%&quot;</span><span class="p">,</span> <span class="s2">&quot;70%&quot;</span><span class="p">,</span> <span class="s2">&quot;80%&quot;</span><span class="p">,</span> <span class="s2">&quot;90%&quot;</span><span class="p">,</span> <span class="s2">&quot;100%&quot;</span><span class="p">,</span> <span class="s2">&quot;120%&quot;</span><span class="p">,</span> <span class="s2">&quot;Full&quot;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="ARPEGGIO_MOTIF">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/arpeggio/data/index.html#jdxi_editor.midi.data.arpeggio.data.ARPEGGIO_MOTIF">[docs]</a>
+<span class="n">ARPEGGIO_MOTIF</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;Up  (L)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Up  (L&amp;H)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Up  (_)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Down  (L)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Down  (L&amp;H)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Down  (_)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Up/Down  (L)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Up/Down  (L&amp;H)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Up/Down  (_)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Random  (L)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Random  (_)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Phrase&quot;</span><span class="p">,</span>
+<span class="p">]</span></div>
+
+<div class="viewcode-block" id="ARPEGGIO_MOTIF_NAME_LIST">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/arpeggio/data/index.html#jdxi_editor.midi.data.arpeggio.data.ARPEGGIO_MOTIF_NAME_LIST">[docs]</a>
+<span class="n">ARPEGGIO_MOTIF_NAME_LIST</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;UP/L&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;UP/H&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;UP/_&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;dn/L&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;dn/H&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;dn/_&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Ud/L&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Ud/H&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Ud/_&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;rn/L&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;rn/_&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PHRASE&quot;</span><span class="p">,</span>
+<span class="p">]</span></div>
+
+<div class="viewcode-block" id="ARPEGGIO_STYLE">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/arpeggio/data/index.html#jdxi_editor.midi.data.arpeggio.data.ARPEGGIO_STYLE">[docs]</a>
+<span class="n">ARPEGGIO_STYLE</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;001: Basic 1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;002: Basic 2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;003: Basic 3&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;004: Basic 4&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;005: Basic 5&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;006: Basic 6&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;007: Seq Ptn 1 (2)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;008: Seq Ptn 2 (2)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;009: Seq Ptn 3 (2)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;010: Seq Ptn 4 (2)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;011: Seq Ptn 5 (2)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;012: Seq Ptn 6 (3)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;013: Seq Ptn 7 (3)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;014: Seq Ptn 8 (3)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;015: Seq Ptn 9 (3)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;016: Seq Ptn 10 (3)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;017: Seq Ptn 11 (3)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;018: Seq Ptn 12 (3)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;019: Seq Ptn 13 (3)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;020: Seq Ptn 14 (3)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;021: Seq Ptn 15 (3)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;022: Seq Ptn 16 (3)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;023: Seq Ptn 17 (3)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;024: Seq Ptn 18 (4)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;025: Seq Ptn 19 (4)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;026: Seq Ptn 20 (4)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;027: Seq Ptn 21 (4)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;028: Seq Ptn 22 (4)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;029: Seq Ptn 23 (4)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;030: Seq Ptn 24 (4)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;031: Seq Ptn 25 (4)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;032: Seq Ptn 26 (4)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;033: Seq Ptn 27 (4)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;034: Seq Ptn 28 (4)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;035: Seq Ptn 29 (4)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;036: Seq Ptn 30 (5)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;037: Seq Ptn 31 (5)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;038: Seq Ptn 32 (6)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;039: Seq Ptn 33 (p)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;040: Seq Ptn 34 (p)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;041: Seq Ptn 35 (p)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;042: Seq Ptn 36 (p)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;043: Seq Ptn 37 (p)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;044: Seq Ptn 38 (p)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;045: Seq Ptn 39 (p)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;046: Seq Ptn 40 (p)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;047: Seq Ptn 41 (p)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;048: Seq Ptn 42 (p)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;049: Seq Ptn 43 (p)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;050: Seq Ptn 44 (p)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;051: Seq Ptn 45 (p)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;052: Seq Ptn 46 (p)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;053: Seq Ptn 47 (p)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;054: Seq Ptn 48 (p)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;055: Seq Ptn 49 (p)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;056: Seq Ptn 50 (p)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;057: Seq Ptn 51 (p)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;058: Seq Ptn 52 (p)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;059: Seq Ptn 53 (p)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;060: Seq Ptn 54 (p)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;061: Seq Ptn 55 (p)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;062: Seq Ptn 56 (p)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;063: Seq Ptn 57 (p)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;064: Seq Ptn 58 (p)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;065: Seq Ptn 59 (p)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;066: Seq Ptn 60 (p)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;067: Bassline 1 (1)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;068: Bassline 2 (1)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;069: Bassline 3 (1)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;070: Bassline 4 (1)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;071: Bassline 5 (1)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;072: Bassline 6 (1)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;073: Bassline 7 (1)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;074: Bassline 8 (1)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;075: Bassline 9 (1)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;076: Bassline 10 (2)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;077: Bassline 11 (2)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;078: Bassline 12 (2)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;079: Bassline 13 (2)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;080: Bassline 14 (2)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;081: Bassline 15 (2)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;082: Bassline 16 (3)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;083: Bassline 17 (3)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;084: Bassline 18 (3)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;085: Bassline 19 (3)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;086: Bassline 20 (3)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;087: Bassline 21 (3)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;088: Bassline 22 (p)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;089: Bassline 23 (p)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;090: Bassline 24 (p)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;091: Bassline 25 (p)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;092: Bassline 26 (p)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;093: Bassline 27 (p)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;094: Bassline 28 (p)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;095: Bassline 29 (p)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;096: Bassline 30 (p)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;097: Bassline 31 (p)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;098: Bassline 32 (p)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;099: Bassline 33 (p)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;100: Bassline 34 (p)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;101: Bassline 35 (p)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;102: Bassline 36 (p)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;103: Bassline 37 (p)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;104: Bassline 38 (p)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;105: Bassline 39 (p)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;106: Bassline 40 (p)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;107: Bassline 41 (p)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;108: Sliced 1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;109: Sliced 2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;110: Sliced 3&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;111: Sliced 4&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;112: Sliced 5&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;113: Sliced 6&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;114: Sliced 7&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;115: Sliced 8&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;116: Sliced 9&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;117: Sliced 10&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;118: Gtr Arp 1 (4)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;119: Gtr Arp 2 (5)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;120: Gtr Arp 3 (6)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;121: Gtr Backing 1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;122: Gtr Backing 2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;123: Key Backing 1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;124: Key Backing 2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;125: Key Backing 3 (1-3)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;126: 1/1 Note Trg (1)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;127: 1/2 Note Trg (1)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;128: 1/4 Note Trg (1)&quot;</span><span class="p">,</span>
+<span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="ArpeggioStyle">
+<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.arpeggio.html#jdxi_editor.midi.data.arpeggio.data.ArpeggioStyle">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ArpeggioStyle</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<div class="viewcode-block" id="ArpeggioStyle.BASIC_1">
+<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.arpeggio.html#jdxi_editor.midi.data.arpeggio.data.ArpeggioStyle.BASIC_1">[docs]</a>
+    <span class="n">BASIC_1</span> <span class="o">=</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="ArpeggioStyle.names">
+<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.arpeggio.html#jdxi_editor.midi.data.arpeggio.data.ArpeggioStyle.names">[docs]</a>
+    <span class="n">names</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="mi">0</span><span class="p">:</span> <span class="s2">&quot;001: Basic 1&quot;</span><span class="p">,</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;002: Basic 2&quot;</span><span class="p">,</span>
+        <span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;003: Basic 3&quot;</span><span class="p">,</span>
+        <span class="mi">3</span><span class="p">:</span> <span class="s2">&quot;004: Basic 4&quot;</span><span class="p">,</span>
+        <span class="mi">4</span><span class="p">:</span> <span class="s2">&quot;005: Basic 5&quot;</span><span class="p">,</span>
+        <span class="mi">5</span><span class="p">:</span> <span class="s2">&quot;006: Basic 6&quot;</span><span class="p">,</span>
+        <span class="mi">6</span><span class="p">:</span> <span class="s2">&quot;007: Seq Ptn 1 (2)&quot;</span><span class="p">,</span>
+        <span class="mi">7</span><span class="p">:</span> <span class="s2">&quot;008: Seq Ptn 2 (2)&quot;</span><span class="p">,</span>
+        <span class="mi">8</span><span class="p">:</span> <span class="s2">&quot;009: Seq Ptn 3 (2)&quot;</span><span class="p">,</span>
+        <span class="mi">9</span><span class="p">:</span> <span class="s2">&quot;010: Seq Ptn 4 (2)&quot;</span><span class="p">,</span>
+        <span class="mi">10</span><span class="p">:</span> <span class="s2">&quot;011: Seq Ptn 5 (2)&quot;</span><span class="p">,</span>
+        <span class="mi">11</span><span class="p">:</span> <span class="s2">&quot;012: Seq Ptn 6 (3)&quot;</span><span class="p">,</span>
+        <span class="mi">12</span><span class="p">:</span> <span class="s2">&quot;013: Seq Ptn 7 (3)&quot;</span><span class="p">,</span>
+        <span class="mi">13</span><span class="p">:</span> <span class="s2">&quot;014: Seq Ptn 8 (3)&quot;</span><span class="p">,</span>
+        <span class="mi">14</span><span class="p">:</span> <span class="s2">&quot;015: Seq Ptn 9 (3)&quot;</span><span class="p">,</span>
+        <span class="mi">15</span><span class="p">:</span> <span class="s2">&quot;016: Seq Ptn 10 (3)&quot;</span><span class="p">,</span>
+        <span class="mi">16</span><span class="p">:</span> <span class="s2">&quot;017: Seq Ptn 11 (3)&quot;</span><span class="p">,</span>
+        <span class="mi">17</span><span class="p">:</span> <span class="s2">&quot;018: Seq Ptn 12 (3)&quot;</span><span class="p">,</span>
+        <span class="mi">18</span><span class="p">:</span> <span class="s2">&quot;019: Seq Ptn 13 (3)&quot;</span><span class="p">,</span>
+        <span class="mi">19</span><span class="p">:</span> <span class="s2">&quot;020: Seq Ptn 14 (3)&quot;</span><span class="p">,</span>
+        <span class="mi">20</span><span class="p">:</span> <span class="s2">&quot;021: Seq Ptn 15 (3)&quot;</span><span class="p">,</span>
+        <span class="mi">21</span><span class="p">:</span> <span class="s2">&quot;022: Seq Ptn 16 (3)&quot;</span><span class="p">,</span>
+        <span class="mi">22</span><span class="p">:</span> <span class="s2">&quot;023: Seq Ptn 17 (3)&quot;</span><span class="p">,</span>
+        <span class="mi">23</span><span class="p">:</span> <span class="s2">&quot;024: Seq Ptn 18 (4)&quot;</span><span class="p">,</span>
+        <span class="mi">24</span><span class="p">:</span> <span class="s2">&quot;025: Seq Ptn 19 (4)&quot;</span><span class="p">,</span>
+        <span class="mi">25</span><span class="p">:</span> <span class="s2">&quot;026: Seq Ptn 20 (4)&quot;</span><span class="p">,</span>
+        <span class="mi">26</span><span class="p">:</span> <span class="s2">&quot;027: Seq Ptn 21 (4)&quot;</span><span class="p">,</span>
+        <span class="mi">27</span><span class="p">:</span> <span class="s2">&quot;028: Seq Ptn 22 (4)&quot;</span><span class="p">,</span>
+        <span class="mi">28</span><span class="p">:</span> <span class="s2">&quot;029: Seq Ptn 23 (4)&quot;</span><span class="p">,</span>
+        <span class="mi">29</span><span class="p">:</span> <span class="s2">&quot;030: Seq Ptn 24 (4)&quot;</span><span class="p">,</span>
+        <span class="mi">30</span><span class="p">:</span> <span class="s2">&quot;031: Seq Ptn 25 (4)&quot;</span><span class="p">,</span>
+        <span class="mi">31</span><span class="p">:</span> <span class="s2">&quot;032: Seq Ptn 26 (4)&quot;</span><span class="p">,</span>
+        <span class="mi">32</span><span class="p">:</span> <span class="s2">&quot;033: Seq Ptn 27 (4)&quot;</span><span class="p">,</span>
+        <span class="mi">33</span><span class="p">:</span> <span class="s2">&quot;034: Seq Ptn 28 (4)&quot;</span><span class="p">,</span>
+        <span class="mi">34</span><span class="p">:</span> <span class="s2">&quot;035: Seq Ptn 29 (4)&quot;</span><span class="p">,</span>
+        <span class="mi">35</span><span class="p">:</span> <span class="s2">&quot;036: Seq Ptn 30 (5)&quot;</span><span class="p">,</span>
+        <span class="mi">36</span><span class="p">:</span> <span class="s2">&quot;037: Seq Ptn 31 (5)&quot;</span><span class="p">,</span>
+        <span class="mi">37</span><span class="p">:</span> <span class="s2">&quot;038: Seq Ptn 32 (6)&quot;</span><span class="p">,</span>
+        <span class="mi">38</span><span class="p">:</span> <span class="s2">&quot;039: Seq Ptn 33 (p)&quot;</span><span class="p">,</span>
+        <span class="mi">39</span><span class="p">:</span> <span class="s2">&quot;040: Seq Ptn 34 (p)&quot;</span><span class="p">,</span>
+        <span class="mi">40</span><span class="p">:</span> <span class="s2">&quot;041: Seq Ptn 35 (p)&quot;</span><span class="p">,</span>
+        <span class="mi">41</span><span class="p">:</span> <span class="s2">&quot;042: Seq Ptn 36 (p)&quot;</span><span class="p">,</span>
+        <span class="mi">42</span><span class="p">:</span> <span class="s2">&quot;043: Seq Ptn 37 (p)&quot;</span><span class="p">,</span>
+        <span class="mi">43</span><span class="p">:</span> <span class="s2">&quot;044: Seq Ptn 38 (p)&quot;</span><span class="p">,</span>
+        <span class="mi">44</span><span class="p">:</span> <span class="s2">&quot;045: Seq Ptn 39 (p)&quot;</span><span class="p">,</span>
+        <span class="mi">45</span><span class="p">:</span> <span class="s2">&quot;046: Seq Ptn 40 (p)&quot;</span><span class="p">,</span>
+        <span class="mi">46</span><span class="p">:</span> <span class="s2">&quot;047: Seq Ptn 41 (p)&quot;</span><span class="p">,</span>
+        <span class="mi">47</span><span class="p">:</span> <span class="s2">&quot;048: Seq Ptn 42 (p)&quot;</span><span class="p">,</span>
+        <span class="mi">48</span><span class="p">:</span> <span class="s2">&quot;049: Seq Ptn 43 (p)&quot;</span><span class="p">,</span>
+        <span class="mi">49</span><span class="p">:</span> <span class="s2">&quot;050: Seq Ptn 44 (p)&quot;</span><span class="p">,</span>
+        <span class="mi">50</span><span class="p">:</span> <span class="s2">&quot;051: Seq Ptn 45 (p)&quot;</span><span class="p">,</span>
+        <span class="mi">51</span><span class="p">:</span> <span class="s2">&quot;052: Seq Ptn 46 (p)&quot;</span><span class="p">,</span>
+        <span class="mi">52</span><span class="p">:</span> <span class="s2">&quot;053: Seq Ptn 47 (p)&quot;</span><span class="p">,</span>
+        <span class="mi">53</span><span class="p">:</span> <span class="s2">&quot;054: Seq Ptn 48 (p)&quot;</span><span class="p">,</span>
+        <span class="mi">54</span><span class="p">:</span> <span class="s2">&quot;055: Seq Ptn 49 (p)&quot;</span><span class="p">,</span>
+        <span class="mi">55</span><span class="p">:</span> <span class="s2">&quot;056: Seq Ptn 50 (p)&quot;</span><span class="p">,</span>
+        <span class="mi">56</span><span class="p">:</span> <span class="s2">&quot;057: Seq Ptn 51 (p)&quot;</span><span class="p">,</span>
+        <span class="mi">57</span><span class="p">:</span> <span class="s2">&quot;058: Seq Ptn 52 (p)&quot;</span><span class="p">,</span>
+        <span class="mi">58</span><span class="p">:</span> <span class="s2">&quot;059: Seq Ptn 53 (p)&quot;</span><span class="p">,</span>
+        <span class="mi">59</span><span class="p">:</span> <span class="s2">&quot;060: Seq Ptn 54 (p)&quot;</span><span class="p">,</span>
+        <span class="mi">60</span><span class="p">:</span> <span class="s2">&quot;061: Seq Ptn 55 (p)&quot;</span><span class="p">,</span>
+        <span class="mi">61</span><span class="p">:</span> <span class="s2">&quot;062: Seq Ptn 56 (p)&quot;</span><span class="p">,</span>
+        <span class="mi">62</span><span class="p">:</span> <span class="s2">&quot;063: Seq Ptn 57 (p)&quot;</span><span class="p">,</span>
+        <span class="mi">63</span><span class="p">:</span> <span class="s2">&quot;064: Seq Ptn 58 (p)&quot;</span><span class="p">,</span>
+        <span class="mi">64</span><span class="p">:</span> <span class="s2">&quot;065: Seq Ptn 59 (p)&quot;</span><span class="p">,</span>
+        <span class="mi">65</span><span class="p">:</span> <span class="s2">&quot;066: Seq Ptn 60 (p)&quot;</span><span class="p">,</span>
+        <span class="mi">66</span><span class="p">:</span> <span class="s2">&quot;067: Bassline 1 (1)&quot;</span><span class="p">,</span>
+        <span class="mi">67</span><span class="p">:</span> <span class="s2">&quot;068: Bassline 2 (1)&quot;</span><span class="p">,</span>
+        <span class="mi">68</span><span class="p">:</span> <span class="s2">&quot;069: Bassline 3 (1)&quot;</span><span class="p">,</span>
+        <span class="mi">69</span><span class="p">:</span> <span class="s2">&quot;070: Bassline 4 (1)&quot;</span><span class="p">,</span>
+        <span class="mi">70</span><span class="p">:</span> <span class="s2">&quot;071: Bassline 5 (1)&quot;</span><span class="p">,</span>
+        <span class="mi">71</span><span class="p">:</span> <span class="s2">&quot;072: Bassline 6 (1)&quot;</span><span class="p">,</span>
+        <span class="mi">72</span><span class="p">:</span> <span class="s2">&quot;073: Bassline 7 (1)&quot;</span><span class="p">,</span>
+        <span class="mi">73</span><span class="p">:</span> <span class="s2">&quot;074: Bassline 8 (1)&quot;</span><span class="p">,</span>
+        <span class="mi">74</span><span class="p">:</span> <span class="s2">&quot;075: Bassline 9 (1)&quot;</span><span class="p">,</span>
+        <span class="mi">75</span><span class="p">:</span> <span class="s2">&quot;076: Bassline 10 (2)&quot;</span><span class="p">,</span>
+        <span class="mi">76</span><span class="p">:</span> <span class="s2">&quot;077: Bassline 11 (2)&quot;</span><span class="p">,</span>
+        <span class="mi">77</span><span class="p">:</span> <span class="s2">&quot;078: Bassline 12 (2)&quot;</span><span class="p">,</span>
+        <span class="mi">78</span><span class="p">:</span> <span class="s2">&quot;079: Bassline 13 (2)&quot;</span><span class="p">,</span>
+        <span class="mi">79</span><span class="p">:</span> <span class="s2">&quot;080: Bassline 14 (2)&quot;</span><span class="p">,</span>
+        <span class="mi">80</span><span class="p">:</span> <span class="s2">&quot;081: Bassline 15 (2)&quot;</span><span class="p">,</span>
+        <span class="mi">81</span><span class="p">:</span> <span class="s2">&quot;082: Bassline 16 (3)&quot;</span><span class="p">,</span>
+        <span class="mi">82</span><span class="p">:</span> <span class="s2">&quot;083: Bassline 17 (3)&quot;</span><span class="p">,</span>
+        <span class="mi">83</span><span class="p">:</span> <span class="s2">&quot;084: Bassline 18 (3)&quot;</span><span class="p">,</span>
+        <span class="mi">84</span><span class="p">:</span> <span class="s2">&quot;085: Bassline 19 (3)&quot;</span><span class="p">,</span>
+        <span class="mi">85</span><span class="p">:</span> <span class="s2">&quot;086: Bassline 20 (3)&quot;</span><span class="p">,</span>
+        <span class="mi">86</span><span class="p">:</span> <span class="s2">&quot;087: Bassline 21 (3)&quot;</span><span class="p">,</span>
+        <span class="mi">87</span><span class="p">:</span> <span class="s2">&quot;088: Bassline 22 (p)&quot;</span><span class="p">,</span>
+        <span class="mi">88</span><span class="p">:</span> <span class="s2">&quot;089: Bassline 23 (p)&quot;</span><span class="p">,</span>
+        <span class="mi">89</span><span class="p">:</span> <span class="s2">&quot;090: Bassline 24 (p)&quot;</span><span class="p">,</span>
+        <span class="mi">90</span><span class="p">:</span> <span class="s2">&quot;091: Bassline 25 (p)&quot;</span><span class="p">,</span>
+        <span class="mi">91</span><span class="p">:</span> <span class="s2">&quot;092: Bassline 26 (p)&quot;</span><span class="p">,</span>
+        <span class="mi">92</span><span class="p">:</span> <span class="s2">&quot;093: Bassline 27 (p)&quot;</span><span class="p">,</span>
+        <span class="mi">93</span><span class="p">:</span> <span class="s2">&quot;094: Bassline 28 (p)&quot;</span><span class="p">,</span>
+        <span class="mi">94</span><span class="p">:</span> <span class="s2">&quot;095: Bassline 29 (p)&quot;</span><span class="p">,</span>
+        <span class="mi">95</span><span class="p">:</span> <span class="s2">&quot;096: Bassline 30 (p)&quot;</span><span class="p">,</span>
+        <span class="mi">96</span><span class="p">:</span> <span class="s2">&quot;097: Bassline 31 (p)&quot;</span><span class="p">,</span>
+        <span class="mi">97</span><span class="p">:</span> <span class="s2">&quot;098: Bassline 32 (p)&quot;</span><span class="p">,</span>
+        <span class="mi">98</span><span class="p">:</span> <span class="s2">&quot;099: Bassline 33 (p)&quot;</span><span class="p">,</span>
+        <span class="mi">99</span><span class="p">:</span> <span class="s2">&quot;100: Bassline 34 (p)&quot;</span><span class="p">,</span>
+        <span class="mi">100</span><span class="p">:</span> <span class="s2">&quot;101: Bassline 35 (p)&quot;</span><span class="p">,</span>
+        <span class="mi">101</span><span class="p">:</span> <span class="s2">&quot;102: Bassline 36 (p)&quot;</span><span class="p">,</span>
+        <span class="mi">102</span><span class="p">:</span> <span class="s2">&quot;103: Bassline 37 (p)&quot;</span><span class="p">,</span>
+        <span class="mi">103</span><span class="p">:</span> <span class="s2">&quot;104: Bassline 38 (p)&quot;</span><span class="p">,</span>
+        <span class="mi">104</span><span class="p">:</span> <span class="s2">&quot;105: Bassline 39 (p)&quot;</span><span class="p">,</span>
+        <span class="mi">105</span><span class="p">:</span> <span class="s2">&quot;106: Bassline 40 (p)&quot;</span><span class="p">,</span>
+        <span class="mi">106</span><span class="p">:</span> <span class="s2">&quot;107: Bassline 41 (p)&quot;</span><span class="p">,</span>
+        <span class="mi">107</span><span class="p">:</span> <span class="s2">&quot;108: Sliced 1&quot;</span><span class="p">,</span>
+        <span class="mi">108</span><span class="p">:</span> <span class="s2">&quot;109: Sliced 2&quot;</span><span class="p">,</span>
+        <span class="mi">109</span><span class="p">:</span> <span class="s2">&quot;110: Sliced 3&quot;</span><span class="p">,</span>
+        <span class="mi">110</span><span class="p">:</span> <span class="s2">&quot;111: Sliced 4&quot;</span><span class="p">,</span>
+        <span class="mi">111</span><span class="p">:</span> <span class="s2">&quot;112: Sliced 5&quot;</span><span class="p">,</span>
+        <span class="mi">112</span><span class="p">:</span> <span class="s2">&quot;113: Sliced 6&quot;</span><span class="p">,</span>
+        <span class="mi">113</span><span class="p">:</span> <span class="s2">&quot;114: Sliced 7&quot;</span><span class="p">,</span>
+        <span class="mi">114</span><span class="p">:</span> <span class="s2">&quot;115: Sliced 8&quot;</span><span class="p">,</span>
+        <span class="mi">115</span><span class="p">:</span> <span class="s2">&quot;116: Sliced 9&quot;</span><span class="p">,</span>
+        <span class="mi">116</span><span class="p">:</span> <span class="s2">&quot;117: Sliced 10&quot;</span><span class="p">,</span>
+        <span class="mi">117</span><span class="p">:</span> <span class="s2">&quot;118: Gtr Arp 1 (4)&quot;</span><span class="p">,</span>
+        <span class="mi">118</span><span class="p">:</span> <span class="s2">&quot;119: Gtr Arp 2 (5)&quot;</span><span class="p">,</span>
+        <span class="mi">119</span><span class="p">:</span> <span class="s2">&quot;120: Gtr Arp 3 (6)&quot;</span><span class="p">,</span>
+        <span class="mi">120</span><span class="p">:</span> <span class="s2">&quot;121: Gtr Backing 1&quot;</span><span class="p">,</span>
+        <span class="mi">121</span><span class="p">:</span> <span class="s2">&quot;122: Gtr Backing 2&quot;</span><span class="p">,</span>
+        <span class="mi">122</span><span class="p">:</span> <span class="s2">&quot;123: Key Backing 1&quot;</span><span class="p">,</span>
+        <span class="mi">123</span><span class="p">:</span> <span class="s2">&quot;124: Key Backing 2&quot;</span><span class="p">,</span>
+        <span class="mi">124</span><span class="p">:</span> <span class="s2">&quot;125: Key Backing 3 (1-3)&quot;</span><span class="p">,</span>
+        <span class="mi">125</span><span class="p">:</span> <span class="s2">&quot;126: 1/1 Note Trg (1)&quot;</span><span class="p">,</span>
+        <span class="mi">126</span><span class="p">:</span> <span class="s2">&quot;127: 1/2 Note Trg (1)&quot;</span><span class="p">,</span>
+        <span class="mi">127</span><span class="p">:</span> <span class="s2">&quot;128: 1/4 Note Trg (1)&quot;</span><span class="p">,</span>
+    <span class="p">}</span></div>
+
+
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="ArpeggioStyle.display_name">
+<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.arpeggio.html#jdxi_editor.midi.data.arpeggio.data.ArpeggioStyle.display_name">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">display_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get display name for grid value&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span></div>
+
+
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="ArpeggioStyle.midi_value">
+<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.arpeggio.html#jdxi_editor.midi.data.arpeggio.data.ArpeggioStyle.midi_value">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">midi_value</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get MIDI value for grid&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="PATTERNS">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/arpeggio/data/index.html#jdxi_editor.midi.data.arpeggio.data.PATTERNS">[docs]</a>
+<span class="n">PATTERNS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;UP&quot;</span><span class="p">,</span> <span class="s2">&quot;DOWN&quot;</span><span class="p">,</span> <span class="s2">&quot;UP/DOWN&quot;</span><span class="p">,</span> <span class="s2">&quot;RANDOM&quot;</span><span class="p">,</span> <span class="s2">&quot;NOTE ORDER&quot;</span><span class="p">,</span> <span class="s2">&quot;CHORD&quot;</span><span class="p">,</span> <span class="s2">&quot;USER&quot;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="DURATIONS">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/arpeggio/data/index.html#jdxi_editor.midi.data.arpeggio.data.DURATIONS">[docs]</a>
+<span class="n">DURATIONS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;1/4&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;1/8&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;1/8 Triplet&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;1/16&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;1/16 Triplet&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;1/32&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;1/32 Triplet&quot;</span><span class="p">,</span>
+<span class="p">]</span></div>
+
+<div class="viewcode-block" id="OCTAVE_RANGES">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/arpeggio/data/index.html#jdxi_editor.midi.data.arpeggio.data.OCTAVE_RANGES">[docs]</a>
+<span class="n">OCTAVE_RANGES</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Mark Mrooks.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

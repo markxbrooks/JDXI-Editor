@@ -11,7 +11,7 @@ Notes can be played on the keyboard, and the JD-Xi Editor will send the MIDI not
 The JD-Xi Editor can be used to edit the different parameters of the JD-Xi instrument, such as the different synths, effects, and vocal effects.
 
 Connection of the JD-Xi Hardware Instrument to the Computer
----------------
+============================================================
 
 Use a USB-B ('host') to USB A or C cable to connect to the USB host connection on the instrument. Connect the other, non-host end to the computer.
 

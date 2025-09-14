@@ -1,0 +1,887 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>jdxi_editor.midi.io.output_handler &mdash; JD-Xi Editor 0.8.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=486e5634"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            JD-Xi Editor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage.html">Quick Start</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../usage.html#connection-of-the-jd-xi-hardware-instrument-to-the-computer">Connection of the JD-Xi Hardware Instrument to the Computer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../instrument.html">JDXi Instrument Window</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../instrument.html#features">Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../instrument.html#using-the-instrument-window">Using the Instrument Window</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../editor.html">Editor Window</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../editor.html#program-mixer-section">Program/Mixer Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../editor.html#digital-1-section">Digital 1 Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../editor.html#digital-2-section">Digital 2 Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../editor.html#drum-kit-section">Drum Kit Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../editor.html#analog-section">Analog Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../editor.html#effect-controls">Effect Controls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../editor.html#vocal-transformer">Vocal Transformer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../editor.html#arpeggiator">Arpeggiator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../editor.html#midi-file-player-and-recorder">MIDI File Player and Recorder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../editor.html#pattern-sequencer">Pattern Sequencer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../troubleshooting.html">Troubleshooting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../troubleshooting.html#general-problems">General Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../troubleshooting.html#macos">MacOS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../troubleshooting.html#windows">Windows</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../legal.html">Legal Disclaimer</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules.html">jdxi_editor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../jdxi_editor.html">jdxi_editor package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../jdxi_editor.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../jdxi_editor.jdxi.html">jdxi_editor.jdxi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../jdxi_editor.log.html">jdxi_editor.log package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../jdxi_editor.midi.html">jdxi_editor.midi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../jdxi_editor.ui.html">jdxi_editor.ui package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../jdxi_editor.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../jdxi_editor.html#module-jdxi_editor.globals">jdxi_editor.globals module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../jdxi_editor.html#module-jdxi_editor.main">jdxi_editor.main module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../jdxi_editor.html#jdxi_editor.main.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../jdxi_editor.html#module-jdxi_editor.project">jdxi_editor.project module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../jdxi_editor.html#module-jdxi_editor.resources">jdxi_editor.resources module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../jdxi_editor.html#jdxi_editor.resources.resource_path"><code class="docutils literal notranslate"><span class="pre">resource_path()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../jdxi_editor.html#module-jdxi_editor">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../autoapi/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/midi/index.html">midi</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/midi/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/midi/colors/index.html">midi.colors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/midi/slider/index.html">midi.slider</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/midi/spin_box/index.html">midi.spin_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/midi/time_ruler/index.html">midi.time_ruler</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/midi/track/index.html">midi.track</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/midi/track_viewer/index.html">midi.track_viewer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/midi/utils/index.html">midi.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/adsr/index.html">adsr</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/adsr/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/adsr/adsr/index.html">adsr.adsr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/adsr/graph/index.html">adsr.graph</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/adsr/parameter/index.html">adsr.parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/adsr/plot/index.html">adsr.plot</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/pitch/index.html">pitch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/pitch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/pitch/envelope/index.html">pitch.envelope</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/pitch/envelope_plot/index.html">pitch.envelope_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/pitch/pwm_plot/index.html">pitch.pwm_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/pitch/slider_spinbox/index.html">pitch.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/piano/index.html">piano</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/piano/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/piano/key/index.html">piano.key</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/piano/keyboard/index.html">piano.keyboard</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/panel/index.html">panel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/panel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/panel/partial/index.html">panel.partial</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/wheel/index.html">wheel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/wheel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/wheel/mod/index.html">wheel.mod</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/wheel/pitch/index.html">wheel.pitch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/wheel/wheel/index.html">wheel.wheel</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/preset/index.html">preset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/preset/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/preset/combo_box/index.html">preset.combo_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/preset/panel/index.html">preset.panel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/preset/patch_name/index.html">preset.patch_name</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/slider/index.html">slider</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/slider/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/slider/slider/index.html">slider.slider</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/slider/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/slider/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/slider/index.html#slider.Slider"><code class="docutils literal notranslate"><span class="pre">Slider</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/dialog/index.html">dialog</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/dialog/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/dialog/progress/index.html">dialog.progress</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/viewer/index.html">viewer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/viewer/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/viewer/log/index.html">viewer.log</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/button/index.html">button</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/button/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/button/channel/index.html">button.channel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/button/favorite/index.html">button.favorite</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/button/sequencer/index.html">button.sequencer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/button/waveform/index.html">button.waveform</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/button/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/button/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/button/index.html#button.ChannelButton"><code class="docutils literal notranslate"><span class="pre">ChannelButton</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/button/index.html#button.SequencerSquare"><code class="docutils literal notranslate"><span class="pre">SequencerSquare</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/switch/index.html">switch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/switch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/switch/partial/index.html">switch.partial</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/switch/switch/index.html">switch.switch</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/filter/index.html">filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/filter/index.html#filter.FilterWidget"><code class="docutils literal notranslate"><span class="pre">FilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/display/index.html">display</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/display/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/display/digital/index.html">display.digital</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/display/pattern/index.html">display.pattern</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/display/value/index.html">display.value</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/pattern/index.html">pattern</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/pattern/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/pattern/measure/index.html">pattern.measure</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/spin_box/index.html">spin_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/spin_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/spin_box/spin_box/index.html">spin_box.spin_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/envelope/index.html">envelope</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/envelope/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/envelope/base/index.html">envelope.base</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/indicator/index.html">indicator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/indicator/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/indicator/led/index.html">indicator.led</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/indicator/midi/index.html">indicator.midi</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/combo_box/index.html">combo_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/combo_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/combo_box/combo_box/index.html">combo_box.combo_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/jdxi_editor/index.html">jdxi_editor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/jdxi_editor/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/jdxi_editor/globals/index.html">jdxi_editor.globals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/jdxi_editor/jdxi/index.html">jdxi_editor.jdxi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/jdxi_editor/log/index.html">jdxi_editor.log</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/jdxi_editor/main/index.html">jdxi_editor.main</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/jdxi_editor/midi/index.html">jdxi_editor.midi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/jdxi_editor/project/index.html">jdxi_editor.project</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/jdxi_editor/resources/index.html">jdxi_editor.resources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/jdxi_editor/ui/index.html">jdxi_editor.ui</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/filter_plot/index.html">filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/filter_plot/index.html#filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/filter_plot/index.html#filter_plot.FilterPlot"><code class="docutils literal notranslate"><span class="pre">FilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/envelope_plot/index.html">envelope_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/envelope_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/envelope_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/envelope_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/envelope_plot/index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/envelope_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/envelope_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/envelope_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/envelope_plot/index.html#envelope_plot.midi_value_to_float"><code class="docutils literal notranslate"><span class="pre">midi_value_to_float()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/envelope_plot/index.html#envelope_plot.WMTEnvPlot"><code class="docutils literal notranslate"><span class="pre">WMTEnvPlot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/envelope_plot/index.html#envelope_plot.app"><code class="docutils literal notranslate"><span class="pre">app</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/wave_selector/index.html">wave_selector</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/wave_selector/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/wave_selector/wave_selector/index.html">wave_selector.wave_selector</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/analog_filter/index.html">analog_filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/analog_filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/analog_filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/analog_filter/index.html#analog_filter.AnalogFilterWidget"><code class="docutils literal notranslate"><span class="pre">AnalogFilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/slider_spinbox/index.html">slider_spinbox</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/slider_spinbox/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/slider_spinbox/slider_spinbox/index.html">slider_spinbox.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/analog_filter_plot/index.html">analog_filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/analog_filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/analog_filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/analog_filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/analog_filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/analog_filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/analog_filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/analog_filter_plot/index.html#analog_filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/analog_filter_plot/index.html#analog_filter_plot.AnalogFilterPlot"><code class="docutils literal notranslate"><span class="pre">AnalogFilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">JD-Xi Editor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">jdxi_editor.midi.io.output_handler</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for jdxi_editor.midi.io.output_handler</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">MIDI Output Handler</span>
+<span class="sd">===================</span>
+
+<span class="sd">This module provides the `MIDIOutHandler` class for managing MIDI output, allowing users to send</span>
+<span class="sd">note-on, note-off, and control change messages through address specified MIDI output port.</span>
+
+<span class="sd">Dependencies:</span>
+<span class="sd">    - rtmidi: A library for working with MIDI messages and ports.</span>
+
+<span class="sd">Example usage:</span>
+<span class="sd">    handler = MIDIOutHandler(&quot;MIDI Output Port&quot;)</span>
+<span class="sd">    handler.send_note_on(60, velocity=100)</span>
+<span class="sd">    handler.send_note_off(60)</span>
+<span class="sd">    handler.send_control_change(7, 127)</span>
+<span class="sd">    handler.close()</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Iterable</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">PySide6.QtCore</span><span class="w"> </span><span class="kn">import</span> <span class="n">Signal</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.jdxi.midi.constant</span><span class="w"> </span><span class="kn">import</span> <span class="n">MidiConstant</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.jdxi.sysex.bitmask</span><span class="w"> </span><span class="kn">import</span> <span class="n">BitMask</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.log.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">Logger</span> <span class="k">as</span> <span class="n">log</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.data.parsers.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">OUTBOUND_MESSAGE_IGNORED_KEYS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.io.controller</span><span class="w"> </span><span class="kn">import</span> <span class="n">MidiIOController</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.io.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">format_midi_message_to_hex_string</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.message</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">IdentityRequestMessage</span><span class="p">,</span>
+    <span class="n">MidiMessage</span><span class="p">,</span>
+    <span class="n">ProgramChangeMessage</span><span class="p">,</span>
+    <span class="n">ControlChangeMessage</span><span class="p">,</span>
+    <span class="n">ChannelMessage</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.sysex.parser.sysex</span><span class="w"> </span><span class="kn">import</span> <span class="n">JDXiSysExParser</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.sysex.validation</span><span class="w"> </span><span class="kn">import</span> <span class="n">validate_midi_message</span>
+
+
+<div class="viewcode-block" id="MidiOutHandler">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.io.html#jdxi_editor.midi.io.output_handler.MidiOutHandler">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">MidiOutHandler</span><span class="p">(</span><span class="n">MidiIOController</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Helper class for MIDI communication with the JD-Xi.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="MidiOutHandler.midi_message_outgoing">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.io.html#jdxi_editor.midi.io.output_handler.MidiOutHandler.midi_message_outgoing">[docs]</a>
+    <span class="n">midi_message_outgoing</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="nb">object</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MidiOutHandler.__init__">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.io.html#jdxi_editor.midi.io.output_handler.MidiOutHandler.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+<div class="viewcode-block" id="MidiOutHandler.parent">
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/io/output_handler/index.html#jdxi_editor.midi.io.output_handler.MidiOutHandler.parent">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span></div>
+
+<div class="viewcode-block" id="MidiOutHandler.channel">
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/io/output_handler/index.html#jdxi_editor.midi.io.output_handler.MidiOutHandler.channel">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">channel</span> <span class="o">=</span> <span class="mi">1</span></div>
+
+<div class="viewcode-block" id="MidiOutHandler.sysex_parser">
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/io/output_handler/index.html#jdxi_editor.midi.io.output_handler.MidiOutHandler.sysex_parser">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sysex_parser</span> <span class="o">=</span> <span class="n">JDXiSysExParser</span><span class="p">()</span></div>
+</div>
+
+
+<div class="viewcode-block" id="MidiOutHandler.send_raw_message">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.io.html#jdxi_editor.midi.io.output_handler.MidiOutHandler.send_raw_message">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">send_raw_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                         <span class="n">message</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Send a validated raw MIDI message through the output port.</span>
+<span class="sd">        This method logs the message, checks the validity using `validate_midi_message`,</span>
+<span class="sd">        and attempts to send it via the MIDI output port.</span>
+<span class="sd">        :param message: A MIDI message represented as a list of integers or a bytes object.</span>
+<span class="sd">        :type message: Union[bytes, List[int]]</span>
+<span class="sd">        :return: True if the message was successfully sent, False otherwise.</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">validate_midi_message</span><span class="p">(</span><span class="n">message</span><span class="p">):</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="s2">&quot;MIDI message validation failed.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="n">formatted_message</span> <span class="o">=</span> <span class="n">format_midi_message_to_hex_string</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">midi_out</span><span class="o">.</span><span class="n">is_port_open</span><span class="p">():</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="s2">&quot;MIDI output port is not open.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">parsed_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sysex_parser</span><span class="o">.</span><span class="n">parse_bytes</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="n">message</span><span class="p">))</span>
+            <span class="n">filtered_data</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">parsed_data</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">OUTBOUND_MESSAGE_IGNORED_KEYS</span>
+            <span class="p">}</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">filtered_data</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;[MIDI QC passed] — [ Sending message: </span><span class="si">{</span><span class="n">formatted_message</span><span class="si">}</span><span class="s2"> ] </span><span class="si">{</span><span class="n">filtered_data</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span>
+                <span class="n">silent</span><span class="o">=</span><span class="kc">False</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">midi_out</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">midi_message_outgoing</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">,</span> <span class="ne">OSError</span><span class="p">,</span> <span class="ne">IOError</span><span class="p">)</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error sending message: </span><span class="si">{</span><span class="n">ex</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="MidiOutHandler.send_note_on">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.io.html#jdxi_editor.midi.io.output_handler.MidiOutHandler.send_note_on">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">send_note_on</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                     <span class="n">note</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">60</span><span class="p">,</span>
+                     <span class="n">velocity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">127</span><span class="p">,</span>
+                     <span class="n">channel</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Send &#39;Note On&#39; message to the specified MIDI channel.</span>
+
+<span class="sd">        :param note: int MIDI note number (0–127), default is 60 (Middle C).</span>
+<span class="sd">        :param velocity: int Note velocity (0–127), default is 127.</span>
+<span class="sd">        :param channel: int MIDI channel (1–16), default is 1.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send_channel_message</span><span class="p">(</span><span class="n">MidiConstant</span><span class="o">.</span><span class="n">NOTE_ON</span><span class="p">,</span> <span class="n">note</span><span class="p">,</span> <span class="n">velocity</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MidiOutHandler.send_note_off">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.io.html#jdxi_editor.midi.io.output_handler.MidiOutHandler.send_note_off">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">send_note_off</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                      <span class="n">note</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">60</span><span class="p">,</span>
+                      <span class="n">velocity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+                      <span class="n">channel</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Send address &#39;Note Off&#39; message</span>
+
+<span class="sd">        :param note: int MIDI note number (0–127), default is 60 (Middle C).</span>
+<span class="sd">        :param velocity: int Note velocity (0–127), default is 127.</span>
+<span class="sd">        :param channel: int MIDI channel (1–16), default is 1.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send_channel_message</span><span class="p">(</span><span class="n">MidiConstant</span><span class="o">.</span><span class="n">NOTE_OFF</span><span class="p">,</span> <span class="n">note</span><span class="p">,</span> <span class="n">velocity</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MidiOutHandler.send_channel_message">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.io.html#jdxi_editor.midi.io.output_handler.MidiOutHandler.send_channel_message">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">send_channel_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                             <span class="n">status</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                             <span class="n">data1</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                             <span class="n">data2</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                             <span class="n">channel</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Send a MIDI Channel Message.</span>
+
+<span class="sd">        :param status: int Status byte (e.g., NOTE_ON, NOTE_OFF, CONTROL_CHANGE).</span>
+<span class="sd">        :param data1: Optional[int]): First data byte, typically a note or controller number.</span>
+<span class="sd">        :param data2: Optional[int]): Second data byte, typically velocity or value.</span>
+<span class="sd">        :param channel: int MIDI channel (1-based, range 1-16).</span>
+<span class="sd">        :raises: ValueError If the channel is out of range (1-16).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">channel</span> <span class="o">&lt;=</span> <span class="mi">16</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid MIDI channel: </span><span class="si">{</span><span class="n">channel</span><span class="si">}</span><span class="s2">. Must be 1-16.&quot;</span><span class="p">)</span>
+        <span class="n">channel_message</span> <span class="o">=</span> <span class="n">ChannelMessage</span><span class="p">(</span>
+            <span class="n">status</span><span class="p">,</span> <span class="n">data1</span><span class="p">,</span> <span class="n">data2</span><span class="p">,</span> <span class="n">channel</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="p">)</span>  <span class="c1"># convert to 0-based</span>
+        <span class="n">message_bytes_list</span> <span class="o">=</span> <span class="n">channel_message</span><span class="o">.</span><span class="n">to_message_list</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send_raw_message</span><span class="p">(</span><span class="n">message_bytes_list</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MidiOutHandler.send_bank_select">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.io.html#jdxi_editor.midi.io.output_handler.MidiOutHandler.send_bank_select">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">send_bank_select</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                         <span class="n">msb</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                         <span class="n">lsb</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                         <span class="n">channel</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Send address bank select message.</span>
+
+<span class="sd">        :param msb: int Upper byte of the bank.</span>
+<span class="sd">        :param lsb: int Lower byte of the bank.</span>
+<span class="sd">        :param channel: int midi channel (0-15).</span>
+<span class="sd">        :return: bool True if successful, False otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="s2">&quot;========Sending bank select==========&quot;</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">parameter</span><span class="p">(</span><span class="s2">&quot;MSB&quot;</span><span class="p">,</span> <span class="n">msb</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">parameter</span><span class="p">(</span><span class="s2">&quot;LSB&quot;</span><span class="p">,</span> <span class="n">lsb</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">parameter</span><span class="p">(</span><span class="s2">&quot;channel&quot;</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Bank Select MSB (CC#0)</span>
+            <span class="n">status</span> <span class="o">=</span> <span class="n">MidiConstant</span><span class="o">.</span><span class="n">CONTROL_CHANGE</span> <span class="o">|</span> <span class="p">(</span><span class="n">channel</span> <span class="o">&amp;</span> <span class="n">BitMask</span><span class="o">.</span><span class="n">LOW_4_BITS</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">send_raw_message</span><span class="p">([</span><span class="n">status</span><span class="p">,</span> <span class="n">MidiConstant</span><span class="o">.</span><span class="n">BANK_SELECT_MSB</span><span class="p">,</span> <span class="n">msb</span><span class="p">])</span>
+            <span class="c1"># Bank Select LSB (CC#32)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">send_raw_message</span><span class="p">([</span><span class="n">status</span><span class="p">,</span> <span class="n">MidiConstant</span><span class="o">.</span><span class="n">BANK_SELECT_LSB</span><span class="p">,</span> <span class="n">lsb</span><span class="p">])</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">,</span> <span class="ne">OSError</span><span class="p">,</span> <span class="ne">IOError</span><span class="p">)</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error sending bank select: </span><span class="si">{</span><span class="n">ex</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="MidiOutHandler.send_identity_request">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.io.html#jdxi_editor.midi.io.output_handler.MidiOutHandler.send_identity_request">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">send_identity_request</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Send identity request message (Universal System Exclusive).</span>
+
+<span class="sd">        :return: bool True if the message was sent successfully, False otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="s2">&quot;=========Sending identity request========&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">identity_request_message</span> <span class="o">=</span> <span class="n">IdentityRequestMessage</span><span class="p">()</span>
+            <span class="n">identity_request_bytes_list</span> <span class="o">=</span> <span class="n">identity_request_message</span><span class="o">.</span><span class="n">to_message_list</span><span class="p">()</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;sending identity request message: &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">identity_request_bytes_list</span><span class="p">)</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">identity_request_bytes_list</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">send_raw_message</span><span class="p">(</span><span class="n">identity_request_bytes_list</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">,</span> <span class="ne">OSError</span><span class="p">,</span> <span class="ne">IOError</span><span class="p">)</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error sending identity request: </span><span class="si">{</span><span class="n">ex</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="MidiOutHandler.send_midi_message">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.io.html#jdxi_editor.midi.io.output_handler.MidiOutHandler.send_midi_message">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">send_midi_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                          <span class="n">sysex_message</span><span class="p">:</span> <span class="n">MidiMessage</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Send SysEx parameter change message using a MidiMessage.</span>
+
+<span class="sd">        :param sysex_message: MidiMessage instance to be converted and sent.</span>
+<span class="sd">        :return: True if the message was successfully sent, False otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="n">sysex_message</span><span class="o">.</span><span class="n">to_message_list</span><span class="p">()</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_raw_message</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">,</span> <span class="ne">OSError</span><span class="p">,</span> <span class="ne">IOError</span><span class="p">)</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error sending message: </span><span class="si">{</span><span class="n">ex</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="MidiOutHandler.send_program_change">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.io.html#jdxi_editor.midi.io.output_handler.MidiOutHandler.send_program_change">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">send_program_change</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">program</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                            <span class="n">channel</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Send address program change message.</span>
+
+<span class="sd">        :param program: int Program number (0-127).</span>
+<span class="sd">        :param channel: int MIDI channel (0-15).</span>
+<span class="sd">        :return: True if successful, False otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="s2">&quot;=====Sending program change====&quot;</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">parameter</span><span class="p">(</span><span class="s2">&quot;program&quot;</span><span class="p">,</span> <span class="n">program</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">parameter</span><span class="p">(</span><span class="s2">&quot;channel&quot;</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">program_change_message</span> <span class="o">=</span> <span class="n">ProgramChangeMessage</span><span class="p">(</span>
+                <span class="n">channel</span><span class="o">=</span><span class="n">channel</span><span class="p">,</span> <span class="n">program</span><span class="o">=</span><span class="n">program</span>
+            <span class="p">)</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="n">program_change_message</span><span class="o">.</span><span class="n">to_message_list</span><span class="p">()</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_raw_message</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">,</span> <span class="ne">OSError</span><span class="p">,</span> <span class="ne">IOError</span><span class="p">)</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error sending program change: </span><span class="si">{</span><span class="n">ex</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="MidiOutHandler.send_control_change">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.io.html#jdxi_editor.midi.io.output_handler.MidiOutHandler.send_control_change">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">send_control_change</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                            <span class="n">controller</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                            <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                            <span class="n">channel</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Send control change message.</span>
+
+<span class="sd">        :param controller: int Controller number (0–127).</span>
+<span class="sd">        :param value: int Controller value (0–127).</span>
+<span class="sd">        :param channel: int MIDI channel (0–15).</span>
+<span class="sd">        :return: bool True if successful, False otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="s2">&quot;=====Sending control change====&quot;</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">parameter</span><span class="p">(</span><span class="s2">&quot;controller&quot;</span><span class="p">,</span> <span class="n">controller</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">parameter</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">parameter</span><span class="p">(</span><span class="s2">&quot;channel&quot;</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">channel</span> <span class="o">&lt;=</span> <span class="mi">15</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid MIDI channel: </span><span class="si">{</span><span class="n">channel</span><span class="si">}</span><span class="s2">. Must be 0-15.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">controller</span> <span class="o">&lt;=</span> <span class="mi">127</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid controller number: </span><span class="si">{</span><span class="n">controller</span><span class="si">}</span><span class="s2">. Must be 0-127.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">value</span> <span class="o">&lt;=</span> <span class="mi">127</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid controller value: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">. Must be 0-127.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">control_change_message</span> <span class="o">=</span> <span class="n">ControlChangeMessage</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">controller</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="n">control_change_message</span><span class="o">.</span><span class="n">to_message_list</span><span class="p">()</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_raw_message</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">,</span> <span class="ne">OSError</span><span class="p">,</span> <span class="ne">IOError</span><span class="p">)</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;send_control_change: Error sending control change: </span><span class="si">{</span><span class="n">ex</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="MidiOutHandler.send_rpn">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.io.html#jdxi_editor.midi.io.output_handler.MidiOutHandler.send_rpn">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">send_rpn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">parameter</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                 <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                 <span class="n">channel</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Send a Registered Parameter Number (RPN) message via MIDI Control Change.</span>
+
+<span class="sd">        :param parameter: int RPN parameter number (0–16383).</span>
+<span class="sd">        :param value: int Parameter value (0–16383).</span>
+<span class="sd">        :param channel: int MIDI channel (0–15).</span>
+<span class="sd">        :return: True if messages sent successfully, False otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="s2">&quot;========sending rpn=========&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">parameter</span> <span class="o">&lt;=</span> <span class="mi">16383</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid RPN parameter: </span><span class="si">{</span><span class="n">parameter</span><span class="si">}</span><span class="s2">. Must be 0–16383.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">value</span> <span class="o">&lt;=</span> <span class="mi">16383</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid RPN value: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">. Must be 0–16383.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># Split into MSB/LSB</span>
+        <span class="n">rpn_msb</span> <span class="o">=</span> <span class="p">(</span><span class="n">parameter</span> <span class="o">&gt;&gt;</span> <span class="mi">7</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">BitMask</span><span class="o">.</span><span class="n">LOW_7_BITS</span>
+        <span class="n">rpn_lsb</span> <span class="o">=</span> <span class="n">parameter</span> <span class="o">&amp;</span> <span class="n">BitMask</span><span class="o">.</span><span class="n">LOW_7_BITS</span>
+        <span class="n">value_msb</span> <span class="o">=</span> <span class="p">(</span><span class="n">value</span> <span class="o">&gt;&gt;</span> <span class="mi">7</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">BitMask</span><span class="o">.</span><span class="n">LOW_7_BITS</span>
+        <span class="n">value_lsb</span> <span class="o">=</span> <span class="n">value</span> <span class="o">&amp;</span> <span class="n">BitMask</span><span class="o">.</span><span class="n">LOW_7_BITS</span>
+
+        <span class="n">success</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">send_control_change</span><span class="p">(</span><span class="mi">101</span><span class="p">,</span> <span class="n">rpn_msb</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_control_change</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">rpn_lsb</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span>  <span class="c1"># RPN MSB</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_control_change</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="n">value_msb</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span>  <span class="c1"># RPN LSB</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_control_change</span><span class="p">(</span>  <span class="c1"># Data Entry MSB</span>
+                <span class="mi">38</span><span class="p">,</span> <span class="n">value_lsb</span><span class="p">,</span> <span class="n">channel</span>
+            <span class="p">)</span>  <span class="c1"># Data Entry LSB</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">success</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="s2">&quot;Success: Sent RPN&quot;</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">parameter</span><span class="p">(</span><span class="s2">&quot;Param&quot;</span><span class="p">,</span> <span class="n">parameter</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">parameter</span><span class="p">(</span><span class="s2">&quot;Value&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">parameter</span><span class="p">(</span><span class="s2">&quot;Channel&quot;</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="s2">&quot;Failed to send RPN messages.&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">success</span></div>
+
+
+<div class="viewcode-block" id="MidiOutHandler.send_nrpn">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.io.html#jdxi_editor.midi.io.output_handler.MidiOutHandler.send_nrpn">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">send_nrpn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                  <span class="n">parameter</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                  <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                  <span class="n">channel</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+                  <span class="n">use_14bit</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Send a Non-Registered Parameter Number (NRPN) message via MIDI Control Change.</span>
+
+<span class="sd">        :param parameter: int NRPN parameter number (0–16383).</span>
+<span class="sd">        :param value: int Parameter value (0–16383 for 14-bit, 0–127 for 7-bit).</span>
+<span class="sd">        :param channel: int MIDI channel (0–15).</span>
+<span class="sd">        :param use_14bit: bool If True, send both MSB and LSB for value (14-bit). If False, send only MSB (7-bit).</span>
+<span class="sd">        :return: True if all messages were sent successfully, False otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="s2">&quot;========sending nrpn=========&quot;</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">parameter</span><span class="p">(</span><span class="s2">&quot;parameter&quot;</span><span class="p">,</span> <span class="n">parameter</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">parameter</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">parameter</span><span class="p">(</span><span class="s2">&quot;channel&quot;</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">parameter</span><span class="p">(</span><span class="s2">&quot;use_14bit&quot;</span><span class="p">,</span> <span class="n">use_14bit</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">parameter</span> <span class="o">&lt;=</span> <span class="mi">16383</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid NRPN parameter: </span><span class="si">{</span><span class="n">parameter</span><span class="si">}</span><span class="s2">. Must be 0–16383.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">value</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="mi">16383</span> <span class="k">if</span> <span class="n">use_14bit</span> <span class="k">else</span> <span class="mi">127</span><span class="p">):</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Invalid NRPN value: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">. Must be 0–</span><span class="si">{</span><span class="mi">16383</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">use_14bit</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="mi">127</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="n">nrpn_msb</span> <span class="o">=</span> <span class="p">(</span><span class="n">parameter</span> <span class="o">&gt;&gt;</span> <span class="mi">7</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">BitMask</span><span class="o">.</span><span class="n">LOW_7_BITS</span>
+        <span class="n">nrpn_lsb</span> <span class="o">=</span> <span class="n">parameter</span> <span class="o">&amp;</span> <span class="n">BitMask</span><span class="o">.</span><span class="n">LOW_7_BITS</span>
+        <span class="k">if</span> <span class="n">use_14bit</span><span class="p">:</span>
+            <span class="n">value_msb</span> <span class="o">=</span> <span class="p">(</span><span class="n">value</span> <span class="o">&gt;&gt;</span> <span class="mi">7</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">BitMask</span><span class="o">.</span><span class="n">LOW_7_BITS</span>
+            <span class="n">value_lsb</span> <span class="o">=</span> <span class="n">value</span> <span class="o">&amp;</span> <span class="n">BitMask</span><span class="o">.</span><span class="n">LOW_7_BITS</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">value_msb</span> <span class="o">=</span> <span class="n">value</span> <span class="o">&amp;</span> <span class="n">BitMask</span><span class="o">.</span><span class="n">LOW_7_BITS</span>
+            <span class="n">value_lsb</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># Optional; not sent anyway</span>
+
+        <span class="n">ok</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">ok</span> <span class="o">&amp;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_control_change</span><span class="p">(</span><span class="mi">99</span><span class="p">,</span> <span class="n">nrpn_msb</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span>  <span class="c1"># NRPN MSB</span>
+        <span class="n">ok</span> <span class="o">&amp;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_control_change</span><span class="p">(</span><span class="mi">98</span><span class="p">,</span> <span class="n">nrpn_lsb</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span>  <span class="c1"># NRPN LSB</span>
+        <span class="n">ok</span> <span class="o">&amp;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_control_change</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="n">value_msb</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span>  <span class="c1"># Data Entry MSB</span>
+        <span class="k">if</span> <span class="n">use_14bit</span><span class="p">:</span>
+            <span class="n">ok</span> <span class="o">&amp;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_control_change</span><span class="p">(</span><span class="mi">38</span><span class="p">,</span> <span class="n">value_lsb</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span>  <span class="c1"># Data Entry LSB</span>
+
+        <span class="c1"># Optional cleanup (nulling NRPN, not required but can prevent stuck parameters)</span>
+        <span class="n">ok</span> <span class="o">&amp;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_control_change</span><span class="p">(</span><span class="mi">99</span><span class="p">,</span> <span class="mi">127</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span>  <span class="c1"># NRPN MSB null</span>
+        <span class="n">ok</span> <span class="o">&amp;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_control_change</span><span class="p">(</span><span class="mi">98</span><span class="p">,</span> <span class="mi">127</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span>  <span class="c1"># NRPN LSB null</span>
+
+        <span class="k">if</span> <span class="n">ok</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="s2">&quot;Sent NRPN:&quot;</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">parameter</span><span class="p">(</span><span class="s2">&quot;parameter&quot;</span><span class="p">,</span> <span class="n">parameter</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">parameter</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">parameter</span><span class="p">(</span><span class="s2">&quot;channel&quot;</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="s2">&quot;Failed to send NRPN messages.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ok</span></div>
+
+
+<div class="viewcode-block" id="MidiOutHandler.send_bank_select_and_program_change">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.io.html#jdxi_editor.midi.io.output_handler.MidiOutHandler.send_bank_select_and_program_change">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">send_bank_select_and_program_change</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">bank_msb</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">bank_lsb</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">program</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sends Bank Select and Program Change messages.</span>
+
+<span class="sd">        :param channel: int MIDI channel (1-16).</span>
+<span class="sd">        :param bank_msb: int Bank MSB value.</span>
+<span class="sd">        :param bank_lsb: int Bank LSB value.</span>
+<span class="sd">        :param program: int Program number.</span>
+<span class="sd">        :return: bool True if all messages are sent successfully, False otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="s2">&quot;========send_bank_select_and_program_change=========&quot;</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">parameter</span><span class="p">(</span><span class="s2">&quot;channel&quot;</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">parameter</span><span class="p">(</span><span class="s2">&quot;bank_msb&quot;</span><span class="p">,</span> <span class="n">bank_msb</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">parameter</span><span class="p">(</span><span class="s2">&quot;bank_lsb&quot;</span><span class="p">,</span> <span class="n">bank_lsb</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">parameter</span><span class="p">(</span><span class="s2">&quot;program&quot;</span><span class="p">,</span> <span class="n">program</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;-------#1 send_control_change controller=0, bank_msb=</span><span class="si">{</span><span class="n">bank_msb</span><span class="si">}</span><span class="s2">, channel: </span><span class="si">{</span><span class="n">channel</span><span class="si">}</span><span class="s2"> --------&quot;</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">send_control_change</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">bank_msb</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;-------#2 send_control_change controller=32, bank_lsb=</span><span class="si">{</span><span class="n">bank_lsb</span><span class="si">}</span><span class="s2">, channel: </span><span class="si">{</span><span class="n">channel</span><span class="si">}</span><span class="s2"> --------&quot;</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">send_control_change</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="n">bank_lsb</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;-------#3 send_program_change program: </span><span class="si">{</span><span class="n">program</span><span class="si">}</span><span class="s2"> channel: </span><span class="si">{</span><span class="n">channel</span><span class="si">}</span><span class="s2"> --------&quot;</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">send_program_change</span><span class="p">(</span><span class="n">program</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error </span><span class="si">{</span><span class="n">ex</span><span class="si">}</span><span class="s2"> occurred sending bank and program change message&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="MidiOutHandler.identify_device">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.io.html#jdxi_editor.midi.io.output_handler.MidiOutHandler.identify_device">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">identify_device</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Send Identity Request and verify response</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">request</span> <span class="o">=</span> <span class="n">IdentityRequestMessage</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">parameter</span><span class="p">(</span><span class="s2">&quot;sending identity request message:&quot;</span><span class="p">,</span> <span class="n">request</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MidiOutHandler.send_message">
+<a class="viewcode-back" href="../../../../jdxi_editor.midi.io.html#jdxi_editor.midi.io.output_handler.MidiOutHandler.send_message">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">send_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="n">MidiMessage</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        unpack the message list and send it</span>
+
+<span class="sd">        :param message: MidiMessage</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">raw_message</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">to_message_list</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">send_raw_message</span><span class="p">(</span><span class="n">raw_message</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">parameter</span><span class="p">(</span><span class="s2">&quot;Sent MIDI message:&quot;</span><span class="p">,</span> <span class="n">raw_message</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error sending identity request: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Mark Mrooks.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

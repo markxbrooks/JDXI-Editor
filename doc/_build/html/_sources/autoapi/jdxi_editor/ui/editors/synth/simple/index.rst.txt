@@ -1,0 +1,85 @@
+jdxi_editor.ui.editors.synth.simple
+===================================
+
+.. py:module:: jdxi_editor.ui.editors.synth.simple
+
+.. autoapi-nested-parse::
+
+   Arpeggio Editor Module
+
+   This module defines the `ArpeggioEditor` class, a specialized editor for configuring arpeggiator
+   settings within a synthesizer. It extends the `SynthEditor` class, providing a user-friendly
+   interface to control various arpeggiator parameters.
+
+   Classes:
+       - ArpeggioEditor: A `QWidget` subclass that allows users to modify arpeggiator parameters
+         such as style, grid, duration, velocity, accent, swing, octave range, and motif.
+
+   Features:
+       - Provides an intuitive UI with labeled controls and dropdown menus for parameter selection.
+       - Includes a toggle switch to enable or disable the arpeggiator.
+       - Displays an instrument image for better user engagement.
+       - Uses MIDI integration to send real-time parameter changes to the synthesizer.
+       - Supports dynamic visualization and interaction through sliders and combo boxes.
+
+   Usage:
+       ```python
+       from PySide6.QtWidgets import QApplication
+       from midi_helper import MIDIHelper
+
+       app = QApplication([])
+       midi_helper = MIDIHelper()
+       editor = ArpeggioEditor(midi_helper=midi_helper)
+       editor.show()
+       app.exec()
+       ```
+
+   Dependencies:
+       - PySide6 (for UI components)
+       - MIDIHelper (for MIDI communication)
+       - ArpeggioParameter (for managing parameter addresses and value ranges)
+       - Slider (for smooth control over numerical parameters)
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   jdxi_editor.ui.editors.synth.simple.BasicEditor
+
+
+Module Contents
+---------------
+
+.. py:class:: BasicEditor(midi_helper: jdxi_editor.midi.io.helper.MidiIOHelper, parent=None)
+
+   Bases: :py:obj:`jdxi_editor.ui.editors.SynthEditor`
+
+
+   Simple Editor Window with small instrument image
+
+
+   .. py:attribute:: default_image
+      :value: None
+
+
+
+   .. py:attribute:: image_label
+      :value: None
+
+
+
+   .. py:method:: load_and_set_image(image_path, secondary_image_path=None)
+
+      Helper function to load and set the image on the label.
+
+
+
+   .. py:method:: update_instrument_image()
+
+      Update the instrument image based on the selected synth.
+
+
+

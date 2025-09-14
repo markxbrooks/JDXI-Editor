@@ -1,0 +1,1519 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>jdxi_editor.midi.data.address.address &mdash; JD-Xi Editor 0.8.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../../../_static/documentation_options.js?v=486e5634"></script>
+      <script src="../../../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../search.html" />
+    <link rel="next" title="jdxi_editor.midi.data.address.address_map" href="../address_map/index.html" />
+    <link rel="prev" title="jdxi_editor.midi.data.address" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../../../index.html" class="icon icon-home">
+            JD-Xi Editor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../usage.html">Quick Start</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../usage.html#connection-of-the-jd-xi-hardware-instrument-to-the-computer">Connection of the JD-Xi Hardware Instrument to the Computer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../instrument.html">JDXi Instrument Window</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../instrument.html#features">Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../instrument.html#using-the-instrument-window">Using the Instrument Window</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../editor.html">Editor Window</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../editor.html#program-mixer-section">Program/Mixer Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../editor.html#digital-1-section">Digital 1 Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../editor.html#digital-2-section">Digital 2 Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../editor.html#drum-kit-section">Drum Kit Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../editor.html#analog-section">Analog Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../editor.html#effect-controls">Effect Controls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../editor.html#vocal-transformer">Vocal Transformer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../editor.html#arpeggiator">Arpeggiator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../editor.html#midi-file-player-and-recorder">MIDI File Player and Recorder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../editor.html#pattern-sequencer">Pattern Sequencer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../troubleshooting.html">Troubleshooting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../troubleshooting.html#general-problems">General Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../troubleshooting.html#macos">MacOS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../troubleshooting.html#windows">Windows</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../legal.html">Legal Disclaimer</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../modules.html">jdxi_editor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../jdxi_editor.html">jdxi_editor package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../jdxi_editor.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../jdxi_editor.jdxi.html">jdxi_editor.jdxi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../jdxi_editor.log.html">jdxi_editor.log package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../jdxi_editor.midi.html">jdxi_editor.midi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../jdxi_editor.ui.html">jdxi_editor.ui package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../jdxi_editor.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../jdxi_editor.html#module-jdxi_editor.globals">jdxi_editor.globals module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../jdxi_editor.html#module-jdxi_editor.main">jdxi_editor.main module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../jdxi_editor.html#jdxi_editor.main.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../jdxi_editor.html#module-jdxi_editor.project">jdxi_editor.project module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../jdxi_editor.html#module-jdxi_editor.resources">jdxi_editor.resources module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../jdxi_editor.html#jdxi_editor.resources.resource_path"><code class="docutils literal notranslate"><span class="pre">resource_path()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../jdxi_editor.html#module-jdxi_editor">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../../../../midi/index.html">midi</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../midi/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../midi/colors/index.html">midi.colors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../midi/slider/index.html">midi.slider</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../midi/spin_box/index.html">midi.spin_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../midi/time_ruler/index.html">midi.time_ruler</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../midi/track/index.html">midi.track</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../midi/track_viewer/index.html">midi.track_viewer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../midi/utils/index.html">midi.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../adsr/index.html">adsr</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../adsr/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../adsr/adsr/index.html">adsr.adsr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../adsr/graph/index.html">adsr.graph</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../adsr/parameter/index.html">adsr.parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../adsr/plot/index.html">adsr.plot</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../pitch/index.html">pitch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../pitch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../pitch/envelope/index.html">pitch.envelope</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../pitch/envelope_plot/index.html">pitch.envelope_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../pitch/pwm_plot/index.html">pitch.pwm_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../pitch/slider_spinbox/index.html">pitch.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../piano/index.html">piano</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../piano/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../piano/key/index.html">piano.key</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../piano/keyboard/index.html">piano.keyboard</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../panel/index.html">panel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../panel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../panel/partial/index.html">panel.partial</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../wheel/index.html">wheel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../wheel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../wheel/mod/index.html">wheel.mod</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../wheel/pitch/index.html">wheel.pitch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../wheel/wheel/index.html">wheel.wheel</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../preset/index.html">preset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../preset/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../preset/combo_box/index.html">preset.combo_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../preset/panel/index.html">preset.panel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../preset/patch_name/index.html">preset.patch_name</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../slider/index.html">slider</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../slider/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../slider/slider/index.html">slider.slider</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../slider/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../slider/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../slider/index.html#slider.Slider"><code class="docutils literal notranslate"><span class="pre">Slider</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../dialog/index.html">dialog</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../dialog/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../dialog/progress/index.html">dialog.progress</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../viewer/index.html">viewer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../viewer/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../viewer/log/index.html">viewer.log</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../button/index.html">button</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../button/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../button/channel/index.html">button.channel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../button/favorite/index.html">button.favorite</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../button/sequencer/index.html">button.sequencer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../button/waveform/index.html">button.waveform</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../button/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../button/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../button/index.html#button.ChannelButton"><code class="docutils literal notranslate"><span class="pre">ChannelButton</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../button/index.html#button.SequencerSquare"><code class="docutils literal notranslate"><span class="pre">SequencerSquare</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../switch/index.html">switch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../switch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../switch/partial/index.html">switch.partial</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../switch/switch/index.html">switch.switch</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../filter/index.html">filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../filter/index.html#filter.FilterWidget"><code class="docutils literal notranslate"><span class="pre">FilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../display/index.html">display</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../display/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../display/digital/index.html">display.digital</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../display/pattern/index.html">display.pattern</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../display/value/index.html">display.value</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../pattern/index.html">pattern</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../pattern/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../pattern/measure/index.html">pattern.measure</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../spin_box/index.html">spin_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../spin_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../spin_box/spin_box/index.html">spin_box.spin_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../envelope/index.html">envelope</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../envelope/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../envelope/base/index.html">envelope.base</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../indicator/index.html">indicator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../indicator/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../indicator/led/index.html">indicator.led</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../indicator/midi/index.html">indicator.midi</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../combo_box/index.html">combo_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../combo_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../combo_box/combo_box/index.html">combo_box.combo_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../../../index.html">jdxi_editor</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../../../index.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../../../globals/index.html">jdxi_editor.globals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../jdxi/index.html">jdxi_editor.jdxi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../log/index.html">jdxi_editor.log</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../main/index.html">jdxi_editor.main</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../../../index.html">jdxi_editor.midi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../project/index.html">jdxi_editor.project</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../resources/index.html">jdxi_editor.resources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../ui/index.html">jdxi_editor.ui</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../filter_plot/index.html">filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../filter_plot/index.html#filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../filter_plot/index.html#filter_plot.FilterPlot"><code class="docutils literal notranslate"><span class="pre">FilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../envelope_plot/index.html">envelope_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../envelope_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../envelope_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../envelope_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../envelope_plot/index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../envelope_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../envelope_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../envelope_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../envelope_plot/index.html#envelope_plot.midi_value_to_float"><code class="docutils literal notranslate"><span class="pre">midi_value_to_float()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../envelope_plot/index.html#envelope_plot.WMTEnvPlot"><code class="docutils literal notranslate"><span class="pre">WMTEnvPlot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../envelope_plot/index.html#envelope_plot.app"><code class="docutils literal notranslate"><span class="pre">app</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../wave_selector/index.html">wave_selector</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../wave_selector/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../wave_selector/wave_selector/index.html">wave_selector.wave_selector</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../analog_filter/index.html">analog_filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../analog_filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../analog_filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../analog_filter/index.html#analog_filter.AnalogFilterWidget"><code class="docutils literal notranslate"><span class="pre">AnalogFilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../slider_spinbox/index.html">slider_spinbox</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../slider_spinbox/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../slider_spinbox/slider_spinbox/index.html">slider_spinbox.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../analog_filter_plot/index.html">analog_filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../analog_filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../analog_filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../analog_filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../analog_filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../analog_filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../analog_filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../analog_filter_plot/index.html#analog_filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../analog_filter_plot/index.html#analog_filter_plot.AnalogFilterPlot"><code class="docutils literal notranslate"><span class="pre">AnalogFilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../../index.html">JD-Xi Editor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../../../../index.html">jdxi_editor</a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">jdxi_editor.midi</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">jdxi_editor.midi.data</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">jdxi_editor.midi.data.address</a></li>
+      <li class="breadcrumb-item active">jdxi_editor.midi.data.address.address</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../../../_sources/autoapi/jdxi_editor/midi/data/address/address/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-jdxi_editor.midi.data.address.address">
+<span id="jdxi-editor-midi-data-address-address"></span><h1>jdxi_editor.midi.data.address.address<a class="headerlink" href="#module-jdxi_editor.midi.data.address.address" title="Link to this heading"></a></h1>
+<p>Parameter Address Map</p>
+<section id="example-usage">
+<h2>Example Usage:<a class="headerlink" href="#example-usage" title="Link to this heading"></a></h2>
+<pre class="doctest literal-block">&gt;&gt;&gt; class AddressMemoryAreaMSB(Address):
+...    PROGRAM = 0x18
+...    TEMPORARY_TONE = 0x19
+... # Add an offset to a base address
+... addr_bytes = AddressMemoryAreaMSB.PROGRAM.add_offset((0x00, 0x20, 0x00))
+... print(addr_bytes)  # (0x18, 0x00, 0x20, 0x00)
+... # Get SysEx-ready address
+... sysex_address = AddressMemoryAreaMSB.PROGRAM.to_sysex_address((0x00, 0x20, 0x00))
+... print(sysex_address)  # b''
+... # Lookup
+... found = AddressMemoryAreaMSB.get_parameter_by_address(0x19)
+... print(found)  # ProgramAddress.TEMPORARY_TONE
+</pre>
+<p>SysExByte</p>
+</section>
+<section id="id1">
+<h2>Example usage:<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">command</span> <span class="o">=</span> <span class="n">CommandID</span><span class="o">.</span><span class="n">DT1</span>
+<span class="gp">... </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Command: </span><span class="si">{</span><span class="n">command</span><span class="si">}</span><span class="s2">, Value: </span><span class="si">{</span><span class="n">command</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">, Message Position: </span><span class="si">{</span><span class="n">command</span><span class="o">.</span><span class="n">message_position</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#jdxi_editor.midi.data.address.address.T" title="jdxi_editor.midi.data.address.address.T"><code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#jdxi_editor.midi.data.address.address.DIGITAL_PARTIAL_MAP" title="jdxi_editor.midi.data.address.address.DIGITAL_PARTIAL_MAP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DIGITAL_PARTIAL_MAP</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#jdxi_editor.midi.data.address.address.JD_XI_MODEL_ID" title="jdxi_editor.midi.data.address.address.JD_XI_MODEL_ID"><code class="xref py py-obj docutils literal notranslate"><span class="pre">JD_XI_MODEL_ID</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#jdxi_editor.midi.data.address.address.JD_XI_HEADER_LIST" title="jdxi_editor.midi.data.address.address.JD_XI_HEADER_LIST"><code class="xref py py-obj docutils literal notranslate"><span class="pre">JD_XI_HEADER_LIST</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../../../../jdxi_editor.midi.data.address.html#jdxi_editor.midi.data.address.address.RolandID" title="jdxi_editor.midi.data.address.address.RolandID"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RolandID</span></code></a></p></td>
+<td><p>Roland IDs</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../../../../../../jdxi_editor.midi.data.address.html#jdxi_editor.midi.data.address.address.ResponseID" title="jdxi_editor.midi.data.address.address.ResponseID"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ResponseID</span></code></a></p></td>
+<td><p>Midi responses</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../../../../jdxi_editor.midi.data.address.html#jdxi_editor.midi.data.address.address.Address" title="jdxi_editor.midi.data.address.address.Address"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Address</span></code></a></p></td>
+<td><p>Base class for Roland-style hierarchical memory address enums (e.g., 0x18, 0x19, etc.)</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../../../../../../jdxi_editor.midi.data.address.html#jdxi_editor.midi.data.address.address.RolandSysExAddress" title="jdxi_editor.midi.data.address.address.RolandSysExAddress"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RolandSysExAddress</span></code></a></p></td>
+<td><p>Represents a full 4-byte SysEx address (MSB, UMB, LMB, LSB), with support for</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../../../../jdxi_editor.midi.data.address.html#jdxi_editor.midi.data.address.address.ModelID" title="jdxi_editor.midi.data.address.address.ModelID"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ModelID</span></code></a></p></td>
+<td><p>Model ID</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../../../../../../jdxi_editor.midi.data.address.html#jdxi_editor.midi.data.address.address.CommandID" title="jdxi_editor.midi.data.address.address.CommandID"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CommandID</span></code></a></p></td>
+<td><p>Roland Commands</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../../../../jdxi_editor.midi.data.address.html#jdxi_editor.midi.data.address.address.AddressStartMSB" title="jdxi_editor.midi.data.address.address.AddressStartMSB"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AddressStartMSB</span></code></a></p></td>
+<td><p>Memory and Program Areas</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../../../../../../jdxi_editor.midi.data.address.html#jdxi_editor.midi.data.address.address.AddressOffsetTemporaryToneUMB" title="jdxi_editor.midi.data.address.address.AddressOffsetTemporaryToneUMB"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AddressOffsetTemporaryToneUMB</span></code></a></p></td>
+<td><p>Address Offset Temporary Tone UMB</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../../../../jdxi_editor.midi.data.address.html#jdxi_editor.midi.data.address.address.AddressOffsetSystemUMB" title="jdxi_editor.midi.data.address.address.AddressOffsetSystemUMB"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AddressOffsetSystemUMB</span></code></a></p></td>
+<td><p>Address Offset System UMB</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../../../../../../jdxi_editor.midi.data.address.html#jdxi_editor.midi.data.address.address.AddressOffsetSystemLMB" title="jdxi_editor.midi.data.address.address.AddressOffsetSystemLMB"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AddressOffsetSystemLMB</span></code></a></p></td>
+<td><p>Address Offset System LMB</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../../../../jdxi_editor.midi.data.address.html#jdxi_editor.midi.data.address.address.AddressOffsetSuperNATURALLMB" title="jdxi_editor.midi.data.address.address.AddressOffsetSuperNATURALLMB"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AddressOffsetSuperNATURALLMB</span></code></a></p></td>
+<td><p>Address Offset SuperNATURAL LMB</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../../../../../../jdxi_editor.midi.data.address.html#jdxi_editor.midi.data.address.address.AddressOffsetAnalogLMB" title="jdxi_editor.midi.data.address.address.AddressOffsetAnalogLMB"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AddressOffsetAnalogLMB</span></code></a></p></td>
+<td><p>Analog Synth Tone</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../../../../jdxi_editor.midi.data.address.html#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB" title="jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AddressOffsetProgramLMB</span></code></a></p></td>
+<td><p>Address Offset Program LMB</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../../../../../../jdxi_editor.midi.data.address.html#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB" title="jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AddressOffsetDrumKitLMB</span></code></a></p></td>
+<td><p>Address Offset Program LMB</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<dl class="py data">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.T">
+<span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.data.address.address.</span></span><span class="sig-name descname"><span class="pre">T</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#T"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.T" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.DIGITAL_PARTIAL_MAP">
+<span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.data.address.address.</span></span><span class="sig-name descname"><span class="pre">DIGITAL_PARTIAL_MAP</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#DIGITAL_PARTIAL_MAP"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.DIGITAL_PARTIAL_MAP" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.RolandID">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.data.address.address.</span></span><span class="sig-name descname"><span class="pre">RolandID</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#RolandID"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.RolandID" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.IntEnum" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">enum.IntEnum</span></code></a></p>
+<p>Roland IDs</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.RolandID.ROLAND_ID">
+<span class="sig-name descname"><span class="pre">ROLAND_ID</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">65</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#RolandID.ROLAND_ID"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.RolandID.ROLAND_ID" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.RolandID.DEVICE_ID">
+<span class="sig-name descname"><span class="pre">DEVICE_ID</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">16</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#RolandID.DEVICE_ID"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.RolandID.DEVICE_ID" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.ResponseID">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.data.address.address.</span></span><span class="sig-name descname"><span class="pre">ResponseID</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#ResponseID"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.ResponseID" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.IntEnum" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">enum.IntEnum</span></code></a></p>
+<p>Midi responses</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.ResponseID.ACK">
+<span class="sig-name descname"><span class="pre">ACK</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">79</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#ResponseID.ACK"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.ResponseID.ACK" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.ResponseID.ERR">
+<span class="sig-name descname"><span class="pre">ERR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">78</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#ResponseID.ERR"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.ResponseID.ERR" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.Address">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.data.address.address.</span></span><span class="sig-name descname"><span class="pre">Address</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#Address"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.Address" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../../../../../../jdxi_editor.midi.data.address.html#jdxi_editor.midi.data.address.sysex_byte.SysExByte" title="jdxi_editor.midi.data.address.sysex_byte.SysExByte"><code class="xref py py-obj docutils literal notranslate"><span class="pre">jdxi_editor.midi.data.address.sysex_byte.SysExByte</span></code></a></p>
+<p>Base class for Roland-style hierarchical memory address enums (e.g., 0x18, 0x19, etc.)
+Includes lookup, offset arithmetic, and SysEx-ready address formatting.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.Address.add_offset">
+<span class="sig-name descname"><span class="pre">add_offset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address_offset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Ellipsis</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#Address.add_offset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.Address.add_offset" title="Link to this definition"></a></dt>
+<dd><p>Returns the full 4-byte address by adding a 3-byte offset to the base address.
+The base address is assumed to be a single byte (e.g., 0x18).
+:param address_offset: Union[int, Tuple[int, int, int]] The address offset
+:return: tuple[int, Any] The full 4-byte address</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.Address.to_sysex_address">
+<span class="sig-name descname"><span class="pre">to_sysex_address</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address_offset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(0,</span> <span class="pre">0,</span> <span class="pre">0)</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><span class="pre">bytes</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#Address.to_sysex_address"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.Address.to_sysex_address" title="Link to this definition"></a></dt>
+<dd><p>Returns the full 4-byte address as a <cite>bytes</cite> object, suitable for SysEx messages.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>address_offset</strong> – Union[int, Tuple[int, int, int]] The address offset</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>bytes The full 4-byte address</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.Address.from_sysex_bytes">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_sysex_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><span class="pre">bytes</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#Address.from_sysex_bytes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.Address.from_sysex_bytes" title="Link to this definition"></a></dt>
+<dd><p>Create an Address object from a 4-byte SysEx address.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>address</strong> – bytes The 4-byte SysEx address</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Optional[T] The Address object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.Address.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#Address.__repr__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.Address.__repr__" title="Link to this definition"></a></dt>
+<dd><p>Return repr(self).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.Address.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#Address.__str__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.Address.__str__" title="Link to this definition"></a></dt>
+<dd><p>Return str(self).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.RolandSysExAddress">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.data.address.address.</span></span><span class="sig-name descname"><span class="pre">RolandSysExAddress</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">umb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">lmb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">lsb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#RolandSysExAddress"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.RolandSysExAddress" title="Link to this definition"></a></dt>
+<dd><p>Represents a full 4-byte SysEx address (MSB, UMB, LMB, LSB), with support for
+address arithmetic, formatting, and conversion to/from SysEx message bytes.
+:param msb: int The MSB
+:param umb: int The UMB
+:param lmb: int The LMB
+:param lsb: int The LSB</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.RolandSysExAddress.msb">
+<span class="sig-name descname"><span class="pre">msb</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#RolandSysExAddress.msb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.RolandSysExAddress.msb" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.RolandSysExAddress.umb">
+<span class="sig-name descname"><span class="pre">umb</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#RolandSysExAddress.umb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.RolandSysExAddress.umb" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.RolandSysExAddress.lmb">
+<span class="sig-name descname"><span class="pre">lmb</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#RolandSysExAddress.lmb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.RolandSysExAddress.lmb" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.RolandSysExAddress.lsb">
+<span class="sig-name descname"><span class="pre">lsb</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#RolandSysExAddress.lsb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.RolandSysExAddress.lsb" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.RolandSysExAddress.from_bytes">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><span class="pre">bytes</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../../../../../../jdxi_editor.midi.data.address.html#jdxi_editor.midi.data.address.address.RolandSysExAddress" title="jdxi_editor.midi.data.address.address.RolandSysExAddress"><span class="pre">RolandSysExAddress</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#RolandSysExAddress.from_bytes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.RolandSysExAddress.from_bytes" title="Link to this definition"></a></dt>
+<dd><p>Create a RolandSysExAddress object from a 4-byte bytes object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>b</strong> – bytes The 4-byte bytes object</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Optional[RolandSysExAddress] The RolandSysExAddress object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.RolandSysExAddress.to_list">
+<span class="sig-name descname"><span class="pre">to_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#RolandSysExAddress.to_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.RolandSysExAddress.to_list" title="Link to this definition"></a></dt>
+<dd><p>Convert the RolandSysExAddress object to a list of integers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[int] The list of integers</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.RolandSysExAddress.to_bytes">
+<span class="sig-name descname"><span class="pre">to_bytes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><span class="pre">bytes</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#RolandSysExAddress.to_bytes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.RolandSysExAddress.to_bytes" title="Link to this definition"></a></dt>
+<dd><p>Convert the RolandSysExAddress object to a 4-byte bytes object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bytes The 4-byte bytes object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.RolandSysExAddress.add_offset">
+<span class="sig-name descname"><span class="pre">add_offset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../../../../../../jdxi_editor.midi.data.address.html#jdxi_editor.midi.data.address.address.RolandSysExAddress" title="jdxi_editor.midi.data.address.address.RolandSysExAddress"><span class="pre">RolandSysExAddress</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#RolandSysExAddress.add_offset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.RolandSysExAddress.add_offset" title="Link to this definition"></a></dt>
+<dd><p>Adds a 3-byte offset to the lower three bytes (UMB, LMB, LSB).
+MSB remains unchanged.
+:param offset: Union[int, tuple[int, int, int]] The offset
+:return: RolandSysExAddress The RolandSysExAddress object</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.RolandSysExAddress.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#RolandSysExAddress.__repr__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.RolandSysExAddress.__repr__" title="Link to this definition"></a></dt>
+<dd><p>Return a string representation of the RolandSysExAddress object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str The string representation</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.RolandSysExAddress.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#RolandSysExAddress.__str__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.RolandSysExAddress.__str__" title="Link to this definition"></a></dt>
+<dd><p>Return a string representation of the RolandSysExAddress object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str The string representation</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.RolandSysExAddress.__eq__">
+<span class="sig-name descname"><span class="pre">__eq__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><span class="pre">object</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#RolandSysExAddress.__eq__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.RolandSysExAddress.__eq__" title="Link to this definition"></a></dt>
+<dd><p>Check if the RolandSysExAddress object is equal to another object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> – object The other object</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool True if the objects are equal, False otherwise</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.RolandSysExAddress.__hash__">
+<span class="sig-name descname"><span class="pre">__hash__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#RolandSysExAddress.__hash__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.RolandSysExAddress.__hash__" title="Link to this definition"></a></dt>
+<dd><p>Return the hash of the RolandSysExAddress object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int The hash of the RolandSysExAddress object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.RolandSysExAddress.copy">
+<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../../../../../../jdxi_editor.midi.data.address.html#jdxi_editor.midi.data.address.address.RolandSysExAddress" title="jdxi_editor.midi.data.address.address.RolandSysExAddress"><span class="pre">RolandSysExAddress</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#RolandSysExAddress.copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.RolandSysExAddress.copy" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.ModelID">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.data.address.address.</span></span><span class="sig-name descname"><span class="pre">ModelID</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#ModelID"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.ModelID" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../../../../../../jdxi_editor.midi.data.address.html#jdxi_editor.midi.data.address.address.Address" title="jdxi_editor.midi.data.address.address.Address"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Address</span></code></a></p>
+<p>Model ID</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.ModelID.ROLAND_ID">
+<span class="sig-name descname"><span class="pre">ROLAND_ID</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">65</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#ModelID.ROLAND_ID"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.ModelID.ROLAND_ID" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.ModelID.DEVICE_ID">
+<span class="sig-name descname"><span class="pre">DEVICE_ID</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">16</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#ModelID.DEVICE_ID"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.ModelID.DEVICE_ID" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.ModelID.MODEL_ID_1">
+<span class="sig-name descname"><span class="pre">MODEL_ID_1</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#ModelID.MODEL_ID_1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.ModelID.MODEL_ID_1" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.ModelID.MODEL_ID_2">
+<span class="sig-name descname"><span class="pre">MODEL_ID_2</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#ModelID.MODEL_ID_2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.ModelID.MODEL_ID_2" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.ModelID.MODEL_ID_3">
+<span class="sig-name descname"><span class="pre">MODEL_ID_3</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#ModelID.MODEL_ID_3"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.ModelID.MODEL_ID_3" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.ModelID.MODEL_ID_4">
+<span class="sig-name descname"><span class="pre">MODEL_ID_4</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">14</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#ModelID.MODEL_ID_4"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.ModelID.MODEL_ID_4" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.JD_XI_MODEL_ID">
+<span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.data.address.address.</span></span><span class="sig-name descname"><span class="pre">JD_XI_MODEL_ID</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#JD_XI_MODEL_ID"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.JD_XI_MODEL_ID" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.JD_XI_HEADER_LIST">
+<span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.data.address.address.</span></span><span class="sig-name descname"><span class="pre">JD_XI_HEADER_LIST</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#JD_XI_HEADER_LIST"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.JD_XI_HEADER_LIST" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.CommandID">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.data.address.address.</span></span><span class="sig-name descname"><span class="pre">CommandID</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#CommandID"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.CommandID" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../../../../../../jdxi_editor.midi.data.address.html#jdxi_editor.midi.data.address.sysex_byte.SysExByte" title="jdxi_editor.midi.data.address.sysex_byte.SysExByte"><code class="xref py py-obj docutils literal notranslate"><span class="pre">jdxi_editor.midi.data.address.sysex_byte.SysExByte</span></code></a></p>
+<p>Roland Commands</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.CommandID.DT1">
+<span class="sig-name descname"><span class="pre">DT1</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">18</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#CommandID.DT1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.CommandID.DT1" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.CommandID.RQ1">
+<span class="sig-name descname"><span class="pre">RQ1</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">17</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#CommandID.RQ1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.CommandID.RQ1" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.CommandID.message_position">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">message_position</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#CommandID.message_position"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.CommandID.message_position" title="Link to this definition"></a></dt>
+<dd><p>Return the fixed message position for command bytes.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressStartMSB">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.data.address.address.</span></span><span class="sig-name descname"><span class="pre">AddressStartMSB</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressStartMSB"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressStartMSB" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../../../../../../jdxi_editor.midi.data.address.html#jdxi_editor.midi.data.address.address.Address" title="jdxi_editor.midi.data.address.address.Address"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Address</span></code></a></p>
+<p>Memory and Program Areas</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressStartMSB.SYSTEM">
+<span class="sig-name descname"><span class="pre">SYSTEM</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressStartMSB.SYSTEM"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressStartMSB.SYSTEM" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressStartMSB.SETUP">
+<span class="sig-name descname"><span class="pre">SETUP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressStartMSB.SETUP"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressStartMSB.SETUP" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressStartMSB.TEMPORARY_PROGRAM">
+<span class="sig-name descname"><span class="pre">TEMPORARY_PROGRAM</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">24</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressStartMSB.TEMPORARY_PROGRAM"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressStartMSB.TEMPORARY_PROGRAM" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressStartMSB.TEMPORARY_TONE">
+<span class="sig-name descname"><span class="pre">TEMPORARY_TONE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">25</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressStartMSB.TEMPORARY_TONE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressStartMSB.TEMPORARY_TONE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressStartMSB.message_position">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">message_position</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressStartMSB.message_position"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressStartMSB.message_position" title="Link to this definition"></a></dt>
+<dd><p>Return the fixed message position for command bytes.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetTemporaryToneUMB">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.data.address.address.</span></span><span class="sig-name descname"><span class="pre">AddressOffsetTemporaryToneUMB</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetTemporaryToneUMB"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetTemporaryToneUMB" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../../../../../../jdxi_editor.midi.data.address.html#jdxi_editor.midi.data.address.address.Address" title="jdxi_editor.midi.data.address.address.Address"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Address</span></code></a></p>
+<p>Address Offset Temporary Tone UMB</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_1">
+<span class="sig-name descname"><span class="pre">DIGITAL_SYNTH_1</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_1" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_2">
+<span class="sig-name descname"><span class="pre">DIGITAL_SYNTH_2</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">33</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_2" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetTemporaryToneUMB.ANALOG_SYNTH">
+<span class="sig-name descname"><span class="pre">ANALOG_SYNTH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">66</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetTemporaryToneUMB.ANALOG_SYNTH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetTemporaryToneUMB.ANALOG_SYNTH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetTemporaryToneUMB.DRUM_KIT">
+<span class="sig-name descname"><span class="pre">DRUM_KIT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">112</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetTemporaryToneUMB.DRUM_KIT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetTemporaryToneUMB.DRUM_KIT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetTemporaryToneUMB.COMMON">
+<span class="sig-name descname"><span class="pre">COMMON</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetTemporaryToneUMB.COMMON"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetTemporaryToneUMB.COMMON" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetTemporaryToneUMB.message_position">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">message_position</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetTemporaryToneUMB.message_position"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetTemporaryToneUMB.message_position" title="Link to this definition"></a></dt>
+<dd><p>Return the fixed message position for command bytes.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetSystemUMB">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.data.address.address.</span></span><span class="sig-name descname"><span class="pre">AddressOffsetSystemUMB</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetSystemUMB"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetSystemUMB" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../../../../../../jdxi_editor.midi.data.address.html#jdxi_editor.midi.data.address.address.Address" title="jdxi_editor.midi.data.address.address.Address"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Address</span></code></a></p>
+<p>Address Offset System UMB</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetSystemUMB.COMMON">
+<span class="sig-name descname"><span class="pre">COMMON</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetSystemUMB.COMMON"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetSystemUMB.COMMON" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetSystemUMB.message_position">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">message_position</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetSystemUMB.message_position"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetSystemUMB.message_position" title="Link to this definition"></a></dt>
+<dd><p>Return the fixed message position for command bytes.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetSystemLMB">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.data.address.address.</span></span><span class="sig-name descname"><span class="pre">AddressOffsetSystemLMB</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetSystemLMB"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetSystemLMB" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../../../../../../jdxi_editor.midi.data.address.html#jdxi_editor.midi.data.address.address.Address" title="jdxi_editor.midi.data.address.address.Address"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Address</span></code></a></p>
+<p>Address Offset System LMB</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetSystemLMB.COMMON">
+<span class="sig-name descname"><span class="pre">COMMON</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetSystemLMB.COMMON"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetSystemLMB.COMMON" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetSystemLMB.CONTROLLER">
+<span class="sig-name descname"><span class="pre">CONTROLLER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetSystemLMB.CONTROLLER"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetSystemLMB.CONTROLLER" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetSystemLMB.message_position">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">message_position</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetSystemLMB.message_position"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetSystemLMB.message_position" title="Link to this definition"></a></dt>
+<dd><p>Return the fixed message position for command bytes.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetSuperNATURALLMB">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.data.address.address.</span></span><span class="sig-name descname"><span class="pre">AddressOffsetSuperNATURALLMB</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetSuperNATURALLMB"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetSuperNATURALLMB" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../../../../../../jdxi_editor.midi.data.address.html#jdxi_editor.midi.data.address.address.Address" title="jdxi_editor.midi.data.address.address.Address"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Address</span></code></a></p>
+<p>Address Offset SuperNATURAL LMB</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetSuperNATURALLMB.COMMON">
+<span class="sig-name descname"><span class="pre">COMMON</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetSuperNATURALLMB.COMMON"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetSuperNATURALLMB.COMMON" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetSuperNATURALLMB.PARTIAL_1">
+<span class="sig-name descname"><span class="pre">PARTIAL_1</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">32</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetSuperNATURALLMB.PARTIAL_1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetSuperNATURALLMB.PARTIAL_1" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetSuperNATURALLMB.PARTIAL_2">
+<span class="sig-name descname"><span class="pre">PARTIAL_2</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">33</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetSuperNATURALLMB.PARTIAL_2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetSuperNATURALLMB.PARTIAL_2" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetSuperNATURALLMB.PARTIAL_3">
+<span class="sig-name descname"><span class="pre">PARTIAL_3</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">34</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetSuperNATURALLMB.PARTIAL_3"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetSuperNATURALLMB.PARTIAL_3" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetSuperNATURALLMB.MODIFY">
+<span class="sig-name descname"><span class="pre">MODIFY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">80</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetSuperNATURALLMB.MODIFY"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetSuperNATURALLMB.MODIFY" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetSuperNATURALLMB.message_position">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">message_position</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetSuperNATURALLMB.message_position"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetSuperNATURALLMB.message_position" title="Link to this definition"></a></dt>
+<dd><p>Return the fixed message position for command bytes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetSuperNATURALLMB.digital_partial_offset">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">digital_partial_offset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">partial_number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetSuperNATURALLMB.digital_partial_offset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetSuperNATURALLMB.digital_partial_offset" title="Link to this definition"></a></dt>
+<dd><p>Return the LMB offset for the given drum partial (0–37).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetAnalogLMB">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.data.address.address.</span></span><span class="sig-name descname"><span class="pre">AddressOffsetAnalogLMB</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetAnalogLMB"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetAnalogLMB" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../../../../../../jdxi_editor.midi.data.address.html#jdxi_editor.midi.data.address.address.Address" title="jdxi_editor.midi.data.address.address.Address"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Address</span></code></a></p>
+<p>Analog Synth Tone</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetAnalogLMB.COMMON">
+<span class="sig-name descname"><span class="pre">COMMON</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetAnalogLMB.COMMON"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetAnalogLMB.COMMON" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.data.address.address.</span></span><span class="sig-name descname"><span class="pre">AddressOffsetProgramLMB</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetProgramLMB"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../../../../../../jdxi_editor.midi.data.address.html#jdxi_editor.midi.data.address.address.Address" title="jdxi_editor.midi.data.address.address.Address"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Address</span></code></a></p>
+<p>Address Offset Program LMB</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.COMMON">
+<span class="sig-name descname"><span class="pre">COMMON</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetProgramLMB.COMMON"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.COMMON" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.VOCAL_EFFECT">
+<span class="sig-name descname"><span class="pre">VOCAL_EFFECT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetProgramLMB.VOCAL_EFFECT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.VOCAL_EFFECT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.EFFECT_1">
+<span class="sig-name descname"><span class="pre">EFFECT_1</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetProgramLMB.EFFECT_1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.EFFECT_1" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.EFFECT_2">
+<span class="sig-name descname"><span class="pre">EFFECT_2</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetProgramLMB.EFFECT_2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.EFFECT_2" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DELAY">
+<span class="sig-name descname"><span class="pre">DELAY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">6</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetProgramLMB.DELAY"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DELAY" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.REVERB">
+<span class="sig-name descname"><span class="pre">REVERB</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">8</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetProgramLMB.REVERB"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.REVERB" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.PART_DIGITAL_SYNTH_1">
+<span class="sig-name descname"><span class="pre">PART_DIGITAL_SYNTH_1</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">32</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetProgramLMB.PART_DIGITAL_SYNTH_1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.PART_DIGITAL_SYNTH_1" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.PART_DIGITAL_SYNTH_2">
+<span class="sig-name descname"><span class="pre">PART_DIGITAL_SYNTH_2</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">33</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetProgramLMB.PART_DIGITAL_SYNTH_2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.PART_DIGITAL_SYNTH_2" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.PART_ANALOG">
+<span class="sig-name descname"><span class="pre">PART_ANALOG</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">34</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetProgramLMB.PART_ANALOG"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.PART_ANALOG" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.PART_DRUM">
+<span class="sig-name descname"><span class="pre">PART_DRUM</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">35</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetProgramLMB.PART_DRUM"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.PART_DRUM" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.ZONE_DIGITAL_SYNTH_1">
+<span class="sig-name descname"><span class="pre">ZONE_DIGITAL_SYNTH_1</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">48</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetProgramLMB.ZONE_DIGITAL_SYNTH_1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.ZONE_DIGITAL_SYNTH_1" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.ZONE_DIGITAL_SYNTH_2">
+<span class="sig-name descname"><span class="pre">ZONE_DIGITAL_SYNTH_2</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">49</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetProgramLMB.ZONE_DIGITAL_SYNTH_2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.ZONE_DIGITAL_SYNTH_2" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.ZONE_ANALOG">
+<span class="sig-name descname"><span class="pre">ZONE_ANALOG</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">50</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetProgramLMB.ZONE_ANALOG"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.ZONE_ANALOG" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.ZONE_DRUM">
+<span class="sig-name descname"><span class="pre">ZONE_DRUM</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">51</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetProgramLMB.ZONE_DRUM"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.ZONE_DRUM" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.CONTROLLER">
+<span class="sig-name descname"><span class="pre">CONTROLLER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">64</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetProgramLMB.CONTROLLER"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.CONTROLLER" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_DEFAULT_PARTIAL">
+<span class="sig-name descname"><span class="pre">DRUM_DEFAULT_PARTIAL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">46</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetProgramLMB.DRUM_DEFAULT_PARTIAL"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_DEFAULT_PARTIAL" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DIGITAL_DEFAULT_PARTIAL">
+<span class="sig-name descname"><span class="pre">DIGITAL_DEFAULT_PARTIAL</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetProgramLMB.DIGITAL_DEFAULT_PARTIAL"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DIGITAL_DEFAULT_PARTIAL" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_1">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_1</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">46</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetProgramLMB.DRUM_KIT_PART_1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_1" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_2">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_2</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">48</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetProgramLMB.DRUM_KIT_PART_2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_2" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_3">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_3</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">50</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetProgramLMB.DRUM_KIT_PART_3"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_3" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_4">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_4</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">52</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetProgramLMB.DRUM_KIT_PART_4"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_4" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_5">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_5</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">54</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetProgramLMB.DRUM_KIT_PART_5"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_5" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_6">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_6</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">56</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetProgramLMB.DRUM_KIT_PART_6"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_6" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_7">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_7</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">58</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetProgramLMB.DRUM_KIT_PART_7"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_7" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_8">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_8</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">60</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetProgramLMB.DRUM_KIT_PART_8"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_8" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_9">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_9</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">62</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetProgramLMB.DRUM_KIT_PART_9"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_9" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_10">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_10</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">64</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetProgramLMB.DRUM_KIT_PART_10"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_10" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_11">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_11</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">66</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetProgramLMB.DRUM_KIT_PART_11"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_11" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_12">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_12</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">68</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetProgramLMB.DRUM_KIT_PART_12"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_12" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_13">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_13</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">70</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetProgramLMB.DRUM_KIT_PART_13"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_13" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_14">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_14</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">72</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetProgramLMB.DRUM_KIT_PART_14"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_14" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_15">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_15</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">74</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetProgramLMB.DRUM_KIT_PART_15"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_15" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_16">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_16</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">76</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetProgramLMB.DRUM_KIT_PART_16"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_16" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_17">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_17</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">78</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetProgramLMB.DRUM_KIT_PART_17"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_17" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_18">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_18</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">80</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetProgramLMB.DRUM_KIT_PART_18"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_18" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_19">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_19</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">82</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetProgramLMB.DRUM_KIT_PART_19"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_19" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_20">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_20</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">84</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetProgramLMB.DRUM_KIT_PART_20"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_20" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_21">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_21</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">86</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetProgramLMB.DRUM_KIT_PART_21"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_21" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_22">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_22</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">88</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetProgramLMB.DRUM_KIT_PART_22"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_22" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_23">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_23</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">90</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetProgramLMB.DRUM_KIT_PART_23"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_23" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_24">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_24</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">92</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetProgramLMB.DRUM_KIT_PART_24"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_24" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_25">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_25</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">94</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetProgramLMB.DRUM_KIT_PART_25"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_25" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_26">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_26</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">96</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetProgramLMB.DRUM_KIT_PART_26"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_26" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_27">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_27</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">98</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetProgramLMB.DRUM_KIT_PART_27"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_27" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_28">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_28</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">100</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetProgramLMB.DRUM_KIT_PART_28"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_28" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_29">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_29</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">102</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetProgramLMB.DRUM_KIT_PART_29"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_29" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_30">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_30</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">104</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetProgramLMB.DRUM_KIT_PART_30"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_30" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_31">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_31</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">106</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetProgramLMB.DRUM_KIT_PART_31"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_31" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_32">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_32</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">108</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetProgramLMB.DRUM_KIT_PART_32"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_32" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_33">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_33</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">110</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetProgramLMB.DRUM_KIT_PART_33"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_33" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_34">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_34</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">112</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetProgramLMB.DRUM_KIT_PART_34"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_34" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_35">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_35</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">114</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetProgramLMB.DRUM_KIT_PART_35"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_35" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_36">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_36</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">116</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetProgramLMB.DRUM_KIT_PART_36"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_36" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_37">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_37</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">118</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetProgramLMB.DRUM_KIT_PART_37"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_37" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.message_position">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">message_position</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetProgramLMB.message_position"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.message_position" title="Link to this definition"></a></dt>
+<dd><p>Return the fixed message position for command bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int The fixed message position</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.drum_partial_offset">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">drum_partial_offset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">partial_number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetProgramLMB.drum_partial_offset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.drum_partial_offset" title="Link to this definition"></a></dt>
+<dd><p>Return the LMB offset for the given drum partial (0–37).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>partial_number</strong> – int The partial number</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>int The LMB offset</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.data.address.address.</span></span><span class="sig-name descname"><span class="pre">AddressOffsetDrumKitLMB</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetDrumKitLMB"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../../../../../../jdxi_editor.midi.data.address.html#jdxi_editor.midi.data.address.address.Address" title="jdxi_editor.midi.data.address.address.Address"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Address</span></code></a></p>
+<p>Address Offset Program LMB</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.COMMON">
+<span class="sig-name descname"><span class="pre">COMMON</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetDrumKitLMB.COMMON"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.COMMON" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_DEFAULT_PARTIAL">
+<span class="sig-name descname"><span class="pre">DRUM_DEFAULT_PARTIAL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">46</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetDrumKitLMB.DRUM_DEFAULT_PARTIAL"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_DEFAULT_PARTIAL" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DIGITAL_DEFAULT_PARTIAL">
+<span class="sig-name descname"><span class="pre">DIGITAL_DEFAULT_PARTIAL</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetDrumKitLMB.DIGITAL_DEFAULT_PARTIAL"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DIGITAL_DEFAULT_PARTIAL" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_1">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_1</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">46</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetDrumKitLMB.DRUM_KIT_PART_1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_1" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_2">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_2</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">48</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetDrumKitLMB.DRUM_KIT_PART_2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_2" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_3">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_3</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">50</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetDrumKitLMB.DRUM_KIT_PART_3"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_3" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_4">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_4</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">52</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetDrumKitLMB.DRUM_KIT_PART_4"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_4" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_5">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_5</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">54</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetDrumKitLMB.DRUM_KIT_PART_5"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_5" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_6">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_6</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">56</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetDrumKitLMB.DRUM_KIT_PART_6"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_6" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_7">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_7</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">58</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetDrumKitLMB.DRUM_KIT_PART_7"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_7" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_8">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_8</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">60</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetDrumKitLMB.DRUM_KIT_PART_8"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_8" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_9">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_9</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">62</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetDrumKitLMB.DRUM_KIT_PART_9"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_9" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_10">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_10</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">64</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetDrumKitLMB.DRUM_KIT_PART_10"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_10" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_11">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_11</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">66</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetDrumKitLMB.DRUM_KIT_PART_11"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_11" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_12">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_12</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">68</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetDrumKitLMB.DRUM_KIT_PART_12"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_12" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_13">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_13</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">70</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetDrumKitLMB.DRUM_KIT_PART_13"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_13" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_14">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_14</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">72</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetDrumKitLMB.DRUM_KIT_PART_14"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_14" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_15">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_15</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">74</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetDrumKitLMB.DRUM_KIT_PART_15"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_15" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_16">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_16</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">76</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetDrumKitLMB.DRUM_KIT_PART_16"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_16" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_17">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_17</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">78</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetDrumKitLMB.DRUM_KIT_PART_17"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_17" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_18">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_18</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">80</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetDrumKitLMB.DRUM_KIT_PART_18"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_18" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_19">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_19</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">82</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetDrumKitLMB.DRUM_KIT_PART_19"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_19" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_20">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_20</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">84</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetDrumKitLMB.DRUM_KIT_PART_20"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_20" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_21">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_21</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">86</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetDrumKitLMB.DRUM_KIT_PART_21"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_21" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_22">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_22</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">88</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetDrumKitLMB.DRUM_KIT_PART_22"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_22" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_23">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_23</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">90</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetDrumKitLMB.DRUM_KIT_PART_23"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_23" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_24">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_24</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">92</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetDrumKitLMB.DRUM_KIT_PART_24"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_24" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_25">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_25</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">94</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetDrumKitLMB.DRUM_KIT_PART_25"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_25" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_26">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_26</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">96</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetDrumKitLMB.DRUM_KIT_PART_26"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_26" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_27">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_27</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">98</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetDrumKitLMB.DRUM_KIT_PART_27"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_27" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_28">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_28</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">100</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetDrumKitLMB.DRUM_KIT_PART_28"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_28" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_29">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_29</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">102</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetDrumKitLMB.DRUM_KIT_PART_29"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_29" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_30">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_30</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">104</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetDrumKitLMB.DRUM_KIT_PART_30"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_30" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_31">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_31</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">106</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetDrumKitLMB.DRUM_KIT_PART_31"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_31" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_32">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_32</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">108</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetDrumKitLMB.DRUM_KIT_PART_32"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_32" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_33">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_33</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">110</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetDrumKitLMB.DRUM_KIT_PART_33"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_33" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_34">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_34</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">112</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetDrumKitLMB.DRUM_KIT_PART_34"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_34" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_35">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_35</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">114</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetDrumKitLMB.DRUM_KIT_PART_35"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_35" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_36">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_36</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">116</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetDrumKitLMB.DRUM_KIT_PART_36"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_36" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_37">
+<span class="sig-name descname"><span class="pre">DRUM_KIT_PART_37</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">118</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetDrumKitLMB.DRUM_KIT_PART_37"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_37" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.message_position">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">message_position</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetDrumKitLMB.message_position"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.message_position" title="Link to this definition"></a></dt>
+<dd><p>Return the fixed message position for command bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int The fixed message position</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.drum_partial_offset">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">drum_partial_offset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">partial_number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/address/address.html#AddressOffsetDrumKitLMB.drum_partial_offset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.drum_partial_offset" title="Link to this definition"></a></dt>
+<dd><p>Return the LMB offset for the given drum partial (0–37).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>partial_number</strong> – int The partial number</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>int The LMB offset</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../index.html" class="btn btn-neutral float-left" title="jdxi_editor.midi.data.address" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../address_map/index.html" class="btn btn-neutral float-right" title="jdxi_editor.midi.data.address.address_map" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Mark Mrooks.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,1177 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>jdxi_editor.midi.data.drum.data &mdash; JD-Xi Editor 0.8.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../../_static/documentation_options.js?v=486e5634"></script>
+      <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../../index.html" class="icon icon-home">
+            JD-Xi Editor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../usage.html">Quick Start</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../usage.html#connection-of-the-jd-xi-hardware-instrument-to-the-computer">Connection of the JD-Xi Hardware Instrument to the Computer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../instrument.html">JDXi Instrument Window</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../instrument.html#features">Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../instrument.html#using-the-instrument-window">Using the Instrument Window</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../editor.html">Editor Window</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../editor.html#program-mixer-section">Program/Mixer Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../editor.html#digital-1-section">Digital 1 Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../editor.html#digital-2-section">Digital 2 Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../editor.html#drum-kit-section">Drum Kit Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../editor.html#analog-section">Analog Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../editor.html#effect-controls">Effect Controls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../editor.html#vocal-transformer">Vocal Transformer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../editor.html#arpeggiator">Arpeggiator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../editor.html#midi-file-player-and-recorder">MIDI File Player and Recorder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../editor.html#pattern-sequencer">Pattern Sequencer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../troubleshooting.html">Troubleshooting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../troubleshooting.html#general-problems">General Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../troubleshooting.html#macos">MacOS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../troubleshooting.html#windows">Windows</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../legal.html">Legal Disclaimer</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../modules.html">jdxi_editor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../jdxi_editor.html">jdxi_editor package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.jdxi.html">jdxi_editor.jdxi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.log.html">jdxi_editor.log package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.midi.html">jdxi_editor.midi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.ui.html">jdxi_editor.ui package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.globals">jdxi_editor.globals module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.main">jdxi_editor.main module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.html#jdxi_editor.main.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.project">jdxi_editor.project module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.resources">jdxi_editor.resources module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.html#jdxi_editor.resources.resource_path"><code class="docutils literal notranslate"><span class="pre">resource_path()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../autoapi/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/midi/index.html">midi</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/midi/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/colors/index.html">midi.colors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/slider/index.html">midi.slider</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/spin_box/index.html">midi.spin_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/time_ruler/index.html">midi.time_ruler</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/track/index.html">midi.track</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/track_viewer/index.html">midi.track_viewer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/utils/index.html">midi.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/adsr/index.html">adsr</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/adsr/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/adsr/adsr/index.html">adsr.adsr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/adsr/graph/index.html">adsr.graph</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/adsr/parameter/index.html">adsr.parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/adsr/plot/index.html">adsr.plot</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/pitch/index.html">pitch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/pitch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pitch/envelope/index.html">pitch.envelope</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pitch/envelope_plot/index.html">pitch.envelope_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pitch/pwm_plot/index.html">pitch.pwm_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pitch/slider_spinbox/index.html">pitch.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/piano/index.html">piano</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/piano/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/piano/key/index.html">piano.key</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/piano/keyboard/index.html">piano.keyboard</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/panel/index.html">panel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/panel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/panel/partial/index.html">panel.partial</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/wheel/index.html">wheel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/wheel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/wheel/mod/index.html">wheel.mod</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/wheel/pitch/index.html">wheel.pitch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/wheel/wheel/index.html">wheel.wheel</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/preset/index.html">preset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/preset/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/preset/combo_box/index.html">preset.combo_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/preset/panel/index.html">preset.panel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/preset/patch_name/index.html">preset.patch_name</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/slider/index.html">slider</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/slider/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/slider/slider/index.html">slider.slider</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/slider/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/slider/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/slider/index.html#slider.Slider"><code class="docutils literal notranslate"><span class="pre">Slider</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/dialog/index.html">dialog</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/dialog/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/dialog/progress/index.html">dialog.progress</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/viewer/index.html">viewer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/viewer/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/viewer/log/index.html">viewer.log</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/button/index.html">button</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/button/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/channel/index.html">button.channel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/favorite/index.html">button.favorite</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/sequencer/index.html">button.sequencer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/waveform/index.html">button.waveform</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/button/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/button/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/index.html#button.ChannelButton"><code class="docutils literal notranslate"><span class="pre">ChannelButton</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/index.html#button.SequencerSquare"><code class="docutils literal notranslate"><span class="pre">SequencerSquare</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/switch/index.html">switch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/switch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/switch/partial/index.html">switch.partial</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/switch/switch/index.html">switch.switch</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/filter/index.html">filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/filter/index.html#filter.FilterWidget"><code class="docutils literal notranslate"><span class="pre">FilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/display/index.html">display</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/display/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/display/digital/index.html">display.digital</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/display/pattern/index.html">display.pattern</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/display/value/index.html">display.value</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/pattern/index.html">pattern</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/pattern/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pattern/measure/index.html">pattern.measure</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/spin_box/index.html">spin_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/spin_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/spin_box/spin_box/index.html">spin_box.spin_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/envelope/index.html">envelope</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/envelope/base/index.html">envelope.base</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/indicator/index.html">indicator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/indicator/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/indicator/led/index.html">indicator.led</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/indicator/midi/index.html">indicator.midi</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/combo_box/index.html">combo_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/combo_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/combo_box/combo_box/index.html">combo_box.combo_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/index.html">jdxi_editor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/globals/index.html">jdxi_editor.globals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/jdxi/index.html">jdxi_editor.jdxi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/log/index.html">jdxi_editor.log</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/main/index.html">jdxi_editor.main</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/midi/index.html">jdxi_editor.midi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/project/index.html">jdxi_editor.project</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/resources/index.html">jdxi_editor.resources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/ui/index.html">jdxi_editor.ui</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html">filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#filter_plot.FilterPlot"><code class="docutils literal notranslate"><span class="pre">FilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html">envelope_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#envelope_plot.midi_value_to_float"><code class="docutils literal notranslate"><span class="pre">midi_value_to_float()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#envelope_plot.WMTEnvPlot"><code class="docutils literal notranslate"><span class="pre">WMTEnvPlot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#envelope_plot.app"><code class="docutils literal notranslate"><span class="pre">app</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/wave_selector/index.html">wave_selector</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/wave_selector/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/wave_selector/wave_selector/index.html">wave_selector.wave_selector</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/analog_filter/index.html">analog_filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/analog_filter/index.html#analog_filter.AnalogFilterWidget"><code class="docutils literal notranslate"><span class="pre">AnalogFilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/slider_spinbox/index.html">slider_spinbox</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/slider_spinbox/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/slider_spinbox/slider_spinbox/index.html">slider_spinbox.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html">analog_filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#analog_filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#analog_filter_plot.AnalogFilterPlot"><code class="docutils literal notranslate"><span class="pre">AnalogFilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">JD-Xi Editor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">jdxi_editor.midi.data.drum.data</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for jdxi_editor.midi.data.drum.data</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Drum Data&quot;&quot;&quot;</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Dict</span>
+
+<div class="viewcode-block" id="DRUM_PARTIAL_NAMES">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/drum/data/index.html#jdxi_editor.midi.data.drum.data.DRUM_PARTIAL_NAMES">[docs]</a>
+<span class="n">DRUM_PARTIAL_NAMES</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;COM&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;BD1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;RIM&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;BD2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CLAP&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;BD3&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;SD1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CHH&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;SD2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PHH&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;SD3&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;OHH&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;SD4&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;TOM1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PRC1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;TOM2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PRC2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;TOM3&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PRC3&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CYM1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PRC4&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CYM2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PRC5&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CYM3&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;HIT&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;OTH1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;OTH2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;D4&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Eb4&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;E4&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;F4&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;F#4&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;G4&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;G#4&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;A4&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Bb4&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;B4&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;C5&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;C#5&quot;</span><span class="p">,</span>
+<span class="p">]</span></div>
+
+<div class="viewcode-block" id="DRUM_ADDRESSES">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/drum/data/index.html#jdxi_editor.midi.data.drum.data.DRUM_ADDRESSES">[docs]</a>
+<span class="n">DRUM_ADDRESSES</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x19\x70\x00\x00</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x19\x70\x2E\x00</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x19\x70\x30\x00</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x19\x70\x32\x00</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x19\x70\x34\x00</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x19\x70\x36\x00</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x19\x70\x38\x00</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x19\x70\x3A\x00</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x19\x70\x3C\x00</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x19\x70\x3E\x00</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x19\x70\x40\x00</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x19\x70\x42\x00</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x19\x70\x44\x00</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x19\x70\x46\x00</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x19\x70\x48\x00</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x19\x70\x4A\x00</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x19\x70\x4C\x00</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x19\x70\x4E\x00</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x19\x70\x50\x00</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x19\x70\x52\x00</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x19\x70\x54\x00</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x19\x70\x56\x00</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x19\x70\x58\x00</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x19\x70\x5A\x00</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x19\x70\x5C\x00</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x19\x70\x5E\x00</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x19\x70\x60\x00</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x19\x70\x62\x00</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x19\x70\x64\x00</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x19\x70\x66\x00</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x19\x70\x68\x00</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x19\x70\x6A\x00</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x19\x70\x6C\x00</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x19\x70\x6E\x00</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x19\x70\x70\x00</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x19\x70\x72\x00</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x19\x70\x74\x00</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x19\x70\x76\x00</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x19\x70\x78\x00</span><span class="s2">&quot;</span><span class="p">,</span>
+<span class="p">)</span></div>
+
+<div class="viewcode-block" id="DR">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/drum/data/index.html#jdxi_editor.midi.data.drum.data.DR">[docs]</a>
+<span class="n">DR</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;common&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;level&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mh">0x00</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">),</span>
+        <span class="s2">&quot;pan&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mh">0x01</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">),</span>
+        <span class="s2">&quot;reverb_send&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mh">0x02</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">),</span>
+        <span class="s2">&quot;delay_send&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mh">0x03</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">),</span>
+        <span class="s2">&quot;fx_send&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mh">0x04</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">),</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;pad&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;wave&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mh">0x00</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">),</span>
+        <span class="s2">&quot;level&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mh">0x01</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">),</span>
+        <span class="s2">&quot;pan&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mh">0x02</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">),</span>
+        <span class="s2">&quot;tune&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mh">0x03</span><span class="p">,</span> <span class="o">-</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">),</span>
+        <span class="s2">&quot;decay&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mh">0x04</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">),</span>
+        <span class="s2">&quot;mute_group&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mh">0x05</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">31</span><span class="p">),</span>
+        <span class="s2">&quot;reverb_send&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mh">0x06</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">),</span>
+        <span class="s2">&quot;delay_send&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mh">0x07</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">),</span>
+        <span class="s2">&quot;fx_send&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mh">0x08</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">),</span>
+    <span class="p">},</span>
+<span class="p">}</span></div>
+
+<div class="viewcode-block" id="DRUM_PARTS">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/drum/data/index.html#jdxi_editor.midi.data.drum.data.DRUM_PARTS">[docs]</a>
+<span class="n">DRUM_PARTS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;KICK&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Kick 1&quot;</span><span class="p">,</span> <span class="s2">&quot;Kick 2&quot;</span><span class="p">,</span> <span class="s2">&quot;Kick 3&quot;</span><span class="p">,</span> <span class="s2">&quot;TR-808 Kick&quot;</span><span class="p">,</span> <span class="s2">&quot;TR-909 Kick&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;SNARE&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Snare 1&quot;</span><span class="p">,</span> <span class="s2">&quot;Snare 2&quot;</span><span class="p">,</span> <span class="s2">&quot;Rim Shot&quot;</span><span class="p">,</span> <span class="s2">&quot;TR-808 Snare&quot;</span><span class="p">,</span> <span class="s2">&quot;TR-909 Snare&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;HI_HAT&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Closed HH&quot;</span><span class="p">,</span> <span class="s2">&quot;Open HH&quot;</span><span class="p">,</span> <span class="s2">&quot;Pedal HH&quot;</span><span class="p">,</span> <span class="s2">&quot;TR-808 CH&quot;</span><span class="p">,</span> <span class="s2">&quot;TR-808 OH&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;CYMBAL&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Crash 1&quot;</span><span class="p">,</span> <span class="s2">&quot;Crash 2&quot;</span><span class="p">,</span> <span class="s2">&quot;Ride&quot;</span><span class="p">,</span> <span class="s2">&quot;China&quot;</span><span class="p">,</span> <span class="s2">&quot;Splash&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;TOM&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Tom Hi&quot;</span><span class="p">,</span> <span class="s2">&quot;Tom Mid&quot;</span><span class="p">,</span> <span class="s2">&quot;Tom Low&quot;</span><span class="p">,</span> <span class="s2">&quot;TR-808 Tom Hi&quot;</span><span class="p">,</span> <span class="s2">&quot;TR-808 Tom Low&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;PERCUSSION&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Conga Hi&quot;</span><span class="p">,</span> <span class="s2">&quot;Conga Low&quot;</span><span class="p">,</span> <span class="s2">&quot;Bongo Hi&quot;</span><span class="p">,</span> <span class="s2">&quot;Bongo Low&quot;</span><span class="p">,</span> <span class="s2">&quot;Timbale&quot;</span><span class="p">],</span>
+<span class="p">}</span></div>
+
+<div class="viewcode-block" id="SN_PRESETS">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/drum/data/index.html#jdxi_editor.midi.data.drum.data.SN_PRESETS">[docs]</a>
+<span class="n">SN_PRESETS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;001: Studio Standard&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;002: Studio Rock&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;003: Studio Jazz&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;004: Studio Dance&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;005: Studio R&amp;B&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;006: Studio Latin&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;007: Power Kit&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;008: Rock Kit&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;009: Jazz Kit&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;010: Brush Kit&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;011: Orchestra Kit&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;012: Dance Kit&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;013: House Kit&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;014: Hip Hop Kit&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;015: R&amp;B Kit&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;016: Latin Kit&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;017: World Kit&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;018: Electronic Kit&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;019: TR-808 Kit&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;020: TR-909 Kit&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;021: CR-78 Kit&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;022: TR-606 Kit&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;023: TR-707 Kit&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;024: TR-727 Kit&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;025: Percussion Kit&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;026: SFX Kit&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;027: User Kit 1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;028: User Kit 2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;029: User Kit 3&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;030: User Kit 4&quot;</span><span class="p">,</span>
+<span class="p">]</span></div>
+
+<div class="viewcode-block" id="DRUM_PRESETS">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/drum/data/index.html#jdxi_editor.midi.data.drum.data.DRUM_PRESETS">[docs]</a>
+<span class="n">DRUM_PRESETS</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">&quot;001: TR-909 Kit 1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;002: TR-808 Kit 1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;003: 707&amp;727 Kit1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;004: CR-78 Kit 1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;005: TR-606 Kit 1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;006: TR-626 Kit 1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;007: EDM Kit 1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;008: Drum&amp;Bs Kit1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;009: Techno Kit 1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;010: House Kit 1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;011: Hiphop Kit 1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;012: R&amp;B Kit 1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;013: TR-909 Kit 2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;014: TR-909 Kit 3&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;015: TR-808 Kit 2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;016: TR-808 Kit 3&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;017: TR-808 Kit 4&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;018: 808&amp;909 Kit1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;019: 808&amp;909 Kit2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;020: 707&amp;727 Kit2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;021: 909&amp;7*7 Kit1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;022: 808&amp;7*7 Kit1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;023: EDM Kit 2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;024: Techno Kit 2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;025: Hiphop Kit 2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;026: 80&#39;s Kit 1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;027: 90&#39;s Kit 1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;028: Noise Kit 1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;029: Pop Kit 1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;030: Pop Kit 2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;031: Rock Kit&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;032: Jazz Kit&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;033: Latin Kit&quot;</span><span class="p">,</span>
+<span class="p">)</span></div>
+
+<div class="viewcode-block" id="DRUM_CATEGORIES">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/drum/data/index.html#jdxi_editor.midi.data.drum.data.DRUM_CATEGORIES">[docs]</a>
+<span class="n">DRUM_CATEGORIES</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;VINTAGE ROLAND&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;001: TR-909 Kit 1&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;002: TR-808 Kit 1&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;003: 707&amp;727 Kit1&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;004: CR-78 Kit 1&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;005: TR-606 Kit 1&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;006: TR-626 Kit 1&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;013: TR-909 Kit 2&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;014: TR-909 Kit 3&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;015: TR-808 Kit 2&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;016: TR-808 Kit 3&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;017: TR-808 Kit 4&quot;</span><span class="p">,</span>
+    <span class="p">],</span>
+    <span class="s2">&quot;HYBRID&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;018: 808&amp;909 Kit1&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;019: 808&amp;909 Kit2&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;020: 707&amp;727 Kit2&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;021: 909&amp;7*7 Kit1&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;022: 808&amp;7*7 Kit1&quot;</span><span class="p">,</span>
+    <span class="p">],</span>
+    <span class="s2">&quot;ELECTRONIC&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;007: EDM Kit 1&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;008: Drum&amp;Bs Kit1&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;009: Techno Kit 1&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;023: EDM Kit 2&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;024: Techno Kit 2&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;028: Noise Kit 1&quot;</span><span class="p">,</span>
+    <span class="p">],</span>
+    <span class="s2">&quot;MODERN&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;010: House Kit 1&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;011: Hiphop Kit 1&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;012: R&amp;B Kit 1&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;025: Hiphop Kit 2&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;026: 80&#39;s Kit 1&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;027: 90&#39;s Kit 1&quot;</span><span class="p">,</span>
+    <span class="p">],</span>
+    <span class="s2">&quot;ACOUSTIC&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;029: Pop Kit 1&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;030: Pop Kit 2&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;031: Rock Kit&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;032: Jazz Kit&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;033: Latin Kit&quot;</span><span class="p">,</span>
+    <span class="p">],</span>
+<span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="rm_waves_categorised">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/drum/data/index.html#jdxi_editor.midi.data.drum.data.rm_waves_categorised">[docs]</a>
+<span class="n">rm_waves_categorised</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;000&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;OFF&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;category&quot;</span><span class="p">:</span> <span class="s2">&quot;None&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;001&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;78 Kick P&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;category&quot;</span><span class="p">:</span> <span class="s2">&quot;Kick&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;002&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;78 Kick P&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;category&quot;</span><span class="p">:</span> <span class="s2">&quot;Kick&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="rm_waves">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/drum/data/index.html#jdxi_editor.midi.data.drum.data.rm_waves">[docs]</a>
+<span class="n">rm_waves</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;000: OFF &quot;</span><span class="p">,</span>
+    <span class="s2">&quot;001: 78 Kick P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;002: 606 Kick P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;003: 808 Kick 1aP&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;004: 808 Kick 1bP&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;005: 808 Kick 1cP&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;006: 808 Kick 2aP&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;007: 808 Kick 2bP&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;008: 808 Kick 2cP&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;009: 808 Kick 3aP&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;010: 808 Kick 3bP&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;011: 808 Kick 3cP&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;012: 808 Kick 4aP&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;013: 808 Kick 4bP&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;014: 808 Kick 4cP&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;015: 808 Kick 1Lp&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;016: 808 Kick 2Lp&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;017: 909 Kick 1aP&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;018: 909 Kick 1bP&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;019: 909 Kick 1cP&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;020: 909 Kick 2bP&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;021: 909 Kick 2cP&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;022: 909 Kick 3P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;023: 909 Kick 4&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;024: 909 Kick 5&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;025: 909 Kick 6&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;026: 909 DstKickP&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;027: 909 Kick Lp&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;028: 707 Kick 1 P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;029: 707 Kick 2 P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;030: 626 Kick 1 P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;031: 626 Kick 2 P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;032: Analog Kick1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;033: Analog Kick2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;034: Analog Kick3&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;035: Analog Kick4&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;036: Analog Kick5&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;037: PlasticKick1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;038: PlasticKick2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;039: Synth Kick 1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;040: Synth Kick 2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;041: Synth Kick 3&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;042: Synth Kick 4&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;043: Synth Kick 5&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;044: Synth Kick 6&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;045: Synth Kick 7&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;046: Synth Kick 8&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;047: Synth Kick 9&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;048: Synth Kick10&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;049: Synth Kick11&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;050: Synth Kick12&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;051: Synth Kick13&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;052: Synth Kick14&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;053: Synth Kick15&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;054: Vint Kick P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;055: Jungle KickP&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;056: HashKick 1 P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;057: HashKick 2 P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;058: Lite Kick P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;059: Dry Kick 1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;060: Dry Kick 2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;061: Tight Kick P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;062: Old Kick&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;063: Warm Kick P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;064: Hush Kick P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;065: Power Kick&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;066: Break Kick&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;067: Turbo Kick&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;068: TM-2 Kick 1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;069: TM-2 Kick 2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;070: PurePhatKckP&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;071: Bright KickP&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;072: LoBit Kick1P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;073: LoBit Kick2P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;074: Dance Kick P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;075: Hip Kick P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;076: HipHop Kick&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;077: Mix Kick 1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;078: Mix Kick 2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;079: Wide Kick P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;080: LD Kick P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;081: SF Kick 1 P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;082: SF Kick 2 P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;083: TY Kick P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;084: WD Kick P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;085: Reg.Kick P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;086: Rock Kick P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;087: Jz Dry Kick&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;088: Jazz Kick P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;089: 78 Snr&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;090: 606 Snr 1 P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;091: 606 Snr 2 P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;092: 808 Snr 1a P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;093: 808 Snr 1b P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;094: 808 Snr 1c P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;095: 808 Snr 2a P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;096: 808 Snr 2b P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;097: 808 Snr 2c P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;098: 808 Snr 3a P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;099: 808 Snr 3b P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;100: 808 Snr 3c P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;101: 909 Snr 1a P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;102: 909 Snr 1b P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;103: 909 Snr 1c P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;104: 909 Snr 1d P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;105: 909 Snr 2a P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;106: 909 Snr 2b P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;107: 909 Snr 2c P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;108: 909 Snr 2d P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;109: 909 Snr 3a P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;110: 909 Snr 3b P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;111: 909 Snr 3c P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;112: 909 Snr 3d P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;113: 909 DstSnr1P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;114: 909 DstSnr2P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;115: 909 DstSnr3P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;116: 707 Snr 1a P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;117: 707 Snr 2a P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;118: 707 Snr 1b P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;119: 707 Snr 2b P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;120: 626 Snr 1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;121: 626 Snr 2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;122: 626 Snr 3&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;123: 626 Snr 1a P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;124: 626 Snr 3a P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;125: 626 Snr 1b P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;126: 626 Snr 2 P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;127: 626 Snr 3b P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;128: Analog Snr 1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;129: Analog Snr 2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;130: Analog Snr 3&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;131: Synth Snr 1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;132: Synth Snr 2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;133: 106 Snr&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;134: Sim Snare&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;135: Jungle Snr 1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;136: Jungle Snr 2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;137: Jungle Snr 3&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;138: Lite Snare&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;139: Lo-Bit Snr1P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;140: Lo-Bit Snr2P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;141: HphpJazzSnrP&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;142: PurePhatSnrP&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;143: DRDisco SnrP&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;144: Ragga Snr&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;145: Lo-Fi Snare&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;146: drums_data Snare&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;147: DanceHallSnr&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;148: Break Snr&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;149: Piccolo SnrP&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;150: TM-2 Snr 1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;151: TM-2 Snr 2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;152: WoodSnr RS&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;153: LD Snr&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;154: SF Snr P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;155: TY Snr&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;156: WD Snr P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;157: Tight Snr&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;158: Reg.Snr1 P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;159: Reg.Snr2 P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;160: Ballad Snr P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;161: Rock Snr1 P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;162: Rock Snr2 P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;163: LD Rim&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;164: SF Rim&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;165: TY Rim&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;166: WD Rim P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;167: Jazz Snr P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;168: Jazz Rim P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;169: Jz BrshSlapP&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;170: Jz BrshSwshP&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;171: Swish&amp;Trn P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;172: 78 Rimshot&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;173: 808 RimshotP&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;174: 909 RimshotP&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;175: 707 Rimshot&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;176: 626 Rimshot&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;177: Vint Stick P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;178: Lo-Bit Stk P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;179: Hard Stick P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;180: Wild Stick P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;181: LD Cstick&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;182: TY Cstick&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;183: WD Cstick&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;184: 606 H.Tom P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;185: 808 H.Tom P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;186: 909 H.Tom P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;187: 707 H.Tom P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;188: 626 H.Tom 1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;189: 626 H.Tom 2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;190: SimV Tom 1 P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;191: LD H.Tom P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;192: SF H.Tom P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;193: TY H.Tom P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;194: 808 M.Tom P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;195: 909 M.Tom P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;196: 707 M.Tom P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;197: 626 M.Tom 1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;198: 626 M.Tom 2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;199: SimV Tom 2 P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;200: LD M.Tom P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;201: SF M.Tom P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;202: TY M.Tom P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;203: 606 L.Tom P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;204: 808 L.Tom P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;205: 909 L.Tom P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;206: 707 L.Tom P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;207: 626 L.Tom 1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;208: 626 L.Tom 2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;209: SimV Tom 3 P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;210: SimV Tom 4 P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;211: LD L.Tom P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;212: SF L.Tom P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;213: TY L.Tom P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;214: 78 CHH&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;215: 606 CHH&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;216: 808 CHH&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;217: 909 CHH 1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;218: 909 CHH 2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;219: 909 CHH 3&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;220: 909 CHH 4&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;221: 707 CHH&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;222: 626 CHH&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;223: HipHop CHH&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;224: Lite CHH&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;225: Reg.CHH&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;226: Rock CHH&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;227: S13 CHH Tip&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;228: S14 CHH Tip&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;229: 606 C&amp;OHH&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;230: 808 C&amp;OHH S&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;231: 808 C&amp;OHH L&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;232: Hip PHH&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;233: Reg.PHH&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;234: Rock PHH&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;235: S13 PHH&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;236: S14 PHH&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;237: 606 OHH&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;238: 808 OHH S&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;239: 808 OHH L&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;240: 909 OHH 1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;241: 909 OHH 2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;242: 909 OHH 3&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;243: 707 OHH&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;244: 626 OHH&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;245: HipHop OHH&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;246: Lite OHH&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;247: Reg.OHH&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;248: Rock OHH&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;249: S13 OHH Shft&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;250: S14 OHH Shft&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;251: 78 Cymbal&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;252: 606 Cymbal&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;253: 808 Cymbal 1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;254: 808 Cymbal 2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;255: 808 Cymbal 3&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;256: 909 CrashCym&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;257: 909 Rev Cym&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;258: MG Nz Cym&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;259: 707 CrashCym&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;260: 626 CrashCym&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;261: Crash Cym 1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;262: Crash Cym 2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;263: Rock Crash 1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;264: Rock Crash 2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;265: P17 CrashTip&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;266: S18 CrashTip&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;267: Z18kCrashSft&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;268: Jazz Crash&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;269: 909 RideCym&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;270: 707 RideCym&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;271: 626 RideCym&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;272: Ride Cymbal&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;273: 626 ChinaCym&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;274: China Cymbal&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;275: Splash Cym&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;276: 626 Cup&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;277: Rock Rd Cup&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;278: 808 ClapS1 P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;279: 808 ClapS2 P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;280: 808 ClapL1 P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;281: 808 ClapL2 P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;282: 909 Clap 1 P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;283: 909 Clap 2 P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;284: 909 Clap 3 P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;285: 909 DstClapP&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;286: 707 Clap P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;287: 626 Clap&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;288: R8 Clap&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;289: Cheap Clap&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;290: Old Clap P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;291: Hip Clap&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;292: Dist Clap&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;293: Hand Clap&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;294: Club Clap&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;295: Real Clap&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;296: Funk Clap&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;297: Bright Clap&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;298: TM-2 Clap&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;299: Amb Clap&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;300: Disc Clap&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;301: Claptail&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;302: Gospel Clap&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;303: 78 Tamb&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;304: 707 Tamb P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;305: 626 Tamb&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;306: TM-2 Tamb&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;307: Tamborine 1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;308: Tamborine 2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;309: Tamborine 3&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;310: 808 CowbellP&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;311: 707 Cowbell&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;312: 626 Cowbell&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;313: Cowbell Mute&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;314: 78 H.Bongo P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;315: 727 H.Bongo&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;316: Bongo Hi Mt&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;317: Bongo Hi Slp&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;318: Bongo Hi Op&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;319: 78 L.Bongo P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;320: 727 L.Bongo&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;321: Bongo Lo Op&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;322: Bongo Lo Slp&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;323: 808 H.CongaP&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;324: 727 H.CngOpP&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;325: 727 H.CngMtP&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;326: 626 H.CngaOp&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;327: 626 H.CngaMt&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;328: Conga Hi Mt&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;329: Conga 2H Mt&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;330: Conga Hi Slp&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;331: Conga 2H Slp&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;332: Conga Hi Op&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;333: Conga 2H Op&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;334: 808 M.CongaP&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;335: 78 L.Conga P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;336: 808 L.CongaP&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;337: 727 L.CongaP&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;338: 626 L.Conga&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;339: Conga Lo Mt&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;340: Conga Lo Slp&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;341: Conga Lo Op&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;342: Conga 2L Mt&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;343: Conga 2L Op&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;344: Conga Slp Op&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;345: Conga Efx&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;346: Conga Thumb&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;347: 727 H.Timbal&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;348: 626 H.Timbal&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;349: 727 L.Timbal&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;350: 626 L.Timbal&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;351: Timbale 1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;352: Timbale 2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;353: Timbale 3&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;354: Timbale 4&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;355: Timbles LoOp&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;356: Timbles LoMt&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;357: TimbalesHand&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;358: Timbales Rim&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;359: TmbSideStick&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;360: 727 H.Agogo&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;361: 626 H.Agogo&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;362: 727 L.Agogo&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;363: 626 L.Agogo&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;364: 727 Cabasa P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;365: Cabasa Up&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;366: Cabasa Down&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;367: Cabasa Cut&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;368: 78 Maracas P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;369: 808 MaracasP&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;370: 727 MaracasP&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;371: Maracas&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;372: 727 WhistleS&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;373: 727 WhistleL&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;374: Whistle&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;375: 78 Guiro S&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;376: 78 Guiro L&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;377: Guiro&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;378: Guiro Long&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;379: 78 Claves P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;380: 808 Claves P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;381: 626 Claves&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;382: Claves&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;383: Wood Block&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;384: Triangle&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;385: 78 MetalBt P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;386: 727 StrChime&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;387: 626 Shaker&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;388: Shaker&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;389: Finger Snap&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;390: Club FinSnap&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;391: Snap&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;392: Group Snap&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;393: Op Pandeiro&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;394: Mt Pandeiro&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;395: PandeiroOp&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;396: PandeiroMt&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;397: PandeiroHit&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;398: PandeiroRim&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;399: PandeiroCrsh&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;400: PandeiroRoll&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;401: 727 Quijada&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;402: TablaBayam 1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;403: TablaBayam 2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;404: TablaBayam 3&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;405: TablaBayam 4&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;406: TablaBayam 5&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;407: TablaBayam 6&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;408: TablaBayam 7&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;409: Udo&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;410: Udu Pot Hi&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;411: Udu Pot Slp&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;412: Scratch 1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;413: Scratch 2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;414: Scratch 3&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;415: Scratch 4&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;416: Scratch 5&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;417: Dance M&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;418: Ahh M&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;419: Let&#39;s Go M&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;420: Hah F&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;421: Yeah F&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;422: C&#39;mon Baby F&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;423: Wooh F&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;424: White Noise&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;425: Pink Noise&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;426: Atmosphere&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;427: PercOrgan 1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;428: PercOrgan 2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;429: TB Blip&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;430: D.Mute Gtr&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;431: Flute Fx&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;432: Pop Brs Atk&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;433: Strings Hit&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;434: Smear Hit&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;435: O&#39;Skool Hit&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;436: Orch. Hit&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;437: Punch Hit&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;438: Philly Hit&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;439: ClassicHseHt&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;440: Tao Hit&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;441: MG S Zap 1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;442: MG S Zap 2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;443: MG S Zap 3&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;444: SH2 S Zap 1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;445: SH2 S Zap 2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;446: SH2 S Zap 3&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;447: SH2 S Zap 4&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;448: SH2 S Zap 5&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;449: SH2 U Zap 1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;450: SH2 U Zap 2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;451: SH2 U Zap 3&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;452: SH2 U Zap 4&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;453: SH2 U Zap 5&quot;</span><span class="p">,</span>
+<span class="p">]</span></div>
+
+<div class="viewcode-block" id="DRUM_PARTIAL_MAP">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/drum/data/index.html#jdxi_editor.midi.data.drum.data.DRUM_PARTIAL_MAP">[docs]</a>
+<span class="n">DRUM_PARTIAL_MAP</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;BD1&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s2">&quot;RIM&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="s2">&quot;BD2&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+    <span class="s2">&quot;CLAP&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+    <span class="s2">&quot;BD3&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="s2">&quot;SD1&quot;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
+    <span class="s2">&quot;CHH&quot;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span>
+    <span class="s2">&quot;SD2&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+    <span class="s2">&quot;PHH&quot;</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span>
+    <span class="s2">&quot;SD3&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="s2">&quot;OHH&quot;</span><span class="p">:</span> <span class="mi">11</span><span class="p">,</span>
+    <span class="s2">&quot;SD4&quot;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
+    <span class="s2">&quot;TOM1&quot;</span><span class="p">:</span> <span class="mi">13</span><span class="p">,</span>
+    <span class="s2">&quot;PRC1&quot;</span><span class="p">:</span> <span class="mi">14</span><span class="p">,</span>
+    <span class="s2">&quot;TOM2&quot;</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span>
+    <span class="s2">&quot;PRC2&quot;</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span>
+    <span class="s2">&quot;TOM3&quot;</span><span class="p">:</span> <span class="mi">17</span><span class="p">,</span>
+    <span class="s2">&quot;PRC3&quot;</span><span class="p">:</span> <span class="mi">18</span><span class="p">,</span>
+    <span class="s2">&quot;CYM1&quot;</span><span class="p">:</span> <span class="mi">19</span><span class="p">,</span>
+    <span class="s2">&quot;PRC4&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+    <span class="s2">&quot;CYM2&quot;</span><span class="p">:</span> <span class="mi">21</span><span class="p">,</span>
+    <span class="s2">&quot;PRC5&quot;</span><span class="p">:</span> <span class="mi">22</span><span class="p">,</span>
+    <span class="s2">&quot;CYM3&quot;</span><span class="p">:</span> <span class="mi">23</span><span class="p">,</span>
+    <span class="s2">&quot;HIT&quot;</span><span class="p">:</span> <span class="mi">24</span><span class="p">,</span>
+    <span class="s2">&quot;OTH1&quot;</span><span class="p">:</span> <span class="mi">25</span><span class="p">,</span>
+    <span class="s2">&quot;OTH2&quot;</span><span class="p">:</span> <span class="mi">26</span><span class="p">,</span>
+<span class="p">}</span></div>
+
+
+
+<div class="viewcode-block" id="JDXiMapPartialDrum">
+<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.drum.html#jdxi_editor.midi.data.drum.data.JDXiMapPartialDrum">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">JDXiMapPartialDrum</span><span class="p">:</span>
+<div class="viewcode-block" id="JDXiMapPartialDrum.MAP">
+<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.drum.html#jdxi_editor.midi.data.drum.data.JDXiMapPartialDrum.MAP">[docs]</a>
+    <span class="n">MAP</span> <span class="o">=</span> <span class="n">DRUM_PARTIAL_MAP</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Mark Mrooks.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
