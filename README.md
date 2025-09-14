@@ -64,7 +64,7 @@ Access JD-Xi documentation in the format that works best for you:
 https://markxbrooks.github.io/JDXI-Editor/
 
 ### 📃 PDF Documentation:
-[PDF Documentation](https://github.com/markxbrooks/JDXI-Editor/doc/JD-Xi_Editor-0.8.pdf)
+[PDF Documentation](https://github.com/markxbrooks/JDXI-Editor/blob/main/doc/JD-Xi_Editor-0.8.pdf)
 
 ### 🎹 UI Previews
 
