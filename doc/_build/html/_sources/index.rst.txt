@@ -15,6 +15,16 @@ Welcome to JD-Xi Editor's documentation!
    usage
    instrument
    editor
+   digital_synth
+   analog_synth
+   drum_kit
+   arpeggiator
+   effects
+   vocal_effects
+   pattern_sequencer
+   midi_file_player
+   program
+   readme
    troubleshooting
    legal
 

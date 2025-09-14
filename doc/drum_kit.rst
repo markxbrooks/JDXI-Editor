@@ -22,13 +22,13 @@ Core Architecture & Design
    - **Kit Organization**: Custom drum kit creation and management
    - **Performance Features**: Real-time voice switching and parameter control
 
-**🎹 Advanced Parameter Management**
+** Advanced Parameter Management**
    - **Comprehensive Parameter Mapping**: Every drum voice parameter is accessible through intuitive controls
    - **Real-time Updates**: Instant parameter changes with immediate hardware response
    - **Visual Feedback**: Live parameter displays, value indicators, and status monitoring
    - **Preset Integration**: Seamless loading, saving, and management of your custom drum kits
 
-**🎵 Professional Workflow Tools**
+** Professional Workflow Tools**
    - **Multi-Voice Support**: Work with multiple drum voices simultaneously
    - **Advanced Organization**: Categorize, search, and manage your drum library
    - **Project Integration**: Export and import drum kits for use in your DAW

@@ -15,20 +15,20 @@ The editor represents a dedicated workspace optimized for vocal processing, from
 Core Architecture & Design
 ===========================
 
-**🎤 Advanced Vocal Processing**
+** Advanced Vocal Processing**
    The Vocal Effects Editor features a sophisticated vocal processing system:
    - **Voice Synthesis**: Advanced voice synthesis and manipulation
    - **Real-time Processing**: Live vocal effects and character modification
    - **Performance Integration**: Seamless vocal processing during live performance
    - **Creative Sound Design**: Unique vocal textures and experimental effects
 
-**🎹 Advanced Parameter Management**
+** Advanced Parameter Management**
    - **Comprehensive Parameter Mapping**: Every vocal effects parameter is accessible through intuitive controls
    - **Real-time Updates**: Instant parameter changes with immediate hardware response
    - **Visual Feedback**: Live parameter displays, value indicators, and status monitoring
    - **Preset Integration**: Seamless loading, saving, and management of your custom vocal effects
 
-**🎵 Professional Workflow Tools**
+** Professional Workflow Tools**
    - **Multi-Effects Support**: Work with multiple vocal effects simultaneously
    - **Advanced Organization**: Categorize, search, and manage your vocal effects library
    - **Project Integration**: Export and import vocal effects for use in your DAW

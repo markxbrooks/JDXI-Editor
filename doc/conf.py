@@ -14,7 +14,7 @@ sys.path.insert(0, os.path.abspath('..'))
 
 project = 'JD-Xi Editor'
 copyright = '2025, Mark Mrooks'
-author = 'PicoGL Contributors'
+author = 'JD-Xi Contributors'
 release = '0.8.0'
 version = '0.8.0'
 

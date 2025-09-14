@@ -35,22 +35,22 @@ Before You Begin
 Common Issues by Category
 =========================
 
-**🚀 Startup & Launch Issues**
+** Startup & Launch Issues**
    Problems with application startup and initialization.
 
-**🔌 MIDI Connection Issues**
+** MIDI Connection Issues**
    Problems with MIDI communication and device detection.
 
-**⚡ Performance Issues**
+** Performance Issues**
    Slow response, high CPU usage, and memory problems.
 
-**🎛️ Editor & Interface Issues**
+** Editor & Interface Issues**
    Problems with the user interface and editor functionality.
 
-**💾 File & Data Issues**
+** File & Data Issues**
    Problems with presets, projects, and data management.
 
-**🔧 System-Specific Issues**
+** System-Specific Issues**
    Platform-specific problems and solutions.
 
 Startup & Launch Issues

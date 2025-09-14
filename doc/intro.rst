@@ -32,25 +32,25 @@ The application communicates with your JD-Xi via **MIDI** (Musical Instrument Di
 Key Features & Capabilities
 ===========================
 
-**🎹 Complete Synthesizer Control**
+** Complete Synthesizer Control**
    - **Digital Synth Parts 1 & 2**: Full editing capabilities for both digital synthesizer parts, including 3 partials per part
    - **Analog Synth Editor**: Comprehensive control over the analog synthesizer section
    - **Drum Kit Editor**: Customize drum sounds, patterns, and kit parameters
    - **Real-time Parameter Updates**: All changes are applied instantly to your JD-Xi
 
-**🎛️ Advanced Effects Processing**
+** Advanced Effects Processing**
    - **Reverb & Delay**: Professional-quality time-based effects
    - **Vocal Effects**: Vocoder and voice processing capabilities
    - **Arpeggiator**: Sophisticated pattern generation and sequencing
    - **Multi-effects Chain**: Layer multiple effects for complex sound design
 
-**🎵 Performance Features**
+** Performance Features**
    - **On-Screen Keyboard**: Play and test sounds directly from your computer
    - **Preset Management**: Search, load, and organize your favorite sounds
    - **Octave Shifting**: Extend your playing range beyond the physical keyboard
    - **MIDI Monitoring**: Real-time visualization of MIDI data flow
 
-**🔧 Professional Tools**
+** Professional Tools**
    - **MIDI Debugger**: Monitor and troubleshoot MIDI communication
    - **Parameter Logging**: Track all changes for analysis and recall
    - **Visual Displays**: ADSR envelopes, pitch modulation, and waveform visualization
@@ -82,9 +82,9 @@ JDXI-Editor is built on a robust, modular architecture that ensures reliability 
 Why Use JDXI-Editor?
 ====================
 
-**🎯 Efficiency**: Edit complex parameters in seconds instead of minutes
-**👁️ Visualization**: See ADSR curves, waveforms, and parameter relationships
-**💾 Organization**: Manage presets and settings with computer-based tools
+** Efficiency**: Edit complex parameters in seconds instead of minutes
+** Visualization**: See ADSR curves, waveforms, and parameter relationships
+** Organization**: Manage presets and settings with computer-based tools
 **🔍 Precision**: Fine-tune parameters with exact numerical control
 **📊 Analysis**: Monitor MIDI data and parameter changes in real-time
 **🎨 Creativity**: Focus on sound design without hardware limitations

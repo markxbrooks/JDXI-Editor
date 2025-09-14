@@ -15,20 +15,20 @@ The editor represents a dedicated workspace optimized for analog sound design, f
 Core Architecture & Design
 ===========================
 
-**🎛️ Traditional Analog Synthesis**
+** Traditional Analog Synthesis**
    The Analog Synth Editor features a classic analog synthesis architecture:
    - **Classic Oscillator Control**: Traditional analog oscillator parameters and waveforms
    - **Warm, Organic Sound**: Dedicated analog modeling with vintage character
    - **Performance Controls**: Real-time parameter manipulation for live performance
    - **Timbral Shaping**: Advanced control over harmonic content and character
 
-**🎹 Advanced Parameter Management**
+** Advanced Parameter Management**
    - **Comprehensive Parameter Mapping**: Every analog synth parameter is accessible through intuitive controls
    - **Real-time Updates**: Instant parameter changes with immediate hardware response
    - **Visual Feedback**: Live parameter displays, value indicators, and status monitoring
    - **Preset Integration**: Seamless loading, saving, and management of your custom sounds
 
-**🎵 Professional Workflow Tools**
+** Professional Workflow Tools**
    - **Live Performance Mode**: Optimized interface for real-time performance
    - **Advanced Organization**: Categorize, search, and manage your sound library
    - **Project Integration**: Export and import settings for use in your DAW
