@@ -88,7 +88,9 @@ latex_elements = {
         }
     ''',
     'figure_align': 'H',
-    'extraclassoptions': 'openany,oneside'
+    'extraclassoptions': 'openany,oneside',
+    'maxdepth': 1,
+    'tocdepth': 1
 }
 
 # -- Options for PDF output --------------------------------------------------

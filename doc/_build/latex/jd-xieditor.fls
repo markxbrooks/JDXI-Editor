@@ -276,12 +276,6 @@ INPUT /usr/local/texlive/2025basic/texmf-dist/tex/latex/fontawesome5/fontawesome
 INPUT /usr/local/texlive/2025basic/texmf-dist/tex/latex/fontawesome5/fontawesome5-generic-helper.sty
 INPUT /usr/local/texlive/2025basic/texmf-dist/tex/latex/fontawesome5/fontawesome5-mapping.def
 INPUT /usr/local/texlive/2025basic/texmf-dist/tex/latex/fontawesome5/fontawesome5-mapping.def
-INPUT ./jd-xieditor.out
-INPUT ./jd-xieditor.out
-INPUT jd-xieditor.out
-INPUT jd-xieditor.out
-INPUT ./jd-xieditor.out
-INPUT ./jd-xieditor.out
 OUTPUT jd-xieditor.out
 INPUT /usr/local/texlive/2025basic/texmf-dist/tex/latex/tex-gyre/t1qhv.fd
 INPUT /usr/local/texlive/2025basic/texmf-dist/tex/latex/tex-gyre/t1qhv.fd
@@ -330,9 +324,6 @@ INPUT /usr/local/texlive/2025basic/texmf-dist/fonts/enc/dvips/tex-gyre/q-ec.enc
 INPUT /usr/local/texlive/2025basic/texmf-dist/fonts/tfm/public/tex-gyre/ec-qtmr.tfm
 INPUT /usr/local/texlive/2025basic/texmf-dist/fonts/tfm/public/tex-gyre/ec-qhvr.tfm
 INPUT /usr/local/texlive/2025basic/texmf-dist/fonts/tfm/public/tex-gyre/ec-qhvb.tfm
-INPUT ./jd-xieditor.toc
-INPUT ./jd-xieditor.toc
-INPUT jd-xieditor.toc
 OUTPUT jd-xieditor.toc
 INPUT /usr/local/texlive/2025basic/texmf-dist/fonts/tfm/public/tex-gyre/ec-qtmb.tfm
 INPUT ./main_window_0.6.gif

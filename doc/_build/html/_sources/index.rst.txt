@@ -7,24 +7,13 @@ Welcome to JD-Xi Editor's documentation!
 =======================================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Contents:
 
-   intro
-   installation
-   usage
-   instrument
-   editor
-   digital_synth
-   analog_synth
-   drum_kit
-   arpeggiator
-   effects
-   vocal_effects
-   pattern_sequencer
-   midi_file_player
-   program
-   readme
+   getting-started
+   editor-windows
+   additional-editors
+   playing-midi-files
    troubleshooting
    legal
 
