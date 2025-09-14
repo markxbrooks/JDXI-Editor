@@ -522,7 +522,7 @@
 
 
 <div class="viewcode-block" id="PatternSequenceEditor">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.pattern.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">PatternSequenceEditor</span><span class="p">(</span><span class="n">SynthEditor</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Pattern Sequencer with MIDI Integration using mido&quot;&quot;&quot;</span>
 
@@ -785,7 +785,7 @@
 
 
 <div class="viewcode-block" id="PatternSequenceEditor.ui_generate_button_row">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.pattern.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor.ui_generate_button_row">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor.ui_generate_button_row">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">ui_generate_button_row</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">visible</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;generate sequencer button row&quot;&quot;&quot;</span>
         <span class="n">button_row_layout</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
@@ -808,7 +808,7 @@
 
 
 <div class="viewcode-block" id="PatternSequenceEditor.on_learn_pattern_button_clicked">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.pattern.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor.on_learn_pattern_button_clicked">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor.on_learn_pattern_button_clicked">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">on_learn_pattern_button_clicked</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Connect the MIDI input to the learn pattern function.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span><span class="o">.</span><span class="n">midi_message_incoming</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_learn_pattern</span><span class="p">)</span>
@@ -816,7 +816,7 @@
 
 
 <div class="viewcode-block" id="PatternSequenceEditor.on_stop_learn_pattern_button_clicked">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.pattern.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor.on_stop_learn_pattern_button_clicked">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor.on_stop_learn_pattern_button_clicked">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">on_stop_learn_pattern_button_clicked</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Disconnect the MIDI input from the learn pattern function and update combo boxes.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span><span class="o">.</span><span class="n">midi_message_incoming</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_learn_pattern</span><span class="p">)</span>
@@ -1062,7 +1062,7 @@
 
 
 <div class="viewcode-block" id="PatternSequenceEditor.set_tempo">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.pattern.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor.set_tempo">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor.set_tempo">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">set_tempo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bpm</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the pattern tempo in BPM using mido.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bpm</span> <span class="o">=</span> <span class="n">bpm</span>
@@ -1095,7 +1095,7 @@
 
 
 <div class="viewcode-block" id="PatternSequenceEditor.update_pattern">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.pattern.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor.update_pattern">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor.update_pattern">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">update_pattern</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the MIDI file with current pattern state&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">midi_file</span> <span class="o">=</span> <span class="n">MidiFile</span><span class="p">()</span>
@@ -1142,7 +1142,7 @@
 
 
 <div class="viewcode-block" id="PatternSequenceEditor.save_pattern">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.pattern.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor.save_pattern">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor.save_pattern">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">save_pattern</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Save the current pattern to a MIDI file using mido.&quot;&quot;&quot;</span>
         <span class="n">midi_file</span> <span class="o">=</span> <span class="n">MidiFile</span><span class="p">()</span>
@@ -1177,7 +1177,7 @@
 
 
 <div class="viewcode-block" id="PatternSequenceEditor.clear_pattern">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.pattern.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor.clear_pattern">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor.clear_pattern">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">clear_pattern</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Clear the current pattern, resetting all steps.&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
@@ -1193,7 +1193,7 @@
 
 
 <div class="viewcode-block" id="PatternSequenceEditor.load_pattern">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.pattern.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor.load_pattern">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor.load_pattern">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">load_pattern</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Load a pattern from a MIDI file&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
@@ -1240,7 +1240,7 @@
 
 
 <div class="viewcode-block" id="PatternSequenceEditor.play_pattern">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.pattern.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor.play_pattern">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor.play_pattern">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">play_pattern</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Start playing the pattern&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;timer&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">timer</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">timer</span><span class="o">.</span><span class="n">isActive</span><span class="p">():</span>
@@ -1264,7 +1264,7 @@
 
 
 <div class="viewcode-block" id="PatternSequenceEditor.stop_pattern">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.pattern.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor.stop_pattern">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor.stop_pattern">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">stop_pattern</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Stop playing the pattern&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;timer&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">timer</span><span class="p">:</span>
@@ -1407,7 +1407,7 @@
 
 
 <div class="viewcode-block" id="PatternSequenceEditor.generate_sequencer_button_style">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.pattern.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor.generate_sequencer_button_style">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor.generate_sequencer_button_style">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">generate_sequencer_button_style</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">is_checked</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">is_current</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -1532,7 +1532,7 @@
 
 
 <div class="viewcode-block" id="PatternSequenceEditor.save_midi_file">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.pattern.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor.save_midi_file">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor.save_midi_file">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">save_midi_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Save the recorded MIDI messages to a file.&quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">output_file</span><span class="p">:</span>

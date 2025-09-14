@@ -509,7 +509,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.data.parameter.synth</span><span class="w"> </span><span class="kn">import</span> <span class="n">AddressParameter</span>
 
 <div class="viewcode-block" id="AddressParameterSystemCommon">
-<a class="viewcode-back" href="../../../../../../jdxi_editor.midi.data.parameter.program.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterSystemCommon">[docs]</a>
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/program/common/index.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterSystemCommon">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">AddressParameterSystemCommon</span><span class="p">(</span><span class="n">AddressParameter</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Program Common parameters&quot;&quot;&quot;</span>
 
@@ -540,20 +540,20 @@
 
 
 <div class="viewcode-block" id="AddressParameterSystemCommon.MASTER_TUNE">
-<a class="viewcode-back" href="../../../../../../jdxi_editor.midi.data.parameter.program.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterSystemCommon.MASTER_TUNE">[docs]</a>
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/program/common/index.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterSystemCommon.MASTER_TUNE">[docs]</a>
     <span class="n">MASTER_TUNE</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x00</span><span class="p">,</span> <span class="mi">24</span><span class="p">,</span> <span class="mi">2024</span><span class="p">,</span> <span class="o">-</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="s2">&quot;Master Tune&quot;</span><span class="p">)</span>  <span class="c1"># Program Level (0-127)</span></div>
 
 <div class="viewcode-block" id="AddressParameterSystemCommon.MASTER_KEY_SHIFT">
-<a class="viewcode-back" href="../../../../../../jdxi_editor.midi.data.parameter.program.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterSystemCommon.MASTER_KEY_SHIFT">[docs]</a>
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/program/common/index.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterSystemCommon.MASTER_KEY_SHIFT">[docs]</a>
     <span class="n">MASTER_KEY_SHIFT</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x04</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">88</span><span class="p">,</span> <span class="o">-</span><span class="mi">24</span><span class="p">,</span> <span class="mi">24</span><span class="p">,</span> <span class="s2">&quot;Volume of the program&quot;</span><span class="p">)</span>  <span class="c1"># Program Level (0-127)</span></div>
 
 <div class="viewcode-block" id="AddressParameterSystemCommon.MASTER_LEVEL">
-<a class="viewcode-back" href="../../../../../../jdxi_editor.midi.data.parameter.program.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterSystemCommon.MASTER_LEVEL">[docs]</a>
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/program/common/index.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterSystemCommon.MASTER_LEVEL">[docs]</a>
     <span class="n">MASTER_LEVEL</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x05</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">,</span> <span class="s2">&quot;Volume of the program&quot;</span><span class="p">)</span>  <span class="c1"># Program Level (0-127)</span></div>
 
 
 <div class="viewcode-block" id="AddressParameterSystemCommon.get_display_value">
-<a class="viewcode-back" href="../../../../../../jdxi_editor.midi.data.parameter.program.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterSystemCommon.get_display_value">[docs]</a>
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/program/common/index.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterSystemCommon.get_display_value">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_display_value</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the display value range (min, max) for the parameter&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;display_min&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;display_max&quot;</span><span class="p">):</span>
@@ -563,7 +563,7 @@
 
     <span class="nd">@property</span>
 <div class="viewcode-block" id="AddressParameterSystemCommon.display_name">
-<a class="viewcode-back" href="../../../../../../jdxi_editor.midi.data.parameter.program.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterSystemCommon.display_name">[docs]</a>
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/program/common/index.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterSystemCommon.display_name">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">display_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get display name for the parameter&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">{</span>
@@ -572,7 +572,7 @@
 
 
 <div class="viewcode-block" id="AddressParameterSystemCommon.get_address_for_partial">
-<a class="viewcode-back" href="../../../../../../jdxi_editor.midi.data.parameter.program.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterSystemCommon.get_address_for_partial">[docs]</a>
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/program/common/index.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterSystemCommon.get_address_for_partial">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_address_for_partial</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">partial_number</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get parameter area and address adjusted for partial number.</span>
@@ -589,14 +589,14 @@
 
     <span class="nd">@property</span>
 <div class="viewcode-block" id="AddressParameterSystemCommon.is_switch">
-<a class="viewcode-back" href="../../../../../../jdxi_editor.midi.data.parameter.program.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterSystemCommon.is_switch">[docs]</a>
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/program/common/index.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterSystemCommon.is_switch">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_switch</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns True if parameter is address binary/enum switch&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span> <span class="ow">in</span> <span class="p">[]</span></div>
 
 
 <div class="viewcode-block" id="AddressParameterSystemCommon.get_switch_text">
-<a class="viewcode-back" href="../../../../../../jdxi_editor.midi.data.parameter.program.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterSystemCommon.get_switch_text">[docs]</a>
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/program/common/index.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterSystemCommon.get_switch_text">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_switch_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get display text for switch values</span>
 <span class="sd">        :param value: int The value</span>
@@ -610,7 +610,7 @@
 
 
 <div class="viewcode-block" id="AddressParameterSystemCommon.validate_value">
-<a class="viewcode-back" href="../../../../../../jdxi_editor.midi.data.parameter.program.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterSystemCommon.validate_value">[docs]</a>
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/program/common/index.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterSystemCommon.validate_value">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate and convert parameter value</span>
 <span class="sd">        :param value: int The value</span>
@@ -635,7 +635,7 @@
 
 
 <div class="viewcode-block" id="AddressParameterSystemCommon.get_partial_number">
-<a class="viewcode-back" href="../../../../../../jdxi_editor.midi.data.parameter.program.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterSystemCommon.get_partial_number">[docs]</a>
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/program/common/index.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterSystemCommon.get_partial_number">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_partial_number</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the partial number (1-3) if this is address partial parameter, None otherwise&quot;&quot;&quot;</span>
         <span class="n">partial_params</span> <span class="o">=</span> <span class="p">{}</span>
@@ -654,7 +654,7 @@
 
     <span class="nd">@staticmethod</span>
 <div class="viewcode-block" id="AddressParameterSystemCommon.get_by_name">
-<a class="viewcode-back" href="../../../../../../jdxi_editor.midi.data.parameter.program.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterSystemCommon.get_by_name">[docs]</a>
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/program/common/index.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterSystemCommon.get_by_name">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_by_name</span><span class="p">(</span><span class="n">param_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">object</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the Parameter by name.</span>
 <span class="sd">        :param param_name: str The parameter name</span>
@@ -668,7 +668,7 @@
 
 
 <div class="viewcode-block" id="AddressParameterProgramCommon">
-<a class="viewcode-back" href="../../../../../../jdxi_editor.midi.data.parameter.program.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterProgramCommon">[docs]</a>
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/program/common/index.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterProgramCommon">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">AddressParameterProgramCommon</span><span class="p">(</span><span class="n">AddressParameter</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Program Common parameters&quot;&quot;&quot;</span>
 
@@ -700,60 +700,60 @@
 
     <span class="c1"># Program name parameters (12 ASCII characters)</span>
 <div class="viewcode-block" id="AddressParameterProgramCommon.TONE_NAME_1">
-<a class="viewcode-back" href="../../../../../../jdxi_editor.midi.data.parameter.program.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterProgramCommon.TONE_NAME_1">[docs]</a>
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/program/common/index.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterProgramCommon.TONE_NAME_1">[docs]</a>
     <span class="n">TONE_NAME_1</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x00</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">127</span><span class="p">)</span>  <span class="c1"># ASCII character 1</span></div>
 
 <div class="viewcode-block" id="AddressParameterProgramCommon.TONE_NAME_2">
-<a class="viewcode-back" href="../../../../../../jdxi_editor.midi.data.parameter.program.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterProgramCommon.TONE_NAME_2">[docs]</a>
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/program/common/index.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterProgramCommon.TONE_NAME_2">[docs]</a>
     <span class="n">TONE_NAME_2</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x01</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">127</span><span class="p">)</span>  <span class="c1"># ASCII character 2</span></div>
 
 <div class="viewcode-block" id="AddressParameterProgramCommon.TONE_NAME_3">
-<a class="viewcode-back" href="../../../../../../jdxi_editor.midi.data.parameter.program.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterProgramCommon.TONE_NAME_3">[docs]</a>
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/program/common/index.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterProgramCommon.TONE_NAME_3">[docs]</a>
     <span class="n">TONE_NAME_3</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x02</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">127</span><span class="p">)</span>  <span class="c1"># ASCII character 3</span></div>
 
 <div class="viewcode-block" id="AddressParameterProgramCommon.TONE_NAME_4">
-<a class="viewcode-back" href="../../../../../../jdxi_editor.midi.data.parameter.program.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterProgramCommon.TONE_NAME_4">[docs]</a>
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/program/common/index.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterProgramCommon.TONE_NAME_4">[docs]</a>
     <span class="n">TONE_NAME_4</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x03</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">127</span><span class="p">)</span>  <span class="c1"># ASCII character 4</span></div>
 
 <div class="viewcode-block" id="AddressParameterProgramCommon.TONE_NAME_5">
-<a class="viewcode-back" href="../../../../../../jdxi_editor.midi.data.parameter.program.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterProgramCommon.TONE_NAME_5">[docs]</a>
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/program/common/index.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterProgramCommon.TONE_NAME_5">[docs]</a>
     <span class="n">TONE_NAME_5</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x04</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">127</span><span class="p">)</span>  <span class="c1"># ASCII character 5</span></div>
 
 <div class="viewcode-block" id="AddressParameterProgramCommon.TONE_NAME_6">
-<a class="viewcode-back" href="../../../../../../jdxi_editor.midi.data.parameter.program.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterProgramCommon.TONE_NAME_6">[docs]</a>
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/program/common/index.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterProgramCommon.TONE_NAME_6">[docs]</a>
     <span class="n">TONE_NAME_6</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x05</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">127</span><span class="p">)</span>  <span class="c1"># ASCII character 6</span></div>
 
 <div class="viewcode-block" id="AddressParameterProgramCommon.TONE_NAME_7">
-<a class="viewcode-back" href="../../../../../../jdxi_editor.midi.data.parameter.program.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterProgramCommon.TONE_NAME_7">[docs]</a>
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/program/common/index.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterProgramCommon.TONE_NAME_7">[docs]</a>
     <span class="n">TONE_NAME_7</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x06</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">127</span><span class="p">)</span>  <span class="c1"># ASCII character 7</span></div>
 
 <div class="viewcode-block" id="AddressParameterProgramCommon.TONE_NAME_8">
-<a class="viewcode-back" href="../../../../../../jdxi_editor.midi.data.parameter.program.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterProgramCommon.TONE_NAME_8">[docs]</a>
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/program/common/index.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterProgramCommon.TONE_NAME_8">[docs]</a>
     <span class="n">TONE_NAME_8</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x07</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">127</span><span class="p">)</span>  <span class="c1"># ASCII character 8</span></div>
 
 <div class="viewcode-block" id="AddressParameterProgramCommon.TONE_NAME_9">
-<a class="viewcode-back" href="../../../../../../jdxi_editor.midi.data.parameter.program.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterProgramCommon.TONE_NAME_9">[docs]</a>
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/program/common/index.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterProgramCommon.TONE_NAME_9">[docs]</a>
     <span class="n">TONE_NAME_9</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x08</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">127</span><span class="p">)</span>  <span class="c1"># ASCII character 9</span></div>
 
 <div class="viewcode-block" id="AddressParameterProgramCommon.TONE_NAME_10">
-<a class="viewcode-back" href="../../../../../../jdxi_editor.midi.data.parameter.program.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterProgramCommon.TONE_NAME_10">[docs]</a>
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/program/common/index.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterProgramCommon.TONE_NAME_10">[docs]</a>
     <span class="n">TONE_NAME_10</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x09</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">127</span><span class="p">)</span>  <span class="c1"># ASCII character 10</span></div>
 
 <div class="viewcode-block" id="AddressParameterProgramCommon.TONE_NAME_11">
-<a class="viewcode-back" href="../../../../../../jdxi_editor.midi.data.parameter.program.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterProgramCommon.TONE_NAME_11">[docs]</a>
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/program/common/index.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterProgramCommon.TONE_NAME_11">[docs]</a>
     <span class="n">TONE_NAME_11</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x0A</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">127</span><span class="p">)</span>  <span class="c1"># ASCII character 11</span></div>
 
 <div class="viewcode-block" id="AddressParameterProgramCommon.TONE_NAME_12">
-<a class="viewcode-back" href="../../../../../../jdxi_editor.midi.data.parameter.program.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterProgramCommon.TONE_NAME_12">[docs]</a>
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/program/common/index.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterProgramCommon.TONE_NAME_12">[docs]</a>
     <span class="n">TONE_NAME_12</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x0B</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">127</span><span class="p">)</span>  <span class="c1"># ASCII character 12</span></div>
 
 
 <div class="viewcode-block" id="AddressParameterProgramCommon.PROGRAM_LEVEL">
-<a class="viewcode-back" href="../../../../../../jdxi_editor.midi.data.parameter.program.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterProgramCommon.PROGRAM_LEVEL">[docs]</a>
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/program/common/index.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterProgramCommon.PROGRAM_LEVEL">[docs]</a>
     <span class="n">PROGRAM_LEVEL</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x10</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">,</span> <span class="s2">&quot;Volume of the program&quot;</span><span class="p">)</span>  <span class="c1"># Program Level (0-127)</span></div>
 
 <div class="viewcode-block" id="AddressParameterProgramCommon.PROGRAM_TEMPO">
-<a class="viewcode-back" href="../../../../../../jdxi_editor.midi.data.parameter.program.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterProgramCommon.PROGRAM_TEMPO">[docs]</a>
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/program/common/index.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterProgramCommon.PROGRAM_TEMPO">[docs]</a>
     <span class="n">PROGRAM_TEMPO</span> <span class="o">=</span> <span class="p">(</span>
         <span class="mh">0x11</span><span class="p">,</span>
         <span class="mi">500</span><span class="p">,</span>
@@ -767,7 +767,7 @@
 <span class="sd">from the JD-Xi.)&quot;&quot;&quot;</span><span class="p">)</span>  <span class="c1"># Program Tempo (500-30000: 5.00-300.00 BPM)</span></div>
 
 <div class="viewcode-block" id="AddressParameterProgramCommon.VOCAL_EFFECT">
-<a class="viewcode-back" href="../../../../../../jdxi_editor.midi.data.parameter.program.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterProgramCommon.VOCAL_EFFECT">[docs]</a>
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/program/common/index.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterProgramCommon.VOCAL_EFFECT">[docs]</a>
     <span class="n">VOCAL_EFFECT</span> <span class="o">=</span> <span class="p">(</span>
         <span class="mh">0x16</span><span class="p">,</span>
         <span class="mi">0</span><span class="p">,</span>
@@ -777,20 +777,20 @@
     <span class="p">)</span>  <span class="c1"># Vocal Effect (0: OFF, 1: VOCODER, 2: AUTO-PITCH)</span></div>
 
 <div class="viewcode-block" id="AddressParameterProgramCommon.VOCAL_EFFECT_NUMBER">
-<a class="viewcode-back" href="../../../../../../jdxi_editor.midi.data.parameter.program.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterProgramCommon.VOCAL_EFFECT_NUMBER">[docs]</a>
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/program/common/index.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterProgramCommon.VOCAL_EFFECT_NUMBER">[docs]</a>
     <span class="n">VOCAL_EFFECT_NUMBER</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x1C</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>  <span class="c1"># Vocal Effect Number (0-20: 1-21)</span></div>
 
 <div class="viewcode-block" id="AddressParameterProgramCommon.VOCAL_EFFECT_PART">
-<a class="viewcode-back" href="../../../../../../jdxi_editor.midi.data.parameter.program.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterProgramCommon.VOCAL_EFFECT_PART">[docs]</a>
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/program/common/index.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterProgramCommon.VOCAL_EFFECT_PART">[docs]</a>
     <span class="n">VOCAL_EFFECT_PART</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x1D</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># Vocal Effect Part (0: Part 1, 1: Part 2)</span></div>
 
 <div class="viewcode-block" id="AddressParameterProgramCommon.AUTO_NOTE_SWITCH">
-<a class="viewcode-back" href="../../../../../../jdxi_editor.midi.data.parameter.program.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterProgramCommon.AUTO_NOTE_SWITCH">[docs]</a>
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/program/common/index.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterProgramCommon.AUTO_NOTE_SWITCH">[docs]</a>
     <span class="n">AUTO_NOTE_SWITCH</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x1E</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># Auto Note Switch (0: OFF, 1: ON)</span></div>
 
 
 <div class="viewcode-block" id="AddressParameterProgramCommon.get_display_value">
-<a class="viewcode-back" href="../../../../../../jdxi_editor.midi.data.parameter.program.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterProgramCommon.get_display_value">[docs]</a>
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/program/common/index.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterProgramCommon.get_display_value">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_display_value</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the display value range (min, max) for the parameter&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;display_min&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;display_max&quot;</span><span class="p">):</span>
@@ -800,7 +800,7 @@
 
     <span class="nd">@property</span>
 <div class="viewcode-block" id="AddressParameterProgramCommon.display_name">
-<a class="viewcode-back" href="../../../../../../jdxi_editor.midi.data.parameter.program.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterProgramCommon.display_name">[docs]</a>
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/program/common/index.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterProgramCommon.display_name">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">display_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get display name for the parameter&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">{</span>
@@ -809,7 +809,7 @@
 
 
 <div class="viewcode-block" id="AddressParameterProgramCommon.get_address_for_partial">
-<a class="viewcode-back" href="../../../../../../jdxi_editor.midi.data.parameter.program.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterProgramCommon.get_address_for_partial">[docs]</a>
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/program/common/index.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterProgramCommon.get_address_for_partial">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_address_for_partial</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">partial_number</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get parameter area and address adjusted for partial number.</span>
@@ -826,14 +826,14 @@
 
     <span class="nd">@property</span>
 <div class="viewcode-block" id="AddressParameterProgramCommon.is_switch">
-<a class="viewcode-back" href="../../../../../../jdxi_editor.midi.data.parameter.program.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterProgramCommon.is_switch">[docs]</a>
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/program/common/index.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterProgramCommon.is_switch">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_switch</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns True if parameter is address binary/enum switch&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span> <span class="ow">in</span> <span class="p">[]</span></div>
 
 
 <div class="viewcode-block" id="AddressParameterProgramCommon.get_switch_text">
-<a class="viewcode-back" href="../../../../../../jdxi_editor.midi.data.parameter.program.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterProgramCommon.get_switch_text">[docs]</a>
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/program/common/index.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterProgramCommon.get_switch_text">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_switch_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get display text for switch values</span>
 <span class="sd">        :param value: int The value</span>
@@ -847,7 +847,7 @@
 
 
 <div class="viewcode-block" id="AddressParameterProgramCommon.validate_value">
-<a class="viewcode-back" href="../../../../../../jdxi_editor.midi.data.parameter.program.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterProgramCommon.validate_value">[docs]</a>
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/program/common/index.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterProgramCommon.validate_value">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate and convert parameter value</span>
 <span class="sd">        :param value: int The value</span>
@@ -872,7 +872,7 @@
 
 
 <div class="viewcode-block" id="AddressParameterProgramCommon.get_partial_number">
-<a class="viewcode-back" href="../../../../../../jdxi_editor.midi.data.parameter.program.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterProgramCommon.get_partial_number">[docs]</a>
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/program/common/index.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterProgramCommon.get_partial_number">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_partial_number</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the partial number (1-3) if this is address partial parameter, None otherwise&quot;&quot;&quot;</span>
         <span class="n">partial_params</span> <span class="o">=</span> <span class="p">{}</span>
@@ -891,7 +891,7 @@
 
     <span class="nd">@staticmethod</span>
 <div class="viewcode-block" id="AddressParameterProgramCommon.get_by_name">
-<a class="viewcode-back" href="../../../../../../jdxi_editor.midi.data.parameter.program.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterProgramCommon.get_by_name">[docs]</a>
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/program/common/index.html#jdxi_editor.midi.data.parameter.program.common.AddressParameterProgramCommon.get_by_name">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_by_name</span><span class="p">(</span><span class="n">param_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">object</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the Parameter by name.</span>
 <span class="sd">        :param param_name: str The parameter name</span>

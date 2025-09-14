@@ -523,34 +523,34 @@
 
 <span class="nd">@dataclass</span>
 <div class="viewcode-block" id="DeviceInfo">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.sysex.html#jdxi_editor.midi.sysex.device.DeviceInfo">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/sysex/device/index.html#jdxi_editor.midi.sysex.device.DeviceInfo">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">DeviceInfo</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;JD-Xi device information parser from MIDI Identity Reply.&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="DeviceInfo.device_id">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.sysex.html#jdxi_editor.midi.sysex.device.DeviceInfo.device_id">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/sysex/device/index.html#jdxi_editor.midi.sysex.device.DeviceInfo.device_id">[docs]</a>
     <span class="n">device_id</span><span class="p">:</span> <span class="nb">int</span></div>
 
 <div class="viewcode-block" id="DeviceInfo.manufacturer">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.sysex.html#jdxi_editor.midi.sysex.device.DeviceInfo.manufacturer">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/sysex/device/index.html#jdxi_editor.midi.sysex.device.DeviceInfo.manufacturer">[docs]</a>
     <span class="n">manufacturer</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>  <span class="c1"># Roland = [0x41]</span></div>
 
 <div class="viewcode-block" id="DeviceInfo.family">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.sysex.html#jdxi_editor.midi.sysex.device.DeviceInfo.family">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/sysex/device/index.html#jdxi_editor.midi.sysex.device.DeviceInfo.family">[docs]</a>
     <span class="n">family</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>  <span class="c1"># JD-Xi = [0x0E, 0x03]</span></div>
 
 <div class="viewcode-block" id="DeviceInfo.model">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.sysex.html#jdxi_editor.midi.sysex.device.DeviceInfo.model">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/sysex/device/index.html#jdxi_editor.midi.sysex.device.DeviceInfo.model">[docs]</a>
     <span class="n">model</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>  <span class="c1"># JD-Xi model identifier</span></div>
 
 <div class="viewcode-block" id="DeviceInfo.version">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.sysex.html#jdxi_editor.midi.sysex.device.DeviceInfo.version">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/sysex/device/index.html#jdxi_editor.midi.sysex.device.DeviceInfo.version">[docs]</a>
     <span class="n">version</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>  <span class="c1"># Software version [Major, Minor, Patch, Build]</span></div>
 
 
     <span class="nd">@property</span>
 <div class="viewcode-block" id="DeviceInfo.is_roland">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.sysex.html#jdxi_editor.midi.sysex.device.DeviceInfo.is_roland">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/sysex/device/index.html#jdxi_editor.midi.sysex.device.DeviceInfo.is_roland">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_roland</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if the device is from Roland.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">manufacturer</span> <span class="o">==</span> <span class="p">[</span><span class="mh">0x41</span><span class="p">]</span></div>
@@ -558,7 +558,7 @@
 
     <span class="nd">@property</span>
 <div class="viewcode-block" id="DeviceInfo.is_jdxi">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.sysex.html#jdxi_editor.midi.sysex.device.DeviceInfo.is_jdxi">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/sysex/device/index.html#jdxi_editor.midi.sysex.device.DeviceInfo.is_jdxi">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_jdxi</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if the device is a JD-Xi.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_roland</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">family</span> <span class="o">==</span> <span class="p">[</span><span class="mh">0x0E</span><span class="p">,</span> <span class="mh">0x03</span><span class="p">]</span></div>
@@ -566,7 +566,7 @@
 
     <span class="nd">@property</span>
 <div class="viewcode-block" id="DeviceInfo.version_string">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.sysex.html#jdxi_editor.midi.sysex.device.DeviceInfo.version_string">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/sysex/device/index.html#jdxi_editor.midi.sysex.device.DeviceInfo.version_string">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">version_string</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Format the version number as a string (e.g., &#39;v1.03&#39;).&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
@@ -576,7 +576,7 @@
 
     <span class="nd">@property</span>
 <div class="viewcode-block" id="DeviceInfo.to_string">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.sysex.html#jdxi_editor.midi.sysex.device.DeviceInfo.to_string">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/sysex/device/index.html#jdxi_editor.midi.sysex.device.DeviceInfo.to_string">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_string</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate a readable string describing the device.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_jdxi</span><span class="p">:</span>
@@ -588,7 +588,7 @@
 
     <span class="nd">@classmethod</span>
 <div class="viewcode-block" id="DeviceInfo.from_identity_reply">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.sysex.html#jdxi_editor.midi.sysex.device.DeviceInfo.from_identity_reply">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/sysex/device/index.html#jdxi_editor.midi.sysex.device.DeviceInfo.from_identity_reply">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_identity_reply</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;DeviceInfo&quot;</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parse an Identity Reply SysEx message into a DeviceInfo object.</span>

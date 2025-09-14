@@ -561,12 +561,12 @@
 
 
 <div class="viewcode-block" id="ProgramEditor">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.io.html#jdxi_editor.ui.editors.ProgramEditor">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/program/index.html#jdxi_editor.ui.editors.ProgramEditor">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ProgramEditor</span><span class="p">(</span><span class="n">BasicEditor</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Program Editor Window&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="ProgramEditor.program_changed">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.io.html#jdxi_editor.ui.editors.ProgramEditor.program_changed">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/program/index.html#jdxi_editor.ui.editors.ProgramEditor.program_changed">[docs]</a>
     <span class="n">program_changed</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>  <span class="c1"># (channel, preset_name, program_number)</span></div>
 
 
@@ -588,7 +588,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">program_list</span> <span class="o">=</span> <span class="kc">None</span></div>
 
 <div class="viewcode-block" id="ProgramEditor.file_label">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.io.html#jdxi_editor.ui.editors.ProgramEditor.file_label">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/program/index.html#jdxi_editor.ui.editors.ProgramEditor.file_label">[docs]</a>
         <span class="bp">self</span><span class="o">.</span><span class="n">file_label</span> <span class="o">=</span> <span class="kc">None</span></div>
 
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -694,14 +694,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">setup_ui</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span><span class="o">.</span><span class="n">update_program_name</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">set_current_program_name</span><span class="p">)</span>
 <div class="viewcode-block" id="ProgramEditor.controls">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.io.html#jdxi_editor.ui.editors.ProgramEditor.controls">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/program/index.html#jdxi_editor.ui.editors.ProgramEditor.controls">[docs]</a>
         <span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">AddressParameter</span><span class="p">,</span> <span class="n">QWidget</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span></div>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span><span class="o">.</span><span class="n">midi_sysex_json</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dispatch_sysex_to_area</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ProgramEditor.setup_ui">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.io.html#jdxi_editor.ui.editors.ProgramEditor.setup_ui">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/program/index.html#jdxi_editor.ui.editors.ProgramEditor.setup_ui">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">setup_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;set up ui elements&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setWindowTitle</span><span class="p">(</span><span class="s2">&quot;Program Editor&quot;</span><span class="p">)</span>
@@ -831,7 +831,7 @@
 
 
 <div class="viewcode-block" id="ProgramEditor.load_preset_by_program_change">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.io.html#jdxi_editor.ui.editors.ProgramEditor.load_preset_by_program_change">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/program/index.html#jdxi_editor.ui.editors.ProgramEditor.load_preset_by_program_change">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">load_preset_by_program_change</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">preset_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Load a preset by program change.</span>
@@ -873,7 +873,7 @@
 
 
 <div class="viewcode-block" id="ProgramEditor.on_category_changed">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.io.html#jdxi_editor.ui.editors.ProgramEditor.on_category_changed">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/program/index.html#jdxi_editor.ui.editors.ProgramEditor.on_category_changed">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">on_category_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Handle category selection change.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_populate_presets</span><span class="p">()</span></div>
@@ -977,7 +977,7 @@
 
 
 <div class="viewcode-block" id="ProgramEditor.edit_program_name">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.io.html#jdxi_editor.ui.editors.ProgramEditor.edit_program_name">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/program/index.html#jdxi_editor.ui.editors.ProgramEditor.edit_program_name">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">edit_program_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        edit_tone_name</span>
@@ -993,7 +993,7 @@
 
 
 <div class="viewcode-block" id="ProgramEditor.on_preset_type_changed">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.io.html#jdxi_editor.ui.editors.ProgramEditor.on_preset_type_changed">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/program/index.html#jdxi_editor.ui.editors.ProgramEditor.on_preset_type_changed">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">on_preset_type_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        on_preset_type_changed</span>
@@ -1009,7 +1009,7 @@
 
 
 <div class="viewcode-block" id="ProgramEditor.set_channel_and_preset_lists">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.io.html#jdxi_editor.ui.editors.ProgramEditor.set_channel_and_preset_lists">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/program/index.html#jdxi_editor.ui.editors.ProgramEditor.set_channel_and_preset_lists">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">set_channel_and_preset_lists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">preset_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        set_channel_and_preset_lists</span>
@@ -1032,7 +1032,7 @@
 
 
 <div class="viewcode-block" id="ProgramEditor.update_category_combo_box_categories">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.io.html#jdxi_editor.ui.editors.ProgramEditor.update_category_combo_box_categories">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/program/index.html#jdxi_editor.ui.editors.ProgramEditor.update_category_combo_box_categories">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">update_category_combo_box_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        update_category_combo_box_categories</span>
@@ -1300,7 +1300,7 @@
 
 
 <div class="viewcode-block" id="ProgramEditor.update_tone_name_for_synth">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.io.html#jdxi_editor.ui.editors.ProgramEditor.update_tone_name_for_synth">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/program/index.html#jdxi_editor.ui.editors.ProgramEditor.update_tone_name_for_synth">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">update_tone_name_for_synth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tone_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">synth_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Update the tone name.</span>
@@ -1327,7 +1327,7 @@
 
 
 <div class="viewcode-block" id="ProgramEditor.set_current_program_name">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.io.html#jdxi_editor.ui.editors.ProgramEditor.set_current_program_name">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/program/index.html#jdxi_editor.ui.editors.ProgramEditor.set_current_program_name">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">set_current_program_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">program_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">synth_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the current program name in the file label</span>
@@ -1346,21 +1346,21 @@
 
 
 <div class="viewcode-block" id="ProgramEditor.start_playback">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.io.html#jdxi_editor.ui.editors.ProgramEditor.start_playback">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/program/index.html#jdxi_editor.ui.editors.ProgramEditor.start_playback">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">start_playback</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Start playback of the MIDI file.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span><span class="o">.</span><span class="n">send_raw_message</span><span class="p">([</span><span class="n">MidiConstant</span><span class="o">.</span><span class="n">SONG_START</span><span class="p">])</span></div>
 
 
 <div class="viewcode-block" id="ProgramEditor.stop_playback">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.io.html#jdxi_editor.ui.editors.ProgramEditor.stop_playback">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/program/index.html#jdxi_editor.ui.editors.ProgramEditor.stop_playback">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">stop_playback</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Stop playback of the MIDI file.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span><span class="o">.</span><span class="n">send_raw_message</span><span class="p">([</span><span class="n">MidiConstant</span><span class="o">.</span><span class="n">SONG_STOP</span><span class="p">])</span></div>
 
 
 <div class="viewcode-block" id="ProgramEditor.populate_programs">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.io.html#jdxi_editor.ui.editors.ProgramEditor.populate_programs">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/program/index.html#jdxi_editor.ui.editors.ProgramEditor.populate_programs">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">populate_programs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">search_text</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Populate the program list with available presets.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">preset_helper</span><span class="p">:</span>
@@ -1407,7 +1407,7 @@
 
 
 <div class="viewcode-block" id="ProgramEditor.add_user_banks">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.io.html#jdxi_editor.ui.editors.ProgramEditor.add_user_banks">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/program/index.html#jdxi_editor.ui.editors.ProgramEditor.add_user_banks">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_user_banks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filtered_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">bank</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">search_text</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Add user banks to the program list.</span>
 <span class="sd">        :param filtered_list: list</span>
@@ -1441,14 +1441,14 @@
 
 
 <div class="viewcode-block" id="ProgramEditor.on_bank_changed">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.io.html#jdxi_editor.ui.editors.ProgramEditor.on_bank_changed">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/program/index.html#jdxi_editor.ui.editors.ProgramEditor.on_bank_changed">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">on_bank_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Handle bank selection change.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">populate_programs</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="ProgramEditor.on_program_number_changed">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.io.html#jdxi_editor.ui.editors.ProgramEditor.on_program_number_changed">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/program/index.html#jdxi_editor.ui.editors.ProgramEditor.on_program_number_changed">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">on_program_number_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Handle program number selection change.</span>
 <span class="sd">        :param index: int</span>
@@ -1457,7 +1457,7 @@
         <span class="c1"># self.load_program()</span>
 
 <div class="viewcode-block" id="ProgramEditor.load_program">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.io.html#jdxi_editor.ui.editors.ProgramEditor.load_program">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/program/index.html#jdxi_editor.ui.editors.ProgramEditor.load_program">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">load_program</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Load the selected program based on bank and number.&quot;&quot;&quot;</span>
         <span class="n">program_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">program_number_combo_box</span><span class="o">.</span><span class="n">currentText</span><span class="p">()</span>
@@ -1481,7 +1481,7 @@
 
 
 <div class="viewcode-block" id="ProgramEditor.update_current_synths">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.io.html#jdxi_editor.ui.editors.ProgramEditor.update_current_synths">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/program/index.html#jdxi_editor.ui.editors.ProgramEditor.update_current_synths">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">update_current_synths</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">program_details</span><span class="p">:</span> <span class="n">JDXiProgram</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the current synth label.</span>
 <span class="sd">        :param program_details: dict</span>
@@ -1501,7 +1501,7 @@
 
 
 <div class="viewcode-block" id="ProgramEditor.load_preset">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.io.html#jdxi_editor.ui.editors.ProgramEditor.load_preset">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/program/index.html#jdxi_editor.ui.editors.ProgramEditor.load_preset">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">load_preset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">program_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        load_preset</span>
@@ -1524,7 +1524,7 @@
 
 
 <div class="viewcode-block" id="ProgramEditor.on_genre_changed">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.io.html#jdxi_editor.ui.editors.ProgramEditor.on_genre_changed">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/program/index.html#jdxi_editor.ui.editors.ProgramEditor.on_genre_changed">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">on_genre_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Handle genre selection change.</span>

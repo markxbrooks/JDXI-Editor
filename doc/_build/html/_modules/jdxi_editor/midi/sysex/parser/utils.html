@@ -514,7 +514,7 @@
 
 
 <div class="viewcode-block" id="get_byte_offset_by_tone_name">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.sysex.parser.html#jdxi_editor.midi.sysex.parser.utils.get_byte_offset_by_tone_name">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/sysex/parser/utils/index.html#jdxi_editor.midi.sysex.parser.utils.get_byte_offset_by_tone_name">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_byte_offset_by_tone_name</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">offset</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">12</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Safely retrieve values from SysEx data with an optional offset.</span>
@@ -531,7 +531,7 @@
 
 
 <div class="viewcode-block" id="extract_hex">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.sysex.parser.html#jdxi_editor.midi.sysex.parser.utils.extract_hex">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/sysex/parser/utils/index.html#jdxi_editor.midi.sysex.parser.utils.extract_hex">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">extract_hex</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;N/A&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Extract address hex value from data safely.</span>
@@ -547,7 +547,7 @@
 
 
 <div class="viewcode-block" id="extract_tone_name">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.sysex.parser.html#jdxi_editor.midi.sysex.parser.utils.extract_tone_name">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/sysex/parser/utils/index.html#jdxi_editor.midi.sysex.parser.utils.extract_tone_name">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">extract_tone_name</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Extract and clean the tone name from SysEx data.</span>
@@ -567,7 +567,7 @@
 
 
 <div class="viewcode-block" id="parse_parameters">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.sysex.parser.html#jdxi_editor.midi.sysex.parser.utils.parse_parameters">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/sysex/parser/utils/index.html#jdxi_editor.midi.sysex.parser.utils.parse_parameters">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">parse_parameters</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">parameter_type</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parses JD-Xi tone parameters from SysEx data for Digital, Analog, and Digital Common types.</span>
@@ -581,7 +581,7 @@
 
 
 <div class="viewcode-block" id="parse_single_parameter">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.sysex.parser.html#jdxi_editor.midi.sysex.parser.utils.parse_single_parameter">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/sysex/parser/utils/index.html#jdxi_editor.midi.sysex.parser.utils.parse_single_parameter">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">parse_single_parameter</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">parameter_type</span><span class="p">:</span> <span class="n">AddressParameter</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parses JD-Xi tone parameters from SysEx data for Digital, Analog, and Digital Common types.</span>
@@ -604,7 +604,7 @@
 
 
 <div class="viewcode-block" id="safe_extract">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.sysex.parser.html#jdxi_editor.midi.sysex.parser.utils.safe_extract">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/sysex/parser/utils/index.html#jdxi_editor.midi.sysex.parser.utils.safe_extract">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">safe_extract</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Safely extract hex data from a byte sequence, or return &quot;Unknown&quot; if out of bounds.</span>
@@ -619,7 +619,7 @@
 
 
 <div class="viewcode-block" id="address_to_index">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.sysex.parser.html#jdxi_editor.midi.sysex.parser.utils.address_to_index">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/sysex/parser/utils/index.html#jdxi_editor.midi.sysex.parser.utils.address_to_index">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">address_to_index</span><span class="p">(</span><span class="n">msb</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">lsb</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert a 2-byte address (MSB, LSB) to a flat integer index.</span>
@@ -635,7 +635,7 @@
 
 
 <div class="viewcode-block" id="initialize_parameters">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.sysex.parser.html#jdxi_editor.midi.sysex.parser.utils.initialize_parameters">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/sysex/parser/utils/index.html#jdxi_editor.midi.sysex.parser.utils.initialize_parameters">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">initialize_parameters</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Initialize parameters with essential fields extracted from SysEx data.</span>
@@ -717,7 +717,7 @@
 
 
 <div class="viewcode-block" id="parse_sysex">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.sysex.parser.html#jdxi_editor.midi.sysex.parser.utils.parse_sysex">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/sysex/parser/utils/index.html#jdxi_editor.midi.sysex.parser.utils.parse_sysex">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">parse_sysex</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parses JD-Xi tone data from SysEx messages.</span>
@@ -752,7 +752,7 @@
 
 
 <div class="viewcode-block" id="update_data_with_parsed_parameters">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.sysex.parser.html#jdxi_editor.midi.sysex.parser.utils.update_data_with_parsed_parameters">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/sysex/parser/utils/index.html#jdxi_editor.midi.sysex.parser.utils.update_data_with_parsed_parameters">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">update_data_with_parsed_parameters</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span>
                                        <span class="n">parameter_cls</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">,</span>
                                        <span class="n">parsed_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
@@ -769,7 +769,7 @@
 
 
 <div class="viewcode-block" id="update_short_data_with_parsed_parameters">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.sysex.parser.html#jdxi_editor.midi.sysex.parser.utils.update_short_data_with_parsed_parameters">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/sysex/parser/utils/index.html#jdxi_editor.midi.sysex.parser.utils.update_short_data_with_parsed_parameters">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">update_short_data_with_parsed_parameters</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span>
                                              <span class="n">parameter_cls</span><span class="p">:</span> <span class="n">AddressParameter</span><span class="p">,</span>
                                              <span class="n">parsed_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>

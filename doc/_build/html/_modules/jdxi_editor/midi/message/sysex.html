@@ -523,21 +523,21 @@
 
 
 <div class="viewcode-block" id="SysexParameter">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.sysex.SysexParameter">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/message/sysex/index.html#jdxi_editor.midi.message.sysex.SysexParameter">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SysexParameter</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;SysEx Parameters for Roland JD-Xi&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="SysexParameter.DT1_COMMAND_12">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.sysex.SysexParameter.DT1_COMMAND_12">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/message/sysex/index.html#jdxi_editor.midi.message.sysex.SysexParameter.DT1_COMMAND_12">[docs]</a>
     <span class="n">DT1_COMMAND_12</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;Data Set 1&quot;</span><span class="p">,</span> <span class="n">CommandID</span><span class="o">.</span><span class="n">DT1</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SysexParameter.RQ1_COMMAND_11">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.sysex.SysexParameter.RQ1_COMMAND_11">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/message/sysex/index.html#jdxi_editor.midi.message.sysex.SysexParameter.RQ1_COMMAND_11">[docs]</a>
     <span class="n">RQ1_COMMAND_11</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;Data Request 1&quot;</span><span class="p">,</span> <span class="n">CommandID</span><span class="o">.</span><span class="n">RQ1</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="SysexParameter.PROGRAM_COMMON">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.sysex.SysexParameter.PROGRAM_COMMON">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/message/sysex/index.html#jdxi_editor.midi.message.sysex.SysexParameter.PROGRAM_COMMON">[docs]</a>
     <span class="n">PROGRAM_COMMON</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;PROGRAM_COMMON&quot;</span><span class="p">,</span> <span class="n">AddressOffsetProgramLMB</span><span class="o">.</span><span class="n">COMMON</span><span class="p">)</span></div>
 
 
@@ -557,7 +557,7 @@
 
     <span class="nd">@classmethod</span>
 <div class="viewcode-block" id="SysexParameter.get_command_name">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.sysex.SysexParameter.get_command_name">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/message/sysex/index.html#jdxi_editor.midi.message.sysex.SysexParameter.get_command_name">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_command_name</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">command_type</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Retrieve the command name given a command type.&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">cls</span><span class="p">:</span>
@@ -570,45 +570,45 @@
 
 <span class="nd">@dataclass</span>
 <div class="viewcode-block" id="SysExMessage">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.sysex.SysExMessage">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/message/sysex/index.html#jdxi_editor.midi.message.sysex.SysExMessage">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SysExMessage</span><span class="p">(</span><span class="n">MidiMessage</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for MIDI System Exclusive (SysEx) messages.&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="SysExMessage.start_of_sysex">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.sysex.SysExMessage.start_of_sysex">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/message/sysex/index.html#jdxi_editor.midi.message.sysex.SysExMessage.start_of_sysex">[docs]</a>
     <span class="n">start_of_sysex</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">MidiConstant</span><span class="o">.</span><span class="n">START_OF_SYSEX</span>  <span class="c1"># Start of SysEx</span></div>
 
 <div class="viewcode-block" id="SysExMessage.manufacturer_id">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.sysex.SysExMessage.manufacturer_id">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/message/sysex/index.html#jdxi_editor.midi.message.sysex.SysExMessage.manufacturer_id">[docs]</a>
     <span class="n">manufacturer_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">RolandID</span><span class="o">.</span><span class="n">ROLAND_ID</span>  <span class="c1"># Manufacturer ID (e.g., [0x41] for Roland)</span></div>
 
 <div class="viewcode-block" id="SysExMessage.device_id">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.sysex.SysExMessage.device_id">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/message/sysex/index.html#jdxi_editor.midi.message.sysex.SysExMessage.device_id">[docs]</a>
     <span class="n">device_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">RolandID</span><span class="o">.</span><span class="n">DEVICE_ID</span>  <span class="c1"># Default device ID</span></div>
 
 <div class="viewcode-block" id="SysExMessage.model_id">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.sysex.SysExMessage.model_id">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/message/sysex/index.html#jdxi_editor.midi.message.sysex.SysExMessage.model_id">[docs]</a>
     <span class="n">model_id</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Model ID (4 bytes)</span></div>
 
 <div class="viewcode-block" id="SysExMessage.command">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.sysex.SysExMessage.command">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/message/sysex/index.html#jdxi_editor.midi.message.sysex.SysExMessage.command">[docs]</a>
     <span class="n">command</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">CommandID</span><span class="o">.</span><span class="n">DT1</span>  <span class="c1"># SysEx command (DT1, RQ1, etc.)</span></div>
 
 <div class="viewcode-block" id="SysExMessage.address">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.sysex.SysExMessage.address">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/message/sysex/index.html#jdxi_editor.midi.message.sysex.SysExMessage.address">[docs]</a>
     <span class="n">address</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Address (4 bytes)</span></div>
 
 <div class="viewcode-block" id="SysExMessage.data">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.sysex.SysExMessage.data">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/message/sysex/index.html#jdxi_editor.midi.message.sysex.SysExMessage.data">[docs]</a>
     <span class="n">data</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Data payload</span></div>
 
 <div class="viewcode-block" id="SysExMessage.end_of_sysex">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.sysex.SysExMessage.end_of_sysex">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/message/sysex/index.html#jdxi_editor.midi.message.sysex.SysExMessage.end_of_sysex">[docs]</a>
     <span class="n">end_of_sysex</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">MidiConstant</span><span class="o">.</span><span class="n">END_OF_SYSEX</span>  <span class="c1"># End of SysEx</span></div>
 
 
 <div class="viewcode-block" id="SysExMessage.__post_init__">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.sysex.SysExMessage.__post_init__">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/message/sysex/index.html#jdxi_editor.midi.message.sysex.SysExMessage.__post_init__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Ensure proper initialization of address, model_id, and data fields.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">manufacturer_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -622,7 +622,7 @@
 
 
 <div class="viewcode-block" id="SysExMessage.calculate_checksum">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.sysex.SysExMessage.calculate_checksum">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/message/sysex/index.html#jdxi_editor.midi.message.sysex.SysExMessage.calculate_checksum">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">calculate_checksum</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate Roland checksum: (128 - sum(bytes) &amp; 0x7F).&quot;&quot;&quot;</span>
         <span class="n">checksum_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
@@ -630,7 +630,7 @@
 
 
 <div class="viewcode-block" id="SysExMessage.to_message_list">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.sysex.SysExMessage.to_message_list">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/message/sysex/index.html#jdxi_editor.midi.message.sysex.SysExMessage.to_message_list">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_message_list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert the SysEx message to a list of integers.&quot;&quot;&quot;</span>
         <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
@@ -650,7 +650,7 @@
 
     <span class="nd">@classmethod</span>
 <div class="viewcode-block" id="SysExMessage.from_bytes">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.sysex.SysExMessage.from_bytes">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/message/sysex/index.html#jdxi_editor.midi.message.sysex.SysExMessage.from_bytes">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_bytes</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse a received SysEx message into an instance.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">12</span><span class="p">:</span>

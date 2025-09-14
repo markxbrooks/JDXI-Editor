@@ -545,12 +545,12 @@
 
 
 <div class="viewcode-block" id="PresetEditor">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.io.html#jdxi_editor.ui.editors.io.preset.PresetEditor">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/preset/index.html#jdxi_editor.ui.editors.io.preset.PresetEditor">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">PresetEditor</span><span class="p">(</span><span class="n">BasicEditor</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Program Editor Window&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="PresetEditor.program_changed">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.io.html#jdxi_editor.ui.editors.io.preset.PresetEditor.program_changed">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/preset/index.html#jdxi_editor.ui.editors.io.preset.PresetEditor.program_changed">[docs]</a>
     <span class="n">program_changed</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>  <span class="c1"># (channel, preset_name, program_number)</span></div>
 
 
@@ -663,7 +663,7 @@
 
 
 <div class="viewcode-block" id="PresetEditor.setup_ui">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.io.html#jdxi_editor.ui.editors.io.preset.PresetEditor.setup_ui">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/preset/index.html#jdxi_editor.ui.editors.io.preset.PresetEditor.setup_ui">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">setup_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;set up UI elements&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setWindowTitle</span><span class="p">(</span><span class="s2">&quot;Preset Editor&quot;</span><span class="p">)</span>
@@ -866,7 +866,7 @@
 
 
 <div class="viewcode-block" id="PresetEditor.on_preset_type_changed">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.io.html#jdxi_editor.ui.editors.io.preset.PresetEditor.on_preset_type_changed">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/preset/index.html#jdxi_editor.ui.editors.io.preset.PresetEditor.on_preset_type_changed">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">on_preset_type_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Handle preset type selection change.&quot;&quot;&quot;</span>
         <span class="n">preset_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">digital_preset_type_combo</span><span class="o">.</span><span class="n">currentText</span><span class="p">()</span>
@@ -888,7 +888,7 @@
 
 
 <div class="viewcode-block" id="PresetEditor.update_tone_name_for_synth">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.io.html#jdxi_editor.ui.editors.io.preset.PresetEditor.update_tone_name_for_synth">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/preset/index.html#jdxi_editor.ui.editors.io.preset.PresetEditor.update_tone_name_for_synth">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">update_tone_name_for_synth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tone_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">synth_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Update the tone name.</span>
@@ -906,7 +906,7 @@
 
 
 <div class="viewcode-block" id="PresetEditor.load_preset_by_program_change">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.io.html#jdxi_editor.ui.editors.io.preset.PresetEditor.load_preset_by_program_change">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/preset/index.html#jdxi_editor.ui.editors.io.preset.PresetEditor.load_preset_by_program_change">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">load_preset_by_program_change</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">preset_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Load a preset by program change.</span>
@@ -1000,7 +1000,7 @@
 
 
 <div class="viewcode-block" id="PresetEditor.update_category_combo_box_categories">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.io.html#jdxi_editor.ui.editors.io.preset.PresetEditor.update_category_combo_box_categories">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/preset/index.html#jdxi_editor.ui.editors.io.preset.PresetEditor.update_category_combo_box_categories">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">update_category_combo_box_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Update the category combo box.</span>
@@ -1027,21 +1027,21 @@
 
 
 <div class="viewcode-block" id="PresetEditor.on_bank_changed">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.io.html#jdxi_editor.ui.editors.io.preset.PresetEditor.on_bank_changed">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/preset/index.html#jdxi_editor.ui.editors.io.preset.PresetEditor.on_bank_changed">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">on_bank_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Handle bank selection change.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_populate_presets</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="PresetEditor.on_preset_number_changed">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.io.html#jdxi_editor.ui.editors.io.preset.PresetEditor.on_preset_number_changed">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/preset/index.html#jdxi_editor.ui.editors.io.preset.PresetEditor.on_preset_number_changed">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">on_preset_number_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Handle program number selection change.&quot;&quot;&quot;</span></div>
 
         <span class="c1"># self.load_program()</span>
 
 <div class="viewcode-block" id="PresetEditor.load_program">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.io.html#jdxi_editor.ui.editors.io.preset.PresetEditor.load_program">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/preset/index.html#jdxi_editor.ui.editors.io.preset.PresetEditor.load_program">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">load_program</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Load the selected program based on bank and number.&quot;&quot;&quot;</span>
         <span class="n">program_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">preset_combo_box</span><span class="o">.</span><span class="n">currentText</span><span class="p">()</span>
@@ -1067,7 +1067,7 @@
 
 
 <div class="viewcode-block" id="PresetEditor.update_current_synths">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.io.html#jdxi_editor.ui.editors.io.preset.PresetEditor.update_current_synths">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/preset/index.html#jdxi_editor.ui.editors.io.preset.PresetEditor.update_current_synths">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">update_current_synths</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">program_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the current synth label.</span>
 <span class="sd">        :param program_details: dict</span>
@@ -1086,7 +1086,7 @@
 
 
 <div class="viewcode-block" id="PresetEditor.load_preset_temp">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.io.html#jdxi_editor.ui.editors.io.preset.PresetEditor.load_preset_temp">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/preset/index.html#jdxi_editor.ui.editors.io.preset.PresetEditor.load_preset_temp">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">load_preset_temp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">preset_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Load preset data and update UI.</span>
 <span class="sd">        :param preset_number: int</span>
@@ -1105,7 +1105,7 @@
 
 
 <div class="viewcode-block" id="PresetEditor.on_category_changed">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.io.html#jdxi_editor.ui.editors.io.preset.PresetEditor.on_category_changed">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/preset/index.html#jdxi_editor.ui.editors.io.preset.PresetEditor.on_category_changed">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">on_category_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Handle category selection change.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_populate_presets</span><span class="p">()</span></div>

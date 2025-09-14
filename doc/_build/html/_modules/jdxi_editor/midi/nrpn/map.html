@@ -478,7 +478,7 @@
 
 
 <div class="viewcode-block" id="ParameterMap">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.nrpn.html#jdxi_editor.midi.nrpn.map.ParameterMap">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/nrpn/map/index.html#jdxi_editor.midi.nrpn.map.ParameterMap">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ParameterMap</span><span class="p">:</span>
 <div class="viewcode-block" id="ParameterMap.__init__">
 <a class="viewcode-back" href="../../../../jdxi_editor.midi.nrpn.html#jdxi_editor.midi.nrpn.map.ParameterMap.__init__">[docs]</a>
@@ -490,13 +490,13 @@
 
 
 <div class="viewcode-block" id="ParameterMap.add_mapping">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.nrpn.html#jdxi_editor.midi.nrpn.map.ParameterMap.add_mapping">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/nrpn/map/index.html#jdxi_editor.midi.nrpn.map.ParameterMap.add_mapping">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">msb_lsb_pair</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_map</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">msb_lsb_pair</span></div>
 
 
 <div class="viewcode-block" id="ParameterMap.get">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.nrpn.html#jdxi_editor.midi.nrpn.map.ParameterMap.get">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/nrpn/map/index.html#jdxi_editor.midi.nrpn.map.ParameterMap.get">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
         <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
@@ -505,13 +505,13 @@
 
 
 <div class="viewcode-block" id="ParameterMap.get_lsb">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.nrpn.html#jdxi_editor.midi.nrpn.map.ParameterMap.get_lsb">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/nrpn/map/index.html#jdxi_editor.midi.nrpn.map.ParameterMap.get_lsb">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_lsb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">))[</span><span class="mi">1</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="ParameterMap.get_msb">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.nrpn.html#jdxi_editor.midi.nrpn.map.ParameterMap.get_msb">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/nrpn/map/index.html#jdxi_editor.midi.nrpn.map.ParameterMap.get_msb">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_msb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span></div>
 
@@ -535,7 +535,7 @@
 
 
 <div class="viewcode-block" id="ParameterMap.items">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.nrpn.html#jdxi_editor.midi.nrpn.map.ParameterMap.items">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/nrpn/map/index.html#jdxi_editor.midi.nrpn.map.ParameterMap.items">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">items</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ItemsView</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map</span><span class="o">.</span><span class="n">items</span><span class="p">()</span></div>
 
@@ -549,14 +549,14 @@
 
 
 <div class="viewcode-block" id="NRPNMap">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.nrpn.html#jdxi_editor.midi.nrpn.map.NRPNMap">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/nrpn/map/index.html#jdxi_editor.midi.nrpn.map.NRPNMap">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">NRPNMap</span><span class="p">(</span><span class="n">ParameterMap</span><span class="p">):</span>
     <span class="k">pass</span></div>
 
 
 
 <div class="viewcode-block" id="RPNMap">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.nrpn.html#jdxi_editor.midi.nrpn.map.RPNMap">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/nrpn/map/index.html#jdxi_editor.midi.nrpn.map.RPNMap">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">RPNMap</span><span class="p">(</span><span class="n">ParameterMap</span><span class="p">):</span>
     <span class="k">pass</span></div>
 

@@ -504,39 +504,39 @@
 
 <span class="nd">@dataclass</span>
 <div class="viewcode-block" id="MidiMessage">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.MidiMessage">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/message/midi/index.html#jdxi_editor.midi.message.MidiMessage">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">MidiMessage</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;MIDI message base class&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="MidiMessage.MIDI_MAX_VALUE">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.MidiMessage.MIDI_MAX_VALUE">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/message/midi/index.html#jdxi_editor.midi.message.MidiMessage.MIDI_MAX_VALUE">[docs]</a>
     <span class="n">MIDI_MAX_VALUE</span> <span class="o">=</span> <span class="mh">0x7F</span>  <span class="c1"># 127</span></div>
 
 <div class="viewcode-block" id="MidiMessage.MIDI_STATUS_MASK">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.MidiMessage.MIDI_STATUS_MASK">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/message/midi/index.html#jdxi_editor.midi.message.MidiMessage.MIDI_STATUS_MASK">[docs]</a>
     <span class="n">MIDI_STATUS_MASK</span> <span class="o">=</span> <span class="mh">0xF0</span>  <span class="c1"># Extracts message type</span></div>
 
 <div class="viewcode-block" id="MidiMessage.MIDI_CHANNEL_MASK">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.MidiMessage.MIDI_CHANNEL_MASK">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/message/midi/index.html#jdxi_editor.midi.message.MidiMessage.MIDI_CHANNEL_MASK">[docs]</a>
     <span class="n">MIDI_CHANNEL_MASK</span> <span class="o">=</span> <span class="mh">0x0F</span>  <span class="c1"># Extracts channel number</span></div>
 
 
 <div class="viewcode-block" id="MidiMessage.to_message_list">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.MidiMessage.to_message_list">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/message/midi/index.html#jdxi_editor.midi.message.MidiMessage.to_message_list">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_message_list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert to list of bytes for sending, must be implemented in subclass&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Subclasses should implement this method.&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="MidiMessage.to_bytes">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.MidiMessage.to_bytes">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/message/midi/index.html#jdxi_editor.midi.message.MidiMessage.to_bytes">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert to bytes for sending&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">bytes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">to_message_list</span><span class="p">())</span></div>
 
 
 <div class="viewcode-block" id="MidiMessage.to_hex_string">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.MidiMessage.to_hex_string">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/message/midi/index.html#jdxi_editor.midi.message.MidiMessage.to_hex_string">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_hex_string</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert message to a formatted hexadecimal string.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x</span><span class="si">:</span><span class="s2">02X</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_message_list</span><span class="p">())</span></div>
