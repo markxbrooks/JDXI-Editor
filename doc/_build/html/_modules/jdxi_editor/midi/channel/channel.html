@@ -498,34 +498,34 @@
 
 
 <div class="viewcode-block" id="MidiChannel">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.channel.html#jdxi_editor.midi.channel.channel.MidiChannel">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/channel/channel/index.html#jdxi_editor.midi.channel.channel.MidiChannel">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">MidiChannel</span><span class="p">(</span><span class="n">IntEnum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    MIDI Channel Enum</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="MidiChannel.DIGITAL_SYNTH_1">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.channel.html#jdxi_editor.midi.channel.channel.MidiChannel.DIGITAL_SYNTH_1">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/channel/channel/index.html#jdxi_editor.midi.channel.channel.MidiChannel.DIGITAL_SYNTH_1">[docs]</a>
     <span class="n">DIGITAL_SYNTH_1</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># Corresponds to channel 1</span></div>
 
 <div class="viewcode-block" id="MidiChannel.DIGITAL_SYNTH_2">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.channel.html#jdxi_editor.midi.channel.channel.MidiChannel.DIGITAL_SYNTH_2">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/channel/channel/index.html#jdxi_editor.midi.channel.channel.MidiChannel.DIGITAL_SYNTH_2">[docs]</a>
     <span class="n">DIGITAL_SYNTH_2</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># Corresponds to channel 2</span></div>
 
 <div class="viewcode-block" id="MidiChannel.ANALOG_SYNTH">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.channel.html#jdxi_editor.midi.channel.channel.MidiChannel.ANALOG_SYNTH">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/channel/channel/index.html#jdxi_editor.midi.channel.channel.MidiChannel.ANALOG_SYNTH">[docs]</a>
     <span class="n">ANALOG_SYNTH</span> <span class="o">=</span> <span class="mi">2</span>  <span class="c1"># Corresponds to channel 3</span></div>
 
 <div class="viewcode-block" id="MidiChannel.DRUM_KIT">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.channel.html#jdxi_editor.midi.channel.channel.MidiChannel.DRUM_KIT">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/channel/channel/index.html#jdxi_editor.midi.channel.channel.MidiChannel.DRUM_KIT">[docs]</a>
     <span class="n">DRUM_KIT</span> <span class="o">=</span> <span class="mi">9</span>  <span class="c1"># Corresponds to channel 10</span></div>
 
 <div class="viewcode-block" id="MidiChannel.PROGRAM">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.channel.html#jdxi_editor.midi.channel.channel.MidiChannel.PROGRAM">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/channel/channel/index.html#jdxi_editor.midi.channel.channel.MidiChannel.PROGRAM">[docs]</a>
     <span class="n">PROGRAM</span> <span class="o">=</span> <span class="mi">15</span>  <span class="c1"># Program list</span></div>
 
 <div class="viewcode-block" id="MidiChannel.VOCAL_FX">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.channel.html#jdxi_editor.midi.channel.channel.MidiChannel.VOCAL_FX">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/channel/channel/index.html#jdxi_editor.midi.channel.channel.MidiChannel.VOCAL_FX">[docs]</a>
     <span class="n">VOCAL_FX</span> <span class="o">=</span> <span class="mi">6</span>  <span class="c1"># Is this correct?!</span></div>
 
 
@@ -544,14 +544,14 @@
 
     <span class="nd">@property</span>
 <div class="viewcode-block" id="MidiChannel.midi_channel_number">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.channel.html#jdxi_editor.midi.channel.channel.MidiChannel.midi_channel_number">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/channel/channel/index.html#jdxi_editor.midi.channel.channel.MidiChannel.midi_channel_number">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">midi_channel_number</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">+</span> <span class="mi">1</span></div>
 
 
     <span class="nd">@classmethod</span>
 <div class="viewcode-block" id="MidiChannel.from_midi_channel">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.channel.html#jdxi_editor.midi.channel.channel.MidiChannel.from_midi_channel">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/channel/channel/index.html#jdxi_editor.midi.channel.channel.MidiChannel.from_midi_channel">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_midi_channel</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">channel</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">next</span><span class="p">((</span><span class="n">m</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">cls</span> <span class="k">if</span> <span class="n">m</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="n">channel</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span></div>
 </div>

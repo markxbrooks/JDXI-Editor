@@ -504,24 +504,24 @@
 
 <span class="nd">@dataclass</span>
 <div class="viewcode-block" id="ControlChangeMessage">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.control_change.ControlChangeMessage">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/message/index.html#jdxi_editor.midi.message.control_change.ControlChangeMessage">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ControlChangeMessage</span><span class="p">(</span><span class="n">MidiMessage</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;MIDI Control Change message&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="ControlChangeMessage.channel">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.control_change.ControlChangeMessage.channel">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/message/control_change/index.html#jdxi_editor.midi.message.control_change.ControlChangeMessage.channel">[docs]</a>
     <span class="n">channel</span><span class="p">:</span> <span class="nb">int</span></div>
 
 <div class="viewcode-block" id="ControlChangeMessage.controller">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.control_change.ControlChangeMessage.controller">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/message/control_change/index.html#jdxi_editor.midi.message.control_change.ControlChangeMessage.controller">[docs]</a>
     <span class="n">controller</span><span class="p">:</span> <span class="nb">int</span></div>
 
 <div class="viewcode-block" id="ControlChangeMessage.value">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.control_change.ControlChangeMessage.value">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/message/control_change/index.html#jdxi_editor.midi.message.control_change.ControlChangeMessage.value">[docs]</a>
     <span class="n">value</span><span class="p">:</span> <span class="nb">int</span></div>
 
 <div class="viewcode-block" id="ControlChangeMessage.status">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.control_change.ControlChangeMessage.status">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/message/control_change/index.html#jdxi_editor.midi.message.control_change.ControlChangeMessage.status">[docs]</a>
     <span class="n">status</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
         <span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">MidiConstant</span><span class="o">.</span><span class="n">CONTROL_CHANGE</span>
     <span class="p">)</span>  <span class="c1"># Prevents status from being a required argument</span></div>
@@ -542,7 +542,7 @@
 
 
 <div class="viewcode-block" id="ControlChangeMessage.to_message_list">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.control_change.ControlChangeMessage.to_message_list">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/message/index.html#jdxi_editor.midi.message.control_change.ControlChangeMessage.to_message_list">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_message_list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert Control Change message to a list of bytes for sending</span>

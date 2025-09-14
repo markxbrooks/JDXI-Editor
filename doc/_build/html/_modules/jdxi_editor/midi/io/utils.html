@@ -490,7 +490,7 @@
 
 
 <div class="viewcode-block" id="format_midi_message_to_hex_string">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.io.html#jdxi_editor.midi.io.utils.format_midi_message_to_hex_string">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/io/utils/index.html#jdxi_editor.midi.io.utils.format_midi_message_to_hex_string">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">format_midi_message_to_hex_string</span><span class="p">(</span><span class="n">message</span><span class="p">:</span>  <span class="n">Iterable</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert a list of MIDI byte values to a space-separated hex string.</span>
@@ -503,7 +503,7 @@
 
 
 <div class="viewcode-block" id="increment_if_lsb_exceeds_7bit">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.io.html#jdxi_editor.midi.io.utils.increment_if_lsb_exceeds_7bit">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/io/utils/index.html#jdxi_editor.midi.io.utils.increment_if_lsb_exceeds_7bit">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">increment_if_lsb_exceeds_7bit</span><span class="p">(</span><span class="n">msb</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">lsb</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Increments the MSB if the LSB exceeds 7-bit maximum (127).</span>
@@ -523,7 +523,7 @@
 
 
 <div class="viewcode-block" id="nibble_data">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.io.html#jdxi_editor.midi.io.utils.nibble_data">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/io/utils/index.html#jdxi_editor.midi.io.utils.nibble_data">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">nibble_data</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Ensures all values in the data list are 7-bit safe (0–127).</span>
@@ -546,7 +546,7 @@
 
 
 <div class="viewcode-block" id="rtmidi_to_mido">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.io.html#jdxi_editor.midi.io.utils.rtmidi_to_mido">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/io/utils/index.html#jdxi_editor.midi.io.utils.rtmidi_to_mido">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">rtmidi_to_mido</span><span class="p">(</span><span class="n">byte_message</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">mido</span><span class="o">.</span><span class="n">Message</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert an rtmidi message to address mido message.</span>
@@ -563,7 +563,7 @@
 
 
 <div class="viewcode-block" id="convert_to_mido_message">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.io.html#jdxi_editor.midi.io.utils.convert_to_mido_message">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/io/utils/index.html#jdxi_editor.midi.io.utils.convert_to_mido_message">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">convert_to_mido_message</span><span class="p">(</span>
     <span class="n">message_content</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">mido</span><span class="o">.</span><span class="n">Message</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">mido</span><span class="o">.</span><span class="n">Message</span><span class="p">]]]:</span>
@@ -612,7 +612,7 @@
 
 
 <div class="viewcode-block" id="mido_message_data_to_byte_list">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.io.html#jdxi_editor.midi.io.utils.mido_message_data_to_byte_list">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/io/utils/index.html#jdxi_editor.midi.io.utils.mido_message_data_to_byte_list">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">mido_message_data_to_byte_list</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="n">mido</span><span class="o">.</span><span class="n">Message</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    mido message data to byte list</span>
@@ -630,7 +630,7 @@
 
 
 <div class="viewcode-block" id="handle_identity_request">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.io.html#jdxi_editor.midi.io.utils.handle_identity_request">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/io/utils/index.html#jdxi_editor.midi.io.utils.handle_identity_request">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">handle_identity_request</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="n">mido</span><span class="o">.</span><span class="n">Message</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Handles an incoming Identity Request</span>

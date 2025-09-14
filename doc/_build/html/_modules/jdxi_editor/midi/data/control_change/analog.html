@@ -483,31 +483,31 @@
 
 
 <div class="viewcode-block" id="AnalogControlChange">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.control_change.html#jdxi_editor.midi.data.control_change.analog.AnalogControlChange">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/control_change/analog/index.html#jdxi_editor.midi.data.control_change.analog.AnalogControlChange">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">AnalogControlChange</span><span class="p">(</span><span class="n">ControlChange</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Analog synth CC parameters&quot;&quot;&quot;</span>
 
     <span class="c1"># Direct CC parameters</span>
 <div class="viewcode-block" id="AnalogControlChange.CUTOFF">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.control_change.html#jdxi_editor.midi.data.control_change.analog.AnalogControlChange.CUTOFF">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/control_change/analog/index.html#jdxi_editor.midi.data.control_change.analog.AnalogControlChange.CUTOFF">[docs]</a>
     <span class="n">CUTOFF</span> <span class="o">=</span> <span class="mi">102</span>  <span class="c1"># Cutoff (0-127)</span></div>
 
 <div class="viewcode-block" id="AnalogControlChange.RESONANCE">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.control_change.html#jdxi_editor.midi.data.control_change.analog.AnalogControlChange.RESONANCE">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/control_change/analog/index.html#jdxi_editor.midi.data.control_change.analog.AnalogControlChange.RESONANCE">[docs]</a>
     <span class="n">RESONANCE</span> <span class="o">=</span> <span class="mi">105</span>  <span class="c1"># Resonance (0-127)</span></div>
 
 <div class="viewcode-block" id="AnalogControlChange.LEVEL">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.control_change.html#jdxi_editor.midi.data.control_change.analog.AnalogControlChange.LEVEL">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/control_change/analog/index.html#jdxi_editor.midi.data.control_change.analog.AnalogControlChange.LEVEL">[docs]</a>
     <span class="n">LEVEL</span> <span class="o">=</span> <span class="mi">117</span>  <span class="c1"># Level (0-127)</span></div>
 
 <div class="viewcode-block" id="AnalogControlChange.LFO_RATE">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.control_change.html#jdxi_editor.midi.data.control_change.analog.AnalogControlChange.LFO_RATE">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/control_change/analog/index.html#jdxi_editor.midi.data.control_change.analog.AnalogControlChange.LFO_RATE">[docs]</a>
     <span class="n">LFO_RATE</span> <span class="o">=</span> <span class="mi">16</span>  <span class="c1"># LFO Rate (0-127)</span></div>
 
 
     <span class="nd">@staticmethod</span>
 <div class="viewcode-block" id="AnalogControlChange.get_display_value">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.control_change.html#jdxi_editor.midi.data.control_change.analog.AnalogControlChange.get_display_value">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/control_change/analog/index.html#jdxi_editor.midi.data.control_change.analog.AnalogControlChange.get_display_value">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_display_value</span><span class="p">(</span><span class="n">param</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert raw value to display value&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">param</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>  <span class="c1"># LFO Shape</span>
@@ -520,20 +520,20 @@
 
 <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <div class="viewcode-block" id="RPNValue">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.control_change.html#jdxi_editor.midi.data.control_change.analog.RPNValue">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/control_change/analog/index.html#jdxi_editor.midi.data.control_change.analog.RPNValue">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">RPNValue</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Represents a MIDI RPN value with its MSB, LSB, and value range.&quot;&quot;&quot;</span>
 <div class="viewcode-block" id="RPNValue.msb_lsb">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.control_change.html#jdxi_editor.midi.data.control_change.analog.RPNValue.msb_lsb">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/control_change/analog/index.html#jdxi_editor.midi.data.control_change.analog.RPNValue.msb_lsb">[docs]</a>
     <span class="n">msb_lsb</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="RPNValue.value_range">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.control_change.html#jdxi_editor.midi.data.control_change.analog.RPNValue.value_range">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/control_change/analog/index.html#jdxi_editor.midi.data.control_change.analog.RPNValue.value_range">[docs]</a>
     <span class="n">value_range</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="RPNValue.midi_bytes">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.control_change.html#jdxi_editor.midi.data.control_change.analog.RPNValue.midi_bytes">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/control_change/analog/index.html#jdxi_editor.midi.data.control_change.analog.RPNValue.midi_bytes">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">midi_bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate CC messages for this RPN and a given value.&quot;&quot;&quot;</span>
         <span class="n">msb</span><span class="p">,</span> <span class="n">lsb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">msb_lsb</span>
@@ -549,31 +549,31 @@
 
 
 <div class="viewcode-block" id="AnalogRPN">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.control_change.html#jdxi_editor.midi.data.control_change.analog.AnalogRPN">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/control_change/analog/index.html#jdxi_editor.midi.data.control_change.analog.AnalogRPN">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">AnalogRPN</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Analog synth RPN parameters with their MSB, LSB, and value range.&quot;&quot;&quot;</span>
 <div class="viewcode-block" id="AnalogRPN.ENVELOPE">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.control_change.html#jdxi_editor.midi.data.control_change.analog.AnalogRPN.ENVELOPE">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/control_change/analog/index.html#jdxi_editor.midi.data.control_change.analog.AnalogRPN.ENVELOPE">[docs]</a>
     <span class="n">ENVELOPE</span> <span class="o">=</span> <span class="n">RPNValue</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">124</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="AnalogRPN.LFO_SHAPE">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.control_change.html#jdxi_editor.midi.data.control_change.analog.AnalogRPN.LFO_SHAPE">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/control_change/analog/index.html#jdxi_editor.midi.data.control_change.analog.AnalogRPN.LFO_SHAPE">[docs]</a>
     <span class="n">LFO_SHAPE</span> <span class="o">=</span> <span class="n">RPNValue</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="AnalogRPN.LFO_PITCH_DEPTH">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.control_change.html#jdxi_editor.midi.data.control_change.analog.AnalogRPN.LFO_PITCH_DEPTH">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/control_change/analog/index.html#jdxi_editor.midi.data.control_change.analog.AnalogRPN.LFO_PITCH_DEPTH">[docs]</a>
     <span class="n">LFO_PITCH_DEPTH</span> <span class="o">=</span> <span class="n">RPNValue</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">15</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="AnalogRPN.LFO_FILTER_DEPTH">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.control_change.html#jdxi_editor.midi.data.control_change.analog.AnalogRPN.LFO_FILTER_DEPTH">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/control_change/analog/index.html#jdxi_editor.midi.data.control_change.analog.AnalogRPN.LFO_FILTER_DEPTH">[docs]</a>
     <span class="n">LFO_FILTER_DEPTH</span> <span class="o">=</span> <span class="n">RPNValue</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">18</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="AnalogRPN.LFO_AMP_DEPTH">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.control_change.html#jdxi_editor.midi.data.control_change.analog.AnalogRPN.LFO_AMP_DEPTH">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/control_change/analog/index.html#jdxi_editor.midi.data.control_change.analog.AnalogRPN.LFO_AMP_DEPTH">[docs]</a>
     <span class="n">LFO_AMP_DEPTH</span> <span class="o">=</span> <span class="n">RPNValue</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">21</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="AnalogRPN.PULSE_WIDTH">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.control_change.html#jdxi_editor.midi.data.control_change.analog.AnalogRPN.PULSE_WIDTH">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/control_change/analog/index.html#jdxi_editor.midi.data.control_change.analog.AnalogRPN.PULSE_WIDTH">[docs]</a>
     <span class="n">PULSE_WIDTH</span> <span class="o">=</span> <span class="n">RPNValue</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">37</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">))</span></div>
 </div>
 
@@ -616,24 +616,24 @@
 
 <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <div class="viewcode-block" id="PartialRPNValue">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.control_change.html#jdxi_editor.midi.data.control_change.analog.PartialRPNValue">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/control_change/analog/index.html#jdxi_editor.midi.data.control_change.analog.PartialRPNValue">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">PartialRPNValue</span><span class="p">:</span>
 <div class="viewcode-block" id="PartialRPNValue.base_msb_lsb">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.control_change.html#jdxi_editor.midi.data.control_change.analog.PartialRPNValue.base_msb_lsb">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/control_change/analog/index.html#jdxi_editor.midi.data.control_change.analog.PartialRPNValue.base_msb_lsb">[docs]</a>
     <span class="n">base_msb_lsb</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="PartialRPNValue.value_range">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.control_change.html#jdxi_editor.midi.data.control_change.analog.PartialRPNValue.value_range">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/control_change/analog/index.html#jdxi_editor.midi.data.control_change.analog.PartialRPNValue.value_range">[docs]</a>
     <span class="n">value_range</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="PartialRPNValue.partial">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.control_change.html#jdxi_editor.midi.data.control_change.analog.PartialRPNValue.partial">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/control_change/analog/index.html#jdxi_editor.midi.data.control_change.analog.PartialRPNValue.partial">[docs]</a>
     <span class="n">partial</span><span class="p">:</span> <span class="nb">int</span></div>
 
 
     <span class="nd">@property</span>
 <div class="viewcode-block" id="PartialRPNValue.msb_lsb">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.control_change.html#jdxi_editor.midi.data.control_change.analog.PartialRPNValue.msb_lsb">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/control_change/analog/index.html#jdxi_editor.midi.data.control_change.analog.PartialRPNValue.msb_lsb">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">msb_lsb</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
         <span class="n">msb</span><span class="p">,</span> <span class="n">base_lsb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_msb_lsb</span>
         <span class="k">return</span> <span class="p">(</span><span class="n">msb</span><span class="p">,</span> <span class="n">base_lsb</span> <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">partial</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span></div>
@@ -642,7 +642,7 @@
 
 
 <div class="viewcode-block" id="make_digital_rpn">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.control_change.html#jdxi_editor.midi.data.control_change.analog.make_digital_rpn">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/control_change/analog/index.html#jdxi_editor.midi.data.control_change.analog.make_digital_rpn">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">make_digital_rpn</span><span class="p">(</span><span class="n">partial</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Object</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    make_digital_rpn</span>
@@ -662,15 +662,15 @@
 
 
 <div class="viewcode-block" id="DigitalRPN_Partial1">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.control_change.html#jdxi_editor.midi.data.control_change.analog.DigitalRPN_Partial1">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/control_change/analog/index.html#jdxi_editor.midi.data.control_change.analog.DigitalRPN_Partial1">[docs]</a>
 <span class="n">DigitalRPN_Partial1</span> <span class="o">=</span> <span class="n">make_digital_rpn</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DigitalRPN_Partial2">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.control_change.html#jdxi_editor.midi.data.control_change.analog.DigitalRPN_Partial2">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/control_change/analog/index.html#jdxi_editor.midi.data.control_change.analog.DigitalRPN_Partial2">[docs]</a>
 <span class="n">DigitalRPN_Partial2</span> <span class="o">=</span> <span class="n">make_digital_rpn</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DigitalRPN_Partial3">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.control_change.html#jdxi_editor.midi.data.control_change.analog.DigitalRPN_Partial3">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/control_change/analog/index.html#jdxi_editor.midi.data.control_change.analog.DigitalRPN_Partial3">[docs]</a>
 <span class="n">DigitalRPN_Partial3</span> <span class="o">=</span> <span class="n">make_digital_rpn</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span></div>
 
 

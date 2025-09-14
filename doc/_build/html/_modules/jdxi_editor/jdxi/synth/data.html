@@ -488,33 +488,33 @@
 
 <span class="nd">@dataclass</span>
 <div class="viewcode-block" id="JDXISynthData">
-<a class="viewcode-back" href="../../../../jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.data.JDXISynthData">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/jdxi/synth/data/index.html#jdxi_editor.jdxi.synth.data.JDXISynthData">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">JDXISynthData</span><span class="p">(</span><span class="n">MidiSynthConfig</span><span class="p">,</span> <span class="n">InstrumentDisplayConfig</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Synth Data&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="JDXISynthData.msb">
-<a class="viewcode-back" href="../../../../jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.data.JDXISynthData.msb">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/jdxi/synth/data/index.html#jdxi_editor.jdxi.synth.data.JDXISynthData.msb">[docs]</a>
     <span class="n">msb</span><span class="p">:</span> <span class="nb">int</span></div>
 
 <div class="viewcode-block" id="JDXISynthData.umb">
-<a class="viewcode-back" href="../../../../jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.data.JDXISynthData.umb">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/jdxi/synth/data/index.html#jdxi_editor.jdxi.synth.data.JDXISynthData.umb">[docs]</a>
     <span class="n">umb</span><span class="p">:</span> <span class="nb">int</span></div>
 
 <div class="viewcode-block" id="JDXISynthData.lmb">
-<a class="viewcode-back" href="../../../../jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.data.JDXISynthData.lmb">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/jdxi/synth/data/index.html#jdxi_editor.jdxi.synth.data.JDXISynthData.lmb">[docs]</a>
     <span class="n">lmb</span><span class="p">:</span> <span class="nb">int</span></div>
 
 <div class="viewcode-block" id="JDXISynthData.address">
-<a class="viewcode-back" href="../../../../jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.data.JDXISynthData.address">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/jdxi/synth/data/index.html#jdxi_editor.jdxi.synth.data.JDXISynthData.address">[docs]</a>
     <span class="n">address</span><span class="p">:</span> <span class="n">RolandSysExAddress</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="JDXISynthData.common_parameters">
-<a class="viewcode-back" href="../../../../jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.data.JDXISynthData.common_parameters">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/jdxi/synth/data/index.html#jdxi_editor.jdxi.synth.data.JDXISynthData.common_parameters">[docs]</a>
     <span class="n">common_parameters</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">AddressParameterDrumCommon</span><span class="p">,</span> <span class="n">AddressParameterAnalog</span><span class="p">,</span> <span class="n">AddressParameterDigitalCommon</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span></div>
 
 
 <div class="viewcode-block" id="JDXISynthData.__post_init__">
-<a class="viewcode-back" href="../../../../jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.data.JDXISynthData.__post_init__">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/jdxi/synth/data/index.html#jdxi_editor.jdxi.synth.data.JDXISynthData.__post_init__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Post Init&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">=</span> <span class="n">RolandSysExAddress</span><span class="p">(</span>
@@ -524,7 +524,7 @@
 
     <span class="nd">@property</span>
 <div class="viewcode-block" id="JDXISynthData.group_map">
-<a class="viewcode-back" href="../../../../jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.data.JDXISynthData.group_map">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/jdxi/synth/data/index.html#jdxi_editor.jdxi.synth.data.JDXISynthData.group_map">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">group_map</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Address</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Group Map</span>
@@ -536,7 +536,7 @@
 
 
 <div class="viewcode-block" id="JDXISynthData.get_partial_lmb">
-<a class="viewcode-back" href="../../../../jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.data.JDXISynthData.get_partial_lmb">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/jdxi/synth/data/index.html#jdxi_editor.jdxi.synth.data.JDXISynthData.get_partial_lmb">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_partial_lmb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">partial_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AddressOffsetProgramLMB</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Resolve the address for a given partial number.</span>

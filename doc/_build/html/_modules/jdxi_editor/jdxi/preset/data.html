@@ -521,32 +521,32 @@
 
 <span class="nd">@dataclass</span>
 <div class="viewcode-block" id="JDXiPresetData">
-<a class="viewcode-back" href="../../../../jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.data.JDXiPresetData">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/jdxi/preset/data/index.html#jdxi_editor.jdxi.preset.data.JDXiPresetData">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">JDXiPresetData</span><span class="p">:</span>
 <div class="viewcode-block" id="JDXiPresetData.name">
-<a class="viewcode-back" href="../../../../jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.data.JDXiPresetData.name">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/jdxi/preset/data/index.html#jdxi_editor.jdxi.preset.data.JDXiPresetData.name">[docs]</a>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span></div>
 
 <div class="viewcode-block" id="JDXiPresetData.presets">
-<a class="viewcode-back" href="../../../../jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.data.JDXiPresetData.presets">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/jdxi/preset/data/index.html#jdxi_editor.jdxi.preset.data.JDXiPresetData.presets">[docs]</a>
     <span class="n">presets</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="JDXiPresetData.bank_msb">
-<a class="viewcode-back" href="../../../../jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.data.JDXiPresetData.bank_msb">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/jdxi/preset/data/index.html#jdxi_editor.jdxi.preset.data.JDXiPresetData.bank_msb">[docs]</a>
     <span class="n">bank_msb</span><span class="p">:</span> <span class="nb">int</span></div>
 
 <div class="viewcode-block" id="JDXiPresetData.bank_lsb">
-<a class="viewcode-back" href="../../../../jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.data.JDXiPresetData.bank_lsb">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/jdxi/preset/data/index.html#jdxi_editor.jdxi.preset.data.JDXiPresetData.bank_lsb">[docs]</a>
     <span class="n">bank_lsb</span><span class="p">:</span> <span class="nb">int</span></div>
 
 <div class="viewcode-block" id="JDXiPresetData.program">
-<a class="viewcode-back" href="../../../../jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.data.JDXiPresetData.program">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/jdxi/preset/data/index.html#jdxi_editor.jdxi.preset.data.JDXiPresetData.program">[docs]</a>
     <span class="n">program</span><span class="p">:</span> <span class="nb">int</span></div>
 
 
     <span class="nd">@staticmethod</span>
 <div class="viewcode-block" id="JDXiPresetData.from_dict">
-<a class="viewcode-back" href="../../../../jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.data.JDXiPresetData.from_dict">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/jdxi/preset/data/index.html#jdxi_editor.jdxi.preset.data.JDXiPresetData.from_dict">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_dict</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;JDXiPresetData&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">JDXiPresetData</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;Unnamed&quot;</span><span class="p">),</span>
@@ -559,7 +559,7 @@
 
     <span class="nd">@staticmethod</span>
 <div class="viewcode-block" id="JDXiPresetData.get_preset_details">
-<a class="viewcode-back" href="../../../../jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.data.JDXiPresetData.get_preset_details">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/jdxi/preset/data/index.html#jdxi_editor.jdxi.preset.data.JDXiPresetData.get_preset_details">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_preset_details</span><span class="p">(</span><span class="n">synth_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">preset_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;JDXiPresetData&quot;</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">synth_type</span> <span class="o">==</span> <span class="n">JDXiSynth</span><span class="o">.</span><span class="n">ANALOG_SYNTH</span><span class="p">:</span>
             <span class="n">presets</span> <span class="o">=</span> <span class="n">JDXiPresetToneList</span><span class="o">.</span><span class="n">ANALOG</span>
@@ -600,7 +600,7 @@
 
 
 <div class="viewcode-block" id="JDXiPresetData.to_dict">
-<a class="viewcode-back" href="../../../../jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.data.JDXiPresetData.to_dict">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/jdxi/preset/data/index.html#jdxi_editor.jdxi.preset.data.JDXiPresetData.to_dict">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">{</span>
             <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>

@@ -519,16 +519,16 @@
 
 
 <div class="viewcode-block" id="JDXiPresetHelper">
-<a class="viewcode-back" href="../../../../jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.helper.JDXiPresetHelper">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/jdxi/preset/helper/index.html#jdxi_editor.jdxi.preset.helper.JDXiPresetHelper">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">JDXiPresetHelper</span><span class="p">(</span><span class="n">QObject</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Preset Loading Class&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="JDXiPresetHelper.update_display">
-<a class="viewcode-back" href="../../../../jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.helper.JDXiPresetHelper.update_display">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/jdxi/preset/helper/index.html#jdxi_editor.jdxi.preset.helper.JDXiPresetHelper.update_display">[docs]</a>
     <span class="n">update_display</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="JDXiPresetHelper.preset_changed">
-<a class="viewcode-back" href="../../../../jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.helper.JDXiPresetHelper.preset_changed">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/jdxi/preset/helper/index.html#jdxi_editor.jdxi.preset.helper.JDXiPresetHelper.preset_changed">[docs]</a>
     <span class="n">preset_changed</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>  <span class="c1"># Signal emitted when preset changes</span></div>
 
 
@@ -573,7 +573,7 @@
 
 
 <div class="viewcode-block" id="JDXiPresetHelper.get_current_preset">
-<a class="viewcode-back" href="../../../../jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.helper.JDXiPresetHelper.get_current_preset">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/jdxi/preset/helper/index.html#jdxi_editor.jdxi.preset.helper.JDXiPresetHelper.get_current_preset">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_current_preset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the current preset details.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">{</span>
@@ -584,14 +584,14 @@
 
 
 <div class="viewcode-block" id="JDXiPresetHelper.get_available_presets">
-<a class="viewcode-back" href="../../../../jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.helper.JDXiPresetHelper.get_available_presets">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/jdxi/preset/helper/index.html#jdxi_editor.jdxi.preset.helper.JDXiPresetHelper.get_available_presets">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_available_presets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the available presets.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">presets</span></div>
 
 
 <div class="viewcode-block" id="JDXiPresetHelper.load_preset_by_program_change">
-<a class="viewcode-back" href="../../../../jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.helper.JDXiPresetHelper.load_preset_by_program_change">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/jdxi/preset/helper/index.html#jdxi_editor.jdxi.preset.helper.JDXiPresetHelper.load_preset_by_program_change">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">load_preset_by_program_change</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">preset_index</span><span class="p">,</span> <span class="n">synth_type</span><span class="o">=</span><span class="n">JDXiSynth</span><span class="o">.</span><span class="n">DIGITAL_SYNTH_1</span>
     <span class="p">):</span>
@@ -620,7 +620,7 @@
 
 
 <div class="viewcode-block" id="JDXiPresetHelper.load_preset">
-<a class="viewcode-back" href="../../../../jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.helper.JDXiPresetHelper.load_preset">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/jdxi/preset/helper/index.html#jdxi_editor.jdxi.preset.helper.JDXiPresetHelper.load_preset">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">load_preset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">preset_data</span><span class="p">:</span> <span class="n">JDXiPresetButtonData</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Load the preset based on the provided data</span>
@@ -645,7 +645,7 @@
 
 
 <div class="viewcode-block" id="JDXiPresetHelper.data_request">
-<a class="viewcode-back" href="../../../../jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.helper.JDXiPresetHelper.data_request">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/jdxi/preset/helper/index.html#jdxi_editor.jdxi.preset.helper.JDXiPresetHelper.data_request">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">data_request</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Request the current value of the NRPN parameter from the device.</span>
@@ -660,7 +660,7 @@
 
 
 <div class="viewcode-block" id="JDXiPresetHelper.send_program_change">
-<a class="viewcode-back" href="../../../../jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.helper.JDXiPresetHelper.send_program_change">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/jdxi/preset/helper/index.html#jdxi_editor.jdxi.preset.helper.JDXiPresetHelper.send_program_change">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">send_program_change</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">msb</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">lsb</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">pc</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Send a Bank Select and Program Change message</span>

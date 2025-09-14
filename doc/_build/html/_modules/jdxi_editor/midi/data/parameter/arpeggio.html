@@ -517,7 +517,7 @@
 
 
 <div class="viewcode-block" id="AddressParameterArpeggio">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/parameter/arpeggio/index.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">AddressParameterArpeggio</span><span class="p">(</span><span class="n">AddressParameter</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Arpeggiator parameters with address and range&quot;&quot;&quot;</span>
 
@@ -549,12 +549,12 @@
 
     <span class="c1"># Common parameters</span>
 <div class="viewcode-block" id="AddressParameterArpeggio.ARPEGGIO_GRID">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.ARPEGGIO_GRID">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/parameter/arpeggio/index.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.ARPEGGIO_GRID">[docs]</a>
     <span class="n">ARPEGGIO_GRID</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x01</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="s2">&quot;Specifies the time signature and “swing” of the arpeggio style.</span><span class="se">\n</span><span class="s2">The setting specifies the note value that one grid unit represents, and the degree of shuffle (none, light, or heavy).</span><span class="se">\n</span><span class="s2">1/4: Eighth note (two grid sections = one beat)</span><span class="se">\n</span><span class="s2">1/8: Eighth note (two grid sections = one beat)</span><span class="se">\n</span><span class="s2">1/8L: Eighth note shuffle Light (two grid sections = one beat, with a light shuffle)</span><span class="se">\n</span><span class="s2">1/8H: Eighth note shuffle Heavy (two grid sections = one beat, with a heavy shuffle)</span><span class="se">\n</span><span class="s2">1/12: Eighth note triplet (three grid sections = one beat)</span><span class="se">\n</span><span class="s2">1/16: Sixteenth note (four grid sections = one beat)</span><span class="se">\n</span><span class="s2">1/16L: Sixteenth note shuffle Light (four grid sections = one beat, with a light shuffle)</span><span class="se">\n</span><span class="s2">1/16H: Sixteenth note shuffle Heavy (four grid sections = one beat, with a heavy shuffle)</span><span class="se">\n</span><span class="s2">1/24: Sixteenth note triplet (six grid sections = one beat)&quot;</span><span class="p">)</span>  <span class="c1"># 04_, 08_, 08L, 08H, 08t, 16_, 16L, 16H, 16t</span></div>
 
 
 <div class="viewcode-block" id="AddressParameterArpeggio.ARPEGGIO_DURATION">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.ARPEGGIO_DURATION">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/parameter/arpeggio/index.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.ARPEGGIO_DURATION">[docs]</a>
     <span class="n">ARPEGGIO_DURATION</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x02</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="s2">&quot;&quot;&quot;Specifies the duration that each note of the arpeggio is sounded.</span>
 <span class="s2">This determines whether the sounds are played staccato (short and clipped), or tenuto (fully drawn out).</span>
 <span class="s2">30–120: For example if you specify “30,” each note on the grid (or in the case of tied notes, the last tied note) has a</span>
@@ -563,16 +563,16 @@
 <span class="s2">next new sound is specified.&quot;&quot;&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="AddressParameterArpeggio.ARPEGGIO_SWITCH">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.ARPEGGIO_SWITCH">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/parameter/arpeggio/index.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.ARPEGGIO_SWITCH">[docs]</a>
     <span class="n">ARPEGGIO_SWITCH</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x03</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Arpeggio ON/OFF&quot;</span><span class="p">)</span>  <span class="c1"># OFF, ON</span></div>
 
 <div class="viewcode-block" id="AddressParameterArpeggio.ARPEGGIO_STYLE">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.ARPEGGIO_STYLE">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/parameter/arpeggio/index.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.ARPEGGIO_STYLE">[docs]</a>
     <span class="n">ARPEGGIO_STYLE</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x05</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">,</span> <span class="s2">&quot;Specifies the style of the arpeggio style.</span><span class="se">\n</span><span class="s2">1 - 128&quot;</span><span class="p">)</span>  <span class="c1"># 1 - 128</span></div>
 
     
 <div class="viewcode-block" id="AddressParameterArpeggio.ARPEGGIO_MOTIF">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.ARPEGGIO_MOTIF">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/parameter/arpeggio/index.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.ARPEGGIO_MOTIF">[docs]</a>
     <span class="n">ARPEGGIO_MOTIF</span> <span class="o">=</span> <span class="p">(</span>
         <span class="mh">0x06</span><span class="p">,</span>
         <span class="mi">0</span><span class="p">,</span>
@@ -595,74 +595,74 @@
 <span class="sd">Phrase Pressing just one key will play a phrase based on the pitch of that key. If you press more than one key, the key you press last will be used.&quot;&quot;&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="AddressParameterArpeggio.ARPEGGIO_OCTAVE_RANGE">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.ARPEGGIO_OCTAVE_RANGE">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/parameter/arpeggio/index.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.ARPEGGIO_OCTAVE_RANGE">[docs]</a>
     <span class="n">ARPEGGIO_OCTAVE_RANGE</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x07</span><span class="p">,</span> <span class="mi">61</span><span class="p">,</span> <span class="mi">67</span><span class="p">,</span> <span class="mi">61</span><span class="p">,</span> <span class="mi">67</span><span class="p">,</span> <span class="s2">&quot;Specifies the range by which the arpeggio is shifted.</span><span class="se">\n</span><span class="s2">This adds an effect that shifts arpeggios one cycle at a time in octave units (octave range).</span><span class="se">\n</span><span class="s2">You can set the shift range upwards or downwards (up to three octaves up or down).&quot;</span><span class="p">)</span>  <span class="c1"># -3 - +3</span></div>
 
 <div class="viewcode-block" id="AddressParameterArpeggio.ARPEGGIO_ACCENT_RATE">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.ARPEGGIO_ACCENT_RATE">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/parameter/arpeggio/index.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.ARPEGGIO_ACCENT_RATE">[docs]</a>
     <span class="n">ARPEGGIO_ACCENT_RATE</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x09</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="s2">&quot;Specifies the accent strength for the arpeggio.</span><span class="se">\n</span><span class="s2">With a setting of “100,” the arpeggiated notes will have the velocities that are programmed by the arpeggio style.</span><span class="se">\n</span><span class="s2">With a setting of “0,” all arpeggiated notes will be sounded at a fixed velocity.&quot;</span><span class="p">)</span>  <span class="c1"># 0 - 100</span></div>
 
 <div class="viewcode-block" id="AddressParameterArpeggio.ARPEGGIO_VELOCITY">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.ARPEGGIO_VELOCITY">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/parameter/arpeggio/index.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.ARPEGGIO_VELOCITY">[docs]</a>
     <span class="n">ARPEGGIO_VELOCITY</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x0A</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">,</span> <span class="s2">&quot;Specifies the loudness of the notes that you play.</span><span class="se">\n</span><span class="s2">REAL: If you want the velocity value of each note to depend on how strongly you play the keyboard, set this</span><span class="se">\n</span><span class="s2">parameter to REAL.</span><span class="se">\n</span><span class="s2">1–127: Notes sound at the velocity you specify here, regardless of how strongly you play the keys.&quot;</span><span class="p">)</span>  <span class="c1"># REAL, 1 - 127</span></div>
 
 
     <span class="c1"># Pattern parameters</span>
 <div class="viewcode-block" id="AddressParameterArpeggio.PATTERN_1">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.PATTERN_1">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/parameter/arpeggio/index.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.PATTERN_1">[docs]</a>
     <span class="n">PATTERN_1</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x10</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="AddressParameterArpeggio.PATTERN_2">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.PATTERN_2">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/parameter/arpeggio/index.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.PATTERN_2">[docs]</a>
     <span class="n">PATTERN_2</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x11</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="AddressParameterArpeggio.PATTERN_3">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.PATTERN_3">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/parameter/arpeggio/index.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.PATTERN_3">[docs]</a>
     <span class="n">PATTERN_3</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x12</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="AddressParameterArpeggio.PATTERN_4">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.PATTERN_4">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/parameter/arpeggio/index.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.PATTERN_4">[docs]</a>
     <span class="n">PATTERN_4</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x13</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">)</span></div>
 
 
     <span class="c1"># Rhythm parameters</span>
 <div class="viewcode-block" id="AddressParameterArpeggio.RHYTHM_1">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.RHYTHM_1">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/parameter/arpeggio/index.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.RHYTHM_1">[docs]</a>
     <span class="n">RHYTHM_1</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x20</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="AddressParameterArpeggio.RHYTHM_2">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.RHYTHM_2">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/parameter/arpeggio/index.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.RHYTHM_2">[docs]</a>
     <span class="n">RHYTHM_2</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x21</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="AddressParameterArpeggio.RHYTHM_3">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.RHYTHM_3">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/parameter/arpeggio/index.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.RHYTHM_3">[docs]</a>
     <span class="n">RHYTHM_3</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x22</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="AddressParameterArpeggio.RHYTHM_4">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.RHYTHM_4">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/parameter/arpeggio/index.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.RHYTHM_4">[docs]</a>
     <span class="n">RHYTHM_4</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x23</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">)</span></div>
 
 
     <span class="c1"># Note parameters</span>
 <div class="viewcode-block" id="AddressParameterArpeggio.NOTE_1">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.NOTE_1">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/parameter/arpeggio/index.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.NOTE_1">[docs]</a>
     <span class="n">NOTE_1</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x30</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="AddressParameterArpeggio.NOTE_2">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.NOTE_2">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/parameter/arpeggio/index.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.NOTE_2">[docs]</a>
     <span class="n">NOTE_2</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x31</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="AddressParameterArpeggio.NOTE_3">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.NOTE_3">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/parameter/arpeggio/index.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.NOTE_3">[docs]</a>
     <span class="n">NOTE_3</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x32</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="AddressParameterArpeggio.NOTE_4">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.NOTE_4">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/parameter/arpeggio/index.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.NOTE_4">[docs]</a>
     <span class="n">NOTE_4</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x33</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="AddressParameterArpeggio.get_address_for_partial">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.get_address_for_partial">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/parameter/arpeggio/index.html#jdxi_editor.midi.data.parameter.arpeggio.AddressParameterArpeggio.get_address_for_partial">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_address_for_partial</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">partial_number</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">ARP_GROUP</span><span class="p">,</span> <span class="mh">0x00</span></div>
 </div>

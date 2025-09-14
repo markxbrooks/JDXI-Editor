@@ -544,11 +544,11 @@
 
 
 <div class="viewcode-block" id="EnumWithAddress">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.windows.midi.html#jdxi_editor.ui.windows.midi.debugger.EnumWithAddress">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/midi/debugger/index.html#jdxi_editor.ui.windows.midi.debugger.EnumWithAddress">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">EnumWithAddress</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
     <span class="nd">@classmethod</span>
 <div class="viewcode-block" id="EnumWithAddress.message_position">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.windows.midi.html#jdxi_editor.ui.windows.midi.debugger.EnumWithAddress.message_position">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/midi/debugger/index.html#jdxi_editor.ui.windows.midi.debugger.EnumWithAddress.message_position">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">message_position</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;        Get the position of the message in the SysEx message.</span>
 <span class="sd">        :return: int - the position of the message</span>
@@ -558,7 +558,7 @@
 
     <span class="nd">@classmethod</span>
 <div class="viewcode-block" id="EnumWithAddress.get_parameter_by_address">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.windows.midi.html#jdxi_editor.ui.windows.midi.debugger.EnumWithAddress.get_parameter_by_address">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/midi/debugger/index.html#jdxi_editor.ui.windows.midi.debugger.EnumWithAddress.get_parameter_by_address">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_parameter_by_address</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;        Get the enum member by address.</span>
 <span class="sd">        :param address: int</span>
@@ -570,7 +570,7 @@
 
 
 <div class="viewcode-block" id="parse_sysex_byte">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.windows.midi.html#jdxi_editor.ui.windows.midi.debugger.parse_sysex_byte">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/midi/debugger/index.html#jdxi_editor.ui.windows.midi.debugger.parse_sysex_byte">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">parse_sysex_byte</span><span class="p">(</span><span class="n">byte_value</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">enum_cls</span><span class="p">:</span> <span class="n">EnumWithAddress</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the name of a SysEx byte value using a given enum class.</span>
@@ -586,7 +586,7 @@
 
 
 <div class="viewcode-block" id="parse_sysex_message">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.windows.midi.html#jdxi_editor.ui.windows.midi.debugger.parse_sysex_message">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/midi/debugger/index.html#jdxi_editor.ui.windows.midi.debugger.parse_sysex_message">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">parse_sysex_message</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">enum_cls</span><span class="p">:</span> <span class="n">EnumWithAddress</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parse a SysEx message and return the name and byte value of the specified parameter.</span>
@@ -603,7 +603,7 @@
 
 
 <div class="viewcode-block" id="parse_parameter">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.windows.midi.html#jdxi_editor.ui.windows.midi.debugger.parse_parameter">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/midi/debugger/index.html#jdxi_editor.ui.windows.midi.debugger.parse_parameter">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">parse_parameter</span><span class="p">(</span><span class="n">offset</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">parameter_type</span><span class="p">:</span> <span class="n">AddressParameter</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parses JD-Xi tone parameters from SysEx data for Digital, Analog, and Digital Common types.</span>
@@ -617,7 +617,7 @@
 
 
 <div class="viewcode-block" id="MIDIDebugger">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.windows.midi.html#jdxi_editor.ui.windows.midi.debugger.MIDIDebugger">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/midi/debugger/index.html#jdxi_editor.ui.windows.midi.debugger.MIDIDebugger">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">MIDIDebugger</span><span class="p">(</span><span class="n">QMainWindow</span><span class="p">):</span>
     <span class="c1"># SysEx message structure constants</span>
 
@@ -847,7 +847,7 @@
 
 
 <div class="viewcode-block" id="MIDIDebugger.send_message">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.windows.midi.html#jdxi_editor.ui.windows.midi.debugger.MIDIDebugger.send_message">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/midi/debugger/index.html#jdxi_editor.ui.windows.midi.debugger.MIDIDebugger.send_message">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">send_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">match</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Send a SysEx message based on the provided hex string.</span>
@@ -881,14 +881,14 @@
 
 
 <div class="viewcode-block" id="MIDIDebugger.log_response">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.windows.midi.html#jdxi_editor.ui.windows.midi.debugger.MIDIDebugger.log_response">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/midi/debugger/index.html#jdxi_editor.ui.windows.midi.debugger.MIDIDebugger.log_response">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">log_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Add text to response log&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">response_log</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">text</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="MIDIDebugger.handle_midi_response">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.windows.midi.html#jdxi_editor.ui.windows.midi.debugger.MIDIDebugger.handle_midi_response">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/midi/debugger/index.html#jdxi_editor.ui.windows.midi.debugger.MIDIDebugger.handle_midi_response">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">handle_midi_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Handle incoming MIDI message&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>

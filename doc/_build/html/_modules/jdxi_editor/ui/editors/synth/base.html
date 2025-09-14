@@ -513,7 +513,7 @@
 
 
 <div class="viewcode-block" id="SynthBase">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.synth.html#jdxi_editor.ui.editors.synth.base.SynthBase">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/synth/base/index.html#jdxi_editor.ui.editors.synth.base.SynthBase">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SynthBase</span><span class="p">(</span><span class="n">QWidget</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;base class for all synth editors&quot;&quot;&quot;</span>
 
@@ -585,7 +585,7 @@
 
     <span class="nd">@property</span>
 <div class="viewcode-block" id="SynthBase.midi_helper">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.synth.html#jdxi_editor.ui.editors.synth.base.SynthBase.midi_helper">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/synth/base/index.html#jdxi_editor.ui.editors.synth.base.SynthBase.midi_helper">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">midi_helper</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MidiIOHelper</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_midi_helper</span></div>
 
@@ -601,7 +601,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_midi_helper</span> <span class="o">=</span> <span class="n">helper</span>
 
 <div class="viewcode-block" id="SynthBase.send_raw_message">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.synth.html#jdxi_editor.ui.editors.synth.base.SynthBase.send_raw_message">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/synth/base/index.html#jdxi_editor.ui.editors.synth.base.SynthBase.send_raw_message">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">send_raw_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Send a raw MIDI message using the MIDI helper.</span>
@@ -616,7 +616,7 @@
 
 
 <div class="viewcode-block" id="SynthBase.edit_tone_name">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.synth.html#jdxi_editor.ui.editors.synth.base.SynthBase.edit_tone_name">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/synth/base/index.html#jdxi_editor.ui.editors.synth.base.SynthBase.edit_tone_name">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">edit_tone_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        edit_tone_name</span>
@@ -637,7 +637,7 @@
 
 
 <div class="viewcode-block" id="SynthBase.data_request">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.synth.html#jdxi_editor.ui.editors.synth.base.SynthBase.data_request">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/synth/base/index.html#jdxi_editor.ui.editors.synth.base.SynthBase.data_request">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">data_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">program</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Request the current value of the NRPN parameter from the device.</span>
@@ -671,7 +671,7 @@
 
           
 <div class="viewcode-block" id="SynthBase.send_tone_name">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.synth.html#jdxi_editor.ui.editors.synth.base.SynthBase.send_tone_name">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/synth/base/index.html#jdxi_editor.ui.editors.synth.base.SynthBase.send_tone_name">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">send_tone_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameter_cls</span><span class="p">:</span> <span class="n">AddressParameter</span><span class="p">,</span> <span class="n">tone_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        send_tone_name</span>
@@ -691,7 +691,7 @@
 
 
 <div class="viewcode-block" id="SynthBase.send_midi_parameter">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.synth.html#jdxi_editor.ui.editors.synth.base.SynthBase.send_midi_parameter">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/synth/base/index.html#jdxi_editor.ui.editors.synth.base.SynthBase.send_midi_parameter">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">send_midi_parameter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                             <span class="n">param</span><span class="p">:</span> <span class="n">AddressParameter</span><span class="p">,</span>
                             <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
@@ -720,7 +720,7 @@
 
 
 <div class="viewcode-block" id="SynthBase.get_controls_as_dict">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.synth.html#jdxi_editor.ui.editors.synth.base.SynthBase.get_controls_as_dict">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/synth/base/index.html#jdxi_editor.ui.editors.synth.base.SynthBase.get_controls_as_dict">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_controls_as_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the current values of self.controls as a dictionary.</span>

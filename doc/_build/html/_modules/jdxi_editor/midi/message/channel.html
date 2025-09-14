@@ -501,29 +501,29 @@
 
 <span class="nd">@dataclass</span>
 <div class="viewcode-block" id="ChannelMessage">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.channel.ChannelMessage">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/message/index.html#jdxi_editor.midi.message.channel.ChannelMessage">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ChannelMessage</span><span class="p">(</span><span class="n">MidiMessage</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;MIDI Channel Message&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="ChannelMessage.channel">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.channel.ChannelMessage.channel">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/message/channel/index.html#jdxi_editor.midi.message.channel.ChannelMessage.channel">[docs]</a>
     <span class="n">channel</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># Default value first</span></div>
 
 <div class="viewcode-block" id="ChannelMessage.status">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.channel.ChannelMessage.status">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/message/channel/index.html#jdxi_editor.midi.message.channel.ChannelMessage.status">[docs]</a>
     <span class="n">status</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># Must have a default since `channel` does</span></div>
 
 <div class="viewcode-block" id="ChannelMessage.data1">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.channel.ChannelMessage.data1">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/message/channel/index.html#jdxi_editor.midi.message.channel.ChannelMessage.data1">[docs]</a>
     <span class="n">data1</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></div>
 
 <div class="viewcode-block" id="ChannelMessage.data2">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.channel.ChannelMessage.data2">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/message/channel/index.html#jdxi_editor.midi.message.channel.ChannelMessage.data2">[docs]</a>
     <span class="n">data2</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></div>
 
 
 <div class="viewcode-block" id="ChannelMessage.to_message_list">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.message.html#jdxi_editor.midi.message.channel.ChannelMessage.to_message_list">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/message/index.html#jdxi_editor.midi.message.channel.ChannelMessage.to_message_list">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_message_list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert to list of bytes for sending&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel</span> <span class="o">&lt;=</span> <span class="mi">15</span><span class="p">):</span>

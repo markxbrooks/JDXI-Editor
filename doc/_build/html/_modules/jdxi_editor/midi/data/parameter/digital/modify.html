@@ -503,7 +503,7 @@
 
 
 <div class="viewcode-block" id="AddressParameterDigitalModify">
-<a class="viewcode-back" href="../../../../../../jdxi_editor.midi.data.parameter.digital.html#jdxi_editor.midi.data.parameter.digital.AddressParameterDigitalModify">[docs]</a>
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/digital/modify/index.html#jdxi_editor.midi.data.parameter.digital.AddressParameterDigitalModify">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">AddressParameterDigitalModify</span><span class="p">(</span><span class="n">AddressParameter</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Modify parameters for Digital/SuperNATURAL synth tones.</span>
 <span class="sd">    These parameters are shared across all partials.</span>
@@ -536,32 +536,32 @@
 
 
 <div class="viewcode-block" id="AddressParameterDigitalModify.ATTACK_TIME_INTERVAL_SENS">
-<a class="viewcode-back" href="../../../../../../jdxi_editor.midi.data.parameter.digital.html#jdxi_editor.midi.data.parameter.digital.AddressParameterDigitalModify.ATTACK_TIME_INTERVAL_SENS">[docs]</a>
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/digital/modify/index.html#jdxi_editor.midi.data.parameter.digital.AddressParameterDigitalModify.ATTACK_TIME_INTERVAL_SENS">[docs]</a>
     <span class="n">ATTACK_TIME_INTERVAL_SENS</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x01</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">,</span> <span class="s2">&quot;Shortens the FILTER and AMP Attack Time according to the spacing between note-on events.</span><span class="se">\n</span><span class="s2">Higher values produce a greater effect. With a setting of 0, there will be no effect.</span><span class="se">\n</span><span class="s2">This is effective when you want to play rapid notes using a sound that has a slow attack</span><span class="se">\n</span><span class="s2">(Attack Time).&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="AddressParameterDigitalModify.RELEASE_TIME_INTERVAL_SENS">
-<a class="viewcode-back" href="../../../../../../jdxi_editor.midi.data.parameter.digital.html#jdxi_editor.midi.data.parameter.digital.AddressParameterDigitalModify.RELEASE_TIME_INTERVAL_SENS">[docs]</a>
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/digital/modify/index.html#jdxi_editor.midi.data.parameter.digital.AddressParameterDigitalModify.RELEASE_TIME_INTERVAL_SENS">[docs]</a>
     <span class="n">RELEASE_TIME_INTERVAL_SENS</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x02</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">,</span> <span class="s2">&quot;Shortens the FILTER and AMP Release Time if the interval between one note-on and the next</span><span class="se">\n</span><span class="s2">note-off is brief. Higher values produce a greater effect. With a setting of 0, there will be no effect.</span><span class="se">\n</span><span class="s2">This is effective when you want to play staccato notes using a sound that has a slow release&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="AddressParameterDigitalModify.PORTAMENTO_TIME_INTERVAL_SENS">
-<a class="viewcode-back" href="../../../../../../jdxi_editor.midi.data.parameter.digital.html#jdxi_editor.midi.data.parameter.digital.AddressParameterDigitalModify.PORTAMENTO_TIME_INTERVAL_SENS">[docs]</a>
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/digital/modify/index.html#jdxi_editor.midi.data.parameter.digital.AddressParameterDigitalModify.PORTAMENTO_TIME_INTERVAL_SENS">[docs]</a>
     <span class="n">PORTAMENTO_TIME_INTERVAL_SENS</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x03</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">,</span> <span class="s2">&quot;Shortens the Portamento Time according to the spacing between note-on events. Higher values</span><span class="se">\n</span><span class="s2">produce a greater effect. With a setting of 0, there will be no effect.&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="AddressParameterDigitalModify.ENVELOPE_LOOP_MODE">
-<a class="viewcode-back" href="../../../../../../jdxi_editor.midi.data.parameter.digital.html#jdxi_editor.midi.data.parameter.digital.AddressParameterDigitalModify.ENVELOPE_LOOP_MODE">[docs]</a>
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/digital/modify/index.html#jdxi_editor.midi.data.parameter.digital.AddressParameterDigitalModify.ENVELOPE_LOOP_MODE">[docs]</a>
     <span class="n">ENVELOPE_LOOP_MODE</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x04</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;Use this to loop the envelope between certain regions during a note-on.</span><span class="se">\n</span><span class="s2">OFF The envelope will operate normally.</span><span class="se">\n</span><span class="s2">FREE-RUN When the Decay segment has ended, the envelope will return to the Attack. The Attack through</span><span class="se">\n</span><span class="s2">Decay segments will repeat until note-off occurs.</span><span class="se">\n</span><span class="s2">TEMPO-SYNC Specifies the loop rate as a note value (Sync Note parameter).&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="AddressParameterDigitalModify.ENVELOPE_LOOP_SYNC_NOTE">
-<a class="viewcode-back" href="../../../../../../jdxi_editor.midi.data.parameter.digital.html#jdxi_editor.midi.data.parameter.digital.AddressParameterDigitalModify.ENVELOPE_LOOP_SYNC_NOTE">[docs]</a>
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/digital/modify/index.html#jdxi_editor.midi.data.parameter.digital.AddressParameterDigitalModify.ENVELOPE_LOOP_SYNC_NOTE">[docs]</a>
     <span class="n">ENVELOPE_LOOP_SYNC_NOTE</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x05</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">19</span><span class="p">,</span> <span class="s2">&quot;Returns to the Attack at the specified rate. If the Attack+Decay time is shorter than the specified</span><span class="se">\n</span><span class="s2">loop, the sound is maintained at the Sustain Level. If the Attack+Decay time is longer than the</span><span class="se">\n</span><span class="s2">specified loop, the sound returns to the Attack even if the Decay has not completed. This will</span><span class="se">\n\n</span><span class="s2">continue repeating until note-off occurs.&quot;</span> <span class="p">)</span></div>
 
 <div class="viewcode-block" id="AddressParameterDigitalModify.CHROMATIC_PORTAMENTO">
-<a class="viewcode-back" href="../../../../../../jdxi_editor.midi.data.parameter.digital.html#jdxi_editor.midi.data.parameter.digital.AddressParameterDigitalModify.CHROMATIC_PORTAMENTO">[docs]</a>
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/digital/modify/index.html#jdxi_editor.midi.data.parameter.digital.AddressParameterDigitalModify.CHROMATIC_PORTAMENTO">[docs]</a>
     <span class="n">CHROMATIC_PORTAMENTO</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x06</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;If this is turned ON, portamento will operate in semitone steps. If this is turned OFF, the pitch will</span><span class="se">\n</span><span class="s2">change smoothly from one note to the next.</span><span class="se">\n</span><span class="s2"> This is effective when you want to play chromatic portamento</span><span class="se">\n</span><span class="s2"> using a sound that has a</span><span class="se">\n</span><span class="s2">slow portamento time.&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="AddressParameterDigitalModify.get_switch_text">
-<a class="viewcode-back" href="../../../../../../jdxi_editor.midi.data.parameter.digital.html#jdxi_editor.midi.data.parameter.digital.AddressParameterDigitalModify.get_switch_text">[docs]</a>
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/digital/modify/index.html#jdxi_editor.midi.data.parameter.digital.AddressParameterDigitalModify.get_switch_text">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_switch_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get display text for switch values&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">ENVELOPE_LOOP_MODE</span><span class="p">:</span>
@@ -596,7 +596,7 @@
 
     <span class="nd">@staticmethod</span>
 <div class="viewcode-block" id="AddressParameterDigitalModify.get_by_name">
-<a class="viewcode-back" href="../../../../../../jdxi_editor.midi.data.parameter.digital.html#jdxi_editor.midi.data.parameter.digital.AddressParameterDigitalModify.get_by_name">[docs]</a>
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/digital/modify/index.html#jdxi_editor.midi.data.parameter.digital.AddressParameterDigitalModify.get_by_name">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_by_name</span><span class="p">(</span><span class="n">param_name</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the Parameter by name.&quot;&quot;&quot;</span>
         <span class="c1"># Return the parameter member by name, or None if not found</span>
@@ -604,7 +604,7 @@
 
 
 <div class="viewcode-block" id="AddressParameterDigitalModify.validate_value">
-<a class="viewcode-back" href="../../../../../../jdxi_editor.midi.data.parameter.digital.html#jdxi_editor.midi.data.parameter.digital.AddressParameterDigitalModify.validate_value">[docs]</a>
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/digital/modify/index.html#jdxi_editor.midi.data.parameter.digital.AddressParameterDigitalModify.validate_value">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate and convert parameter value&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
@@ -620,7 +620,7 @@
 
 
 <div class="viewcode-block" id="AddressParameterDigitalModify.get_address_for_partial">
-<a class="viewcode-back" href="../../../../../../jdxi_editor.midi.data.parameter.digital.html#jdxi_editor.midi.data.parameter.digital.AddressParameterDigitalModify.get_address_for_partial">[docs]</a>
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/digital/modify/index.html#jdxi_editor.midi.data.parameter.digital.AddressParameterDigitalModify.get_address_for_partial">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_address_for_partial</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">partial_number</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">AddressOffsetSuperNATURALLMB</span><span class="o">.</span><span class="n">MODIFY</span><span class="p">,</span> <span class="mh">0x00</span></div>
 </div>

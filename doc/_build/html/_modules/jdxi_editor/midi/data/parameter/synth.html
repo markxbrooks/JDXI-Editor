@@ -511,7 +511,7 @@
 
 
 <div class="viewcode-block" id="AddressParameter">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.AddressParameter">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/parameter/synth/index.html#jdxi_editor.midi.data.parameter.AddressParameter">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">AddressParameter</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class for synthesizer parameters with associated addresses and valid value ranges.</span>
@@ -547,7 +547,7 @@
 
 
 <div class="viewcode-block" id="AddressParameter.__str__">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.AddressParameter.__str__">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/parameter/synth/index.html#jdxi_editor.midi.data.parameter.AddressParameter.__str__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a string representation of the parameter.</span>
@@ -558,7 +558,7 @@
 
     
 <div class="viewcode-block" id="AddressParameter.__repr__">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.AddressParameter.__repr__">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/parameter/synth/index.html#jdxi_editor.midi.data.parameter.AddressParameter.__repr__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a string representation of the parameter.</span>
@@ -570,7 +570,7 @@
 
     <span class="nd">@classmethod</span>
 <div class="viewcode-block" id="AddressParameter.message_position">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.AddressParameter.message_position">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/parameter/synth/index.html#jdxi_editor.midi.data.parameter.AddressParameter.message_position">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">message_position</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the position of the message in the SysEx message.</span>
@@ -582,7 +582,7 @@
 
     <span class="nd">@classmethod</span>
 <div class="viewcode-block" id="AddressParameter.get_parameter_by_address">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.AddressParameter.get_parameter_by_address">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/parameter/synth/index.html#jdxi_editor.midi.data.parameter.AddressParameter.get_parameter_by_address">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_parameter_by_address</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">address</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the parameter member by address.</span>
@@ -597,7 +597,7 @@
 
     <span class="nd">@property</span>
 <div class="viewcode-block" id="AddressParameter.is_switch">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.AddressParameter.is_switch">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/parameter/synth/index.html#jdxi_editor.midi.data.parameter.AddressParameter.is_switch">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_switch</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns True if parameter is a switch (e.g. ON/OFF)</span>
@@ -609,7 +609,7 @@
 
     <span class="nd">@property</span>
 <div class="viewcode-block" id="AddressParameter.is_bipolar">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.AddressParameter.is_bipolar">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/parameter/synth/index.html#jdxi_editor.midi.data.parameter.AddressParameter.is_bipolar">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_bipolar</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns True if parameter is bipolar (e.g. -64 to +63)</span>
@@ -621,7 +621,7 @@
 
     <span class="nd">@property</span>
 <div class="viewcode-block" id="AddressParameter.display_name">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.AddressParameter.display_name">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/parameter/synth/index.html#jdxi_editor.midi.data.parameter.AddressParameter.display_name">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">display_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the display name of the parameter by formatting the enum name with spaces</span>
@@ -632,7 +632,7 @@
 
 
 <div class="viewcode-block" id="AddressParameter.validate_value">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.AddressParameter.validate_value">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/parameter/synth/index.html#jdxi_editor.midi.data.parameter.AddressParameter.validate_value">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Validate the value against the parameter&#39;s valid range.</span>
@@ -654,7 +654,7 @@
 
     <span class="nd">@staticmethod</span>
 <div class="viewcode-block" id="AddressParameter.get_name_by_address">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.AddressParameter.get_name_by_address">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/parameter/synth/index.html#jdxi_editor.midi.data.parameter.AddressParameter.get_name_by_address">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_name_by_address</span><span class="p">(</span><span class="n">address</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the parameter name by address.</span>
@@ -670,7 +670,7 @@
 
     <span class="nd">@staticmethod</span>
 <div class="viewcode-block" id="AddressParameter.get_by_name">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.AddressParameter.get_by_name">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/parameter/synth/index.html#jdxi_editor.midi.data.parameter.AddressParameter.get_by_name">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_by_name</span><span class="p">(</span><span class="n">param_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the parameter member by name.</span>
@@ -683,7 +683,7 @@
 
 
 <div class="viewcode-block" id="AddressParameter.get_address_for_partial">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.AddressParameter.get_address_for_partial">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/parameter/synth/index.html#jdxi_editor.midi.data.parameter.AddressParameter.get_address_for_partial">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_address_for_partial</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">partial_number</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the address for the partial number.</span>
@@ -695,7 +695,7 @@
 
     
 <div class="viewcode-block" id="AddressParameter.convert_value">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.AddressParameter.convert_value">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/parameter/synth/index.html#jdxi_editor.midi.data.parameter.AddressParameter.convert_value">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">convert_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">reverse</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Converts value in both directions based on CONVERSION_OFFSETS</span>
@@ -722,7 +722,7 @@
 
 
 <div class="viewcode-block" id="AddressParameter.convert_to_midi">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.AddressParameter.convert_to_midi">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/parameter/synth/index.html#jdxi_editor.midi.data.parameter.AddressParameter.convert_to_midi">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">convert_to_midi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slider_value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert from display value to MIDI value</span>
@@ -734,7 +734,7 @@
 
 
 <div class="viewcode-block" id="AddressParameter.convert_from_midi">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.AddressParameter.convert_from_midi">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/parameter/synth/index.html#jdxi_editor.midi.data.parameter.AddressParameter.convert_from_midi">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">convert_from_midi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">midi_value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert from MIDI value to display value</span>
@@ -746,7 +746,7 @@
 
 
 <div class="viewcode-block" id="AddressParameter.get_switch_text">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.AddressParameter.get_switch_text">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/parameter/synth/index.html#jdxi_editor.midi.data.parameter.AddressParameter.get_switch_text">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_switch_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the text representation of the switch value.</span>
@@ -760,7 +760,7 @@
 
 
 <div class="viewcode-block" id="AddressParameter.get_nibbled_size">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.AddressParameter.get_nibbled_size">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/parameter/synth/index.html#jdxi_editor.midi.data.parameter.AddressParameter.get_nibbled_size">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_nibbled_size</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the nibbled size for the parameter</span>
@@ -774,7 +774,7 @@
 
 
 <div class="viewcode-block" id="AddressParameter.get_offset">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.AddressParameter.get_offset">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/parameter/synth/index.html#jdxi_editor.midi.data.parameter.AddressParameter.get_offset">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_offset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a 3-byte tuple representing the address offset (UMB, LMB, LSB)</span>
@@ -790,7 +790,7 @@
 
 
 <div class="viewcode-block" id="AddressParameter.get_tooltip">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.AddressParameter.get_tooltip">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/parameter/synth/index.html#jdxi_editor.midi.data.parameter.AddressParameter.get_tooltip">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_tooltip</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get tooltip for the parameter&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tooltip</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;tooltip&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span></div>
@@ -798,7 +798,7 @@
 
     <span class="nd">@property</span>
 <div class="viewcode-block" id="AddressParameter.lsb">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.AddressParameter.lsb">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/parameter/synth/index.html#jdxi_editor.midi.data.parameter.AddressParameter.lsb">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">lsb</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the least significant byte (LSB) of the address.</span>
@@ -809,7 +809,7 @@
 
 
 <div class="viewcode-block" id="AddressParameter.get_envelope_param_type">
-<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.AddressParameter.get_envelope_param_type">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/parameter/synth/index.html#jdxi_editor.midi.data.parameter.AddressParameter.get_envelope_param_type">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_envelope_param_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;should be over-ridden by a subclass&quot;</span><span class="p">)</span></div>
 </div>

@@ -509,7 +509,7 @@
 
 
 <div class="viewcode-block" id="MIDIConnection">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.io.html#jdxi_editor.midi.io.connection.MIDIConnection">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/io/connection/index.html#jdxi_editor.midi.io.connection.MIDIConnection">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">MIDIConnection</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Midi connection object&quot;&quot;&quot;</span>
 
@@ -549,7 +549,7 @@
 
     <span class="nd">@property</span>
 <div class="viewcode-block" id="MIDIConnection.midi_in">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.io.html#jdxi_editor.midi.io.connection.MIDIConnection.midi_in">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/io/connection/index.html#jdxi_editor.midi.io.connection.MIDIConnection.midi_in">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">midi_in</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get MIDI input port&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_midi_in</span></div>
@@ -557,14 +557,14 @@
 
     <span class="nd">@property</span>
 <div class="viewcode-block" id="MIDIConnection.midi_out">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.io.html#jdxi_editor.midi.io.connection.MIDIConnection.midi_out">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/io/connection/index.html#jdxi_editor.midi.io.connection.MIDIConnection.midi_out">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">midi_out</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get MIDI output port&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_midi_out</span></div>
 
 
 <div class="viewcode-block" id="MIDIConnection.initialize">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.io.html#jdxi_editor.midi.io.connection.MIDIConnection.initialize">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/io/connection/index.html#jdxi_editor.midi.io.connection.MIDIConnection.initialize">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                    <span class="n">midi_in</span><span class="p">:</span> <span class="n">rtmidi</span><span class="o">.</span><span class="n">MidiIn</span><span class="p">,</span>
                    <span class="n">midi_out</span><span class="p">:</span> <span class="n">rtmidi</span><span class="o">.</span><span class="n">MidiOut</span><span class="p">,</span>
@@ -585,7 +585,7 @@
 
 
 <div class="viewcode-block" id="MIDIConnection.send_message">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.io.html#jdxi_editor.midi.io.connection.MIDIConnection.send_message">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/io/connection/index.html#jdxi_editor.midi.io.connection.MIDIConnection.send_message">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">send_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Send MIDI message and trigger indicator</span>
@@ -610,7 +610,7 @@
 
 
 <div class="viewcode-block" id="MIDIConnection.identify_device">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.io.html#jdxi_editor.midi.io.connection.MIDIConnection.identify_device">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/io/connection/index.html#jdxi_editor.midi.io.connection.MIDIConnection.identify_device">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">identify_device</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Send Identity Request and verify response&quot;&quot;&quot;</span>
         <span class="n">request</span> <span class="o">=</span> <span class="n">IdentityRequestMessage</span><span class="p">()</span>
@@ -620,7 +620,7 @@
 
     <span class="nd">@property</span>
 <div class="viewcode-block" id="MIDIConnection.is_connected">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.io.html#jdxi_editor.midi.io.connection.MIDIConnection.is_connected">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/io/connection/index.html#jdxi_editor.midi.io.connection.MIDIConnection.is_connected">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_connected</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if connected to JD-Xi&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">device_info</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">device_info</span><span class="o">.</span><span class="n">is_jdxi</span></div>
@@ -628,7 +628,7 @@
 
     <span class="nd">@property</span>
 <div class="viewcode-block" id="MIDIConnection.device_version">
-<a class="viewcode-back" href="../../../../jdxi_editor.midi.io.html#jdxi_editor.midi.io.connection.MIDIConnection.device_version">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/midi/io/connection/index.html#jdxi_editor.midi.io.connection.MIDIConnection.device_version">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">device_version</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get device firmware version&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">device_info</span><span class="p">:</span>

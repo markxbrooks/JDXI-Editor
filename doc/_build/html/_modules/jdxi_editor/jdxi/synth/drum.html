@@ -484,16 +484,16 @@
 
 <span class="nd">@dataclass</span>
 <div class="viewcode-block" id="DrumSynthData">
-<a class="viewcode-back" href="../../../../jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.drum.DrumSynthData">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/jdxi/synth/drum/index.html#jdxi_editor.jdxi.synth.drum.DrumSynthData">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">DrumSynthData</span><span class="p">(</span><span class="n">JDXISynthData</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Drum Synth Data&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="DrumSynthData.partial_number">
-<a class="viewcode-back" href="../../../../jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.drum.DrumSynthData.partial_number">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/jdxi/synth/drum/index.html#jdxi_editor.jdxi.synth.drum.DrumSynthData.partial_number">[docs]</a>
     <span class="n">partial_number</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span></div>
 
 <div class="viewcode-block" id="DrumSynthData.partial_parameters">
-<a class="viewcode-back" href="../../../../jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.drum.DrumSynthData.partial_parameters">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/jdxi/synth/drum/index.html#jdxi_editor.jdxi.synth.drum.DrumSynthData.partial_parameters">[docs]</a>
     <span class="n">partial_parameters</span><span class="p">:</span> <span class="n">AddressParameterDrumPartial</span> <span class="o">=</span> <span class="kc">None</span></div>
 
 
@@ -505,7 +505,7 @@
 
 
 <div class="viewcode-block" id="DrumSynthData.__post_init__">
-<a class="viewcode-back" href="../../../../jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.drum.DrumSynthData.__post_init__">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/jdxi/synth/drum/index.html#jdxi_editor.jdxi.synth.drum.DrumSynthData.__post_init__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Post Init&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
@@ -560,7 +560,7 @@
 
     <span class="nd">@property</span>
 <div class="viewcode-block" id="DrumSynthData.group_map">
-<a class="viewcode-back" href="../../../../jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.drum.DrumSynthData.group_map">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/jdxi/synth/drum/index.html#jdxi_editor.jdxi.synth.drum.DrumSynthData.group_map">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">group_map</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Address</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the drum group map.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_group_map</span></div>
@@ -568,14 +568,14 @@
 
     <span class="nd">@property</span>
 <div class="viewcode-block" id="DrumSynthData.partial_lmb">
-<a class="viewcode-back" href="../../../../jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.drum.DrumSynthData.partial_lmb">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/jdxi/synth/drum/index.html#jdxi_editor.jdxi.synth.drum.DrumSynthData.partial_lmb">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">partial_lmb</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Address</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the LMB for the current partial number.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_partial_lmb</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">partial_number</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DrumSynthData.get_partial_lmb">
-<a class="viewcode-back" href="../../../../jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.drum.DrumSynthData.get_partial_lmb">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/jdxi/synth/drum/index.html#jdxi_editor.jdxi.synth.drum.DrumSynthData.get_partial_lmb">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_partial_lmb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">partial_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Address</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the LMB for a given partial number.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_group_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">partial_number</span><span class="p">,</span> <span class="n">AddressOffsetDrumKitLMB</span><span class="o">.</span><span class="n">COMMON</span><span class="p">)</span></div>

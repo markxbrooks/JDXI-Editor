@@ -522,7 +522,7 @@
 
 
 <div class="viewcode-block" id="log_changes">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.synth.html#jdxi_editor.ui.editors.log_changes">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/synth/editor/index.html#jdxi_editor.ui.editors.log_changes">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">log_changes</span><span class="p">(</span><span class="n">previous_data</span><span class="p">,</span> <span class="n">current_data</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Log changes between previous and current JSON data.&quot;&quot;&quot;</span>
     <span class="n">changes</span> <span class="o">=</span> <span class="p">[]</span>
@@ -553,12 +553,12 @@
 
 
 <div class="viewcode-block" id="SynthEditor">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.synth.html#jdxi_editor.ui.editors.SynthEditor">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/synth/editor/index.html#jdxi_editor.ui.editors.SynthEditor">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SynthEditor</span><span class="p">(</span><span class="n">SynthBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for all editor windows&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="SynthEditor.parameter_received">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.synth.html#jdxi_editor.ui.editors.SynthEditor.parameter_received">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/synth/editor/index.html#jdxi_editor.ui.editors.SynthEditor.parameter_received">[docs]</a>
     <span class="n">parameter_received</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>  <span class="c1"># address, value</span></div>
 
 
@@ -606,7 +606,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">nrpn_map</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="SynthEditor.controls">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.synth.html#jdxi_editor.ui.editors.SynthEditor.controls">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/synth/editor/index.html#jdxi_editor.ui.editors.SynthEditor.controls">[docs]</a>
         <span class="bp">self</span><span class="o">.</span><span class="n">controls</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="SynthEditor.bipolar_parameters">
@@ -807,7 +807,7 @@
 
 
 <div class="viewcode-block" id="SynthEditor.get_controls_as_dict">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.synth.html#jdxi_editor.ui.editors.SynthEditor.get_controls_as_dict">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/synth/editor/index.html#jdxi_editor.ui.editors.SynthEditor.get_controls_as_dict">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_controls_as_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the current values of self.controls as a dictionary.</span>
@@ -934,7 +934,7 @@
 
 
 <div class="viewcode-block" id="SynthEditor.set_instrument_title_label">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.synth.html#jdxi_editor.ui.editors.SynthEditor.set_instrument_title_label">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/synth/editor/index.html#jdxi_editor.ui.editors.SynthEditor.set_instrument_title_label">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">set_instrument_title_label</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">synth_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        set_instrument_title_label</span>
@@ -952,7 +952,7 @@
         
 
 <div class="viewcode-block" id="SynthEditor.update_combo_box_index">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.synth.html#jdxi_editor.ui.editors.SynthEditor.update_combo_box_index">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/synth/editor/index.html#jdxi_editor.ui.editors.SynthEditor.update_combo_box_index">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">update_combo_box_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">preset_number</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Updates the QComboBox to reflect the loaded preset.&quot;&quot;&quot;</span>
         <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Updating combo to preset </span><span class="si">{</span><span class="n">preset_number</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -960,7 +960,7 @@
 
 
 <div class="viewcode-block" id="SynthEditor.update_instrument_title">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.synth.html#jdxi_editor.ui.editors.SynthEditor.update_instrument_title">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/synth/editor/index.html#jdxi_editor.ui.editors.SynthEditor.update_instrument_title">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">update_instrument_title</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        update instrument title</span>
@@ -973,7 +973,7 @@
 
 
 <div class="viewcode-block" id="SynthEditor.update_instrument_preset">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.synth.html#jdxi_editor.ui.editors.SynthEditor.update_instrument_preset">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/synth/editor/index.html#jdxi_editor.ui.editors.SynthEditor.update_instrument_preset">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">update_instrument_preset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
         <span class="n">selected_synth_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instrument_selection_combo</span><span class="o">.</span><span class="n">combo_box</span><span class="o">.</span><span class="n">currentText</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">synth_matches</span> <span class="o">:=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
@@ -988,7 +988,7 @@
 
 
 <div class="viewcode-block" id="SynthEditor.load_preset">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.synth.html#jdxi_editor.ui.editors.SynthEditor.load_preset">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/synth/editor/index.html#jdxi_editor.ui.editors.SynthEditor.load_preset">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">load_preset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">preset_index</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Load a preset by program change.&quot;&quot;&quot;</span>
         <span class="n">preset_name</span> <span class="o">=</span> <span class="p">(</span>
@@ -1042,7 +1042,7 @@
 
 
 <div class="viewcode-block" id="SynthEditor.send_control_change">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.synth.html#jdxi_editor.ui.editors.SynthEditor.send_control_change">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/synth/editor/index.html#jdxi_editor.ui.editors.SynthEditor.send_control_change">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">send_control_change</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">control_change</span><span class="p">:</span> <span class="n">ControlChange</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Send MIDI CC message&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span><span class="p">:</span>
@@ -1057,7 +1057,7 @@
 
 
 <div class="viewcode-block" id="SynthEditor.load_and_set_image">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.synth.html#jdxi_editor.ui.editors.SynthEditor.load_and_set_image">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/synth/editor/index.html#jdxi_editor.ui.editors.SynthEditor.load_and_set_image">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">load_and_set_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image_path</span><span class="p">,</span> <span class="n">secondary_image_path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Helper function to load and set the image on the label.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">image_path</span><span class="p">):</span>
@@ -1081,7 +1081,7 @@
 
 
 <div class="viewcode-block" id="SynthEditor.update_instrument_image">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.synth.html#jdxi_editor.ui.editors.SynthEditor.update_instrument_image">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/synth/editor/index.html#jdxi_editor.ui.editors.SynthEditor.update_instrument_image">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">update_instrument_image</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the instrument image based on the selected synth.&quot;&quot;&quot;</span>
         <span class="n">selected_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_selected_instrument_text</span><span class="p">()</span>
@@ -1160,7 +1160,7 @@
 
 
 <div class="viewcode-block" id="SynthEditor.update_instrument_image_new">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.synth.html#jdxi_editor.ui.editors.SynthEditor.update_instrument_image_new">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/synth/editor/index.html#jdxi_editor.ui.editors.SynthEditor.update_instrument_image_new">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">update_instrument_image_new</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the instrument image based on the selected synth.&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
@@ -1234,7 +1234,7 @@
 
 
 <div class="viewcode-block" id="SynthEditor.update_instrument_image_old">
-<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.synth.html#jdxi_editor.ui.editors.SynthEditor.update_instrument_image_old">[docs]</a>
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/synth/editor/index.html#jdxi_editor.ui.editors.SynthEditor.update_instrument_image_old">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">update_instrument_image_old</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the instrument image based on the selected synth.&quot;&quot;&quot;</span>
         <span class="n">default_image_path</span> <span class="o">=</span> <span class="n">resource_path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
