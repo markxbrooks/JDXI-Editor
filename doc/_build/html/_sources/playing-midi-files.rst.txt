@@ -3,9 +3,8 @@ Playing MIDI Files
 
 Comprehensive MIDI file playback, recording, and pattern sequencing capabilities.
 
-.. toctree::
-   :maxdepth: 1
-   :caption: MIDI & Sequencing:
+Available Tools
+===============
 
-   pattern_sequencer
-   midi_file_player
+* :doc:`Pattern Sequencer <pattern_sequencer>` - Multi-part sequencing with step-by-step editing
+* :doc:`MIDI File Player & Recorder <midi_file_player>` - Comprehensive MIDI and audio file handling
