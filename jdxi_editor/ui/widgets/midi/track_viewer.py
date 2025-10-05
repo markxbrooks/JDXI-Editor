@@ -33,6 +33,9 @@ class MidiTrackViewer(QWidget):
 
         # To track muted channels
         self.muted_channels: set[int] = set()
+        # Per-track editors for batch apply
+        self._track_name_edits: dict[int, QLineEdit] = {}
+        self._track_channel_spins: dict[int, MidiSpinBox] = {}
 
         # Main layout
         main_layout = QVBoxLayout(self)
@@ -113,6 +116,8 @@ class MidiTrackViewer(QWidget):
                 btn.setChecked(False)
         self.muted_channels.clear()
         self.muted_tracks.clear()
+        self._track_name_edits.clear()
+        self._track_channel_spins.clear()
 
         # Remove track widgets
         for track_key, track_widget in self.midi_track_widgets.copy().items():
@@ -430,6 +435,7 @@ class MidiTrackViewer(QWidget):
             # temp_row.addWidget(track_number_label)
             temp_row.addWidget(track_name_line_edit)
             # temp_row.addWidget(track_channel_label)
+            self._track_name_edits[i] = track_name_line_edit
 
             # Add QSpinBox for selecting the MIDI channel
             spin = MidiSpinBox()
@@ -438,6 +444,7 @@ class MidiTrackViewer(QWidget):
             spin.setFixedWidth(JDXiStyle.TRACK_SPINBOX_WIDTH)
             spin.setPrefix("Ch")
             line_label_row.addWidget(spin)
+            self._track_channel_spins[i] = spin
 
             button_hlayout = QHBoxLayout()
             label_vlayout.addLayout(button_hlayout)
@@ -488,6 +495,15 @@ class MidiTrackViewer(QWidget):
 
             self.channel_controls_vlayout.addLayout(hlayout)
 
+        # Global Apply button
+        apply_all_layout = QHBoxLayout()
+        apply_all_layout.addStretch()
+        apply_all_btn = QPushButton("Apply All Track Changes")
+        apply_all_btn.setToolTip("Apply all Track Name and MIDI Channel changes")
+        apply_all_btn.clicked.connect(self.apply_all_track_changes)
+        apply_all_layout.addWidget(apply_all_btn)
+        self.channel_controls_vlayout.addLayout(apply_all_layout)
+
         self.channel_controls_vlayout.addStretch()
 
     def get_track_controls_width(self) -> int:
@@ -514,6 +530,41 @@ class MidiTrackViewer(QWidget):
         :return:
         """
         self.update()
+
+    def apply_all_track_changes(self) -> None:
+        """Apply all Track Name and Channel changes in one operation."""
+        if not self.midi_file:
+            return
+
+        # Build a new MIDI file with updated channels
+        new_midi = mido.MidiFile()
+        new_midi.ticks_per_beat = self.midi_file.ticks_per_beat
+
+        for i, t in enumerate(self.midi_file.tracks):
+            desired_display_channel = self._track_channel_spins.get(i).value() if i in self._track_channel_spins else None
+            desired_channel = None if desired_display_channel is None else desired_display_channel + MidiConstant.CHANNEL_DISPLAY_TO_BINARY
+            new_track = mido.MidiTrack()
+
+            for msg in t:
+                msg_copy = msg.copy()
+                if desired_channel is not None and hasattr(msg_copy, "channel"):
+                    msg_copy.channel = desired_channel
+                new_track.append(msg_copy)
+
+            # Set or update track name
+            new_name = self._track_name_edits.get(i).text() if i in self._track_name_edits else None
+            if new_name:
+                # Remove existing track_name meta to avoid duplicates
+                filtered = [m for m in new_track if not (m.is_meta and getattr(m, 'type', '') == 'track_name')]
+                new_track.clear()
+                # Insert a track_name at the very beginning
+                new_track.append(mido.MetaMessage('track_name', name=new_name, time=0))
+                for m in filtered:
+                    new_track.append(m)
+
+            new_midi.tracks.append(new_track)
+
+        self.set_midi_file(new_midi)
 
     def get_muted_channels(self):
         return self.muted_channels
