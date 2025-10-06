@@ -1,0 +1,658 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>jdxi_editor.ui.editors.effects.common &mdash; JD-Xi Editor 0.8.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../../../_static/documentation_options.js?v=486e5634"></script>
+      <script src="../../../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../search.html" />
+    <link rel="next" title="jdxi_editor.ui.editors.effects.data" href="../data/index.html" />
+    <link rel="prev" title="jdxi_editor.ui.editors.effects" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../../../index.html" class="icon icon-home">
+            JD-Xi Editor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../getting-started.html#getting-started-guide">Getting Started Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../editor-windows.html">Editor Windows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../editor-windows.html#available-editors">Available Editors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../additional-editors.html">Additional Editors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../additional-editors.html#available-editors">Available Editors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../playing-midi-files.html">Playing MIDI Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../playing-midi-files.html#available-tools">Available Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../troubleshooting.html#id1">Troubleshooting</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../legal.html">Legal Disclaimer</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../modules.html">jdxi_editor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../jdxi_editor.html">jdxi_editor package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../jdxi_editor.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../jdxi_editor.jdxi.html">jdxi_editor.jdxi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../jdxi_editor.log.html">jdxi_editor.log package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../jdxi_editor.midi.html">jdxi_editor.midi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../jdxi_editor.ui.html">jdxi_editor.ui package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../jdxi_editor.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../jdxi_editor.html#module-jdxi_editor.globals">jdxi_editor.globals module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../jdxi_editor.html#module-jdxi_editor.main">jdxi_editor.main module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../jdxi_editor.html#jdxi_editor.main.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../jdxi_editor.html#jdxi_editor.main.setup_splash_screen"><code class="docutils literal notranslate"><span class="pre">setup_splash_screen()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../jdxi_editor.html#module-jdxi_editor.project">jdxi_editor.project module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../jdxi_editor.html#module-jdxi_editor.resources">jdxi_editor.resources module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../jdxi_editor.html#jdxi_editor.resources.resource_path"><code class="docutils literal notranslate"><span class="pre">resource_path()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../jdxi_editor.html#module-jdxi_editor">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../../../../midi/index.html">midi</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../midi/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../midi/colors/index.html">midi.colors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../midi/slider/index.html">midi.slider</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../midi/spin_box/index.html">midi.spin_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../midi/time_ruler/index.html">midi.time_ruler</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../midi/track/index.html">midi.track</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../midi/track_viewer/index.html">midi.track_viewer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../midi/utils/index.html">midi.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../adsr/index.html">adsr</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../adsr/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../adsr/adsr/index.html">adsr.adsr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../adsr/graph/index.html">adsr.graph</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../adsr/parameter/index.html">adsr.parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../adsr/plot/index.html">adsr.plot</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../pitch/index.html">pitch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../pitch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../pitch/envelope/index.html">pitch.envelope</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../pitch/envelope_plot/index.html">pitch.envelope_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../pitch/pwm_plot/index.html">pitch.pwm_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../pitch/slider_spinbox/index.html">pitch.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../piano/index.html">piano</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../piano/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../piano/key/index.html">piano.key</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../piano/keyboard/index.html">piano.keyboard</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../panel/index.html">panel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../panel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../panel/partial/index.html">panel.partial</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../wheel/index.html">wheel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../wheel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../wheel/mod/index.html">wheel.mod</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../wheel/pitch/index.html">wheel.pitch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../wheel/wheel/index.html">wheel.wheel</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../preset/index.html">preset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../preset/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../preset/combo_box/index.html">preset.combo_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../preset/panel/index.html">preset.panel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../preset/patch_name/index.html">preset.patch_name</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../slider/index.html">slider</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../slider/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../slider/slider/index.html">slider.slider</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../slider/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../slider/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../slider/index.html#slider.Slider"><code class="docutils literal notranslate"><span class="pre">Slider</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../dialog/index.html">dialog</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../dialog/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../dialog/progress/index.html">dialog.progress</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../viewer/index.html">viewer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../viewer/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../viewer/log/index.html">viewer.log</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../button/index.html">button</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../button/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../button/channel/index.html">button.channel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../button/favorite/index.html">button.favorite</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../button/sequencer/index.html">button.sequencer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../button/waveform/index.html">button.waveform</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../button/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../button/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../button/index.html#button.ChannelButton"><code class="docutils literal notranslate"><span class="pre">ChannelButton</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../button/index.html#button.SequencerSquare"><code class="docutils literal notranslate"><span class="pre">SequencerSquare</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../switch/index.html">switch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../switch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../switch/partial/index.html">switch.partial</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../switch/switch/index.html">switch.switch</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../filter/index.html">filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../filter/index.html#filter.FilterWidget"><code class="docutils literal notranslate"><span class="pre">FilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../display/index.html">display</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../display/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../display/digital/index.html">display.digital</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../display/pattern/index.html">display.pattern</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../display/value/index.html">display.value</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../pattern/index.html">pattern</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../pattern/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../pattern/measure/index.html">pattern.measure</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../spin_box/index.html">spin_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../spin_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../spin_box/spin_box/index.html">spin_box.spin_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../envelope/index.html">envelope</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../envelope/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../envelope/base/index.html">envelope.base</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../indicator/index.html">indicator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../indicator/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../indicator/led/index.html">indicator.led</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../indicator/midi/index.html">indicator.midi</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../combo_box/index.html">combo_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../combo_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../combo_box/combo_box/index.html">combo_box.combo_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../../../index.html">jdxi_editor</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../../../index.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../../../globals/index.html">jdxi_editor.globals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../jdxi/index.html">jdxi_editor.jdxi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../log/index.html">jdxi_editor.log</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../main/index.html">jdxi_editor.main</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../midi/index.html">jdxi_editor.midi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../project/index.html">jdxi_editor.project</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../resources/index.html">jdxi_editor.resources</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../../../index.html">jdxi_editor.ui</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../filter_plot/index.html">filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../filter_plot/index.html#filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../filter_plot/index.html#filter_plot.FilterPlot"><code class="docutils literal notranslate"><span class="pre">FilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../envelope_plot/index.html">envelope_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../envelope_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../envelope_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../envelope_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../envelope_plot/index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../envelope_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../envelope_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../envelope_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../envelope_plot/index.html#envelope_plot.midi_value_to_float"><code class="docutils literal notranslate"><span class="pre">midi_value_to_float()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../envelope_plot/index.html#envelope_plot.WMTEnvPlot"><code class="docutils literal notranslate"><span class="pre">WMTEnvPlot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../envelope_plot/index.html#envelope_plot.app"><code class="docutils literal notranslate"><span class="pre">app</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../wave_selector/index.html">wave_selector</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../wave_selector/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../wave_selector/wave_selector/index.html">wave_selector.wave_selector</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../analog_filter/index.html">analog_filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../analog_filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../analog_filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../analog_filter/index.html#analog_filter.AnalogFilterWidget"><code class="docutils literal notranslate"><span class="pre">AnalogFilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../slider_spinbox/index.html">slider_spinbox</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../slider_spinbox/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../slider_spinbox/slider_spinbox/index.html">slider_spinbox.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../analog_filter_plot/index.html">analog_filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../analog_filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../analog_filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../analog_filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../analog_filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../analog_filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../analog_filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../analog_filter_plot/index.html#analog_filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../analog_filter_plot/index.html#analog_filter_plot.AnalogFilterPlot"><code class="docutils literal notranslate"><span class="pre">AnalogFilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../../index.html">JD-Xi Editor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../../../../index.html">jdxi_editor</a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">jdxi_editor.ui</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">jdxi_editor.ui.editors</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">jdxi_editor.ui.editors.effects</a></li>
+      <li class="breadcrumb-item active">jdxi_editor.ui.editors.effects.common</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../../../_sources/autoapi/jdxi_editor/ui/editors/effects/common/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-jdxi_editor.ui.editors.effects.common">
+<span id="jdxi-editor-ui-editors-effects-common"></span><h1>jdxi_editor.ui.editors.effects.common<a class="headerlink" href="#module-jdxi_editor.ui.editors.effects.common" title="Link to this heading"></a></h1>
+<p>Module: effects_editor</p>
+<p>This module defines the <cite>EffectsEditor</cite> class, which provides a PySide6-based user interface
+for editing effects parameters on the Roland JD-Xi synthesizer. It extends <cite>SynthEditor</cite> and
+allows users to modify various effects settings, including Effect 1, Effect 2, Delay, and Reverb.</p>
+<dl>
+<dt>Classes:</dt><dd><ul class="simple">
+<li><p>EffectsEditor: A QWidget subclass for managing and editing JD-Xi effect parameters.</p></li>
+</ul>
+</dd>
+<dt>Dependencies:</dt><dd><ul class="simple">
+<li><p>os</p></li>
+<li><p>logging</p></li>
+<li><p>PySide6.QtWidgets (QWidget, QVBoxLayout, etc.)</p></li>
+<li><p>PySide6.QtCore (Qt)</p></li>
+<li><p>PySide6.QtGui (QPixmap)</p></li>
+<li><p>jdxi_manager modules for MIDI and parameter handling</p></li>
+</ul>
+</dd>
+<dt>Features:</dt><dd><ul>
+<li><p>Displays effects parameters with interactive controls.</p></li>
+<li><p>Supports updating instrument images dynamically.</p></li>
+<li><p>Sends MIDI messages to update effect settings in real-time.</p></li>
+<li><p>Organizes effect parameters into categorized tabs.</p>
+<blockquote>
+<div><p>AddressParameterEffect1.EFX1_PARAM_17,
+AddressParameterEffect1.EFX1_PARAM_18,
+AddressParameterEffect1.EFX1_PARAM_19,
+AddressParameterEffect1.EFX1_PARAM_20,
+AddressParameterEffect1.EFX1_PARAM_21,
+AddressParameterEffect1.EFX1_PARAM_22,
+AddressParameterEffect1.EFX1_PARAM_23,
+AddressParameterEffect1.EFX1_PARAM_24,
+AddressParameterEffect1.EFX1_PARAM_25,
+AddressParameterEffect1.EFX1_PARAM_26,
+AddressParameterEffect1.EFX1_PARAM_27,
+AddressParameterEffect1.EFX1_PARAM_28,
+AddressParameterEffect1.EFX1_PARAM_29,
+AddressParameterEffect1.EFX1_PARAM_30,
+AddressParameterEffect1.EFX1_PARAM_31,</p>
+<p>AddressParameterEffect1.EFX2_PARAM_17,
+AddressParameterEffect1.EFX2_PARAM_18,
+AddressParameterEffect1.EFX2_PARAM_19,
+AddressParameterEffect1.EFX2_PARAM_20,
+AddressParameterEffect1.EFX2_PARAM_21,
+AddressParameterEffect1.EFX2_PARAM_22,
+AddressParameterEffect1.EFX2_PARAM_23,
+AddressParameterEffect1.EFX2_PARAM_24,
+AddressParameterEffect1.EFX2_PARAM_25,
+AddressParameterEffect1.EFX2_PARAM_26,
+AddressParameterEffect1.EFX2_PARAM_27,
+AddressParameterEffect1.EFX2_PARAM_28,
+AddressParameterEffect1.EFX2_PARAM_29,
+AddressParameterEffect1.EFX2_PARAM_30,
+AddressParameterEffect1.EFX2_PARAM_31,</p>
+</div></blockquote>
+</li>
+</ul>
+</dd>
+</dl>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#jdxi_editor.ui.editors.effects.common.EffectsCommonEditor" title="jdxi_editor.ui.editors.effects.common.EffectsCommonEditor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EffectsCommonEditor</span></code></a></p></td>
+<td><p>Effects Editor Window</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.effects.common.EffectsCommonEditor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.ui.editors.effects.common.</span></span><span class="sig-name descname"><span class="pre">EffectsCommonEditor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">midi_helper</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../../../midi/io/helper/index.html#jdxi_editor.midi.io.helper.MidiIOHelper" title="jdxi_editor.midi.io.helper.MidiIOHelper"><span class="pre">jdxi_editor.midi.io.helper.MidiIOHelper</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">preset_helper</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../../../jdxi/preset/helper/index.html#jdxi_editor.jdxi.preset.helper.JDXiPresetHelper" title="jdxi_editor.jdxi.preset.helper.JDXiPresetHelper"><span class="pre">jdxi_editor.jdxi.preset.helper.JDXiPresetHelper</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/effects/common.html#EffectsCommonEditor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.effects.common.EffectsCommonEditor" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../../synth/simple/index.html#jdxi_editor.ui.editors.synth.simple.BasicEditor" title="jdxi_editor.ui.editors.synth.simple.BasicEditor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">jdxi_editor.ui.editors.synth.simple.BasicEditor</span></code></a></p>
+<p>Effects Editor Window</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.tab_widget">
+<span class="sig-name descname"><span class="pre">tab_widget</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/effects/common.html#EffectsCommonEditor.tab_widget"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.tab_widget" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.midi_helper">
+<span class="sig-name descname"><span class="pre">midi_helper</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/effects/common.html#EffectsCommonEditor.midi_helper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.midi_helper" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.preset_helper">
+<span class="sig-name descname"><span class="pre">preset_helper</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/effects/common.html#EffectsCommonEditor.preset_helper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.preset_helper" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.EFX1_PARAMETERS">
+<span class="sig-name descname"><span class="pre">EFX1_PARAMETERS</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/effects/common.html#EffectsCommonEditor.EFX1_PARAMETERS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.EFX1_PARAMETERS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.EFX2_PARAMETERS">
+<span class="sig-name descname"><span class="pre">EFX2_PARAMETERS</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/effects/common.html#EffectsCommonEditor.EFX2_PARAMETERS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.EFX2_PARAMETERS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.efx1_param_labels">
+<span class="sig-name descname"><span class="pre">efx1_param_labels</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/effects/common.html#EffectsCommonEditor.efx1_param_labels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.efx1_param_labels" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.efx2_param_labels">
+<span class="sig-name descname"><span class="pre">efx2_param_labels</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/effects/common.html#EffectsCommonEditor.efx2_param_labels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.efx2_param_labels" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.midi_requests">
+<span class="sig-name descname"><span class="pre">midi_requests</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['F0</span> <span class="pre">41</span> <span class="pre">10</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">0E</span> <span class="pre">12</span> <span class="pre">18</span> <span class="pre">00</span> <span class="pre">02</span> <span class="pre">00</span> <span class="pre">01</span> <span class="pre">7F</span> <span class="pre">32</span> <span class="pre">32</span> <span class="pre">01</span> <span class="pre">00</span> <span class="pre">40</span> <span class="pre">00</span> <span class="pre">40</span> <span class="pre">00</span> <span class="pre">40</span> <span class="pre">00</span> <span class="pre">40</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">08</span> <span class="pre">00...</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/effects/common.html#EffectsCommonEditor.midi_requests"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.midi_requests" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.delay_params">
+<span class="sig-name descname"><span class="pre">delay_params</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/effects/common.html#EffectsCommonEditor.delay_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.delay_params" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.efx2_additional_params">
+<span class="sig-name descname"><span class="pre">efx2_additional_params</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/effects/common.html#EffectsCommonEditor.efx2_additional_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.efx2_additional_params" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.default_image">
+<span class="sig-name descname"><span class="pre">default_image</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'effects.png'</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/effects/common.html#EffectsCommonEditor.default_image"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.default_image" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.instrument_icon_folder">
+<span class="sig-name descname"><span class="pre">instrument_icon_folder</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'effects'</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/effects/common.html#EffectsCommonEditor.instrument_icon_folder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.instrument_icon_folder" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.title_label">
+<span class="sig-name descname"><span class="pre">title_label</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/effects/common.html#EffectsCommonEditor.title_label"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.title_label" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.image_label">
+<span class="sig-name descname"><span class="pre">image_label</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/effects/common.html#EffectsCommonEditor.image_label"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.image_label" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.controls">
+<span class="sig-name descname"><span class="pre">controls</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../../../../midi/data/parameter/effects/effects/index.html#jdxi_editor.midi.data.parameter.effects.effects.AddressParameterReverb" title="jdxi_editor.midi.data.parameter.effects.effects.AddressParameterReverb"><span class="pre">jdxi_editor.midi.data.parameter.effects.effects.AddressParameterReverb</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../../../midi/data/parameter/effects/common/index.html#jdxi_editor.midi.data.parameter.effects.common.AddressParameterEffectCommon" title="jdxi_editor.midi.data.parameter.effects.common.AddressParameterEffectCommon"><span class="pre">jdxi_editor.midi.data.parameter.effects.common.AddressParameterEffectCommon</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../../../midi/data/parameter/effects/effects/index.html#jdxi_editor.midi.data.parameter.effects.effects.AddressParameterEffect1" title="jdxi_editor.midi.data.parameter.effects.effects.AddressParameterEffect1"><span class="pre">jdxi_editor.midi.data.parameter.effects.effects.AddressParameterEffect1</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../../../midi/data/parameter/effects/effects/index.html#jdxi_editor.midi.data.parameter.effects.effects.AddressParameterEffect2" title="jdxi_editor.midi.data.parameter.effects.effects.AddressParameterEffect2"><span class="pre">jdxi_editor.midi.data.parameter.effects.effects.AddressParameterEffect2</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">PySide6.QtWidgets.QWidget</span><span class="p"><span class="pre">]</span></span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/effects/common.html#EffectsCommonEditor.controls"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.controls" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.tabs">
+<span class="sig-name descname"><span class="pre">tabs</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/effects/common.html#EffectsCommonEditor.tabs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.tabs" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.address">
+<span class="sig-name descname"><span class="pre">address</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/effects/common.html#EffectsCommonEditor.address"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.address" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.sysex_composer">
+<span class="sig-name descname"><span class="pre">sysex_composer</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/effects/common.html#EffectsCommonEditor.sysex_composer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.sysex_composer" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.update_flanger_rate_note_controls">
+<span class="sig-name descname"><span class="pre">update_flanger_rate_note_controls</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/effects/common.html#EffectsCommonEditor.update_flanger_rate_note_controls"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.update_flanger_rate_note_controls" title="Link to this definition"></a></dt>
+<dd><p>Update Flanger rate/note controls based on rate note switch.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.update_phaser_rate_note_controls">
+<span class="sig-name descname"><span class="pre">update_phaser_rate_note_controls</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/effects/common.html#EffectsCommonEditor.update_phaser_rate_note_controls"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.update_phaser_rate_note_controls" title="Link to this definition"></a></dt>
+<dd><p>Update Flanger rate/note controls based on rate note switch.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.effects.common.EffectsCommonEditor._update_efx1_labels">
+<span class="sig-name descname"><span class="pre">_update_efx1_labels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">effect_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/effects/common.html#EffectsCommonEditor._update_efx1_labels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.effects.common.EffectsCommonEditor._update_efx1_labels" title="Link to this definition"></a></dt>
+<dd><p>Update Effect 1 parameter labels based on selected effect type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>effect_type</strong> – int</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.effects.common.EffectsCommonEditor._update_efx2_labels">
+<span class="sig-name descname"><span class="pre">_update_efx2_labels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">effect_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/effects/common.html#EffectsCommonEditor._update_efx2_labels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.effects.common.EffectsCommonEditor._update_efx2_labels" title="Link to this definition"></a></dt>
+<dd><p>Update Effect 2 parameter labels based on selected effect type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>effect_type</strong> – int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.effects.common.EffectsCommonEditor._create_effect1_section">
+<span class="sig-name descname"><span class="pre">_create_effect1_section</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/effects/common.html#EffectsCommonEditor._create_effect1_section"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.effects.common.EffectsCommonEditor._create_effect1_section" title="Link to this definition"></a></dt>
+<dd><p>Create Effect 1 section</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.effects.common.EffectsCommonEditor._create_effect2_section">
+<span class="sig-name descname"><span class="pre">_create_effect2_section</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/effects/common.html#EffectsCommonEditor._create_effect2_section"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.effects.common.EffectsCommonEditor._create_effect2_section" title="Link to this definition"></a></dt>
+<dd><p>Create Effect 2 section</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.effects.common.EffectsCommonEditor._create_delay_tab">
+<span class="sig-name descname"><span class="pre">_create_delay_tab</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/effects/common.html#EffectsCommonEditor._create_delay_tab"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.effects.common.EffectsCommonEditor._create_delay_tab" title="Link to this definition"></a></dt>
+<dd><p>Create Delay tab with parameters</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.effects.common.EffectsCommonEditor._create_reverb_section">
+<span class="sig-name descname"><span class="pre">_create_reverb_section</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/effects/common.html#EffectsCommonEditor._create_reverb_section"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.effects.common.EffectsCommonEditor._create_reverb_section" title="Link to this definition"></a></dt>
+<dd><p>Create Reverb section</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.effects.common.EffectsCommonEditor._on_parameter_changed">
+<span class="sig-name descname"><span class="pre">_on_parameter_changed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../../../midi/data/parameter/synth/index.html#jdxi_editor.midi.data.parameter.synth.AddressParameter" title="jdxi_editor.midi.data.parameter.synth.AddressParameter"><span class="pre">jdxi_editor.midi.data.parameter.synth.AddressParameter</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">address</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../../../midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.RolandSysExAddress" title="jdxi_editor.midi.data.address.address.RolandSysExAddress"><span class="pre">jdxi_editor.midi.data.address.address.RolandSysExAddress</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/effects/common.html#EffectsCommonEditor._on_parameter_changed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.effects.common.EffectsCommonEditor._on_parameter_changed" title="Link to this definition"></a></dt>
+<dd><p>Handle parameter value changes from UI controls.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.send_midi_parameter">
+<span class="sig-name descname"><span class="pre">send_midi_parameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../../../midi/data/parameter/synth/index.html#jdxi_editor.midi.data.parameter.synth.AddressParameter" title="jdxi_editor.midi.data.parameter.synth.AddressParameter"><span class="pre">jdxi_editor.midi.data.parameter.synth.AddressParameter</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/effects/common.html#EffectsCommonEditor.send_midi_parameter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.effects.common.EffectsCommonEditor.send_midi_parameter" title="Link to this definition"></a></dt>
+<dd><p>Send MIDI parameter with error handling</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>param</strong> – AddressParameter</p></li>
+<li><p><strong>value</strong> – int value</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool True on success, False otherwise</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../index.html" class="btn btn-neutral float-left" title="jdxi_editor.ui.editors.effects" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../data/index.html" class="btn btn-neutral float-right" title="jdxi_editor.ui.editors.effects.data" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Mark Mrooks.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,1280 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>jdxi_editor.ui.editors.io.player &mdash; JD-Xi Editor 0.8.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../../../_static/documentation_options.js?v=486e5634"></script>
+      <script src="../../../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../search.html" />
+    <link rel="next" title="jdxi_editor.ui.editors.io.preset" href="../preset/index.html" />
+    <link rel="prev" title="jdxi_editor.ui.editors.io.playback_worker" href="../playback_worker/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../../../index.html" class="icon icon-home">
+            JD-Xi Editor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../getting-started.html#getting-started-guide">Getting Started Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../editor-windows.html">Editor Windows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../editor-windows.html#available-editors">Available Editors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../additional-editors.html">Additional Editors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../additional-editors.html#available-editors">Available Editors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../playing-midi-files.html">Playing MIDI Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../playing-midi-files.html#available-tools">Available Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../troubleshooting.html#id1">Troubleshooting</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../legal.html">Legal Disclaimer</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../modules.html">jdxi_editor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../jdxi_editor.html">jdxi_editor package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../jdxi_editor.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../jdxi_editor.jdxi.html">jdxi_editor.jdxi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../jdxi_editor.log.html">jdxi_editor.log package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../jdxi_editor.midi.html">jdxi_editor.midi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../jdxi_editor.ui.html">jdxi_editor.ui package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../jdxi_editor.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../jdxi_editor.html#module-jdxi_editor.globals">jdxi_editor.globals module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../jdxi_editor.html#module-jdxi_editor.main">jdxi_editor.main module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../jdxi_editor.html#jdxi_editor.main.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../jdxi_editor.html#jdxi_editor.main.setup_splash_screen"><code class="docutils literal notranslate"><span class="pre">setup_splash_screen()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../jdxi_editor.html#module-jdxi_editor.project">jdxi_editor.project module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../jdxi_editor.html#module-jdxi_editor.resources">jdxi_editor.resources module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../jdxi_editor.html#jdxi_editor.resources.resource_path"><code class="docutils literal notranslate"><span class="pre">resource_path()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../jdxi_editor.html#module-jdxi_editor">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../../../../midi/index.html">midi</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../midi/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../midi/colors/index.html">midi.colors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../midi/slider/index.html">midi.slider</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../midi/spin_box/index.html">midi.spin_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../midi/time_ruler/index.html">midi.time_ruler</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../midi/track/index.html">midi.track</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../midi/track_viewer/index.html">midi.track_viewer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../midi/utils/index.html">midi.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../adsr/index.html">adsr</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../adsr/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../adsr/adsr/index.html">adsr.adsr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../adsr/graph/index.html">adsr.graph</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../adsr/parameter/index.html">adsr.parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../adsr/plot/index.html">adsr.plot</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../pitch/index.html">pitch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../pitch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../pitch/envelope/index.html">pitch.envelope</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../pitch/envelope_plot/index.html">pitch.envelope_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../pitch/pwm_plot/index.html">pitch.pwm_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../pitch/slider_spinbox/index.html">pitch.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../piano/index.html">piano</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../piano/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../piano/key/index.html">piano.key</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../piano/keyboard/index.html">piano.keyboard</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../panel/index.html">panel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../panel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../panel/partial/index.html">panel.partial</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../wheel/index.html">wheel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../wheel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../wheel/mod/index.html">wheel.mod</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../wheel/pitch/index.html">wheel.pitch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../wheel/wheel/index.html">wheel.wheel</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../preset/index.html">preset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../preset/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../preset/combo_box/index.html">preset.combo_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../preset/panel/index.html">preset.panel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../preset/patch_name/index.html">preset.patch_name</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../slider/index.html">slider</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../slider/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../slider/slider/index.html">slider.slider</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../slider/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../slider/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../slider/index.html#slider.Slider"><code class="docutils literal notranslate"><span class="pre">Slider</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../dialog/index.html">dialog</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../dialog/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../dialog/progress/index.html">dialog.progress</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../viewer/index.html">viewer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../viewer/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../viewer/log/index.html">viewer.log</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../button/index.html">button</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../button/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../button/channel/index.html">button.channel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../button/favorite/index.html">button.favorite</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../button/sequencer/index.html">button.sequencer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../button/waveform/index.html">button.waveform</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../button/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../button/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../button/index.html#button.ChannelButton"><code class="docutils literal notranslate"><span class="pre">ChannelButton</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../button/index.html#button.SequencerSquare"><code class="docutils literal notranslate"><span class="pre">SequencerSquare</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../switch/index.html">switch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../switch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../switch/partial/index.html">switch.partial</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../switch/switch/index.html">switch.switch</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../filter/index.html">filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../filter/index.html#filter.FilterWidget"><code class="docutils literal notranslate"><span class="pre">FilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../display/index.html">display</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../display/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../display/digital/index.html">display.digital</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../display/pattern/index.html">display.pattern</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../display/value/index.html">display.value</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../pattern/index.html">pattern</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../pattern/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../pattern/measure/index.html">pattern.measure</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../spin_box/index.html">spin_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../spin_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../spin_box/spin_box/index.html">spin_box.spin_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../envelope/index.html">envelope</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../envelope/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../envelope/base/index.html">envelope.base</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../indicator/index.html">indicator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../indicator/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../indicator/led/index.html">indicator.led</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../indicator/midi/index.html">indicator.midi</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../combo_box/index.html">combo_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../combo_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../combo_box/combo_box/index.html">combo_box.combo_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../../../index.html">jdxi_editor</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../../../index.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../../../globals/index.html">jdxi_editor.globals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../jdxi/index.html">jdxi_editor.jdxi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../log/index.html">jdxi_editor.log</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../main/index.html">jdxi_editor.main</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../midi/index.html">jdxi_editor.midi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../project/index.html">jdxi_editor.project</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../resources/index.html">jdxi_editor.resources</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../../../index.html">jdxi_editor.ui</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../filter_plot/index.html">filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../filter_plot/index.html#filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../filter_plot/index.html#filter_plot.FilterPlot"><code class="docutils literal notranslate"><span class="pre">FilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../envelope_plot/index.html">envelope_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../envelope_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../envelope_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../envelope_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../envelope_plot/index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../envelope_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../envelope_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../envelope_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../envelope_plot/index.html#envelope_plot.midi_value_to_float"><code class="docutils literal notranslate"><span class="pre">midi_value_to_float()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../envelope_plot/index.html#envelope_plot.WMTEnvPlot"><code class="docutils literal notranslate"><span class="pre">WMTEnvPlot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../envelope_plot/index.html#envelope_plot.app"><code class="docutils literal notranslate"><span class="pre">app</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../wave_selector/index.html">wave_selector</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../wave_selector/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../wave_selector/wave_selector/index.html">wave_selector.wave_selector</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../analog_filter/index.html">analog_filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../analog_filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../analog_filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../analog_filter/index.html#analog_filter.AnalogFilterWidget"><code class="docutils literal notranslate"><span class="pre">AnalogFilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../slider_spinbox/index.html">slider_spinbox</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../slider_spinbox/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../slider_spinbox/slider_spinbox/index.html">slider_spinbox.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../analog_filter_plot/index.html">analog_filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../analog_filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../analog_filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../analog_filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../analog_filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../analog_filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../analog_filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../analog_filter_plot/index.html#analog_filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../analog_filter_plot/index.html#analog_filter_plot.AnalogFilterPlot"><code class="docutils literal notranslate"><span class="pre">AnalogFilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../../index.html">JD-Xi Editor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../../../../index.html">jdxi_editor</a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">jdxi_editor.ui</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">jdxi_editor.ui.editors</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">jdxi_editor.ui.editors.io</a></li>
+      <li class="breadcrumb-item active">jdxi_editor.ui.editors.io.player</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../../../_sources/autoapi/jdxi_editor/ui/editors/io/player/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-jdxi_editor.ui.editors.io.player">
+<span id="jdxi-editor-ui-editors-io-player"></span><h1>jdxi_editor.ui.editors.io.player<a class="headerlink" href="#module-jdxi_editor.ui.editors.io.player" title="Link to this heading"></a></h1>
+<p>MIDI Player for JDXI Editor</p>
+<section id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#jdxi_editor.ui.editors.io.player.QApplication" title="jdxi_editor.ui.editors.io.player.QApplication"><code class="xref py py-obj docutils literal notranslate"><span class="pre">QApplication</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#jdxi_editor.ui.editors.io.player.QObject" title="jdxi_editor.ui.editors.io.player.QObject"><code class="xref py py-obj docutils literal notranslate"><span class="pre">QObject</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#jdxi_editor.ui.editors.io.player.Signal" title="jdxi_editor.ui.editors.io.player.Signal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Signal</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#jdxi_editor.ui.editors.io.player.Slot" title="jdxi_editor.ui.editors.io.player.Slot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Slot</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor" title="jdxi_editor.ui.editors.io.player.MidiFileEditor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MidiFileEditor</span></code></a></p></td>
+<td><p>Midi File Editor</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<dl class="py data">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.QApplication">
+<span class="sig-prename descclassname"><span class="pre">jdxi_editor.ui.editors.io.player.</span></span><span class="sig-name descname"><span class="pre">QApplication</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#QApplication"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.QApplication" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.QObject">
+<span class="sig-prename descclassname"><span class="pre">jdxi_editor.ui.editors.io.player.</span></span><span class="sig-name descname"><span class="pre">QObject</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#QObject"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.QObject" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.Signal">
+<span class="sig-prename descclassname"><span class="pre">jdxi_editor.ui.editors.io.player.</span></span><span class="sig-name descname"><span class="pre">Signal</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#Signal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.Signal" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.Slot">
+<span class="sig-prename descclassname"><span class="pre">jdxi_editor.ui.editors.io.player.</span></span><span class="sig-name descname"><span class="pre">Slot</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#Slot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.Slot" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.ui.editors.io.player.</span></span><span class="sig-name descname"><span class="pre">MidiFileEditor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">midi_helper</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../../../midi/io/helper/index.html#jdxi_editor.midi.io.helper.MidiIOHelper" title="jdxi_editor.midi.io.helper.MidiIOHelper"><span class="pre">jdxi_editor.midi.io.helper.MidiIOHelper</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PySide6.QtWidgets.QWidget</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preset_helper</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../../../jdxi/preset/helper/index.html#jdxi_editor.jdxi.preset.helper.JDXiPresetHelper" title="jdxi_editor.jdxi.preset.helper.JDXiPresetHelper"><span class="pre">jdxi_editor.jdxi.preset.helper.JDXiPresetHelper</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../../index.html#jdxi_editor.ui.editors.SynthEditor" title="jdxi_editor.ui.editors.SynthEditor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">jdxi_editor.ui.editors.SynthEditor</span></code></a></p>
+<p>Midi File Editor</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.BUFFER_WINDOW_SECONDS">
+<span class="sig-name descname"><span class="pre">BUFFER_WINDOW_SECONDS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">30.0</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.BUFFER_WINDOW_SECONDS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.BUFFER_WINDOW_SECONDS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor._last_position_label">
+<span class="sig-name descname"><span class="pre">_last_position_label</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor._last_position_label"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor._last_position_label" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.parent">
+<span class="sig-name descname"><span class="pre">parent</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.parent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.parent" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.preset_helper">
+<span class="sig-name descname"><span class="pre">preset_helper</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.preset_helper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.preset_helper" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.profiler">
+<span class="sig-name descname"><span class="pre">profiler</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.profiler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.profiler" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.midi_state">
+<span class="sig-name descname"><span class="pre">midi_state</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.midi_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.midi_state" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.midi_playback_worker">
+<span class="sig-name descname"><span class="pre">midi_playback_worker</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.midi_playback_worker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.midi_playback_worker" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.midi_total_ticks">
+<span class="sig-name descname"><span class="pre">midi_total_ticks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.midi_total_ticks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.midi_total_ticks" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.midi_port">
+<span class="sig-name descname"><span class="pre">midi_port</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.midi_port"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.midi_port" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.midi_preferred_channels">
+<span class="sig-name descname"><span class="pre">midi_preferred_channels</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.midi_preferred_channels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.midi_preferred_channels" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.usb_recorder">
+<span class="sig-name descname"><span class="pre">usb_recorder</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.usb_recorder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.usb_recorder" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.ui">
+<span class="sig-name descname"><span class="pre">ui</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.ui"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.ui" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.midi_timer_init">
+<span class="sig-name descname"><span class="pre">midi_timer_init</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.midi_timer_init"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.midi_timer_init" title="Link to this definition"></a></dt>
+<dd><p>Initialize or reinitialize the MIDI playback timer.
+Ensures previous connections are safely removed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.ui_ensure_timer_connected">
+<span class="sig-name descname"><span class="pre">ui_ensure_timer_connected</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.ui_ensure_timer_connected"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.ui_ensure_timer_connected" title="Link to this definition"></a></dt>
+<dd><p>ui_ensure_timer_connected</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
+<p>Ensure the midi_play_next_event is connected to midi.timer.timeout</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.ui_init">
+<span class="sig-name descname"><span class="pre">ui_init</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.ui_init"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.ui_init" title="Link to this definition"></a></dt>
+<dd><p>Initialize the UI for the MidiPlayer.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.init_ruler">
+<span class="sig-name descname"><span class="pre">init_ruler</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">PySide6.QtWidgets.QWidget</span></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.init_ruler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.init_ruler" title="Link to this definition"></a></dt>
+<dd><p>init_ruler</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>QWidget</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.init_midi_file_controls">
+<span class="sig-name descname"><span class="pre">init_midi_file_controls</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">PySide6.QtWidgets.QHBoxLayout</span></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.init_midi_file_controls"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.init_midi_file_controls" title="Link to this definition"></a></dt>
+<dd><p>init_midi_file_controls</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>QHBoxLayout</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.init_usb_port_controls">
+<span class="sig-name descname"><span class="pre">init_usb_port_controls</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">PySide6.QtWidgets.QHBoxLayout</span></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.init_usb_port_controls"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.init_usb_port_controls" title="Link to this definition"></a></dt>
+<dd><p>init_usb_port_controls</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.init_usb_file_controls">
+<span class="sig-name descname"><span class="pre">init_usb_file_controls</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">PySide6.QtWidgets.QHBoxLayout</span></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.init_usb_file_controls"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.init_usb_file_controls" title="Link to this definition"></a></dt>
+<dd><p>init_usb_file_controls</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>QHBoxLayout</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.init_transport_controls">
+<span class="sig-name descname"><span class="pre">init_transport_controls</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">PySide6.QtWidgets.QGroupBox</span></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.init_transport_controls"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.init_transport_controls" title="Link to this definition"></a></dt>
+<dd><p>init_transport_controls</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.update_tempo_us_from_worker">
+<span class="sig-name descname"><span class="pre">update_tempo_us_from_worker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tempo_us</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.update_tempo_us_from_worker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.update_tempo_us_from_worker" title="Link to this definition"></a></dt>
+<dd><p>update_tempo_us_from_worker</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tempo_us</strong> – int tempo in microseconds e.g  500_000</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.update_playback_worker_tempo_us">
+<span class="sig-name descname"><span class="pre">update_playback_worker_tempo_us</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tempo_us</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.update_playback_worker_tempo_us"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.update_playback_worker_tempo_us" title="Link to this definition"></a></dt>
+<dd><p>update_playback_worker_tempo_us</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tempo_us</strong> – tempo in microseconds e.g  500_000</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.setup_worker">
+<span class="sig-name descname"><span class="pre">setup_worker</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.setup_worker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.setup_worker" title="Link to this definition"></a></dt>
+<dd><p>setup_worker</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<p>Setup the worker and thread for threaded playback using QTimer</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.midi_playback_worker_stop">
+<span class="sig-name descname"><span class="pre">midi_playback_worker_stop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.midi_playback_worker_stop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.midi_playback_worker_stop" title="Link to this definition"></a></dt>
+<dd><p>midi_playback_worker_stop</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.on_suppress_program_changes_toggled">
+<span class="sig-name descname"><span class="pre">on_suppress_program_changes_toggled</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PySide6.QtCore.Qt.CheckState</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.on_suppress_program_changes_toggled"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.on_suppress_program_changes_toggled" title="Link to this definition"></a></dt>
+<dd><p>on_suppress_program_changes_toggled</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>state</strong> – Qt.CheckState</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.on_suppress_control_changes_toggled">
+<span class="sig-name descname"><span class="pre">on_suppress_control_changes_toggled</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PySide6.QtCore.Qt.CheckState</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.on_suppress_control_changes_toggled"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.on_suppress_control_changes_toggled" title="Link to this definition"></a></dt>
+<dd><p>on_suppress_control_changes_toggled</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>state</strong> – Qt.CheckState</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.on_usb_save_recording_toggled">
+<span class="sig-name descname"><span class="pre">on_usb_save_recording_toggled</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PySide6.QtCore.Qt.CheckState</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.on_usb_save_recording_toggled"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.on_usb_save_recording_toggled" title="Link to this definition"></a></dt>
+<dd><p>on_usb_save_recording_toggled</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>state</strong> – Qt.CheckState</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.usb_populate_devices">
+<span class="sig-name descname"><span class="pre">usb_populate_devices</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.usb_populate_devices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.usb_populate_devices" title="Link to this definition"></a></dt>
+<dd><p>usb_populate_devices</p>
+<p>usb port selection</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list List of USB devices</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.usb_port_jdxi_auto_connect">
+<span class="sig-name descname"><span class="pre">usb_port_jdxi_auto_connect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">usb_devices</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.usb_port_jdxi_auto_connect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.usb_port_jdxi_auto_connect" title="Link to this definition"></a></dt>
+<dd><p>usb_port_jdxi_auto_connect</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>usb_devices</strong> – list</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<p>Auto-select the first matching device</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.usb_start_recording">
+<span class="sig-name descname"><span class="pre">usb_start_recording</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">recording_rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">pyaudio.paInt16</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.usb_start_recording"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.usb_start_recording" title="Link to this definition"></a></dt>
+<dd><p>usb_start_recording</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>recording_rate</strong> – int</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<p>Start recording in a separate thread</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.usb_select_recording_file">
+<span class="sig-name descname"><span class="pre">usb_select_recording_file</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.usb_select_recording_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.usb_select_recording_file" title="Link to this definition"></a></dt>
+<dd><p>Open a file picker dialog to select output .wav file.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.midi_save_file">
+<span class="sig-name descname"><span class="pre">midi_save_file</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.midi_save_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.midi_save_file" title="Link to this definition"></a></dt>
+<dd><p>midi_save_file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<p>Save the current MIDI file to disk.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.midi_load_file">
+<span class="sig-name descname"><span class="pre">midi_load_file</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.midi_load_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.midi_load_file" title="Link to this definition"></a></dt>
+<dd><p>Load a MIDI file and initialize parameters</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.calculate_tick_duration">
+<span class="sig-name descname"><span class="pre">calculate_tick_duration</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.calculate_tick_duration"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.calculate_tick_duration" title="Link to this definition"></a></dt>
+<dd><p>calculate_tick_duration</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
+<p>Calculate the duration of a single MIDI tick in seconds.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.calculate_duration">
+<span class="sig-name descname"><span class="pre">calculate_duration</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.calculate_duration"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.calculate_duration" title="Link to this definition"></a></dt>
+<dd><p>calculate_duration</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<p>Accurate Total Duration Calculation</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.midi_channel_select">
+<span class="sig-name descname"><span class="pre">midi_channel_select</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.midi_channel_select"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.midi_channel_select" title="Link to this definition"></a></dt>
+<dd><p>midi_channel_select</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<p>Select a suitable MIDI channel for playback - detects a “reasonable” playback channel</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.midi_extract_events">
+<span class="sig-name descname"><span class="pre">midi_extract_events</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.midi_extract_events"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.midi_extract_events" title="Link to this definition"></a></dt>
+<dd><p>midi_extract_events</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<p>Extract events from the MIDI file and store them in the midi_state.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.detect_initial_tempo">
+<span class="sig-name descname"><span class="pre">detect_initial_tempo</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.detect_initial_tempo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.detect_initial_tempo" title="Link to this definition"></a></dt>
+<dd><p>detect_initial_tempo</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[int, int]</p>
+</dd>
+</dl>
+<p>Detect Initial Tempo from the UI</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.ui_display_set_tempo_usecs">
+<span class="sig-name descname"><span class="pre">ui_display_set_tempo_usecs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tempo_usecs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.ui_display_set_tempo_usecs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.ui_display_set_tempo_usecs" title="Link to this definition"></a></dt>
+<dd><p>ui_display_set_tempo_usecs</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tempo_usecs</strong> – int tempo in microseconds</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<p>Set the tempo in the UI and log it.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.set_display_tempo_bpm">
+<span class="sig-name descname"><span class="pre">set_display_tempo_bpm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tempo_bpm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.set_display_tempo_bpm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.set_display_tempo_bpm" title="Link to this definition"></a></dt>
+<dd><p>set_display_tempo_bpm</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tempo_bpm</strong> – int tempo in microseconds</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<p>Set the tempo in the UI and log it.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.midi_playback_start">
+<span class="sig-name descname"><span class="pre">midi_playback_start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.midi_playback_start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.midi_playback_start" title="Link to this definition"></a></dt>
+<dd><p>Start playback of the MIDI file</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.setup_playback_worker">
+<span class="sig-name descname"><span class="pre">setup_playback_worker</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.setup_playback_worker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.setup_playback_worker" title="Link to this definition"></a></dt>
+<dd><p>setup_playback_worker</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<p>Setup the MIDI playback worker (prepare buffered messages, etc.)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.start_playback_worker">
+<span class="sig-name descname"><span class="pre">start_playback_worker</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.start_playback_worker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.start_playback_worker" title="Link to this definition"></a></dt>
+<dd><p>start_playback_worker</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<p>Start the timer for actual playback.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.setup_and_start_playback_worker">
+<span class="sig-name descname"><span class="pre">setup_and_start_playback_worker</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.setup_and_start_playback_worker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.setup_and_start_playback_worker" title="Link to this definition"></a></dt>
+<dd><p>setup_and_start_playback_worker</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<p>Setup the MIDI playback worker and start the timer.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.initialize_midi_state">
+<span class="sig-name descname"><span class="pre">initialize_midi_state</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.initialize_midi_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.initialize_midi_state" title="Link to this definition"></a></dt>
+<dd><p>Initialize muted tracks, muted channels, and buffered messages.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.calculate_start_tick">
+<span class="sig-name descname"><span class="pre">calculate_start_tick</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.calculate_start_tick"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.calculate_start_tick" title="Link to this definition"></a></dt>
+<dd><p>Calculate the start tick based on elapsed playback time.
+:return: Start tick or None if an error occurs.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.is_track_muted">
+<span class="sig-name descname"><span class="pre">is_track_muted</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">track_index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.is_track_muted"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.is_track_muted" title="Link to this definition"></a></dt>
+<dd><p>is_track_muted</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>track_index</strong> – Index of the track to check.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the track is muted, otherwise False.</p>
+</dd>
+</dl>
+<p>Check if the track is muted.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.is_channel_muted">
+<span class="sig-name descname"><span class="pre">is_channel_muted</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel_index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.is_channel_muted"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.is_channel_muted" title="Link to this definition"></a></dt>
+<dd><p>is_channel_muted</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>channel_index</strong> – Index of the track to check.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the channel is muted, otherwise False.</p>
+</dd>
+</dl>
+<p>Check if the channel is muted.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.handle_set_tempo">
+<span class="sig-name descname"><span class="pre">handle_set_tempo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">mido.Message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">absolute_time_ticks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.handle_set_tempo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.handle_set_tempo" title="Link to this definition"></a></dt>
+<dd><p>handle_set_tempo</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>absolute_time_ticks</strong> – int</p></li>
+<li><p><strong>msg</strong> – The MIDI message to process.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Handle ‘set_tempo’ messages in a MIDI track.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.buffer_message">
+<span class="sig-name descname"><span class="pre">buffer_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">absolute_time_ticks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">mido.Message</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.buffer_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.buffer_message" title="Link to this definition"></a></dt>
+<dd><p>Add a MIDI message to the buffer.
+:param absolute_time_ticks: Absolute tick of the message.
+:param msg: The MIDI message to buffer.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.buffer_message_with_tempo">
+<span class="sig-name descname"><span class="pre">buffer_message_with_tempo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">absolute_time_ticks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">mido.Message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tempo</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.buffer_message_with_tempo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.buffer_message_with_tempo" title="Link to this definition"></a></dt>
+<dd><p>Add a MIDI message to the buffer with a specific tempo.
+:param absolute_time_ticks: Absolute tick of the message.
+:param msg: The MIDI message to buffer.
+:param tempo: The tempo that was active when this message was created.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.midi_message_buffer_refill">
+<span class="sig-name descname"><span class="pre">midi_message_buffer_refill</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.midi_message_buffer_refill"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.midi_message_buffer_refill" title="Link to this definition"></a></dt>
+<dd><p>midi_message_buffer_refill</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<p>Preprocess MIDI tracks into a sorted list of (absolute_ticks, raw_bytes, tempo) tuples.
+Meta messages are excluded except for set_tempo.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.process_tracks">
+<span class="sig-name descname"><span class="pre">process_tracks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_tick</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.process_tracks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.process_tracks" title="Link to this definition"></a></dt>
+<dd><p>process_tracks</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>start_tick</strong> – int</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.process_track_messages">
+<span class="sig-name descname"><span class="pre">process_track_messages</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_tick</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">track</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">mido.MidiTrack</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.process_track_messages"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.process_track_messages" title="Link to this definition"></a></dt>
+<dd><p>process_track_messages</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start_tick</strong> – int The starting tick from which to begin processing.</p></li>
+<li><p><strong>track</strong> – mido.MidiTrack The MIDI track to process.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<p>Process messages in a MIDI track from a given starting tick.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.get_muted_tracks">
+<span class="sig-name descname"><span class="pre">get_muted_tracks</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.get_muted_tracks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.get_muted_tracks" title="Link to this definition"></a></dt>
+<dd><p>get_muted_tracks</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<p>Get the muted tracks from the MIDI track viewer.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.get_muted_channels">
+<span class="sig-name descname"><span class="pre">get_muted_channels</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.get_muted_channels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.get_muted_channels" title="Link to this definition"></a></dt>
+<dd><p>get_muted_channels</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<p>Get the muted channels from the MIDI track viewer.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.on_tempo_usecs_changed">
+<span class="sig-name descname"><span class="pre">on_tempo_usecs_changed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tempo</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.on_tempo_usecs_changed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.on_tempo_usecs_changed" title="Link to this definition"></a></dt>
+<dd><p>on_tempo_usecs_changed</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tempo</strong> – int</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.on_tempo_bpm_changed">
+<span class="sig-name descname"><span class="pre">on_tempo_bpm_changed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bpm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.on_tempo_bpm_changed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.on_tempo_bpm_changed" title="Link to this definition"></a></dt>
+<dd><p>on_tempo_bpm_changed</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>bpm</strong> – float</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.midi_play_next_event">
+<span class="sig-name descname"><span class="pre">midi_play_next_event</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.midi_play_next_event"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.midi_play_next_event" title="Link to this definition"></a></dt>
+<dd><p>UI update: Update slider and label to reflect playback progress.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.ui_midi_file_position_slider_set_position">
+<span class="sig-name descname"><span class="pre">ui_midi_file_position_slider_set_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">elapsed_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.ui_midi_file_position_slider_set_position"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.ui_midi_file_position_slider_set_position" title="Link to this definition"></a></dt>
+<dd><p>ui.midi_file_position_slider_set_position</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>elapsed_time</strong> – float</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<p>Update the slider position and label based on elapsed time.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.midi_scrub_position">
+<span class="sig-name descname"><span class="pre">midi_scrub_position</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.midi_scrub_position"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.midi_scrub_position" title="Link to this definition"></a></dt>
+<dd><p>Updates the MIDI playback state based on the scrub position.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.is_midi_ready">
+<span class="sig-name descname"><span class="pre">is_midi_ready</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.is_midi_ready"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.is_midi_ready" title="Link to this definition"></a></dt>
+<dd><p>Checks if the MIDI file and events are available.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.stop_playback">
+<span class="sig-name descname"><span class="pre">stop_playback</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.stop_playback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.stop_playback" title="Link to this definition"></a></dt>
+<dd><p>Stops playback and resets the paused state.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.get_target_time">
+<span class="sig-name descname"><span class="pre">get_target_time</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.get_target_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.get_target_time" title="Link to this definition"></a></dt>
+<dd><p>Retrieves the target time from the slider and logs it.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.update_event_index">
+<span class="sig-name descname"><span class="pre">update_event_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.update_event_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.update_event_index" title="Link to this definition"></a></dt>
+<dd><p>Finds and updates the event index based on the target time.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.update_playback_start_time">
+<span class="sig-name descname"><span class="pre">update_playback_start_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.update_playback_start_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.update_playback_start_time" title="Link to this definition"></a></dt>
+<dd><p>Adjusts the playback start time based on the scrub position.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.stop_all_notes">
+<span class="sig-name descname"><span class="pre">stop_all_notes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.stop_all_notes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.stop_all_notes" title="Link to this definition"></a></dt>
+<dd><p>Sends Control Change 123 and note_off messages to silence all notes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.prepare_for_playback">
+<span class="sig-name descname"><span class="pre">prepare_for_playback</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.prepare_for_playback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.prepare_for_playback" title="Link to this definition"></a></dt>
+<dd><p>Clears the event buffer and starts the playback worker.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.midi_stop_playback">
+<span class="sig-name descname"><span class="pre">midi_stop_playback</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.midi_stop_playback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.midi_stop_playback" title="Link to this definition"></a></dt>
+<dd><p>Stops playback and resets everything.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.stop_playback_worker">
+<span class="sig-name descname"><span class="pre">stop_playback_worker</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.stop_playback_worker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.stop_playback_worker" title="Link to this definition"></a></dt>
+<dd><p>Stops and disconnects the playback worker.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.reset_midi_state">
+<span class="sig-name descname"><span class="pre">reset_midi_state</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.reset_midi_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.reset_midi_state" title="Link to this definition"></a></dt>
+<dd><p>Resets MIDI state variables.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.reset_tempo">
+<span class="sig-name descname"><span class="pre">reset_tempo</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.reset_tempo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.reset_tempo" title="Link to this definition"></a></dt>
+<dd><p>Resets the tempo to the initial value.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.clear_active_notes">
+<span class="sig-name descname"><span class="pre">clear_active_notes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.clear_active_notes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.clear_active_notes" title="Link to this definition"></a></dt>
+<dd><p>Clears the active notes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.log_event_buffer">
+<span class="sig-name descname"><span class="pre">log_event_buffer</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.log_event_buffer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.log_event_buffer" title="Link to this definition"></a></dt>
+<dd><p>log_event_buffer</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<p>Logs the event buffer for debugging.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.perform_profiling">
+<span class="sig-name descname"><span class="pre">perform_profiling</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.perform_profiling"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.perform_profiling" title="Link to this definition"></a></dt>
+<dd><p>perform_profiling</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<p>Performs profiling and logs the results.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.midi_play_next_event_disconnect">
+<span class="sig-name descname"><span class="pre">midi_play_next_event_disconnect</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.midi_play_next_event_disconnect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.midi_play_next_event_disconnect" title="Link to this definition"></a></dt>
+<dd><p>midi_play_next_event_disconnect</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<p>Disconnect the midi_play_next_event from the timer’s timeout signal.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.midi_playback_worker_disconnect">
+<span class="sig-name descname"><span class="pre">midi_playback_worker_disconnect</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.midi_playback_worker_disconnect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.midi_playback_worker_disconnect" title="Link to this definition"></a></dt>
+<dd><p>midi_playback_worker_disconnect</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<p>Disconnect the midi_playback_worker.do_work from the timer’s timeout signal.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.ui_position_slider_reset">
+<span class="sig-name descname"><span class="pre">ui_position_slider_reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.ui_position_slider_reset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.ui_position_slider_reset" title="Link to this definition"></a></dt>
+<dd><p>position_slider_reset</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<p>Reset the position slider and label to initial state.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.ui_position_label_update_time">
+<span class="sig-name descname"><span class="pre">ui_position_label_update_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_seconds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.ui_position_label_update_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.ui_position_label_update_time" title="Link to this definition"></a></dt>
+<dd><p>ui_position_label_update_time</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>time_seconds</strong> – float, optional</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.ui_position_label_set_time">
+<span class="sig-name descname"><span class="pre">ui_position_label_set_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">elapsed_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.ui_position_label_set_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.ui_position_label_set_time" title="Link to this definition"></a></dt>
+<dd><p>Update the position label with formatted elapsed time and total duration.
+Caps elapsed_time to total duration to prevent overflow display.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.midi_playback_pause_toggle">
+<span class="sig-name descname"><span class="pre">midi_playback_pause_toggle</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.midi_playback_pause_toggle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.midi_playback_pause_toggle" title="Link to this definition"></a></dt>
+<dd><p>midi_playback_pause_toggle</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<p>Toggle pause and resume playback.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor.midi_playback_worker_handle_result">
+<span class="sig-name descname"><span class="pre">midi_playback_worker_handle_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">result</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor.midi_playback_worker_handle_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor.midi_playback_worker_handle_result" title="Link to this definition"></a></dt>
+<dd><p>Handle the result from the worker.
+This can be used to update the UI or perform further actions.
+:param result: The result from the worker</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor._print_segment_statistics">
+<span class="sig-name descname"><span class="pre">_print_segment_statistics</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor._print_segment_statistics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor._print_segment_statistics" title="Link to this definition"></a></dt>
+<dd><p>Print segment statistics for the buffered MIDI file.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.io.player.MidiFileEditor._fix_buffer_tempo_assignments">
+<span class="sig-name descname"><span class="pre">_fix_buffer_tempo_assignments</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/ui/editors/io/player.html#MidiFileEditor._fix_buffer_tempo_assignments"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.io.player.MidiFileEditor._fix_buffer_tempo_assignments" title="Link to this definition"></a></dt>
+<dd><p>Fix tempo assignments in the buffer - each message should use the tempo that was active at its tick.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../playback_worker/index.html" class="btn btn-neutral float-left" title="jdxi_editor.ui.editors.io.playback_worker" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../preset/index.html" class="btn btn-neutral float-right" title="jdxi_editor.ui.editors.io.preset" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Mark Mrooks.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

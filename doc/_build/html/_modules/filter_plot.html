@@ -1,0 +1,748 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>filter_plot &mdash; JD-Xi Editor 0.8.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=486e5634"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            JD-Xi Editor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting-started.html#getting-started-guide">Getting Started Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../editor-windows.html">Editor Windows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../editor-windows.html#available-editors">Available Editors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../additional-editors.html">Additional Editors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../additional-editors.html#available-editors">Available Editors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../playing-midi-files.html">Playing MIDI Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../playing-midi-files.html#available-tools">Available Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../troubleshooting.html#id1">Troubleshooting</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../legal.html">Legal Disclaimer</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">jdxi_editor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../jdxi_editor.html">jdxi_editor package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jdxi_editor.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jdxi_editor.jdxi.html">jdxi_editor.jdxi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jdxi_editor.log.html">jdxi_editor.log package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jdxi_editor.midi.html">jdxi_editor.midi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jdxi_editor.ui.html">jdxi_editor.ui package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../jdxi_editor.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jdxi_editor.html#module-jdxi_editor.globals">jdxi_editor.globals module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jdxi_editor.html#module-jdxi_editor.main">jdxi_editor.main module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jdxi_editor.html#jdxi_editor.main.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jdxi_editor.html#jdxi_editor.main.setup_splash_screen"><code class="docutils literal notranslate"><span class="pre">setup_splash_screen()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../jdxi_editor.html#module-jdxi_editor.project">jdxi_editor.project module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jdxi_editor.html#module-jdxi_editor.resources">jdxi_editor.resources module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jdxi_editor.html#jdxi_editor.resources.resource_path"><code class="docutils literal notranslate"><span class="pre">resource_path()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../jdxi_editor.html#module-jdxi_editor">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../autoapi/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../autoapi/midi/index.html">midi</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/midi/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/midi/colors/index.html">midi.colors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/midi/slider/index.html">midi.slider</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/midi/spin_box/index.html">midi.spin_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/midi/time_ruler/index.html">midi.time_ruler</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/midi/track/index.html">midi.track</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/midi/track_viewer/index.html">midi.track_viewer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/midi/utils/index.html">midi.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../autoapi/adsr/index.html">adsr</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/adsr/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/adsr/adsr/index.html">adsr.adsr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/adsr/graph/index.html">adsr.graph</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/adsr/parameter/index.html">adsr.parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/adsr/plot/index.html">adsr.plot</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../autoapi/pitch/index.html">pitch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/pitch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/pitch/envelope/index.html">pitch.envelope</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/pitch/envelope_plot/index.html">pitch.envelope_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/pitch/pwm_plot/index.html">pitch.pwm_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/pitch/slider_spinbox/index.html">pitch.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../autoapi/piano/index.html">piano</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/piano/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/piano/key/index.html">piano.key</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/piano/keyboard/index.html">piano.keyboard</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../autoapi/panel/index.html">panel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/panel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/panel/partial/index.html">panel.partial</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../autoapi/wheel/index.html">wheel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/wheel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/wheel/mod/index.html">wheel.mod</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/wheel/pitch/index.html">wheel.pitch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/wheel/wheel/index.html">wheel.wheel</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../autoapi/preset/index.html">preset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/preset/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/preset/combo_box/index.html">preset.combo_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/preset/panel/index.html">preset.panel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/preset/patch_name/index.html">preset.patch_name</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../autoapi/slider/index.html">slider</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/slider/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/slider/slider/index.html">slider.slider</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/slider/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/slider/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/slider/index.html#slider.Slider"><code class="docutils literal notranslate"><span class="pre">Slider</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../autoapi/dialog/index.html">dialog</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/dialog/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/dialog/progress/index.html">dialog.progress</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../autoapi/viewer/index.html">viewer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/viewer/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/viewer/log/index.html">viewer.log</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../autoapi/button/index.html">button</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/button/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/button/channel/index.html">button.channel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/button/favorite/index.html">button.favorite</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/button/sequencer/index.html">button.sequencer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/button/waveform/index.html">button.waveform</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/button/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/button/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/button/index.html#button.ChannelButton"><code class="docutils literal notranslate"><span class="pre">ChannelButton</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/button/index.html#button.SequencerSquare"><code class="docutils literal notranslate"><span class="pre">SequencerSquare</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../autoapi/switch/index.html">switch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/switch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/switch/partial/index.html">switch.partial</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/switch/switch/index.html">switch.switch</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../autoapi/filter/index.html">filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/filter/index.html#filter.FilterWidget"><code class="docutils literal notranslate"><span class="pre">FilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../autoapi/display/index.html">display</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/display/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/display/digital/index.html">display.digital</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/display/pattern/index.html">display.pattern</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/display/value/index.html">display.value</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../autoapi/pattern/index.html">pattern</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/pattern/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/pattern/measure/index.html">pattern.measure</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../autoapi/spin_box/index.html">spin_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/spin_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/spin_box/spin_box/index.html">spin_box.spin_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../autoapi/envelope/index.html">envelope</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/envelope/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/envelope/base/index.html">envelope.base</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../autoapi/indicator/index.html">indicator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/indicator/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/indicator/led/index.html">indicator.led</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/indicator/midi/index.html">indicator.midi</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../autoapi/combo_box/index.html">combo_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/combo_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/combo_box/combo_box/index.html">combo_box.combo_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../autoapi/jdxi_editor/index.html">jdxi_editor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/jdxi_editor/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/jdxi_editor/globals/index.html">jdxi_editor.globals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/jdxi_editor/jdxi/index.html">jdxi_editor.jdxi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/jdxi_editor/log/index.html">jdxi_editor.log</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/jdxi_editor/main/index.html">jdxi_editor.main</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/jdxi_editor/midi/index.html">jdxi_editor.midi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/jdxi_editor/project/index.html">jdxi_editor.project</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/jdxi_editor/resources/index.html">jdxi_editor.resources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/jdxi_editor/ui/index.html">jdxi_editor.ui</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../autoapi/filter_plot/index.html">filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/filter_plot/index.html#filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/filter_plot/index.html#filter_plot.FilterPlot"><code class="docutils literal notranslate"><span class="pre">FilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../autoapi/envelope_plot/index.html">envelope_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/envelope_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/envelope_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/envelope_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/envelope_plot/index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/envelope_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/envelope_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/envelope_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/envelope_plot/index.html#envelope_plot.midi_value_to_float"><code class="docutils literal notranslate"><span class="pre">midi_value_to_float()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/envelope_plot/index.html#envelope_plot.WMTEnvPlot"><code class="docutils literal notranslate"><span class="pre">WMTEnvPlot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/envelope_plot/index.html#envelope_plot.app"><code class="docutils literal notranslate"><span class="pre">app</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../autoapi/wave_selector/index.html">wave_selector</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/wave_selector/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/wave_selector/wave_selector/index.html">wave_selector.wave_selector</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../autoapi/analog_filter/index.html">analog_filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/analog_filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/analog_filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/analog_filter/index.html#analog_filter.AnalogFilterWidget"><code class="docutils literal notranslate"><span class="pre">AnalogFilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../autoapi/slider_spinbox/index.html">slider_spinbox</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/slider_spinbox/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/slider_spinbox/slider_spinbox/index.html">slider_spinbox.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../autoapi/analog_filter_plot/index.html">analog_filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/analog_filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/analog_filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/analog_filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/analog_filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/analog_filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/analog_filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/analog_filter_plot/index.html#analog_filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/analog_filter_plot/index.html#analog_filter_plot.AnalogFilterPlot"><code class="docutils literal notranslate"><span class="pre">AnalogFilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">JD-Xi Editor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
+      <li class="breadcrumb-item active">filter_plot</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for filter_plot</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Pitch Envelope Plot</span>
+<span class="sd">===================</span>
+
+<span class="sd">This module defines the `ADSRPlot` class, address QWidget subclass that visualizes an ADSR (Attack,</span>
+<span class="sd">Decay, Sustain, Release) envelope using Matplotlib. The plot displays the envelope&#39;s progression</span>
+<span class="sd">over time, with adjustable parameters for attack, decay, sustain, and release times, as well as</span>
+<span class="sd">initial, peak, and sustain amplitudes.</span>
+
+<span class="sd">The plot is rendered in address QWidget, and the background and text colors are customized for better</span>
+<span class="sd">visibility, with the envelope plotted in orange on address dark gray background.</span>
+
+<span class="sd">Classes:</span>
+<span class="sd">--------</span>
+<span class="sd">- `ADSRPlot`: A QWidget subclass that generates and displays an ADSR envelope plot.</span>
+
+<span class="sd">Methods:</span>
+<span class="sd">--------</span>
+<span class="sd">- `__init__(self)`: Initializes the widget and sets up the figure and layout for the plot.</span>
+<span class="sd">- `plot_envelope(self)`: Generates and plots the ADSR envelope based on the current envelope parameters.</span>
+<span class="sd">- `set_values(self, envelope)`: Updates the envelope parameters and refreshes the plot.</span>
+
+<span class="sd">Customization:</span>
+<span class="sd">-------------</span>
+<span class="sd">- The plot background is dark gray (`#333333`), with all plot elements (ticks, labels, title) in</span>
+<span class="sd">  orange for better visibility against the dark background.</span>
+<span class="sd">- The time is represented in seconds, and the amplitude in address range from 0 to 1.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PySide6.QtCore</span><span class="w"> </span><span class="kn">import</span> <span class="n">Qt</span><span class="p">,</span> <span class="n">QPointF</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PySide6.QtWidgets</span><span class="w"> </span><span class="kn">import</span> <span class="n">QWidget</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PySide6.QtGui</span><span class="w"> </span><span class="kn">import</span> <span class="n">QPainter</span><span class="p">,</span> <span class="n">QPainterPath</span><span class="p">,</span> <span class="n">QLinearGradient</span><span class="p">,</span> <span class="n">QColor</span><span class="p">,</span> <span class="n">QPen</span><span class="p">,</span> <span class="n">QFont</span><span class="p">,</span> <span class="n">QBrush</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.jdxi.midi.constant</span><span class="w"> </span><span class="kn">import</span> <span class="n">JDXiConstant</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.jdxi.style</span><span class="w"> </span><span class="kn">import</span> <span class="n">JDXiStyle</span>
+
+
+<div class="viewcode-block" id="generate_filter_plot">
+<a class="viewcode-back" href="../autoapi/filter_plot/index.html#filter_plot.generate_filter_plot">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_filter_plot</span><span class="p">(</span><span class="n">width</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                         <span class="n">slope</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                         <span class="n">sample_rate</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                         <span class="n">duration</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generates a filter envelope with a sustain plateau followed by a slope down to zero.&quot;&quot;&quot;</span>
+    <span class="n">width</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">width</span><span class="p">))</span>  <span class="c1"># Clip to valid range</span>
+    <span class="n">total_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">duration</span> <span class="o">*</span> <span class="n">sample_rate</span><span class="p">)</span>
+    <span class="n">slope_gradient</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">-</span> <span class="p">(</span><span class="n">slope</span> <span class="o">*</span> <span class="mf">0.25</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;slope: </span><span class="se">\t</span><span class="si">{</span><span class="n">slope</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;slope_gradient: </span><span class="se">\t</span><span class="si">{</span><span class="n">slope_gradient</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="c1"># Define segments in samples</span>
+    <span class="n">period</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">)</span>  <span class="c1"># Avoid divide-by-zero</span>
+    <span class="n">sustain_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">period</span> <span class="o">*</span> <span class="n">width</span><span class="p">)</span>
+    <span class="n">slope_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">period</span> <span class="o">*</span> <span class="n">slope_gradient</span><span class="p">)</span>
+
+    <span class="c1"># At least 1 sample high or slope to avoid weird signals</span>
+    <span class="n">sustain_samples</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">sustain_samples</span><span class="p">)</span>
+    <span class="n">slope_samples</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">slope_samples</span><span class="p">)</span>
+
+    <span class="c1"># Create the sustain plateau first</span>
+    <span class="n">sustain</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">sustain_samples</span><span class="p">,</span> <span class="n">JDXiConstant</span><span class="o">.</span><span class="n">FILTER_PLOT_DEPTH</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+
+    <span class="c1"># Now create slope descending to zero</span>
+    <span class="n">slope_vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span>
+        <span class="n">JDXiConstant</span><span class="o">.</span><span class="n">FILTER_PLOT_DEPTH</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">slope_samples</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Combine together</span>
+    <span class="n">envelope</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">sustain</span><span class="p">,</span> <span class="n">slope_vals</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># Trim or pad to match total_samples</span>
+    <span class="k">if</span> <span class="n">envelope</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="n">total_samples</span><span class="p">:</span>
+        <span class="n">envelope</span> <span class="o">=</span> <span class="n">envelope</span><span class="p">[:</span><span class="n">total_samples</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">envelope</span><span class="o">.</span><span class="n">size</span> <span class="o">&lt;</span> <span class="n">total_samples</span><span class="p">:</span>
+        <span class="n">padding</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">total_samples</span> <span class="o">-</span> <span class="n">envelope</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+        <span class="n">envelope</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">envelope</span><span class="p">,</span> <span class="n">padding</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">envelope</span></div>
+
+
+
+<div class="viewcode-block" id="FilterPlot">
+<a class="viewcode-back" href="../autoapi/filter_plot/index.html#filter_plot.FilterPlot">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">FilterPlot</span><span class="p">(</span><span class="n">QWidget</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">width</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">JDXiStyle</span><span class="o">.</span><span class="n">ADSR_PLOT_WIDTH</span><span class="p">,</span>
+            <span class="n">height</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">JDXiStyle</span><span class="o">.</span><span class="n">ADSR_PLOT_HEIGHT</span><span class="p">,</span>
+            <span class="n">envelope</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">parent</span><span class="p">:</span> <span class="n">QWidget</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+<div class="viewcode-block" id="FilterPlot.point_moved">
+<a class="viewcode-back" href="../autoapi/filter_plot/index.html#filter_plot.FilterPlot.point_moved">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">point_moved</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="FilterPlot.parent">
+<a class="viewcode-back" href="../autoapi/filter_plot/index.html#filter_plot.FilterPlot.parent">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span></div>
+
+        <span class="c1"># Default envelope parameters (times in ms)</span>
+<div class="viewcode-block" id="FilterPlot.enabled">
+<a class="viewcode-back" href="../autoapi/filter_plot/index.html#filter_plot.FilterPlot.enabled">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">enabled</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="FilterPlot.envelope">
+<a class="viewcode-back" href="../autoapi/filter_plot/index.html#filter_plot.FilterPlot.envelope">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">envelope</span> <span class="o">=</span> <span class="n">envelope</span></div>
+
+        <span class="c1"># Set address fixed size for the widget (or use layouts as needed)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMinimumSize</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMaximumHeight</span><span class="p">(</span><span class="n">height</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMaximumWidth</span><span class="p">(</span><span class="n">width</span><span class="p">)</span>
+        <span class="c1"># Use dark gray background</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">ADSR_PLOT</span><span class="p">)</span>
+        <span class="c1"># Sample rate for converting times to samples</span>
+<div class="viewcode-block" id="FilterPlot.sample_rate">
+<a class="viewcode-back" href="../autoapi/filter_plot/index.html#filter_plot.FilterPlot.sample_rate">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sample_rate</span> <span class="o">=</span> <span class="mi">256</span></div>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMinimumHeight</span><span class="p">(</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">ADSR_PLOT_HEIGHT</span><span class="p">)</span>
+<div class="viewcode-block" id="FilterPlot.attack_x">
+<a class="viewcode-back" href="../autoapi/filter_plot/index.html#filter_plot.FilterPlot.attack_x">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attack_x</span> <span class="o">=</span> <span class="mf">0.1</span></div>
+
+<div class="viewcode-block" id="FilterPlot.decay_x">
+<a class="viewcode-back" href="../autoapi/filter_plot/index.html#filter_plot.FilterPlot.decay_x">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">decay_x</span> <span class="o">=</span> <span class="mf">0.3</span></div>
+
+<div class="viewcode-block" id="FilterPlot.peak_level">
+<a class="viewcode-back" href="../autoapi/filter_plot/index.html#filter_plot.FilterPlot.peak_level">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">peak_level</span> <span class="o">=</span> <span class="mf">0.5</span></div>
+
+<div class="viewcode-block" id="FilterPlot.release_x">
+<a class="viewcode-back" href="../autoapi/filter_plot/index.html#filter_plot.FilterPlot.release_x">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">release_x</span> <span class="o">=</span> <span class="mf">0.7</span></div>
+
+<div class="viewcode-block" id="FilterPlot.dragging">
+<a class="viewcode-back" href="../autoapi/filter_plot/index.html#filter_plot.FilterPlot.dragging">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dragging</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="s2">&quot;envelope_changed&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">envelope_changed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">set_values</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="s2">&quot;pulse_width_changed&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">pulse_width_changed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">set_values</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="s2">&quot;mod_depth_changed&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mod_depth_changed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">set_values</span><span class="p">)</span>
+
+<div class="viewcode-block" id="FilterPlot.set_values">
+<a class="viewcode-back" href="../autoapi/filter_plot/index.html#filter_plot.FilterPlot.set_values">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">envelope</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update envelope values and trigger address redraw</span>
+
+<span class="sd">        :param envelope: dict</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">envelope</span> <span class="o">=</span> <span class="n">envelope</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="FilterPlot.mousePressEvent">
+<a class="viewcode-back" href="../autoapi/filter_plot/index.html#filter_plot.FilterPlot.mousePressEvent">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">mousePressEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">position</span><span class="p">()</span>
+        <span class="n">points</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;attack&quot;</span><span class="p">:</span> <span class="n">QPointF</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attack_x</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">(),</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s2">&quot;decay&quot;</span><span class="p">:</span> <span class="n">QPointF</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">decay_x</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">(),</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">peak_level</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">()</span>
+            <span class="p">),</span>
+            <span class="s2">&quot;release&quot;</span><span class="p">:</span> <span class="n">QPointF</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">release_x</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">(),</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">peak_level</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">()</span>
+            <span class="p">),</span>
+        <span class="p">}</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">pt</span> <span class="ow">in</span> <span class="n">points</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">pt</span> <span class="o">-</span> <span class="n">pos</span><span class="p">)</span><span class="o">.</span><span class="n">manhattanLength</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mi">15</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dragging</span> <span class="o">=</span> <span class="n">name</span>
+                <span class="k">break</span></div>
+
+
+<div class="viewcode-block" id="FilterPlot.mouseMoveEvent">
+<a class="viewcode-back" href="../autoapi/filter_plot/index.html#filter_plot.FilterPlot.mouseMoveEvent">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">mouseMoveEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dragging</span><span class="p">:</span>
+            <span class="n">pos</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">position</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dragging</span> <span class="o">==</span> <span class="s2">&quot;attack&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">attack_x</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">pos</span><span class="o">.</span><span class="n">x</span><span class="p">()</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">(),</span> <span class="mf">1.0</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">dragging</span> <span class="o">==</span> <span class="s2">&quot;decay&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">decay_x</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">attack_x</span> <span class="o">+</span> <span class="mf">0.01</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">pos</span><span class="o">.</span><span class="n">x</span><span class="p">()</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">(),</span> <span class="mf">1.0</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">dragging</span> <span class="o">==</span> <span class="s2">&quot;release&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">release_x</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">decay_x</span> <span class="o">+</span> <span class="mf">0.01</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">pos</span><span class="o">.</span><span class="n">x</span><span class="p">()</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">(),</span> <span class="mf">1.0</span><span class="p">)</span>
+                <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">point_moved</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dragging</span><span class="p">,</span> <span class="n">pos</span><span class="o">.</span><span class="n">x</span><span class="p">()</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="FilterPlot.mouseReleaseEvent">
+<a class="viewcode-back" href="../autoapi/filter_plot/index.html#filter_plot.FilterPlot.mouseReleaseEvent">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">mouseReleaseEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dragging</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="FilterPlot.setEnabled">
+<a class="viewcode-back" href="../autoapi/filter_plot/index.html#filter_plot.FilterPlot.setEnabled">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setEnabled</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">enabled</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="n">enabled</span><span class="p">)</span>  <span class="c1"># Ensure QWidget&#39;s default behavior is applied</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">enabled</span> <span class="o">=</span> <span class="n">enabled</span></div>
+
+
+<div class="viewcode-block" id="FilterPlot.paintEvent">
+<a class="viewcode-back" href="../autoapi/filter_plot/index.html#filter_plot.FilterPlot.paintEvent">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">paintEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Paint the plot in the style of an LCD&quot;&quot;&quot;</span>
+        <span class="n">painter</span> <span class="o">=</span> <span class="n">QPainter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">painter</span><span class="o">.</span><span class="n">setRenderHint</span><span class="p">(</span><span class="n">QPainter</span><span class="o">.</span><span class="n">Antialiasing</span><span class="p">)</span>
+
+            <span class="c1"># === Background ===</span>
+            <span class="n">gradient</span> <span class="o">=</span> <span class="n">QLinearGradient</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">())</span>
+            <span class="n">gradient</span><span class="o">.</span><span class="n">setColorAt</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">QColor</span><span class="p">(</span><span class="s2">&quot;#321212&quot;</span><span class="p">))</span>
+            <span class="n">gradient</span><span class="o">.</span><span class="n">setColorAt</span><span class="p">(</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">QColor</span><span class="p">(</span><span class="s2">&quot;#331111&quot;</span><span class="p">))</span>
+            <span class="n">gradient</span><span class="o">.</span><span class="n">setColorAt</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">QColor</span><span class="p">(</span><span class="s2">&quot;#551100&quot;</span><span class="p">))</span>
+            <span class="n">gradient</span><span class="o">.</span><span class="n">setColorAt</span><span class="p">(</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">QColor</span><span class="p">(</span><span class="s2">&quot;#331111&quot;</span><span class="p">))</span>
+            <span class="n">gradient</span><span class="o">.</span><span class="n">setColorAt</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">QColor</span><span class="p">(</span><span class="s2">&quot;#111111&quot;</span><span class="p">))</span>
+            <span class="n">painter</span><span class="o">.</span><span class="n">setBrush</span><span class="p">(</span><span class="n">gradient</span><span class="p">)</span>
+            <span class="n">painter</span><span class="o">.</span><span class="n">setPen</span><span class="p">(</span><span class="n">QPen</span><span class="p">(</span><span class="n">QColor</span><span class="p">(</span><span class="s2">&quot;#000000&quot;</span><span class="p">),</span> <span class="mi">0</span><span class="p">))</span>
+            <span class="n">painter</span><span class="o">.</span><span class="n">drawRect</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">())</span>
+
+            <span class="c1"># === Pens &amp; Fonts ===</span>
+            <span class="n">orange_pen</span> <span class="o">=</span> <span class="n">QPen</span><span class="p">(</span><span class="n">QColor</span><span class="p">(</span><span class="s2">&quot;orange&quot;</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">axis_pen</span> <span class="o">=</span> <span class="n">QPen</span><span class="p">(</span><span class="n">QColor</span><span class="p">(</span><span class="s2">&quot;white&quot;</span><span class="p">))</span>
+            <span class="n">grid_pen</span> <span class="o">=</span> <span class="n">QPen</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">GlobalColor</span><span class="o">.</span><span class="n">darkGray</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">Qt</span><span class="o">.</span><span class="n">PenStyle</span><span class="o">.</span><span class="n">DashLine</span><span class="p">)</span>
+            <span class="n">painter</span><span class="o">.</span><span class="n">setFont</span><span class="p">(</span><span class="n">QFont</span><span class="p">(</span><span class="s2">&quot;JD LCD Rounded&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+            <span class="n">font_metrics</span> <span class="o">=</span> <span class="n">painter</span><span class="o">.</span><span class="n">fontMetrics</span><span class="p">()</span>
+
+            <span class="c1"># === Envelope Parameters ===</span>
+            <span class="c1"># Pulse width envelope: rise and fall</span>
+            <span class="n">envelope</span> <span class="o">=</span> <span class="n">generate_filter_plot</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">envelope</span><span class="p">[</span><span class="s2">&quot;cutoff_param&quot;</span><span class="p">],</span>
+                                            <span class="n">slope</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">envelope</span><span class="p">[</span><span class="s2">&quot;slope_param&quot;</span><span class="p">],</span>
+                                            <span class="n">sample_rate</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sample_rate</span><span class="p">,</span>
+                                            <span class="n">duration</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;duration&quot;</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">))</span>
+            <span class="n">total_samples</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">envelope</span><span class="p">)</span>
+            <span class="n">total_time</span> <span class="o">=</span> <span class="n">total_samples</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_rate</span>
+
+            <span class="c1"># === Plot Layout ===</span>
+            <span class="n">w</span><span class="p">,</span> <span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">()</span>
+            <span class="n">top_pad</span><span class="p">,</span> <span class="n">bottom_pad</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">50</span>
+            <span class="n">left_pad</span><span class="p">,</span> <span class="n">right_pad</span> <span class="o">=</span> <span class="mi">80</span><span class="p">,</span> <span class="mi">50</span>
+            <span class="n">plot_w</span> <span class="o">=</span> <span class="n">w</span> <span class="o">-</span> <span class="n">left_pad</span> <span class="o">-</span> <span class="n">right_pad</span>
+            <span class="n">plot_h</span> <span class="o">=</span> <span class="n">h</span> <span class="o">-</span> <span class="n">top_pad</span> <span class="o">-</span> <span class="n">bottom_pad</span>
+
+            <span class="n">y_min</span><span class="p">,</span> <span class="n">y_max</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">1.2</span>
+            <span class="n">zero_y</span> <span class="o">=</span> <span class="n">top_pad</span> <span class="o">+</span> <span class="p">(</span><span class="n">y_max</span> <span class="o">/</span> <span class="p">(</span><span class="n">y_max</span> <span class="o">-</span> <span class="n">y_min</span><span class="p">))</span> <span class="o">*</span> <span class="n">plot_h</span>
+
+            <span class="c1"># === Axes ===</span>
+            <span class="n">painter</span><span class="o">.</span><span class="n">setPen</span><span class="p">(</span><span class="n">axis_pen</span><span class="p">)</span>
+            <span class="c1"># Y-axis</span>
+            <span class="n">painter</span><span class="o">.</span><span class="n">drawLine</span><span class="p">(</span><span class="n">left_pad</span><span class="p">,</span> <span class="n">top_pad</span><span class="p">,</span> <span class="n">left_pad</span><span class="p">,</span> <span class="n">top_pad</span> <span class="o">+</span> <span class="n">plot_h</span><span class="p">)</span>
+            <span class="c1"># X-axis</span>
+            <span class="n">painter</span><span class="o">.</span><span class="n">drawLine</span><span class="p">(</span><span class="n">left_pad</span><span class="p">,</span> <span class="n">zero_y</span><span class="p">,</span> <span class="n">left_pad</span> <span class="o">+</span> <span class="n">plot_w</span><span class="p">,</span> <span class="n">zero_y</span><span class="p">)</span>
+
+            <span class="c1"># === X-axis Labels &amp; Ticks ===</span>
+            <span class="n">num_ticks</span> <span class="o">=</span> <span class="mi">6</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_ticks</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="n">left_pad</span> <span class="o">+</span> <span class="n">i</span> <span class="o">*</span> <span class="n">plot_w</span> <span class="o">/</span> <span class="n">num_ticks</span>
+
+            <span class="c1"># === Y-axis Labels &amp; Ticks ===</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">):</span>
+                <span class="n">y_val</span> <span class="o">=</span> <span class="n">i</span> <span class="o">*</span> <span class="mf">0.2</span>
+                <span class="n">y</span> <span class="o">=</span> <span class="n">top_pad</span> <span class="o">+</span> <span class="p">((</span><span class="n">y_max</span> <span class="o">-</span> <span class="n">y_val</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">y_max</span> <span class="o">-</span> <span class="n">y_min</span><span class="p">))</span> <span class="o">*</span> <span class="n">plot_h</span>
+                <span class="n">painter</span><span class="o">.</span><span class="n">drawLine</span><span class="p">(</span><span class="n">left_pad</span> <span class="o">-</span> <span class="mi">5</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">left_pad</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+                <span class="n">label</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">y_val</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="n">label_width</span> <span class="o">=</span> <span class="n">font_metrics</span><span class="o">.</span><span class="n">horizontalAdvance</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+                <span class="n">painter</span><span class="o">.</span><span class="n">drawText</span><span class="p">(</span><span class="n">left_pad</span> <span class="o">-</span> <span class="mi">10</span> <span class="o">-</span> <span class="n">label_width</span><span class="p">,</span> <span class="n">y</span> <span class="o">+</span> <span class="n">font_metrics</span><span class="o">.</span><span class="n">ascent</span><span class="p">()</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span>
+
+            <span class="c1"># === Title ===</span>
+            <span class="n">painter</span><span class="o">.</span><span class="n">setPen</span><span class="p">(</span><span class="n">QPen</span><span class="p">(</span><span class="n">QColor</span><span class="p">(</span><span class="s2">&quot;orange&quot;</span><span class="p">)))</span>
+            <span class="n">painter</span><span class="o">.</span><span class="n">setFont</span><span class="p">(</span><span class="n">QFont</span><span class="p">(</span><span class="s2">&quot;JD LCD Rounded&quot;</span><span class="p">,</span> <span class="mi">16</span><span class="p">))</span>
+            <span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;Filter Cutoff&quot;</span>
+            <span class="n">title_width</span> <span class="o">=</span> <span class="n">painter</span><span class="o">.</span><span class="n">fontMetrics</span><span class="p">()</span><span class="o">.</span><span class="n">horizontalAdvance</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+            <span class="n">painter</span><span class="o">.</span><span class="n">drawText</span><span class="p">(</span><span class="n">left_pad</span> <span class="o">+</span> <span class="p">(</span><span class="n">plot_w</span> <span class="o">-</span> <span class="n">title_width</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">top_pad</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">title</span><span class="p">)</span>
+
+            <span class="c1"># === X-axis Label ===</span>
+            <span class="n">painter</span><span class="o">.</span><span class="n">setPen</span><span class="p">(</span><span class="n">QPen</span><span class="p">(</span><span class="n">QColor</span><span class="p">(</span><span class="s2">&quot;white&quot;</span><span class="p">)))</span>
+            <span class="n">painter</span><span class="o">.</span><span class="n">setFont</span><span class="p">(</span><span class="n">QFont</span><span class="p">(</span><span class="s2">&quot;JD LCD Rounded&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+            <span class="n">x_label</span> <span class="o">=</span> <span class="s2">&quot;Frequency (Hz)&quot;</span>
+            <span class="n">x_label_width</span> <span class="o">=</span> <span class="n">font_metrics</span><span class="o">.</span><span class="n">horizontalAdvance</span><span class="p">(</span><span class="n">x_label</span><span class="p">)</span>
+            <span class="n">painter</span><span class="o">.</span><span class="n">drawText</span><span class="p">(</span><span class="n">left_pad</span> <span class="o">+</span> <span class="p">(</span><span class="n">plot_w</span> <span class="o">-</span> <span class="n">x_label_width</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">top_pad</span> <span class="o">+</span> <span class="n">plot_h</span> <span class="o">+</span> <span class="mi">35</span><span class="p">,</span> <span class="n">x_label</span><span class="p">)</span>
+
+            <span class="c1"># === Y-axis Label (rotated) ===</span>
+            <span class="n">painter</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+            <span class="n">y_label</span> <span class="o">=</span> <span class="s2">&quot;Voltage (V)&quot;</span>
+            <span class="n">y_label_width</span> <span class="o">=</span> <span class="n">font_metrics</span><span class="o">.</span><span class="n">horizontalAdvance</span><span class="p">(</span><span class="n">y_label</span><span class="p">)</span>
+            <span class="n">painter</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">left_pad</span> <span class="o">-</span> <span class="mi">50</span><span class="p">,</span> <span class="n">top_pad</span> <span class="o">+</span> <span class="n">plot_h</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">y_label_width</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">painter</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="o">-</span><span class="mi">90</span><span class="p">)</span>
+            <span class="n">painter</span><span class="o">.</span><span class="n">drawText</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">y_label</span><span class="p">)</span>
+            <span class="n">painter</span><span class="o">.</span><span class="n">restore</span><span class="p">()</span>
+
+            <span class="c1"># === Grid Lines ===</span>
+            <span class="n">painter</span><span class="o">.</span><span class="n">setPen</span><span class="p">(</span><span class="n">grid_pen</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">):</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="n">left_pad</span> <span class="o">+</span> <span class="n">i</span> <span class="o">*</span> <span class="n">plot_w</span> <span class="o">/</span> <span class="mi">6</span>
+                <span class="n">painter</span><span class="o">.</span><span class="n">drawLine</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">top_pad</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">top_pad</span> <span class="o">+</span> <span class="n">plot_h</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">):</span>
+                <span class="n">y_val</span> <span class="o">=</span> <span class="n">i</span> <span class="o">*</span> <span class="mf">0.2</span>
+                <span class="n">y</span> <span class="o">=</span> <span class="n">top_pad</span> <span class="o">+</span> <span class="p">((</span><span class="n">y_max</span> <span class="o">-</span> <span class="n">y_val</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">y_max</span> <span class="o">-</span> <span class="n">y_min</span><span class="p">))</span> <span class="o">*</span> <span class="n">plot_h</span>
+                <span class="n">y_mirror</span> <span class="o">=</span> <span class="n">top_pad</span> <span class="o">+</span> <span class="p">((</span><span class="n">y_max</span> <span class="o">+</span> <span class="n">y_val</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">y_max</span> <span class="o">-</span> <span class="n">y_min</span><span class="p">))</span> <span class="o">*</span> <span class="n">plot_h</span>
+                <span class="n">painter</span><span class="o">.</span><span class="n">drawLine</span><span class="p">(</span><span class="n">left_pad</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">left_pad</span> <span class="o">+</span> <span class="n">plot_w</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+                <span class="c1"># painter.drawLine(left_pad, y_mirror, left_pad + plot_w, y_mirror)</span>
+
+            <span class="c1"># === Envelope Plot ===</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">enabled</span><span class="p">:</span>
+                <span class="n">painter</span><span class="o">.</span><span class="n">setPen</span><span class="p">(</span><span class="n">orange_pen</span><span class="p">)</span>
+                <span class="n">points</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">num_points</span> <span class="o">=</span> <span class="mi">500</span>
+                <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">total_samples</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">num_points</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">envelope</span><span class="p">):</span>
+                        <span class="k">continue</span>
+                    <span class="n">t</span> <span class="o">=</span> <span class="n">i</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_rate</span>
+                    <span class="n">x</span> <span class="o">=</span> <span class="n">left_pad</span> <span class="o">+</span> <span class="p">(</span><span class="n">t</span> <span class="o">/</span> <span class="n">total_time</span><span class="p">)</span> <span class="o">*</span> <span class="n">plot_w</span>
+                    <span class="n">y_val</span> <span class="o">=</span> <span class="n">envelope</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                    <span class="n">y</span> <span class="o">=</span> <span class="n">top_pad</span> <span class="o">+</span> <span class="p">((</span><span class="n">y_max</span> <span class="o">-</span> <span class="n">y_val</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">y_max</span> <span class="o">-</span> <span class="n">y_min</span><span class="p">))</span> <span class="o">*</span> <span class="n">plot_h</span>
+                    <span class="n">points</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">QPointF</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
+
+                <span class="k">if</span> <span class="n">points</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">enabled</span><span class="p">:</span>
+                    <span class="n">path</span> <span class="o">=</span> <span class="n">QPainterPath</span><span class="p">()</span>
+                    <span class="n">path</span><span class="o">.</span><span class="n">moveTo</span><span class="p">(</span><span class="n">points</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                    <span class="k">for</span> <span class="n">pt</span> <span class="ow">in</span> <span class="n">points</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+                        <span class="n">path</span><span class="o">.</span><span class="n">lineTo</span><span class="p">(</span><span class="n">pt</span><span class="p">)</span>  <span class="c1"># For smoothing: use cubicTo</span>
+                    <span class="n">painter</span><span class="o">.</span><span class="n">drawPath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+                    <span class="c1"># Now fill in to axes</span>
+                    <span class="n">path</span><span class="o">.</span><span class="n">lineTo</span><span class="p">(</span><span class="n">left_pad</span> <span class="o">+</span> <span class="n">plot_w</span><span class="p">,</span> <span class="n">zero_y</span><span class="p">)</span>
+                    <span class="n">path</span><span class="o">.</span><span class="n">lineTo</span><span class="p">(</span><span class="n">left_pad</span><span class="p">,</span> <span class="n">zero_y</span><span class="p">)</span>
+                    <span class="n">path</span><span class="o">.</span><span class="n">closeSubpath</span><span class="p">()</span>
+
+                    <span class="c1"># Fill the path black first</span>
+                    <span class="n">painter</span><span class="o">.</span><span class="n">fillPath</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">gradient</span><span class="p">)</span>
+                    <span class="c1"># redraw x-axis</span>
+                    <span class="n">painter</span><span class="o">.</span><span class="n">setPen</span><span class="p">(</span><span class="n">axis_pen</span><span class="p">)</span>
+                    <span class="n">painter</span><span class="o">.</span><span class="n">drawLine</span><span class="p">(</span><span class="n">left_pad</span><span class="p">,</span> <span class="n">zero_y</span><span class="p">,</span> <span class="n">left_pad</span> <span class="o">+</span> <span class="n">plot_w</span><span class="p">,</span> <span class="n">zero_y</span><span class="p">)</span>
+                    <span class="c1"># === X-axis Labels &amp; Ticks ===</span>
+                    <span class="n">num_ticks</span> <span class="o">=</span> <span class="mi">6</span>
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_ticks</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                        <span class="n">x</span> <span class="o">=</span> <span class="n">left_pad</span> <span class="o">+</span> <span class="n">i</span> <span class="o">*</span> <span class="n">plot_w</span> <span class="o">/</span> <span class="n">num_ticks</span>
+
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">painter</span><span class="o">.</span><span class="n">end</span><span class="p">()</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Mark Mrooks.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

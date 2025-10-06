@@ -1,0 +1,604 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>jdxi_editor.midi.data.control_change.analog &mdash; JD-Xi Editor 0.8.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../../_static/documentation_options.js?v=486e5634"></script>
+      <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../../index.html" class="icon icon-home">
+            JD-Xi Editor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../getting-started.html#getting-started-guide">Getting Started Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../editor-windows.html">Editor Windows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../editor-windows.html#available-editors">Available Editors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../additional-editors.html">Additional Editors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../additional-editors.html#available-editors">Available Editors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../playing-midi-files.html">Playing MIDI Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../playing-midi-files.html#available-tools">Available Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../troubleshooting.html#id1">Troubleshooting</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../legal.html">Legal Disclaimer</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../modules.html">jdxi_editor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../jdxi_editor.html">jdxi_editor package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.jdxi.html">jdxi_editor.jdxi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.log.html">jdxi_editor.log package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.midi.html">jdxi_editor.midi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.ui.html">jdxi_editor.ui package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.globals">jdxi_editor.globals module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.main">jdxi_editor.main module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.html#jdxi_editor.main.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.html#jdxi_editor.main.setup_splash_screen"><code class="docutils literal notranslate"><span class="pre">setup_splash_screen()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.project">jdxi_editor.project module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.resources">jdxi_editor.resources module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.html#jdxi_editor.resources.resource_path"><code class="docutils literal notranslate"><span class="pre">resource_path()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../autoapi/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/midi/index.html">midi</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/midi/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/colors/index.html">midi.colors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/slider/index.html">midi.slider</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/spin_box/index.html">midi.spin_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/time_ruler/index.html">midi.time_ruler</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/track/index.html">midi.track</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/track_viewer/index.html">midi.track_viewer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/utils/index.html">midi.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/adsr/index.html">adsr</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/adsr/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/adsr/adsr/index.html">adsr.adsr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/adsr/graph/index.html">adsr.graph</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/adsr/parameter/index.html">adsr.parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/adsr/plot/index.html">adsr.plot</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/pitch/index.html">pitch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/pitch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pitch/envelope/index.html">pitch.envelope</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pitch/envelope_plot/index.html">pitch.envelope_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pitch/pwm_plot/index.html">pitch.pwm_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pitch/slider_spinbox/index.html">pitch.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/piano/index.html">piano</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/piano/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/piano/key/index.html">piano.key</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/piano/keyboard/index.html">piano.keyboard</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/panel/index.html">panel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/panel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/panel/partial/index.html">panel.partial</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/wheel/index.html">wheel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/wheel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/wheel/mod/index.html">wheel.mod</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/wheel/pitch/index.html">wheel.pitch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/wheel/wheel/index.html">wheel.wheel</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/preset/index.html">preset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/preset/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/preset/combo_box/index.html">preset.combo_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/preset/panel/index.html">preset.panel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/preset/patch_name/index.html">preset.patch_name</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/slider/index.html">slider</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/slider/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/slider/slider/index.html">slider.slider</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/slider/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/slider/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/slider/index.html#slider.Slider"><code class="docutils literal notranslate"><span class="pre">Slider</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/dialog/index.html">dialog</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/dialog/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/dialog/progress/index.html">dialog.progress</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/viewer/index.html">viewer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/viewer/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/viewer/log/index.html">viewer.log</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/button/index.html">button</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/button/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/channel/index.html">button.channel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/favorite/index.html">button.favorite</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/sequencer/index.html">button.sequencer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/waveform/index.html">button.waveform</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/button/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/button/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/index.html#button.ChannelButton"><code class="docutils literal notranslate"><span class="pre">ChannelButton</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/index.html#button.SequencerSquare"><code class="docutils literal notranslate"><span class="pre">SequencerSquare</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/switch/index.html">switch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/switch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/switch/partial/index.html">switch.partial</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/switch/switch/index.html">switch.switch</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/filter/index.html">filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/filter/index.html#filter.FilterWidget"><code class="docutils literal notranslate"><span class="pre">FilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/display/index.html">display</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/display/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/display/digital/index.html">display.digital</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/display/pattern/index.html">display.pattern</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/display/value/index.html">display.value</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/pattern/index.html">pattern</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/pattern/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pattern/measure/index.html">pattern.measure</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/spin_box/index.html">spin_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/spin_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/spin_box/spin_box/index.html">spin_box.spin_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/envelope/index.html">envelope</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/envelope/base/index.html">envelope.base</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/indicator/index.html">indicator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/indicator/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/indicator/led/index.html">indicator.led</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/indicator/midi/index.html">indicator.midi</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/combo_box/index.html">combo_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/combo_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/combo_box/combo_box/index.html">combo_box.combo_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/index.html">jdxi_editor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/globals/index.html">jdxi_editor.globals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/jdxi/index.html">jdxi_editor.jdxi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/log/index.html">jdxi_editor.log</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/main/index.html">jdxi_editor.main</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/midi/index.html">jdxi_editor.midi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/project/index.html">jdxi_editor.project</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/resources/index.html">jdxi_editor.resources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/ui/index.html">jdxi_editor.ui</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html">filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#filter_plot.FilterPlot"><code class="docutils literal notranslate"><span class="pre">FilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html">envelope_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#envelope_plot.midi_value_to_float"><code class="docutils literal notranslate"><span class="pre">midi_value_to_float()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#envelope_plot.WMTEnvPlot"><code class="docutils literal notranslate"><span class="pre">WMTEnvPlot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#envelope_plot.app"><code class="docutils literal notranslate"><span class="pre">app</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/wave_selector/index.html">wave_selector</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/wave_selector/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/wave_selector/wave_selector/index.html">wave_selector.wave_selector</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/analog_filter/index.html">analog_filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/analog_filter/index.html#analog_filter.AnalogFilterWidget"><code class="docutils literal notranslate"><span class="pre">AnalogFilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/slider_spinbox/index.html">slider_spinbox</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/slider_spinbox/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/slider_spinbox/slider_spinbox/index.html">slider_spinbox.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html">analog_filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#analog_filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#analog_filter_plot.AnalogFilterPlot"><code class="docutils literal notranslate"><span class="pre">AnalogFilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">JD-Xi Editor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">jdxi_editor.midi.data.control_change.analog</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for jdxi_editor.midi.data.control_change.analog</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Analog Control Change&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Any</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">shiboken6.Shiboken</span><span class="w"> </span><span class="kn">import</span> <span class="n">Object</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.jdxi.midi.constant</span><span class="w"> </span><span class="kn">import</span> <span class="n">MidiConstant</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.data.control_change.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">ControlChange</span>
+
+
+<div class="viewcode-block" id="AnalogControlChange">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/control_change/analog/index.html#jdxi_editor.midi.data.control_change.analog.AnalogControlChange">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">AnalogControlChange</span><span class="p">(</span><span class="n">ControlChange</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Analog synth CC parameters&quot;&quot;&quot;</span>
+
+    <span class="c1"># Direct CC parameters</span>
+<div class="viewcode-block" id="AnalogControlChange.CUTOFF">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/control_change/analog/index.html#jdxi_editor.midi.data.control_change.analog.AnalogControlChange.CUTOFF">[docs]</a>
+    <span class="n">CUTOFF</span> <span class="o">=</span> <span class="mi">102</span>  <span class="c1"># Cutoff (0-127)</span></div>
+
+<div class="viewcode-block" id="AnalogControlChange.RESONANCE">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/control_change/analog/index.html#jdxi_editor.midi.data.control_change.analog.AnalogControlChange.RESONANCE">[docs]</a>
+    <span class="n">RESONANCE</span> <span class="o">=</span> <span class="mi">105</span>  <span class="c1"># Resonance (0-127)</span></div>
+
+<div class="viewcode-block" id="AnalogControlChange.LEVEL">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/control_change/analog/index.html#jdxi_editor.midi.data.control_change.analog.AnalogControlChange.LEVEL">[docs]</a>
+    <span class="n">LEVEL</span> <span class="o">=</span> <span class="mi">117</span>  <span class="c1"># Level (0-127)</span></div>
+
+<div class="viewcode-block" id="AnalogControlChange.LFO_RATE">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/control_change/analog/index.html#jdxi_editor.midi.data.control_change.analog.AnalogControlChange.LFO_RATE">[docs]</a>
+    <span class="n">LFO_RATE</span> <span class="o">=</span> <span class="mi">16</span>  <span class="c1"># LFO Rate (0-127)</span></div>
+
+
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="AnalogControlChange.get_display_value">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/control_change/analog/index.html#jdxi_editor.midi.data.control_change.analog.AnalogControlChange.get_display_value">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_display_value</span><span class="p">(</span><span class="n">param</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert raw value to display value&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">param</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>  <span class="c1"># LFO Shape</span>
+            <span class="n">shapes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;TRI&quot;</span><span class="p">,</span> <span class="s2">&quot;SIN&quot;</span><span class="p">,</span> <span class="s2">&quot;SAW&quot;</span><span class="p">,</span> <span class="s2">&quot;SQR&quot;</span><span class="p">,</span> <span class="s2">&quot;S&amp;H&quot;</span><span class="p">,</span> <span class="s2">&quot;RND&quot;</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">shapes</span><span class="p">[</span><span class="n">value</span><span class="p">]</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+</div>
+
+
+
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="viewcode-block" id="RPNValue">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/control_change/analog/index.html#jdxi_editor.midi.data.control_change.analog.RPNValue">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">RPNValue</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Represents a MIDI RPN value with its MSB, LSB, and value range.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="RPNValue.msb_lsb">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/control_change/analog/index.html#jdxi_editor.midi.data.control_change.analog.RPNValue.msb_lsb">[docs]</a>
+    <span class="n">msb_lsb</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="RPNValue.value_range">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/control_change/analog/index.html#jdxi_editor.midi.data.control_change.analog.RPNValue.value_range">[docs]</a>
+    <span class="n">value_range</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="RPNValue.midi_bytes">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/control_change/analog/index.html#jdxi_editor.midi.data.control_change.analog.RPNValue.midi_bytes">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">midi_bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate CC messages for this RPN and a given value.&quot;&quot;&quot;</span>
+        <span class="n">msb</span><span class="p">,</span> <span class="n">lsb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">msb_lsb</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">value_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="bp">self</span><span class="o">.</span><span class="n">value_range</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="p">(</span><span class="n">MidiConstant</span><span class="o">.</span><span class="n">CONTROL_CHANGE</span><span class="p">,</span> <span class="mi">101</span><span class="p">,</span> <span class="n">msb</span><span class="p">),</span>    <span class="c1"># RPN MSB</span>
+            <span class="p">(</span><span class="n">MidiConstant</span><span class="o">.</span><span class="n">CONTROL_CHANGE</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="n">lsb</span><span class="p">),</span>    <span class="c1"># RPN LSB</span>
+            <span class="p">(</span><span class="n">MidiConstant</span><span class="o">.</span><span class="n">CONTROL_CHANGE</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="n">value</span> <span class="o">&gt;&gt;</span> <span class="mi">7</span><span class="p">),</span>   <span class="c1"># Data Entry MSB</span>
+            <span class="p">(</span><span class="n">MidiConstant</span><span class="o">.</span><span class="n">CONTROL_CHANGE</span><span class="p">,</span> <span class="mi">38</span><span class="p">,</span> <span class="n">value</span> <span class="o">&amp;</span> <span class="mh">0x7F</span><span class="p">)</span>  <span class="c1"># Data Entry LSB</span>
+        <span class="p">]</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="AnalogRPN">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/control_change/analog/index.html#jdxi_editor.midi.data.control_change.analog.AnalogRPN">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">AnalogRPN</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Analog synth RPN parameters with their MSB, LSB, and value range.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="AnalogRPN.ENVELOPE">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/control_change/analog/index.html#jdxi_editor.midi.data.control_change.analog.AnalogRPN.ENVELOPE">[docs]</a>
+    <span class="n">ENVELOPE</span> <span class="o">=</span> <span class="n">RPNValue</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">124</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="AnalogRPN.LFO_SHAPE">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/control_change/analog/index.html#jdxi_editor.midi.data.control_change.analog.AnalogRPN.LFO_SHAPE">[docs]</a>
+    <span class="n">LFO_SHAPE</span> <span class="o">=</span> <span class="n">RPNValue</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="AnalogRPN.LFO_PITCH_DEPTH">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/control_change/analog/index.html#jdxi_editor.midi.data.control_change.analog.AnalogRPN.LFO_PITCH_DEPTH">[docs]</a>
+    <span class="n">LFO_PITCH_DEPTH</span> <span class="o">=</span> <span class="n">RPNValue</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">15</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="AnalogRPN.LFO_FILTER_DEPTH">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/control_change/analog/index.html#jdxi_editor.midi.data.control_change.analog.AnalogRPN.LFO_FILTER_DEPTH">[docs]</a>
+    <span class="n">LFO_FILTER_DEPTH</span> <span class="o">=</span> <span class="n">RPNValue</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">18</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="AnalogRPN.LFO_AMP_DEPTH">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/control_change/analog/index.html#jdxi_editor.midi.data.control_change.analog.AnalogRPN.LFO_AMP_DEPTH">[docs]</a>
+    <span class="n">LFO_AMP_DEPTH</span> <span class="o">=</span> <span class="n">RPNValue</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">21</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="AnalogRPN.PULSE_WIDTH">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/control_change/analog/index.html#jdxi_editor.midi.data.control_change.analog.AnalogRPN.PULSE_WIDTH">[docs]</a>
+    <span class="n">PULSE_WIDTH</span> <span class="o">=</span> <span class="n">RPNValue</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">37</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">))</span></div>
+</div>
+
+
+
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PartialRPNValue</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Represents a MIDI RPN value with base MSB/LSB, value range, and partial.&quot;&quot;&quot;</span>
+    <span class="n">base_msb_lsb</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
+    <span class="n">value_range</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
+    <span class="n">partial</span><span class="p">:</span> <span class="nb">int</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">msb_lsb</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the dynamically adjusted MSB/LSB based on the partial number.&quot;&quot;&quot;</span>
+        <span class="n">msb</span><span class="p">,</span> <span class="n">base_lsb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_msb_lsb</span>
+        <span class="k">return</span> <span class="n">msb</span><span class="p">,</span> <span class="n">base_lsb</span> <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">partial</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
+<div class="viewcode-block" id="PartialRPNValue.__post_init__">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/control_change/analog/index.html#jdxi_editor.midi.data.control_change.analog.PartialRPNValue.__post_init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">partial</span> <span class="o">&lt;=</span> <span class="mi">3</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Partial must be between 1 and 3.&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PartialRPNValue.midi_bytes">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/control_change/analog/index.html#jdxi_editor.midi.data.control_change.analog.PartialRPNValue.midi_bytes">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">midi_bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate CC messages for this RPN and a given value.&quot;&quot;&quot;</span>
+        <span class="n">msb</span><span class="p">,</span> <span class="n">lsb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">msb_lsb</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">value_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="bp">self</span><span class="o">.</span><span class="n">value_range</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="p">(</span><span class="n">MidiConstant</span><span class="o">.</span><span class="n">CONTROL_CHANGE</span><span class="p">,</span> <span class="mi">101</span><span class="p">,</span> <span class="n">msb</span><span class="p">),</span>    <span class="c1"># RPN MSB</span>
+            <span class="p">(</span><span class="n">MidiConstant</span><span class="o">.</span><span class="n">CONTROL_CHANGE</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="n">lsb</span><span class="p">),</span>    <span class="c1"># RPN LSB</span>
+            <span class="p">(</span><span class="n">MidiConstant</span><span class="o">.</span><span class="n">CONTROL_CHANGE</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="n">value</span> <span class="o">&gt;&gt;</span> <span class="mi">7</span><span class="p">),</span>   <span class="c1"># Data Entry MSB</span>
+            <span class="p">(</span><span class="n">MidiConstant</span><span class="o">.</span><span class="n">CONTROL_CHANGE</span><span class="p">,</span> <span class="mi">38</span><span class="p">,</span> <span class="n">value</span> <span class="o">&amp;</span> <span class="mh">0x7F</span><span class="p">)</span>  <span class="c1"># Data Entry LSB</span>
+        <span class="p">]</span></div>
+
+
+
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="viewcode-block" id="PartialRPNValue">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/control_change/analog/index.html#jdxi_editor.midi.data.control_change.analog.PartialRPNValue">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">PartialRPNValue</span><span class="p">:</span>
+<div class="viewcode-block" id="PartialRPNValue.base_msb_lsb">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/control_change/analog/index.html#jdxi_editor.midi.data.control_change.analog.PartialRPNValue.base_msb_lsb">[docs]</a>
+    <span class="n">base_msb_lsb</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="PartialRPNValue.value_range">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/control_change/analog/index.html#jdxi_editor.midi.data.control_change.analog.PartialRPNValue.value_range">[docs]</a>
+    <span class="n">value_range</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="PartialRPNValue.partial">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/control_change/analog/index.html#jdxi_editor.midi.data.control_change.analog.PartialRPNValue.partial">[docs]</a>
+    <span class="n">partial</span><span class="p">:</span> <span class="nb">int</span></div>
+
+
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="PartialRPNValue.msb_lsb">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/control_change/analog/index.html#jdxi_editor.midi.data.control_change.analog.PartialRPNValue.msb_lsb">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">msb_lsb</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+        <span class="n">msb</span><span class="p">,</span> <span class="n">base_lsb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_msb_lsb</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">msb</span><span class="p">,</span> <span class="n">base_lsb</span> <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">partial</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="make_digital_rpn">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/control_change/analog/index.html#jdxi_editor.midi.data.control_change.analog.make_digital_rpn">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">make_digital_rpn</span><span class="p">(</span><span class="n">partial</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Object</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    make_digital_rpn</span>
+
+<span class="sd">    :param partial: int</span>
+<span class="sd">    :return: Object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">DigitalPartialRPN</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+        <span class="n">ENVELOPE</span> <span class="o">=</span> <span class="n">PartialRPNValue</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">124</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">),</span> <span class="n">partial</span><span class="p">)</span>
+        <span class="n">LFO_SHAPE</span> <span class="o">=</span> <span class="n">PartialRPNValue</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">partial</span><span class="p">)</span>
+        <span class="n">LFO_PITCH_DEPTH</span> <span class="o">=</span> <span class="n">PartialRPNValue</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">15</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">),</span> <span class="n">partial</span><span class="p">)</span>
+        <span class="n">LFO_FILTER_DEPTH</span> <span class="o">=</span> <span class="n">PartialRPNValue</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">18</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">),</span> <span class="n">partial</span><span class="p">)</span>
+        <span class="n">LFO_AMP_DEPTH</span> <span class="o">=</span> <span class="n">PartialRPNValue</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">21</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">),</span> <span class="n">partial</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">DigitalPartialRPN</span></div>
+
+
+
+<div class="viewcode-block" id="DigitalRPN_Partial1">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/control_change/analog/index.html#jdxi_editor.midi.data.control_change.analog.DigitalRPN_Partial1">[docs]</a>
+<span class="n">DigitalRPN_Partial1</span> <span class="o">=</span> <span class="n">make_digital_rpn</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DigitalRPN_Partial2">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/control_change/analog/index.html#jdxi_editor.midi.data.control_change.analog.DigitalRPN_Partial2">[docs]</a>
+<span class="n">DigitalRPN_Partial2</span> <span class="o">=</span> <span class="n">make_digital_rpn</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DigitalRPN_Partial3">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/control_change/analog/index.html#jdxi_editor.midi.data.control_change.analog.DigitalRPN_Partial3">[docs]</a>
+<span class="n">DigitalRPN_Partial3</span> <span class="o">=</span> <span class="n">make_digital_rpn</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># Not using drums (26 Partials) thankfully :-)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="c1"># Example usage</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">AnalogRPN</span><span class="o">.</span><span class="n">ENVELOPE</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">msb_lsb</span><span class="p">)</span>  <span class="c1"># (0, 124)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">DigitalRPN_Partial1</span><span class="o">.</span><span class="n">ENVELOPE</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">msb_lsb</span><span class="p">)</span>  <span class="c1"># (0, 124)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">DigitalRPN_Partial2</span><span class="o">.</span><span class="n">ENVELOPE</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">msb_lsb</span><span class="p">)</span>  <span class="c1"># (0, 125)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Mark Mrooks.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

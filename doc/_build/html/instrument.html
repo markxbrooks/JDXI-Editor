@@ -1,0 +1,692 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JDXi Instrument Window &mdash; JD-Xi Editor 0.8.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=486e5634"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Editor Windows" href="editor.html" />
+    <link rel="prev" title="Editor Windows" href="editor-windows.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            JD-Xi Editor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#what-is-jdxi-editor">What is JDXI-Editor?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#key-features-capabilities">Key Features &amp; Capabilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#architecture-technology">Architecture &amp; Technology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#why-use-jdxi-editor">Why Use JDXI-Editor?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#getting-started">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#system-requirements">System Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#installation-methods">Installation Methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#method-1-pre-built-packages-recommended">Method 1: Pre-Built Packages (Recommended)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#method-2-python-package-installation">Method 2: Python Package Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#method-3-source-code-installation">Method 3: Source Code Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#method-4-development-setup">Method 4: Development Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#post-installation-setup">Post-Installation Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#troubleshooting">Troubleshooting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#getting-help">Getting Help</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html">Quick Start Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#what-you-ll-learn">What You’ll Learn</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#hardware-setup">Hardware Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#software-launch">Software Launch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#interface-overview">Interface Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#your-first-sound-creation">Your First Sound Creation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#essential-workflows">Essential Workflows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#quick-tips-for-success">Quick Tips for Success</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#common-issues-and-solutions">Common Issues and Solutions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#next-steps">Next Steps</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="editor-windows.html">Editor Windows</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">JDXi Instrument Window</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#what-is-the-jdxi-instrument-window">What is the JDXi Instrument Window?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#core-architecture-components">Core Architecture &amp; Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#key-features-capabilities">Key Features &amp; Capabilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#user-interface-components">User Interface Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#workflow-integration">Workflow Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#technical-specifications">Technical Specifications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#getting-started-with-the-instrument-window">Getting Started with the Instrument Window</a></li>
+<li class="toctree-l2"><a class="reference internal" href="editor.html">Editor Windows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="editor.html#what-are-the-editor-windows">What are the Editor Windows?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="editor.html#core-architecture-design">Core Architecture &amp; Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="editor.html#available-editors">Available Editors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="editor.html#getting-started-with-editor-windows">Getting Started with Editor Windows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="digital_synth.html">Digital Synth Editors (Parts 1 &amp; 2)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="digital_synth.html#what-are-the-digital-synth-editors">What are the Digital Synth Editors?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="digital_synth.html#core-architecture-design">Core Architecture &amp; Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="digital_synth.html#digital-synth-editor-features">Digital Synth Editor Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="digital_synth.html#partial-management-system">Partial Management System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="digital_synth.html#performance-features">Performance Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="digital_synth.html#visual-feedback-monitoring">Visual Feedback &amp; Monitoring</a></li>
+<li class="toctree-l2"><a class="reference internal" href="digital_synth.html#getting-started-with-digital-synth-editors">Getting Started with Digital Synth Editors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analog_synth.html">Analog Synth Editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analog_synth.html#what-is-the-analog-synth-editor">What is the Analog Synth Editor?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analog_synth.html#core-architecture-design">Core Architecture &amp; Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analog_synth.html#analog-synth-editor-features">Analog Synth Editor Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analog_synth.html#analog-synthesis-characteristics">Analog Synthesis Characteristics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analog_synth.html#advanced-features">Advanced Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analog_synth.html#performance-features">Performance Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analog_synth.html#getting-started-with-analog-synth-editor">Getting Started with Analog Synth Editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="drum_kit.html">Drum Kit Editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="drum_kit.html#what-is-the-drum-kit-editor">What is the Drum Kit Editor?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="drum_kit.html#core-architecture-design">Core Architecture &amp; Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="drum_kit.html#drum-kit-editor-features">Drum Kit Editor Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="drum_kit.html#kit-management-system">Kit Management System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="drum_kit.html#advanced-sound-design">Advanced Sound Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="drum_kit.html#visual-feedback-monitoring">Visual Feedback &amp; Monitoring</a></li>
+<li class="toctree-l2"><a class="reference internal" href="drum_kit.html#getting-started-with-drum-kit-editor">Getting Started with Drum Kit Editor</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="additional-editors.html">Additional Editors</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="arpeggiator.html">Arpeggiator Editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arpeggiator.html#what-is-the-arpeggiator-editor">What is the Arpeggiator Editor?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arpeggiator.html#core-architecture-design">Core Architecture &amp; Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arpeggiator.html#arpeggiator-editor-features">Arpeggiator Editor Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arpeggiator.html#advanced-pattern-features">Advanced Pattern Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arpeggiator.html#sequencing-tools">Sequencing Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arpeggiator.html#musical-integration">Musical Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arpeggiator.html#getting-started-with-arpeggiator-editor">Getting Started with Arpeggiator Editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="effects.html">Effects Editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="effects.html#what-is-the-effects-editor">What is the Effects Editor?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="effects.html#core-architecture-design">Core Architecture &amp; Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="effects.html#effects-editor-features">Effects Editor Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="effects.html#advanced-processing">Advanced Processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="effects.html#performance-integration">Performance Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="effects.html#visual-feedback-monitoring">Visual Feedback &amp; Monitoring</a></li>
+<li class="toctree-l2"><a class="reference internal" href="effects.html#getting-started-with-effects-editor">Getting Started with Effects Editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vocal_effects.html">Vocal Effects Editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vocal_effects.html#what-is-the-vocal-effects-editor">What is the Vocal Effects Editor?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vocal_effects.html#core-architecture-design">Core Architecture &amp; Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vocal_effects.html#vocal-effects-editor-features">Vocal Effects Editor Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vocal_effects.html#advanced-vocal-processing">Advanced Vocal Processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vocal_effects.html#performance-features">Performance Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vocal_effects.html#visual-feedback-monitoring">Visual Feedback &amp; Monitoring</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vocal_effects.html#getting-started-with-vocal-effects-editor">Getting Started with Vocal Effects Editor</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="playing-midi-files.html">Playing MIDI Files</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pattern_sequencer.html">Pattern Sequencer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pattern_sequencer.html#what-is-the-pattern-sequencer">What is the Pattern Sequencer?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pattern_sequencer.html#core-architecture-design">Core Architecture &amp; Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pattern_sequencer.html#pattern-sequencer-features">Pattern Sequencer Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pattern_sequencer.html#advanced-pattern-features">Advanced Pattern Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pattern_sequencer.html#performance-features">Performance Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pattern_sequencer.html#creative-tools">Creative Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pattern_sequencer.html#visual-feedback-monitoring">Visual Feedback &amp; Monitoring</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pattern_sequencer.html#getting-started-with-pattern-sequencer">Getting Started with Pattern Sequencer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="midi_file_player.html">MIDI File Player &amp; Recorder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="midi_file_player.html#what-is-the-midi-file-player-recorder">What is the MIDI File Player &amp; Recorder?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="midi_file_player.html#core-architecture-design">Core Architecture &amp; Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="midi_file_player.html#midi-file-player-features">MIDI File Player Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="midi_file_player.html#production-tools">Production Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="midi_file_player.html#advanced-features">Advanced Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="midi_file_player.html#performance-features">Performance Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="midi_file_player.html#visual-feedback-monitoring">Visual Feedback &amp; Monitoring</a></li>
+<li class="toctree-l2"><a class="reference internal" href="midi_file_player.html#getting-started-with-midi-file-player-recorder">Getting Started with MIDI File Player &amp; Recorder</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#id1">Troubleshooting</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="legal.html">Legal Disclaimer</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">jdxi_editor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.html">jdxi_editor package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.html">jdxi_editor.jdxi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.log.html">jdxi_editor.log package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.midi.html">jdxi_editor.midi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.ui.html">jdxi_editor.ui package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.html#module-jdxi_editor.globals">jdxi_editor.globals module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.html#module-jdxi_editor.main">jdxi_editor.main module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.html#jdxi_editor.main.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.html#jdxi_editor.main.setup_splash_screen"><code class="docutils literal notranslate"><span class="pre">setup_splash_screen()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.html#module-jdxi_editor.project">jdxi_editor.project module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.html#module-jdxi_editor.resources">jdxi_editor.resources module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.html#jdxi_editor.resources.resource_path"><code class="docutils literal notranslate"><span class="pre">resource_path()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.html#module-jdxi_editor">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="autoapi/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/midi/index.html">midi</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/midi/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/midi/colors/index.html">midi.colors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/midi/slider/index.html">midi.slider</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/midi/spin_box/index.html">midi.spin_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/midi/time_ruler/index.html">midi.time_ruler</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/midi/track/index.html">midi.track</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/midi/track_viewer/index.html">midi.track_viewer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/midi/utils/index.html">midi.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/adsr/index.html">adsr</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/adsr/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/adsr/adsr/index.html">adsr.adsr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/adsr/graph/index.html">adsr.graph</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/adsr/parameter/index.html">adsr.parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/adsr/plot/index.html">adsr.plot</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/pitch/index.html">pitch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/pitch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/pitch/envelope/index.html">pitch.envelope</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/pitch/envelope_plot/index.html">pitch.envelope_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/pitch/pwm_plot/index.html">pitch.pwm_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/pitch/slider_spinbox/index.html">pitch.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/piano/index.html">piano</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/piano/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/piano/key/index.html">piano.key</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/piano/keyboard/index.html">piano.keyboard</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/panel/index.html">panel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/panel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/panel/partial/index.html">panel.partial</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/wheel/index.html">wheel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/wheel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/wheel/mod/index.html">wheel.mod</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/wheel/pitch/index.html">wheel.pitch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/wheel/wheel/index.html">wheel.wheel</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/preset/index.html">preset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/preset/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/preset/combo_box/index.html">preset.combo_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/preset/panel/index.html">preset.panel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/preset/patch_name/index.html">preset.patch_name</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/slider/index.html">slider</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/slider/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/slider/slider/index.html">slider.slider</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/slider/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/slider/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/slider/index.html#slider.Slider"><code class="docutils literal notranslate"><span class="pre">Slider</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/dialog/index.html">dialog</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/dialog/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/dialog/progress/index.html">dialog.progress</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/viewer/index.html">viewer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/viewer/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/viewer/log/index.html">viewer.log</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/button/index.html">button</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/button/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/button/channel/index.html">button.channel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/button/favorite/index.html">button.favorite</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/button/sequencer/index.html">button.sequencer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/button/waveform/index.html">button.waveform</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/button/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/button/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/button/index.html#button.ChannelButton"><code class="docutils literal notranslate"><span class="pre">ChannelButton</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/button/index.html#button.SequencerSquare"><code class="docutils literal notranslate"><span class="pre">SequencerSquare</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/switch/index.html">switch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/switch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/switch/partial/index.html">switch.partial</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/switch/switch/index.html">switch.switch</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/filter/index.html">filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/filter/index.html#filter.FilterWidget"><code class="docutils literal notranslate"><span class="pre">FilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/display/index.html">display</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/display/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/display/digital/index.html">display.digital</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/display/pattern/index.html">display.pattern</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/display/value/index.html">display.value</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/pattern/index.html">pattern</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/pattern/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/pattern/measure/index.html">pattern.measure</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/spin_box/index.html">spin_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/spin_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/spin_box/spin_box/index.html">spin_box.spin_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/envelope/index.html">envelope</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/envelope/base/index.html">envelope.base</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/indicator/index.html">indicator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/indicator/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/indicator/led/index.html">indicator.led</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/indicator/midi/index.html">indicator.midi</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/combo_box/index.html">combo_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/combo_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/combo_box/combo_box/index.html">combo_box.combo_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/jdxi_editor/index.html">jdxi_editor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/jdxi_editor/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/globals/index.html">jdxi_editor.globals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/jdxi/index.html">jdxi_editor.jdxi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/log/index.html">jdxi_editor.log</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/main/index.html">jdxi_editor.main</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/midi/index.html">jdxi_editor.midi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/project/index.html">jdxi_editor.project</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/resources/index.html">jdxi_editor.resources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/ui/index.html">jdxi_editor.ui</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/filter_plot/index.html">filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/filter_plot/index.html#filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/filter_plot/index.html#filter_plot.FilterPlot"><code class="docutils literal notranslate"><span class="pre">FilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/envelope_plot/index.html">envelope_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope_plot/index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/envelope_plot/index.html#envelope_plot.midi_value_to_float"><code class="docutils literal notranslate"><span class="pre">midi_value_to_float()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/envelope_plot/index.html#envelope_plot.WMTEnvPlot"><code class="docutils literal notranslate"><span class="pre">WMTEnvPlot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/envelope_plot/index.html#envelope_plot.app"><code class="docutils literal notranslate"><span class="pre">app</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/wave_selector/index.html">wave_selector</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/wave_selector/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/wave_selector/wave_selector/index.html">wave_selector.wave_selector</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/analog_filter/index.html">analog_filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/analog_filter/index.html#analog_filter.AnalogFilterWidget"><code class="docutils literal notranslate"><span class="pre">AnalogFilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/slider_spinbox/index.html">slider_spinbox</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/slider_spinbox/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/slider_spinbox/slider_spinbox/index.html">slider_spinbox.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/analog_filter_plot/index.html">analog_filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#analog_filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#analog_filter_plot.AnalogFilterPlot"><code class="docutils literal notranslate"><span class="pre">AnalogFilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">JD-Xi Editor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="editor-windows.html">Editor Windows</a></li>
+      <li class="breadcrumb-item active">JDXi Instrument Window</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/instrument.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="jdxi-instrument-window">
+<h1>JDXi Instrument Window<a class="headerlink" href="#jdxi-instrument-window" title="Link to this heading"></a></h1>
+<p>The <strong>JDXi Instrument Window</strong> is the central command center of the JDXI-Editor application—a sophisticated, real-time interface that transforms your Roland JD-Xi synthesizer into a powerful, computer-controlled instrument. This window serves as your primary gateway for sound design, performance, and comprehensive control over every aspect of your JD-Xi’s capabilities.</p>
+<figure class="align-default" id="id1">
+<a class="reference internal image-reference" href="_images/main_window_0.6.gif"><img alt="JDXi Instrument Window - Main Interface" src="_images/main_window_0.6.gif" style="width: 60%;" />
+</a>
+<figcaption>
+<p><span class="caption-text">JDXi Instrument Window - Main Interface</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="what-is-the-jdxi-instrument-window">
+<h1>What is the JDXi Instrument Window?<a class="headerlink" href="#what-is-the-jdxi-instrument-window" title="Link to this heading"></a></h1>
+<p>The JDXi Instrument Window is a feature-rich, graphical interface that provides complete real-time control over your Roland JD-Xi synthesizer. Unlike the limited LCD screen and menu-driven interface of the hardware itself, this window offers an expansive, intuitive environment where you can see, control, and modify every parameter with precision and clarity.</p>
+<p>Built with modern Qt6 technology, the window features a responsive, professional interface that automatically synchronizes with your JD-Xi hardware, ensuring that every change you make is instantly reflected in your synthesizer’s sound.</p>
+</section>
+<section id="core-architecture-components">
+<h1>Core Architecture &amp; Components<a class="headerlink" href="#core-architecture-components" title="Link to this heading"></a></h1>
+<dl class="simple">
+<dt>** Visual Instrument Representation**</dt><dd><p>The window displays a high-fidelity, interactive representation of your JD-Xi synthesizer, complete with:
+- <strong>Real-time Status Indicators</strong>: Visual feedback for MIDI communication, preset loading, and parameter changes
+- <strong>Dynamic Part Selection</strong>: Interactive buttons for each synthesizer section (Digital 1, Digital 2, Analog, Drums)
+- <strong>Live Parameter Display</strong>: Real-time visualization of current settings and values
+- <strong>Customizable Layout</strong>: Adaptable interface that scales to your workflow preferences</p>
+</dd>
+<dt>** Comprehensive Control System**</dt><dd><ul class="simple">
+<li><p><strong>Multi-Part Management</strong>: Simultaneous control over all four synthesizer parts</p></li>
+<li><p><strong>Real-time Parameter Updates</strong>: Instant synchronization between software and hardware</p></li>
+<li><p><strong>Bidirectional Communication</strong>: Full read/write capabilities for all JD-Xi parameters</p></li>
+<li><p><strong>State Management</strong>: Automatic saving and recall of your favorite settings</p></li>
+</ul>
+</dd>
+<dt>** Performance Integration**</dt><dd><ul class="simple">
+<li><p><strong>On-Screen Piano Keyboard</strong>: Full-featured virtual keyboard for testing and performance</p></li>
+<li><p><strong>MIDI Controller Support</strong>: Seamless integration with external MIDI controllers</p></li>
+<li><p><strong>Live Performance Mode</strong>: Optimized for real-time sound design and live performance</p></li>
+<li><p><strong>Preset Management</strong>: Advanced preset browsing, searching, and organization</p></li>
+</ul>
+</dd>
+</dl>
+</section>
+<section id="key-features-capabilities">
+<h1>Key Features &amp; Capabilities<a class="headerlink" href="#key-features-capabilities" title="Link to this heading"></a></h1>
+<dl class="simple">
+<dt>** Complete Synthesizer Control**</dt><dd><ul class="simple">
+<li><p><strong>Digital Synth Parts 1 &amp; 2</strong>: Full editing capabilities for both digital synthesizer parts, including 3 partials per part</p></li>
+<li><p><strong>Analog Synth Editor</strong>: Comprehensive control over the analog synthesizer section with real-time parameter updates</p></li>
+<li><p><strong>Drum Kit Editor</strong>: Customize drum sounds, patterns, and kit parameters with visual feedback</p></li>
+<li><p><strong>Multi-Part Mixing</strong>: Advanced mixer controls for volume, panning, and routing</p></li>
+</ul>
+</dd>
+<dt>** Advanced Effects Processing**</dt><dd><ul class="simple">
+<li><p><strong>Reverb &amp; Delay</strong>: Professional-quality time-based effects with real-time parameter control</p></li>
+<li><p><strong>Vocal Effects</strong>: Vocoder and voice processing capabilities with live monitoring</p></li>
+<li><p><strong>Arpeggiator</strong>: Sophisticated pattern generation and sequencing with visual pattern display</p></li>
+<li><p><strong>Multi-effects Chain</strong>: Layer multiple effects for complex sound design</p></li>
+</ul>
+</dd>
+<dt>** Performance &amp; Workflow Features**</dt><dd><ul class="simple">
+<li><p><strong>On-Screen Keyboard</strong>: Full 88-key virtual piano with velocity sensitivity and octave shifting</p></li>
+<li><p><strong>Preset Management</strong>: Advanced search, categorization, and organization of your sound library</p></li>
+<li><p><strong>Favorites System</strong>: Quick access to your most-used presets and settings</p></li>
+<li><p><strong>Real-time Monitoring</strong>: Live visualization of MIDI data, parameter changes, and audio levels</p></li>
+</ul>
+</dd>
+<dt>** Professional Tools &amp; Utilities**</dt><dd><ul class="simple">
+<li><p><strong>MIDI Debugger</strong>: Comprehensive monitoring and troubleshooting of MIDI communication</p></li>
+<li><p><strong>Parameter Logging</strong>: Detailed tracking of all changes for analysis and recall</p></li>
+<li><p><strong>Visual Displays</strong>: ADSR envelopes, pitch modulation, and waveform visualization</p></li>
+<li><p><strong>Cross-Platform Compatibility</strong>: Native performance on macOS, Windows, and Linux</p></li>
+</ul>
+</dd>
+</dl>
+</section>
+<section id="user-interface-components">
+<h1>User Interface Components<a class="headerlink" href="#user-interface-components" title="Link to this heading"></a></h1>
+<dl class="simple">
+<dt><strong>Main Control Panel</strong></dt><dd><p>The central hub featuring:
+- <strong>Part Selection Buttons</strong>: Interactive buttons for Digital 1, Digital 2, Analog, and Drums
+- <strong>Status Indicators</strong>: Real-time MIDI input/output status and connection monitoring
+- <strong>Preset Display</strong>: Current preset information with navigation controls
+- <strong>Quick Access Tools</strong>: Frequently used controls and settings</p>
+</dd>
+<dt><strong>Visual Instrument Display</strong></dt><dd><p>A high-resolution representation of your JD-Xi featuring:
+- <strong>Interactive Elements</strong>: Clickable controls that mirror hardware functionality
+- <strong>Real-time Updates</strong>: Live reflection of parameter changes and settings
+- <strong>Customizable Overlays</strong>: Adjustable display elements for different workflow needs
+- <strong>Responsive Design</strong>: Scales beautifully across different screen sizes and resolutions</p>
+</dd>
+<dt><strong>Piano Keyboard Interface</strong></dt><dd><p>A professional-grade virtual keyboard providing:
+- <strong>Full 88-Key Range</strong>: Complete piano keyboard with octave shifting capabilities
+- <strong>Velocity Sensitivity</strong>: Realistic key response with adjustable velocity curves
+- <strong>MIDI Controller Integration</strong>: Seamless support for external MIDI controllers
+- <strong>Performance Optimization</strong>: Low-latency response for live performance</p>
+</dd>
+<dt><strong>Status Bar &amp; Monitoring</strong></dt><dd><p>Comprehensive system monitoring including:
+- <strong>MIDI Communication Status</strong>: Real-time indicators for input/output connectivity
+- <strong>Parameter Change Logging</strong>: Live feed of all parameter modifications
+- <strong>System Performance</strong>: CPU usage, memory consumption, and response times
+- <strong>Error Reporting</strong>: Automatic detection and reporting of communication issues</p>
+</dd>
+</dl>
+</section>
+<section id="workflow-integration">
+<h1>Workflow Integration<a class="headerlink" href="#workflow-integration" title="Link to this heading"></a></h1>
+<dl class="simple">
+<dt><strong>Sound Design Workflow</strong></dt><dd><ol class="arabic simple">
+<li><p><strong>Part Selection</strong>: Choose the synthesizer section you want to edit</p></li>
+<li><p><strong>Parameter Adjustment</strong>: Use sliders, knobs, and controls to modify settings</p></li>
+<li><p><strong>Real-time Testing</strong>: Play notes using the on-screen keyboard or MIDI controller</p></li>
+<li><p><strong>Preset Management</strong>: Save your creations and organize your sound library</p></li>
+<li><p><strong>Performance</strong>: Use your customized sounds in live performance or recording</p></li>
+</ol>
+</dd>
+<dt><strong>Live Performance Integration</strong></dt><dd><ul class="simple">
+<li><p><strong>Instant Access</strong>: Quick switching between presets and settings</p></li>
+<li><p><strong>Real-time Control</strong>: Immediate response to parameter changes</p></li>
+<li><p><strong>Visual Feedback</strong>: Clear indication of current settings and changes</p></li>
+<li><p><strong>Reliable Communication</strong>: Stable MIDI connection for uninterrupted performance</p></li>
+</ul>
+</dd>
+<dt><strong>Studio Workflow</strong></dt><dd><ul class="simple">
+<li><p><strong>Precision Editing</strong>: Fine-tune parameters with exact numerical control</p></li>
+<li><p><strong>Preset Organization</strong>: Advanced categorization and search capabilities</p></li>
+<li><p><strong>Project Integration</strong>: Seamless workflow with your DAW and recording software</p></li>
+<li><p><strong>Documentation</strong>: Automatic logging of all changes and settings</p></li>
+</ul>
+</dd>
+</dl>
+</section>
+<section id="technical-specifications">
+<h1>Technical Specifications<a class="headerlink" href="#technical-specifications" title="Link to this heading"></a></h1>
+<dl class="simple">
+<dt><strong>System Requirements</strong></dt><dd><ul class="simple">
+<li><p><strong>Operating System</strong>: macOS 10.14+, Windows 10+, or Linux (Ubuntu 18.04+)</p></li>
+<li><p><strong>Python</strong>: Version 3.8 or higher</p></li>
+<li><p><strong>Memory</strong>: 4GB RAM minimum, 8GB recommended</p></li>
+<li><p><strong>Storage</strong>: 500MB available space for application and presets</p></li>
+<li><p><strong>MIDI Interface</strong>: USB connection to Roland JD-Xi synthesizer</p></li>
+</ul>
+</dd>
+<dt><strong>Performance Characteristics</strong></dt><dd><ul class="simple">
+<li><p><strong>Latency</strong>: Ultra-low latency MIDI communication (&lt; 5ms)</p></li>
+<li><p><strong>Refresh Rate</strong>: 60fps real-time parameter updates</p></li>
+<li><p><strong>Memory Usage</strong>: Optimized for minimal system resource consumption</p></li>
+<li><p><strong>Stability</strong>: Robust error handling and automatic recovery</p></li>
+</ul>
+</dd>
+<dt><strong>Compatibility</strong></dt><dd><ul class="simple">
+<li><p><strong>Hardware</strong>: Roland JD-Xi synthesizer (all firmware versions)</p></li>
+<li><p><strong>MIDI</strong>: Standard MIDI 1.0 protocol with SysEx support</p></li>
+<li><p><strong>Controllers</strong>: Full support for MIDI controllers and keyboards</p></li>
+<li><p><strong>DAW Integration</strong>: Compatible with all major digital audio workstations</p></li>
+</ul>
+</dd>
+</dl>
+</section>
+<section id="getting-started-with-the-instrument-window">
+<h1>Getting Started with the Instrument Window<a class="headerlink" href="#getting-started-with-the-instrument-window" title="Link to this heading"></a></h1>
+<dl class="simple">
+<dt><strong>Initial Setup</strong></dt><dd><ol class="arabic simple">
+<li><p><strong>Connect Your JD-Xi</strong>: Use a USB cable to connect your synthesizer to your computer</p></li>
+<li><p><strong>Launch JDXI-Editor</strong>: Start the application and wait for automatic MIDI detection</p></li>
+<li><p><strong>Verify Connection</strong>: Check that the MIDI indicators show active input/output</p></li>
+<li><p><strong>Load a Preset</strong>: Select a preset to begin exploring the interface</p></li>
+</ol>
+</dd>
+<dt><strong>Basic Operation</strong></dt><dd><ol class="arabic simple">
+<li><p><strong>Select a Part</strong>: Click on Digital 1, Digital 2, Analog, or Drums to choose your target</p></li>
+<li><p><strong>Adjust Parameters</strong>: Use the on-screen controls to modify settings in real-time</p></li>
+<li><p><strong>Test Your Changes</strong>: Play notes using the virtual keyboard or your MIDI controller</p></li>
+<li><p><strong>Save Your Work</strong>: Use the preset management system to save your creations</p></li>
+</ol>
+</dd>
+<dt><strong>Advanced Features</strong></dt><dd><ul class="simple">
+<li><p><strong>Multi-Part Editing</strong>: Work with multiple synthesizer parts simultaneously</p></li>
+<li><p><strong>Preset Management</strong>: Organize and categorize your sound library</p></li>
+<li><p><strong>MIDI Monitoring</strong>: Use the debugger to troubleshoot and optimize your setup</p></li>
+<li><p><strong>Custom Workflows</strong>: Adapt the interface to your specific creative process</p></li>
+</ul>
+</dd>
+</dl>
+<p>The JDXi Instrument Window transforms your Roland JD-Xi from a hardware synthesizer into a powerful, computer-integrated instrument that combines the best of both worlds: the tactile feel of hardware with the precision and convenience of modern software interfaces.</p>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="editor-windows.html" class="btn btn-neutral float-left" title="Editor Windows" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="editor.html" class="btn btn-neutral float-right" title="Editor Windows" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Mark Mrooks.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

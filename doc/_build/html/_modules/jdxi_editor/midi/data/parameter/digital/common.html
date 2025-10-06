@@ -1,0 +1,722 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>jdxi_editor.midi.data.parameter.digital.common &mdash; JD-Xi Editor 0.8.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../../../_static/documentation_options.js?v=486e5634"></script>
+      <script src="../../../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../../../index.html" class="icon icon-home">
+            JD-Xi Editor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../getting-started.html#getting-started-guide">Getting Started Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../editor-windows.html">Editor Windows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../editor-windows.html#available-editors">Available Editors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../additional-editors.html">Additional Editors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../additional-editors.html#available-editors">Available Editors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../playing-midi-files.html">Playing MIDI Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../playing-midi-files.html#available-tools">Available Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../troubleshooting.html#id1">Troubleshooting</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../legal.html">Legal Disclaimer</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../modules.html">jdxi_editor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../jdxi_editor.html">jdxi_editor package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../jdxi_editor.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../jdxi_editor.jdxi.html">jdxi_editor.jdxi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../jdxi_editor.log.html">jdxi_editor.log package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../jdxi_editor.midi.html">jdxi_editor.midi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../jdxi_editor.ui.html">jdxi_editor.ui package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../jdxi_editor.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../jdxi_editor.html#module-jdxi_editor.globals">jdxi_editor.globals module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../jdxi_editor.html#module-jdxi_editor.main">jdxi_editor.main module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../jdxi_editor.html#jdxi_editor.main.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../jdxi_editor.html#jdxi_editor.main.setup_splash_screen"><code class="docutils literal notranslate"><span class="pre">setup_splash_screen()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../jdxi_editor.html#module-jdxi_editor.project">jdxi_editor.project module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../jdxi_editor.html#module-jdxi_editor.resources">jdxi_editor.resources module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../jdxi_editor.html#jdxi_editor.resources.resource_path"><code class="docutils literal notranslate"><span class="pre">resource_path()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../jdxi_editor.html#module-jdxi_editor">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../autoapi/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/midi/index.html">midi</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/midi/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/midi/colors/index.html">midi.colors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/midi/slider/index.html">midi.slider</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/midi/spin_box/index.html">midi.spin_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/midi/time_ruler/index.html">midi.time_ruler</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/midi/track/index.html">midi.track</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/midi/track_viewer/index.html">midi.track_viewer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/midi/utils/index.html">midi.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/adsr/index.html">adsr</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/adsr/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/adsr/adsr/index.html">adsr.adsr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/adsr/graph/index.html">adsr.graph</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/adsr/parameter/index.html">adsr.parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/adsr/plot/index.html">adsr.plot</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/pitch/index.html">pitch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/pitch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/pitch/envelope/index.html">pitch.envelope</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/pitch/envelope_plot/index.html">pitch.envelope_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/pitch/pwm_plot/index.html">pitch.pwm_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/pitch/slider_spinbox/index.html">pitch.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/piano/index.html">piano</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/piano/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/piano/key/index.html">piano.key</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/piano/keyboard/index.html">piano.keyboard</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/panel/index.html">panel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/panel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/panel/partial/index.html">panel.partial</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/wheel/index.html">wheel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/wheel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/wheel/mod/index.html">wheel.mod</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/wheel/pitch/index.html">wheel.pitch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/wheel/wheel/index.html">wheel.wheel</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/preset/index.html">preset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/preset/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/preset/combo_box/index.html">preset.combo_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/preset/panel/index.html">preset.panel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/preset/patch_name/index.html">preset.patch_name</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/slider/index.html">slider</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/slider/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/slider/slider/index.html">slider.slider</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/slider/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/slider/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/slider/index.html#slider.Slider"><code class="docutils literal notranslate"><span class="pre">Slider</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/dialog/index.html">dialog</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/dialog/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/dialog/progress/index.html">dialog.progress</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/viewer/index.html">viewer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/viewer/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/viewer/log/index.html">viewer.log</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/button/index.html">button</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/button/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/button/channel/index.html">button.channel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/button/favorite/index.html">button.favorite</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/button/sequencer/index.html">button.sequencer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/button/waveform/index.html">button.waveform</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/button/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/button/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/button/index.html#button.ChannelButton"><code class="docutils literal notranslate"><span class="pre">ChannelButton</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/button/index.html#button.SequencerSquare"><code class="docutils literal notranslate"><span class="pre">SequencerSquare</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/switch/index.html">switch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/switch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/switch/partial/index.html">switch.partial</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/switch/switch/index.html">switch.switch</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/filter/index.html">filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/filter/index.html#filter.FilterWidget"><code class="docutils literal notranslate"><span class="pre">FilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/display/index.html">display</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/display/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/display/digital/index.html">display.digital</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/display/pattern/index.html">display.pattern</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/display/value/index.html">display.value</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/pattern/index.html">pattern</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/pattern/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/pattern/measure/index.html">pattern.measure</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/spin_box/index.html">spin_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/spin_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/spin_box/spin_box/index.html">spin_box.spin_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/envelope/index.html">envelope</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/envelope/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/envelope/base/index.html">envelope.base</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/indicator/index.html">indicator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/indicator/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/indicator/led/index.html">indicator.led</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/indicator/midi/index.html">indicator.midi</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/combo_box/index.html">combo_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/combo_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/combo_box/combo_box/index.html">combo_box.combo_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/jdxi_editor/index.html">jdxi_editor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/jdxi_editor/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/jdxi_editor/globals/index.html">jdxi_editor.globals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/jdxi_editor/jdxi/index.html">jdxi_editor.jdxi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/jdxi_editor/log/index.html">jdxi_editor.log</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/jdxi_editor/main/index.html">jdxi_editor.main</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/jdxi_editor/midi/index.html">jdxi_editor.midi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/jdxi_editor/project/index.html">jdxi_editor.project</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/jdxi_editor/resources/index.html">jdxi_editor.resources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/jdxi_editor/ui/index.html">jdxi_editor.ui</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/filter_plot/index.html">filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/filter_plot/index.html#filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/filter_plot/index.html#filter_plot.FilterPlot"><code class="docutils literal notranslate"><span class="pre">FilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/envelope_plot/index.html">envelope_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/envelope_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/envelope_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/envelope_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/envelope_plot/index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/envelope_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/envelope_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/envelope_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/envelope_plot/index.html#envelope_plot.midi_value_to_float"><code class="docutils literal notranslate"><span class="pre">midi_value_to_float()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/envelope_plot/index.html#envelope_plot.WMTEnvPlot"><code class="docutils literal notranslate"><span class="pre">WMTEnvPlot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/envelope_plot/index.html#envelope_plot.app"><code class="docutils literal notranslate"><span class="pre">app</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/wave_selector/index.html">wave_selector</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/wave_selector/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/wave_selector/wave_selector/index.html">wave_selector.wave_selector</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/analog_filter/index.html">analog_filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/analog_filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/analog_filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/analog_filter/index.html#analog_filter.AnalogFilterWidget"><code class="docutils literal notranslate"><span class="pre">AnalogFilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/slider_spinbox/index.html">slider_spinbox</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/slider_spinbox/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/slider_spinbox/slider_spinbox/index.html">slider_spinbox.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/analog_filter_plot/index.html">analog_filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/analog_filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/analog_filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/analog_filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/analog_filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/analog_filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/analog_filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/analog_filter_plot/index.html#analog_filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/analog_filter_plot/index.html#analog_filter_plot.AnalogFilterPlot"><code class="docutils literal notranslate"><span class="pre">AnalogFilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../../index.html">JD-Xi Editor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">jdxi_editor.midi.data.parameter.digital.common</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for jdxi_editor.midi.data.parameter.digital.common</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Module: AddressParameterDigitalCommon</span>
+
+<span class="sd">This module defines the AddressParameterDigitalCommon class, which represents common parameters</span>
+<span class="sd">for Digital/SuperNATURAL synth tones. These parameters are shared across all partials and</span>
+<span class="sd">define various synthesizer settings, such as tone name, tone level, performance parameters,</span>
+<span class="sd">partial switches, and additional effects.</span>
+
+<span class="sd">The class provides methods to:</span>
+
+<span class="sd">- Retrieve a human-readable display name for each parameter.</span>
+<span class="sd">- Identify if a parameter is a switch (binary or enum).</span>
+<span class="sd">- Get appropriate display text for switch values.</span>
+<span class="sd">- Validate and convert parameter values within their defined range.</span>
+<span class="sd">- Retrieve the partial number (1-3) for partial-specific parameters.</span>
+<span class="sd">- Get a parameter by its name.</span>
+
+<span class="sd">Parameters include:</span>
+<span class="sd">- Tone name parameters (12 ASCII characters)</span>
+<span class="sd">- Tone level</span>
+<span class="sd">- Performance parameters (e.g., Portamento switch, Mono switch)</span>
+<span class="sd">- Partial switches (e.g., Partial 1 switch, Partial 2 switch)</span>
+<span class="sd">- Additional effect parameters (e.g., Ring Mod, Unison, Analog Feel)</span>
+
+<span class="sd">Usage example:</span>
+<span class="sd">    # Initialize a parameter object</span>
+<span class="sd">    param = AddressParameterDigitalCommon(address=0x00, min_val=0, max_val=127)</span>
+
+<span class="sd">    # Get the display name for the parameter</span>
+<span class="sd">    print(param.display_name)</span>
+
+<span class="sd">    # Validate and convert a value for the parameter</span>
+<span class="sd">    valid_value = param.validate_value(64)</span>
+
+<span class="sd">    # Get the switch text for a given value</span>
+<span class="sd">    switch_text = param.get_switch_text(1)</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.data.address.address</span><span class="w"> </span><span class="kn">import</span> <span class="n">AddressOffsetProgramLMB</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.data.parameter.synth</span><span class="w"> </span><span class="kn">import</span> <span class="n">AddressParameter</span>
+
+
+<div class="viewcode-block" id="AddressParameterDigitalCommon">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/digital/index.html#jdxi_editor.midi.data.parameter.digital.common.AddressParameterDigitalCommon">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">AddressParameterDigitalCommon</span><span class="p">(</span><span class="n">AddressParameter</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Common parameters for Digital/SuperNATURAL synth tones.</span>
+<span class="sd">    These parameters are shared across all partials.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="AddressParameterDigitalCommon.__init__">
+<a class="viewcode-back" href="../../../../../../jdxi_editor.midi.data.parameter.digital.html#jdxi_editor.midi.data.parameter.digital.common.AddressParameterDigitalCommon.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">address</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                 <span class="n">min_val</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                 <span class="n">max_val</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                 <span class="n">tooltip</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+                 <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">min_val</span><span class="p">,</span> <span class="n">max_val</span><span class="p">)</span>
+<div class="viewcode-block" id="AddressParameterDigitalCommon.address">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/digital/common/index.html#jdxi_editor.midi.data.parameter.digital.common.AddressParameterDigitalCommon.address">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">=</span> <span class="n">address</span></div>
+
+<div class="viewcode-block" id="AddressParameterDigitalCommon.min_val">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/digital/common/index.html#jdxi_editor.midi.data.parameter.digital.common.AddressParameterDigitalCommon.min_val">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_val</span> <span class="o">=</span> <span class="n">min_val</span></div>
+
+<div class="viewcode-block" id="AddressParameterDigitalCommon.max_val">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/digital/common/index.html#jdxi_editor.midi.data.parameter.digital.common.AddressParameterDigitalCommon.max_val">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_val</span> <span class="o">=</span> <span class="n">max_val</span></div>
+
+<div class="viewcode-block" id="AddressParameterDigitalCommon.tooltip">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/digital/common/index.html#jdxi_editor.midi.data.parameter.digital.common.AddressParameterDigitalCommon.tooltip">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tooltip</span> <span class="o">=</span> <span class="n">tooltip</span></div>
+</div>
+
+
+    <span class="c1"># Tone name parameters (12 ASCII characters)</span>
+<div class="viewcode-block" id="AddressParameterDigitalCommon.TONE_NAME_1">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/digital/common/index.html#jdxi_editor.midi.data.parameter.digital.common.AddressParameterDigitalCommon.TONE_NAME_1">[docs]</a>
+    <span class="n">TONE_NAME_1</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x00</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">127</span><span class="p">)</span>  <span class="c1"># ASCII character 1</span></div>
+
+<div class="viewcode-block" id="AddressParameterDigitalCommon.TONE_NAME_2">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/digital/common/index.html#jdxi_editor.midi.data.parameter.digital.common.AddressParameterDigitalCommon.TONE_NAME_2">[docs]</a>
+    <span class="n">TONE_NAME_2</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x01</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">127</span><span class="p">)</span>  <span class="c1"># ASCII character 2</span></div>
+
+<div class="viewcode-block" id="AddressParameterDigitalCommon.TONE_NAME_3">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/digital/common/index.html#jdxi_editor.midi.data.parameter.digital.common.AddressParameterDigitalCommon.TONE_NAME_3">[docs]</a>
+    <span class="n">TONE_NAME_3</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x02</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">127</span><span class="p">)</span>  <span class="c1"># ASCII character 3</span></div>
+
+<div class="viewcode-block" id="AddressParameterDigitalCommon.TONE_NAME_4">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/digital/common/index.html#jdxi_editor.midi.data.parameter.digital.common.AddressParameterDigitalCommon.TONE_NAME_4">[docs]</a>
+    <span class="n">TONE_NAME_4</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x03</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">127</span><span class="p">)</span>  <span class="c1"># ASCII character 4</span></div>
+
+<div class="viewcode-block" id="AddressParameterDigitalCommon.TONE_NAME_5">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/digital/common/index.html#jdxi_editor.midi.data.parameter.digital.common.AddressParameterDigitalCommon.TONE_NAME_5">[docs]</a>
+    <span class="n">TONE_NAME_5</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x04</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">127</span><span class="p">)</span>  <span class="c1"># ASCII character 5</span></div>
+
+<div class="viewcode-block" id="AddressParameterDigitalCommon.TONE_NAME_6">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/digital/common/index.html#jdxi_editor.midi.data.parameter.digital.common.AddressParameterDigitalCommon.TONE_NAME_6">[docs]</a>
+    <span class="n">TONE_NAME_6</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x05</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">127</span><span class="p">)</span>  <span class="c1"># ASCII character 6</span></div>
+
+<div class="viewcode-block" id="AddressParameterDigitalCommon.TONE_NAME_7">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/digital/common/index.html#jdxi_editor.midi.data.parameter.digital.common.AddressParameterDigitalCommon.TONE_NAME_7">[docs]</a>
+    <span class="n">TONE_NAME_7</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x06</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">127</span><span class="p">)</span>  <span class="c1"># ASCII character 7</span></div>
+
+<div class="viewcode-block" id="AddressParameterDigitalCommon.TONE_NAME_8">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/digital/common/index.html#jdxi_editor.midi.data.parameter.digital.common.AddressParameterDigitalCommon.TONE_NAME_8">[docs]</a>
+    <span class="n">TONE_NAME_8</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x07</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">127</span><span class="p">)</span>  <span class="c1"># ASCII character 8</span></div>
+
+<div class="viewcode-block" id="AddressParameterDigitalCommon.TONE_NAME_9">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/digital/common/index.html#jdxi_editor.midi.data.parameter.digital.common.AddressParameterDigitalCommon.TONE_NAME_9">[docs]</a>
+    <span class="n">TONE_NAME_9</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x08</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">127</span><span class="p">)</span>  <span class="c1"># ASCII character 9</span></div>
+
+<div class="viewcode-block" id="AddressParameterDigitalCommon.TONE_NAME_10">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/digital/common/index.html#jdxi_editor.midi.data.parameter.digital.common.AddressParameterDigitalCommon.TONE_NAME_10">[docs]</a>
+    <span class="n">TONE_NAME_10</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x09</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">127</span><span class="p">)</span>  <span class="c1"># ASCII character 10</span></div>
+
+<div class="viewcode-block" id="AddressParameterDigitalCommon.TONE_NAME_11">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/digital/common/index.html#jdxi_editor.midi.data.parameter.digital.common.AddressParameterDigitalCommon.TONE_NAME_11">[docs]</a>
+    <span class="n">TONE_NAME_11</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x0A</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">127</span><span class="p">)</span>  <span class="c1"># ASCII character 11</span></div>
+
+<div class="viewcode-block" id="AddressParameterDigitalCommon.TONE_NAME_12">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/digital/common/index.html#jdxi_editor.midi.data.parameter.digital.common.AddressParameterDigitalCommon.TONE_NAME_12">[docs]</a>
+    <span class="n">TONE_NAME_12</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x0B</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">127</span><span class="p">)</span>  <span class="c1"># ASCII character 12</span></div>
+
+
+    <span class="c1"># Tone level</span>
+<div class="viewcode-block" id="AddressParameterDigitalCommon.TONE_LEVEL">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/digital/common/index.html#jdxi_editor.midi.data.parameter.digital.common.AddressParameterDigitalCommon.TONE_LEVEL">[docs]</a>
+    <span class="n">TONE_LEVEL</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x0C</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">,</span> <span class="s2">&quot;Adjusts the overall volume of the tone&quot;</span><span class="p">)</span>  <span class="c1"># Overall tone level</span></div>
+
+
+    <span class="c1"># Performance parameters</span>
+<div class="viewcode-block" id="AddressParameterDigitalCommon.PORTAMENTO_SWITCH">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/digital/common/index.html#jdxi_editor.midi.data.parameter.digital.common.AddressParameterDigitalCommon.PORTAMENTO_SWITCH">[docs]</a>
+    <span class="n">PORTAMENTO_SWITCH</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x12</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Specifies whether the portamento effect will be applied (ON) or not applied (OFF)&quot;</span><span class="p">)</span>  <span class="c1"># Portamento Switch (OFF, ON)</span></div>
+
+<div class="viewcode-block" id="AddressParameterDigitalCommon.PORTAMENTO_TIME">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/digital/common/index.html#jdxi_editor.midi.data.parameter.digital.common.AddressParameterDigitalCommon.PORTAMENTO_TIME">[docs]</a>
+    <span class="n">PORTAMENTO_TIME</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x13</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">,</span> <span class="s2">&quot;Specifies the time taken for the pitch to change when playing portamento. Higher values </span><span class="se">\n</span><span class="s2">lengthen the time over which the pitch will change to the next note.&quot;</span><span class="p">)</span>  <span class="c1"># Portamento Time (CC# 5)</span></div>
+
+<div class="viewcode-block" id="AddressParameterDigitalCommon.MONO_SWITCH">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/digital/common/index.html#jdxi_editor.midi.data.parameter.digital.common.AddressParameterDigitalCommon.MONO_SWITCH">[docs]</a>
+    <span class="n">MONO_SWITCH</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x14</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Specifies whether notes will sound polyphonically (POLY) or monophonically (MONO)&quot;</span><span class="p">)</span>  <span class="c1"># Mono Switch (OFF, ON)</span></div>
+
+<div class="viewcode-block" id="AddressParameterDigitalCommon.OCTAVE_SHIFT">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/digital/common/index.html#jdxi_editor.midi.data.parameter.digital.common.AddressParameterDigitalCommon.OCTAVE_SHIFT">[docs]</a>
+    <span class="n">OCTAVE_SHIFT</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x15</span><span class="p">,</span> <span class="mi">61</span><span class="p">,</span> <span class="mi">67</span><span class="p">,</span> <span class="s2">&quot;Specifies the octave of the tone&quot;</span><span class="p">)</span>  <span class="c1"># Octave Shift (-3 to +3)</span></div>
+
+<div class="viewcode-block" id="AddressParameterDigitalCommon.PITCH_BEND_UP">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/digital/common/index.html#jdxi_editor.midi.data.parameter.digital.common.AddressParameterDigitalCommon.PITCH_BEND_UP">[docs]</a>
+    <span class="n">PITCH_BEND_UP</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x16</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">24</span><span class="p">,</span> <span class="s2">&quot;Specifies the amount of pitch change that occurs when the pitch bend/modulation lever is </span><span class="se">\n</span><span class="s2">moved all the way up.&quot;</span><span class="p">)</span>  <span class="c1"># Pitch Bend Range Up (semitones)</span></div>
+
+<div class="viewcode-block" id="AddressParameterDigitalCommon.PITCH_BEND_DOWN">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/digital/common/index.html#jdxi_editor.midi.data.parameter.digital.common.AddressParameterDigitalCommon.PITCH_BEND_DOWN">[docs]</a>
+    <span class="n">PITCH_BEND_DOWN</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x17</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">24</span><span class="p">,</span> <span class="s2">&quot;Specifies the amount of pitch change that occurs when the pitch bend/modulation lever is </span><span class="se">\n</span><span class="s2">moved all the way to the dowm.&quot;</span><span class="p">)</span>  <span class="c1"># Pitch Bend Range Down (semitones)</span></div>
+
+
+    <span class="c1"># Partial switches</span>
+<div class="viewcode-block" id="AddressParameterDigitalCommon.PARTIAL1_SWITCH">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/digital/common/index.html#jdxi_editor.midi.data.parameter.digital.common.AddressParameterDigitalCommon.PARTIAL1_SWITCH">[docs]</a>
+    <span class="n">PARTIAL1_SWITCH</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x19</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Partial 1 turn on (OFF, ON)&quot;</span><span class="p">)</span>  <span class="c1"># Partial 1 Switch (OFF, ON)</span></div>
+
+<div class="viewcode-block" id="AddressParameterDigitalCommon.PARTIAL1_SELECT">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/digital/common/index.html#jdxi_editor.midi.data.parameter.digital.common.AddressParameterDigitalCommon.PARTIAL1_SELECT">[docs]</a>
+    <span class="n">PARTIAL1_SELECT</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x1A</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Partial 1 select and edit (OFF, ON)&quot;</span><span class="p">)</span>  <span class="c1"># Partial 1 Select (OFF, ON)</span></div>
+
+<div class="viewcode-block" id="AddressParameterDigitalCommon.PARTIAL2_SWITCH">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/digital/common/index.html#jdxi_editor.midi.data.parameter.digital.common.AddressParameterDigitalCommon.PARTIAL2_SWITCH">[docs]</a>
+    <span class="n">PARTIAL2_SWITCH</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x1B</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Partial 2 turn on (OFF, ON)&quot;</span><span class="p">)</span>  <span class="c1"># Partial 2 Switch (OFF, ON)</span></div>
+
+<div class="viewcode-block" id="AddressParameterDigitalCommon.PARTIAL2_SELECT">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/digital/common/index.html#jdxi_editor.midi.data.parameter.digital.common.AddressParameterDigitalCommon.PARTIAL2_SELECT">[docs]</a>
+    <span class="n">PARTIAL2_SELECT</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x1C</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Partial 2 select and edit (OFF, ON)&quot;</span><span class="p">)</span>  <span class="c1"># Partial 2 Select (OFF, ON)</span></div>
+
+<div class="viewcode-block" id="AddressParameterDigitalCommon.PARTIAL3_SWITCH">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/digital/common/index.html#jdxi_editor.midi.data.parameter.digital.common.AddressParameterDigitalCommon.PARTIAL3_SWITCH">[docs]</a>
+    <span class="n">PARTIAL3_SWITCH</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x1D</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Partial 1 turn on (OFF, ON)&quot;</span><span class="p">)</span>  <span class="c1"># Partial 3 Switch (OFF, ON)</span></div>
+
+<div class="viewcode-block" id="AddressParameterDigitalCommon.PARTIAL3_SELECT">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/digital/common/index.html#jdxi_editor.midi.data.parameter.digital.common.AddressParameterDigitalCommon.PARTIAL3_SELECT">[docs]</a>
+    <span class="n">PARTIAL3_SELECT</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x1E</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Partial 3 select and edit (OFF, ON)&quot;</span><span class="p">)</span>  <span class="c1"># Partial 3 Select (OFF, ON)</span></div>
+
+
+    <span class="c1"># Additional parameters</span>
+<div class="viewcode-block" id="AddressParameterDigitalCommon.RING_SWITCH">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/digital/common/index.html#jdxi_editor.midi.data.parameter.digital.common.AddressParameterDigitalCommon.RING_SWITCH">[docs]</a>
+    <span class="n">RING_SWITCH</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x1F</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;Turns ring modulator on/off. </span><span class="se">\n</span><span class="s2">By multiplying partial 1’s OSC and partial 2’s OSC, this creates a complex, metallic-sounding waveform like that of a bell. </span><span class="se">\n</span><span class="s2">If Ring Switch is turned on, the OSC Pulse Width Mod Depth, OSC Pulse Width, and SUPER SAW</span><span class="se">\n</span><span class="s2">Detune of partial 1 and partial 2 cannot be used.</span><span class="se">\n</span><span class="s2">In addition, if an asymmetrical square wave is selected as the OSC waveform, the OSC variation</span><span class="se">\n</span><span class="s2">will be ignored, and there will be a slight difference in sound compared to the originally selected</span><span class="se">\n</span><span class="s2"> waveform (OFF, ON)&quot;</span><span class="p">)</span>  <span class="c1"># OFF(0), ---(1), ON(2)</span></div>
+
+<div class="viewcode-block" id="AddressParameterDigitalCommon.UNISON_SWITCH">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/digital/common/index.html#jdxi_editor.midi.data.parameter.digital.common.AddressParameterDigitalCommon.UNISON_SWITCH">[docs]</a>
+    <span class="n">UNISON_SWITCH</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x2E</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;This layers a single sound.</span><span class="se">\n</span><span class="s2">If the Unison Switch is on, the number of notes layered on one key will change according to the</span><span class="se">\n</span><span class="s2">number of keys you play.&quot;</span><span class="p">)</span>  <span class="c1"># OFF, ON</span></div>
+
+<div class="viewcode-block" id="AddressParameterDigitalCommon.PORTAMENTO_MODE">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/digital/common/index.html#jdxi_editor.midi.data.parameter.digital.common.AddressParameterDigitalCommon.PORTAMENTO_MODE">[docs]</a>
+    <span class="n">PORTAMENTO_MODE</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x31</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;NORMAL: Portamento will always be applied.</span><span class="se">\n</span><span class="s2">LEGATO: Portamento will be applied only when you play legato (i.e., when you press the next</span><span class="se">\n</span><span class="s2">key before releasing the previous key).&quot;</span><span class="p">)</span>  <span class="c1"># NORMAL, LEGATO</span></div>
+
+<div class="viewcode-block" id="AddressParameterDigitalCommon.LEGATO_SWITCH">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/digital/common/index.html#jdxi_editor.midi.data.parameter.digital.common.AddressParameterDigitalCommon.LEGATO_SWITCH">[docs]</a>
+    <span class="n">LEGATO_SWITCH</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x32</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Specifies the time taken for the pitch to change when playing portamento. Higher values</span><span class="se">\n</span><span class="s2">lengthen the time over which the pitch will change to the next note.&quot;</span><span class="p">)</span>  <span class="c1"># OFF, ON</span></div>
+
+<div class="viewcode-block" id="AddressParameterDigitalCommon.ANALOG_FEEL">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/digital/common/index.html#jdxi_editor.midi.data.parameter.digital.common.AddressParameterDigitalCommon.ANALOG_FEEL">[docs]</a>
+    <span class="n">ANALOG_FEEL</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x34</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">,</span> <span class="s2">&quot;Use this to apply “1/f fluctuation,” a type of randomness or instability that is present in many</span><span class="se">\n</span><span class="s2">natural systems (such as a babbling brook or whispering breeze) and is perceived as pleasant by </span><span class="se">\n</span><span class="s2">many people.</span><span class="se">\n</span><span class="s2">By applying “1/f fluctuation” you can create the natural-sounding instability that is</span><span class="se">\n</span><span class="s2">characteristic of an analog synthesizer.&quot;</span><span class="p">)</span>  <span class="c1"># Analog Feel amount</span></div>
+
+<div class="viewcode-block" id="AddressParameterDigitalCommon.WAVE_SHAPE">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/digital/common/index.html#jdxi_editor.midi.data.parameter.digital.common.AddressParameterDigitalCommon.WAVE_SHAPE">[docs]</a>
+    <span class="n">WAVE_SHAPE</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x35</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">,</span> <span class="s2">&quot;Partial 1 will be modulated by the pitch of partial 2. Higher values produce a greater effect.</span><span class="se">\n</span><span class="s2">This has no effect if the partial 1 waveform is PW-SQR or SP-SAW.&quot;</span><span class="p">)</span>  <span class="c1"># Wave Shape amount</span></div>
+
+<div class="viewcode-block" id="AddressParameterDigitalCommon.TONE_CATEGORY">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/digital/common/index.html#jdxi_editor.midi.data.parameter.digital.common.AddressParameterDigitalCommon.TONE_CATEGORY">[docs]</a>
+    <span class="n">TONE_CATEGORY</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x36</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">,</span> <span class="s2">&quot;Selects the tone’s category.&quot;</span><span class="p">)</span>  <span class="c1"># Tone Category</span></div>
+
+<div class="viewcode-block" id="AddressParameterDigitalCommon.UNISON_SIZE">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/digital/common/index.html#jdxi_editor.midi.data.parameter.digital.common.AddressParameterDigitalCommon.UNISON_SIZE">[docs]</a>
+    <span class="n">UNISON_SIZE</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x3C</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;Number of notes assigned to each key when the Unison Switch is on.</span><span class="se">\n</span><span class="s2">keys | notes</span><span class="se">\n</span><span class="s2">1   | 8</span><span class="se">\n</span><span class="s2">2   |4 notes</span><span class="se">\n</span><span class="s2">3–4  |2 each</span><span class="se">\n</span><span class="s2">5-8  | 1 each &quot;</span><span class="p">)</span>  <span class="c1"># Unison voice count (2-5 voices)</span></div>
+
+
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="AddressParameterDigitalCommon.display_name">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/digital/common/index.html#jdxi_editor.midi.data.parameter.digital.common.AddressParameterDigitalCommon.display_name">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">display_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get display name for the parameter&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RING_SWITCH</span><span class="p">:</span> <span class="s2">&quot;Ring Mod&quot;</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">UNISON_SWITCH</span><span class="p">:</span> <span class="s2">&quot;Unison&quot;</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">PORTAMENTO_MODE</span><span class="p">:</span> <span class="s2">&quot;Porto Mode&quot;</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">LEGATO_SWITCH</span><span class="p">:</span> <span class="s2">&quot;Legato&quot;</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ANALOG_FEEL</span><span class="p">:</span> <span class="s2">&quot;Analog Feel&quot;</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">WAVE_SHAPE</span><span class="p">:</span> <span class="s2">&quot;Wave Shape&quot;</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">TONE_CATEGORY</span><span class="p">:</span> <span class="s2">&quot;Category&quot;</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">UNISON_SIZE</span><span class="p">:</span> <span class="s2">&quot;Uni Size&quot;</span><span class="p">,</span>
+        <span class="p">}</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">)</span><span class="o">.</span><span class="n">title</span><span class="p">())</span></div>
+
+
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="AddressParameterDigitalCommon.is_switch">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/digital/common/index.html#jdxi_editor.midi.data.parameter.digital.common.AddressParameterDigitalCommon.is_switch">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_switch</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns True if parameter is address binary/enum switch&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span> <span class="ow">in</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">PORTAMENTO_SWITCH</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">MONO_SWITCH</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">PARTIAL1_SWITCH</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">PARTIAL1_SELECT</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">PARTIAL2_SWITCH</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">PARTIAL2_SELECT</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">PARTIAL3_SWITCH</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">PARTIAL3_SELECT</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RING_SWITCH</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">UNISON_SWITCH</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">PORTAMENTO_MODE</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">LEGATO_SWITCH</span><span class="p">,</span>
+        <span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="AddressParameterDigitalCommon.get_switch_text">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/digital/index.html#jdxi_editor.midi.data.parameter.digital.common.AddressParameterDigitalCommon.get_switch_text">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_switch_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get display text for switch values&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">RING_SWITCH</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;OFF&quot;</span><span class="p">,</span> <span class="s2">&quot;---&quot;</span><span class="p">,</span> <span class="s2">&quot;ON&quot;</span><span class="p">][</span><span class="n">value</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="bp">self</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">PORTAMENTO_MODE</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;NORMAL&quot;</span><span class="p">,</span> <span class="s2">&quot;LEGATO&quot;</span><span class="p">][</span><span class="n">value</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="bp">self</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">UNISON_SIZE</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">value</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">2</span><span class="si">}</span><span class="s2"> VOICE&quot;</span>  <span class="c1"># 0=2 voices, 1=3 voices, etc.</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_switch</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;ON&quot;</span> <span class="k">if</span> <span class="n">value</span> <span class="k">else</span> <span class="s2">&quot;OFF&quot;</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AddressParameterDigitalCommon.validate_value">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/digital/index.html#jdxi_editor.midi.data.parameter.digital.common.AddressParameterDigitalCommon.validate_value">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate and convert parameter value&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Value must be an integer, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Special cases mapping</span>
+        <span class="n">special_cases</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RING_SWITCH</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="mi">2</span> <span class="k">if</span> <span class="n">v</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">v</span>  <span class="c1"># Skip &quot;---&quot; value</span>
+        <span class="p">}</span>
+
+        <span class="c1"># Apply special case transformation if applicable</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">special_cases</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="n">v</span><span class="p">)(</span><span class="n">value</span><span class="p">)</span>
+
+        <span class="c1"># Regular range check</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">min_val</span> <span class="o">&lt;=</span> <span class="n">value</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_val</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Value </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> out of range for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;(valid range: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">min_val</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">max_val</span><span class="si">}</span><span class="s2">)&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">value</span></div>
+
+
+<div class="viewcode-block" id="AddressParameterDigitalCommon.get_partial_number">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/digital/index.html#jdxi_editor.midi.data.parameter.digital.common.AddressParameterDigitalCommon.get_partial_number">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_partial_number</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the partial number (1-3) if this is address partial parameter, None otherwise&quot;&quot;&quot;</span>
+        <span class="n">partial_params</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">PARTIAL1_SWITCH</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">PARTIAL1_SELECT</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">PARTIAL2_SWITCH</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">PARTIAL2_SELECT</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">PARTIAL3_SWITCH</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">PARTIAL3_SELECT</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">partial_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="AddressParameterDigitalCommon.get_by_name">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/digital/index.html#jdxi_editor.midi.data.parameter.digital.common.AddressParameterDigitalCommon.get_by_name">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_by_name</span><span class="p">(</span><span class="n">param_name</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the Parameter by name.&quot;&quot;&quot;</span>
+        <span class="c1"># Return the parameter member by name, or None if not found</span>
+        <span class="k">return</span> <span class="n">AddressParameterDigitalCommon</span><span class="o">.</span><span class="n">__members__</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">param_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AddressParameterDigitalCommon.get_address_for_partial">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/midi/data/parameter/digital/index.html#jdxi_editor.midi.data.parameter.digital.common.AddressParameterDigitalCommon.get_address_for_partial">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_address_for_partial</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">partial_number</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">AddressOffsetProgramLMB</span><span class="o">.</span><span class="n">COMMON</span><span class="p">,</span> <span class="mh">0x00</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Mark Mrooks.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,1291 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>jdxi_editor.midi.message.roland &mdash; JD-Xi Editor 0.8.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../../_static/documentation_options.js?v=486e5634"></script>
+      <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <link rel="next" title="jdxi_editor.midi.message.synths" href="../synths/index.html" />
+    <link rel="prev" title="jdxi_editor.midi.message.program_change" href="../program_change/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../../index.html" class="icon icon-home">
+            JD-Xi Editor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../getting-started.html#getting-started-guide">Getting Started Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../editor-windows.html">Editor Windows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../editor-windows.html#available-editors">Available Editors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../additional-editors.html">Additional Editors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../additional-editors.html#available-editors">Available Editors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../playing-midi-files.html">Playing MIDI Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../playing-midi-files.html#available-tools">Available Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../troubleshooting.html#id1">Troubleshooting</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../legal.html">Legal Disclaimer</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../../modules.html">jdxi_editor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../jdxi_editor.html">jdxi_editor package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.jdxi.html">jdxi_editor.jdxi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.log.html">jdxi_editor.log package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.midi.html">jdxi_editor.midi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.ui.html">jdxi_editor.ui package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.globals">jdxi_editor.globals module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.main">jdxi_editor.main module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.html#jdxi_editor.main.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.html#jdxi_editor.main.setup_splash_screen"><code class="docutils literal notranslate"><span class="pre">setup_splash_screen()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.project">jdxi_editor.project module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.resources">jdxi_editor.resources module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.html#jdxi_editor.resources.resource_path"><code class="docutils literal notranslate"><span class="pre">resource_path()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../../../midi/index.html">midi</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../midi/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../midi/colors/index.html">midi.colors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../midi/slider/index.html">midi.slider</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../midi/spin_box/index.html">midi.spin_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../midi/time_ruler/index.html">midi.time_ruler</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../midi/track/index.html">midi.track</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../midi/track_viewer/index.html">midi.track_viewer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../midi/utils/index.html">midi.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../adsr/index.html">adsr</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../adsr/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../adsr/adsr/index.html">adsr.adsr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../adsr/graph/index.html">adsr.graph</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../adsr/parameter/index.html">adsr.parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../adsr/plot/index.html">adsr.plot</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../pitch/index.html">pitch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../pitch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../pitch/envelope/index.html">pitch.envelope</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../pitch/envelope_plot/index.html">pitch.envelope_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../pitch/pwm_plot/index.html">pitch.pwm_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../pitch/slider_spinbox/index.html">pitch.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../piano/index.html">piano</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../piano/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../piano/key/index.html">piano.key</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../piano/keyboard/index.html">piano.keyboard</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../panel/index.html">panel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../panel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../panel/partial/index.html">panel.partial</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../wheel/index.html">wheel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../wheel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../wheel/mod/index.html">wheel.mod</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../wheel/pitch/index.html">wheel.pitch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../wheel/wheel/index.html">wheel.wheel</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../preset/index.html">preset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../preset/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../preset/combo_box/index.html">preset.combo_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../preset/panel/index.html">preset.panel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../preset/patch_name/index.html">preset.patch_name</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../slider/index.html">slider</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../slider/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../slider/slider/index.html">slider.slider</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../slider/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../slider/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../slider/index.html#slider.Slider"><code class="docutils literal notranslate"><span class="pre">Slider</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../dialog/index.html">dialog</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../dialog/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../dialog/progress/index.html">dialog.progress</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../viewer/index.html">viewer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../viewer/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../viewer/log/index.html">viewer.log</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../button/index.html">button</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../button/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../button/channel/index.html">button.channel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../button/favorite/index.html">button.favorite</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../button/sequencer/index.html">button.sequencer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../button/waveform/index.html">button.waveform</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../button/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../button/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../button/index.html#button.ChannelButton"><code class="docutils literal notranslate"><span class="pre">ChannelButton</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../button/index.html#button.SequencerSquare"><code class="docutils literal notranslate"><span class="pre">SequencerSquare</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../switch/index.html">switch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../switch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../switch/partial/index.html">switch.partial</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../switch/switch/index.html">switch.switch</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../filter/index.html">filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../filter/index.html#filter.FilterWidget"><code class="docutils literal notranslate"><span class="pre">FilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../display/index.html">display</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../display/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../display/digital/index.html">display.digital</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../display/pattern/index.html">display.pattern</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../display/value/index.html">display.value</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../pattern/index.html">pattern</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../pattern/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../pattern/measure/index.html">pattern.measure</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../spin_box/index.html">spin_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../spin_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../spin_box/spin_box/index.html">spin_box.spin_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../envelope/index.html">envelope</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../envelope/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../envelope/base/index.html">envelope.base</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../indicator/index.html">indicator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../indicator/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../indicator/led/index.html">indicator.led</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../indicator/midi/index.html">indicator.midi</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../combo_box/index.html">combo_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../combo_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../combo_box/combo_box/index.html">combo_box.combo_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../../index.html">jdxi_editor</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../../index.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../../globals/index.html">jdxi_editor.globals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../jdxi/index.html">jdxi_editor.jdxi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../log/index.html">jdxi_editor.log</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../main/index.html">jdxi_editor.main</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../../index.html">jdxi_editor.midi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../project/index.html">jdxi_editor.project</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../resources/index.html">jdxi_editor.resources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../ui/index.html">jdxi_editor.ui</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../filter_plot/index.html">filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../filter_plot/index.html#filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../filter_plot/index.html#filter_plot.FilterPlot"><code class="docutils literal notranslate"><span class="pre">FilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../envelope_plot/index.html">envelope_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../envelope_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../envelope_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../envelope_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../envelope_plot/index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../envelope_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../envelope_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../envelope_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../envelope_plot/index.html#envelope_plot.midi_value_to_float"><code class="docutils literal notranslate"><span class="pre">midi_value_to_float()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../envelope_plot/index.html#envelope_plot.WMTEnvPlot"><code class="docutils literal notranslate"><span class="pre">WMTEnvPlot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../envelope_plot/index.html#envelope_plot.app"><code class="docutils literal notranslate"><span class="pre">app</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../wave_selector/index.html">wave_selector</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../wave_selector/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../wave_selector/wave_selector/index.html">wave_selector.wave_selector</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../analog_filter/index.html">analog_filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../analog_filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../analog_filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../analog_filter/index.html#analog_filter.AnalogFilterWidget"><code class="docutils literal notranslate"><span class="pre">AnalogFilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../slider_spinbox/index.html">slider_spinbox</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../slider_spinbox/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../slider_spinbox/slider_spinbox/index.html">slider_spinbox.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../analog_filter_plot/index.html">analog_filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../analog_filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../analog_filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../analog_filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../analog_filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../analog_filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../analog_filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../analog_filter_plot/index.html#analog_filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../analog_filter_plot/index.html#analog_filter_plot.AnalogFilterPlot"><code class="docutils literal notranslate"><span class="pre">AnalogFilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">JD-Xi Editor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">jdxi_editor</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">jdxi_editor.midi</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">jdxi_editor.midi.message</a></li>
+      <li class="breadcrumb-item active">jdxi_editor.midi.message.roland</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../../_sources/autoapi/jdxi_editor/midi/message/roland/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-jdxi_editor.midi.message.roland">
+<span id="jdxi-editor-midi-message-roland"></span><h1>jdxi_editor.midi.message.roland<a class="headerlink" href="#module-jdxi_editor.midi.message.roland" title="Link to this heading"></a></h1>
+<p>This module provides a class for constructing and parsing Roland System Exclusive (SysEx) messages. The <cite>RolandSysEx</cite> class allows for easy creation of messages to be sent to Roland devices, as well as the ability to parse incoming SysEx messages.</p>
+<p>Usage Example:</p>
+<p><a href="#id1"><span class="problematic" id="id2">``</span></a><a href="#id3"><span class="problematic" id="id4">`</span></a>python
+from roland_sysex import RolandSysEx</p>
+<p># Creating a SysEx message
+message = RolandSysEx(command=0x12, area=0x01, section=0x02, group=0x03, param=0x04, value=0x05)
+message_bytes = message.to_bytes()
+print(“Generated SysEx Message (bytes):”, message_bytes)</p>
+<p># Parsing a SysEx message from bytes
+received_bytes = b’ðA÷’  # Example received SysEx message
+parsed_message = RolandSysEx.from_bytes(received_bytes)
+print(“Parsed Command:”, parsed_message.command)
+print(“Parsed Address:”, parsed_message.address)
+print(“Parsed Value:”, parsed_message.value)</p>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#jdxi_editor.midi.message.roland.RolandSysExMessage" title="jdxi_editor.midi.message.roland.RolandSysExMessage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RolandSysExMessage</span></code></a></p></td>
+<td><p>Specialized class for Roland JD-Xi SysEx messages.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#jdxi_editor.midi.message.roland.RolandSysEx" title="jdxi_editor.midi.message.roland.RolandSysEx"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RolandSysEx</span></code></a></p></td>
+<td><p>Specialized class for Roland JD-Xi SysEx messages.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#jdxi_editor.midi.message.roland.JDXiSysEx" title="jdxi_editor.midi.message.roland.JDXiSysEx"><code class="xref py py-obj docutils literal notranslate"><span class="pre">JDXiSysEx</span></code></a></p></td>
+<td><p>JD-Xi specific SysEx message</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#jdxi_editor.midi.message.roland.ParameterMessage" title="jdxi_editor.midi.message.roland.ParameterMessage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ParameterMessage</span></code></a></p></td>
+<td><p>Base class for parameter messages</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#jdxi_editor.midi.message.roland.SystemMessage" title="jdxi_editor.midi.message.roland.SystemMessage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SystemMessage</span></code></a></p></td>
+<td><p>System parameter message</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#jdxi_editor.midi.message.roland.ProgramMessage" title="jdxi_editor.midi.message.roland.ProgramMessage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ProgramMessage</span></code></a></p></td>
+<td><p>Program parameter message</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#jdxi_editor.midi.message.roland.Effect1Message" title="jdxi_editor.midi.message.roland.Effect1Message"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Effect1Message</span></code></a></p></td>
+<td><p>Effect 1 parameter message</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#jdxi_editor.midi.message.roland.Effect2Message" title="jdxi_editor.midi.message.roland.Effect2Message"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Effect2Message</span></code></a></p></td>
+<td><p>Effect 2 parameter message</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#jdxi_editor.midi.message.roland.DelayMessage" title="jdxi_editor.midi.message.roland.DelayMessage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DelayMessage</span></code></a></p></td>
+<td><p>Delay parameter message</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#jdxi_editor.midi.message.roland.ReverbMessage" title="jdxi_editor.midi.message.roland.ReverbMessage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ReverbMessage</span></code></a></p></td>
+<td><p>Reverb parameter message</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#jdxi_editor.midi.message.roland.PartMessage" title="jdxi_editor.midi.message.roland.PartMessage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PartMessage</span></code></a></p></td>
+<td><p>Program Part parameter message</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#jdxi_editor.midi.message.roland.ZoneMessage" title="jdxi_editor.midi.message.roland.ZoneMessage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ZoneMessage</span></code></a></p></td>
+<td><p>Program Zone parameter message</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#jdxi_editor.midi.message.roland.ControllerMessage" title="jdxi_editor.midi.message.roland.ControllerMessage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ControllerMessage</span></code></a></p></td>
+<td><p>Program Controller parameter message</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#jdxi_editor.midi.message.roland.DigitalToneCommonMessage" title="jdxi_editor.midi.message.roland.DigitalToneCommonMessage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DigitalToneCommonMessage</span></code></a></p></td>
+<td><p>SuperNATURAL Synth Tone Common parameter message</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#jdxi_editor.midi.message.roland.DigitalToneModifyMessage" title="jdxi_editor.midi.message.roland.DigitalToneModifyMessage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DigitalToneModifyMessage</span></code></a></p></td>
+<td><p>SuperNATURAL Synth Tone Modify parameter message</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#jdxi_editor.midi.message.roland.DigitalTonePartialMessage" title="jdxi_editor.midi.message.roland.DigitalTonePartialMessage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DigitalTonePartialMessage</span></code></a></p></td>
+<td><p>SuperNATURAL Synth Tone Partial parameter message</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#jdxi_editor.midi.message.roland.AnalogToneMessage" title="jdxi_editor.midi.message.roland.AnalogToneMessage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AnalogToneMessage</span></code></a></p></td>
+<td><p>Message for analog tone parameters</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#jdxi_editor.midi.message.roland.DrumKitCommonMessage" title="jdxi_editor.midi.message.roland.DrumKitCommonMessage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DrumKitCommonMessage</span></code></a></p></td>
+<td><p>Drum Kit Common parameter message</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#jdxi_editor.midi.message.roland.DrumKitPartialMessage" title="jdxi_editor.midi.message.roland.DrumKitPartialMessage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DrumKitPartialMessage</span></code></a></p></td>
+<td><p>Drum Kit Partial parameter message</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#jdxi_editor.midi.message.roland.create_sysex_message" title="jdxi_editor.midi.message.roland.create_sysex_message"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_sysex_message</span></code></a>(→ JDXiSysEx)</p></td>
+<td><p>Create address JD-Xi SysEx message with the given parameters</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#jdxi_editor.midi.message.roland.create_patch_load_message" title="jdxi_editor.midi.message.roland.create_patch_load_message"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_patch_load_message</span></code></a>(→ List[JDXiSysEx])</p></td>
+<td><p>Create messages to load address patch (bank select + program change)</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#jdxi_editor.midi.message.roland.create_patch_request_message" title="jdxi_editor.midi.message.roland.create_patch_request_message"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_patch_request_message</span></code></a>(→ JDXiSysEx)</p></td>
+<td><p>Create address message to request patch data</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.RolandSysExMessage">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.message.roland.</span></span><span class="sig-name descname"><span class="pre">RolandSysExMessage</span></span><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#RolandSysExMessage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.RolandSysExMessage" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../sysex/index.html#jdxi_editor.midi.message.sysex.SysExMessage" title="jdxi_editor.midi.message.sysex.SysExMessage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">jdxi_editor.midi.message.sysex.SysExMessage</span></code></a></p>
+<p>Specialized class for Roland JD-Xi SysEx messages.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.RolandSysExMessage.manufacturer_id">
+<span class="sig-name descname"><span class="pre">manufacturer_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#RolandSysExMessage.manufacturer_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.RolandSysExMessage.manufacturer_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.RolandSysExMessage.device_id">
+<span class="sig-name descname"><span class="pre">device_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#RolandSysExMessage.device_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.RolandSysExMessage.device_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.RolandSysExMessage.model_id">
+<span class="sig-name descname"><span class="pre">model_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#RolandSysExMessage.model_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.RolandSysExMessage.model_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.RolandSysExMessage.command">
+<span class="sig-name descname"><span class="pre">command</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#RolandSysExMessage.command"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.RolandSysExMessage.command" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.RolandSysExMessage.sysex_address">
+<span class="sig-name descname"><span class="pre">sysex_address</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../../data/address/address/index.html#jdxi_editor.midi.data.address.address.RolandSysExAddress" title="jdxi_editor.midi.data.address.address.RolandSysExAddress"><span class="pre">jdxi_editor.midi.data.address.address.RolandSysExAddress</span></a></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#RolandSysExMessage.sysex_address"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.RolandSysExMessage.sysex_address" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.RolandSysExMessage.value">
+<span class="sig-name descname"><span class="pre">value</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#RolandSysExMessage.value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.RolandSysExMessage.value" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.RolandSysExMessage.size">
+<span class="sig-name descname"><span class="pre">size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#RolandSysExMessage.size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.RolandSysExMessage.size" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.RolandSysExMessage.synth_type">
+<span class="sig-name descname"><span class="pre">synth_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#RolandSysExMessage.synth_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.RolandSysExMessage.synth_type" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.RolandSysExMessage.part">
+<span class="sig-name descname"><span class="pre">part</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#RolandSysExMessage.part"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.RolandSysExMessage.part" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.RolandSysExMessage.dt1_command">
+<span class="sig-name descname"><span class="pre">dt1_command</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#RolandSysExMessage.dt1_command"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.RolandSysExMessage.dt1_command" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.RolandSysExMessage.rq1_command">
+<span class="sig-name descname"><span class="pre">rq1_command</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#RolandSysExMessage.rq1_command"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.RolandSysExMessage.rq1_command" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.RolandSysExMessage.__post_init__">
+<span class="sig-name descname"><span class="pre">__post_init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#RolandSysExMessage.__post_init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.RolandSysExMessage.__post_init__" title="Link to this definition"></a></dt>
+<dd><p>Initialize data and resolve address bytes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.RolandSysExMessage.to_message_list">
+<span class="sig-name descname"><span class="pre">to_message_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#RolandSysExMessage.to_message_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.RolandSysExMessage.to_message_list" title="Link to this definition"></a></dt>
+<dd><p>Convert the SysEx message to a list of integers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.RolandSysEx">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.message.roland.</span></span><span class="sig-name descname"><span class="pre">RolandSysEx</span></span><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#RolandSysEx"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.RolandSysEx" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../sysex/index.html#jdxi_editor.midi.message.sysex.SysExMessage" title="jdxi_editor.midi.message.sysex.SysExMessage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">jdxi_editor.midi.message.sysex.SysExMessage</span></code></a></p>
+<p>Specialized class for Roland JD-Xi SysEx messages.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.RolandSysEx.manufacturer_id">
+<span class="sig-name descname"><span class="pre">manufacturer_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#RolandSysEx.manufacturer_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.RolandSysEx.manufacturer_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.RolandSysEx.device_id">
+<span class="sig-name descname"><span class="pre">device_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#RolandSysEx.device_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.RolandSysEx.device_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.RolandSysEx.model_id">
+<span class="sig-name descname"><span class="pre">model_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#RolandSysEx.model_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.RolandSysEx.model_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.RolandSysEx.command">
+<span class="sig-name descname"><span class="pre">command</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#RolandSysEx.command"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.RolandSysEx.command" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.RolandSysEx.sysex_address">
+<span class="sig-name descname"><span class="pre">sysex_address</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../../data/address/address/index.html#jdxi_editor.midi.data.address.address.RolandSysExAddress" title="jdxi_editor.midi.data.address.address.RolandSysExAddress"><span class="pre">jdxi_editor.midi.data.address.address.RolandSysExAddress</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#RolandSysEx.sysex_address"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.RolandSysEx.sysex_address" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.RolandSysEx.msb">
+<span class="sig-name descname"><span class="pre">msb</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#RolandSysEx.msb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.RolandSysEx.msb" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.RolandSysEx.umb">
+<span class="sig-name descname"><span class="pre">umb</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#RolandSysEx.umb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.RolandSysEx.umb" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.RolandSysEx.lmb">
+<span class="sig-name descname"><span class="pre">lmb</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#RolandSysEx.lmb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.RolandSysEx.lmb" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.RolandSysEx.lsb">
+<span class="sig-name descname"><span class="pre">lsb</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#RolandSysEx.lsb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.RolandSysEx.lsb" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.RolandSysEx.value">
+<span class="sig-name descname"><span class="pre">value</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#RolandSysEx.value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.RolandSysEx.value" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.RolandSysEx.size">
+<span class="sig-name descname"><span class="pre">size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#RolandSysEx.size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.RolandSysEx.size" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.RolandSysEx.synth_type">
+<span class="sig-name descname"><span class="pre">synth_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#RolandSysEx.synth_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.RolandSysEx.synth_type" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.RolandSysEx.part">
+<span class="sig-name descname"><span class="pre">part</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#RolandSysEx.part"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.RolandSysEx.part" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.RolandSysEx.dt1_command">
+<span class="sig-name descname"><span class="pre">dt1_command</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#RolandSysEx.dt1_command"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.RolandSysEx.dt1_command" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.RolandSysEx.rq1_command">
+<span class="sig-name descname"><span class="pre">rq1_command</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#RolandSysEx.rq1_command"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.RolandSysEx.rq1_command" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.RolandSysEx.__post_init__">
+<span class="sig-name descname"><span class="pre">__post_init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#RolandSysEx.__post_init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.RolandSysEx.__post_init__" title="Link to this definition"></a></dt>
+<dd><p>Ensure proper initialization of address, model_id, and data fields.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.RolandSysEx.from_sysex_address">
+<span class="sig-name descname"><span class="pre">from_sysex_address</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sysex_address</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../data/address/address/index.html#jdxi_editor.midi.data.address.address.RolandSysExAddress" title="jdxi_editor.midi.data.address.address.RolandSysExAddress"><span class="pre">jdxi_editor.midi.data.address.address.RolandSysExAddress</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#RolandSysEx.from_sysex_address"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.RolandSysEx.from_sysex_address" title="Link to this definition"></a></dt>
+<dd><p>from_sysex_address
+:param sysex_address: RolandSysExAddress
+:return: None</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.RolandSysEx.to_message_list">
+<span class="sig-name descname"><span class="pre">to_message_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#RolandSysEx.to_message_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.RolandSysEx.to_message_list" title="Link to this definition"></a></dt>
+<dd><p>to_message_list</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[int]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.RolandSysEx.construct_sysex">
+<span class="sig-name descname"><span class="pre">construct_sysex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../data/address/address/index.html#jdxi_editor.midi.data.address.address.RolandSysExAddress" title="jdxi_editor.midi.data.address.address.RolandSysExAddress"><span class="pre">jdxi_editor.midi.data.address.address.RolandSysExAddress</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">data_bytes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">request</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#RolandSysEx.construct_sysex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.RolandSysEx.construct_sysex" title="Link to this definition"></a></dt>
+<dd><p>Construct a SysEx message based on the provided address and data bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>address</strong> – RolandSysExAddress</p></li>
+<li><p><strong>data_bytes</strong> – list of data bytes</p></li>
+<li><p><strong>request</strong> – bool is this a request?</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.JDXiSysEx">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.message.roland.</span></span><span class="sig-name descname"><span class="pre">JDXiSysEx</span></span><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#JDXiSysEx"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.JDXiSysEx" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#jdxi_editor.midi.message.roland.RolandSysEx" title="jdxi_editor.midi.message.roland.RolandSysEx"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RolandSysEx</span></code></a></p>
+<p>JD-Xi specific SysEx message</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.JDXiSysEx.model_id">
+<span class="sig-name descname"><span class="pre">model_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#JDXiSysEx.model_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.JDXiSysEx.model_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.JDXiSysEx.device_id">
+<span class="sig-name descname"><span class="pre">device_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">16</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#JDXiSysEx.device_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.JDXiSysEx.device_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.JDXiSysEx.command">
+<span class="sig-name descname"><span class="pre">command</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#JDXiSysEx.command"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.JDXiSysEx.command" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.JDXiSysEx.address">
+<span class="sig-name descname"><span class="pre">address</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[0,</span> <span class="pre">0,</span> <span class="pre">0,</span> <span class="pre">0]</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#JDXiSysEx.address"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.JDXiSysEx.address" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.JDXiSysEx.data">
+<span class="sig-name descname"><span class="pre">data</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#JDXiSysEx.data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.JDXiSysEx.data" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.JDXiSysEx.__post_init__">
+<span class="sig-name descname"><span class="pre">__post_init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#JDXiSysEx.__post_init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.JDXiSysEx.__post_init__" title="Link to this definition"></a></dt>
+<dd><p>Validate message components</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.JDXiSysEx.to_bytes">
+<span class="sig-name descname"><span class="pre">to_bytes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><span class="pre">bytes</span></a></span></span><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#JDXiSysEx.to_bytes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.JDXiSysEx.to_bytes" title="Link to this definition"></a></dt>
+<dd><p>Convert message to bytes for sending</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.JDXiSysEx.calculate_checksum">
+<span class="sig-name descname"><span class="pre">calculate_checksum</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#JDXiSysEx.calculate_checksum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.JDXiSysEx.calculate_checksum" title="Link to this definition"></a></dt>
+<dd><p>Calculate Roland checksum for the message</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.JDXiSysEx.from_bytes">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><span class="pre">bytes</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#JDXiSysEx.from_bytes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.JDXiSysEx.from_bytes" title="Link to this definition"></a></dt>
+<dd><p>Create message from received bytes</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.ParameterMessage">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.message.roland.</span></span><span class="sig-name descname"><span class="pre">ParameterMessage</span></span><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#ParameterMessage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.ParameterMessage" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#jdxi_editor.midi.message.roland.JDXiSysEx" title="jdxi_editor.midi.message.roland.JDXiSysEx"><code class="xref py py-obj docutils literal notranslate"><span class="pre">JDXiSysEx</span></code></a></p>
+<p>Base class for parameter messages</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.ParameterMessage.command">
+<span class="sig-name descname"><span class="pre">command</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#ParameterMessage.command"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.ParameterMessage.command" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.ParameterMessage.__post_init__">
+<span class="sig-name descname"><span class="pre">__post_init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#ParameterMessage.__post_init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.ParameterMessage.__post_init__" title="Link to this definition"></a></dt>
+<dd><p>Handle parameter value conversion</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.ParameterMessage.convert_value">
+<span class="sig-name descname"><span class="pre">convert_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#ParameterMessage.convert_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.ParameterMessage.convert_value" title="Link to this definition"></a></dt>
+<dd><p>Convert parameter value to data bytes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong> – int</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>list[int]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.ParameterMessage.from_bytes">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><span class="pre">bytes</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#jdxi_editor.midi.message.roland.JDXiSysEx" title="jdxi_editor.midi.message.roland.JDXiSysEx"><span class="pre">JDXiSysEx</span></a></span></span><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#ParameterMessage.from_bytes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.ParameterMessage.from_bytes" title="Link to this definition"></a></dt>
+<dd><p>Create message from received bytes</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.ParameterMessage.convert_data">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">convert_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#ParameterMessage.convert_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.ParameterMessage.convert_data" title="Link to this definition"></a></dt>
+<dd><p>Convert data bytes back to parameter value</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.SystemMessage">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.message.roland.</span></span><span class="sig-name descname"><span class="pre">SystemMessage</span></span><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#SystemMessage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.SystemMessage" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#jdxi_editor.midi.message.roland.ParameterMessage" title="jdxi_editor.midi.message.roland.ParameterMessage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ParameterMessage</span></code></a></p>
+<p>System parameter message</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.SystemMessage.msb">
+<span class="sig-name descname"><span class="pre">msb</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#SystemMessage.msb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.SystemMessage.msb" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.ProgramMessage">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.message.roland.</span></span><span class="sig-name descname"><span class="pre">ProgramMessage</span></span><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#ProgramMessage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.ProgramMessage" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#jdxi_editor.midi.message.roland.ParameterMessage" title="jdxi_editor.midi.message.roland.ParameterMessage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ParameterMessage</span></code></a></p>
+<p>Program parameter message</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.ProgramMessage.msb">
+<span class="sig-name descname"><span class="pre">msb</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">24</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#ProgramMessage.msb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.ProgramMessage.msb" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.Effect1Message">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.message.roland.</span></span><span class="sig-name descname"><span class="pre">Effect1Message</span></span><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#Effect1Message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.Effect1Message" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#jdxi_editor.midi.message.roland.ParameterMessage" title="jdxi_editor.midi.message.roland.ParameterMessage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ParameterMessage</span></code></a></p>
+<p>Effect 1 parameter message</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.Effect1Message.msb">
+<span class="sig-name descname"><span class="pre">msb</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">24</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#Effect1Message.msb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.Effect1Message.msb" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.Effect1Message.umb">
+<span class="sig-name descname"><span class="pre">umb</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#Effect1Message.umb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.Effect1Message.umb" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.Effect2Message">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.message.roland.</span></span><span class="sig-name descname"><span class="pre">Effect2Message</span></span><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#Effect2Message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.Effect2Message" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#jdxi_editor.midi.message.roland.ParameterMessage" title="jdxi_editor.midi.message.roland.ParameterMessage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ParameterMessage</span></code></a></p>
+<p>Effect 2 parameter message</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.Effect2Message.msb">
+<span class="sig-name descname"><span class="pre">msb</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">24</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#Effect2Message.msb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.Effect2Message.msb" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.Effect2Message.umb">
+<span class="sig-name descname"><span class="pre">umb</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#Effect2Message.umb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.Effect2Message.umb" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.DelayMessage">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.message.roland.</span></span><span class="sig-name descname"><span class="pre">DelayMessage</span></span><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#DelayMessage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.DelayMessage" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#jdxi_editor.midi.message.roland.ParameterMessage" title="jdxi_editor.midi.message.roland.ParameterMessage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ParameterMessage</span></code></a></p>
+<p>Delay parameter message</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.DelayMessage.msb">
+<span class="sig-name descname"><span class="pre">msb</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">24</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#DelayMessage.msb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.DelayMessage.msb" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.DelayMessage.umb">
+<span class="sig-name descname"><span class="pre">umb</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">6</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#DelayMessage.umb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.DelayMessage.umb" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.ReverbMessage">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.message.roland.</span></span><span class="sig-name descname"><span class="pre">ReverbMessage</span></span><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#ReverbMessage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.ReverbMessage" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#jdxi_editor.midi.message.roland.ParameterMessage" title="jdxi_editor.midi.message.roland.ParameterMessage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ParameterMessage</span></code></a></p>
+<p>Reverb parameter message</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.ReverbMessage.msb">
+<span class="sig-name descname"><span class="pre">msb</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">24</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#ReverbMessage.msb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.ReverbMessage.msb" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.ReverbMessage.umb">
+<span class="sig-name descname"><span class="pre">umb</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">8</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#ReverbMessage.umb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.ReverbMessage.umb" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.PartMessage">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.message.roland.</span></span><span class="sig-name descname"><span class="pre">PartMessage</span></span><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#PartMessage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.PartMessage" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#jdxi_editor.midi.message.roland.ParameterMessage" title="jdxi_editor.midi.message.roland.ParameterMessage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ParameterMessage</span></code></a></p>
+<p>Program Part parameter message</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.PartMessage.msb">
+<span class="sig-name descname"><span class="pre">msb</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">24</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#PartMessage.msb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.PartMessage.msb" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.PartMessage.umb">
+<span class="sig-name descname"><span class="pre">umb</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#PartMessage.umb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.PartMessage.umb" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.PartMessage.convert_value">
+<span class="sig-name descname"><span class="pre">convert_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#PartMessage.convert_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.PartMessage.convert_value" title="Link to this definition"></a></dt>
+<dd><p>Convert parameter value based on parameter preset_type</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.PartMessage.convert_data">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">convert_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#PartMessage.convert_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.PartMessage.convert_data" title="Link to this definition"></a></dt>
+<dd><p>Convert data bytes back to parameter value</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.ZoneMessage">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.message.roland.</span></span><span class="sig-name descname"><span class="pre">ZoneMessage</span></span><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#ZoneMessage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.ZoneMessage" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#jdxi_editor.midi.message.roland.ParameterMessage" title="jdxi_editor.midi.message.roland.ParameterMessage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ParameterMessage</span></code></a></p>
+<p>Program Zone parameter message</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.ZoneMessage.msb">
+<span class="sig-name descname"><span class="pre">msb</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">24</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#ZoneMessage.msb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.ZoneMessage.msb" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.ZoneMessage.umb">
+<span class="sig-name descname"><span class="pre">umb</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#ZoneMessage.umb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.ZoneMessage.umb" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.ZoneMessage.convert_value">
+<span class="sig-name descname"><span class="pre">convert_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#ZoneMessage.convert_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.ZoneMessage.convert_value" title="Link to this definition"></a></dt>
+<dd><p>Convert parameter value based on parameter preset_type</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.ZoneMessage.convert_data">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">convert_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#ZoneMessage.convert_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.ZoneMessage.convert_data" title="Link to this definition"></a></dt>
+<dd><p>Convert data bytes back to parameter value</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.ControllerMessage">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.message.roland.</span></span><span class="sig-name descname"><span class="pre">ControllerMessage</span></span><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#ControllerMessage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.ControllerMessage" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#jdxi_editor.midi.message.roland.ParameterMessage" title="jdxi_editor.midi.message.roland.ParameterMessage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ParameterMessage</span></code></a></p>
+<p>Program Controller parameter message</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.ControllerMessage.msb">
+<span class="sig-name descname"><span class="pre">msb</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#ControllerMessage.msb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.ControllerMessage.msb" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.ControllerMessage.umb">
+<span class="sig-name descname"><span class="pre">umb</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">64</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#ControllerMessage.umb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.ControllerMessage.umb" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.ControllerMessage.convert_value">
+<span class="sig-name descname"><span class="pre">convert_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#ControllerMessage.convert_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.ControllerMessage.convert_value" title="Link to this definition"></a></dt>
+<dd><p>Convert parameter value based on parameter preset_type</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List[int]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.ControllerMessage.convert_data">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">convert_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#ControllerMessage.convert_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.ControllerMessage.convert_data" title="Link to this definition"></a></dt>
+<dd><p>Convert data bytes back to parameter value</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> – List</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.DigitalToneCommonMessage">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.message.roland.</span></span><span class="sig-name descname"><span class="pre">DigitalToneCommonMessage</span></span><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#DigitalToneCommonMessage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.DigitalToneCommonMessage" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#jdxi_editor.midi.message.roland.ParameterMessage" title="jdxi_editor.midi.message.roland.ParameterMessage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ParameterMessage</span></code></a></p>
+<p>SuperNATURAL Synth Tone Common parameter message</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.DigitalToneCommonMessage.msb">
+<span class="sig-name descname"><span class="pre">msb</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#DigitalToneCommonMessage.msb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.DigitalToneCommonMessage.msb" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.DigitalToneCommonMessage.umb">
+<span class="sig-name descname"><span class="pre">umb</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#DigitalToneCommonMessage.umb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.DigitalToneCommonMessage.umb" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.DigitalToneCommonMessage.convert_value">
+<span class="sig-name descname"><span class="pre">convert_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#DigitalToneCommonMessage.convert_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.DigitalToneCommonMessage.convert_value" title="Link to this definition"></a></dt>
+<dd><p>Convert parameter value based on parameter preset_type</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List[int]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.DigitalToneCommonMessage.convert_data">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">convert_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#DigitalToneCommonMessage.convert_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.DigitalToneCommonMessage.convert_data" title="Link to this definition"></a></dt>
+<dd><p>Convert data bytes back to parameter value</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> – List</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.DigitalToneModifyMessage">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.message.roland.</span></span><span class="sig-name descname"><span class="pre">DigitalToneModifyMessage</span></span><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#DigitalToneModifyMessage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.DigitalToneModifyMessage" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#jdxi_editor.midi.message.roland.ParameterMessage" title="jdxi_editor.midi.message.roland.ParameterMessage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ParameterMessage</span></code></a></p>
+<p>SuperNATURAL Synth Tone Modify parameter message</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.DigitalToneModifyMessage.msb">
+<span class="sig-name descname"><span class="pre">msb</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#DigitalToneModifyMessage.msb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.DigitalToneModifyMessage.msb" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.DigitalToneModifyMessage.umb">
+<span class="sig-name descname"><span class="pre">umb</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">80</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#DigitalToneModifyMessage.umb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.DigitalToneModifyMessage.umb" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.DigitalToneModifyMessage.convert_value">
+<span class="sig-name descname"><span class="pre">convert_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#DigitalToneModifyMessage.convert_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.DigitalToneModifyMessage.convert_value" title="Link to this definition"></a></dt>
+<dd><p>Convert parameter value based on parameter preset_type</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List[int]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.DigitalToneModifyMessage.convert_data">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">convert_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#DigitalToneModifyMessage.convert_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.DigitalToneModifyMessage.convert_data" title="Link to this definition"></a></dt>
+<dd><p>Convert data bytes back to parameter value</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> – List</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.DigitalTonePartialMessage">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.message.roland.</span></span><span class="sig-name descname"><span class="pre">DigitalTonePartialMessage</span></span><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#DigitalTonePartialMessage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.DigitalTonePartialMessage" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#jdxi_editor.midi.message.roland.ParameterMessage" title="jdxi_editor.midi.message.roland.ParameterMessage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ParameterMessage</span></code></a></p>
+<p>SuperNATURAL Synth Tone Partial parameter message</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.DigitalTonePartialMessage.msb">
+<span class="sig-name descname"><span class="pre">msb</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#DigitalTonePartialMessage.msb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.DigitalTonePartialMessage.msb" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.DigitalTonePartialMessage.umb">
+<span class="sig-name descname"><span class="pre">umb</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">32</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#DigitalTonePartialMessage.umb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.DigitalTonePartialMessage.umb" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.DigitalTonePartialMessage.convert_value">
+<span class="sig-name descname"><span class="pre">convert_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#DigitalTonePartialMessage.convert_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.DigitalTonePartialMessage.convert_value" title="Link to this definition"></a></dt>
+<dd><p>Convert parameter value based on parameter preset_type</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List[int]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.DigitalTonePartialMessage.convert_data">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">convert_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#DigitalTonePartialMessage.convert_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.DigitalTonePartialMessage.convert_data" title="Link to this definition"></a></dt>
+<dd><p>Convert data bytes back to parameter value</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> – List</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.AnalogToneMessage">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.message.roland.</span></span><span class="sig-name descname"><span class="pre">AnalogToneMessage</span></span><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#AnalogToneMessage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.AnalogToneMessage" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#jdxi_editor.midi.message.roland.ParameterMessage" title="jdxi_editor.midi.message.roland.ParameterMessage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ParameterMessage</span></code></a></p>
+<p>Message for analog tone parameters</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.AnalogToneMessage.msb">
+<span class="sig-name descname"><span class="pre">msb</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#AnalogToneMessage.msb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.AnalogToneMessage.msb" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.AnalogToneMessage.umb">
+<span class="sig-name descname"><span class="pre">umb</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#AnalogToneMessage.umb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.AnalogToneMessage.umb" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.AnalogToneMessage.lmb">
+<span class="sig-name descname"><span class="pre">lmb</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#AnalogToneMessage.lmb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.AnalogToneMessage.lmb" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.AnalogToneMessage.lsb">
+<span class="sig-name descname"><span class="pre">lsb</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#AnalogToneMessage.lsb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.AnalogToneMessage.lsb" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.AnalogToneMessage.value">
+<span class="sig-name descname"><span class="pre">value</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#AnalogToneMessage.value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.AnalogToneMessage.value" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.AnalogToneMessage.to_message_list">
+<span class="sig-name descname"><span class="pre">to_message_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#AnalogToneMessage.to_message_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.AnalogToneMessage.to_message_list" title="Link to this definition"></a></dt>
+<dd><p>Convert to SysEx message bytes</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.DrumKitCommonMessage">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.message.roland.</span></span><span class="sig-name descname"><span class="pre">DrumKitCommonMessage</span></span><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#DrumKitCommonMessage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.DrumKitCommonMessage" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#jdxi_editor.midi.message.roland.ParameterMessage" title="jdxi_editor.midi.message.roland.ParameterMessage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ParameterMessage</span></code></a></p>
+<p>Drum Kit Common parameter message</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.DrumKitCommonMessage.msb">
+<span class="sig-name descname"><span class="pre">msb</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#DrumKitCommonMessage.msb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.DrumKitCommonMessage.msb" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.DrumKitCommonMessage.umb">
+<span class="sig-name descname"><span class="pre">umb</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">16</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#DrumKitCommonMessage.umb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.DrumKitCommonMessage.umb" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.DrumKitCommonMessage.lmb">
+<span class="sig-name descname"><span class="pre">lmb</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#DrumKitCommonMessage.lmb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.DrumKitCommonMessage.lmb" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.DrumKitCommonMessage.convert_value">
+<span class="sig-name descname"><span class="pre">convert_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#DrumKitCommonMessage.convert_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.DrumKitCommonMessage.convert_value" title="Link to this definition"></a></dt>
+<dd><p>Convert parameter value based on parameter preset_type</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List[int]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.DrumKitCommonMessage.convert_data">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">convert_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#DrumKitCommonMessage.convert_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.DrumKitCommonMessage.convert_data" title="Link to this definition"></a></dt>
+<dd><p>Convert data bytes back to parameter value</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> – List</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.DrumKitPartialMessage">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.message.roland.</span></span><span class="sig-name descname"><span class="pre">DrumKitPartialMessage</span></span><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#DrumKitPartialMessage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.DrumKitPartialMessage" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#jdxi_editor.midi.message.roland.ParameterMessage" title="jdxi_editor.midi.message.roland.ParameterMessage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ParameterMessage</span></code></a></p>
+<p>Drum Kit Partial parameter message</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.DrumKitPartialMessage.msb">
+<span class="sig-name descname"><span class="pre">msb</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#DrumKitPartialMessage.msb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.DrumKitPartialMessage.msb" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.DrumKitPartialMessage.umb">
+<span class="sig-name descname"><span class="pre">umb</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">16</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#DrumKitPartialMessage.umb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.DrumKitPartialMessage.umb" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.DrumKitPartialMessage.lmb">
+<span class="sig-name descname"><span class="pre">lmb</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#DrumKitPartialMessage.lmb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.DrumKitPartialMessage.lmb" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.DrumKitPartialMessage.convert_value">
+<span class="sig-name descname"><span class="pre">convert_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#DrumKitPartialMessage.convert_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.DrumKitPartialMessage.convert_value" title="Link to this definition"></a></dt>
+<dd><p>Convert parameter value based on parameter preset_type</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List[int]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.DrumKitPartialMessage.convert_data">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">convert_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#DrumKitPartialMessage.convert_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.DrumKitPartialMessage.convert_data" title="Link to this definition"></a></dt>
+<dd><p>Convert data bytes back to parameter value</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> – List</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.create_sysex_message">
+<span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.message.roland.</span></span><span class="sig-name descname"><span class="pre">create_sysex_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">umb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">lmb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">lsb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#jdxi_editor.midi.message.roland.JDXiSysEx" title="jdxi_editor.midi.message.roland.JDXiSysEx"><span class="pre">JDXiSysEx</span></a></span></span><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#create_sysex_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.create_sysex_message" title="Link to this definition"></a></dt>
+<dd><p>Create address JD-Xi SysEx message with the given parameters</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.create_patch_load_message">
+<span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.message.roland.</span></span><span class="sig-name descname"><span class="pre">create_patch_load_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bank_msb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">bank_lsb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">program</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#jdxi_editor.midi.message.roland.JDXiSysEx" title="jdxi_editor.midi.message.roland.JDXiSysEx"><span class="pre">JDXiSysEx</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#create_patch_load_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.create_patch_load_message" title="Link to this definition"></a></dt>
+<dd><p>Create messages to load address patch (bank select + program change)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jdxi_editor.midi.message.roland.create_patch_request_message">
+<span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.message.roland.</span></span><span class="sig-name descname"><span class="pre">create_patch_request_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">umb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#jdxi_editor.midi.message.roland.JDXiSysEx" title="jdxi_editor.midi.message.roland.JDXiSysEx"><span class="pre">JDXiSysEx</span></a></span></span><a class="reference internal" href="../../../../../_modules/jdxi_editor/midi/message/roland.html#create_patch_request_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.message.roland.create_patch_request_message" title="Link to this definition"></a></dt>
+<dd><p>Create address message to request patch data</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../program_change/index.html" class="btn btn-neutral float-left" title="jdxi_editor.midi.message.program_change" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../synths/index.html" class="btn btn-neutral float-right" title="jdxi_editor.midi.message.synths" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Mark Mrooks.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

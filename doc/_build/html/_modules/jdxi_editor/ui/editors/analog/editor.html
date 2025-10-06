@@ -1,0 +1,1175 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>jdxi_editor.ui.editors.analog.editor &mdash; JD-Xi Editor 0.8.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../../_static/documentation_options.js?v=486e5634"></script>
+      <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../../index.html" class="icon icon-home">
+            JD-Xi Editor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../getting-started.html#getting-started-guide">Getting Started Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../editor-windows.html">Editor Windows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../editor-windows.html#available-editors">Available Editors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../additional-editors.html">Additional Editors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../additional-editors.html#available-editors">Available Editors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../playing-midi-files.html">Playing MIDI Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../playing-midi-files.html#available-tools">Available Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../troubleshooting.html#id1">Troubleshooting</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../legal.html">Legal Disclaimer</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../modules.html">jdxi_editor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../jdxi_editor.html">jdxi_editor package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.jdxi.html">jdxi_editor.jdxi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.log.html">jdxi_editor.log package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.midi.html">jdxi_editor.midi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.ui.html">jdxi_editor.ui package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.globals">jdxi_editor.globals module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.main">jdxi_editor.main module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.html#jdxi_editor.main.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.html#jdxi_editor.main.setup_splash_screen"><code class="docutils literal notranslate"><span class="pre">setup_splash_screen()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.project">jdxi_editor.project module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.resources">jdxi_editor.resources module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.html#jdxi_editor.resources.resource_path"><code class="docutils literal notranslate"><span class="pre">resource_path()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../autoapi/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/midi/index.html">midi</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/midi/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/colors/index.html">midi.colors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/slider/index.html">midi.slider</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/spin_box/index.html">midi.spin_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/time_ruler/index.html">midi.time_ruler</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/track/index.html">midi.track</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/track_viewer/index.html">midi.track_viewer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/utils/index.html">midi.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/adsr/index.html">adsr</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/adsr/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/adsr/adsr/index.html">adsr.adsr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/adsr/graph/index.html">adsr.graph</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/adsr/parameter/index.html">adsr.parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/adsr/plot/index.html">adsr.plot</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/pitch/index.html">pitch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/pitch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pitch/envelope/index.html">pitch.envelope</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pitch/envelope_plot/index.html">pitch.envelope_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pitch/pwm_plot/index.html">pitch.pwm_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pitch/slider_spinbox/index.html">pitch.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/piano/index.html">piano</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/piano/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/piano/key/index.html">piano.key</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/piano/keyboard/index.html">piano.keyboard</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/panel/index.html">panel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/panel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/panel/partial/index.html">panel.partial</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/wheel/index.html">wheel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/wheel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/wheel/mod/index.html">wheel.mod</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/wheel/pitch/index.html">wheel.pitch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/wheel/wheel/index.html">wheel.wheel</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/preset/index.html">preset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/preset/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/preset/combo_box/index.html">preset.combo_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/preset/panel/index.html">preset.panel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/preset/patch_name/index.html">preset.patch_name</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/slider/index.html">slider</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/slider/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/slider/slider/index.html">slider.slider</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/slider/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/slider/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/slider/index.html#slider.Slider"><code class="docutils literal notranslate"><span class="pre">Slider</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/dialog/index.html">dialog</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/dialog/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/dialog/progress/index.html">dialog.progress</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/viewer/index.html">viewer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/viewer/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/viewer/log/index.html">viewer.log</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/button/index.html">button</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/button/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/channel/index.html">button.channel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/favorite/index.html">button.favorite</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/sequencer/index.html">button.sequencer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/waveform/index.html">button.waveform</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/button/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/button/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/index.html#button.ChannelButton"><code class="docutils literal notranslate"><span class="pre">ChannelButton</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/index.html#button.SequencerSquare"><code class="docutils literal notranslate"><span class="pre">SequencerSquare</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/switch/index.html">switch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/switch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/switch/partial/index.html">switch.partial</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/switch/switch/index.html">switch.switch</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/filter/index.html">filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/filter/index.html#filter.FilterWidget"><code class="docutils literal notranslate"><span class="pre">FilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/display/index.html">display</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/display/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/display/digital/index.html">display.digital</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/display/pattern/index.html">display.pattern</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/display/value/index.html">display.value</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/pattern/index.html">pattern</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/pattern/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pattern/measure/index.html">pattern.measure</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/spin_box/index.html">spin_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/spin_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/spin_box/spin_box/index.html">spin_box.spin_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/envelope/index.html">envelope</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/envelope/base/index.html">envelope.base</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/indicator/index.html">indicator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/indicator/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/indicator/led/index.html">indicator.led</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/indicator/midi/index.html">indicator.midi</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/combo_box/index.html">combo_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/combo_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/combo_box/combo_box/index.html">combo_box.combo_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/index.html">jdxi_editor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/globals/index.html">jdxi_editor.globals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/jdxi/index.html">jdxi_editor.jdxi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/log/index.html">jdxi_editor.log</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/main/index.html">jdxi_editor.main</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/midi/index.html">jdxi_editor.midi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/project/index.html">jdxi_editor.project</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/resources/index.html">jdxi_editor.resources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/ui/index.html">jdxi_editor.ui</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html">filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#filter_plot.FilterPlot"><code class="docutils literal notranslate"><span class="pre">FilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html">envelope_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#envelope_plot.midi_value_to_float"><code class="docutils literal notranslate"><span class="pre">midi_value_to_float()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#envelope_plot.WMTEnvPlot"><code class="docutils literal notranslate"><span class="pre">WMTEnvPlot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#envelope_plot.app"><code class="docutils literal notranslate"><span class="pre">app</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/wave_selector/index.html">wave_selector</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/wave_selector/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/wave_selector/wave_selector/index.html">wave_selector.wave_selector</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/analog_filter/index.html">analog_filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/analog_filter/index.html#analog_filter.AnalogFilterWidget"><code class="docutils literal notranslate"><span class="pre">AnalogFilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/slider_spinbox/index.html">slider_spinbox</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/slider_spinbox/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/slider_spinbox/slider_spinbox/index.html">slider_spinbox.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html">analog_filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#analog_filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#analog_filter_plot.AnalogFilterPlot"><code class="docutils literal notranslate"><span class="pre">AnalogFilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">JD-Xi Editor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">jdxi_editor.ui.editors.analog.editor</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for jdxi_editor.ui.editors.analog.editor</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Module: analog_synth_editor</span>
+<span class="sd">===========================</span>
+
+<span class="sd">This module defines the `AnalogSynthEditor` class, which provides a PySide6-based</span>
+<span class="sd">user interface for editing analog synthesizer parameters in the Roland JD-Xi synthesizer.</span>
+<span class="sd">It extends the `SynthEditor` base class and integrates MIDI communication for real-time</span>
+<span class="sd">parameter adjustments and preset management.</span>
+
+<span class="sd">Key Features:</span>
+<span class="sd">-------------</span>
+<span class="sd">- Provides a graphical editor for modifying analog synth parameters, including</span>
+<span class="sd">  oscillator, filter, amp, LFO, and envelope settings.</span>
+<span class="sd">- Supports MIDI communication to send and receive real-time parameter changes.</span>
+<span class="sd">- Allows selection of different analog synth presets from a dropdown menu.</span>
+<span class="sd">- Displays an instrument image that updates based on the selected preset.</span>
+<span class="sd">- Includes a scrollable layout for managing a variety of parameter controls.</span>
+<span class="sd">- Implements bipolar parameter handling for proper UI representation.</span>
+<span class="sd">- Supports waveform selection with custom buttons and icons.</span>
+<span class="sd">- Provides a &quot;Send Read Request to Synth&quot; button to retrieve current synth settings.</span>
+<span class="sd">- Enables MIDI-triggered updates via incoming program changes and parameter adjustments.</span>
+
+<span class="sd">Dependencies:</span>
+<span class="sd">-------------</span>
+<span class="sd">- PySide6 (for UI components and event handling)</span>
+<span class="sd">- MIDIHelper (for handling MIDI communication)</span>
+<span class="sd">- PresetHandler (for managing synth presets)</span>
+<span class="sd">- Various custom enums and helper classes (AnalogParameter, AnalogCommonParameter, etc.)</span>
+
+<span class="sd">Usage:</span>
+<span class="sd">------</span>
+<span class="sd">The `AnalogSynthEditor` class can be instantiated as part of a larger PySide6 application.</span>
+<span class="sd">It requires a `MIDIHelper` instance for proper communication with the synthesizer.</span>
+
+<span class="sd">Example:</span>
+<span class="sd">--------</span>
+<span class="sd">    midi_helper = MIDIHelper()</span>
+<span class="sd">    preset_helper = PresetHandler()</span>
+<span class="sd">    editor = AnalogSynthEditor(midi_helper, preset_helper)</span>
+<span class="sd">    editor.show()</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">PySide6.QtWidgets</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">QWidget</span><span class="p">,</span>
+    <span class="n">QVBoxLayout</span><span class="p">,</span>
+    <span class="n">QHBoxLayout</span><span class="p">,</span>
+    <span class="n">QScrollArea</span><span class="p">,</span>
+    <span class="n">QSlider</span><span class="p">,</span>
+    <span class="n">QTabWidget</span><span class="p">,</span>
+    <span class="n">QSplitter</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PySide6.QtCore</span><span class="w"> </span><span class="kn">import</span> <span class="n">Qt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PySide6.QtGui</span><span class="w"> </span><span class="kn">import</span> <span class="n">QShortcut</span><span class="p">,</span> <span class="n">QKeySequence</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">qtawesome</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">qta</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.log.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">Logger</span> <span class="k">as</span> <span class="n">log</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.log.slider_parameter</span><span class="w"> </span><span class="kn">import</span> <span class="n">log_slider_parameters</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.data.control_change.analog</span><span class="w"> </span><span class="kn">import</span> <span class="n">AnalogControlChange</span><span class="p">,</span> <span class="n">DigitalRPN_Partial1</span><span class="p">,</span> <span class="n">AnalogRPN</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.data.parameter.analog</span><span class="w"> </span><span class="kn">import</span> <span class="n">AddressParameterAnalog</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.io.helper</span><span class="w"> </span><span class="kn">import</span> <span class="n">MidiIOHelper</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.jdxi.synth.type</span><span class="w"> </span><span class="kn">import</span> <span class="n">JDXiSynth</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.utils.conversions</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">midi_value_to_ms</span><span class="p">,</span>
+    <span class="n">midi_value_to_fraction</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.data.analog.oscillator</span><span class="w"> </span><span class="kn">import</span> <span class="n">AnalogOscWave</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.ui.editors.analog.amp</span><span class="w"> </span><span class="kn">import</span> <span class="n">AmpSection</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.ui.editors.analog.common</span><span class="w"> </span><span class="kn">import</span> <span class="n">AnalogCommonSection</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.ui.editors.analog.filter</span><span class="w"> </span><span class="kn">import</span> <span class="n">AnalogFilterSection</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.ui.editors.analog.lfo</span><span class="w"> </span><span class="kn">import</span> <span class="n">AnalogLFOSection</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.ui.editors.analog.oscillator</span><span class="w"> </span><span class="kn">import</span> <span class="n">AnalogOscillatorSection</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.ui.editors.synth.editor</span><span class="w"> </span><span class="kn">import</span> <span class="n">SynthEditor</span><span class="p">,</span> <span class="n">log_changes</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.ui.image.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">base64_to_pixmap</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.ui.image.waveform</span><span class="w"> </span><span class="kn">import</span> <span class="n">generate_waveform_icon</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.jdxi.style</span><span class="w"> </span><span class="kn">import</span> <span class="n">JDXiStyle</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.jdxi.preset.helper</span><span class="w"> </span><span class="kn">import</span> <span class="n">JDXiPresetHelper</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.ui.windows.jdxi.dimensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">JDXiDimensions</span>
+
+
+<div class="viewcode-block" id="AnalogSynthEditor">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/index.html#jdxi_editor.ui.editors.analog.editor.AnalogSynthEditor">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">AnalogSynthEditor</span><span class="p">(</span><span class="n">SynthEditor</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Analog Synth Editor UI.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="AnalogSynthEditor.__init__">
+<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.analog.html#jdxi_editor.ui.editors.analog.editor.AnalogSynthEditor.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">midi_helper</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">MidiIOHelper</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">preset_helper</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">JDXiPresetHelper</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">parent</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">QWidget</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">midi_helper</span><span class="p">,</span> <span class="n">parent</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the AnalogSynthEditor</span>
+
+<span class="sd">        :param midi_helper: MidiIOHelper</span>
+<span class="sd">        :param preset_helper: JDXIPresetHelper</span>
+<span class="sd">        :param parent: QWidget</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="AnalogSynthEditor.amp_section">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/analog/editor/index.html#jdxi_editor.ui.editors.analog.editor.AnalogSynthEditor.amp_section">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">amp_section</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="AnalogSynthEditor.oscillator_section">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/analog/editor/index.html#jdxi_editor.ui.editors.analog.editor.AnalogSynthEditor.oscillator_section">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">oscillator_section</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="AnalogSynthEditor.read_request_button">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/analog/editor/index.html#jdxi_editor.ui.editors.analog.editor.AnalogSynthEditor.read_request_button">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">read_request_button</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="AnalogSynthEditor.tab_widget">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/analog/editor/index.html#jdxi_editor.ui.editors.analog.editor.AnalogSynthEditor.tab_widget">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tab_widget</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="AnalogSynthEditor.lfo_section">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/analog/editor/index.html#jdxi_editor.ui.editors.analog.editor.AnalogSynthEditor.lfo_section">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lfo_section</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="AnalogSynthEditor.instrument_selection_label">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/analog/editor/index.html#jdxi_editor.ui.editors.analog.editor.AnalogSynthEditor.instrument_selection_label">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">instrument_selection_label</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="AnalogSynthEditor.instrument_title_label">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/analog/editor/index.html#jdxi_editor.ui.editors.analog.editor.AnalogSynthEditor.instrument_title_label">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">instrument_title_label</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="AnalogSynthEditor.preset_helper">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/analog/editor/index.html#jdxi_editor.ui.editors.analog.editor.AnalogSynthEditor.preset_helper">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">preset_helper</span> <span class="o">=</span> <span class="n">preset_helper</span></div>
+
+<div class="viewcode-block" id="AnalogSynthEditor.wave_buttons">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/analog/editor/index.html#jdxi_editor.ui.editors.analog.editor.AnalogSynthEditor.wave_buttons">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wave_buttons</span> <span class="o">=</span> <span class="p">{}</span></div>
+
+<div class="viewcode-block" id="AnalogSynthEditor.lfo_shape_buttons">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/analog/editor/index.html#jdxi_editor.ui.editors.analog.editor.AnalogSynthEditor.lfo_shape_buttons">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lfo_shape_buttons</span> <span class="o">=</span> <span class="p">{}</span></div>
+
+<div class="viewcode-block" id="AnalogSynthEditor.controls">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/analog/editor/index.html#jdxi_editor.ui.editors.analog.editor.AnalogSynthEditor.controls">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">AddressParameterAnalog</span><span class="p">],</span> <span class="n">QWidget</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span></div>
+
+<div class="viewcode-block" id="AnalogSynthEditor.updating_from_spinbox">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/analog/editor/index.html#jdxi_editor.ui.editors.analog.editor.AnalogSynthEditor.updating_from_spinbox">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">updating_from_spinbox</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="AnalogSynthEditor.previous_json_data">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/analog/editor/index.html#jdxi_editor.ui.editors.analog.editor.AnalogSynthEditor.previous_json_data">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">previous_json_data</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="AnalogSynthEditor.main_window">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/analog/editor/index.html#jdxi_editor.ui.editors.analog.editor.AnalogSynthEditor.main_window">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_window</span> <span class="o">=</span> <span class="n">parent</span></div>
+
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_parameter_mappings</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_synth_data</span><span class="p">(</span><span class="n">JDXiSynth</span><span class="o">.</span><span class="n">ANALOG_SYNTH</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setup_ui</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span><span class="o">.</span><span class="n">midi_program_changed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_handle_program_change</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span><span class="o">.</span><span class="n">midi_sysex_json</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dispatch_sysex_to_area</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="s2">&quot;MIDI signals connected&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="s2">&quot;MIDI signals not connected&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="AnalogSynthEditor.refresh_shortcut">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/analog/editor/index.html#jdxi_editor.ui.editors.analog.editor.AnalogSynthEditor.refresh_shortcut">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">refresh_shortcut</span> <span class="o">=</span> <span class="n">QShortcut</span><span class="p">(</span><span class="n">QKeySequence</span><span class="o">.</span><span class="n">StandardKey</span><span class="o">.</span><span class="n">Refresh</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span></div>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">refresh_shortcut</span><span class="o">.</span><span class="n">activated</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_request</span><span class="p">)</span>
+
+        <span class="c1"># Define mapping dictionaries</span>
+<div class="viewcode-block" id="AnalogSynthEditor.sub_osc_type_map">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/analog/editor/index.html#jdxi_editor.ui.editors.analog.editor.AnalogSynthEditor.sub_osc_type_map">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sub_osc_type_map</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="mi">2</span><span class="p">}</span></div>
+
+<div class="viewcode-block" id="AnalogSynthEditor.filter_switch_map">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/analog/editor/index.html#jdxi_editor.ui.editors.analog.editor.AnalogSynthEditor.filter_switch_map">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filter_switch_map</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span></div>
+
+<div class="viewcode-block" id="AnalogSynthEditor.osc_waveform_map">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/analog/editor/index.html#jdxi_editor.ui.editors.analog.editor.AnalogSynthEditor.osc_waveform_map">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">osc_waveform_map</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="mi">0</span><span class="p">:</span> <span class="n">AnalogOscWave</span><span class="o">.</span><span class="n">SAW</span><span class="p">,</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="n">AnalogOscWave</span><span class="o">.</span><span class="n">TRIANGLE</span><span class="p">,</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="n">AnalogOscWave</span><span class="o">.</span><span class="n">PULSE</span><span class="p">,</span>
+        <span class="p">}</span></div>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_sections</span><span class="p">()</span>
+<div class="viewcode-block" id="AnalogSynthEditor.adsr_mapping">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/analog/editor/index.html#jdxi_editor.ui.editors.analog.editor.AnalogSynthEditor.adsr_mapping">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">adsr_mapping</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">AddressParameterAnalog</span><span class="o">.</span><span class="n">AMP_ENV_ATTACK_TIME</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">amp_section</span><span class="o">.</span><span class="n">amp_env_adsr_widget</span><span class="o">.</span><span class="n">attack_control</span><span class="p">,</span>
+            <span class="n">AddressParameterAnalog</span><span class="o">.</span><span class="n">AMP_ENV_DECAY_TIME</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">amp_section</span><span class="o">.</span><span class="n">amp_env_adsr_widget</span><span class="o">.</span><span class="n">decay_control</span><span class="p">,</span>
+            <span class="n">AddressParameterAnalog</span><span class="o">.</span><span class="n">AMP_ENV_SUSTAIN_LEVEL</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">amp_section</span><span class="o">.</span><span class="n">amp_env_adsr_widget</span><span class="o">.</span><span class="n">sustain_control</span><span class="p">,</span>
+            <span class="n">AddressParameterAnalog</span><span class="o">.</span><span class="n">AMP_ENV_RELEASE_TIME</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">amp_section</span><span class="o">.</span><span class="n">amp_env_adsr_widget</span><span class="o">.</span><span class="n">release_control</span><span class="p">,</span>
+            <span class="n">AddressParameterAnalog</span><span class="o">.</span><span class="n">FILTER_ENV_ATTACK_TIME</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_section</span><span class="o">.</span><span class="n">filter_adsr_widget</span><span class="o">.</span><span class="n">attack_control</span><span class="p">,</span>
+            <span class="n">AddressParameterAnalog</span><span class="o">.</span><span class="n">FILTER_ENV_DECAY_TIME</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_section</span><span class="o">.</span><span class="n">filter_adsr_widget</span><span class="o">.</span><span class="n">decay_control</span><span class="p">,</span>
+            <span class="n">AddressParameterAnalog</span><span class="o">.</span><span class="n">FILTER_ENV_SUSTAIN_LEVEL</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_section</span><span class="o">.</span><span class="n">filter_adsr_widget</span><span class="o">.</span><span class="n">sustain_control</span><span class="p">,</span>
+            <span class="n">AddressParameterAnalog</span><span class="o">.</span><span class="n">FILTER_ENV_RELEASE_TIME</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_section</span><span class="o">.</span><span class="n">filter_adsr_widget</span><span class="o">.</span><span class="n">release_control</span><span class="p">,</span>
+        <span class="p">}</span></div>
+
+<div class="viewcode-block" id="AnalogSynthEditor.pitch_env_mapping">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/analog/editor/index.html#jdxi_editor.ui.editors.analog.editor.AnalogSynthEditor.pitch_env_mapping">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pitch_env_mapping</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">AddressParameterAnalog</span><span class="o">.</span><span class="n">OSC_PITCH_ENV_ATTACK_TIME</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">oscillator_section</span><span class="o">.</span><span class="n">pitch_env_widget</span><span class="o">.</span><span class="n">attack_control</span><span class="p">,</span>
+            <span class="n">AddressParameterAnalog</span><span class="o">.</span><span class="n">OSC_PITCH_ENV_DECAY_TIME</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">oscillator_section</span><span class="o">.</span><span class="n">pitch_env_widget</span><span class="o">.</span><span class="n">decay_control</span><span class="p">,</span>
+            <span class="n">AddressParameterAnalog</span><span class="o">.</span><span class="n">OSC_PITCH_ENV_DEPTH</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">oscillator_section</span><span class="o">.</span><span class="n">pitch_env_widget</span><span class="o">.</span><span class="n">depth_control</span><span class="p">,</span>
+        <span class="p">}</span></div>
+
+<div class="viewcode-block" id="AnalogSynthEditor.pwm_mapping">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/analog/editor/index.html#jdxi_editor.ui.editors.analog.editor.AnalogSynthEditor.pwm_mapping">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pwm_mapping</span> <span class="o">=</span> <span class="p">[</span><span class="n">AddressParameterAnalog</span><span class="o">.</span><span class="n">OSC_PULSE_WIDTH</span><span class="p">,</span>
+                            <span class="n">AddressParameterAnalog</span><span class="o">.</span><span class="n">OSC_PULSE_WIDTH_MOD_DEPTH</span><span class="p">]</span></div>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_request</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="AnalogSynthEditor.setup_ui">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/index.html#jdxi_editor.ui.editors.analog.editor.AnalogSynthEditor.setup_ui">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set up the Analog Synth Editor UI.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMinimumSize</span><span class="p">(</span><span class="n">JDXiDimensions</span><span class="o">.</span><span class="n">EDITOR_ANALOG_MIN_WIDTH</span><span class="p">,</span> <span class="n">JDXiDimensions</span><span class="o">.</span><span class="n">EDITOR_ANALOG_MIN_HEIGHT</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">JDXiDimensions</span><span class="o">.</span><span class="n">EDITOR_ANALOG_WIDTH</span><span class="p">,</span> <span class="n">JDXiDimensions</span><span class="o">.</span><span class="n">EDITOR_ANALOG_HEIGHT</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">TABS_ANALOG</span> <span class="o">+</span> <span class="n">JDXiStyle</span><span class="o">.</span><span class="n">EDITOR_ANALOG</span><span class="p">)</span>
+
+        <span class="n">main_layout</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">main_layout</span><span class="p">)</span>
+
+        <span class="c1"># Splitter</span>
+        <span class="n">splitter</span> <span class="o">=</span> <span class="n">QSplitter</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">Orientation</span><span class="o">.</span><span class="n">Vertical</span><span class="p">)</span>
+        <span class="n">main_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">splitter</span><span class="p">)</span>
+
+        <span class="c1"># === Top half ===</span>
+        <span class="n">upper_widget</span> <span class="o">=</span> <span class="n">QWidget</span><span class="p">()</span>
+
+        <span class="n">scroll</span> <span class="o">=</span> <span class="n">QScrollArea</span><span class="p">()</span>
+        <span class="n">scroll</span><span class="o">.</span><span class="n">setWidgetResizable</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">scroll</span><span class="o">.</span><span class="n">setHorizontalScrollBarPolicy</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">ScrollBarPolicy</span><span class="o">.</span><span class="n">ScrollBarAsNeeded</span><span class="p">)</span>
+        <span class="n">scroll</span><span class="o">.</span><span class="n">setVerticalScrollBarPolicy</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">ScrollBarPolicy</span><span class="o">.</span><span class="n">ScrollBarAsNeeded</span><span class="p">)</span>
+
+        <span class="n">container</span> <span class="o">=</span> <span class="n">QWidget</span><span class="p">()</span>
+        <span class="n">container_layout</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">(</span><span class="n">container</span><span class="p">)</span>
+        <span class="n">scroll</span><span class="o">.</span><span class="n">setWidget</span><span class="p">(</span><span class="n">container</span><span class="p">)</span>
+        <span class="n">main_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">splitter</span><span class="p">)</span>
+
+        <span class="c1"># Top layout with title and image</span>
+        <span class="n">upper_layout</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+        <span class="n">upper_layout</span><span class="o">.</span><span class="n">addStretch</span><span class="p">()</span>
+        <span class="n">upper_widget</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">upper_layout</span><span class="p">)</span>
+        <span class="n">instrument_layout</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">()</span>
+        <span class="n">instrument_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">upper_widget</span><span class="p">)</span>
+        <span class="n">instrument_layout</span><span class="o">.</span><span class="n">addStretch</span><span class="p">()</span>
+        <span class="n">instrument_widget</span> <span class="o">=</span> <span class="n">QWidget</span><span class="p">()</span>
+        <span class="n">instrument_widget</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">instrument_layout</span><span class="p">)</span>
+
+        <span class="n">instrument_preset_group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_instrument_preset_group</span><span class="p">()</span>
+        <span class="n">upper_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">instrument_preset_group</span><span class="p">)</span>
+        <span class="n">upper_layout</span><span class="o">.</span><span class="n">addStretch</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_instrument_image_group</span><span class="p">()</span>
+        <span class="n">upper_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instrument_image_group</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">instrument_image_group</span><span class="o">.</span><span class="n">setMinimumWidth</span><span class="p">(</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">INSTRUMENT_IMAGE_WIDTH</span><span class="p">)</span>
+        <span class="n">upper_layout</span><span class="o">.</span><span class="n">addStretch</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_instrument_image</span><span class="p">()</span>
+
+        <span class="c1"># Tab sections</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tab_widget</span> <span class="o">=</span> <span class="n">QTabWidget</span><span class="p">()</span>
+        <span class="n">container_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tab_widget</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tab_widget</span><span class="o">.</span><span class="n">addTab</span><span class="p">(</span><span class="n">instrument_widget</span><span class="p">,</span> <span class="s2">&quot;Presets&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Configure sliders</span>
+        <span class="k">for</span> <span class="n">param</span><span class="p">,</span> <span class="n">slider</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">slider</span><span class="p">,</span> <span class="n">QSlider</span><span class="p">):</span>
+                <span class="n">slider</span><span class="o">.</span><span class="n">setTickPosition</span><span class="p">(</span><span class="n">QSlider</span><span class="o">.</span><span class="n">TickPosition</span><span class="o">.</span><span class="n">TicksBothSides</span><span class="p">)</span>
+                <span class="n">slider</span><span class="o">.</span><span class="n">setTickInterval</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+
+        <span class="n">scroll</span><span class="o">.</span><span class="n">setWidget</span><span class="p">(</span><span class="n">container</span><span class="p">)</span>
+
+        <span class="c1"># splitter.addWidget(upper_widget)</span>
+        <span class="n">splitter</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">scroll</span><span class="p">)</span>
+        <span class="n">splitter</span><span class="o">.</span><span class="n">setSizes</span><span class="p">(</span><span class="n">JDXiDimensions</span><span class="o">.</span><span class="n">EDITOR_DRUM_ANALOG_SPLITTER_SIZES</span><span class="p">)</span>  <span class="c1"># give more room to bottom</span>
+        <span class="c1"># Splitter handle style</span>
+        <span class="n">splitter</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">SPLITTER</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AnalogSynthEditor._create_sections">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/index.html#jdxi_editor.ui.editors.analog.editor.AnalogSynthEditor._create_sections">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_sections</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create the sections for the Analog Synth Editor.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">oscillator_section</span> <span class="o">=</span> <span class="n">AnalogOscillatorSection</span><span class="p">(</span>
+            <span class="n">create_parameter_slider</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_slider</span><span class="p">,</span>
+            <span class="n">create_parameter_switch</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_switch</span><span class="p">,</span>
+            <span class="n">waveform_selected_callback</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_on_waveform_selected</span><span class="p">,</span>
+            <span class="n">wave_buttons</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">wave_buttons</span><span class="p">,</span>
+            <span class="n">midi_helper</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span><span class="p">,</span>
+            <span class="n">controls</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="p">,</span>
+            <span class="n">address</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tab_widget</span><span class="o">.</span><span class="n">addTab</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">oscillator_section</span><span class="p">,</span>
+            <span class="n">qta</span><span class="o">.</span><span class="n">icon</span><span class="p">(</span><span class="s2">&quot;mdi.triangle-wave&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#666666&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;Oscillator&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filter_section</span> <span class="o">=</span> <span class="n">AnalogFilterSection</span><span class="p">(</span>
+            <span class="n">create_parameter_slider</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_slider</span><span class="p">,</span>
+            <span class="n">create_parameter_switch</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_switch</span><span class="p">,</span>
+            <span class="n">on_filter_mode_changed</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_on_filter_mode_changed</span><span class="p">,</span>
+            <span class="n">send_control_change</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">send_control_change</span><span class="p">,</span>
+            <span class="n">midi_helper</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span><span class="p">,</span>
+            <span class="n">controls</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="p">,</span>
+            <span class="n">address</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">synth_data</span><span class="o">.</span><span class="n">address</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tab_widget</span><span class="o">.</span><span class="n">addTab</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">filter_section</span><span class="p">,</span> <span class="n">qta</span><span class="o">.</span><span class="n">icon</span><span class="p">(</span><span class="s2">&quot;ri.filter-3-fill&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#666666&quot;</span><span class="p">),</span> <span class="s2">&quot;Filter&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">amp_section</span> <span class="o">=</span> <span class="n">AmpSection</span><span class="p">(</span>
+            <span class="n">midi_helper</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span><span class="p">,</span>
+            <span class="n">address</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">synth_data</span><span class="o">.</span><span class="n">address</span><span class="p">,</span>
+            <span class="n">create_parameter_slider</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_slider</span><span class="p">,</span>
+            <span class="n">generate_waveform_icon</span><span class="o">=</span><span class="n">generate_waveform_icon</span><span class="p">,</span>
+            <span class="n">base64_to_pixmap</span><span class="o">=</span><span class="n">base64_to_pixmap</span><span class="p">,</span>
+            <span class="n">controls</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">controls</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tab_widget</span><span class="o">.</span><span class="n">addTab</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">amp_section</span><span class="p">,</span> <span class="n">qta</span><span class="o">.</span><span class="n">icon</span><span class="p">(</span><span class="s2">&quot;mdi.amplifier&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#666666&quot;</span><span class="p">),</span> <span class="s2">&quot;Amp&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lfo_section</span> <span class="o">=</span> <span class="n">AnalogLFOSection</span><span class="p">(</span>
+            <span class="n">create_parameter_slider</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_slider</span><span class="p">,</span>
+            <span class="n">create_parameter_switch</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_switch</span><span class="p">,</span>
+            <span class="n">create_parameter_combo_box</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_combo_box</span><span class="p">,</span>
+            <span class="n">on_lfo_shape_changed</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_on_lfo_shape_changed</span><span class="p">,</span>
+            <span class="n">lfo_shape_buttons</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lfo_shape_buttons</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tab_widget</span><span class="o">.</span><span class="n">addTab</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lfo_section</span><span class="p">,</span> <span class="n">qta</span><span class="o">.</span><span class="n">icon</span><span class="p">(</span><span class="s2">&quot;mdi.sine-wave&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#666666&quot;</span><span class="p">),</span> <span class="s2">&quot;LFO&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">common_section</span> <span class="o">=</span> <span class="n">AnalogCommonSection</span><span class="p">(</span>
+            <span class="n">create_parameter_slider</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_slider</span><span class="p">,</span>
+            <span class="n">create_parameter_switch</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_switch</span><span class="p">,</span>
+            <span class="n">create_parameter_combo_box</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_combo_box</span><span class="p">,</span>
+            <span class="n">controls</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tab_widget</span><span class="o">.</span><span class="n">addTab</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">common_section</span><span class="p">,</span> <span class="s2">&quot;Common&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AnalogSynthEditor._init_parameter_mappings">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/index.html#jdxi_editor.ui.editors.analog.editor.AnalogSynthEditor._init_parameter_mappings">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_init_parameter_mappings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize MIDI parameter mappings.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cc_parameters</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;Cutoff&quot;</span><span class="p">:</span> <span class="n">AnalogControlChange</span><span class="o">.</span><span class="n">CUTOFF</span><span class="p">,</span>
+            <span class="s2">&quot;Resonance&quot;</span><span class="p">:</span> <span class="n">AnalogControlChange</span><span class="o">.</span><span class="n">RESONANCE</span><span class="p">,</span>
+            <span class="s2">&quot;Level&quot;</span><span class="p">:</span> <span class="n">AnalogControlChange</span><span class="o">.</span><span class="n">LEVEL</span><span class="p">,</span>
+            <span class="s2">&quot;LFO Rate&quot;</span><span class="p">:</span> <span class="n">AnalogControlChange</span><span class="o">.</span><span class="n">LFO_RATE</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">nrpn_parameters</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;Envelope&quot;</span><span class="p">:</span> <span class="n">AnalogRPN</span><span class="o">.</span><span class="n">ENVELOPE</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">msb_lsb</span><span class="p">,</span>  <span class="c1"># (0, 124),</span>
+            <span class="s2">&quot;LFO Shape&quot;</span><span class="p">:</span> <span class="n">AnalogRPN</span><span class="o">.</span><span class="n">LFO_SHAPE</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">msb_lsb</span><span class="p">,</span>  <span class="c1"># (0, 3),</span>
+            <span class="s2">&quot;LFO Pitch Depth&quot;</span><span class="p">:</span> <span class="n">AnalogRPN</span><span class="o">.</span><span class="n">LFO_PITCH_DEPTH</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">msb_lsb</span><span class="p">,</span>  <span class="c1"># (0, 15),</span>
+            <span class="s2">&quot;LFO Filter Depth&quot;</span><span class="p">:</span> <span class="n">AnalogRPN</span><span class="o">.</span><span class="n">LFO_FILTER_DEPTH</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">msb_lsb</span><span class="p">,</span>  <span class="c1"># (0, 18),</span>
+            <span class="s2">&quot;LFO Amp Depth&quot;</span><span class="p">:</span> <span class="n">AnalogRPN</span><span class="o">.</span><span class="n">LFO_AMP_DEPTH</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">msb_lsb</span><span class="p">,</span>  <span class="c1"># (0, 21),</span>
+            <span class="s2">&quot;Pulse Width&quot;</span><span class="p">:</span> <span class="n">AnalogRPN</span><span class="o">.</span><span class="n">PULSE_WIDTH</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">msb_lsb</span>  <span class="c1"># (0, 37),</span>
+        <span class="p">}</span>
+
+        <span class="c1"># Reverse lookup map</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nrpn_map</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nrpn_parameters</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span></div>
+
+
+<div class="viewcode-block" id="AnalogSynthEditor.update_filter_controls_state">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/index.html#jdxi_editor.ui.editors.analog.editor.AnalogSynthEditor.update_filter_controls_state">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_filter_controls_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update filter controls enabled state based on mode&quot;&quot;&quot;</span>
+        <span class="n">enabled</span> <span class="o">=</span> <span class="n">mode</span> <span class="o">!=</span> <span class="mi">0</span>  <span class="c1"># Enable if not BYPASS</span>
+        <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="p">[</span>
+            <span class="n">AddressParameterAnalog</span><span class="o">.</span><span class="n">FILTER_CUTOFF</span><span class="p">,</span>
+            <span class="n">AddressParameterAnalog</span><span class="o">.</span><span class="n">FILTER_RESONANCE</span><span class="p">,</span>
+            <span class="n">AddressParameterAnalog</span><span class="o">.</span><span class="n">FILTER_CUTOFF_KEYFOLLOW</span><span class="p">,</span>
+            <span class="n">AddressParameterAnalog</span><span class="o">.</span><span class="n">FILTER_ENV_VELOCITY_SENSITIVITY</span><span class="p">,</span>
+            <span class="n">AddressParameterAnalog</span><span class="o">.</span><span class="n">FILTER_ENV_DEPTH</span><span class="p">,</span>
+        <span class="p">]:</span>
+            <span class="k">if</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="p">[</span><span class="n">param</span><span class="p">]</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="n">enabled</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filter_section</span><span class="o">.</span><span class="n">filter_adsr_widget</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="n">enabled</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AnalogSynthEditor._on_filter_mode_changed">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/index.html#jdxi_editor.ui.editors.analog.editor.AnalogSynthEditor._on_filter_mode_changed">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_on_filter_mode_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Handle filter mode changes&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_filter_controls_state</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AnalogSynthEditor.update_filter_state">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/index.html#jdxi_editor.ui.editors.analog.editor.AnalogSynthEditor.update_filter_state">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_filter_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update the filter state</span>
+
+<span class="sd">        :param value: int value</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_filter_controls_state</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AnalogSynthEditor._on_waveform_selected">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/index.html#jdxi_editor.ui.editors.analog.editor.AnalogSynthEditor._on_waveform_selected">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_on_waveform_selected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">waveform</span><span class="p">:</span> <span class="n">AnalogOscWave</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Handle waveform button selection</span>
+
+<span class="sd">        :param waveform: AnalogOscWave value</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span><span class="p">:</span>
+            <span class="n">sysex_message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sysex_composer</span><span class="o">.</span><span class="n">compose_message</span><span class="p">(</span><span class="n">address</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span>
+                                                                <span class="n">param</span><span class="o">=</span><span class="n">AddressParameterAnalog</span><span class="o">.</span><span class="n">OSC_WAVEFORM</span><span class="p">,</span>
+                                                                <span class="n">value</span><span class="o">=</span><span class="n">waveform</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span><span class="o">.</span><span class="n">send_midi_message</span><span class="p">(</span><span class="n">sysex_message</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">btn</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">wave_buttons</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="n">btn</span><span class="o">.</span><span class="n">setChecked</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+                <span class="n">btn</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">BUTTON_RECT_ANALOG</span><span class="p">)</span>
+
+            <span class="c1"># Apply active style to the selected waveform button</span>
+            <span class="n">selected_btn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wave_buttons</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">waveform</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">selected_btn</span><span class="p">:</span>
+                <span class="n">selected_btn</span><span class="o">.</span><span class="n">setChecked</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">selected_btn</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">BUTTON_ANALOG_ACTIVE</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_pw_controls_state</span><span class="p">(</span><span class="n">waveform</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AnalogSynthEditor._on_lfo_shape_changed">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/index.html#jdxi_editor.ui.editors.analog.editor.AnalogSynthEditor._on_lfo_shape_changed">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_on_lfo_shape_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Handle LFO shape change</span>
+
+<span class="sd">        :param value: int value</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span><span class="p">:</span>
+            <span class="n">sysex_message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sysex_composer</span><span class="o">.</span><span class="n">compose_message</span><span class="p">(</span><span class="n">address</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span>
+                                                                <span class="n">param</span><span class="o">=</span><span class="n">AddressParameterAnalog</span><span class="o">.</span><span class="n">LFO_SHAPE</span><span class="p">,</span>
+                                                                <span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span><span class="o">.</span><span class="n">send_midi_message</span><span class="p">(</span><span class="n">sysex_message</span><span class="p">)</span>
+            <span class="c1"># Reset all buttons to default style</span>
+            <span class="k">for</span> <span class="n">btn</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">lfo_shape_buttons</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="n">btn</span><span class="o">.</span><span class="n">setChecked</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+                <span class="n">btn</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">BUTTON_RECT_ANALOG</span><span class="p">)</span>
+
+            <span class="c1"># Apply active style to the selected button</span>
+            <span class="n">selected_btn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lfo_shape_buttons</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">selected_btn</span><span class="p">:</span>
+                <span class="n">selected_btn</span><span class="o">.</span><span class="n">setChecked</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">selected_btn</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">BUTTON_ANALOG_ACTIVE</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AnalogSynthEditor.update_slider">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/index.html#jdxi_editor.ui.editors.analog.editor.AnalogSynthEditor.update_slider">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_slider</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">param</span><span class="p">:</span> <span class="n">AddressParameterAnalog</span><span class="p">,</span>
+            <span class="n">midi_value</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">successes</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">failures</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Helper function to update sliders safely.</span>
+
+<span class="sd">        :param param: AddressParameterAnalog value</span>
+<span class="sd">        :param failures: list of failed parameters</span>
+<span class="sd">        :param successes: list of successful parameters</span>
+<span class="sd">        :param midi_value: int value</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">slider</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">slider</span><span class="p">:</span>
+            <span class="n">slider_value</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">convert_from_midi</span><span class="p">(</span><span class="n">midi_value</span><span class="p">)</span>
+            <span class="n">slider</span><span class="o">.</span><span class="n">blockSignals</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">slider</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">slider_value</span><span class="p">)</span>
+            <span class="n">slider</span><span class="o">.</span><span class="n">blockSignals</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">successes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">log_slider_parameters</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">midi_value</span><span class="p">,</span> <span class="n">slider_value</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">failures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">name</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AnalogSynthEditor.update_adsr_widget">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/index.html#jdxi_editor.ui.editors.analog.editor.AnalogSynthEditor.update_adsr_widget">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_adsr_widget</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">param</span><span class="p">:</span> <span class="n">AddressParameterAnalog</span><span class="p">,</span>
+            <span class="n">midi_value</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">successes</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">failures</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Helper function to update ADSR widgets.</span>
+
+<span class="sd">        :param param: AddressParameterAnalog value</span>
+<span class="sd">        :param midi_value: int value</span>
+<span class="sd">        :param failures: list of failed parameters</span>
+<span class="sd">        :param successes: list of successful parameters</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">slider_value</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">midi_value_to_fraction</span><span class="p">(</span><span class="n">midi_value</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">param</span>
+               <span class="ow">in</span> <span class="p">[</span>
+                   <span class="n">AddressParameterAnalog</span><span class="o">.</span><span class="n">AMP_ENV_SUSTAIN_LEVEL</span><span class="p">,</span>
+                   <span class="n">AddressParameterAnalog</span><span class="o">.</span><span class="n">FILTER_ENV_SUSTAIN_LEVEL</span><span class="p">,</span>
+               <span class="p">]</span>
+            <span class="k">else</span> <span class="n">midi_value_to_ms</span><span class="p">(</span><span class="n">midi_value</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">adsr_mapping</span><span class="p">:</span>
+            <span class="n">control</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adsr_mapping</span><span class="p">[</span><span class="n">param</span><span class="p">]</span>
+            <span class="n">control</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">slider_value</span><span class="p">)</span>
+            <span class="n">successes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">log_slider_parameters</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">midi_value</span><span class="p">,</span> <span class="n">slider_value</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">failures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">name</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AnalogSynthEditor.update_pitch_env_widget">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/index.html#jdxi_editor.ui.editors.analog.editor.AnalogSynthEditor.update_pitch_env_widget">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_pitch_env_widget</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">parameter</span><span class="p">:</span> <span class="n">AddressParameterAnalog</span><span class="p">,</span>
+            <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">successes</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">failures</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Helper function to update ADSR widgets.</span>
+
+<span class="sd">        :param parameter: AddressParameterAnalog value</span>
+<span class="sd">        :param value: int value</span>
+<span class="sd">        :param failures: list of failed parameters</span>
+<span class="sd">        :param successes: list of successful parameters</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">new_value</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">midi_value_to_fraction</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">parameter</span>
+               <span class="ow">in</span> <span class="p">[</span>
+                   <span class="n">AddressParameterAnalog</span><span class="o">.</span><span class="n">OSC_PITCH_ENV_DEPTH</span><span class="p">,</span>
+               <span class="p">]</span>
+            <span class="k">else</span> <span class="n">midi_value_to_ms</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">parameter</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pitch_env_mapping</span><span class="p">:</span>
+            <span class="n">control</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pitch_env_mapping</span><span class="p">[</span><span class="n">parameter</span><span class="p">]</span>
+            <span class="n">control</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">new_value</span><span class="p">)</span>
+            <span class="n">successes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">parameter</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">failures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">parameter</span><span class="o">.</span><span class="n">name</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AnalogSynthEditor.update_pwm_widget">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/index.html#jdxi_editor.ui.editors.analog.editor.AnalogSynthEditor.update_pwm_widget">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_pwm_widget</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">parameter</span><span class="p">:</span> <span class="n">AddressParameterAnalog</span><span class="p">,</span>
+            <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">successes</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">failures</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Helper function to update PWM widgets.</span>
+
+<span class="sd">        :param parameter: AddressParameterAnalog value</span>
+<span class="sd">        :param value: int value</span>
+<span class="sd">        :param failures: list of failed parameters</span>
+<span class="sd">        :param successes: list of successful parameters</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">new_value</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">midi_value_to_fraction</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">parameter</span>
+               <span class="ow">in</span> <span class="p">[</span>
+                   <span class="n">AddressParameterAnalog</span><span class="o">.</span><span class="n">OSC_PULSE_WIDTH_MOD_DEPTH</span><span class="p">,</span>
+                   <span class="n">AddressParameterAnalog</span><span class="o">.</span><span class="n">OSC_PULSE_WIDTH</span><span class="p">,</span>
+               <span class="p">]</span>
+            <span class="k">else</span> <span class="n">midi_value_to_ms</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">parameter</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pwm_mapping</span><span class="p">:</span>
+            <span class="n">control</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pwm_mapping</span><span class="p">[</span><span class="n">parameter</span><span class="p">]</span>
+            <span class="n">control</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">new_value</span><span class="p">)</span>
+            <span class="n">successes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">parameter</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">failures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">parameter</span><span class="o">.</span><span class="n">name</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AnalogSynthEditor._update_partial_controls">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/index.html#jdxi_editor.ui.editors.analog.editor.AnalogSynthEditor._update_partial_controls">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_partial_controls</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                                 <span class="n">partial_no</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                                 <span class="n">sysex_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+                                 <span class="n">successes</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+                                 <span class="n">failures</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update sliders and combo boxes based on parsed SysEx data.</span>
+
+<span class="sd">        :param sysex_data: dict SysEx data</span>
+<span class="sd">        :param successes: list SysEx data</span>
+<span class="sd">        :param failures: list SysEx data</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Compare with previous data and log changes</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">previous_json_data</span><span class="p">:</span>
+            <span class="n">log_changes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">previous_json_data</span><span class="p">,</span> <span class="n">sysex_data</span><span class="p">)</span>
+
+        <span class="c1"># Store the current data for future comparison</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">previous_json_data</span> <span class="o">=</span> <span class="n">sysex_data</span>
+
+        <span class="k">for</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">param_value</span> <span class="ow">in</span> <span class="n">sysex_data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">param</span> <span class="o">=</span> <span class="n">AddressParameterAnalog</span><span class="o">.</span><span class="n">get_by_name</span><span class="p">(</span><span class="n">param_name</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">param</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">(</span>
+                        <span class="n">param_name</span> <span class="o">==</span> <span class="s2">&quot;SUB_OSCILLATOR_TYPE&quot;</span>
+                        <span class="ow">and</span> <span class="n">param_value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sub_osc_type_map</span>
+                <span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">oscillator_section</span><span class="o">.</span><span class="n">sub_oscillator_type_switch</span><span class="o">.</span><span class="n">blockSignals</span><span class="p">(</span>
+                        <span class="kc">True</span>
+                    <span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">oscillator_section</span><span class="o">.</span><span class="n">sub_oscillator_type_switch</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">sub_osc_type_map</span><span class="p">[</span><span class="n">param_value</span><span class="p">]</span>
+                    <span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">oscillator_section</span><span class="o">.</span><span class="n">sub_oscillator_type_switch</span><span class="o">.</span><span class="n">blockSignals</span><span class="p">(</span>
+                        <span class="kc">False</span>
+                    <span class="p">)</span>
+                <span class="k">elif</span> <span class="p">(</span>
+                        <span class="n">param_name</span> <span class="o">==</span> <span class="s2">&quot;OSC_WAVEFORM&quot;</span>
+                        <span class="ow">and</span> <span class="n">param_value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">osc_waveform_map</span>
+                <span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_update_waveform_buttons</span><span class="p">(</span><span class="n">param_value</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="p">(</span>
+                        <span class="n">param_name</span> <span class="o">==</span> <span class="s2">&quot;LFO_SHAPE&quot;</span> <span class="ow">and</span> <span class="n">param_value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">lfo_shape_buttons</span>
+                <span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_update_lfo_shape_buttons</span><span class="p">(</span><span class="n">param_value</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">param_name</span> <span class="o">==</span> <span class="s2">&quot;LFO_TEMPO_SYNC_SWITCH&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="p">[</span>
+                        <span class="n">AddressParameterAnalog</span><span class="o">.</span><span class="n">LFO_TEMPO_SYNC_SWITCH</span>
+                    <span class="p">]</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">param_value</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">param_name</span> <span class="o">==</span> <span class="s2">&quot;LFO_TEMPO_SYNC_NOTE&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="p">[</span><span class="n">AddressParameterAnalog</span><span class="o">.</span><span class="n">LFO_TEMPO_SYNC_NOTE</span><span class="p">]</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span>
+                        <span class="n">param_value</span>
+                    <span class="p">)</span>
+                <span class="k">elif</span> <span class="p">(</span>
+                        <span class="n">param</span> <span class="o">==</span> <span class="n">AddressParameterAnalog</span><span class="o">.</span><span class="n">FILTER_MODE_SWITCH</span>
+                        <span class="ow">and</span> <span class="n">param_value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_switch_map</span>
+                <span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">filter_section</span><span class="o">.</span><span class="n">filter_mode_switch</span><span class="o">.</span><span class="n">blockSignals</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">filter_section</span><span class="o">.</span><span class="n">filter_mode_switch</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">filter_switch_map</span><span class="p">[</span><span class="n">param_value</span><span class="p">]</span>
+                    <span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">filter_section</span><span class="o">.</span><span class="n">filter_mode_switch</span><span class="o">.</span><span class="n">blockSignals</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">update_filter_controls_state</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="n">param_value</span><span class="p">))</span>
+                <span class="k">elif</span> <span class="n">param</span> <span class="ow">in</span> <span class="p">[</span>
+                    <span class="n">AddressParameterAnalog</span><span class="o">.</span><span class="n">AMP_ENV_ATTACK_TIME</span><span class="p">,</span>
+                    <span class="n">AddressParameterAnalog</span><span class="o">.</span><span class="n">AMP_ENV_DECAY_TIME</span><span class="p">,</span>
+                    <span class="n">AddressParameterAnalog</span><span class="o">.</span><span class="n">AMP_ENV_SUSTAIN_LEVEL</span><span class="p">,</span>
+                    <span class="n">AddressParameterAnalog</span><span class="o">.</span><span class="n">AMP_ENV_RELEASE_TIME</span><span class="p">,</span>
+                    <span class="n">AddressParameterAnalog</span><span class="o">.</span><span class="n">FILTER_ENV_ATTACK_TIME</span><span class="p">,</span>
+                    <span class="n">AddressParameterAnalog</span><span class="o">.</span><span class="n">FILTER_ENV_DECAY_TIME</span><span class="p">,</span>
+                    <span class="n">AddressParameterAnalog</span><span class="o">.</span><span class="n">FILTER_ENV_SUSTAIN_LEVEL</span><span class="p">,</span>
+                    <span class="n">AddressParameterAnalog</span><span class="o">.</span><span class="n">FILTER_ENV_RELEASE_TIME</span><span class="p">,</span>
+                <span class="p">]:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">update_adsr_widget</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">param_value</span><span class="p">,</span> <span class="n">successes</span><span class="p">,</span> <span class="n">failures</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pitch_env_mapping</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">update_pitch_env_widget</span><span class="p">(</span>
+                        <span class="n">param</span><span class="p">,</span> <span class="n">param_value</span><span class="p">,</span> <span class="n">successes</span><span class="p">,</span> <span class="n">failures</span>
+                    <span class="p">)</span>
+                <span class="k">elif</span> <span class="n">param</span> <span class="o">==</span> <span class="n">AddressParameterAnalog</span><span class="o">.</span><span class="n">OSC_WAVEFORM</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_update_waveform_buttons</span><span class="p">(</span><span class="n">param_value</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">update_slider</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">param_value</span><span class="p">,</span> <span class="n">successes</span><span class="p">,</span> <span class="n">failures</span><span class="p">)</span>
+                <span class="n">successes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">param_name</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">failures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">param_name</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AnalogSynthEditor._update_waveform_buttons">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/index.html#jdxi_editor.ui.editors.analog.editor.AnalogSynthEditor._update_waveform_buttons">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_waveform_buttons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update the waveform buttons based on the OSC_WAVE value with visual feedback.</span>
+
+<span class="sd">        :param value: int value</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">waveform_map</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="mi">0</span><span class="p">:</span> <span class="n">AnalogOscWave</span><span class="o">.</span><span class="n">SAW</span><span class="p">,</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="n">AnalogOscWave</span><span class="o">.</span><span class="n">TRIANGLE</span><span class="p">,</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="n">AnalogOscWave</span><span class="o">.</span><span class="n">PULSE</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="n">selected_waveform</span> <span class="o">=</span> <span class="n">waveform_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">selected_waveform</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown waveform value: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Waveform value </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> found, selecting </span><span class="si">{</span><span class="n">selected_waveform</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Retrieve waveform buttons for the given partial</span>
+        <span class="n">wave_buttons</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wave_buttons</span>
+
+        <span class="c1"># Reset all buttons to default style</span>
+        <span class="k">for</span> <span class="n">btn</span> <span class="ow">in</span> <span class="n">wave_buttons</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">btn</span><span class="o">.</span><span class="n">setChecked</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">btn</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">BUTTON_RECT_ANALOG</span><span class="p">)</span>
+
+        <span class="c1"># Apply active style to the selected waveform button</span>
+        <span class="n">selected_btn</span> <span class="o">=</span> <span class="n">wave_buttons</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">selected_waveform</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">selected_btn</span><span class="p">:</span>
+            <span class="n">selected_btn</span><span class="o">.</span><span class="n">setChecked</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">selected_btn</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">BUTTON_ANALOG_ACTIVE</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AnalogSynthEditor._update_lfo_shape_buttons">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/index.html#jdxi_editor.ui.editors.analog.editor.AnalogSynthEditor._update_lfo_shape_buttons">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_lfo_shape_buttons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update the LFO shape buttons with visual feedback.</span>
+
+<span class="sd">        :param value: int value</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Reset all buttons to default style</span>
+        <span class="k">for</span> <span class="n">btn</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">lfo_shape_buttons</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">btn</span><span class="o">.</span><span class="n">setChecked</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">btn</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">BUTTON_RECT_ANALOG</span><span class="p">)</span>
+
+        <span class="c1"># Apply active style to the selected button</span>
+        <span class="n">selected_btn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lfo_shape_buttons</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">selected_btn</span><span class="p">:</span>
+            <span class="n">selected_btn</span><span class="o">.</span><span class="n">setChecked</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">selected_btn</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">BUTTON_ANALOG_ACTIVE</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown LFO shape value: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AnalogSynthEditor._update_pw_controls_state">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/index.html#jdxi_editor.ui.editors.analog.editor.AnalogSynthEditor._update_pw_controls_state">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_pw_controls_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">waveform</span><span class="p">:</span> <span class="n">AnalogOscWave</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Enable/disable PW controls based on waveform</span>
+
+<span class="sd">        :param waveform: AnalogOscWave value</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">pw_enabled</span> <span class="o">=</span> <span class="n">waveform</span> <span class="o">==</span> <span class="n">AnalogOscWave</span><span class="o">.</span><span class="n">PULSE</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Waveform: </span><span class="si">{</span><span class="n">waveform</span><span class="si">}</span><span class="s2"> Pulse Width enabled: </span><span class="si">{</span><span class="n">pw_enabled</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="p">[</span><span class="n">AddressParameterAnalog</span><span class="o">.</span><span class="n">OSC_PULSE_WIDTH</span><span class="p">]</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="n">pw_enabled</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="p">[</span><span class="n">AddressParameterAnalog</span><span class="o">.</span><span class="n">OSC_PULSE_WIDTH_MOD_DEPTH</span><span class="p">]</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span>
+            <span class="n">pw_enabled</span>
+        <span class="p">)</span>
+        <span class="c1"># Update the visual state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="p">[</span><span class="n">AddressParameterAnalog</span><span class="o">.</span><span class="n">OSC_PULSE_WIDTH</span><span class="p">]</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span>
+            <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="n">pw_enabled</span> <span class="k">else</span> <span class="s2">&quot;QSlider::groove:vertical { background: #000000; }&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="p">[</span><span class="n">AddressParameterAnalog</span><span class="o">.</span><span class="n">OSC_PULSE_WIDTH_MOD_DEPTH</span><span class="p">]</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span>
+            <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="n">pw_enabled</span> <span class="k">else</span> <span class="s2">&quot;QSlider::groove:vertical { background: #000000; }&quot;</span>
+        <span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Mark Mrooks.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

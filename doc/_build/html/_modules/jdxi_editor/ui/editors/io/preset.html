@@ -1,0 +1,1033 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>jdxi_editor.ui.editors.io.preset &mdash; JD-Xi Editor 0.8.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../../_static/documentation_options.js?v=486e5634"></script>
+      <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../../index.html" class="icon icon-home">
+            JD-Xi Editor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../getting-started.html#getting-started-guide">Getting Started Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../editor-windows.html">Editor Windows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../editor-windows.html#available-editors">Available Editors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../additional-editors.html">Additional Editors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../additional-editors.html#available-editors">Available Editors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../playing-midi-files.html">Playing MIDI Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../playing-midi-files.html#available-tools">Available Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../troubleshooting.html#id1">Troubleshooting</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../legal.html">Legal Disclaimer</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../modules.html">jdxi_editor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../jdxi_editor.html">jdxi_editor package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.jdxi.html">jdxi_editor.jdxi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.log.html">jdxi_editor.log package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.midi.html">jdxi_editor.midi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.ui.html">jdxi_editor.ui package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.globals">jdxi_editor.globals module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.main">jdxi_editor.main module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.html#jdxi_editor.main.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.html#jdxi_editor.main.setup_splash_screen"><code class="docutils literal notranslate"><span class="pre">setup_splash_screen()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.project">jdxi_editor.project module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.resources">jdxi_editor.resources module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.html#jdxi_editor.resources.resource_path"><code class="docutils literal notranslate"><span class="pre">resource_path()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../autoapi/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/midi/index.html">midi</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/midi/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/colors/index.html">midi.colors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/slider/index.html">midi.slider</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/spin_box/index.html">midi.spin_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/time_ruler/index.html">midi.time_ruler</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/track/index.html">midi.track</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/track_viewer/index.html">midi.track_viewer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/utils/index.html">midi.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/adsr/index.html">adsr</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/adsr/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/adsr/adsr/index.html">adsr.adsr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/adsr/graph/index.html">adsr.graph</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/adsr/parameter/index.html">adsr.parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/adsr/plot/index.html">adsr.plot</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/pitch/index.html">pitch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/pitch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pitch/envelope/index.html">pitch.envelope</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pitch/envelope_plot/index.html">pitch.envelope_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pitch/pwm_plot/index.html">pitch.pwm_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pitch/slider_spinbox/index.html">pitch.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/piano/index.html">piano</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/piano/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/piano/key/index.html">piano.key</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/piano/keyboard/index.html">piano.keyboard</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/panel/index.html">panel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/panel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/panel/partial/index.html">panel.partial</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/wheel/index.html">wheel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/wheel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/wheel/mod/index.html">wheel.mod</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/wheel/pitch/index.html">wheel.pitch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/wheel/wheel/index.html">wheel.wheel</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/preset/index.html">preset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/preset/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/preset/combo_box/index.html">preset.combo_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/preset/panel/index.html">preset.panel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/preset/patch_name/index.html">preset.patch_name</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/slider/index.html">slider</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/slider/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/slider/slider/index.html">slider.slider</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/slider/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/slider/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/slider/index.html#slider.Slider"><code class="docutils literal notranslate"><span class="pre">Slider</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/dialog/index.html">dialog</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/dialog/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/dialog/progress/index.html">dialog.progress</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/viewer/index.html">viewer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/viewer/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/viewer/log/index.html">viewer.log</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/button/index.html">button</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/button/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/channel/index.html">button.channel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/favorite/index.html">button.favorite</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/sequencer/index.html">button.sequencer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/waveform/index.html">button.waveform</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/button/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/button/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/index.html#button.ChannelButton"><code class="docutils literal notranslate"><span class="pre">ChannelButton</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/index.html#button.SequencerSquare"><code class="docutils literal notranslate"><span class="pre">SequencerSquare</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/switch/index.html">switch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/switch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/switch/partial/index.html">switch.partial</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/switch/switch/index.html">switch.switch</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/filter/index.html">filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/filter/index.html#filter.FilterWidget"><code class="docutils literal notranslate"><span class="pre">FilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/display/index.html">display</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/display/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/display/digital/index.html">display.digital</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/display/pattern/index.html">display.pattern</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/display/value/index.html">display.value</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/pattern/index.html">pattern</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/pattern/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pattern/measure/index.html">pattern.measure</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/spin_box/index.html">spin_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/spin_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/spin_box/spin_box/index.html">spin_box.spin_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/envelope/index.html">envelope</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/envelope/base/index.html">envelope.base</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/indicator/index.html">indicator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/indicator/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/indicator/led/index.html">indicator.led</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/indicator/midi/index.html">indicator.midi</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/combo_box/index.html">combo_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/combo_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/combo_box/combo_box/index.html">combo_box.combo_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/index.html">jdxi_editor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/globals/index.html">jdxi_editor.globals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/jdxi/index.html">jdxi_editor.jdxi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/log/index.html">jdxi_editor.log</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/main/index.html">jdxi_editor.main</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/midi/index.html">jdxi_editor.midi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/project/index.html">jdxi_editor.project</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/resources/index.html">jdxi_editor.resources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/ui/index.html">jdxi_editor.ui</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html">filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#filter_plot.FilterPlot"><code class="docutils literal notranslate"><span class="pre">FilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html">envelope_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#envelope_plot.midi_value_to_float"><code class="docutils literal notranslate"><span class="pre">midi_value_to_float()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#envelope_plot.WMTEnvPlot"><code class="docutils literal notranslate"><span class="pre">WMTEnvPlot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#envelope_plot.app"><code class="docutils literal notranslate"><span class="pre">app</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/wave_selector/index.html">wave_selector</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/wave_selector/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/wave_selector/wave_selector/index.html">wave_selector.wave_selector</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/analog_filter/index.html">analog_filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/analog_filter/index.html#analog_filter.AnalogFilterWidget"><code class="docutils literal notranslate"><span class="pre">AnalogFilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/slider_spinbox/index.html">slider_spinbox</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/slider_spinbox/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/slider_spinbox/slider_spinbox/index.html">slider_spinbox.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html">analog_filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#analog_filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#analog_filter_plot.AnalogFilterPlot"><code class="docutils literal notranslate"><span class="pre">AnalogFilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">JD-Xi Editor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">jdxi_editor.ui.editors.io.preset</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for jdxi_editor.ui.editors.io.preset</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">PresetEditor Module</span>
+
+<span class="sd">This module defines the `ProgramEditor` class, a PySide6-based GUI for</span>
+<span class="sd">managing and selecting MIDI programs.</span>
+
+<span class="sd">It allows users to browse, filter, and load programs based on bank, genre,</span>
+<span class="sd">and program number.</span>
+
+<span class="sd">The class also facilitates MIDI integration by sending Program Change (PC)</span>
+<span class="sd">and Bank Select (CC#0, CC#32) messages.</span>
+
+<span class="sd">Key Features:</span>
+<span class="sd">- Graphical UI for selecting and managing MIDI programs.</span>
+<span class="sd">- Filtering options based on bank and genre.</span>
+<span class="sd">- MIDI integration for program selection and loading.</span>
+<span class="sd">- Image display for program categories.</span>
+<span class="sd">- Program list population based on predefined program data.</span>
+
+<span class="sd">Classes:</span>
+<span class="sd">    ProgramEditor(QMainWindow)</span>
+<span class="sd">        A main window class for handling MIDI program selection and management.</span>
+
+<span class="sd">Signals:</span>
+<span class="sd">    program_changed (int, str, int)</span>
+<span class="sd">        Emitted when a program selection changes. Parameters:</span>
+<span class="sd">        - MIDI channel (int)</span>
+<span class="sd">        - Preset name (str)</span>
+<span class="sd">        - Program number (int)</span>
+
+<span class="sd">Dependencies:</span>
+<span class="sd">- PySide6.QtWidgets</span>
+<span class="sd">- PySide6.QtCore</span>
+<span class="sd">- MIDIHelper for MIDI message handling</span>
+<span class="sd">- PresetHandler for managing program presets</span>
+<span class="sd">- JDXiProgramList.PROGRAM_LIST for predefined program data</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">PySide6.QtWidgets</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">QVBoxLayout</span><span class="p">,</span>
+    <span class="n">QComboBox</span><span class="p">,</span>
+    <span class="n">QPushButton</span><span class="p">,</span>
+    <span class="n">QWidget</span><span class="p">,</span>
+    <span class="n">QLabel</span><span class="p">,</span>
+    <span class="n">QHBoxLayout</span><span class="p">,</span>
+    <span class="n">QLineEdit</span><span class="p">,</span> <span class="n">QGroupBox</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PySide6.QtCore</span><span class="w"> </span><span class="kn">import</span> <span class="n">Signal</span><span class="p">,</span> <span class="n">Qt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">qtawesome</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">qta</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.jdxi.preset.lists</span><span class="w"> </span><span class="kn">import</span> <span class="n">JDXiPresetToneList</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.jdxi.synth.type</span><span class="w"> </span><span class="kn">import</span> <span class="n">JDXiSynth</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.log.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">Logger</span> <span class="k">as</span> <span class="n">log</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.data.programs.analog</span><span class="w"> </span><span class="kn">import</span> <span class="n">ANALOG_PRESET_LIST</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.data.programs.drum</span><span class="w"> </span><span class="kn">import</span> <span class="n">DRUM_KIT_LIST</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.data.programs.digital</span><span class="w"> </span><span class="kn">import</span> <span class="n">DIGITAL_PRESET_LIST</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.channel.channel</span><span class="w"> </span><span class="kn">import</span> <span class="n">MidiChannel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.io.helper</span><span class="w"> </span><span class="kn">import</span> <span class="n">MidiIOHelper</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.jdxi.preset.helper</span><span class="w"> </span><span class="kn">import</span> <span class="n">JDXiPresetHelper</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.sysex.request.midi_requests</span><span class="w"> </span><span class="kn">import</span> <span class="n">MidiRequests</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.ui.editors.helpers.program</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">get_program_by_id</span><span class="p">,</span>
+    <span class="n">calculate_midi_values</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.ui.editors.helpers.preset</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_preset_parameter_value</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.log.midi_info</span><span class="w"> </span><span class="kn">import</span> <span class="n">log_midi_info</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.ui.editors.synth.simple</span><span class="w"> </span><span class="kn">import</span> <span class="n">BasicEditor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.jdxi.style</span><span class="w"> </span><span class="kn">import</span> <span class="n">JDXiStyle</span>
+
+
+<div class="viewcode-block" id="PresetEditor">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/preset/index.html#jdxi_editor.ui.editors.io.preset.PresetEditor">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">PresetEditor</span><span class="p">(</span><span class="n">BasicEditor</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Program Editor Window&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="PresetEditor.program_changed">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/preset/index.html#jdxi_editor.ui.editors.io.preset.PresetEditor.program_changed">[docs]</a>
+    <span class="n">program_changed</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>  <span class="c1"># (channel, preset_name, program_number)</span></div>
+
+
+<div class="viewcode-block" id="PresetEditor.__init__">
+<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.io.html#jdxi_editor.ui.editors.io.preset.PresetEditor.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">midi_helper</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">MidiIOHelper</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">parent</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">QWidget</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">preset_helper</span><span class="p">:</span> <span class="n">JDXiPresetHelper</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">midi_helper</span><span class="o">=</span><span class="n">midi_helper</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the PresetEditor</span>
+
+<span class="sd">        :param midi_helper: Optional[MidiIOHelper]</span>
+<span class="sd">        :param parent: Optional[QWidget]</span>
+<span class="sd">        :param preset_helper: JDXIPresetHelper</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="PresetEditor.digital_preset_type_combo">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/preset/index.html#jdxi_editor.ui.editors.io.preset.PresetEditor.digital_preset_type_combo">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">digital_preset_type_combo</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setWindowFlag</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">Window</span><span class="p">)</span>
+<div class="viewcode-block" id="PresetEditor.midi_helper">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/preset/index.html#jdxi_editor.ui.editors.io.preset.PresetEditor.midi_helper">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span> <span class="o">=</span> <span class="n">midi_helper</span></div>
+
+<div class="viewcode-block" id="PresetEditor.preset_helper">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/preset/index.html#jdxi_editor.ui.editors.io.preset.PresetEditor.preset_helper">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">preset_helper</span> <span class="o">=</span> <span class="n">preset_helper</span></div>
+
+<div class="viewcode-block" id="PresetEditor.midi_channel">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/preset/index.html#jdxi_editor.ui.editors.io.preset.PresetEditor.midi_channel">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">midi_channel</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">MidiChannel</span><span class="o">.</span><span class="n">DIGITAL_SYNTH_1</span>  <span class="c1"># Default MIDI channel: 16 for programs, 0-based</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="PresetEditor.default_image">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/preset/index.html#jdxi_editor.ui.editors.io.preset.PresetEditor.default_image">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default_image</span> <span class="o">=</span> <span class="s2">&quot;presets.png&quot;</span></div>
+
+<div class="viewcode-block" id="PresetEditor.instrument_icon_folder">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/preset/index.html#jdxi_editor.ui.editors.io.preset.PresetEditor.instrument_icon_folder">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">instrument_icon_folder</span> <span class="o">=</span> <span class="s2">&quot;presets&quot;</span></div>
+
+<div class="viewcode-block" id="PresetEditor.midi_requests">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/preset/index.html#jdxi_editor.ui.editors.io.preset.PresetEditor.midi_requests">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">midi_requests</span> <span class="o">=</span> <span class="n">MidiRequests</span><span class="o">.</span><span class="n">PROGRAM_TONE_NAME_PARTIAL</span></div>
+
+<div class="viewcode-block" id="PresetEditor.layout">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/preset/index.html#jdxi_editor.ui.editors.io.preset.PresetEditor.layout">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="PresetEditor.genre_label">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/preset/index.html#jdxi_editor.ui.editors.io.preset.PresetEditor.genre_label">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">genre_label</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="PresetEditor.preset_combo_box">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/preset/index.html#jdxi_editor.ui.editors.io.preset.PresetEditor.preset_combo_box">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">preset_combo_box</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="PresetEditor.load_button">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/preset/index.html#jdxi_editor.ui.editors.io.preset.PresetEditor.load_button">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_button</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="PresetEditor.save_button">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/preset/index.html#jdxi_editor.ui.editors.io.preset.PresetEditor.save_button">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_button</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="PresetEditor.image_label">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/preset/index.html#jdxi_editor.ui.editors.io.preset.PresetEditor.image_label">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">image_label</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="PresetEditor.title_label">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/preset/index.html#jdxi_editor.ui.editors.io.preset.PresetEditor.title_label">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">title_label</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="PresetEditor.bank_label">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/preset/index.html#jdxi_editor.ui.editors.io.preset.PresetEditor.bank_label">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bank_label</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="PresetEditor.digital_preset_label">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/preset/index.html#jdxi_editor.ui.editors.io.preset.PresetEditor.digital_preset_label">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">digital_preset_label</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="PresetEditor.category_combo_box">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/preset/index.html#jdxi_editor.ui.editors.io.preset.PresetEditor.category_combo_box">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">category_combo_box</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="PresetEditor.preset_type">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/preset/index.html#jdxi_editor.ui.editors.io.preset.PresetEditor.preset_type">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">preset_type</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="PresetEditor.synth_label_map">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/preset/index.html#jdxi_editor.ui.editors.io.preset.PresetEditor.synth_label_map">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">synth_label_map</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">JDXiSynth</span><span class="o">.</span><span class="n">DIGITAL_SYNTH_1</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">digital_synth_1_current_label</span><span class="p">,</span>
+            <span class="n">JDXiSynth</span><span class="o">.</span><span class="n">DIGITAL_SYNTH_2</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">digital_synth_2_current_label</span><span class="p">,</span>
+            <span class="n">JDXiSynth</span><span class="o">.</span><span class="n">DRUM_KIT</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">drum_kit_current_label</span><span class="p">,</span>
+            <span class="n">JDXiSynth</span><span class="o">.</span><span class="n">ANALOG_SYNTH</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">analog_synth_current_label</span><span class="p">,</span>
+        <span class="p">}</span></div>
+
+<div class="viewcode-block" id="PresetEditor.presets">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/preset/index.html#jdxi_editor.ui.editors.io.preset.PresetEditor.presets">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">presets</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># Maps program names to numbers</span></div>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setup_ui</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_request</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="PresetEditor.setup_ui">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/preset/index.html#jdxi_editor.ui.editors.io.preset.PresetEditor.setup_ui">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;set up UI elements&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setWindowTitle</span><span class="p">(</span><span class="s2">&quot;Preset Editor&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMinimumSize</span><span class="p">(</span><span class="mi">400</span><span class="p">,</span> <span class="mi">400</span><span class="p">)</span>
+        <span class="c1"># center_widget = QWidget()</span>
+        <span class="n">main_vlayout</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">()</span>
+        <span class="c1"># self.setCentralWidget(center_widget)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">main_vlayout</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">EDITOR</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">title_label</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">(</span><span class="s2">&quot;Presets:&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">title_label</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                font-size: 16px;</span>
+<span class="sd">                font-weight: bold;</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+        <span class="p">)</span>
+        <span class="n">title_layout</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+        <span class="n">title_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">title_label</span><span class="p">)</span>
+        <span class="n">main_vlayout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">title_layout</span><span class="p">)</span>
+        <span class="c1"># Image display</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">image_label</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">image_label</span><span class="o">.</span><span class="n">setAlignment</span><span class="p">(</span>
+            <span class="n">Qt</span><span class="o">.</span><span class="n">AlignmentFlag</span><span class="o">.</span><span class="n">AlignCenter</span>
+        <span class="p">)</span>  <span class="c1"># Center align the image</span>
+        <span class="n">title_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">image_label</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_instrument_image</span><span class="p">()</span>
+
+        <span class="n">preset_group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_preset_selection_group</span><span class="p">()</span>
+        <span class="n">main_vlayout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">preset_group</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">digital_synth_1_hlayout</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+        <span class="n">main_vlayout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">digital_synth_1_hlayout</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">digital_synth_1_icon</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">digital_synth_1_icon</span><span class="o">.</span><span class="n">setPixmap</span><span class="p">(</span>
+            <span class="n">qta</span><span class="o">.</span><span class="n">icon</span><span class="p">(</span><span class="s2">&quot;msc.piano&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">FOREGROUND</span><span class="p">)</span><span class="o">.</span><span class="n">pixmap</span><span class="p">(</span><span class="mi">40</span><span class="p">,</span> <span class="mi">40</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">digital_synth_1_hlayout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">digital_synth_1_icon</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">digital_synth_1_title</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">(</span><span class="s2">&quot;Digital Synth 1&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">digital_synth_1_hlayout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">digital_synth_1_title</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">digital_synth_1_title</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">                font-size: 16px;</span>
+<span class="s2">                font-weight: bold;</span>
+<span class="s2">                color: </span><span class="si">{</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">ACCENT</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">            &quot;&quot;&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">digital_synth_1_current_label</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">(</span><span class="s2">&quot;Current Tone:&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">digital_synth_1_hlayout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">digital_synth_1_current_label</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">digital_synth_1_current_label</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">                font-size: 16px;</span>
+<span class="s2">                font-weight: bold;</span>
+<span class="s2">                color: </span><span class="si">{</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">ACCENT</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">            &quot;&quot;&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">digital_synth_2_hlayout</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+        <span class="n">main_vlayout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">digital_synth_2_hlayout</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">digital_synth_2_icon</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">digital_synth_2_icon</span><span class="o">.</span><span class="n">setPixmap</span><span class="p">(</span>
+            <span class="n">qta</span><span class="o">.</span><span class="n">icon</span><span class="p">(</span><span class="s2">&quot;msc.piano&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">FOREGROUND</span><span class="p">)</span><span class="o">.</span><span class="n">pixmap</span><span class="p">(</span><span class="mi">40</span><span class="p">,</span> <span class="mi">40</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">digital_synth_2_hlayout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">digital_synth_2_icon</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">digital_synth_2_title</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">(</span><span class="s2">&quot;Digital Synth 2&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">digital_synth_2_hlayout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">digital_synth_2_title</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">digital_synth_2_title</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">                font-size: 16px;</span>
+<span class="s2">                font-weight: bold;</span>
+<span class="s2">                color: </span><span class="si">{</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">ACCENT</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">            &quot;&quot;&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">digital_synth_2_current_label</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">(</span><span class="s2">&quot;Current Tone:&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">digital_synth_2_hlayout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">digital_synth_2_current_label</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">digital_synth_2_current_label</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">                font-size: 16px;</span>
+<span class="s2">                font-weight: bold;  </span>
+<span class="s2">                color: </span><span class="si">{</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">ACCENT</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">            &quot;&quot;&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">drum_kit_hlayout</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+        <span class="n">main_vlayout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">drum_kit_hlayout</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">drum_kit_icon</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">drum_kit_icon</span><span class="o">.</span><span class="n">setPixmap</span><span class="p">(</span>
+            <span class="n">qta</span><span class="o">.</span><span class="n">icon</span><span class="p">(</span><span class="s2">&quot;fa5s.drum&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">FOREGROUND</span><span class="p">)</span><span class="o">.</span><span class="n">pixmap</span><span class="p">(</span><span class="mi">40</span><span class="p">,</span> <span class="mi">40</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">drum_kit_hlayout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">drum_kit_icon</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">drum_kit_title</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">(</span><span class="s2">&quot;Drums&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">drum_kit_hlayout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">drum_kit_title</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">drum_kit_title</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">                font-size: 16px;</span>
+<span class="s2">                font-weight: bold;</span>
+<span class="s2">                color: </span><span class="si">{</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">ACCENT</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">            &quot;&quot;&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">drum_kit_current_label</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">(</span><span class="s2">&quot;Current Tone:&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">drum_kit_hlayout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">drum_kit_current_label</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">drum_kit_current_label</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">                font-size: 16px;</span>
+<span class="s2">                font-weight: bold;</span>
+<span class="s2">                color: </span><span class="si">{</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">ACCENT</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">            &quot;&quot;&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">analog_synth_hlayout</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">analog_synth_icon</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">analog_synth_icon</span><span class="o">.</span><span class="n">setPixmap</span><span class="p">(</span>
+            <span class="n">qta</span><span class="o">.</span><span class="n">icon</span><span class="p">(</span><span class="s2">&quot;msc.piano&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">FOREGROUND</span><span class="p">)</span><span class="o">.</span><span class="n">pixmap</span><span class="p">(</span><span class="mi">40</span><span class="p">,</span> <span class="mi">40</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">analog_synth_hlayout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">analog_synth_icon</span><span class="p">)</span>
+
+        <span class="n">main_vlayout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">analog_synth_hlayout</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">analog_synth_title</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">(</span><span class="s2">&quot;Analog Synth&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">analog_synth_hlayout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">analog_synth_title</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">analog_synth_title</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">                font-size: 16px;</span>
+<span class="s2">                font-weight: bold;</span>
+<span class="s2">                color: </span><span class="si">{</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">ACCENT_ANALOG</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">            &quot;&quot;&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">analog_synth_current_label</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">(</span><span class="s2">&quot;Current Tone:&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">analog_synth_hlayout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">analog_synth_current_label</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">analog_synth_current_label</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">                font-size: 16px;</span>
+<span class="s2">                font-weight: bold;</span>
+<span class="s2">                color: </span><span class="si">{</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">ACCENT_ANALOG</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">            &quot;&quot;&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_populate_presets</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span><span class="o">.</span><span class="n">update_tone_name</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+             <span class="k">lambda</span> <span class="n">tone_name</span><span class="p">,</span> <span class="n">synth_type</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_tone_name_for_synth</span><span class="p">(</span><span class="n">tone_name</span><span class="p">,</span> <span class="n">synth_type</span><span class="p">)</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PresetEditor._create_preset_selection_group">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/preset/index.html#jdxi_editor.ui.editors.io.preset.PresetEditor._create_preset_selection_group">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_preset_selection_group</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">QGroupBox</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        create_preset_selection_group</span>
+
+<span class="sd">        :return: QGroupBox</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Program controls group</span>
+        <span class="n">preset_group</span> <span class="o">=</span> <span class="n">QGroupBox</span><span class="p">(</span><span class="s2">&quot;Load a program&quot;</span><span class="p">)</span>
+        <span class="n">preset_vlayout</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">()</span>
+        <span class="n">preset_group</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">preset_vlayout</span><span class="p">)</span>
+        <span class="c1"># Synth type selection combo box</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">digital_preset_type_combo</span> <span class="o">=</span> <span class="n">QComboBox</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">digital_preset_type_combo</span><span class="o">.</span><span class="n">addItems</span><span class="p">(</span>
+            <span class="p">[</span><span class="s2">&quot;Digital Synth 1&quot;</span><span class="p">,</span> <span class="s2">&quot;Digital Synth 2&quot;</span><span class="p">,</span> <span class="s2">&quot;Drums&quot;</span><span class="p">,</span> <span class="s2">&quot;Analog Synth&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">digital_preset_type_combo</span><span class="o">.</span><span class="n">currentIndexChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">on_preset_type_changed</span>
+        <span class="p">)</span>
+        <span class="n">preset_vlayout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">digital_preset_type_combo</span><span class="p">)</span>
+        <span class="c1"># Search Box</span>
+        <span class="n">search_row</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+        <span class="n">search_row</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">QLabel</span><span class="p">(</span><span class="s2">&quot;Search:&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">search_box</span> <span class="o">=</span> <span class="n">QLineEdit</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">search_box</span><span class="o">.</span><span class="n">setPlaceholderText</span><span class="p">(</span><span class="s2">&quot;Search presets...&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">search_box</span><span class="o">.</span><span class="n">textChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_populate_presets</span><span class="p">)</span>
+        <span class="n">search_row</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">search_box</span><span class="p">)</span>
+        <span class="n">preset_vlayout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">search_row</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">digital_preset_label</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">(</span><span class="s2">&quot;Preset&quot;</span><span class="p">)</span>
+        <span class="n">preset_vlayout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">digital_preset_label</span><span class="p">)</span>
+        <span class="c1"># Program number selection combo box</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">preset_combo_box</span> <span class="o">=</span> <span class="n">QComboBox</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">preset_combo_box</span><span class="o">.</span><span class="n">addItems</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">i</span><span class="si">:</span><span class="s2">02</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">65</span><span class="p">)])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">preset_combo_box</span><span class="o">.</span><span class="n">currentIndexChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">on_preset_number_changed</span><span class="p">)</span>
+        <span class="n">preset_vlayout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">preset_combo_box</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">genre_label</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">(</span><span class="s2">&quot;Category&quot;</span><span class="p">)</span>
+        <span class="n">preset_vlayout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">genre_label</span><span class="p">)</span>
+        <span class="c1"># Category selection combo box</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">category_combo_box</span> <span class="o">=</span> <span class="n">QComboBox</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">category_combo_box</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="s2">&quot;No Category Selected&quot;</span><span class="p">)</span>
+        <span class="n">categories</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">preset</span><span class="p">[</span><span class="s2">&quot;category&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">preset</span> <span class="ow">in</span> <span class="n">DIGITAL_PRESET_LIST</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">category_combo_box</span><span class="o">.</span><span class="n">addItems</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">categories</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">category_combo_box</span><span class="o">.</span><span class="n">currentIndexChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">on_category_changed</span><span class="p">)</span>
+        <span class="n">preset_vlayout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">category_combo_box</span><span class="p">)</span>
+        <span class="c1"># Load button</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_button</span> <span class="o">=</span> <span class="n">QPushButton</span><span class="p">(</span>
+            <span class="n">qta</span><span class="o">.</span><span class="n">icon</span><span class="p">(</span><span class="s2">&quot;ph.folder-notch-open-fill&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">FOREGROUND</span><span class="p">),</span>
+            <span class="s2">&quot;Load Preset&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_button</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">load_preset_by_program_change</span><span class="p">)</span>
+        <span class="n">preset_vlayout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">load_button</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">preset_group</span></div>
+
+
+<div class="viewcode-block" id="PresetEditor.on_preset_type_changed">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/preset/index.html#jdxi_editor.ui.editors.io.preset.PresetEditor.on_preset_type_changed">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_preset_type_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Handle preset type selection change.&quot;&quot;&quot;</span>
+        <span class="n">preset_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">digital_preset_type_combo</span><span class="o">.</span><span class="n">currentText</span><span class="p">()</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;preset_type: </span><span class="si">{</span><span class="n">preset_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">preset_type</span> <span class="o">==</span> <span class="s2">&quot;Digital Synth 1&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">midi_channel</span> <span class="o">=</span> <span class="n">MidiChannel</span><span class="o">.</span><span class="n">DIGITAL_SYNTH_1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">preset_list</span> <span class="o">=</span> <span class="n">JDXiPresetToneList</span><span class="o">.</span><span class="n">DIGITAL_PROGRAM_CHANGE</span>
+        <span class="k">elif</span> <span class="n">preset_type</span> <span class="o">==</span> <span class="s2">&quot;Digital Synth 2&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">midi_channel</span> <span class="o">=</span> <span class="n">MidiChannel</span><span class="o">.</span><span class="n">DIGITAL_SYNTH_2</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">preset_list</span> <span class="o">=</span> <span class="n">JDXiPresetToneList</span><span class="o">.</span><span class="n">DIGITAL_PROGRAM_CHANGE</span>
+        <span class="k">elif</span> <span class="n">preset_type</span> <span class="o">==</span> <span class="s2">&quot;Drums&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">midi_channel</span> <span class="o">=</span> <span class="n">MidiChannel</span><span class="o">.</span><span class="n">DRUM_KIT</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">preset_list</span> <span class="o">=</span> <span class="n">JDXiPresetToneList</span><span class="o">.</span><span class="n">DRUM_PROGRAM_CHANGE</span>
+        <span class="k">elif</span> <span class="n">preset_type</span> <span class="o">==</span> <span class="s2">&quot;Analog Synth&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">midi_channel</span> <span class="o">=</span> <span class="n">MidiChannel</span><span class="o">.</span><span class="n">ANALOG_SYNTH</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">preset_list</span> <span class="o">=</span> <span class="n">JDXiPresetToneList</span><span class="o">.</span><span class="n">ANALOG_PROGRAM_CHANGE</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_populate_presets</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_category_combo_box_categories</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="PresetEditor.update_tone_name_for_synth">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/preset/index.html#jdxi_editor.ui.editors.io.preset.PresetEditor.update_tone_name_for_synth">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_tone_name_for_synth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tone_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">synth_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update the tone name.</span>
+
+<span class="sd">        :param tone_name: str</span>
+<span class="sd">        :param synth_type: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Update tone name triggered: tone_name </span><span class="si">{</span><span class="n">tone_name</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">synth_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">synth_label_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">synth_type</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">label</span><span class="p">:</span>
+            <span class="n">label</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">tone_name</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;synth type: </span><span class="si">{</span><span class="n">synth_type</span><span class="si">}</span><span class="s2"> not found in mapping. Cannot update tone name.&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PresetEditor.load_preset_by_program_change">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/preset/index.html#jdxi_editor.ui.editors.io.preset.PresetEditor.load_preset_by_program_change">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_preset_by_program_change</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">preset_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load a preset by program change.</span>
+
+<span class="sd">        :param preset_index: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">preset_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">preset_combo_box</span><span class="o">.</span><span class="n">currentText</span><span class="p">()</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="s2">&quot;=======load_preset_by_program_change=======&quot;</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">parameter</span><span class="p">(</span><span class="s2">&quot;combo box preset_name&quot;</span><span class="p">,</span> <span class="n">preset_name</span><span class="p">)</span>
+        <span class="n">program_number</span> <span class="o">=</span> <span class="n">preset_name</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">parameter</span><span class="p">(</span><span class="s2">&quot;combo box program_number&quot;</span><span class="p">,</span> <span class="n">program_number</span><span class="p">)</span>
+
+        <span class="c1"># Get MSB, LSB, PC values from the preset using get_preset_parameter_value</span>
+        <span class="n">msb</span> <span class="o">=</span> <span class="n">get_preset_parameter_value</span><span class="p">(</span><span class="s2">&quot;msb&quot;</span><span class="p">,</span> <span class="n">program_number</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">preset_list</span><span class="p">)</span>
+        <span class="n">lsb</span> <span class="o">=</span> <span class="n">get_preset_parameter_value</span><span class="p">(</span><span class="s2">&quot;lsb&quot;</span><span class="p">,</span> <span class="n">program_number</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">preset_list</span><span class="p">)</span>
+        <span class="n">pc</span> <span class="o">=</span> <span class="n">get_preset_parameter_value</span><span class="p">(</span><span class="s2">&quot;pc&quot;</span><span class="p">,</span> <span class="n">program_number</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">preset_list</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="kc">None</span> <span class="ow">in</span> <span class="p">[</span><span class="n">msb</span><span class="p">,</span> <span class="n">lsb</span><span class="p">,</span> <span class="n">pc</span><span class="p">]:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Could not retrieve preset parameters for program </span><span class="si">{</span><span class="n">program_number</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="s2">&quot;retrieved msb, lsb, pc :&quot;</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">parameter</span><span class="p">(</span><span class="s2">&quot;combo box msb&quot;</span><span class="p">,</span> <span class="n">msb</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">parameter</span><span class="p">(</span><span class="s2">&quot;combo box lsb&quot;</span><span class="p">,</span> <span class="n">lsb</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">parameter</span><span class="p">(</span><span class="s2">&quot;combo box pc&quot;</span><span class="p">,</span> <span class="n">pc</span><span class="p">)</span>
+        <span class="n">log_midi_info</span><span class="p">(</span><span class="n">msb</span><span class="p">,</span> <span class="n">lsb</span><span class="p">,</span> <span class="n">pc</span><span class="p">)</span>
+
+        <span class="c1"># Send bank select and program change</span>
+        <span class="c1"># Note: PC is 0-based in MIDI, so subtract 1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span><span class="o">.</span><span class="n">send_bank_select_and_program_change</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">midi_channel</span><span class="p">,</span>  <span class="c1"># MIDI channel</span>
+            <span class="n">msb</span><span class="p">,</span>  <span class="c1"># MSB is already correct</span>
+            <span class="n">lsb</span><span class="p">,</span>  <span class="c1"># LSB is already correct</span>
+            <span class="n">pc</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>  <span class="c1"># Convert 1-based PC to 0-based</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_request</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="PresetEditor._populate_presets">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/preset/index.html#jdxi_editor.ui.editors.io.preset.PresetEditor._populate_presets">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_populate_presets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">search_text</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Populate the program list with available presets.</span>
+
+<span class="sd">        :param search_text: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">preset_helper</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">preset_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">digital_preset_type_combo</span><span class="o">.</span><span class="n">currentText</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">preset_type</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;Digital Synth 1&quot;</span><span class="p">,</span> <span class="s2">&quot;Digital Synth 2&quot;</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">preset_list</span> <span class="o">=</span> <span class="n">DIGITAL_PRESET_LIST</span>
+        <span class="k">elif</span> <span class="n">preset_type</span> <span class="o">==</span> <span class="s2">&quot;Drums&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">preset_list</span> <span class="o">=</span> <span class="n">DRUM_KIT_LIST</span>
+        <span class="k">elif</span> <span class="n">preset_type</span> <span class="o">==</span> <span class="s2">&quot;Analog Synth&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">preset_list</span> <span class="o">=</span> <span class="n">ANALOG_PRESET_LIST</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">preset_list</span> <span class="o">=</span> <span class="n">DIGITAL_PRESET_LIST</span>  <span class="c1"># Default to digital synth 1</span>
+        <span class="c1"># self.update_category_combo_box_categories()</span>
+
+        <span class="n">selected_category</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">category_combo_box</span><span class="o">.</span><span class="n">currentText</span><span class="p">()</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Selected Category: </span><span class="si">{</span><span class="n">selected_category</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">preset_combo_box</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">presets</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+        <span class="n">filtered_list</span> <span class="o">=</span> <span class="p">[</span>  <span class="c1"># Filter programs based on bank and genre</span>
+            <span class="n">preset</span>
+            <span class="k">for</span> <span class="n">preset</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">preset_list</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">selected_category</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;No Category Selected&quot;</span><span class="p">,</span> <span class="n">preset</span><span class="p">[</span><span class="s2">&quot;category&quot;</span><span class="p">]])</span>
+        <span class="p">]</span>
+        <span class="n">filtered_presets</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">preset</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">filtered_list</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">search_text</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">preset</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+                <span class="n">filtered_presets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">preset</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">preset</span> <span class="ow">in</span> <span class="n">filtered_presets</span><span class="p">:</span>  <span class="c1"># Add programs to the combo box</span>
+            <span class="n">preset_name</span> <span class="o">=</span> <span class="n">preset</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+            <span class="n">preset_id</span> <span class="o">=</span> <span class="n">preset</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">presets</span><span class="p">)</span>  <span class="c1"># Use the current number of programs</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">preset_combo_box</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">preset_id</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">preset_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">presets</span><span class="p">[</span><span class="n">preset_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">index</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">preset_combo_box</span><span class="o">.</span><span class="n">setCurrentIndex</span><span class="p">(</span>
+            <span class="mi">0</span>
+        <span class="p">)</span>  <span class="c1"># Update the UI with the new program list</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">preset_combo_box</span><span class="o">.</span><span class="n">setCurrentIndex</span><span class="p">(</span>
+            <span class="mi">0</span>
+        <span class="p">)</span>  <span class="c1"># Select &quot;No Category Selected&quot; as default</span></div>
+
+
+<div class="viewcode-block" id="PresetEditor.update_category_combo_box_categories">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/preset/index.html#jdxi_editor.ui.editors.io.preset.PresetEditor.update_category_combo_box_categories">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_category_combo_box_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update the category combo box.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Update the category combo box</span>
+        <span class="n">categories</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">preset</span><span class="p">[</span><span class="s2">&quot;category&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">preset</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">preset_list</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">category_combo_box</span><span class="o">.</span><span class="n">blockSignals</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># Block signals during update</span>
+
+        <span class="c1"># Clear and update items</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">category_combo_box</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">category_combo_box</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span>
+            <span class="s2">&quot;No Category Selected&quot;</span>
+        <span class="p">)</span>  <span class="c1"># Add the default option</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">category_combo_box</span><span class="o">.</span><span class="n">addItems</span><span class="p">(</span>
+            <span class="nb">sorted</span><span class="p">(</span><span class="n">categories</span><span class="p">)</span>
+        <span class="p">)</span>  <span class="c1"># Add the sorted categories</span>
+
+        <span class="c1"># Set the default selected index</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">category_combo_box</span><span class="o">.</span><span class="n">setCurrentIndex</span><span class="p">(</span>
+            <span class="mi">0</span>
+        <span class="p">)</span>  <span class="c1"># Select &quot;No Category Selected&quot; as default</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">category_combo_box</span><span class="o">.</span><span class="n">blockSignals</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># Unblock signals after update</span></div>
+
+
+<div class="viewcode-block" id="PresetEditor.on_bank_changed">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/preset/index.html#jdxi_editor.ui.editors.io.preset.PresetEditor.on_bank_changed">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_bank_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Handle bank selection change.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_populate_presets</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="PresetEditor.on_preset_number_changed">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/preset/index.html#jdxi_editor.ui.editors.io.preset.PresetEditor.on_preset_number_changed">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_preset_number_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Handle program number selection change.&quot;&quot;&quot;</span></div>
+
+        <span class="c1"># self.load_program()</span>
+
+<div class="viewcode-block" id="PresetEditor.load_program">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/preset/index.html#jdxi_editor.ui.editors.io.preset.PresetEditor.load_program">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_program</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load the selected program based on bank and number.&quot;&quot;&quot;</span>
+        <span class="n">program_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">preset_combo_box</span><span class="o">.</span><span class="n">currentText</span><span class="p">()</span>
+        <span class="n">program_id</span> <span class="o">=</span> <span class="n">program_name</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span>
+        <span class="n">bank_letter</span> <span class="o">=</span> <span class="n">program_name</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">bank_number</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">program_name</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">])</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">parameter</span><span class="p">(</span><span class="s2">&quot;combo box bank_letter&quot;</span><span class="p">,</span> <span class="n">bank_letter</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">parameter</span><span class="p">(</span><span class="s2">&quot;combo box bank_number&quot;</span><span class="p">,</span> <span class="n">bank_number</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">bank_letter</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="s2">&quot;D&quot;</span><span class="p">]:</span>
+            <span class="n">program_details</span> <span class="o">=</span> <span class="n">get_program_by_id</span><span class="p">(</span><span class="n">program_id</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">parameter</span><span class="p">(</span><span class="s2">&quot;program_details&quot;</span><span class="p">,</span> <span class="n">program_details</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_current_synths</span><span class="p">(</span><span class="n">program_details</span><span class="p">)</span>
+        <span class="n">msb</span><span class="p">,</span> <span class="n">lsb</span><span class="p">,</span> <span class="n">pc</span> <span class="o">=</span> <span class="n">calculate_midi_values</span><span class="p">(</span><span class="n">bank_letter</span><span class="p">,</span> <span class="n">bank_number</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="s2">&quot;calculated msb, lsb, pc :&quot;</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">parameter</span><span class="p">(</span><span class="s2">&quot;combo box msb&quot;</span><span class="p">,</span> <span class="n">msb</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">parameter</span><span class="p">(</span><span class="s2">&quot;combo box lsb&quot;</span><span class="p">,</span> <span class="n">lsb</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">parameter</span><span class="p">(</span><span class="s2">&quot;combo box pc&quot;</span><span class="p">,</span> <span class="n">pc</span><span class="p">)</span>
+        <span class="n">log_midi_info</span><span class="p">(</span><span class="n">msb</span><span class="p">,</span> <span class="n">lsb</span><span class="p">,</span> <span class="n">pc</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span><span class="o">.</span><span class="n">send_bank_select_and_program_change</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">midi_channel</span><span class="p">,</span> <span class="n">msb</span><span class="p">,</span> <span class="n">lsb</span><span class="p">,</span> <span class="n">pc</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_request</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="PresetEditor.update_current_synths">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/preset/index.html#jdxi_editor.ui.editors.io.preset.PresetEditor.update_current_synths">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_current_synths</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">program_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the current synth label.</span>
+<span class="sd">        :param program_details: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">digital_synth_1_current_label</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">program_details</span><span class="p">[</span><span class="s2">&quot;digital_1&quot;</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">digital_synth_2_current_label</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">program_details</span><span class="p">[</span><span class="s2">&quot;digital_2&quot;</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">drum_kit_current_label</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">program_details</span><span class="p">[</span><span class="s2">&quot;drum&quot;</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">analog_synth_current_label</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">program_details</span><span class="p">[</span><span class="s2">&quot;analog&quot;</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Program details missing required keys: </span><span class="si">{</span><span class="n">program_details</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">digital_synth_1_current_label</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s2">&quot;Unknown&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">digital_synth_2_current_label</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s2">&quot;Unknown&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">drum_kit_current_label</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s2">&quot;Unknown&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">analog_synth_current_label</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s2">&quot;Unknown&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PresetEditor.load_preset_temp">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/preset/index.html#jdxi_editor.ui.editors.io.preset.PresetEditor.load_preset_temp">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_preset_temp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">preset_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load preset data and update UI.</span>
+<span class="sd">        :param preset_number: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">preset_helper</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">preset_helper</span><span class="o">.</span><span class="n">load_preset</span><span class="p">(</span><span class="n">preset_number</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_request</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="PresetEditor._update_preset_list">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/preset/index.html#jdxi_editor.ui.editors.io.preset.PresetEditor._update_preset_list">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_preset_list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the preset list with available presets.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_populate_presets</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="PresetEditor.on_category_changed">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/io/preset/index.html#jdxi_editor.ui.editors.io.preset.PresetEditor.on_category_changed">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_category_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Handle category selection change.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_populate_presets</span><span class="p">()</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Mark Mrooks.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

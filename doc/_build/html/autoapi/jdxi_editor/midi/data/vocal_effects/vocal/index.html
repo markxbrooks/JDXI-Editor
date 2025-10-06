@@ -1,0 +1,1094 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>jdxi_editor.midi.data.vocal_effects.vocal &mdash; JD-Xi Editor 0.8.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../../../_static/documentation_options.js?v=486e5634"></script>
+      <script src="../../../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../search.html" />
+    <link rel="next" title="jdxi_editor.midi.io" href="../../../io/index.html" />
+    <link rel="prev" title="jdxi_editor.midi.data.vocal_effects" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../../../index.html" class="icon icon-home">
+            JD-Xi Editor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../getting-started.html#getting-started-guide">Getting Started Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../editor-windows.html">Editor Windows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../editor-windows.html#available-editors">Available Editors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../additional-editors.html">Additional Editors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../additional-editors.html#available-editors">Available Editors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../playing-midi-files.html">Playing MIDI Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../playing-midi-files.html#available-tools">Available Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../troubleshooting.html#id1">Troubleshooting</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../legal.html">Legal Disclaimer</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../modules.html">jdxi_editor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../jdxi_editor.html">jdxi_editor package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../jdxi_editor.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../jdxi_editor.jdxi.html">jdxi_editor.jdxi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../jdxi_editor.log.html">jdxi_editor.log package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../jdxi_editor.midi.html">jdxi_editor.midi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../jdxi_editor.ui.html">jdxi_editor.ui package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../jdxi_editor.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../jdxi_editor.html#module-jdxi_editor.globals">jdxi_editor.globals module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../jdxi_editor.html#module-jdxi_editor.main">jdxi_editor.main module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../jdxi_editor.html#jdxi_editor.main.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../jdxi_editor.html#jdxi_editor.main.setup_splash_screen"><code class="docutils literal notranslate"><span class="pre">setup_splash_screen()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../jdxi_editor.html#module-jdxi_editor.project">jdxi_editor.project module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../jdxi_editor.html#module-jdxi_editor.resources">jdxi_editor.resources module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../jdxi_editor.html#jdxi_editor.resources.resource_path"><code class="docutils literal notranslate"><span class="pre">resource_path()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../jdxi_editor.html#module-jdxi_editor">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../../../../midi/index.html">midi</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../midi/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../midi/colors/index.html">midi.colors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../midi/slider/index.html">midi.slider</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../midi/spin_box/index.html">midi.spin_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../midi/time_ruler/index.html">midi.time_ruler</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../midi/track/index.html">midi.track</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../midi/track_viewer/index.html">midi.track_viewer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../midi/utils/index.html">midi.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../adsr/index.html">adsr</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../adsr/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../adsr/adsr/index.html">adsr.adsr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../adsr/graph/index.html">adsr.graph</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../adsr/parameter/index.html">adsr.parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../adsr/plot/index.html">adsr.plot</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../pitch/index.html">pitch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../pitch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../pitch/envelope/index.html">pitch.envelope</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../pitch/envelope_plot/index.html">pitch.envelope_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../pitch/pwm_plot/index.html">pitch.pwm_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../pitch/slider_spinbox/index.html">pitch.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../piano/index.html">piano</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../piano/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../piano/key/index.html">piano.key</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../piano/keyboard/index.html">piano.keyboard</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../panel/index.html">panel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../panel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../panel/partial/index.html">panel.partial</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../wheel/index.html">wheel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../wheel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../wheel/mod/index.html">wheel.mod</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../wheel/pitch/index.html">wheel.pitch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../wheel/wheel/index.html">wheel.wheel</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../preset/index.html">preset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../preset/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../preset/combo_box/index.html">preset.combo_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../preset/panel/index.html">preset.panel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../preset/patch_name/index.html">preset.patch_name</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../slider/index.html">slider</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../slider/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../slider/slider/index.html">slider.slider</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../slider/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../slider/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../slider/index.html#slider.Slider"><code class="docutils literal notranslate"><span class="pre">Slider</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../dialog/index.html">dialog</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../dialog/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../dialog/progress/index.html">dialog.progress</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../viewer/index.html">viewer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../viewer/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../viewer/log/index.html">viewer.log</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../button/index.html">button</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../button/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../button/channel/index.html">button.channel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../button/favorite/index.html">button.favorite</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../button/sequencer/index.html">button.sequencer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../button/waveform/index.html">button.waveform</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../button/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../button/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../button/index.html#button.ChannelButton"><code class="docutils literal notranslate"><span class="pre">ChannelButton</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../button/index.html#button.SequencerSquare"><code class="docutils literal notranslate"><span class="pre">SequencerSquare</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../switch/index.html">switch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../switch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../switch/partial/index.html">switch.partial</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../switch/switch/index.html">switch.switch</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../filter/index.html">filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../filter/index.html#filter.FilterWidget"><code class="docutils literal notranslate"><span class="pre">FilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../display/index.html">display</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../display/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../display/digital/index.html">display.digital</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../display/pattern/index.html">display.pattern</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../display/value/index.html">display.value</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../pattern/index.html">pattern</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../pattern/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../pattern/measure/index.html">pattern.measure</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../spin_box/index.html">spin_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../spin_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../spin_box/spin_box/index.html">spin_box.spin_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../envelope/index.html">envelope</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../envelope/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../envelope/base/index.html">envelope.base</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../indicator/index.html">indicator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../indicator/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../indicator/led/index.html">indicator.led</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../indicator/midi/index.html">indicator.midi</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../combo_box/index.html">combo_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../combo_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../combo_box/combo_box/index.html">combo_box.combo_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../../../index.html">jdxi_editor</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../../../index.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../../../globals/index.html">jdxi_editor.globals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../jdxi/index.html">jdxi_editor.jdxi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../log/index.html">jdxi_editor.log</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../main/index.html">jdxi_editor.main</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../../../index.html">jdxi_editor.midi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../project/index.html">jdxi_editor.project</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../resources/index.html">jdxi_editor.resources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../ui/index.html">jdxi_editor.ui</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../filter_plot/index.html">filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../filter_plot/index.html#filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../filter_plot/index.html#filter_plot.FilterPlot"><code class="docutils literal notranslate"><span class="pre">FilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../envelope_plot/index.html">envelope_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../envelope_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../envelope_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../envelope_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../envelope_plot/index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../envelope_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../envelope_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../envelope_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../envelope_plot/index.html#envelope_plot.midi_value_to_float"><code class="docutils literal notranslate"><span class="pre">midi_value_to_float()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../envelope_plot/index.html#envelope_plot.WMTEnvPlot"><code class="docutils literal notranslate"><span class="pre">WMTEnvPlot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../envelope_plot/index.html#envelope_plot.app"><code class="docutils literal notranslate"><span class="pre">app</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../wave_selector/index.html">wave_selector</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../wave_selector/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../wave_selector/wave_selector/index.html">wave_selector.wave_selector</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../analog_filter/index.html">analog_filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../analog_filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../analog_filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../analog_filter/index.html#analog_filter.AnalogFilterWidget"><code class="docutils literal notranslate"><span class="pre">AnalogFilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../slider_spinbox/index.html">slider_spinbox</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../slider_spinbox/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../slider_spinbox/slider_spinbox/index.html">slider_spinbox.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../analog_filter_plot/index.html">analog_filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../analog_filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../analog_filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../analog_filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../analog_filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../analog_filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../analog_filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../analog_filter_plot/index.html#analog_filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../analog_filter_plot/index.html#analog_filter_plot.AnalogFilterPlot"><code class="docutils literal notranslate"><span class="pre">AnalogFilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../../index.html">JD-Xi Editor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../../../../index.html">jdxi_editor</a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">jdxi_editor.midi</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">jdxi_editor.midi.data</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">jdxi_editor.midi.data.vocal_effects</a></li>
+      <li class="breadcrumb-item active">jdxi_editor.midi.data.vocal_effects.vocal</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../../../_sources/autoapi/jdxi_editor/midi/data/vocal_effects/vocal/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-jdxi_editor.midi.data.vocal_effects.vocal">
+<span id="jdxi-editor-midi-data-vocal-effects-vocal"></span><h1>jdxi_editor.midi.data.vocal_effects.vocal<a class="headerlink" href="#module-jdxi_editor.midi.data.vocal_effects.vocal" title="Link to this heading"></a></h1>
+<p>Vocal Effects</p>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalFxSwitch" title="jdxi_editor.midi.data.vocal_effects.vocal.VocalFxSwitch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">VocalFxSwitch</span></code></a></p></td>
+<td><p>Vocal FX switch values</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoNoteSwitch" title="jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoNoteSwitch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">VocalAutoNoteSwitch</span></code></a></p></td>
+<td><p>Auto Note switch values</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchType" title="jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">VocalAutoPitchType</span></code></a></p></td>
+<td><p>Auto Pitch preset_type values</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalOutputAssign" title="jdxi_editor.midi.data.vocal_effects.vocal.VocalOutputAssign"><code class="xref py py-obj docutils literal notranslate"><span class="pre">VocalOutputAssign</span></code></a></p></td>
+<td><p>Output assignment values</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchKey" title="jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchKey"><code class="xref py py-obj docutils literal notranslate"><span class="pre">VocalAutoPitchKey</span></code></a></p></td>
+<td><p>Auto Pitch key values</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalOctaveRange" title="jdxi_editor.midi.data.vocal_effects.vocal.VocalOctaveRange"><code class="xref py py-obj docutils literal notranslate"><span class="pre">VocalOctaveRange</span></code></a></p></td>
+<td><p>Octave range values</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchNote" title="jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchNote"><code class="xref py py-obj docutils literal notranslate"><span class="pre">VocalAutoPitchNote</span></code></a></p></td>
+<td><p>Auto Pitch note values</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocoderEnvelope" title="jdxi_editor.midi.data.vocal_effects.vocal.VocoderEnvelope"><code class="xref py py-obj docutils literal notranslate"><span class="pre">VocoderEnvelope</span></code></a></p></td>
+<td><p>Vocoder envelope types</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocoderHPF" title="jdxi_editor.midi.data.vocal_effects.vocal.VocoderHPF"><code class="xref py py-obj docutils literal notranslate"><span class="pre">VocoderHPF</span></code></a></p></td>
+<td><p>Vocoder HPF frequencies</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#jdxi_editor.midi.data.vocal_effects.vocal.VoiceCutoffFilter" title="jdxi_editor.midi.data.vocal_effects.vocal.VoiceCutoffFilter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">VoiceCutoffFilter</span></code></a></p></td>
+<td><p>Voice cutoff filter types</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#jdxi_editor.midi.data.vocal_effects.vocal.VoiceScale" title="jdxi_editor.midi.data.vocal_effects.vocal.VoiceScale"><code class="xref py py-obj docutils literal notranslate"><span class="pre">VoiceScale</span></code></a></p></td>
+<td><p>Voice scale types</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#jdxi_editor.midi.data.vocal_effects.vocal.VoiceKey" title="jdxi_editor.midi.data.vocal_effects.vocal.VoiceKey"><code class="xref py py-obj docutils literal notranslate"><span class="pre">VoiceKey</span></code></a></p></td>
+<td><p>Voice keys</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalFxSwitch">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.data.vocal_effects.vocal.</span></span><span class="sig-name descname"><span class="pre">VocalFxSwitch</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalFxSwitch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalFxSwitch" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">enum.Enum</span></code></a></p>
+<p>Vocal FX switch values</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalFxSwitch.OFF">
+<span class="sig-name descname"><span class="pre">OFF</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalFxSwitch.OFF"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalFxSwitch.OFF" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalFxSwitch.ON">
+<span class="sig-name descname"><span class="pre">ON</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalFxSwitch.ON"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalFxSwitch.ON" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalFxSwitch.display_name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">display_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalFxSwitch.display_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalFxSwitch.display_name" title="Link to this definition"></a></dt>
+<dd><p>Get display name for switch value</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalFxSwitch.midi_value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">midi_value</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalFxSwitch.midi_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalFxSwitch.midi_value" title="Link to this definition"></a></dt>
+<dd><p>Get MIDI value for switch</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoNoteSwitch">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.data.vocal_effects.vocal.</span></span><span class="sig-name descname"><span class="pre">VocalAutoNoteSwitch</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalAutoNoteSwitch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoNoteSwitch" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">enum.Enum</span></code></a></p>
+<p>Auto Note switch values</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoNoteSwitch.OFF">
+<span class="sig-name descname"><span class="pre">OFF</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalAutoNoteSwitch.OFF"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoNoteSwitch.OFF" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoNoteSwitch.ON">
+<span class="sig-name descname"><span class="pre">ON</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalAutoNoteSwitch.ON"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoNoteSwitch.ON" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoNoteSwitch.display_name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">display_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalAutoNoteSwitch.display_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoNoteSwitch.display_name" title="Link to this definition"></a></dt>
+<dd><p>Get display name for switch value</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoNoteSwitch.midi_value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">midi_value</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalAutoNoteSwitch.midi_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoNoteSwitch.midi_value" title="Link to this definition"></a></dt>
+<dd><p>Get MIDI value for switch</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.data.vocal_effects.vocal.</span></span><span class="sig-name descname"><span class="pre">VocalAutoPitchType</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalAutoPitchType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchType" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">enum.Enum</span></code></a></p>
+<p>Auto Pitch preset_type values</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchType.SOFT">
+<span class="sig-name descname"><span class="pre">SOFT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalAutoPitchType.SOFT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchType.SOFT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchType.HARD">
+<span class="sig-name descname"><span class="pre">HARD</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalAutoPitchType.HARD"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchType.HARD" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchType.ELECTRIC1">
+<span class="sig-name descname"><span class="pre">ELECTRIC1</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalAutoPitchType.ELECTRIC1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchType.ELECTRIC1" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchType.ELECTRIC2">
+<span class="sig-name descname"><span class="pre">ELECTRIC2</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalAutoPitchType.ELECTRIC2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchType.ELECTRIC2" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchType.display_name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">display_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalAutoPitchType.display_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchType.display_name" title="Link to this definition"></a></dt>
+<dd><p>Get display name for pitch preset_type</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchType.midi_value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">midi_value</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalAutoPitchType.midi_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchType.midi_value" title="Link to this definition"></a></dt>
+<dd><p>Get MIDI value for pitch preset_type</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalOutputAssign">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.data.vocal_effects.vocal.</span></span><span class="sig-name descname"><span class="pre">VocalOutputAssign</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalOutputAssign"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalOutputAssign" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">enum.Enum</span></code></a></p>
+<p>Output assignment values</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalOutputAssign.EFX1">
+<span class="sig-name descname"><span class="pre">EFX1</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalOutputAssign.EFX1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalOutputAssign.EFX1" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalOutputAssign.EFX2">
+<span class="sig-name descname"><span class="pre">EFX2</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalOutputAssign.EFX2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalOutputAssign.EFX2" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalOutputAssign.DLY">
+<span class="sig-name descname"><span class="pre">DLY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalOutputAssign.DLY"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalOutputAssign.DLY" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalOutputAssign.REV">
+<span class="sig-name descname"><span class="pre">REV</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalOutputAssign.REV"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalOutputAssign.REV" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalOutputAssign.DIR">
+<span class="sig-name descname"><span class="pre">DIR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalOutputAssign.DIR"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalOutputAssign.DIR" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalOutputAssign.display_name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">display_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalOutputAssign.display_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalOutputAssign.display_name" title="Link to this definition"></a></dt>
+<dd><p>Get display name for output assignment</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalOutputAssign.midi_value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">midi_value</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalOutputAssign.midi_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalOutputAssign.midi_value" title="Link to this definition"></a></dt>
+<dd><p>Get MIDI value for output assignment</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchKey">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.data.vocal_effects.vocal.</span></span><span class="sig-name descname"><span class="pre">VocalAutoPitchKey</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalAutoPitchKey"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchKey" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">enum.Enum</span></code></a></p>
+<p>Auto Pitch key values</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchKey.C">
+<span class="sig-name descname"><span class="pre">C</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalAutoPitchKey.C"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchKey.C" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchKey.Db">
+<span class="sig-name descname"><span class="pre">Db</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalAutoPitchKey.Db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchKey.Db" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchKey.D">
+<span class="sig-name descname"><span class="pre">D</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalAutoPitchKey.D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchKey.D" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchKey.Eb">
+<span class="sig-name descname"><span class="pre">Eb</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalAutoPitchKey.Eb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchKey.Eb" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchKey.E">
+<span class="sig-name descname"><span class="pre">E</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalAutoPitchKey.E"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchKey.E" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchKey.F">
+<span class="sig-name descname"><span class="pre">F</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalAutoPitchKey.F"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchKey.F" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchKey.Fsharp">
+<span class="sig-name descname"><span class="pre">Fsharp</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">6</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalAutoPitchKey.Fsharp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchKey.Fsharp" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchKey.G">
+<span class="sig-name descname"><span class="pre">G</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">7</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalAutoPitchKey.G"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchKey.G" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchKey.Ab">
+<span class="sig-name descname"><span class="pre">Ab</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">8</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalAutoPitchKey.Ab"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchKey.Ab" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchKey.A">
+<span class="sig-name descname"><span class="pre">A</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">9</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalAutoPitchKey.A"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchKey.A" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchKey.Bb">
+<span class="sig-name descname"><span class="pre">Bb</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalAutoPitchKey.Bb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchKey.Bb" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchKey.B">
+<span class="sig-name descname"><span class="pre">B</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">11</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalAutoPitchKey.B"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchKey.B" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchKey.Cm">
+<span class="sig-name descname"><span class="pre">Cm</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">12</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalAutoPitchKey.Cm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchKey.Cm" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchKey.Csharp_m">
+<span class="sig-name descname"><span class="pre">Csharp_m</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">13</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalAutoPitchKey.Csharp_m"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchKey.Csharp_m" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchKey.Dm">
+<span class="sig-name descname"><span class="pre">Dm</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">14</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalAutoPitchKey.Dm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchKey.Dm" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchKey.Dsharp_m">
+<span class="sig-name descname"><span class="pre">Dsharp_m</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">15</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalAutoPitchKey.Dsharp_m"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchKey.Dsharp_m" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchKey.Em">
+<span class="sig-name descname"><span class="pre">Em</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">16</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalAutoPitchKey.Em"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchKey.Em" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchKey.Fm">
+<span class="sig-name descname"><span class="pre">Fm</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">17</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalAutoPitchKey.Fm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchKey.Fm" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchKey.Fsharp_m">
+<span class="sig-name descname"><span class="pre">Fsharp_m</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">18</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalAutoPitchKey.Fsharp_m"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchKey.Fsharp_m" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchKey.Gm">
+<span class="sig-name descname"><span class="pre">Gm</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">19</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalAutoPitchKey.Gm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchKey.Gm" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchKey.Gsharp_m">
+<span class="sig-name descname"><span class="pre">Gsharp_m</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">20</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalAutoPitchKey.Gsharp_m"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchKey.Gsharp_m" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchKey.Am">
+<span class="sig-name descname"><span class="pre">Am</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">21</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalAutoPitchKey.Am"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchKey.Am" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchKey.Bbm">
+<span class="sig-name descname"><span class="pre">Bbm</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">22</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalAutoPitchKey.Bbm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchKey.Bbm" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchKey.Bm">
+<span class="sig-name descname"><span class="pre">Bm</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">23</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalAutoPitchKey.Bm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchKey.Bm" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchKey.display_name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">display_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalAutoPitchKey.display_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchKey.display_name" title="Link to this definition"></a></dt>
+<dd><p>Get display name for key</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchKey.midi_value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">midi_value</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalAutoPitchKey.midi_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchKey.midi_value" title="Link to this definition"></a></dt>
+<dd><p>Get MIDI value for key</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalOctaveRange">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.data.vocal_effects.vocal.</span></span><span class="sig-name descname"><span class="pre">VocalOctaveRange</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalOctaveRange"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalOctaveRange" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">enum.Enum</span></code></a></p>
+<p>Octave range values</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalOctaveRange.MINUS_ONE">
+<span class="sig-name descname"><span class="pre">MINUS_ONE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalOctaveRange.MINUS_ONE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalOctaveRange.MINUS_ONE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalOctaveRange.ZERO">
+<span class="sig-name descname"><span class="pre">ZERO</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalOctaveRange.ZERO"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalOctaveRange.ZERO" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalOctaveRange.PLUS_ONE">
+<span class="sig-name descname"><span class="pre">PLUS_ONE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalOctaveRange.PLUS_ONE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalOctaveRange.PLUS_ONE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalOctaveRange.display_name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">display_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalOctaveRange.display_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalOctaveRange.display_name" title="Link to this definition"></a></dt>
+<dd><p>Get display name for octave</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalOctaveRange.midi_value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">midi_value</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalOctaveRange.midi_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalOctaveRange.midi_value" title="Link to this definition"></a></dt>
+<dd><p>Get MIDI value for octave</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchNote">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.data.vocal_effects.vocal.</span></span><span class="sig-name descname"><span class="pre">VocalAutoPitchNote</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalAutoPitchNote"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchNote" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">enum.Enum</span></code></a></p>
+<p>Auto Pitch note values</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchNote.C">
+<span class="sig-name descname"><span class="pre">C</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalAutoPitchNote.C"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchNote.C" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchNote.C_SHARP">
+<span class="sig-name descname"><span class="pre">C_SHARP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalAutoPitchNote.C_SHARP"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchNote.C_SHARP" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchNote.D">
+<span class="sig-name descname"><span class="pre">D</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalAutoPitchNote.D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchNote.D" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchNote.D_SHARP">
+<span class="sig-name descname"><span class="pre">D_SHARP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalAutoPitchNote.D_SHARP"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchNote.D_SHARP" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchNote.E">
+<span class="sig-name descname"><span class="pre">E</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalAutoPitchNote.E"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchNote.E" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchNote.F">
+<span class="sig-name descname"><span class="pre">F</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalAutoPitchNote.F"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchNote.F" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchNote.F_SHARP">
+<span class="sig-name descname"><span class="pre">F_SHARP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">6</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalAutoPitchNote.F_SHARP"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchNote.F_SHARP" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchNote.G">
+<span class="sig-name descname"><span class="pre">G</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">7</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalAutoPitchNote.G"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchNote.G" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchNote.G_SHARP">
+<span class="sig-name descname"><span class="pre">G_SHARP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">8</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalAutoPitchNote.G_SHARP"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchNote.G_SHARP" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchNote.A">
+<span class="sig-name descname"><span class="pre">A</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">9</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalAutoPitchNote.A"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchNote.A" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchNote.A_SHARP">
+<span class="sig-name descname"><span class="pre">A_SHARP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalAutoPitchNote.A_SHARP"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchNote.A_SHARP" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchNote.B">
+<span class="sig-name descname"><span class="pre">B</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">11</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalAutoPitchNote.B"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchNote.B" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchNote.display_name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">display_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalAutoPitchNote.display_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchNote.display_name" title="Link to this definition"></a></dt>
+<dd><p>Get display name for note</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchNote.midi_value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">midi_value</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocalAutoPitchNote.midi_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocalAutoPitchNote.midi_value" title="Link to this definition"></a></dt>
+<dd><p>Get MIDI value for note</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocoderEnvelope">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.data.vocal_effects.vocal.</span></span><span class="sig-name descname"><span class="pre">VocoderEnvelope</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocoderEnvelope"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocoderEnvelope" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">enum.Enum</span></code></a></p>
+<p>Vocoder envelope types</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocoderEnvelope.SHARP">
+<span class="sig-name descname"><span class="pre">SHARP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocoderEnvelope.SHARP"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocoderEnvelope.SHARP" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocoderEnvelope.SOFT">
+<span class="sig-name descname"><span class="pre">SOFT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocoderEnvelope.SOFT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocoderEnvelope.SOFT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocoderEnvelope.LONG">
+<span class="sig-name descname"><span class="pre">LONG</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocoderEnvelope.LONG"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocoderEnvelope.LONG" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocoderEnvelope.display_name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">display_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocoderEnvelope.display_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocoderEnvelope.display_name" title="Link to this definition"></a></dt>
+<dd><p>Get display name for envelope preset_type</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocoderEnvelope.midi_value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">midi_value</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocoderEnvelope.midi_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocoderEnvelope.midi_value" title="Link to this definition"></a></dt>
+<dd><p>Get MIDI value for envelope preset_type</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocoderHPF">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.data.vocal_effects.vocal.</span></span><span class="sig-name descname"><span class="pre">VocoderHPF</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocoderHPF"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocoderHPF" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">enum.Enum</span></code></a></p>
+<p>Vocoder HPF frequencies</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocoderHPF.BYPASS">
+<span class="sig-name descname"><span class="pre">BYPASS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocoderHPF.BYPASS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocoderHPF.BYPASS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocoderHPF.FREQ_1000">
+<span class="sig-name descname"><span class="pre">FREQ_1000</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocoderHPF.FREQ_1000"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocoderHPF.FREQ_1000" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocoderHPF.FREQ_1250">
+<span class="sig-name descname"><span class="pre">FREQ_1250</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocoderHPF.FREQ_1250"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocoderHPF.FREQ_1250" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocoderHPF.FREQ_1600">
+<span class="sig-name descname"><span class="pre">FREQ_1600</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocoderHPF.FREQ_1600"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocoderHPF.FREQ_1600" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocoderHPF.FREQ_2000">
+<span class="sig-name descname"><span class="pre">FREQ_2000</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocoderHPF.FREQ_2000"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocoderHPF.FREQ_2000" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocoderHPF.FREQ_2500">
+<span class="sig-name descname"><span class="pre">FREQ_2500</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocoderHPF.FREQ_2500"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocoderHPF.FREQ_2500" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocoderHPF.FREQ_3150">
+<span class="sig-name descname"><span class="pre">FREQ_3150</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">6</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocoderHPF.FREQ_3150"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocoderHPF.FREQ_3150" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocoderHPF.FREQ_4000">
+<span class="sig-name descname"><span class="pre">FREQ_4000</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">7</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocoderHPF.FREQ_4000"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocoderHPF.FREQ_4000" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocoderHPF.FREQ_5000">
+<span class="sig-name descname"><span class="pre">FREQ_5000</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">8</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocoderHPF.FREQ_5000"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocoderHPF.FREQ_5000" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocoderHPF.FREQ_6300">
+<span class="sig-name descname"><span class="pre">FREQ_6300</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">9</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocoderHPF.FREQ_6300"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocoderHPF.FREQ_6300" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocoderHPF.FREQ_8000">
+<span class="sig-name descname"><span class="pre">FREQ_8000</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocoderHPF.FREQ_8000"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocoderHPF.FREQ_8000" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocoderHPF.FREQ_10000">
+<span class="sig-name descname"><span class="pre">FREQ_10000</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">11</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocoderHPF.FREQ_10000"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocoderHPF.FREQ_10000" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocoderHPF.FREQ_12500">
+<span class="sig-name descname"><span class="pre">FREQ_12500</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">12</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocoderHPF.FREQ_12500"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocoderHPF.FREQ_12500" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocoderHPF.FREQ_16000">
+<span class="sig-name descname"><span class="pre">FREQ_16000</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">13</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocoderHPF.FREQ_16000"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocoderHPF.FREQ_16000" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocoderHPF.display_name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">display_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocoderHPF.display_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocoderHPF.display_name" title="Link to this definition"></a></dt>
+<dd><p>Get display name for HPF frequency</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VocoderHPF.midi_value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">midi_value</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VocoderHPF.midi_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VocoderHPF.midi_value" title="Link to this definition"></a></dt>
+<dd><p>Get MIDI value for HPF frequency</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VoiceCutoffFilter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.data.vocal_effects.vocal.</span></span><span class="sig-name descname"><span class="pre">VoiceCutoffFilter</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VoiceCutoffFilter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VoiceCutoffFilter" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">enum.Enum</span></code></a></p>
+<p>Voice cutoff filter types</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VoiceCutoffFilter.THRU">
+<span class="sig-name descname"><span class="pre">THRU</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VoiceCutoffFilter.THRU"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VoiceCutoffFilter.THRU" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VoiceCutoffFilter.LPF">
+<span class="sig-name descname"><span class="pre">LPF</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VoiceCutoffFilter.LPF"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VoiceCutoffFilter.LPF" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VoiceCutoffFilter.HPF">
+<span class="sig-name descname"><span class="pre">HPF</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VoiceCutoffFilter.HPF"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VoiceCutoffFilter.HPF" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VoiceCutoffFilter.BPF">
+<span class="sig-name descname"><span class="pre">BPF</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VoiceCutoffFilter.BPF"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VoiceCutoffFilter.BPF" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VoiceScale">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.data.vocal_effects.vocal.</span></span><span class="sig-name descname"><span class="pre">VoiceScale</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VoiceScale"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VoiceScale" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">enum.Enum</span></code></a></p>
+<p>Voice scale types</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VoiceScale.CHROMATIC">
+<span class="sig-name descname"><span class="pre">CHROMATIC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VoiceScale.CHROMATIC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VoiceScale.CHROMATIC" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VoiceScale.MAJOR">
+<span class="sig-name descname"><span class="pre">MAJOR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VoiceScale.MAJOR"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VoiceScale.MAJOR" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VoiceScale.MINOR">
+<span class="sig-name descname"><span class="pre">MINOR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VoiceScale.MINOR"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VoiceScale.MINOR" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VoiceScale.BLUES">
+<span class="sig-name descname"><span class="pre">BLUES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VoiceScale.BLUES"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VoiceScale.BLUES" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VoiceScale.INDIAN">
+<span class="sig-name descname"><span class="pre">INDIAN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VoiceScale.INDIAN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VoiceScale.INDIAN" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VoiceKey">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.data.vocal_effects.vocal.</span></span><span class="sig-name descname"><span class="pre">VoiceKey</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VoiceKey"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VoiceKey" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">enum.Enum</span></code></a></p>
+<p>Voice keys</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VoiceKey.C">
+<span class="sig-name descname"><span class="pre">C</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VoiceKey.C"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VoiceKey.C" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VoiceKey.Db">
+<span class="sig-name descname"><span class="pre">Db</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VoiceKey.Db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VoiceKey.Db" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VoiceKey.D">
+<span class="sig-name descname"><span class="pre">D</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VoiceKey.D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VoiceKey.D" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VoiceKey.Eb">
+<span class="sig-name descname"><span class="pre">Eb</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VoiceKey.Eb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VoiceKey.Eb" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VoiceKey.E">
+<span class="sig-name descname"><span class="pre">E</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VoiceKey.E"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VoiceKey.E" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VoiceKey.F">
+<span class="sig-name descname"><span class="pre">F</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VoiceKey.F"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VoiceKey.F" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VoiceKey.Gb">
+<span class="sig-name descname"><span class="pre">Gb</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">6</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VoiceKey.Gb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VoiceKey.Gb" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VoiceKey.G">
+<span class="sig-name descname"><span class="pre">G</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">7</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VoiceKey.G"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VoiceKey.G" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VoiceKey.Ab">
+<span class="sig-name descname"><span class="pre">Ab</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">8</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VoiceKey.Ab"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VoiceKey.Ab" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VoiceKey.A">
+<span class="sig-name descname"><span class="pre">A</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">9</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VoiceKey.A"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VoiceKey.A" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VoiceKey.Bb">
+<span class="sig-name descname"><span class="pre">Bb</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VoiceKey.Bb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VoiceKey.Bb" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.vocal_effects.vocal.VoiceKey.B">
+<span class="sig-name descname"><span class="pre">B</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">11</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/vocal_effects/vocal.html#VoiceKey.B"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.vocal_effects.vocal.VoiceKey.B" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../index.html" class="btn btn-neutral float-left" title="jdxi_editor.midi.data.vocal_effects" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../../../io/index.html" class="btn btn-neutral float-right" title="jdxi_editor.midi.io" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Mark Mrooks.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

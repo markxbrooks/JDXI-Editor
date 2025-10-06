@@ -1,0 +1,1570 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>jdxi_editor.midi.io package &mdash; JD-Xi Editor 0.8.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=486e5634"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="jdxi_editor.midi.map package" href="jdxi_editor.midi.map.html" />
+    <link rel="prev" title="jdxi_editor.midi.data.vocal_effects package" href="jdxi_editor.midi.data.vocal_effects.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            JD-Xi Editor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#what-is-jdxi-editor">What is JDXI-Editor?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#key-features-capabilities">Key Features &amp; Capabilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#architecture-technology">Architecture &amp; Technology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#why-use-jdxi-editor">Why Use JDXI-Editor?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#getting-started">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#system-requirements">System Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#installation-methods">Installation Methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#method-1-pre-built-packages-recommended">Method 1: Pre-Built Packages (Recommended)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#method-2-python-package-installation">Method 2: Python Package Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#method-3-source-code-installation">Method 3: Source Code Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#method-4-development-setup">Method 4: Development Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#post-installation-setup">Post-Installation Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#troubleshooting">Troubleshooting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#getting-help">Getting Help</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html">Quick Start Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#what-you-ll-learn">What You’ll Learn</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#hardware-setup">Hardware Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#software-launch">Software Launch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#interface-overview">Interface Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#your-first-sound-creation">Your First Sound Creation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#essential-workflows">Essential Workflows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#quick-tips-for-success">Quick Tips for Success</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#common-issues-and-solutions">Common Issues and Solutions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#next-steps">Next Steps</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="editor-windows.html">Editor Windows</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="instrument.html">JDXi Instrument Window</a></li>
+<li class="toctree-l2"><a class="reference internal" href="instrument.html#what-is-the-jdxi-instrument-window">What is the JDXi Instrument Window?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="instrument.html#core-architecture-components">Core Architecture &amp; Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="instrument.html#key-features-capabilities">Key Features &amp; Capabilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="instrument.html#user-interface-components">User Interface Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="instrument.html#workflow-integration">Workflow Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="instrument.html#technical-specifications">Technical Specifications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="instrument.html#getting-started-with-the-instrument-window">Getting Started with the Instrument Window</a></li>
+<li class="toctree-l2"><a class="reference internal" href="editor.html">Editor Windows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="editor.html#what-are-the-editor-windows">What are the Editor Windows?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="editor.html#core-architecture-design">Core Architecture &amp; Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="editor.html#available-editors">Available Editors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="editor.html#getting-started-with-editor-windows">Getting Started with Editor Windows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="digital_synth.html">Digital Synth Editors (Parts 1 &amp; 2)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="digital_synth.html#what-are-the-digital-synth-editors">What are the Digital Synth Editors?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="digital_synth.html#core-architecture-design">Core Architecture &amp; Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="digital_synth.html#digital-synth-editor-features">Digital Synth Editor Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="digital_synth.html#partial-management-system">Partial Management System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="digital_synth.html#performance-features">Performance Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="digital_synth.html#visual-feedback-monitoring">Visual Feedback &amp; Monitoring</a></li>
+<li class="toctree-l2"><a class="reference internal" href="digital_synth.html#getting-started-with-digital-synth-editors">Getting Started with Digital Synth Editors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analog_synth.html">Analog Synth Editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analog_synth.html#what-is-the-analog-synth-editor">What is the Analog Synth Editor?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analog_synth.html#core-architecture-design">Core Architecture &amp; Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analog_synth.html#analog-synth-editor-features">Analog Synth Editor Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analog_synth.html#analog-synthesis-characteristics">Analog Synthesis Characteristics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analog_synth.html#advanced-features">Advanced Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analog_synth.html#performance-features">Performance Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analog_synth.html#getting-started-with-analog-synth-editor">Getting Started with Analog Synth Editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="drum_kit.html">Drum Kit Editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="drum_kit.html#what-is-the-drum-kit-editor">What is the Drum Kit Editor?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="drum_kit.html#core-architecture-design">Core Architecture &amp; Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="drum_kit.html#drum-kit-editor-features">Drum Kit Editor Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="drum_kit.html#kit-management-system">Kit Management System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="drum_kit.html#advanced-sound-design">Advanced Sound Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="drum_kit.html#visual-feedback-monitoring">Visual Feedback &amp; Monitoring</a></li>
+<li class="toctree-l2"><a class="reference internal" href="drum_kit.html#getting-started-with-drum-kit-editor">Getting Started with Drum Kit Editor</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="additional-editors.html">Additional Editors</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="arpeggiator.html">Arpeggiator Editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arpeggiator.html#what-is-the-arpeggiator-editor">What is the Arpeggiator Editor?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arpeggiator.html#core-architecture-design">Core Architecture &amp; Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arpeggiator.html#arpeggiator-editor-features">Arpeggiator Editor Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arpeggiator.html#advanced-pattern-features">Advanced Pattern Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arpeggiator.html#sequencing-tools">Sequencing Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arpeggiator.html#musical-integration">Musical Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arpeggiator.html#getting-started-with-arpeggiator-editor">Getting Started with Arpeggiator Editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="effects.html">Effects Editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="effects.html#what-is-the-effects-editor">What is the Effects Editor?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="effects.html#core-architecture-design">Core Architecture &amp; Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="effects.html#effects-editor-features">Effects Editor Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="effects.html#advanced-processing">Advanced Processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="effects.html#performance-integration">Performance Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="effects.html#visual-feedback-monitoring">Visual Feedback &amp; Monitoring</a></li>
+<li class="toctree-l2"><a class="reference internal" href="effects.html#getting-started-with-effects-editor">Getting Started with Effects Editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vocal_effects.html">Vocal Effects Editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vocal_effects.html#what-is-the-vocal-effects-editor">What is the Vocal Effects Editor?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vocal_effects.html#core-architecture-design">Core Architecture &amp; Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vocal_effects.html#vocal-effects-editor-features">Vocal Effects Editor Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vocal_effects.html#advanced-vocal-processing">Advanced Vocal Processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vocal_effects.html#performance-features">Performance Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vocal_effects.html#visual-feedback-monitoring">Visual Feedback &amp; Monitoring</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vocal_effects.html#getting-started-with-vocal-effects-editor">Getting Started with Vocal Effects Editor</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="playing-midi-files.html">Playing MIDI Files</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pattern_sequencer.html">Pattern Sequencer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pattern_sequencer.html#what-is-the-pattern-sequencer">What is the Pattern Sequencer?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pattern_sequencer.html#core-architecture-design">Core Architecture &amp; Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pattern_sequencer.html#pattern-sequencer-features">Pattern Sequencer Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pattern_sequencer.html#advanced-pattern-features">Advanced Pattern Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pattern_sequencer.html#performance-features">Performance Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pattern_sequencer.html#creative-tools">Creative Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pattern_sequencer.html#visual-feedback-monitoring">Visual Feedback &amp; Monitoring</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pattern_sequencer.html#getting-started-with-pattern-sequencer">Getting Started with Pattern Sequencer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="midi_file_player.html">MIDI File Player &amp; Recorder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="midi_file_player.html#what-is-the-midi-file-player-recorder">What is the MIDI File Player &amp; Recorder?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="midi_file_player.html#core-architecture-design">Core Architecture &amp; Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="midi_file_player.html#midi-file-player-features">MIDI File Player Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="midi_file_player.html#production-tools">Production Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="midi_file_player.html#advanced-features">Advanced Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="midi_file_player.html#performance-features">Performance Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="midi_file_player.html#visual-feedback-monitoring">Visual Feedback &amp; Monitoring</a></li>
+<li class="toctree-l2"><a class="reference internal" href="midi_file_player.html#getting-started-with-midi-file-player-recorder">Getting Started with MIDI File Player &amp; Recorder</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#id1">Troubleshooting</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="legal.html">Legal Disclaimer</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">jdxi_editor</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="jdxi_editor.html">jdxi_editor package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="jdxi_editor.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.html">jdxi_editor.jdxi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.log.html">jdxi_editor.log package</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="jdxi_editor.midi.html">jdxi_editor.midi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.ui.html">jdxi_editor.ui package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.html#module-jdxi_editor.globals">jdxi_editor.globals module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.html#module-jdxi_editor.main">jdxi_editor.main module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.html#jdxi_editor.main.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.html#jdxi_editor.main.setup_splash_screen"><code class="docutils literal notranslate"><span class="pre">setup_splash_screen()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.html#module-jdxi_editor.project">jdxi_editor.project module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.html#module-jdxi_editor.resources">jdxi_editor.resources module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.html#jdxi_editor.resources.resource_path"><code class="docutils literal notranslate"><span class="pre">resource_path()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.html#module-jdxi_editor">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="autoapi/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/midi/index.html">midi</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/midi/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/midi/colors/index.html">midi.colors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/midi/slider/index.html">midi.slider</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/midi/spin_box/index.html">midi.spin_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/midi/time_ruler/index.html">midi.time_ruler</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/midi/track/index.html">midi.track</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/midi/track_viewer/index.html">midi.track_viewer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/midi/utils/index.html">midi.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/adsr/index.html">adsr</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/adsr/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/adsr/adsr/index.html">adsr.adsr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/adsr/graph/index.html">adsr.graph</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/adsr/parameter/index.html">adsr.parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/adsr/plot/index.html">adsr.plot</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/pitch/index.html">pitch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/pitch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/pitch/envelope/index.html">pitch.envelope</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/pitch/envelope_plot/index.html">pitch.envelope_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/pitch/pwm_plot/index.html">pitch.pwm_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/pitch/slider_spinbox/index.html">pitch.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/piano/index.html">piano</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/piano/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/piano/key/index.html">piano.key</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/piano/keyboard/index.html">piano.keyboard</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/panel/index.html">panel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/panel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/panel/partial/index.html">panel.partial</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/wheel/index.html">wheel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/wheel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/wheel/mod/index.html">wheel.mod</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/wheel/pitch/index.html">wheel.pitch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/wheel/wheel/index.html">wheel.wheel</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/preset/index.html">preset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/preset/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/preset/combo_box/index.html">preset.combo_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/preset/panel/index.html">preset.panel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/preset/patch_name/index.html">preset.patch_name</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/slider/index.html">slider</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/slider/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/slider/slider/index.html">slider.slider</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/slider/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/slider/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/slider/index.html#slider.Slider"><code class="docutils literal notranslate"><span class="pre">Slider</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/dialog/index.html">dialog</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/dialog/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/dialog/progress/index.html">dialog.progress</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/viewer/index.html">viewer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/viewer/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/viewer/log/index.html">viewer.log</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/button/index.html">button</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/button/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/button/channel/index.html">button.channel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/button/favorite/index.html">button.favorite</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/button/sequencer/index.html">button.sequencer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/button/waveform/index.html">button.waveform</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/button/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/button/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/button/index.html#button.ChannelButton"><code class="docutils literal notranslate"><span class="pre">ChannelButton</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/button/index.html#button.SequencerSquare"><code class="docutils literal notranslate"><span class="pre">SequencerSquare</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/switch/index.html">switch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/switch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/switch/partial/index.html">switch.partial</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/switch/switch/index.html">switch.switch</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/filter/index.html">filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/filter/index.html#filter.FilterWidget"><code class="docutils literal notranslate"><span class="pre">FilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/display/index.html">display</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/display/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/display/digital/index.html">display.digital</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/display/pattern/index.html">display.pattern</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/display/value/index.html">display.value</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/pattern/index.html">pattern</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/pattern/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/pattern/measure/index.html">pattern.measure</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/spin_box/index.html">spin_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/spin_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/spin_box/spin_box/index.html">spin_box.spin_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/envelope/index.html">envelope</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/envelope/base/index.html">envelope.base</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/indicator/index.html">indicator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/indicator/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/indicator/led/index.html">indicator.led</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/indicator/midi/index.html">indicator.midi</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/combo_box/index.html">combo_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/combo_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/combo_box/combo_box/index.html">combo_box.combo_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/jdxi_editor/index.html">jdxi_editor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/jdxi_editor/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/globals/index.html">jdxi_editor.globals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/jdxi/index.html">jdxi_editor.jdxi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/log/index.html">jdxi_editor.log</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/main/index.html">jdxi_editor.main</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/midi/index.html">jdxi_editor.midi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/project/index.html">jdxi_editor.project</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/resources/index.html">jdxi_editor.resources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/ui/index.html">jdxi_editor.ui</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/filter_plot/index.html">filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/filter_plot/index.html#filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/filter_plot/index.html#filter_plot.FilterPlot"><code class="docutils literal notranslate"><span class="pre">FilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/envelope_plot/index.html">envelope_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope_plot/index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/envelope_plot/index.html#envelope_plot.midi_value_to_float"><code class="docutils literal notranslate"><span class="pre">midi_value_to_float()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/envelope_plot/index.html#envelope_plot.WMTEnvPlot"><code class="docutils literal notranslate"><span class="pre">WMTEnvPlot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/envelope_plot/index.html#envelope_plot.app"><code class="docutils literal notranslate"><span class="pre">app</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/wave_selector/index.html">wave_selector</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/wave_selector/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/wave_selector/wave_selector/index.html">wave_selector.wave_selector</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/analog_filter/index.html">analog_filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/analog_filter/index.html#analog_filter.AnalogFilterWidget"><code class="docutils literal notranslate"><span class="pre">AnalogFilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/slider_spinbox/index.html">slider_spinbox</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/slider_spinbox/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/slider_spinbox/slider_spinbox/index.html">slider_spinbox.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/analog_filter_plot/index.html">analog_filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#analog_filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#analog_filter_plot.AnalogFilterPlot"><code class="docutils literal notranslate"><span class="pre">AnalogFilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">JD-Xi Editor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">jdxi_editor</a></li>
+          <li class="breadcrumb-item"><a href="jdxi_editor.html">jdxi_editor package</a></li>
+          <li class="breadcrumb-item"><a href="jdxi_editor.midi.html">jdxi_editor.midi package</a></li>
+      <li class="breadcrumb-item active">jdxi_editor.midi.io package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/jdxi_editor.midi.io.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="jdxi-editor-midi-io-package">
+<h1>jdxi_editor.midi.io package<a class="headerlink" href="#jdxi-editor-midi-io-package" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-jdxi_editor.midi.io.clock">
+<span id="jdxi-editor-midi-io-clock-module"></span><h2>jdxi_editor.midi.io.clock module<a class="headerlink" href="#module-jdxi_editor.midi.io.clock" title="Link to this heading"></a></h2>
+<p>import mido
+import time</p>
+<dl class="simple">
+<dt>try:</dt><dd><p>outport = mido.open_output()</p>
+</dd>
+<dt>except Exception as e:</dt><dd><p>print(f”Error opening MIDI output port: {e}”)
+exit()</p>
+</dd>
+</dl>
+<p>clock_message = mido.Message(‘clock’)
+tempo = 120
+time_per_pulse = (60 / tempo) / 24</p>
+<dl class="simple">
+<dt>try:</dt><dd><dl class="simple">
+<dt>while True:</dt><dd><p>outport.send(clock_message)
+time.sleep(time_per_pulse)</p>
+</dd>
+</dl>
+</dd>
+<dt>except KeyboardInterrupt:</dt><dd><p>print(“Stopping MIDI clock.”)</p>
+</dd>
+<dt>finally:</dt><dd><p>outport.close()</p>
+</dd>
+</dl>
+</section>
+<section id="module-jdxi_editor.midi.io.connection">
+<span id="jdxi-editor-midi-io-connection-module"></span><h2>jdxi_editor.midi.io.connection module<a class="headerlink" href="#module-jdxi_editor.midi.io.connection" title="Link to this heading"></a></h2>
+<p>MIDI Connection Singleton for JD-Xi</p>
+<p>This module defines the <cite>MIDIConnection</cite> class, which serves as a singleton for managing
+MIDI input and output connections with the Roland JD-Xi synthesizer. It provides methods
+for sending MIDI messages, setting input callbacks, and identifying connected devices.</p>
+<p>Features:
+- Implements a singleton pattern to ensure a single MIDI connection instance.
+- Manages MIDI input and output ports.
+- Sends MIDI messages with an optional UI indicator blink.
+- Sets a callback function for incoming MIDI messages.
+- Sends an Identity Request to detect and verify the connected device.
+- Retrieves firmware version information from the JD-Xi.</p>
+<p>Dependencies:
+- <cite>rtmidi</cite> for MIDI communication.
+- <cite>logging</cite> for debugging and error handling.
+- <cite>DeviceInfo</cite> and <cite>IdentityRequest</cite> for device identification.</p>
+<dl>
+<dt>Example Usage:</dt><dd><p>midi_conn = MIDIConnection()
+midi_conn.initialize(midi_in, midi_out, main_window)
+midi_conn.send_message([0x90, 0x40, 0x7F])  # Send a Note On message
+if midi_conn.identify_device():</p>
+<blockquote>
+<div><p>print(“Connected to JD-Xi:”, midi_conn.device_version)</p>
+</div></blockquote>
+</dd>
+</dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.connection.MIDIConnection">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.io.connection.</span></span><span class="sig-name descname"><span class="pre">MIDIConnection</span></span><a class="reference internal" href="_modules/jdxi_editor/midi/io/connection.html#MIDIConnection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.connection.MIDIConnection" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Midi connection object</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.connection.MIDIConnection.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/jdxi_editor/midi/io/connection.html#MIDIConnection.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.connection.MIDIConnection.__init__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.connection.MIDIConnection.midi_in">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">midi_in</span></span><a class="reference internal" href="_modules/jdxi_editor/midi/io/connection.html#MIDIConnection.midi_in"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.connection.MIDIConnection.midi_in" title="Link to this definition"></a></dt>
+<dd><p>Get MIDI input port</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.connection.MIDIConnection.midi_out">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">midi_out</span></span><a class="reference internal" href="_modules/jdxi_editor/midi/io/connection.html#MIDIConnection.midi_out"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.connection.MIDIConnection.midi_out" title="Link to this definition"></a></dt>
+<dd><p>Get MIDI output port</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.connection.MIDIConnection.initialize">
+<span class="sig-name descname"><span class="pre">initialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">midi_in</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">MidiIn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">midi_out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">MidiOut</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">main_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">typing.Optional[PySide6.QtWidgets.QMainWindow]</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/io/connection.html#MIDIConnection.initialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.connection.MIDIConnection.initialize" title="Link to this definition"></a></dt>
+<dd><p>Initialize MIDI connection with input and output ports</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>midi_in</strong> – rtmidi.MidiIn</p></li>
+<li><p><strong>midi_out</strong> – rtmidi.MidiOut</p></li>
+<li><p><strong>main_window</strong> – Optional[QMainWindow] for UI interaction</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.connection.MIDIConnection.send_message">
+<span class="sig-name descname"><span class="pre">send_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.13)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/io/connection.html#MIDIConnection.send_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.connection.MIDIConnection.send_message" title="Link to this definition"></a></dt>
+<dd><p>Send MIDI message and trigger indicator</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>message</strong> – Iterable[int], MIDI message to send</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.connection.MIDIConnection.identify_device">
+<span class="sig-name descname"><span class="pre">identify_device</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/io/connection.html#MIDIConnection.identify_device"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.connection.MIDIConnection.identify_device" title="Link to this definition"></a></dt>
+<dd><p>Send Identity Request and verify response</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.connection.MIDIConnection.is_connected">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_connected</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><a class="reference internal" href="_modules/jdxi_editor/midi/io/connection.html#MIDIConnection.is_connected"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.connection.MIDIConnection.is_connected" title="Link to this definition"></a></dt>
+<dd><p>Check if connected to JD-Xi</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.connection.MIDIConnection.device_version">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">device_version</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="reference internal" href="_modules/jdxi_editor/midi/io/connection.html#MIDIConnection.device_version"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.connection.MIDIConnection.device_version" title="Link to this definition"></a></dt>
+<dd><p>Get device firmware version</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-jdxi_editor.midi.io.controller">
+<span id="jdxi-editor-midi-io-controller-module"></span><h2>jdxi_editor.midi.io.controller module<a class="headerlink" href="#module-jdxi_editor.midi.io.controller" title="Link to this heading"></a></h2>
+<p>MIDI I/O Controller for JD-Xi</p>
+<p>This module provides the <cite>MidiIOController</cite> class, which facilitates MIDI communication
+with the Roland JD-Xi synthesizer. It allows users to list, open, and manage MIDI input
+and output ports, automatically detect JD-Xi ports, and handle MIDI message reception.</p>
+<p>Features:
+- Retrieve available MIDI input and output ports.
+- Automatically detect JD-Xi MIDI ports.
+- Open and close MIDI input and output ports by name or index.
+- Check the status of open MIDI ports.
+- Set a callback for incoming MIDI messages.</p>
+<p>Dependencies:
+- <cite>rtmidi</cite> for MIDI communication.
+- <cite>PyQt6.QtCore</cite> for QObject-based structure.</p>
+<dl class="simple">
+<dt>Example Usage:</dt><dd><p>controller = MidiIOController()
+controller.open_ports(“JD-Xi MIDI IN”, “JD-Xi MIDI OUT”)
+print(controller.current_in_port, controller.current_out_port)</p>
+</dd>
+</dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.controller.MidiIOController">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.io.controller.</span></span><span class="sig-name descname"><span class="pre">MidiIOController</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">QObject</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jdxi_editor/midi/io/controller.html#MidiIOController"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.controller.MidiIOController" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QObject</span></code></p>
+<p>Helper class for MIDI communication with the JD-Xi</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.controller.MidiIOController.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">QObject</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jdxi_editor/midi/io/controller.html#MidiIOController.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.controller.MidiIOController.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initialize the MIDI I/O Controller</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>parent</strong> – QObject, parent object for the controller</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.controller.MidiIOController.current_in_port">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">current_in_port</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></em><a class="reference internal" href="_modules/jdxi_editor/midi/io/controller.html#MidiIOController.current_in_port"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.controller.MidiIOController.current_in_port" title="Link to this definition"></a></dt>
+<dd><p>Get current input port name</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[str], MIDI input port name</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.controller.MidiIOController.current_out_port">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">current_out_port</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></em><a class="reference internal" href="_modules/jdxi_editor/midi/io/controller.html#MidiIOController.current_out_port"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.controller.MidiIOController.current_out_port" title="Link to this definition"></a></dt>
+<dd><p>Get current output port name</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[str], MIDI output port name</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.controller.MidiIOController.get_input_ports">
+<span class="sig-name descname"><span class="pre">get_input_ports</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/io/controller.html#MidiIOController.get_input_ports"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.controller.MidiIOController.get_input_ports" title="Link to this definition"></a></dt>
+<dd><p>Get available MIDI input ports</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[str], MIDI input ports</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.controller.MidiIOController.get_output_ports">
+<span class="sig-name descname"><span class="pre">get_output_ports</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/io/controller.html#MidiIOController.get_output_ports"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.controller.MidiIOController.get_output_ports" title="Link to this definition"></a></dt>
+<dd><p>Get available MIDI output ports</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[str], MIDI output ports</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.controller.MidiIOController.find_jdxi_ports">
+<span class="sig-name descname"><span class="pre">find_jdxi_ports</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.13)"><span class="pre">Tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/io/controller.html#MidiIOController.find_jdxi_ports"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.controller.MidiIOController.find_jdxi_ports" title="Link to this definition"></a></dt>
+<dd><p>Find JD-Xi input and output ports</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple[Optional[str], Optional[str]], JD-Xi input and output ports</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.controller.MidiIOController.open_input">
+<span class="sig-name descname"><span class="pre">open_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">port_name_or_index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/io/controller.html#MidiIOController.open_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.controller.MidiIOController.open_input" title="Link to this definition"></a></dt>
+<dd><p>Open MIDI input port by name or index</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>port_name_or_index</strong> – str, MIDI input port name or index</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool True if successful, False otherwise</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.controller.MidiIOController.open_output">
+<span class="sig-name descname"><span class="pre">open_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">port_name_or_index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/io/controller.html#MidiIOController.open_output"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.controller.MidiIOController.open_output" title="Link to this definition"></a></dt>
+<dd><p>Open MIDI output port by name or index</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>port_name_or_index</strong> – str</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool True if successful, False otherwise</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.controller.MidiIOController.open_input_port">
+<span class="sig-name descname"><span class="pre">open_input_port</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">port_name_or_index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/io/controller.html#MidiIOController.open_input_port"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.controller.MidiIOController.open_input_port" title="Link to this definition"></a></dt>
+<dd><p>Open MIDI input port by name or index</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>port_name_or_index</strong> – str</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.controller.MidiIOController.open_output_port">
+<span class="sig-name descname"><span class="pre">open_output_port</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">port_name_or_index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/io/controller.html#MidiIOController.open_output_port"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.controller.MidiIOController.open_output_port" title="Link to this definition"></a></dt>
+<dd><p>Open MIDI output port by name or index</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>port_name_or_index</strong> – str, MIDI output port name or index</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool True if successful, False otherwise</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.controller.MidiIOController.close_ports">
+<span class="sig-name descname"><span class="pre">close_ports</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/io/controller.html#MidiIOController.close_ports"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.controller.MidiIOController.close_ports" title="Link to this definition"></a></dt>
+<dd><p>Close MIDI ports</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.controller.MidiIOController.is_input_open">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_input_open</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><a class="reference internal" href="_modules/jdxi_editor/midi/io/controller.html#MidiIOController.is_input_open"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.controller.MidiIOController.is_input_open" title="Link to this definition"></a></dt>
+<dd><p>Check if MIDI input port is open</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.controller.MidiIOController.is_output_open">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_output_open</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><a class="reference internal" href="_modules/jdxi_editor/midi/io/controller.html#MidiIOController.is_output_open"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.controller.MidiIOController.is_output_open" title="Link to this definition"></a></dt>
+<dd><p>Check if MIDI output port is open</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.controller.MidiIOController.open_ports">
+<span class="sig-name descname"><span class="pre">open_ports</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_port</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_port</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/io/controller.html#MidiIOController.open_ports"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.controller.MidiIOController.open_ports" title="Link to this definition"></a></dt>
+<dd><p>Open both input and output ports by name</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>in_port</strong> – str, Input port name or None</p></li>
+<li><p><strong>out_port</strong> – str, Output port name or None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.controller.MidiIOController.staticMetaObject">
+<span class="sig-name descname"><span class="pre">staticMetaObject</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">PySide6.QtCore.QMetaObject(&quot;MidiIOController&quot;</span> <span class="pre">inherits</span> <span class="pre">&quot;QObject&quot;:</span> <span class="pre">)</span></em><a class="headerlink" href="#jdxi_editor.midi.io.controller.MidiIOController.staticMetaObject" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-jdxi_editor.midi.io.delay">
+<span id="jdxi-editor-midi-io-delay-module"></span><h2>jdxi_editor.midi.io.delay module<a class="headerlink" href="#module-jdxi_editor.midi.io.delay" title="Link to this heading"></a></h2>
+<p>jdxi_editor.midi.io.delay
+send midi messages with a delay so that the JD-Xi can process them correctly.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.delay.send_with_delay">
+<span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.io.delay.</span></span><span class="sig-name descname"><span class="pre">send_with_delay</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">midi_helper</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#jdxi_editor.midi.io.helper.MidiIOHelper" title="jdxi_editor.midi.io.helper.MidiIOHelper"><span class="pre">MidiIOHelper</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">midi_requests</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/io/delay.html#send_with_delay"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.delay.send_with_delay" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>midi_helper</strong> – MidiIOHelper, helper for sending MIDI messages</p></li>
+<li><p><strong>midi_requests</strong> – list, list of MIDI messages to send</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-jdxi_editor.midi.io.helper">
+<span id="jdxi-editor-midi-io-helper-module"></span><h2>jdxi_editor.midi.io.helper module<a class="headerlink" href="#module-jdxi_editor.midi.io.helper" title="Link to this heading"></a></h2>
+<section id="midi-helper-module">
+<h3>MIDI Helper Module<a class="headerlink" href="#midi-helper-module" title="Link to this heading"></a></h3>
+<p>This module provides address unified helper class for MIDI communication with the Roland JD-Xi.
+It integrates both MIDI input and output functionalities by combining the features of
+the MIDIInHandler and MIDIOutHandler classes.</p>
+<dl class="simple">
+<dt>Classes:</dt><dd><dl class="simple">
+<dt>MIDIHelper: A helper class that inherits from both MIDIInHandler and MIDIOutHandler,</dt><dd><p>offering address consolidated interface for handling MIDI messages (including
+SysEx messages in JSON format) for the JD-Xi synthesizer.</p>
+</dd>
+</dl>
+</dd>
+<dt>Dependencies:</dt><dd><ul class="simple">
+<li><p>PySide6.QtCore.Signal for Qt signal support.</p></li>
+<li><p>jdxi_editor.midi.input_handler.MIDIInHandler for handling incoming MIDI messages.</p></li>
+<li><p>jdxi_editor.midi.output_handler.MIDIOutHandler for handling outgoing MIDI messages.</p></li>
+</ul>
+</dd>
+</dl>
+</section>
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.helper.MidiIOHelper">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.io.helper.</span></span><span class="sig-name descname"><span class="pre">MidiIOHelper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jdxi_editor/midi/io/helper.html#MidiIOHelper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.helper.MidiIOHelper" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#jdxi_editor.midi.io.input_handler.MidiInHandler" title="jdxi_editor.midi.io.input_handler.MidiInHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">MidiInHandler</span></code></a>, <a class="reference internal" href="#jdxi_editor.midi.io.output_handler.MidiOutHandler" title="jdxi_editor.midi.io.output_handler.MidiOutHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">MidiOutHandler</span></code></a></p>
+<p>Class to handle midi input/output</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.helper.MidiIOHelper.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jdxi_editor/midi/io/helper.html#MidiIOHelper.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.helper.MidiIOHelper.__init__" title="Link to this definition"></a></dt>
+<dd><p>constructor</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.helper.MidiIOHelper.send_mido_message">
+<span class="sig-name descname"><span class="pre">send_mido_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Message</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jdxi_editor/midi/io/helper.html#MidiIOHelper.send_mido_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.helper.MidiIOHelper.send_mido_message" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>msg</strong> – mido.Message</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.helper.MidiIOHelper.load_patch">
+<span class="sig-name descname"><span class="pre">load_patch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jdxi_editor/midi/io/helper.html#MidiIOHelper.load_patch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.helper.MidiIOHelper.load_patch" title="Link to this definition"></a></dt>
+<dd><p>Load the JSON patch as a string and emit it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>file_path</strong> – str</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.helper.MidiIOHelper.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/jdxi_editor/midi/io/helper.html#MidiIOHelper.__str__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.helper.MidiIOHelper.__str__" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str String representation</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.helper.MidiIOHelper.load_sysx_patch">
+<span class="sig-name descname"><span class="pre">load_sysx_patch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jdxi_editor/midi/io/helper.html#MidiIOHelper.load_sysx_patch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.helper.MidiIOHelper.load_sysx_patch" title="Link to this definition"></a></dt>
+<dd><p>Load the SysEx patch from a file and emit it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>file_path</strong> – str File path as a string</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.helper.MidiIOHelper.set_midi_ports">
+<span class="sig-name descname"><span class="pre">set_midi_ports</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_port</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_port</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/io/helper.html#MidiIOHelper.set_midi_ports"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.helper.MidiIOHelper.set_midi_ports" title="Link to this definition"></a></dt>
+<dd><p>Set MIDI input and output ports</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>in_port</strong> – str</p></li>
+<li><p><strong>out_port</strong> – str</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool True on success, False otherwise</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.helper.MidiIOHelper.connect_port_names">
+<span class="sig-name descname"><span class="pre">connect_port_names</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_port</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_port</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/io/helper.html#MidiIOHelper.connect_port_names"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.helper.MidiIOHelper.connect_port_names" title="Link to this definition"></a></dt>
+<dd><p>Attempt to automatically connect to JD-Xi MIDI ports.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>in_port</strong> – str</p></li>
+<li><p><strong>out_port</strong> – str</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool True on success, False otherwise</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.helper.MidiIOHelper.reconnect_port_names">
+<span class="sig-name descname"><span class="pre">reconnect_port_names</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_port</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_port</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/io/helper.html#MidiIOHelper.reconnect_port_names"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.helper.MidiIOHelper.reconnect_port_names" title="Link to this definition"></a></dt>
+<dd><p>Reconnect ports</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>in_port</strong> – str</p></li>
+<li><p><strong>out_port</strong> – str</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.helper.MidiIOHelper.auto_connect_jdxi">
+<span class="sig-name descname"><span class="pre">auto_connect_jdxi</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/io/helper.html#MidiIOHelper.auto_connect_jdxi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.helper.MidiIOHelper.auto_connect_jdxi" title="Link to this definition"></a></dt>
+<dd><p>Attempt to automatically connect to JD-Xi MIDI ports.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool True on success, False otherwise</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.helper.MidiIOHelper.staticMetaObject">
+<span class="sig-name descname"><span class="pre">staticMetaObject</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">PySide6.QtCore.QMetaObject(&quot;MidiIOHelper&quot;</span> <span class="pre">inherits</span> <span class="pre">&quot;MidiInHandler&quot;:</span> <span class="pre">)</span></em><a class="headerlink" href="#jdxi_editor.midi.io.helper.MidiIOHelper.staticMetaObject" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-jdxi_editor.midi.io.input_handler">
+<span id="jdxi-editor-midi-io-input-handler-module"></span><h2>jdxi_editor.midi.io.input_handler module<a class="headerlink" href="#module-jdxi_editor.midi.io.input_handler" title="Link to this heading"></a></h2>
+<section id="midiinhandler-module">
+<h3>MIDIInHandler Module<a class="headerlink" href="#midiinhandler-module" title="Link to this heading"></a></h3>
+<p>This module provides the MIDIInHandler class for handling MIDI communication with the Roland JD-Xi.
+It supports processing of SysEx, Control Change, Program Change, Note On/Off, and Clock messages.
+The handler decodes incoming MIDI messages, routes them to appropriate sub-handlers, and emits Qt signals
+for integration with PySide6-based applications.</p>
+<dl class="simple">
+<dt>Classes:</dt><dd><dl class="simple">
+<dt>MIDIInHandler: Processes incoming MIDI messages, handles SysEx tone data parsing, and emits signals</dt><dd><p>for further processing in the application.</p>
+</dd>
+</dl>
+</dd>
+<dt>Usage:</dt><dd><p>Instantiate MIDIInHandler and connect to its signals to integrate MIDI data handling with your application.</p>
+</dd>
+<dt>Dependencies:</dt><dd><ul class="simple">
+<li><p>PySide6.QtCore.Signal for signal emission.</p></li>
+<li><p>pubsub for publish/subscribe messaging.</p></li>
+<li><p>jdxi_manager modules for data handling, parsing, and MIDI processing.</p></li>
+</ul>
+</dd>
+</dl>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.input_handler.add_or_replace_program_and_save">
+<span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.io.input_handler.</span></span><span class="sig-name descname"><span class="pre">add_or_replace_program_and_save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_program</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="jdxi_editor.jdxi.program.html#jdxi_editor.jdxi.program.program.JDXiProgram" title="jdxi_editor.jdxi.program.program.JDXiProgram"><span class="pre">JDXiProgram</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/io/input_handler.html#add_or_replace_program_and_save"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.input_handler.add_or_replace_program_and_save" title="Link to this definition"></a></dt>
+<dd><p>Add a new program to the list, replacing any with matching ID or PC.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>new_program</strong> – JDXiProgram to add or replace.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if successfully added/replaced and saved, False otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.input_handler.add_or_replace_program_and_save_old">
+<span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.io.input_handler.</span></span><span class="sig-name descname"><span class="pre">add_or_replace_program_and_save_old</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_program</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="jdxi_editor.jdxi.program.html#jdxi_editor.jdxi.program.program.JDXiProgram" title="jdxi_editor.jdxi.program.program.JDXiProgram"><span class="pre">JDXiProgram</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/io/input_handler.html#add_or_replace_program_and_save_old"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.input_handler.add_or_replace_program_and_save_old" title="Link to this definition"></a></dt>
+<dd><p>add_or_replace_program_and_save</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>new_program</strong></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.input_handler.load_programs">
+<span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.io.input_handler.</span></span><span class="sig-name descname"><span class="pre">load_programs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.13)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/io/input_handler.html#load_programs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.input_handler.load_programs" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.input_handler.save_programs">
+<span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.io.input_handler.</span></span><span class="sig-name descname"><span class="pre">save_programs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">program_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.13)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/io/input_handler.html#save_programs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.input_handler.save_programs" title="Link to this definition"></a></dt>
+<dd><p>Save the program list to USER_PROGRAMS_FILE, creating the file and directory if needed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>program_list</strong> – List of program dictionaries.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.input_handler.save_programs_old">
+<span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.io.input_handler.</span></span><span class="sig-name descname"><span class="pre">save_programs_old</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">program_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.13)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/io/input_handler.html#save_programs_old"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.input_handler.save_programs_old" title="Link to this definition"></a></dt>
+<dd><p>save_programs</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>program_list</strong> – List[Dict[str, str]]</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.input_handler.MidiInHandler">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.io.input_handler.</span></span><span class="sig-name descname"><span class="pre">MidiInHandler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jdxi_editor/midi/io/input_handler.html#MidiInHandler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.input_handler.MidiInHandler" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#jdxi_editor.midi.io.controller.MidiIOController" title="jdxi_editor.midi.io.controller.MidiIOController"><code class="xref py py-class docutils literal notranslate"><span class="pre">MidiIOController</span></code></a></p>
+<p>Helper class for MIDI communication with the JD-Xi.</p>
+<p>This class listens to incoming MIDI messages, processes them based on
+their preset_type, and emits corresponding signals. It handles SysEx, Control
+Change, Program Change, Note On/Off, and Clock messages.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.input_handler.MidiInHandler.update_tone_name">
+<span class="sig-name descname"><span class="pre">update_tone_name</span></span><a class="reference internal" href="_modules/jdxi_editor/midi/io/input_handler.html#MidiInHandler.update_tone_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.input_handler.MidiInHandler.update_tone_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.input_handler.MidiInHandler.update_program_name">
+<span class="sig-name descname"><span class="pre">update_program_name</span></span><a class="reference internal" href="_modules/jdxi_editor/midi/io/input_handler.html#MidiInHandler.update_program_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.input_handler.MidiInHandler.update_program_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.input_handler.MidiInHandler.midi_message_incoming">
+<span class="sig-name descname"><span class="pre">midi_message_incoming</span></span><a class="reference internal" href="_modules/jdxi_editor/midi/io/input_handler.html#MidiInHandler.midi_message_incoming"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.input_handler.MidiInHandler.midi_message_incoming" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.input_handler.MidiInHandler.midi_program_changed">
+<span class="sig-name descname"><span class="pre">midi_program_changed</span></span><a class="reference internal" href="_modules/jdxi_editor/midi/io/input_handler.html#MidiInHandler.midi_program_changed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.input_handler.MidiInHandler.midi_program_changed" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.input_handler.MidiInHandler.midi_control_changed">
+<span class="sig-name descname"><span class="pre">midi_control_changed</span></span><a class="reference internal" href="_modules/jdxi_editor/midi/io/input_handler.html#MidiInHandler.midi_control_changed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.input_handler.MidiInHandler.midi_control_changed" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.input_handler.MidiInHandler.midi_sysex_json">
+<span class="sig-name descname"><span class="pre">midi_sysex_json</span></span><a class="reference internal" href="_modules/jdxi_editor/midi/io/input_handler.html#MidiInHandler.midi_sysex_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.input_handler.MidiInHandler.midi_sysex_json" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.input_handler.MidiInHandler.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/io/input_handler.html#MidiInHandler.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.input_handler.MidiInHandler.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initialize the MIDIInHandler.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>parent</strong> – Optional[Any] parent widget or object.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.input_handler.MidiInHandler.midi_callback">
+<span class="sig-name descname"><span class="pre">midi_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/io/input_handler.html#MidiInHandler.midi_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.input_handler.MidiInHandler.midi_callback" title="Link to this definition"></a></dt>
+<dd><p>callback for rtmidi
+mido doesn’t have callbacks, so we convert
+:param message: list[Any]
+:param data: Any</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.input_handler.MidiInHandler.reopen_input_port_name">
+<span class="sig-name descname"><span class="pre">reopen_input_port_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_port</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/io/input_handler.html#MidiInHandler.reopen_input_port_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.input_handler.MidiInHandler.reopen_input_port_name" title="Link to this definition"></a></dt>
+<dd><p>Reopen the current MIDI input port and reattach the callback.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>in_port</strong> – str</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.input_handler.MidiInHandler.set_callback">
+<span class="sig-name descname"><span class="pre">set_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callback</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.13)"><span class="pre">Callable</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/io/input_handler.html#MidiInHandler.set_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.input_handler.MidiInHandler.set_callback" title="Link to this definition"></a></dt>
+<dd><p>Set address callback for MIDI messages.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>callback</strong> – The callback function to be set.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.input_handler.MidiInHandler.staticMetaObject">
+<span class="sig-name descname"><span class="pre">staticMetaObject</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">PySide6.QtCore.QMetaObject(&quot;MidiInHandler&quot;</span> <span class="pre">inherits</span> <span class="pre">&quot;MidiIOController&quot;:</span> <span class="pre">Methods:</span>&#160;&#160; <span class="pre">#4</span> <span class="pre">type=Signal,</span> <span class="pre">signature=update_tone_name(QString,QString),</span> <span class="pre">parameters=QString,</span> <span class="pre">QString</span>&#160;&#160; <span class="pre">#5</span> <span class="pre">type=Signal,</span> <span class="pre">signature=update_program_name(QString),</span> <span class="pre">parameters=QString</span>&#160;&#160; <span class="pre">#6</span> <span class="pre">type=Signal,</span> <span class="pre">signature=midi_message_incoming(PyObject),</span> <span class="pre">parameters=PyObject</span>&#160;&#160; <span class="pre">#7</span> <span class="pre">type=Signal,</span> <span class="pre">signature=midi_program_changed(int,int),</span> <span class="pre">parameters=int,</span> <span class="pre">int</span>&#160;&#160; <span class="pre">#8</span> <span class="pre">type=Signal,</span> <span class="pre">signature=midi_control_changed(int,int,int),</span> <span class="pre">parameters=int,</span> <span class="pre">int,</span> <span class="pre">int</span>&#160;&#160; <span class="pre">#9</span> <span class="pre">type=Signal,</span> <span class="pre">signature=midi_sysex_json(QString),</span> <span class="pre">parameters=QString</span> <span class="pre">)</span></em><a class="headerlink" href="#jdxi_editor.midi.io.input_handler.MidiInHandler.staticMetaObject" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-jdxi_editor.midi.io.output_handler">
+<span id="jdxi-editor-midi-io-output-handler-module"></span><h2>jdxi_editor.midi.io.output_handler module<a class="headerlink" href="#module-jdxi_editor.midi.io.output_handler" title="Link to this heading"></a></h2>
+<section id="midi-output-handler">
+<h3>MIDI Output Handler<a class="headerlink" href="#midi-output-handler" title="Link to this heading"></a></h3>
+<p>This module provides the <cite>MIDIOutHandler</cite> class for managing MIDI output, allowing users to send
+note-on, note-off, and control change messages through address specified MIDI output port.</p>
+<dl class="simple">
+<dt>Dependencies:</dt><dd><ul class="simple">
+<li><p>rtmidi: A library for working with MIDI messages and ports.</p></li>
+</ul>
+</dd>
+<dt>Example usage:</dt><dd><p>handler = MIDIOutHandler(“MIDI Output Port”)
+handler.send_note_on(60, velocity=100)
+handler.send_note_off(60)
+handler.send_control_change(7, 127)
+handler.close()</p>
+</dd>
+</dl>
+</section>
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.output_handler.MidiOutHandler">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.io.output_handler.</span></span><span class="sig-name descname"><span class="pre">MidiOutHandler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jdxi_editor/midi/io/output_handler.html#MidiOutHandler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.output_handler.MidiOutHandler" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#jdxi_editor.midi.io.controller.MidiIOController" title="jdxi_editor.midi.io.controller.MidiIOController"><code class="xref py py-class docutils literal notranslate"><span class="pre">MidiIOController</span></code></a></p>
+<p>Helper class for MIDI communication with the JD-Xi.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.output_handler.MidiOutHandler.midi_message_outgoing">
+<span class="sig-name descname"><span class="pre">midi_message_outgoing</span></span><a class="reference internal" href="_modules/jdxi_editor/midi/io/output_handler.html#MidiOutHandler.midi_message_outgoing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.output_handler.MidiOutHandler.midi_message_outgoing" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.output_handler.MidiOutHandler.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jdxi_editor/midi/io/output_handler.html#MidiOutHandler.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.output_handler.MidiOutHandler.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initialize the MIDI I/O Controller</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>parent</strong> – QObject, parent object for the controller</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.output_handler.MidiOutHandler.send_raw_message">
+<span class="sig-name descname"><span class="pre">send_raw_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.13)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/io/output_handler.html#MidiOutHandler.send_raw_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.output_handler.MidiOutHandler.send_raw_message" title="Link to this definition"></a></dt>
+<dd><p>Send a validated raw MIDI message through the output port.
+This method logs the message, checks the validity using <cite>validate_midi_message</cite>,
+and attempts to send it via the MIDI output port.
+:param message: A MIDI message represented as a list of integers or a bytes object.
+:type message: Union[bytes, List[int]]
+:return: True if the message was successfully sent, False otherwise.
+:rtype: bool</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.output_handler.MidiOutHandler.send_note_on">
+<span class="sig-name descname"><span class="pre">send_note_on</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">note</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">60</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">velocity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">127</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/io/output_handler.html#MidiOutHandler.send_note_on"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.output_handler.MidiOutHandler.send_note_on" title="Link to this definition"></a></dt>
+<dd><p>Send ‘Note On’ message to the specified MIDI channel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>note</strong> – int MIDI note number (0–127), default is 60 (Middle C).</p></li>
+<li><p><strong>velocity</strong> – int Note velocity (0–127), default is 127.</p></li>
+<li><p><strong>channel</strong> – int MIDI channel (1–16), default is 1.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.output_handler.MidiOutHandler.send_note_off">
+<span class="sig-name descname"><span class="pre">send_note_off</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">note</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">60</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">velocity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/io/output_handler.html#MidiOutHandler.send_note_off"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.output_handler.MidiOutHandler.send_note_off" title="Link to this definition"></a></dt>
+<dd><p>Send address ‘Note Off’ message</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>note</strong> – int MIDI note number (0–127), default is 60 (Middle C).</p></li>
+<li><p><strong>velocity</strong> – int Note velocity (0–127), default is 127.</p></li>
+<li><p><strong>channel</strong> – int MIDI channel (1–16), default is 1.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.output_handler.MidiOutHandler.send_channel_message">
+<span class="sig-name descname"><span class="pre">send_channel_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">status</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">data1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/io/output_handler.html#MidiOutHandler.send_channel_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.output_handler.MidiOutHandler.send_channel_message" title="Link to this definition"></a></dt>
+<dd><p>Send a MIDI Channel Message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>status</strong> – int Status byte (e.g., NOTE_ON, NOTE_OFF, CONTROL_CHANGE).</p></li>
+<li><p><strong>data1</strong> – Optional[int]): First data byte, typically a note or controller number.</p></li>
+<li><p><strong>data2</strong> – Optional[int]): Second data byte, typically velocity or value.</p></li>
+<li><p><strong>channel</strong> – int MIDI channel (1-based, range 1-16).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p>ValueError If the channel is out of range (1-16).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.output_handler.MidiOutHandler.send_bank_select">
+<span class="sig-name descname"><span class="pre">send_bank_select</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">lsb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/io/output_handler.html#MidiOutHandler.send_bank_select"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.output_handler.MidiOutHandler.send_bank_select" title="Link to this definition"></a></dt>
+<dd><p>Send address bank select message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msb</strong> – int Upper byte of the bank.</p></li>
+<li><p><strong>lsb</strong> – int Lower byte of the bank.</p></li>
+<li><p><strong>channel</strong> – int midi channel (0-15).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool True if successful, False otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.output_handler.MidiOutHandler.send_identity_request">
+<span class="sig-name descname"><span class="pre">send_identity_request</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/io/output_handler.html#MidiOutHandler.send_identity_request"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.output_handler.MidiOutHandler.send_identity_request" title="Link to this definition"></a></dt>
+<dd><p>Send identity request message (Universal System Exclusive).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool True if the message was sent successfully, False otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.output_handler.MidiOutHandler.send_midi_message">
+<span class="sig-name descname"><span class="pre">send_midi_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sysex_message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="jdxi_editor.midi.message.html#jdxi_editor.midi.message.midi.MidiMessage" title="jdxi_editor.midi.message.midi.MidiMessage"><span class="pre">MidiMessage</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/io/output_handler.html#MidiOutHandler.send_midi_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.output_handler.MidiOutHandler.send_midi_message" title="Link to this definition"></a></dt>
+<dd><p>Send SysEx parameter change message using a MidiMessage.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>sysex_message</strong> – MidiMessage instance to be converted and sent.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the message was successfully sent, False otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.output_handler.MidiOutHandler.send_program_change">
+<span class="sig-name descname"><span class="pre">send_program_change</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">program</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/io/output_handler.html#MidiOutHandler.send_program_change"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.output_handler.MidiOutHandler.send_program_change" title="Link to this definition"></a></dt>
+<dd><p>Send address program change message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>program</strong> – int Program number (0-127).</p></li>
+<li><p><strong>channel</strong> – int MIDI channel (0-15).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if successful, False otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.output_handler.MidiOutHandler.send_control_change">
+<span class="sig-name descname"><span class="pre">send_control_change</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">controller</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/io/output_handler.html#MidiOutHandler.send_control_change"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.output_handler.MidiOutHandler.send_control_change" title="Link to this definition"></a></dt>
+<dd><p>Send control change message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>controller</strong> – int Controller number (0–127).</p></li>
+<li><p><strong>value</strong> – int Controller value (0–127).</p></li>
+<li><p><strong>channel</strong> – int MIDI channel (0–15).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool True if successful, False otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.output_handler.MidiOutHandler.send_rpn">
+<span class="sig-name descname"><span class="pre">send_rpn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parameter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/io/output_handler.html#MidiOutHandler.send_rpn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.output_handler.MidiOutHandler.send_rpn" title="Link to this definition"></a></dt>
+<dd><p>Send a Registered Parameter Number (RPN) message via MIDI Control Change.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>parameter</strong> – int RPN parameter number (0–16383).</p></li>
+<li><p><strong>value</strong> – int Parameter value (0–16383).</p></li>
+<li><p><strong>channel</strong> – int MIDI channel (0–15).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if messages sent successfully, False otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.output_handler.MidiOutHandler.send_nrpn">
+<span class="sig-name descname"><span class="pre">send_nrpn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parameter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_14bit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/io/output_handler.html#MidiOutHandler.send_nrpn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.output_handler.MidiOutHandler.send_nrpn" title="Link to this definition"></a></dt>
+<dd><p>Send a Non-Registered Parameter Number (NRPN) message via MIDI Control Change.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>parameter</strong> – int NRPN parameter number (0–16383).</p></li>
+<li><p><strong>value</strong> – int Parameter value (0–16383 for 14-bit, 0–127 for 7-bit).</p></li>
+<li><p><strong>channel</strong> – int MIDI channel (0–15).</p></li>
+<li><p><strong>use_14bit</strong> – bool If True, send both MSB and LSB for value (14-bit). If False, send only MSB (7-bit).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if all messages were sent successfully, False otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.output_handler.MidiOutHandler.send_bank_select_and_program_change">
+<span class="sig-name descname"><span class="pre">send_bank_select_and_program_change</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">bank_msb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">bank_lsb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">program</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/io/output_handler.html#MidiOutHandler.send_bank_select_and_program_change"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.output_handler.MidiOutHandler.send_bank_select_and_program_change" title="Link to this definition"></a></dt>
+<dd><p>Sends Bank Select and Program Change messages.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>channel</strong> – int MIDI channel (1-16).</p></li>
+<li><p><strong>bank_msb</strong> – int Bank MSB value.</p></li>
+<li><p><strong>bank_lsb</strong> – int Bank LSB value.</p></li>
+<li><p><strong>program</strong> – int Program number.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool True if all messages are sent successfully, False otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.output_handler.MidiOutHandler.identify_device">
+<span class="sig-name descname"><span class="pre">identify_device</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/io/output_handler.html#MidiOutHandler.identify_device"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.output_handler.MidiOutHandler.identify_device" title="Link to this definition"></a></dt>
+<dd><p>Send Identity Request and verify response</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.output_handler.MidiOutHandler.send_message">
+<span class="sig-name descname"><span class="pre">send_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="jdxi_editor.midi.message.html#jdxi_editor.midi.message.midi.MidiMessage" title="jdxi_editor.midi.message.midi.MidiMessage"><span class="pre">MidiMessage</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/io/output_handler.html#MidiOutHandler.send_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.output_handler.MidiOutHandler.send_message" title="Link to this definition"></a></dt>
+<dd><p>unpack the message list and send it</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>message</strong> – MidiMessage</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.output_handler.MidiOutHandler.staticMetaObject">
+<span class="sig-name descname"><span class="pre">staticMetaObject</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">PySide6.QtCore.QMetaObject(&quot;MidiOutHandler&quot;</span> <span class="pre">inherits</span> <span class="pre">&quot;MidiIOController&quot;:</span> <span class="pre">Methods:</span>&#160;&#160; <span class="pre">#4</span> <span class="pre">type=Signal,</span> <span class="pre">signature=midi_message_outgoing(PyObject),</span> <span class="pre">parameters=PyObject</span> <span class="pre">)</span></em><a class="headerlink" href="#jdxi_editor.midi.io.output_handler.MidiOutHandler.staticMetaObject" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-jdxi_editor.midi.io.utils">
+<span id="jdxi-editor-midi-io-utils-module"></span><h2>jdxi_editor.midi.io.utils module<a class="headerlink" href="#module-jdxi_editor.midi.io.utils" title="Link to this heading"></a></h2>
+<p>utility functions</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.utils.format_midi_message_to_hex_string">
+<span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.io.utils.</span></span><span class="sig-name descname"><span class="pre">format_midi_message_to_hex_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.13)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/io/utils.html#format_midi_message_to_hex_string"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.utils.format_midi_message_to_hex_string" title="Link to this definition"></a></dt>
+<dd><p>Convert a list of MIDI byte values to a space-separated hex string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>message</strong> – Iterable[int]</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>str A string like “F0 41 10 00 00 00 0E … F7”</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.utils.increment_if_lsb_exceeds_7bit">
+<span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.io.utils.</span></span><span class="sig-name descname"><span class="pre">increment_if_lsb_exceeds_7bit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">lsb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/io/utils.html#increment_if_lsb_exceeds_7bit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.utils.increment_if_lsb_exceeds_7bit" title="Link to this definition"></a></dt>
+<dd><p>Increments the MSB if the LSB exceeds 7-bit maximum (127).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msb</strong> – Most significant byte (int)</p></li>
+<li><p><strong>lsb</strong> – Least significant byte (int)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Adjusted MSB (int)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.utils.nibble_data">
+<span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.io.utils.</span></span><span class="sig-name descname"><span class="pre">nibble_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/io/utils.html#nibble_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.utils.nibble_data" title="Link to this definition"></a></dt>
+<dd><p>Ensures all values in the data list are 7-bit safe (0–127).
+Bytes &gt; 127 are split into two 4-bit nibbles.
+:param data: List of integer byte values (0–255)
+:return: List of 7-bit-safe integers (0–127)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.utils.rtmidi_to_mido">
+<span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.io.utils.</span></span><span class="sig-name descname"><span class="pre">rtmidi_to_mido</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">byte_message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><span class="pre">bytes</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Message</span></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/io/utils.html#rtmidi_to_mido"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.utils.rtmidi_to_mido" title="Link to this definition"></a></dt>
+<dd><p>Convert an rtmidi message to address mido message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>byte_message</strong> – bytes</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Union[bool, mido.Message]: mido message on success or False otherwise</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.utils.convert_to_mido_message">
+<span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.io.utils.</span></span><span class="sig-name descname"><span class="pre">convert_to_mido_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message_content</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Message</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Message</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/io/utils.html#convert_to_mido_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.utils.convert_to_mido_message" title="Link to this definition"></a></dt>
+<dd><p>Convert raw MIDI message content to a mido.Message object or a list of them.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>message_content</strong> – List[int] byte list</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Optional[Union[mido.Message, List[mido.Message]] either a single mido message or a list of mido messages</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.utils.mido_message_data_to_byte_list">
+<span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.io.utils.</span></span><span class="sig-name descname"><span class="pre">mido_message_data_to_byte_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Message</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><span class="pre">bytes</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/io/utils.html#mido_message_data_to_byte_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.utils.mido_message_data_to_byte_list" title="Link to this definition"></a></dt>
+<dd><p>mido message data to byte list</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>message</strong> – mido.Message</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>bytes</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jdxi_editor.midi.io.utils.handle_identity_request">
+<span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.io.utils.</span></span><span class="sig-name descname"><span class="pre">handle_identity_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Message</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/io/utils.html#handle_identity_request"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.io.utils.handle_identity_request" title="Link to this definition"></a></dt>
+<dd><p>Handles an incoming Identity Request</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>message</strong> – mido.Message incoming response to identity request</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict device details</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-jdxi_editor.midi.io">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-jdxi_editor.midi.io" title="Link to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="jdxi_editor.midi.data.vocal_effects.html" class="btn btn-neutral float-left" title="jdxi_editor.midi.data.vocal_effects package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="jdxi_editor.midi.map.html" class="btn btn-neutral float-right" title="jdxi_editor.midi.map package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Mark Mrooks.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

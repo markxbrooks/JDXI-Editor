@@ -1,0 +1,809 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Drum Kit Editor &mdash; JD-Xi Editor 0.8.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=486e5634"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Additional Editors" href="additional-editors.html" />
+    <link rel="prev" title="Analog Synth Editor" href="analog_synth.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            JD-Xi Editor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#what-is-jdxi-editor">What is JDXI-Editor?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#key-features-capabilities">Key Features &amp; Capabilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#architecture-technology">Architecture &amp; Technology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#why-use-jdxi-editor">Why Use JDXI-Editor?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#getting-started">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#system-requirements">System Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#installation-methods">Installation Methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#method-1-pre-built-packages-recommended">Method 1: Pre-Built Packages (Recommended)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#method-2-python-package-installation">Method 2: Python Package Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#method-3-source-code-installation">Method 3: Source Code Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#method-4-development-setup">Method 4: Development Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#post-installation-setup">Post-Installation Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#troubleshooting">Troubleshooting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#getting-help">Getting Help</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html">Quick Start Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#what-you-ll-learn">What You’ll Learn</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#hardware-setup">Hardware Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#software-launch">Software Launch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#interface-overview">Interface Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#your-first-sound-creation">Your First Sound Creation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#essential-workflows">Essential Workflows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#quick-tips-for-success">Quick Tips for Success</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#common-issues-and-solutions">Common Issues and Solutions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#next-steps">Next Steps</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="editor-windows.html">Editor Windows</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="instrument.html">JDXi Instrument Window</a></li>
+<li class="toctree-l2"><a class="reference internal" href="instrument.html#what-is-the-jdxi-instrument-window">What is the JDXi Instrument Window?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="instrument.html#core-architecture-components">Core Architecture &amp; Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="instrument.html#key-features-capabilities">Key Features &amp; Capabilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="instrument.html#user-interface-components">User Interface Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="instrument.html#workflow-integration">Workflow Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="instrument.html#technical-specifications">Technical Specifications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="instrument.html#getting-started-with-the-instrument-window">Getting Started with the Instrument Window</a></li>
+<li class="toctree-l2"><a class="reference internal" href="editor.html">Editor Windows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="editor.html#what-are-the-editor-windows">What are the Editor Windows?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="editor.html#core-architecture-design">Core Architecture &amp; Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="editor.html#available-editors">Available Editors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="editor.html#getting-started-with-editor-windows">Getting Started with Editor Windows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="digital_synth.html">Digital Synth Editors (Parts 1 &amp; 2)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="digital_synth.html#what-are-the-digital-synth-editors">What are the Digital Synth Editors?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="digital_synth.html#core-architecture-design">Core Architecture &amp; Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="digital_synth.html#digital-synth-editor-features">Digital Synth Editor Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="digital_synth.html#partial-management-system">Partial Management System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="digital_synth.html#performance-features">Performance Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="digital_synth.html#visual-feedback-monitoring">Visual Feedback &amp; Monitoring</a></li>
+<li class="toctree-l2"><a class="reference internal" href="digital_synth.html#getting-started-with-digital-synth-editors">Getting Started with Digital Synth Editors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analog_synth.html">Analog Synth Editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analog_synth.html#what-is-the-analog-synth-editor">What is the Analog Synth Editor?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analog_synth.html#core-architecture-design">Core Architecture &amp; Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analog_synth.html#analog-synth-editor-features">Analog Synth Editor Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analog_synth.html#analog-synthesis-characteristics">Analog Synthesis Characteristics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analog_synth.html#advanced-features">Advanced Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analog_synth.html#performance-features">Performance Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analog_synth.html#getting-started-with-analog-synth-editor">Getting Started with Analog Synth Editor</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Drum Kit Editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#what-is-the-drum-kit-editor">What is the Drum Kit Editor?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#core-architecture-design">Core Architecture &amp; Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#drum-kit-editor-features">Drum Kit Editor Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#kit-management-system">Kit Management System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#advanced-sound-design">Advanced Sound Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#visual-feedback-monitoring">Visual Feedback &amp; Monitoring</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#getting-started-with-drum-kit-editor">Getting Started with Drum Kit Editor</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="additional-editors.html">Additional Editors</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="arpeggiator.html">Arpeggiator Editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arpeggiator.html#what-is-the-arpeggiator-editor">What is the Arpeggiator Editor?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arpeggiator.html#core-architecture-design">Core Architecture &amp; Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arpeggiator.html#arpeggiator-editor-features">Arpeggiator Editor Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arpeggiator.html#advanced-pattern-features">Advanced Pattern Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arpeggiator.html#sequencing-tools">Sequencing Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arpeggiator.html#musical-integration">Musical Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arpeggiator.html#getting-started-with-arpeggiator-editor">Getting Started with Arpeggiator Editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="effects.html">Effects Editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="effects.html#what-is-the-effects-editor">What is the Effects Editor?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="effects.html#core-architecture-design">Core Architecture &amp; Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="effects.html#effects-editor-features">Effects Editor Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="effects.html#advanced-processing">Advanced Processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="effects.html#performance-integration">Performance Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="effects.html#visual-feedback-monitoring">Visual Feedback &amp; Monitoring</a></li>
+<li class="toctree-l2"><a class="reference internal" href="effects.html#getting-started-with-effects-editor">Getting Started with Effects Editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vocal_effects.html">Vocal Effects Editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vocal_effects.html#what-is-the-vocal-effects-editor">What is the Vocal Effects Editor?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vocal_effects.html#core-architecture-design">Core Architecture &amp; Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vocal_effects.html#vocal-effects-editor-features">Vocal Effects Editor Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vocal_effects.html#advanced-vocal-processing">Advanced Vocal Processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vocal_effects.html#performance-features">Performance Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vocal_effects.html#visual-feedback-monitoring">Visual Feedback &amp; Monitoring</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vocal_effects.html#getting-started-with-vocal-effects-editor">Getting Started with Vocal Effects Editor</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="playing-midi-files.html">Playing MIDI Files</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pattern_sequencer.html">Pattern Sequencer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pattern_sequencer.html#what-is-the-pattern-sequencer">What is the Pattern Sequencer?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pattern_sequencer.html#core-architecture-design">Core Architecture &amp; Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pattern_sequencer.html#pattern-sequencer-features">Pattern Sequencer Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pattern_sequencer.html#advanced-pattern-features">Advanced Pattern Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pattern_sequencer.html#performance-features">Performance Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pattern_sequencer.html#creative-tools">Creative Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pattern_sequencer.html#visual-feedback-monitoring">Visual Feedback &amp; Monitoring</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pattern_sequencer.html#getting-started-with-pattern-sequencer">Getting Started with Pattern Sequencer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="midi_file_player.html">MIDI File Player &amp; Recorder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="midi_file_player.html#what-is-the-midi-file-player-recorder">What is the MIDI File Player &amp; Recorder?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="midi_file_player.html#core-architecture-design">Core Architecture &amp; Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="midi_file_player.html#midi-file-player-features">MIDI File Player Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="midi_file_player.html#production-tools">Production Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="midi_file_player.html#advanced-features">Advanced Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="midi_file_player.html#performance-features">Performance Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="midi_file_player.html#visual-feedback-monitoring">Visual Feedback &amp; Monitoring</a></li>
+<li class="toctree-l2"><a class="reference internal" href="midi_file_player.html#getting-started-with-midi-file-player-recorder">Getting Started with MIDI File Player &amp; Recorder</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#id1">Troubleshooting</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="legal.html">Legal Disclaimer</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">jdxi_editor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.html">jdxi_editor package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.html">jdxi_editor.jdxi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.log.html">jdxi_editor.log package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.midi.html">jdxi_editor.midi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.ui.html">jdxi_editor.ui package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.html#module-jdxi_editor.globals">jdxi_editor.globals module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.html#module-jdxi_editor.main">jdxi_editor.main module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.html#jdxi_editor.main.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.html#jdxi_editor.main.setup_splash_screen"><code class="docutils literal notranslate"><span class="pre">setup_splash_screen()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.html#module-jdxi_editor.project">jdxi_editor.project module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.html#module-jdxi_editor.resources">jdxi_editor.resources module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.html#jdxi_editor.resources.resource_path"><code class="docutils literal notranslate"><span class="pre">resource_path()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.html#module-jdxi_editor">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="autoapi/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/midi/index.html">midi</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/midi/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/midi/colors/index.html">midi.colors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/midi/slider/index.html">midi.slider</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/midi/spin_box/index.html">midi.spin_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/midi/time_ruler/index.html">midi.time_ruler</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/midi/track/index.html">midi.track</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/midi/track_viewer/index.html">midi.track_viewer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/midi/utils/index.html">midi.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/adsr/index.html">adsr</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/adsr/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/adsr/adsr/index.html">adsr.adsr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/adsr/graph/index.html">adsr.graph</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/adsr/parameter/index.html">adsr.parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/adsr/plot/index.html">adsr.plot</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/pitch/index.html">pitch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/pitch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/pitch/envelope/index.html">pitch.envelope</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/pitch/envelope_plot/index.html">pitch.envelope_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/pitch/pwm_plot/index.html">pitch.pwm_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/pitch/slider_spinbox/index.html">pitch.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/piano/index.html">piano</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/piano/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/piano/key/index.html">piano.key</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/piano/keyboard/index.html">piano.keyboard</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/panel/index.html">panel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/panel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/panel/partial/index.html">panel.partial</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/wheel/index.html">wheel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/wheel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/wheel/mod/index.html">wheel.mod</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/wheel/pitch/index.html">wheel.pitch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/wheel/wheel/index.html">wheel.wheel</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/preset/index.html">preset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/preset/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/preset/combo_box/index.html">preset.combo_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/preset/panel/index.html">preset.panel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/preset/patch_name/index.html">preset.patch_name</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/slider/index.html">slider</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/slider/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/slider/slider/index.html">slider.slider</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/slider/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/slider/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/slider/index.html#slider.Slider"><code class="docutils literal notranslate"><span class="pre">Slider</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/dialog/index.html">dialog</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/dialog/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/dialog/progress/index.html">dialog.progress</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/viewer/index.html">viewer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/viewer/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/viewer/log/index.html">viewer.log</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/button/index.html">button</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/button/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/button/channel/index.html">button.channel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/button/favorite/index.html">button.favorite</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/button/sequencer/index.html">button.sequencer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/button/waveform/index.html">button.waveform</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/button/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/button/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/button/index.html#button.ChannelButton"><code class="docutils literal notranslate"><span class="pre">ChannelButton</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/button/index.html#button.SequencerSquare"><code class="docutils literal notranslate"><span class="pre">SequencerSquare</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/switch/index.html">switch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/switch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/switch/partial/index.html">switch.partial</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/switch/switch/index.html">switch.switch</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/filter/index.html">filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/filter/index.html#filter.FilterWidget"><code class="docutils literal notranslate"><span class="pre">FilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/display/index.html">display</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/display/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/display/digital/index.html">display.digital</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/display/pattern/index.html">display.pattern</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/display/value/index.html">display.value</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/pattern/index.html">pattern</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/pattern/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/pattern/measure/index.html">pattern.measure</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/spin_box/index.html">spin_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/spin_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/spin_box/spin_box/index.html">spin_box.spin_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/envelope/index.html">envelope</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/envelope/base/index.html">envelope.base</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/indicator/index.html">indicator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/indicator/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/indicator/led/index.html">indicator.led</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/indicator/midi/index.html">indicator.midi</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/combo_box/index.html">combo_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/combo_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/combo_box/combo_box/index.html">combo_box.combo_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/jdxi_editor/index.html">jdxi_editor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/jdxi_editor/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/globals/index.html">jdxi_editor.globals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/jdxi/index.html">jdxi_editor.jdxi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/log/index.html">jdxi_editor.log</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/main/index.html">jdxi_editor.main</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/midi/index.html">jdxi_editor.midi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/project/index.html">jdxi_editor.project</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/resources/index.html">jdxi_editor.resources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/ui/index.html">jdxi_editor.ui</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/filter_plot/index.html">filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/filter_plot/index.html#filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/filter_plot/index.html#filter_plot.FilterPlot"><code class="docutils literal notranslate"><span class="pre">FilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/envelope_plot/index.html">envelope_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope_plot/index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/envelope_plot/index.html#envelope_plot.midi_value_to_float"><code class="docutils literal notranslate"><span class="pre">midi_value_to_float()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/envelope_plot/index.html#envelope_plot.WMTEnvPlot"><code class="docutils literal notranslate"><span class="pre">WMTEnvPlot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/envelope_plot/index.html#envelope_plot.app"><code class="docutils literal notranslate"><span class="pre">app</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/wave_selector/index.html">wave_selector</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/wave_selector/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/wave_selector/wave_selector/index.html">wave_selector.wave_selector</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/analog_filter/index.html">analog_filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/analog_filter/index.html#analog_filter.AnalogFilterWidget"><code class="docutils literal notranslate"><span class="pre">AnalogFilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/slider_spinbox/index.html">slider_spinbox</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/slider_spinbox/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/slider_spinbox/slider_spinbox/index.html">slider_spinbox.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/analog_filter_plot/index.html">analog_filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#analog_filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#analog_filter_plot.AnalogFilterPlot"><code class="docutils literal notranslate"><span class="pre">AnalogFilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">JD-Xi Editor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="editor-windows.html">Editor Windows</a></li>
+      <li class="breadcrumb-item active">Drum Kit Editor</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/drum_kit.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="drum-kit-editor">
+<h1>Drum Kit Editor<a class="headerlink" href="#drum-kit-editor" title="Link to this heading"></a></h1>
+<p>The <strong>Drum Kit Editor</strong> provides comprehensive control over the JD-Xi’s drum synthesis engine, offering professional drum sound design and kit management capabilities. This powerful editor transforms your JD-Xi’s drum synthesis into a professional-grade percussion workstation.</p>
+<p>Built with advanced Qt6 technology and featuring real-time parameter control, the Drum Kit Editor serves as your primary workspace for creating, editing, and managing sophisticated drum sounds with the precision and control of modern software synthesizers.</p>
+</section>
+<section id="what-is-the-drum-kit-editor">
+<h1>What is the Drum Kit Editor?<a class="headerlink" href="#what-is-the-drum-kit-editor" title="Link to this heading"></a></h1>
+<p>The Drum Kit Editor is a specialized interface that provides deep, granular control over the JD-Xi’s drum synthesis engine. Unlike the limited hardware interface, this editor offers expansive, visual control over every parameter with real-time feedback, advanced organization tools, and professional-grade editing capabilities.</p>
+<p>The editor represents a dedicated workspace optimized for drum sound design, from basic voice control to complex kit management. The editor automatically synchronizes with your JD-Xi hardware, ensuring that every change is instantly reflected in your synthesizer’s sound.</p>
+</section>
+<section id="core-architecture-design">
+<h1>Core Architecture &amp; Design<a class="headerlink" href="#core-architecture-design" title="Link to this heading"></a></h1>
+<dl class="simple">
+<dt><strong>🥁 36 Individual Drum Voices</strong></dt><dd><p>The Drum Kit Editor features a comprehensive voice management system:
+- <strong>Complete Voice Control</strong>: Individual control over each of the 36 drum sounds
+- <strong>Advanced Voice Shaping</strong>: Pitch, filter, envelope, and effects per voice
+- <strong>Kit Organization</strong>: Custom drum kit creation and management
+- <strong>Performance Features</strong>: Real-time voice switching and parameter control</p>
+</dd>
+<dt>** Advanced Parameter Management**</dt><dd><ul class="simple">
+<li><p><strong>Comprehensive Parameter Mapping</strong>: Every drum voice parameter is accessible through intuitive controls</p></li>
+<li><p><strong>Real-time Updates</strong>: Instant parameter changes with immediate hardware response</p></li>
+<li><p><strong>Visual Feedback</strong>: Live parameter displays, value indicators, and status monitoring</p></li>
+<li><p><strong>Preset Integration</strong>: Seamless loading, saving, and management of your custom drum kits</p></li>
+</ul>
+</dd>
+<dt>** Professional Workflow Tools**</dt><dd><ul class="simple">
+<li><p><strong>Multi-Voice Support</strong>: Work with multiple drum voices simultaneously</p></li>
+<li><p><strong>Advanced Organization</strong>: Categorize, search, and manage your drum library</p></li>
+<li><p><strong>Project Integration</strong>: Export and import drum kits for use in your DAW</p></li>
+<li><p><strong>Performance Optimization</strong>: Low-latency response for live performance and recording</p></li>
+</ul>
+</dd>
+</dl>
+</section>
+<section id="drum-kit-editor-features">
+<h1>Drum Kit Editor Features<a class="headerlink" href="#drum-kit-editor-features" title="Link to this heading"></a></h1>
+<dl>
+<dt><strong>Individual Voice Control</strong></dt><dd><p>Complete control over each of the 36 drum voices:</p>
+<dl class="simple">
+<dt><strong>Voice Selection</strong></dt><dd><ul class="simple">
+<li><p><strong>Voice List</strong>: Complete list of all 36 drum voices</p></li>
+<li><p><strong>Voice Categories</strong>: Organized by drum type (kick, snare, hi-hat, etc.)</p></li>
+<li><p><strong>Voice Preview</strong>: Real-time preview of selected voices</p></li>
+<li><p><strong>Voice Management</strong>: Enable/disable individual voices</p></li>
+</ul>
+</dd>
+<dt><strong>Voice Parameters</strong></dt><dd><ul class="simple">
+<li><p><strong>Pitch Control</strong>: Precise pitch adjustment for each voice</p></li>
+<li><p><strong>Filter Control</strong>: Individual filter settings per voice</p></li>
+<li><p><strong>Envelope Control</strong>: ADSR settings for each voice</p></li>
+<li><p><strong>Effect Control</strong>: Individual effects per voice</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+<dt><strong>Sound Design Tools</strong></dt><dd><p>Advanced tools for shaping drum sounds:</p>
+<dl class="simple">
+<dt><strong>Pitch Control</strong></dt><dd><ul class="simple">
+<li><p><strong>Pitch Adjustment</strong>: Fine and coarse pitch control</p></li>
+<li><p><strong>Pitch Modulation</strong>: LFO and envelope modulation of pitch</p></li>
+<li><p><strong>Pitch Envelope</strong>: Dedicated pitch envelope per voice</p></li>
+<li><p><strong>Pitch Scaling</strong>: Keyboard scaling for pitched drums</p></li>
+</ul>
+</dd>
+<dt><strong>Filter Processing</strong></dt><dd><ul class="simple">
+<li><p><strong>Filter Types</strong>: Low-pass, high-pass, and band-pass filters</p></li>
+<li><p><strong>Cutoff Control</strong>: Real-time filter cutoff adjustment</p></li>
+<li><p><strong>Resonance Control</strong>: Filter emphasis and character</p></li>
+<li><p><strong>Filter Modulation</strong>: LFO and envelope modulation of filter</p></li>
+</ul>
+</dd>
+<dt><strong>Envelope Shaping</strong></dt><dd><ul class="simple">
+<li><p><strong>ADSR Controls</strong>: Attack, decay, sustain, and release</p></li>
+<li><p><strong>Envelope Types</strong>: Different envelope shapes per voice</p></li>
+<li><p><strong>Envelope Modulation</strong>: Modulation of envelope parameters</p></li>
+<li><p><strong>Envelope Scaling</strong>: Time and level scaling</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+<dt><strong>Effects Processing</strong></dt><dd><p>Individual effects processing per drum voice:</p>
+<dl class="simple">
+<dt><strong>Effect Types</strong></dt><dd><ul class="simple">
+<li><p><strong>Distortion</strong>: Harmonic enhancement and saturation</p></li>
+<li><p><strong>Compression</strong>: Dynamic control and punch</p></li>
+<li><p><strong>EQ</strong>: Frequency shaping and tone control</p></li>
+<li><p><strong>Reverb</strong>: Spatial effects and ambience</p></li>
+</ul>
+</dd>
+<dt><strong>Effect Parameters</strong></dt><dd><ul class="simple">
+<li><p><strong>Real-time Control</strong>: Live parameter manipulation</p></li>
+<li><p><strong>Effect Routing</strong>: Flexible effect chain routing</p></li>
+<li><p><strong>Preset Management</strong>: Save and recall effect settings</p></li>
+<li><p><strong>Performance Integration</strong>: Optimized for live performance</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+<section id="kit-management-system">
+<h1>Kit Management System<a class="headerlink" href="#kit-management-system" title="Link to this heading"></a></h1>
+<dl>
+<dt><strong>Kit Organization</strong></dt><dd><p>Advanced organization and management of drum kits:</p>
+<dl class="simple">
+<dt><strong>Kit Structure</strong></dt><dd><ul class="simple">
+<li><p><strong>Kit Layout</strong>: Visual representation of drum kit layout</p></li>
+<li><p><strong>Voice Assignment</strong>: Assign voices to specific kit positions</p></li>
+<li><p><strong>Kit Naming</strong>: Custom names for drum kits</p></li>
+<li><p><strong>Kit Categories</strong>: Organize kits by style or genre</p></li>
+</ul>
+</dd>
+<dt><strong>Kit Operations</strong></dt><dd><ul class="simple">
+<li><p><strong>Save Kit</strong>: Save current kit configuration</p></li>
+<li><p><strong>Load Kit</strong>: Load existing drum kits</p></li>
+<li><p><strong>Copy Kit</strong>: Duplicate existing kits</p></li>
+<li><p><strong>Delete Kit</strong>: Remove unwanted kits</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+<dt><strong>Voice Management</strong></dt><dd><p>Comprehensive control over individual drum voices:</p>
+<dl class="simple">
+<dt><strong>Voice Assignment</strong></dt><dd><ul class="simple">
+<li><p><strong>Kit Positions</strong>: Assign voices to specific kit positions</p></li>
+<li><p><strong>Voice Mapping</strong>: Custom voice-to-key mapping</p></li>
+<li><p><strong>Velocity Layers</strong>: Multiple velocity layers per voice</p></li>
+<li><p><strong>Voice Groups</strong>: Group related voices together</p></li>
+</ul>
+</dd>
+<dt><strong>Voice Editing</strong></dt><dd><ul class="simple">
+<li><p><strong>Individual Editing</strong>: Edit each voice independently</p></li>
+<li><p><strong>Bulk Editing</strong>: Edit multiple voices simultaneously</p></li>
+<li><p><strong>Voice Copying</strong>: Copy settings between voices</p></li>
+<li><p><strong>Voice Templates</strong>: Use voice templates for consistency</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+<dt><strong>Performance Features</strong></dt><dd><p>Real-time voice switching and parameter control:</p>
+<dl class="simple">
+<dt><strong>Live Performance</strong></dt><dd><ul class="simple">
+<li><p><strong>Real-time Updates</strong>: Immediate parameter changes</p></li>
+<li><p><strong>Voice Switching</strong>: Quick voice changes during performance</p></li>
+<li><p><strong>Parameter Control</strong>: Live manipulation of voice parameters</p></li>
+<li><p><strong>Kit Switching</strong>: Quick kit changes during performance</p></li>
+</ul>
+</dd>
+<dt><strong>Performance Modes</strong></dt><dd><ul class="simple">
+<li><p><strong>Live Mode</strong>: Optimized for real-time performance</p></li>
+<li><p><strong>Edit Mode</strong>: Detailed parameter editing</p></li>
+<li><p><strong>Preset Mode</strong>: Quick preset switching</p></li>
+<li><p><strong>Learn Mode</strong>: MIDI controller learning</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+<section id="advanced-sound-design">
+<h1>Advanced Sound Design<a class="headerlink" href="#advanced-sound-design" title="Link to this heading"></a></h1>
+<dl>
+<dt><strong>Multi-Voice Layering</strong></dt><dd><p>Sophisticated layering of multiple drum voices:</p>
+<dl class="simple">
+<dt><strong>Layer Management</strong></dt><dd><ul class="simple">
+<li><p><strong>Voice Layering</strong>: Layer multiple voices for complex sounds</p></li>
+<li><p><strong>Layer Mixing</strong>: Balance between layered voices</p></li>
+<li><p><strong>Layer Effects</strong>: Individual effects per layer</p></li>
+<li><p><strong>Layer Automation</strong>: Automate layer parameters</p></li>
+</ul>
+</dd>
+<dt><strong>Layer Control</strong></dt><dd><ul class="simple">
+<li><p><strong>Layer Selection</strong>: Choose which voices to layer</p></li>
+<li><p><strong>Layer Balance</strong>: Control the balance between layers</p></li>
+<li><p><strong>Layer Effects</strong>: Apply effects to individual layers</p></li>
+<li><p><strong>Layer Automation</strong>: Automate layer parameters</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+<dt><strong>Cross-Modulation</strong></dt><dd><p>Advanced modulation between drum voices:</p>
+<dl class="simple">
+<dt><strong>Modulation Sources</strong></dt><dd><ul class="simple">
+<li><p><strong>LFO</strong>: Low-frequency oscillator modulation</p></li>
+<li><p><strong>Envelope</strong>: Envelope follower modulation</p></li>
+<li><p><strong>External</strong>: MIDI controller modulation</p></li>
+<li><p><strong>Internal</strong>: Voice-to-voice modulation</p></li>
+</ul>
+</dd>
+<dt><strong>Modulation Destinations</strong></dt><dd><ul class="simple">
+<li><p><strong>Pitch</strong>: Frequency modulation</p></li>
+<li><p><strong>Filter</strong>: Cutoff and resonance modulation</p></li>
+<li><p><strong>Amplitude</strong>: Volume modulation</p></li>
+<li><p><strong>Effects</strong>: Effect parameter modulation</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+<dt><strong>Creative Sound Design</strong></dt><dd><p>Advanced tools for unique drum sounds:</p>
+<dl class="simple">
+<dt><strong>Sound Shaping</strong></dt><dd><ul class="simple">
+<li><p><strong>Waveform Editing</strong>: Custom waveform creation</p></li>
+<li><p><strong>Harmonic Control</strong>: Control harmonic content</p></li>
+<li><p><strong>Noise Generation</strong>: Add noise elements to sounds</p></li>
+<li><p><strong>Resonance Control</strong>: Control drum resonance</p></li>
+</ul>
+</dd>
+<dt><strong>Experimental Features</strong></dt><dd><ul class="simple">
+<li><p><strong>Granular Synthesis</strong>: Granular processing of drum sounds</p></li>
+<li><p><strong>Spectral Processing</strong>: Frequency domain manipulation</p></li>
+<li><p><strong>Time Stretching</strong>: Time-based manipulation</p></li>
+<li><p><strong>Pitch Shifting</strong>: Pitch-based manipulation</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+<section id="visual-feedback-monitoring">
+<h1>Visual Feedback &amp; Monitoring<a class="headerlink" href="#visual-feedback-monitoring" title="Link to this heading"></a></h1>
+<dl>
+<dt><strong>Real-time Visualization</strong></dt><dd><p>Live display of drum sounds and parameter relationships:</p>
+<dl class="simple">
+<dt><strong>Waveform Display</strong></dt><dd><ul class="simple">
+<li><p><strong>Live Waveforms</strong>: Real-time waveform visualization</p></li>
+<li><p><strong>Spectrum Analysis</strong>: Frequency domain display</p></li>
+<li><p><strong>Waveform Comparison</strong>: Compare different voices</p></li>
+<li><p><strong>Custom Waveforms</strong>: Display user-defined waveforms</p></li>
+</ul>
+</dd>
+<dt><strong>Envelope Visualization</strong></dt><dd><ul class="simple">
+<li><p><strong>ADSR Display</strong>: Visual representation of envelope stages</p></li>
+<li><p><strong>Envelope Editing</strong>: Graphical envelope editing</p></li>
+<li><p><strong>Envelope Comparison</strong>: Compare different envelopes</p></li>
+<li><p><strong>Envelope Automation</strong>: Visual automation display</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+<dt><strong>Parameter Monitoring</strong></dt><dd><p>Comprehensive display of current settings and parameter relationships:</p>
+<dl class="simple">
+<dt><strong>Value Displays</strong></dt><dd><ul class="simple">
+<li><p><strong>Numerical Values</strong>: Precise parameter values</p></li>
+<li><p><strong>Bar Graphs</strong>: Visual parameter levels</p></li>
+<li><p><strong>Meters</strong>: Real-time level monitoring</p></li>
+<li><p><strong>Status Indicators</strong>: Parameter state indicators</p></li>
+</ul>
+</dd>
+<dt><strong>Relationship Display</strong></dt><dd><ul class="simple">
+<li><p><strong>Modulation Matrix</strong>: Visual modulation routing</p></li>
+<li><p><strong>Signal Flow</strong>: Audio signal path display</p></li>
+<li><p><strong>Parameter Dependencies</strong>: Show parameter relationships</p></li>
+<li><p><strong>Effect Chain</strong>: Visual effects routing</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+<section id="getting-started-with-drum-kit-editor">
+<h1>Getting Started with Drum Kit Editor<a class="headerlink" href="#getting-started-with-drum-kit-editor" title="Link to this heading"></a></h1>
+<dl class="simple">
+<dt><strong>Initial Setup</strong></dt><dd><ol class="arabic simple">
+<li><p><strong>Launch Drum Kit Editor</strong>: Open the Drum Kit Editor from the main interface</p></li>
+<li><p><strong>Load a Kit</strong>: Start with a factory drum kit to understand the interface</p></li>
+<li><p><strong>Explore Voices</strong>: Familiarize yourself with the available drum voices</p></li>
+<li><p><strong>Test Your Changes</strong>: Play notes using the virtual keyboard or MIDI controller</p></li>
+</ol>
+</dd>
+<dt><strong>Basic Workflow</strong></dt><dd><ol class="arabic simple">
+<li><p><strong>Choose a Voice</strong>: Select a drum voice to edit</p></li>
+<li><p><strong>Adjust Parameters</strong>: Use sliders, knobs, and controls to modify settings</p></li>
+<li><p><strong>Test Your Changes</strong>: Play the voice to hear your modifications</p></li>
+<li><p><strong>Save Your Work</strong>: Use the kit management system to save your creations</p></li>
+</ol>
+</dd>
+<dt><strong>Advanced Techniques</strong></dt><dd><ul class="simple">
+<li><p><strong>Voice Layering</strong>: Layer multiple voices for complex sounds</p></li>
+<li><p><strong>Cross-Modulation</strong>: Create modulation relationships between voices</p></li>
+<li><p><strong>Kit Organization</strong>: Organize your drum kits by style or genre</p></li>
+<li><p><strong>Performance Integration</strong>: Optimize the interface for live performance</p></li>
+</ul>
+</dd>
+<dt><strong>Tips for Effective Drum Sound Design</strong></dt><dd><ul class="simple">
+<li><p><strong>Start Simple</strong>: Begin with basic voices and simple parameters</p></li>
+<li><p><strong>Use Layering</strong>: Layer multiple voices for rich, complex sounds</p></li>
+<li><p><strong>Experiment with Modulation</strong>: Try different modulation sources and destinations</p></li>
+<li><p><strong>Save Frequently</strong>: Save your work regularly to avoid losing changes</p></li>
+</ul>
+</dd>
+</dl>
+<p>The Drum Kit Editor transforms your Roland JD-Xi’s drum synthesis capabilities into a professional-grade percussion workstation, providing the tools and interface you need to create, edit, and manage sophisticated drum sounds with the precision and control of modern software synthesizers.</p>
+<figure class="align-default" id="id1">
+<a class="reference internal image-reference" href="_images/jdxi-drum-kit.png"><img alt="Drum Kit Editor - 36 Voice Control" src="_images/jdxi-drum-kit.png" style="width: 60%;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Drum Kit Editor - 36 Voice Control</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="analog_synth.html" class="btn btn-neutral float-left" title="Analog Synth Editor" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="additional-editors.html" class="btn btn-neutral float-right" title="Additional Editors" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Mark Mrooks.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

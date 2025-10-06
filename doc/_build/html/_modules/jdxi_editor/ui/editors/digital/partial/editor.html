@@ -1,0 +1,693 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>jdxi_editor.ui.editors.digital.partial.editor &mdash; JD-Xi Editor 0.8.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../../../_static/documentation_options.js?v=486e5634"></script>
+      <script src="../../../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../../../index.html" class="icon icon-home">
+            JD-Xi Editor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../getting-started.html#getting-started-guide">Getting Started Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../editor-windows.html">Editor Windows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../editor-windows.html#available-editors">Available Editors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../additional-editors.html">Additional Editors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../additional-editors.html#available-editors">Available Editors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../playing-midi-files.html">Playing MIDI Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../playing-midi-files.html#available-tools">Available Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../troubleshooting.html#id1">Troubleshooting</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../legal.html">Legal Disclaimer</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../modules.html">jdxi_editor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../jdxi_editor.html">jdxi_editor package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../jdxi_editor.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../jdxi_editor.jdxi.html">jdxi_editor.jdxi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../jdxi_editor.log.html">jdxi_editor.log package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../jdxi_editor.midi.html">jdxi_editor.midi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../jdxi_editor.ui.html">jdxi_editor.ui package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../jdxi_editor.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../jdxi_editor.html#module-jdxi_editor.globals">jdxi_editor.globals module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../jdxi_editor.html#module-jdxi_editor.main">jdxi_editor.main module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../jdxi_editor.html#jdxi_editor.main.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../jdxi_editor.html#jdxi_editor.main.setup_splash_screen"><code class="docutils literal notranslate"><span class="pre">setup_splash_screen()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../jdxi_editor.html#module-jdxi_editor.project">jdxi_editor.project module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../jdxi_editor.html#module-jdxi_editor.resources">jdxi_editor.resources module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../jdxi_editor.html#jdxi_editor.resources.resource_path"><code class="docutils literal notranslate"><span class="pre">resource_path()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../jdxi_editor.html#module-jdxi_editor">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../autoapi/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/midi/index.html">midi</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/midi/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/midi/colors/index.html">midi.colors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/midi/slider/index.html">midi.slider</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/midi/spin_box/index.html">midi.spin_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/midi/time_ruler/index.html">midi.time_ruler</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/midi/track/index.html">midi.track</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/midi/track_viewer/index.html">midi.track_viewer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/midi/utils/index.html">midi.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/adsr/index.html">adsr</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/adsr/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/adsr/adsr/index.html">adsr.adsr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/adsr/graph/index.html">adsr.graph</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/adsr/parameter/index.html">adsr.parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/adsr/plot/index.html">adsr.plot</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/pitch/index.html">pitch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/pitch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/pitch/envelope/index.html">pitch.envelope</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/pitch/envelope_plot/index.html">pitch.envelope_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/pitch/pwm_plot/index.html">pitch.pwm_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/pitch/slider_spinbox/index.html">pitch.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/piano/index.html">piano</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/piano/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/piano/key/index.html">piano.key</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/piano/keyboard/index.html">piano.keyboard</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/panel/index.html">panel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/panel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/panel/partial/index.html">panel.partial</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/wheel/index.html">wheel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/wheel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/wheel/mod/index.html">wheel.mod</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/wheel/pitch/index.html">wheel.pitch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/wheel/wheel/index.html">wheel.wheel</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/preset/index.html">preset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/preset/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/preset/combo_box/index.html">preset.combo_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/preset/panel/index.html">preset.panel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/preset/patch_name/index.html">preset.patch_name</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/slider/index.html">slider</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/slider/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/slider/slider/index.html">slider.slider</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/slider/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/slider/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/slider/index.html#slider.Slider"><code class="docutils literal notranslate"><span class="pre">Slider</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/dialog/index.html">dialog</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/dialog/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/dialog/progress/index.html">dialog.progress</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/viewer/index.html">viewer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/viewer/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/viewer/log/index.html">viewer.log</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/button/index.html">button</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/button/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/button/channel/index.html">button.channel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/button/favorite/index.html">button.favorite</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/button/sequencer/index.html">button.sequencer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/button/waveform/index.html">button.waveform</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/button/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/button/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/button/index.html#button.ChannelButton"><code class="docutils literal notranslate"><span class="pre">ChannelButton</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/button/index.html#button.SequencerSquare"><code class="docutils literal notranslate"><span class="pre">SequencerSquare</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/switch/index.html">switch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/switch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/switch/partial/index.html">switch.partial</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/switch/switch/index.html">switch.switch</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/filter/index.html">filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/filter/index.html#filter.FilterWidget"><code class="docutils literal notranslate"><span class="pre">FilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/display/index.html">display</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/display/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/display/digital/index.html">display.digital</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/display/pattern/index.html">display.pattern</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/display/value/index.html">display.value</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/pattern/index.html">pattern</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/pattern/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/pattern/measure/index.html">pattern.measure</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/spin_box/index.html">spin_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/spin_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/spin_box/spin_box/index.html">spin_box.spin_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/envelope/index.html">envelope</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/envelope/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/envelope/base/index.html">envelope.base</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/indicator/index.html">indicator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/indicator/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/indicator/led/index.html">indicator.led</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/indicator/midi/index.html">indicator.midi</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/combo_box/index.html">combo_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/combo_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/combo_box/combo_box/index.html">combo_box.combo_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/jdxi_editor/index.html">jdxi_editor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/jdxi_editor/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/jdxi_editor/globals/index.html">jdxi_editor.globals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/jdxi_editor/jdxi/index.html">jdxi_editor.jdxi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/jdxi_editor/log/index.html">jdxi_editor.log</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/jdxi_editor/main/index.html">jdxi_editor.main</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/jdxi_editor/midi/index.html">jdxi_editor.midi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/jdxi_editor/project/index.html">jdxi_editor.project</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/jdxi_editor/resources/index.html">jdxi_editor.resources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/jdxi_editor/ui/index.html">jdxi_editor.ui</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/filter_plot/index.html">filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/filter_plot/index.html#filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/filter_plot/index.html#filter_plot.FilterPlot"><code class="docutils literal notranslate"><span class="pre">FilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/envelope_plot/index.html">envelope_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/envelope_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/envelope_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/envelope_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/envelope_plot/index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/envelope_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/envelope_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/envelope_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/envelope_plot/index.html#envelope_plot.midi_value_to_float"><code class="docutils literal notranslate"><span class="pre">midi_value_to_float()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/envelope_plot/index.html#envelope_plot.WMTEnvPlot"><code class="docutils literal notranslate"><span class="pre">WMTEnvPlot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/envelope_plot/index.html#envelope_plot.app"><code class="docutils literal notranslate"><span class="pre">app</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/wave_selector/index.html">wave_selector</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/wave_selector/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/wave_selector/wave_selector/index.html">wave_selector.wave_selector</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/analog_filter/index.html">analog_filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/analog_filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/analog_filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/analog_filter/index.html#analog_filter.AnalogFilterWidget"><code class="docutils literal notranslate"><span class="pre">AnalogFilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/slider_spinbox/index.html">slider_spinbox</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/slider_spinbox/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/slider_spinbox/slider_spinbox/index.html">slider_spinbox.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../autoapi/analog_filter_plot/index.html">analog_filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/analog_filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/analog_filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/analog_filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/analog_filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/analog_filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../autoapi/analog_filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/analog_filter_plot/index.html#analog_filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../autoapi/analog_filter_plot/index.html#analog_filter_plot.AnalogFilterPlot"><code class="docutils literal notranslate"><span class="pre">AnalogFilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../../index.html">JD-Xi Editor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">jdxi_editor.ui.editors.digital.partial.editor</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for jdxi_editor.ui.editors.digital.partial.editor</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Digital Partial Editor Module</span>
+
+<span class="sd">This module defines the `DigitalPartialEditor` class, a specialized editor for managing a single</span>
+<span class="sd">digital partial in a synthesizer. It extends the `PartialEditor` class, providing a structured UI</span>
+<span class="sd">to control and modify parameters related to oscillators, filters, amplifiers, and modulation sources.</span>
+
+<span class="sd">Classes:</span>
+<span class="sd">    - DigitalPartialEditor: A `QWidget` subclass that allows users to modify digital synthesis</span>
+<span class="sd">      parameters using a tabbed interface with various control sections.</span>
+
+<span class="sd">Features:</span>
+<span class="sd">    - Supports editing a single partial within a digital synth part.</span>
+<span class="sd">    - Provides categorized parameter sections: Oscillator, Filter, Amp, LFO, and Mod LFO.</span>
+<span class="sd">    - Integrates with `MIDIHelper` for real-time MIDI parameter updates.</span>
+<span class="sd">    - Uses icons for waveform selection, filter controls, and modulation settings.</span>
+<span class="sd">    - Stores UI controls for easy access and interaction.</span>
+
+<span class="sd">Usage:</span>
+<span class="sd">    ```python</span>
+<span class="sd">    from PySide6.QtWidgets import QApplication</span>
+<span class="sd">    from midi_helper import MIDIHelper</span>
+
+<span class="sd">    app = QApplication([])</span>
+<span class="sd">    midi_helper = MIDIHelper()</span>
+<span class="sd">    editor = DigitalPartialEditor(midi_helper=midi_helper)</span>
+<span class="sd">    editor.show()</span>
+<span class="sd">    app.exec()</span>
+<span class="sd">    ```</span>
+
+<span class="sd">Dependencies:</span>
+<span class="sd">    - PySide6 (for UI components)</span>
+<span class="sd">    - MIDIHelper (for MIDI communication)</span>
+<span class="sd">    - DigitalParameter, DigitalCommonParameter (for parameter management)</span>
+<span class="sd">    - WaveformButton (for waveform selection UI)</span>
+<span class="sd">    - QIcons generated from waveform base64 data</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">qtawesome</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">qta</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PySide6.QtWidgets</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">QWidget</span><span class="p">,</span>
+    <span class="n">QVBoxLayout</span><span class="p">,</span>
+    <span class="n">QTabWidget</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.log.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">Logger</span> <span class="k">as</span> <span class="n">log</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.data.address.address</span><span class="w"> </span><span class="kn">import</span> <span class="n">AddressOffsetSuperNATURALLMB</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.data.parameter.digital.partial</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">AddressParameterDigitalPartial</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.data.digital.oscillator</span><span class="w"> </span><span class="kn">import</span> <span class="n">DigitalOscWave</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.data.digital.partial</span><span class="w"> </span><span class="kn">import</span> <span class="n">DIGITAL_PARTIAL_NAMES</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.data.parameter.digital.common</span><span class="w"> </span><span class="kn">import</span> <span class="n">AddressParameterDigitalCommon</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.jdxi.synth.type</span><span class="w"> </span><span class="kn">import</span> <span class="n">JDXiSynth</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.io.helper</span><span class="w"> </span><span class="kn">import</span> <span class="n">MidiIOHelper</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.ui.editors.digital.partial.amp</span><span class="w"> </span><span class="kn">import</span> <span class="n">DigitalAmpSection</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.ui.editors.digital.partial.filter</span><span class="w"> </span><span class="kn">import</span> <span class="n">DigitalFilterSection</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.ui.editors.digital.partial.lfo</span><span class="w"> </span><span class="kn">import</span> <span class="n">DigitalLFOSection</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.ui.editors.digital.partial.mod_lfo</span><span class="w"> </span><span class="kn">import</span> <span class="n">DigitalModLFOSection</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.ui.editors.digital.partial.oscillator</span><span class="w"> </span><span class="kn">import</span> <span class="n">DigitalOscillatorSection</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.ui.editors.synth.partial</span><span class="w"> </span><span class="kn">import</span> <span class="n">PartialEditor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.jdxi.style</span><span class="w"> </span><span class="kn">import</span> <span class="n">JDXiStyle</span>
+
+
+<div class="viewcode-block" id="DigitalPartialEditor">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/ui/editors/digital/partial/editor/index.html#jdxi_editor.ui.editors.digital.DigitalPartialEditor">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DigitalPartialEditor</span><span class="p">(</span><span class="n">PartialEditor</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Editor for address single partial&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="DigitalPartialEditor.__init__">
+<a class="viewcode-back" href="../../../../../../jdxi_editor.ui.editors.digital.partial.html#jdxi_editor.ui.editors.digital.DigitalPartialEditor.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">midi_helper</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">MidiIOHelper</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">synth_number</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">partial_number</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">preset_type</span><span class="p">:</span> <span class="n">JDXiSynth</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">parent</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">QWidget</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+<div class="viewcode-block" id="DigitalPartialEditor.filter_mode_switch">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/ui/editors/digital/partial/editor/index.html#jdxi_editor.ui.editors.digital.DigitalPartialEditor.filter_mode_switch">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filter_mode_switch</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the DigitalPartialEditor</span>
+
+<span class="sd">        :param midi_helper: MidiIOHelper</span>
+<span class="sd">        :param synth_number: int</span>
+<span class="sd">        :param partial_number: int</span>
+<span class="sd">        :param preset_type: JDXiSynth</span>
+<span class="sd">        :param parent: QWidget</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="DigitalPartialEditor.partial_address_default">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/ui/editors/digital/partial/editor/index.html#jdxi_editor.ui.editors.digital.DigitalPartialEditor.partial_address_default">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">partial_address_default</span> <span class="o">=</span> <span class="n">AddressOffsetSuperNATURALLMB</span><span class="o">.</span><span class="n">PARTIAL_1</span></div>
+
+<div class="viewcode-block" id="DigitalPartialEditor.partial_address_map">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/ui/editors/digital/partial/editor/index.html#jdxi_editor.ui.editors.digital.DigitalPartialEditor.partial_address_map">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">partial_address_map</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="n">AddressOffsetSuperNATURALLMB</span><span class="o">.</span><span class="n">PARTIAL_1</span><span class="p">,</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="n">AddressOffsetSuperNATURALLMB</span><span class="o">.</span><span class="n">PARTIAL_2</span><span class="p">,</span>
+            <span class="mi">3</span><span class="p">:</span> <span class="n">AddressOffsetSuperNATURALLMB</span><span class="o">.</span><span class="n">PARTIAL_3</span><span class="p">,</span>
+        <span class="p">}</span></div>
+
+<div class="viewcode-block" id="DigitalPartialEditor.bipolar_parameters">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/ui/editors/digital/partial/editor/index.html#jdxi_editor.ui.editors.digital.DigitalPartialEditor.bipolar_parameters">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bipolar_parameters</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">AddressParameterDigitalPartial</span><span class="o">.</span><span class="n">OSC_DETUNE</span><span class="p">,</span>
+            <span class="n">AddressParameterDigitalPartial</span><span class="o">.</span><span class="n">OSC_PITCH</span><span class="p">,</span>
+            <span class="n">AddressParameterDigitalPartial</span><span class="o">.</span><span class="n">OSC_PITCH_ENV_DEPTH</span><span class="p">,</span>
+            <span class="n">AddressParameterDigitalPartial</span><span class="o">.</span><span class="n">AMP_PAN</span><span class="p">,</span>
+        <span class="p">]</span></div>
+
+<div class="viewcode-block" id="DigitalPartialEditor.midi_helper">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/ui/editors/digital/partial/editor/index.html#jdxi_editor.ui.editors.digital.DigitalPartialEditor.midi_helper">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span> <span class="o">=</span> <span class="n">midi_helper</span></div>
+
+<div class="viewcode-block" id="DigitalPartialEditor.partial_number">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/ui/editors/digital/partial/editor/index.html#jdxi_editor.ui.editors.digital.DigitalPartialEditor.partial_number">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">partial_number</span> <span class="o">=</span> <span class="n">partial_number</span></div>
+
+<div class="viewcode-block" id="DigitalPartialEditor.preset_type">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/ui/editors/digital/partial/editor/index.html#jdxi_editor.ui.editors.digital.DigitalPartialEditor.preset_type">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">preset_type</span> <span class="o">=</span> <span class="n">preset_type</span></div>
+
+        <span class="k">if</span> <span class="n">synth_number</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_init_synth_data</span><span class="p">(</span><span class="n">synth_type</span><span class="o">=</span><span class="n">JDXiSynth</span><span class="o">.</span><span class="n">DIGITAL_SYNTH_1</span><span class="p">,</span> <span class="n">partial_number</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">partial_number</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">synth_number</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_init_synth_data</span><span class="p">(</span><span class="n">synth_type</span><span class="o">=</span><span class="n">JDXiSynth</span><span class="o">.</span><span class="n">DIGITAL_SYNTH_2</span><span class="p">,</span> <span class="n">partial_number</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">partial_number</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">parameter</span><span class="p">(</span><span class="s2">&quot;Initializing partial:&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">synth_data</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
+        <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">partial_number</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">DIGITAL_PARTIAL_NAMES</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">part_name</span> <span class="o">=</span> <span class="n">DIGITAL_PARTIAL_NAMES</span><span class="p">[</span><span class="n">partial_number</span><span class="p">]</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">parameter</span><span class="p">(</span><span class="s2">&quot;Partial name:&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">part_name</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid partial_num: </span><span class="si">{</span><span class="n">partial_number</span><span class="si">}</span><span class="s2">. Using default value.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">part_name</span> <span class="o">=</span> <span class="s2">&quot;Unknown&quot;</span>  <span class="c1"># Provide a fallback value</span>
+        <span class="c1"># Store parameter controls for easy access</span>
+<div class="viewcode-block" id="DigitalPartialEditor.controls">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/ui/editors/digital/partial/editor/index.html#jdxi_editor.ui.editors.digital.DigitalPartialEditor.controls">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span>
+            <span class="n">Union</span><span class="p">[</span><span class="n">AddressParameterDigitalPartial</span><span class="p">,</span> <span class="n">AddressParameterDigitalCommon</span><span class="p">],</span>
+            <span class="n">QWidget</span><span class="p">,</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="p">{}</span></div>
+
+
+        <span class="c1"># Main layout</span>
+        <span class="n">main_layout</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">main_layout</span><span class="p">)</span>
+
+        <span class="c1"># Create container widget for the tabs</span>
+        <span class="n">container</span> <span class="o">=</span> <span class="n">QWidget</span><span class="p">()</span>
+        <span class="n">container_layout</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">()</span>
+        <span class="n">container</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">container_layout</span><span class="p">)</span>
+<div class="viewcode-block" id="DigitalPartialEditor.tab_widget">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/ui/editors/digital/partial/editor/index.html#jdxi_editor.ui.editors.digital.DigitalPartialEditor.tab_widget">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tab_widget</span> <span class="o">=</span> <span class="n">QTabWidget</span><span class="p">()</span></div>
+
+        <span class="n">container_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tab_widget</span><span class="p">)</span>
+        <span class="c1"># Add sections in address vertical layout</span>
+<div class="viewcode-block" id="DigitalPartialEditor.oscillator_tab">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/ui/editors/digital/partial/editor/index.html#jdxi_editor.ui.editors.digital.DigitalPartialEditor.oscillator_tab">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">oscillator_tab</span> <span class="o">=</span> <span class="n">DigitalOscillatorSection</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_slider</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_switch</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_combo_box</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">send_midi_parameter</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">partial_number</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">tab_widget</span><span class="o">.</span><span class="n">addTab</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">oscillator_tab</span><span class="p">,</span>
+            <span class="n">qta</span><span class="o">.</span><span class="n">icon</span><span class="p">(</span><span class="s2">&quot;mdi.triangle-wave&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#666666&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;Oscillator&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+<div class="viewcode-block" id="DigitalPartialEditor.filter_tab">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/ui/editors/digital/partial/editor/index.html#jdxi_editor.ui.editors.digital.DigitalPartialEditor.filter_tab">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filter_tab</span> <span class="o">=</span> <span class="n">DigitalFilterSection</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_slider</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_switch</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">partial_number</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">synth_data</span><span class="o">.</span><span class="n">address</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">tab_widget</span><span class="o">.</span><span class="n">addTab</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">filter_tab</span><span class="p">,</span> <span class="n">qta</span><span class="o">.</span><span class="n">icon</span><span class="p">(</span><span class="s2">&quot;ri.filter-3-fill&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#666666&quot;</span><span class="p">),</span> <span class="s2">&quot;Filter&quot;</span>
+        <span class="p">)</span>
+<div class="viewcode-block" id="DigitalPartialEditor.amp_tab">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/ui/editors/digital/partial/editor/index.html#jdxi_editor.ui.editors.digital.DigitalPartialEditor.amp_tab">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">amp_tab</span> <span class="o">=</span> <span class="n">DigitalAmpSection</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_slider</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">partial_number</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">synth_data</span><span class="o">.</span><span class="n">address</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">tab_widget</span><span class="o">.</span><span class="n">addTab</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">amp_tab</span><span class="p">,</span> <span class="n">qta</span><span class="o">.</span><span class="n">icon</span><span class="p">(</span><span class="s2">&quot;mdi.amplifier&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#666666&quot;</span><span class="p">),</span> <span class="s2">&quot;Amp&quot;</span>
+        <span class="p">)</span>
+<div class="viewcode-block" id="DigitalPartialEditor.lfo_tab">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/ui/editors/digital/partial/editor/index.html#jdxi_editor.ui.editors.digital.DigitalPartialEditor.lfo_tab">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lfo_tab</span> <span class="o">=</span> <span class="n">DigitalLFOSection</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_slider</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_switch</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_combo_box</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">controls</span>
+        <span class="p">)</span></div>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">tab_widget</span><span class="o">.</span><span class="n">addTab</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lfo_tab</span><span class="p">,</span> <span class="n">qta</span><span class="o">.</span><span class="n">icon</span><span class="p">(</span><span class="s2">&quot;mdi.sine-wave&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#666666&quot;</span><span class="p">),</span> <span class="s2">&quot;LFO&quot;</span>
+        <span class="p">)</span>
+<div class="viewcode-block" id="DigitalPartialEditor.mod_lfo_tab">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/ui/editors/digital/partial/editor/index.html#jdxi_editor.ui.editors.digital.DigitalPartialEditor.mod_lfo_tab">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mod_lfo_tab</span> <span class="o">=</span> <span class="n">DigitalModLFOSection</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_slider</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_switch</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_on_parameter_changed</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">tab_widget</span><span class="o">.</span><span class="n">addTab</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mod_lfo_tab</span><span class="p">,</span> <span class="n">qta</span><span class="o">.</span><span class="n">icon</span><span class="p">(</span><span class="s2">&quot;mdi.waveform&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#666666&quot;</span><span class="p">),</span> <span class="s2">&quot;Mod LFO&quot;</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Add container to scroll area</span>
+        <span class="n">main_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">container</span><span class="p">)</span>
+<div class="viewcode-block" id="DigitalPartialEditor.updating_from_spinbox">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/ui/editors/digital/partial/editor/index.html#jdxi_editor.ui.editors.digital.DigitalPartialEditor.updating_from_spinbox">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">updating_from_spinbox</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+        <span class="n">log</span><span class="o">.</span><span class="n">parameter</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DigitalPartialEditor initialized for&quot;</span><span class="p">,</span>  <span class="bp">self</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DigitalPartialEditor.__str__">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/ui/editors/digital/partial/editor/index.html#jdxi_editor.ui.editors.digital.DigitalPartialEditor.__str__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">preset_type</span><span class="si">}</span><span class="s2"> partial: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">partial_number</span><span class="si">}</span><span class="s2">&quot;</span></div>
+
+
+<div class="viewcode-block" id="DigitalPartialEditor.__repr__">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/ui/editors/digital/partial/editor/index.html#jdxi_editor.ui.editors.digital.DigitalPartialEditor.__repr__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">preset_type</span><span class="si">}</span><span class="s2"> partial: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">partial_number</span><span class="si">}</span><span class="s2">&quot;</span></div>
+
+
+<div class="viewcode-block" id="DigitalPartialEditor.update_filter_controls_state">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/ui/editors/digital/partial/editor/index.html#jdxi_editor.ui.editors.digital.DigitalPartialEditor.update_filter_controls_state">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_filter_controls_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update filter controls enabled state based on mode</span>
+
+<span class="sd">        :param mode: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">enabled</span> <span class="o">=</span> <span class="n">mode</span> <span class="o">!=</span> <span class="mi">0</span>  <span class="c1"># Enable if not BYPASS</span>
+        <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="p">[</span>
+            <span class="n">AddressParameterDigitalPartial</span><span class="o">.</span><span class="n">FILTER_CUTOFF</span><span class="p">,</span>
+            <span class="n">AddressParameterDigitalPartial</span><span class="o">.</span><span class="n">FILTER_RESONANCE</span><span class="p">,</span>
+            <span class="n">AddressParameterDigitalPartial</span><span class="o">.</span><span class="n">FILTER_CUTOFF_KEYFOLLOW</span><span class="p">,</span>
+            <span class="n">AddressParameterDigitalPartial</span><span class="o">.</span><span class="n">FILTER_ENV_VELOCITY_SENSITIVITY</span><span class="p">,</span>
+            <span class="n">AddressParameterDigitalPartial</span><span class="o">.</span><span class="n">FILTER_ENV_DEPTH</span><span class="p">,</span>
+            <span class="n">AddressParameterDigitalPartial</span><span class="o">.</span><span class="n">FILTER_SLOPE</span><span class="p">,</span>
+        <span class="p">]:</span>
+            <span class="k">if</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">filter_tab</span><span class="o">.</span><span class="n">controls</span><span class="p">[</span><span class="n">param</span><span class="p">]</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="n">enabled</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">filter_tab</span><span class="o">.</span><span class="n">filter_adsr_widget</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="n">enabled</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DigitalPartialEditor._on_waveform_selected">
+<a class="viewcode-back" href="../../../../../../autoapi/jdxi_editor/ui/editors/digital/partial/editor/index.html#jdxi_editor.ui.editors.digital.DigitalPartialEditor._on_waveform_selected">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_on_waveform_selected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">waveform</span><span class="p">:</span> <span class="n">DigitalOscWave</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Handle waveform button clicks</span>
+
+<span class="sd">        :param waveform: DigitalOscWave</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Reset all buttons to default style</span>
+        <span class="k">for</span> <span class="n">btn</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">oscillator_tab</span><span class="o">.</span><span class="n">wave_buttons</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">btn</span><span class="o">.</span><span class="n">setChecked</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">btn</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">BUTTON_RECT</span><span class="p">)</span>
+
+        <span class="c1"># Apply active style to the selected waveform button</span>
+        <span class="n">selected_btn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">oscillator_tab</span><span class="o">.</span><span class="n">wave_buttons</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">waveform</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">selected_btn</span><span class="p">:</span>
+            <span class="n">selected_btn</span><span class="o">.</span><span class="n">setChecked</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">selected_btn</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">BUTTON_RECT_ACTIVE</span><span class="p">)</span>
+
+        <span class="c1"># Send MIDI message</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_midi_parameter</span><span class="p">(</span>
+            <span class="n">AddressParameterDigitalPartial</span><span class="o">.</span><span class="n">OSC_WAVE</span><span class="p">,</span> <span class="n">waveform</span><span class="o">.</span><span class="n">value</span>
+        <span class="p">):</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to set waveform to </span><span class="si">{</span><span class="n">waveform</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Mark Mrooks.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

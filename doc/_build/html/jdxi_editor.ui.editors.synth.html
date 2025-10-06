@@ -1,0 +1,1004 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>jdxi_editor.ui.editors.synth package &mdash; JD-Xi Editor 0.8.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=486e5634"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="jdxi_editor.ui.image package" href="jdxi_editor.ui.image.html" />
+    <link rel="prev" title="jdxi_editor.ui.editors.pattern package" href="jdxi_editor.ui.editors.pattern.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            JD-Xi Editor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#what-is-jdxi-editor">What is JDXI-Editor?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#key-features-capabilities">Key Features &amp; Capabilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#architecture-technology">Architecture &amp; Technology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#why-use-jdxi-editor">Why Use JDXI-Editor?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#getting-started">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#system-requirements">System Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#installation-methods">Installation Methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#method-1-pre-built-packages-recommended">Method 1: Pre-Built Packages (Recommended)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#method-2-python-package-installation">Method 2: Python Package Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#method-3-source-code-installation">Method 3: Source Code Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#method-4-development-setup">Method 4: Development Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#post-installation-setup">Post-Installation Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#troubleshooting">Troubleshooting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#getting-help">Getting Help</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html">Quick Start Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#what-you-ll-learn">What You’ll Learn</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#hardware-setup">Hardware Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#software-launch">Software Launch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#interface-overview">Interface Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#your-first-sound-creation">Your First Sound Creation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#essential-workflows">Essential Workflows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#quick-tips-for-success">Quick Tips for Success</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#common-issues-and-solutions">Common Issues and Solutions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#next-steps">Next Steps</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="editor-windows.html">Editor Windows</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="instrument.html">JDXi Instrument Window</a></li>
+<li class="toctree-l2"><a class="reference internal" href="instrument.html#what-is-the-jdxi-instrument-window">What is the JDXi Instrument Window?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="instrument.html#core-architecture-components">Core Architecture &amp; Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="instrument.html#key-features-capabilities">Key Features &amp; Capabilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="instrument.html#user-interface-components">User Interface Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="instrument.html#workflow-integration">Workflow Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="instrument.html#technical-specifications">Technical Specifications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="instrument.html#getting-started-with-the-instrument-window">Getting Started with the Instrument Window</a></li>
+<li class="toctree-l2"><a class="reference internal" href="editor.html">Editor Windows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="editor.html#what-are-the-editor-windows">What are the Editor Windows?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="editor.html#core-architecture-design">Core Architecture &amp; Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="editor.html#available-editors">Available Editors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="editor.html#getting-started-with-editor-windows">Getting Started with Editor Windows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="digital_synth.html">Digital Synth Editors (Parts 1 &amp; 2)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="digital_synth.html#what-are-the-digital-synth-editors">What are the Digital Synth Editors?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="digital_synth.html#core-architecture-design">Core Architecture &amp; Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="digital_synth.html#digital-synth-editor-features">Digital Synth Editor Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="digital_synth.html#partial-management-system">Partial Management System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="digital_synth.html#performance-features">Performance Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="digital_synth.html#visual-feedback-monitoring">Visual Feedback &amp; Monitoring</a></li>
+<li class="toctree-l2"><a class="reference internal" href="digital_synth.html#getting-started-with-digital-synth-editors">Getting Started with Digital Synth Editors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analog_synth.html">Analog Synth Editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analog_synth.html#what-is-the-analog-synth-editor">What is the Analog Synth Editor?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analog_synth.html#core-architecture-design">Core Architecture &amp; Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analog_synth.html#analog-synth-editor-features">Analog Synth Editor Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analog_synth.html#analog-synthesis-characteristics">Analog Synthesis Characteristics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analog_synth.html#advanced-features">Advanced Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analog_synth.html#performance-features">Performance Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analog_synth.html#getting-started-with-analog-synth-editor">Getting Started with Analog Synth Editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="drum_kit.html">Drum Kit Editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="drum_kit.html#what-is-the-drum-kit-editor">What is the Drum Kit Editor?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="drum_kit.html#core-architecture-design">Core Architecture &amp; Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="drum_kit.html#drum-kit-editor-features">Drum Kit Editor Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="drum_kit.html#kit-management-system">Kit Management System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="drum_kit.html#advanced-sound-design">Advanced Sound Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="drum_kit.html#visual-feedback-monitoring">Visual Feedback &amp; Monitoring</a></li>
+<li class="toctree-l2"><a class="reference internal" href="drum_kit.html#getting-started-with-drum-kit-editor">Getting Started with Drum Kit Editor</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="additional-editors.html">Additional Editors</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="arpeggiator.html">Arpeggiator Editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arpeggiator.html#what-is-the-arpeggiator-editor">What is the Arpeggiator Editor?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arpeggiator.html#core-architecture-design">Core Architecture &amp; Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arpeggiator.html#arpeggiator-editor-features">Arpeggiator Editor Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arpeggiator.html#advanced-pattern-features">Advanced Pattern Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arpeggiator.html#sequencing-tools">Sequencing Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arpeggiator.html#musical-integration">Musical Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arpeggiator.html#getting-started-with-arpeggiator-editor">Getting Started with Arpeggiator Editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="effects.html">Effects Editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="effects.html#what-is-the-effects-editor">What is the Effects Editor?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="effects.html#core-architecture-design">Core Architecture &amp; Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="effects.html#effects-editor-features">Effects Editor Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="effects.html#advanced-processing">Advanced Processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="effects.html#performance-integration">Performance Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="effects.html#visual-feedback-monitoring">Visual Feedback &amp; Monitoring</a></li>
+<li class="toctree-l2"><a class="reference internal" href="effects.html#getting-started-with-effects-editor">Getting Started with Effects Editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vocal_effects.html">Vocal Effects Editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vocal_effects.html#what-is-the-vocal-effects-editor">What is the Vocal Effects Editor?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vocal_effects.html#core-architecture-design">Core Architecture &amp; Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vocal_effects.html#vocal-effects-editor-features">Vocal Effects Editor Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vocal_effects.html#advanced-vocal-processing">Advanced Vocal Processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vocal_effects.html#performance-features">Performance Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vocal_effects.html#visual-feedback-monitoring">Visual Feedback &amp; Monitoring</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vocal_effects.html#getting-started-with-vocal-effects-editor">Getting Started with Vocal Effects Editor</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="playing-midi-files.html">Playing MIDI Files</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pattern_sequencer.html">Pattern Sequencer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pattern_sequencer.html#what-is-the-pattern-sequencer">What is the Pattern Sequencer?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pattern_sequencer.html#core-architecture-design">Core Architecture &amp; Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pattern_sequencer.html#pattern-sequencer-features">Pattern Sequencer Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pattern_sequencer.html#advanced-pattern-features">Advanced Pattern Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pattern_sequencer.html#performance-features">Performance Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pattern_sequencer.html#creative-tools">Creative Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pattern_sequencer.html#visual-feedback-monitoring">Visual Feedback &amp; Monitoring</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pattern_sequencer.html#getting-started-with-pattern-sequencer">Getting Started with Pattern Sequencer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="midi_file_player.html">MIDI File Player &amp; Recorder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="midi_file_player.html#what-is-the-midi-file-player-recorder">What is the MIDI File Player &amp; Recorder?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="midi_file_player.html#core-architecture-design">Core Architecture &amp; Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="midi_file_player.html#midi-file-player-features">MIDI File Player Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="midi_file_player.html#production-tools">Production Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="midi_file_player.html#advanced-features">Advanced Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="midi_file_player.html#performance-features">Performance Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="midi_file_player.html#visual-feedback-monitoring">Visual Feedback &amp; Monitoring</a></li>
+<li class="toctree-l2"><a class="reference internal" href="midi_file_player.html#getting-started-with-midi-file-player-recorder">Getting Started with MIDI File Player &amp; Recorder</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#id1">Troubleshooting</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="legal.html">Legal Disclaimer</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">jdxi_editor</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="jdxi_editor.html">jdxi_editor package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="jdxi_editor.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.html">jdxi_editor.jdxi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.log.html">jdxi_editor.log package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.midi.html">jdxi_editor.midi package</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="jdxi_editor.ui.html">jdxi_editor.ui package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.html#module-jdxi_editor.globals">jdxi_editor.globals module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.html#module-jdxi_editor.main">jdxi_editor.main module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.html#jdxi_editor.main.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.html#jdxi_editor.main.setup_splash_screen"><code class="docutils literal notranslate"><span class="pre">setup_splash_screen()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.html#module-jdxi_editor.project">jdxi_editor.project module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.html#module-jdxi_editor.resources">jdxi_editor.resources module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.html#jdxi_editor.resources.resource_path"><code class="docutils literal notranslate"><span class="pre">resource_path()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.html#module-jdxi_editor">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="autoapi/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/midi/index.html">midi</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/midi/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/midi/colors/index.html">midi.colors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/midi/slider/index.html">midi.slider</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/midi/spin_box/index.html">midi.spin_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/midi/time_ruler/index.html">midi.time_ruler</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/midi/track/index.html">midi.track</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/midi/track_viewer/index.html">midi.track_viewer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/midi/utils/index.html">midi.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/adsr/index.html">adsr</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/adsr/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/adsr/adsr/index.html">adsr.adsr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/adsr/graph/index.html">adsr.graph</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/adsr/parameter/index.html">adsr.parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/adsr/plot/index.html">adsr.plot</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/pitch/index.html">pitch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/pitch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/pitch/envelope/index.html">pitch.envelope</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/pitch/envelope_plot/index.html">pitch.envelope_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/pitch/pwm_plot/index.html">pitch.pwm_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/pitch/slider_spinbox/index.html">pitch.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/piano/index.html">piano</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/piano/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/piano/key/index.html">piano.key</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/piano/keyboard/index.html">piano.keyboard</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/panel/index.html">panel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/panel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/panel/partial/index.html">panel.partial</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/wheel/index.html">wheel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/wheel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/wheel/mod/index.html">wheel.mod</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/wheel/pitch/index.html">wheel.pitch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/wheel/wheel/index.html">wheel.wheel</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/preset/index.html">preset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/preset/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/preset/combo_box/index.html">preset.combo_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/preset/panel/index.html">preset.panel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/preset/patch_name/index.html">preset.patch_name</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/slider/index.html">slider</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/slider/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/slider/slider/index.html">slider.slider</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/slider/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/slider/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/slider/index.html#slider.Slider"><code class="docutils literal notranslate"><span class="pre">Slider</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/dialog/index.html">dialog</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/dialog/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/dialog/progress/index.html">dialog.progress</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/viewer/index.html">viewer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/viewer/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/viewer/log/index.html">viewer.log</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/button/index.html">button</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/button/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/button/channel/index.html">button.channel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/button/favorite/index.html">button.favorite</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/button/sequencer/index.html">button.sequencer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/button/waveform/index.html">button.waveform</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/button/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/button/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/button/index.html#button.ChannelButton"><code class="docutils literal notranslate"><span class="pre">ChannelButton</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/button/index.html#button.SequencerSquare"><code class="docutils literal notranslate"><span class="pre">SequencerSquare</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/switch/index.html">switch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/switch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/switch/partial/index.html">switch.partial</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/switch/switch/index.html">switch.switch</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/filter/index.html">filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/filter/index.html#filter.FilterWidget"><code class="docutils literal notranslate"><span class="pre">FilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/display/index.html">display</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/display/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/display/digital/index.html">display.digital</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/display/pattern/index.html">display.pattern</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/display/value/index.html">display.value</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/pattern/index.html">pattern</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/pattern/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/pattern/measure/index.html">pattern.measure</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/spin_box/index.html">spin_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/spin_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/spin_box/spin_box/index.html">spin_box.spin_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/envelope/index.html">envelope</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/envelope/base/index.html">envelope.base</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/indicator/index.html">indicator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/indicator/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/indicator/led/index.html">indicator.led</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/indicator/midi/index.html">indicator.midi</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/combo_box/index.html">combo_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/combo_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/combo_box/combo_box/index.html">combo_box.combo_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/jdxi_editor/index.html">jdxi_editor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/jdxi_editor/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/globals/index.html">jdxi_editor.globals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/jdxi/index.html">jdxi_editor.jdxi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/log/index.html">jdxi_editor.log</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/main/index.html">jdxi_editor.main</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/midi/index.html">jdxi_editor.midi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/project/index.html">jdxi_editor.project</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/resources/index.html">jdxi_editor.resources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/ui/index.html">jdxi_editor.ui</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/filter_plot/index.html">filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/filter_plot/index.html#filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/filter_plot/index.html#filter_plot.FilterPlot"><code class="docutils literal notranslate"><span class="pre">FilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/envelope_plot/index.html">envelope_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope_plot/index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/envelope_plot/index.html#envelope_plot.midi_value_to_float"><code class="docutils literal notranslate"><span class="pre">midi_value_to_float()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/envelope_plot/index.html#envelope_plot.WMTEnvPlot"><code class="docutils literal notranslate"><span class="pre">WMTEnvPlot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/envelope_plot/index.html#envelope_plot.app"><code class="docutils literal notranslate"><span class="pre">app</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/wave_selector/index.html">wave_selector</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/wave_selector/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/wave_selector/wave_selector/index.html">wave_selector.wave_selector</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/analog_filter/index.html">analog_filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/analog_filter/index.html#analog_filter.AnalogFilterWidget"><code class="docutils literal notranslate"><span class="pre">AnalogFilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/slider_spinbox/index.html">slider_spinbox</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/slider_spinbox/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/slider_spinbox/slider_spinbox/index.html">slider_spinbox.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/analog_filter_plot/index.html">analog_filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#analog_filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#analog_filter_plot.AnalogFilterPlot"><code class="docutils literal notranslate"><span class="pre">AnalogFilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">JD-Xi Editor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">jdxi_editor</a></li>
+          <li class="breadcrumb-item"><a href="jdxi_editor.html">jdxi_editor package</a></li>
+          <li class="breadcrumb-item"><a href="jdxi_editor.ui.html">jdxi_editor.ui package</a></li>
+          <li class="breadcrumb-item"><a href="jdxi_editor.ui.editors.html">jdxi_editor.ui.editors package</a></li>
+      <li class="breadcrumb-item active">jdxi_editor.ui.editors.synth package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/jdxi_editor.ui.editors.synth.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="jdxi-editor-ui-editors-synth-package">
+<h1>jdxi_editor.ui.editors.synth package<a class="headerlink" href="#jdxi-editor-ui-editors-synth-package" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-jdxi_editor.ui.editors.synth.base">
+<span id="jdxi-editor-ui-editors-synth-base-module"></span><h2>jdxi_editor.ui.editors.synth.base module<a class="headerlink" href="#module-jdxi_editor.ui.editors.synth.base" title="Link to this heading"></a></h2>
+<p>Synth Control Base Module</p>
+<p>This module defines the <cite>SynthControlBase</cite> class, a Qt-based widget that provides MIDI
+control functionality for synthesizer parameters in the JD-Xi editor.</p>
+<p>It facilitates:
+- Sending and receiving MIDI SysEx messages.
+- Handling parameter updates through UI elements (sliders, combo boxes, spin boxes, switches).
+- Managing MIDI helper instances for communication.</p>
+<p>Dependencies:
+- PySide6 for GUI components.
+- jdxi_editor.midi for MIDI communication.
+- jdxi_editor.ui.widgets for UI elements.</p>
+<p>Classes:
+- SynthControlBase: A base widget for controlling synth parameters via MIDI.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.synth.base.SynthBase">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.ui.editors.synth.base.</span></span><span class="sig-name descname"><span class="pre">SynthBase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">midi_helper</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="jdxi_editor.midi.io.html#jdxi_editor.midi.io.helper.MidiIOHelper" title="jdxi_editor.midi.io.helper.MidiIOHelper"><span class="pre">MidiIOHelper</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">QWidget</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jdxi_editor/ui/editors/synth/base.html#SynthBase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.synth.base.SynthBase" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QWidget</span></code></p>
+<p>base class for all synth editors</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.synth.base.SynthBase.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">midi_helper</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="jdxi_editor.midi.io.html#jdxi_editor.midi.io.helper.MidiIOHelper" title="jdxi_editor.midi.io.helper.MidiIOHelper"><span class="pre">MidiIOHelper</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">QWidget</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jdxi_editor/ui/editors/synth/base.html#SynthBase.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.synth.base.SynthBase.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initialize the SynthBase editor with MIDI helper and parent widget.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>midi_helper</strong> – Optional[MidiIOHelper] instance for MIDI communication</p></li>
+<li><p><strong>parent</strong> – QWidget Parent widget for this editor</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.synth.base.SynthBase.midi_helper">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">midi_helper</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="jdxi_editor.midi.io.html#jdxi_editor.midi.io.helper.MidiIOHelper" title="jdxi_editor.midi.io.helper.MidiIOHelper"><span class="pre">MidiIOHelper</span></a></em><a class="reference internal" href="_modules/jdxi_editor/ui/editors/synth/base.html#SynthBase.midi_helper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.synth.base.SynthBase.midi_helper" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.synth.base.SynthBase.send_raw_message">
+<span class="sig-name descname"><span class="pre">send_raw_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><span class="pre">bytes</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/ui/editors/synth/base.html#SynthBase.send_raw_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.synth.base.SynthBase.send_raw_message" title="Link to this definition"></a></dt>
+<dd><p>Send a raw MIDI message using the MIDI helper.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>message</strong> – bytes MIDI message to send</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool True on success, False otherwise</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.synth.base.SynthBase.edit_tone_name">
+<span class="sig-name descname"><span class="pre">edit_tone_name</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/jdxi_editor/ui/editors/synth/base.html#SynthBase.edit_tone_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.synth.base.SynthBase.edit_tone_name" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.synth.base.SynthBase.data_request">
+<span class="sig-name descname"><span class="pre">data_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">program</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jdxi_editor/ui/editors/synth/base.html#SynthBase.data_request"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.synth.base.SynthBase.data_request" title="Link to this definition"></a></dt>
+<dd><p>Request the current value of the NRPN parameter from the device.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>channel</strong> – int MIDI channel to send the request on (discarded)</p></li>
+<li><p><strong>program</strong> – int Program number to request data for (discarded)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.synth.base.SynthBase.send_tone_name">
+<span class="sig-name descname"><span class="pre">send_tone_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parameter_cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.synth.AddressParameter" title="jdxi_editor.midi.data.parameter.synth.AddressParameter"><span class="pre">AddressParameter</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">tone_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/ui/editors/synth/base.html#SynthBase.send_tone_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.synth.base.SynthBase.send_tone_name" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tone_name</strong> – str Name of the Tone/preset</p></li>
+<li><p><strong>parameter_cls</strong> – AddressParameter</p></li>
+</ul>
+</dd>
+</dl>
+<p>Send the characters of the tone name to SysEx parameters.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.synth.base.SynthBase.send_midi_parameter">
+<span class="sig-name descname"><span class="pre">send_midi_parameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="jdxi_editor.midi.data.parameter.html#jdxi_editor.midi.data.parameter.synth.AddressParameter" title="jdxi_editor.midi.data.parameter.synth.AddressParameter"><span class="pre">AddressParameter</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">address</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="jdxi_editor.midi.data.address.html#jdxi_editor.midi.data.address.address.RolandSysExAddress" title="jdxi_editor.midi.data.address.address.RolandSysExAddress"><span class="pre">RolandSysExAddress</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/ui/editors/synth/base.html#SynthBase.send_midi_parameter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.synth.base.SynthBase.send_midi_parameter" title="Link to this definition"></a></dt>
+<dd><p>Send MIDI parameter with error handling</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>address</strong> – RolandSysExAddress</p></li>
+<li><p><strong>param</strong> – AddressParameter the parameter to send</p></li>
+<li><p><strong>value</strong> – int value to send</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool True on success, False otherwise</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.synth.base.SynthBase.get_controls_as_dict">
+<span class="sig-name descname"><span class="pre">get_controls_as_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/jdxi_editor/ui/editors/synth/base.html#SynthBase.get_controls_as_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.synth.base.SynthBase.get_controls_as_dict" title="Link to this definition"></a></dt>
+<dd><p>Get the current values of self.controls as a dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict A dictionary of control parameter names and their values.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.synth.base.SynthBase.staticMetaObject">
+<span class="sig-name descname"><span class="pre">staticMetaObject</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">PySide6.QtCore.QMetaObject(&quot;SynthBase&quot;</span> <span class="pre">inherits</span> <span class="pre">&quot;QWidget&quot;:</span> <span class="pre">)</span></em><a class="headerlink" href="#jdxi_editor.ui.editors.synth.base.SynthBase.staticMetaObject" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-jdxi_editor.ui.editors.synth.controller">
+<span id="jdxi-editor-ui-editors-synth-controller-module"></span><h2>jdxi_editor.ui.editors.synth.controller module<a class="headerlink" href="#module-jdxi_editor.ui.editors.synth.controller" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.synth.controller.PartialController">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.ui.editors.synth.controller.</span></span><span class="sig-name descname"><span class="pre">PartialController</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">partial_count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">QObject</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jdxi_editor/ui/editors/synth/controller.html#PartialController"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.synth.controller.PartialController" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QObject</span></code></p>
+<p>A mixin for managing partial controls in the digital synth editor.
+Provides methods for enabling/disabling partials, updating parameters,
+and handling state changes for partials.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.synth.controller.PartialController.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PySide6.QtCore.QObject</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">objectName</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/ui/editors/synth/controller.html#PartialController.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.synth.controller.PartialController.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.synth.controller.PartialController.enable_partial">
+<span class="sig-name descname"><span class="pre">enable_partial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">partial_number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">enabled</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/ui/editors/synth/controller.html#PartialController.enable_partial"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.synth.controller.PartialController.enable_partial" title="Link to this definition"></a></dt>
+<dd><p>Enable or disable a specific partial.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>partial_number</strong> – The partial number to enable/disable.</p></li>
+<li><p><strong>enabled</strong> – True to enable, False to disable.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.synth.controller.PartialController.select_partial">
+<span class="sig-name descname"><span class="pre">select_partial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">partial_number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/ui/editors/synth/controller.html#PartialController.select_partial"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.synth.controller.PartialController.select_partial" title="Link to this definition"></a></dt>
+<dd><p>Select a specific partial. Deselects others.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>partial_number</strong> – The partial number to select.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.synth.controller.PartialController.update_partial_parameter">
+<span class="sig-name descname"><span class="pre">update_partial_parameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">partial_number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">param</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/ui/editors/synth/controller.html#PartialController.update_partial_parameter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.synth.controller.PartialController.update_partial_parameter" title="Link to this definition"></a></dt>
+<dd><p>Update a parameter for a specific partial.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>partial_number</strong> – The partial number.</p></li>
+<li><p><strong>param</strong> – The parameter name to update.</p></li>
+<li><p><strong>value</strong> – The value to set.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.synth.controller.PartialController.set_partial_state">
+<span class="sig-name descname"><span class="pre">set_partial_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">partial</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="jdxi_editor.midi.data.digital.html#jdxi_editor.midi.data.digital.partial.DigitalPartial" title="jdxi_editor.midi.data.digital.partial.DigitalPartial"><span class="pre">DigitalPartial</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">enabled</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">selected</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/ui/editors/synth/controller.html#PartialController.set_partial_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.synth.controller.PartialController.set_partial_state" title="Link to this definition"></a></dt>
+<dd><p>Set the state of a partial (enabled/disabled and selected/unselected).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>partial</strong> – The partial to modify</p></li>
+<li><p><strong>enabled</strong> – Whether the partial is enabled (ON/OFF)</p></li>
+<li><p><strong>selected</strong> – Whether the partial is selected</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if successful, False otherwise</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.synth.controller.PartialController.staticMetaObject">
+<span class="sig-name descname"><span class="pre">staticMetaObject</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">PySide6.QtCore.QMetaObject(&quot;PartialController&quot;</span> <span class="pre">inherits</span> <span class="pre">&quot;QObject&quot;:</span> <span class="pre">)</span></em><a class="headerlink" href="#jdxi_editor.ui.editors.synth.controller.PartialController.staticMetaObject" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-jdxi_editor.ui.editors.synth.editor">
+<span id="jdxi-editor-ui-editors-synth-editor-module"></span><h2>jdxi_editor.ui.editors.synth.editor module<a class="headerlink" href="#module-jdxi_editor.ui.editors.synth.editor" title="Link to this heading"></a></h2>
+<p>synth_editor.py</p>
+<p>This module defines the <cite>SynthEditor</cite> class, a base class for all editor windows in the JD-Xi Manager application.
+It provides an interface for editing synthesizer parameters, handling MIDI messages, and updating UI components.</p>
+<p>Key Features:
+- UI Elements: Uses PySide6 widgets, including ComboBoxes, Sliders, and SpinBoxes, to adjust synthesizer parameters.
+- MIDI Integration: Sends and receives MIDI messages via <cite>MIDIHelper</cite>, supporting parameter changes, SysEx communication,</p>
+<blockquote>
+<div><p>and program change handling.</p>
+</div></blockquote>
+<ul class="simple">
+<li><p>Preset Management: Loads, updates, and applies instrument presets with <cite>PresetHandler</cite> and <cite>PresetLoader</cite>.</p></li>
+<li><p>Parameter Control: Dynamically creates UI controls for synthesizer parameters, supporting bipolar values and display conversion.</p></li>
+<li><p>Shortcuts: Implements keyboard shortcuts for refreshing data and closing the window.</p></li>
+</ul>
+<p>Dependencies:
+- PySide6 for the UI components.
+- <cite>jdxi_manager.midi</cite> for MIDI communication.
+- <cite>jdxi_manager.midi.data.parameter</cite> for synthesizer parameter handling.
+- <cite>jdxi_manager.ui.style</cite> for applying UI styles.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.synth.editor.log_changes">
+<span class="sig-prename descclassname"><span class="pre">jdxi_editor.ui.editors.synth.editor.</span></span><span class="sig-name descname"><span class="pre">log_changes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">previous_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jdxi_editor/ui/editors/synth/editor.html#log_changes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.synth.editor.log_changes" title="Link to this definition"></a></dt>
+<dd><p>Log changes between previous and current JSON data.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.synth.editor.SynthEditor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.ui.editors.synth.editor.</span></span><span class="sig-name descname"><span class="pre">SynthEditor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">midi_helper</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><span class="pre">object</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">QWidget</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jdxi_editor/ui/editors/synth/editor.html#SynthEditor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.synth.editor.SynthEditor" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#jdxi_editor.ui.editors.synth.base.SynthBase" title="jdxi_editor.ui.editors.synth.base.SynthBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">SynthBase</span></code></a></p>
+<p>Base class for all editor windows</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.synth.editor.SynthEditor.parameter_received">
+<span class="sig-name descname"><span class="pre">parameter_received</span></span><a class="reference internal" href="_modules/jdxi_editor/ui/editors/synth/editor.html#SynthEditor.parameter_received"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.synth.editor.SynthEditor.parameter_received" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.synth.editor.SynthEditor.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">midi_helper</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><span class="pre">object</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">QWidget</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jdxi_editor/ui/editors/synth/editor.html#SynthEditor.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.synth.editor.SynthEditor.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initialize the SynthBase editor with MIDI helper and parent widget.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>midi_helper</strong> – Optional[MidiIOHelper] instance for MIDI communication</p></li>
+<li><p><strong>parent</strong> – QWidget Parent widget for this editor</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.synth.editor.SynthEditor.controls">
+<span class="sig-name descname"><span class="pre">controls</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="autoapi/jdxi_editor/midi/data/parameter/index.html#jdxi_editor.midi.data.parameter.AddressParameter" title="jdxi_editor.midi.data.parameter.AddressParameter"><span class="pre">AddressParameter</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">QWidget</span><span class="p"><span class="pre">]</span></span></em><a class="reference internal" href="_modules/jdxi_editor/ui/editors/synth/editor.html#SynthEditor.controls"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.synth.editor.SynthEditor.controls" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.synth.editor.SynthEditor.get_controls_as_dict">
+<span class="sig-name descname"><span class="pre">get_controls_as_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/jdxi_editor/ui/editors/synth/editor.html#SynthEditor.get_controls_as_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.synth.editor.SynthEditor.get_controls_as_dict" title="Link to this definition"></a></dt>
+<dd><p>Get the current values of self.controls as a dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict A dictionary of control parameter names and their values.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.synth.editor.SynthEditor.set_instrument_title_label">
+<span class="sig-name descname"><span class="pre">set_instrument_title_label</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">synth_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jdxi_editor/ui/editors/synth/editor.html#SynthEditor.set_instrument_title_label"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.synth.editor.SynthEditor.set_instrument_title_label" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – str</p></li>
+<li><p><strong>synth_type</strong> – str</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.synth.editor.SynthEditor.update_combo_box_index">
+<span class="sig-name descname"><span class="pre">update_combo_box_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">preset_number</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jdxi_editor/ui/editors/synth/editor.html#SynthEditor.update_combo_box_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.synth.editor.SynthEditor.update_combo_box_index" title="Link to this definition"></a></dt>
+<dd><p>Updates the QComboBox to reflect the loaded preset.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.synth.editor.SynthEditor.update_instrument_title">
+<span class="sig-name descname"><span class="pre">update_instrument_title</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/jdxi_editor/ui/editors/synth/editor.html#SynthEditor.update_instrument_title"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.synth.editor.SynthEditor.update_instrument_title" title="Link to this definition"></a></dt>
+<dd><p>update instrument title</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.synth.editor.SynthEditor.update_instrument_preset">
+<span class="sig-name descname"><span class="pre">update_instrument_preset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jdxi_editor/ui/editors/synth/editor.html#SynthEditor.update_instrument_preset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.synth.editor.SynthEditor.update_instrument_preset" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.synth.editor.SynthEditor.load_preset">
+<span class="sig-name descname"><span class="pre">load_preset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">preset_index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jdxi_editor/ui/editors/synth/editor.html#SynthEditor.load_preset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.synth.editor.SynthEditor.load_preset" title="Link to this definition"></a></dt>
+<dd><p>Load a preset by program change.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.synth.editor.SynthEditor.send_control_change">
+<span class="sig-name descname"><span class="pre">send_control_change</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">control_change</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="jdxi_editor.midi.data.control_change.html#jdxi_editor.midi.data.control_change.base.ControlChange" title="jdxi_editor.midi.data.control_change.base.ControlChange"><span class="pre">ControlChange</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jdxi_editor/ui/editors/synth/editor.html#SynthEditor.send_control_change"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.synth.editor.SynthEditor.send_control_change" title="Link to this definition"></a></dt>
+<dd><p>Send MIDI CC message</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.synth.editor.SynthEditor.load_and_set_image">
+<span class="sig-name descname"><span class="pre">load_and_set_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">secondary_image_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jdxi_editor/ui/editors/synth/editor.html#SynthEditor.load_and_set_image"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.synth.editor.SynthEditor.load_and_set_image" title="Link to this definition"></a></dt>
+<dd><p>Helper function to load and set the image on the label.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.synth.editor.SynthEditor.update_instrument_image">
+<span class="sig-name descname"><span class="pre">update_instrument_image</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/jdxi_editor/ui/editors/synth/editor.html#SynthEditor.update_instrument_image"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.synth.editor.SynthEditor.update_instrument_image" title="Link to this definition"></a></dt>
+<dd><p>Update the instrument image based on the selected synth.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.synth.editor.SynthEditor.update_instrument_image_new">
+<span class="sig-name descname"><span class="pre">update_instrument_image_new</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/jdxi_editor/ui/editors/synth/editor.html#SynthEditor.update_instrument_image_new"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.synth.editor.SynthEditor.update_instrument_image_new" title="Link to this definition"></a></dt>
+<dd><p>Update the instrument image based on the selected synth.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.synth.editor.SynthEditor.update_instrument_image_old">
+<span class="sig-name descname"><span class="pre">update_instrument_image_old</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/jdxi_editor/ui/editors/synth/editor.html#SynthEditor.update_instrument_image_old"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.synth.editor.SynthEditor.update_instrument_image_old" title="Link to this definition"></a></dt>
+<dd><p>Update the instrument image based on the selected synth.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.synth.editor.SynthEditor.staticMetaObject">
+<span class="sig-name descname"><span class="pre">staticMetaObject</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">PySide6.QtCore.QMetaObject(&quot;SynthEditor&quot;</span> <span class="pre">inherits</span> <span class="pre">&quot;SynthBase&quot;:</span> <span class="pre">Methods:</span>&#160;&#160; <span class="pre">#33</span> <span class="pre">type=Signal,</span> <span class="pre">signature=parameter_received(QVariantList,int),</span> <span class="pre">parameters=QVariantList,</span> <span class="pre">int</span> <span class="pre">)</span></em><a class="headerlink" href="#jdxi_editor.ui.editors.synth.editor.SynthEditor.staticMetaObject" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-jdxi_editor.ui.editors.synth.partial">
+<span id="jdxi-editor-ui-editors-synth-partial-module"></span><h2>jdxi_editor.ui.editors.synth.partial module<a class="headerlink" href="#module-jdxi_editor.ui.editors.synth.partial" title="Link to this heading"></a></h2>
+<p>Module for the PartialEditor widget, which provides a UI for editing individual partial parameters of a synthesizer.</p>
+<p>This module defines the <cite>PartialEditor</cite> class, which extends <cite>QWidget</cite> to offer an interface for modifying
+synth parameters through sliders, combo boxes, and spin boxes. It integrates with a MIDI helper to send parameter
+changes to the synthesizer in real-time.</p>
+<dl class="simple">
+<dt>Classes:</dt><dd><p>PartialEditor: A QWidget-based editor for modifying individual partial parameters.</p>
+</dd>
+<dt>Dependencies:</dt><dd><ul class="simple">
+<li><p>PySide6.QtWidgets (QWidget)</p></li>
+<li><p>logging</p></li>
+<li><p>typing (Dict)</p></li>
+<li><p>jdxi_manager.midi.data.parameter.synth (SynthParameter)</p></li>
+<li><p>jdxi_manager.midi.data.constants (PART_1)</p></li>
+<li><p>jdxi_manager.ui.widgets.slider (Slider)</p></li>
+<li><p>jdxi_manager.ui.widgets.combo_box.combo_box (ComboBox)</p></li>
+<li><p>jdxi_manager.ui.widgets.spin_box.spin_box (SpinBox)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.synth.partial.PartialEditor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.ui.editors.synth.partial.</span></span><span class="sig-name descname"><span class="pre">PartialEditor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">midi_helper</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">partial_number</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jdxi_editor/ui/editors/synth/partial.html#PartialEditor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.synth.partial.PartialEditor" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#jdxi_editor.ui.editors.synth.base.SynthBase" title="jdxi_editor.ui.editors.synth.base.SynthBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">SynthBase</span></code></a></p>
+<p>Editor for address single partial</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.synth.partial.PartialEditor.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">midi_helper</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">partial_number</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jdxi_editor/ui/editors/synth/partial.html#PartialEditor.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.synth.partial.PartialEditor.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initialize the SynthBase editor with MIDI helper and parent widget.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>midi_helper</strong> – Optional[MidiIOHelper] instance for MIDI communication</p></li>
+<li><p><strong>parent</strong> – QWidget Parent widget for this editor</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.synth.partial.PartialEditor.staticMetaObject">
+<span class="sig-name descname"><span class="pre">staticMetaObject</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">PySide6.QtCore.QMetaObject(&quot;PartialEditor&quot;</span> <span class="pre">inherits</span> <span class="pre">&quot;SynthBase&quot;:</span> <span class="pre">)</span></em><a class="headerlink" href="#jdxi_editor.ui.editors.synth.partial.PartialEditor.staticMetaObject" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-jdxi_editor.ui.editors.synth.simple">
+<span id="jdxi-editor-ui-editors-synth-simple-module"></span><h2>jdxi_editor.ui.editors.synth.simple module<a class="headerlink" href="#module-jdxi_editor.ui.editors.synth.simple" title="Link to this heading"></a></h2>
+<p>Arpeggio Editor Module</p>
+<p>This module defines the <cite>ArpeggioEditor</cite> class, a specialized editor for configuring arpeggiator
+settings within a synthesizer. It extends the <cite>SynthEditor</cite> class, providing a user-friendly
+interface to control various arpeggiator parameters.</p>
+<dl>
+<dt>Classes:</dt><dd><ul class="simple">
+<li><p>ArpeggioEditor: A <cite>QWidget</cite> subclass that allows users to modify arpeggiator parameters
+such as style, grid, duration, velocity, accent, swing, octave range, and motif.</p></li>
+</ul>
+</dd>
+<dt>Features:</dt><dd><ul class="simple">
+<li><p>Provides an intuitive UI with labeled controls and dropdown menus for parameter selection.</p></li>
+<li><p>Includes a toggle switch to enable or disable the arpeggiator.</p></li>
+<li><p>Displays an instrument image for better user engagement.</p></li>
+<li><p>Uses MIDI integration to send real-time parameter changes to the synthesizer.</p></li>
+<li><p>Supports dynamic visualization and interaction through sliders and combo boxes.</p></li>
+</ul>
+</dd>
+<dt>Usage:</dt><dd><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">PySide6.QtWidgets</span><span class="w"> </span><span class="kn">import</span> <span class="n">QApplication</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">midi_helper</span><span class="w"> </span><span class="kn">import</span> <span class="n">MIDIHelper</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">QApplication</span><span class="p">([])</span>
+<span class="n">midi_helper</span> <span class="o">=</span> <span class="n">MIDIHelper</span><span class="p">()</span>
+<span class="n">editor</span> <span class="o">=</span> <span class="n">ArpeggioEditor</span><span class="p">(</span><span class="n">midi_helper</span><span class="o">=</span><span class="n">midi_helper</span><span class="p">)</span>
+<span class="n">editor</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">app</span><span class="o">.</span><span class="n">exec</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd>
+<dt>Dependencies:</dt><dd><ul class="simple">
+<li><p>PySide6 (for UI components)</p></li>
+<li><p>MIDIHelper (for MIDI communication)</p></li>
+<li><p>ArpeggioParameter (for managing parameter addresses and value ranges)</p></li>
+<li><p>Slider (for smooth control over numerical parameters)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.synth.simple.BasicEditor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.ui.editors.synth.simple.</span></span><span class="sig-name descname"><span class="pre">BasicEditor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">midi_helper</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="jdxi_editor.midi.io.html#jdxi_editor.midi.io.helper.MidiIOHelper" title="jdxi_editor.midi.io.helper.MidiIOHelper"><span class="pre">MidiIOHelper</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jdxi_editor/ui/editors/synth/simple.html#BasicEditor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.synth.simple.BasicEditor" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#jdxi_editor.ui.editors.synth.editor.SynthEditor" title="jdxi_editor.ui.editors.synth.editor.SynthEditor"><code class="xref py py-class docutils literal notranslate"><span class="pre">SynthEditor</span></code></a></p>
+<p>Simple Editor Window with small instrument image</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.synth.simple.BasicEditor.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">midi_helper</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="jdxi_editor.midi.io.html#jdxi_editor.midi.io.helper.MidiIOHelper" title="jdxi_editor.midi.io.helper.MidiIOHelper"><span class="pre">MidiIOHelper</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jdxi_editor/ui/editors/synth/simple.html#BasicEditor.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.synth.simple.BasicEditor.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initialize the SynthBase editor with MIDI helper and parent widget.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>midi_helper</strong> – Optional[MidiIOHelper] instance for MIDI communication</p></li>
+<li><p><strong>parent</strong> – QWidget Parent widget for this editor</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.synth.simple.BasicEditor.load_and_set_image">
+<span class="sig-name descname"><span class="pre">load_and_set_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">secondary_image_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jdxi_editor/ui/editors/synth/simple.html#BasicEditor.load_and_set_image"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.synth.simple.BasicEditor.load_and_set_image" title="Link to this definition"></a></dt>
+<dd><p>Helper function to load and set the image on the label.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.synth.simple.BasicEditor.update_instrument_image">
+<span class="sig-name descname"><span class="pre">update_instrument_image</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/jdxi_editor/ui/editors/synth/simple.html#BasicEditor.update_instrument_image"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.ui.editors.synth.simple.BasicEditor.update_instrument_image" title="Link to this definition"></a></dt>
+<dd><p>Update the instrument image based on the selected synth.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.ui.editors.synth.simple.BasicEditor.staticMetaObject">
+<span class="sig-name descname"><span class="pre">staticMetaObject</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">PySide6.QtCore.QMetaObject(&quot;BasicEditor&quot;</span> <span class="pre">inherits</span> <span class="pre">&quot;SynthEditor&quot;:</span> <span class="pre">)</span></em><a class="headerlink" href="#jdxi_editor.ui.editors.synth.simple.BasicEditor.staticMetaObject" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-jdxi_editor.ui.editors.synth">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-jdxi_editor.ui.editors.synth" title="Link to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="jdxi_editor.ui.editors.pattern.html" class="btn btn-neutral float-left" title="jdxi_editor.ui.editors.pattern package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="jdxi_editor.ui.image.html" class="btn btn-neutral float-right" title="jdxi_editor.ui.image package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Mark Mrooks.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

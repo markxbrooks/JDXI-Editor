@@ -610,7 +610,7 @@ class EffectsCommonEditor(BasicEditor):
         layout.addRow(reverb_parameter24_slider)
         return widget
 
-    def _on_parameter_changed(self, param: AddressParameter, value: int):
+    def _on_parameter_changed(self, param: AddressParameter, value: int, address: RolandSysExAddress = None):
         """Handle parameter value changes from UI controls."""
         try:
             # Send MIDI message

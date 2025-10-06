@@ -1,0 +1,635 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>button.favorite &mdash; JD-Xi Editor 0.8.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=486e5634"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            JD-Xi Editor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../getting-started.html#getting-started-guide">Getting Started Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../editor-windows.html">Editor Windows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../editor-windows.html#available-editors">Available Editors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../additional-editors.html">Additional Editors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../additional-editors.html#available-editors">Available Editors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../playing-midi-files.html">Playing MIDI Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../playing-midi-files.html#available-tools">Available Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../troubleshooting.html#id1">Troubleshooting</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../legal.html">Legal Disclaimer</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">jdxi_editor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../jdxi_editor.html">jdxi_editor package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../jdxi_editor.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../jdxi_editor.jdxi.html">jdxi_editor.jdxi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../jdxi_editor.log.html">jdxi_editor.log package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../jdxi_editor.midi.html">jdxi_editor.midi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../jdxi_editor.ui.html">jdxi_editor.ui package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../jdxi_editor.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../jdxi_editor.html#module-jdxi_editor.globals">jdxi_editor.globals module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../jdxi_editor.html#module-jdxi_editor.main">jdxi_editor.main module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../jdxi_editor.html#jdxi_editor.main.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../jdxi_editor.html#jdxi_editor.main.setup_splash_screen"><code class="docutils literal notranslate"><span class="pre">setup_splash_screen()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../jdxi_editor.html#module-jdxi_editor.project">jdxi_editor.project module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../jdxi_editor.html#module-jdxi_editor.resources">jdxi_editor.resources module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../jdxi_editor.html#jdxi_editor.resources.resource_path"><code class="docutils literal notranslate"><span class="pre">resource_path()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../jdxi_editor.html#module-jdxi_editor">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../autoapi/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/midi/index.html">midi</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/midi/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/midi/colors/index.html">midi.colors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/midi/slider/index.html">midi.slider</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/midi/spin_box/index.html">midi.spin_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/midi/time_ruler/index.html">midi.time_ruler</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/midi/track/index.html">midi.track</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/midi/track_viewer/index.html">midi.track_viewer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/midi/utils/index.html">midi.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/adsr/index.html">adsr</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/adsr/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/adsr/adsr/index.html">adsr.adsr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/adsr/graph/index.html">adsr.graph</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/adsr/parameter/index.html">adsr.parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/adsr/plot/index.html">adsr.plot</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/pitch/index.html">pitch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/pitch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/pitch/envelope/index.html">pitch.envelope</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/pitch/envelope_plot/index.html">pitch.envelope_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/pitch/pwm_plot/index.html">pitch.pwm_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/pitch/slider_spinbox/index.html">pitch.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/piano/index.html">piano</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/piano/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/piano/key/index.html">piano.key</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/piano/keyboard/index.html">piano.keyboard</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/panel/index.html">panel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/panel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/panel/partial/index.html">panel.partial</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/wheel/index.html">wheel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/wheel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/wheel/mod/index.html">wheel.mod</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/wheel/pitch/index.html">wheel.pitch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/wheel/wheel/index.html">wheel.wheel</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/preset/index.html">preset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/preset/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/preset/combo_box/index.html">preset.combo_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/preset/panel/index.html">preset.panel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/preset/patch_name/index.html">preset.patch_name</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/slider/index.html">slider</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/slider/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/slider/slider/index.html">slider.slider</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/slider/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/slider/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/slider/index.html#slider.Slider"><code class="docutils literal notranslate"><span class="pre">Slider</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/dialog/index.html">dialog</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/dialog/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/dialog/progress/index.html">dialog.progress</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/viewer/index.html">viewer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/viewer/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/viewer/log/index.html">viewer.log</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/button/index.html">button</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/button/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/button/channel/index.html">button.channel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/button/favorite/index.html">button.favorite</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/button/sequencer/index.html">button.sequencer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/button/waveform/index.html">button.waveform</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/button/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/button/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/button/index.html#button.ChannelButton"><code class="docutils literal notranslate"><span class="pre">ChannelButton</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/button/index.html#button.SequencerSquare"><code class="docutils literal notranslate"><span class="pre">SequencerSquare</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/switch/index.html">switch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/switch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/switch/partial/index.html">switch.partial</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/switch/switch/index.html">switch.switch</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/filter/index.html">filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/filter/index.html#filter.FilterWidget"><code class="docutils literal notranslate"><span class="pre">FilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/display/index.html">display</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/display/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/display/digital/index.html">display.digital</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/display/pattern/index.html">display.pattern</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/display/value/index.html">display.value</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/pattern/index.html">pattern</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/pattern/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/pattern/measure/index.html">pattern.measure</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/spin_box/index.html">spin_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/spin_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/spin_box/spin_box/index.html">spin_box.spin_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/envelope/index.html">envelope</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/envelope/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/envelope/base/index.html">envelope.base</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/indicator/index.html">indicator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/indicator/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/indicator/led/index.html">indicator.led</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/indicator/midi/index.html">indicator.midi</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/combo_box/index.html">combo_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/combo_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/combo_box/combo_box/index.html">combo_box.combo_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/jdxi_editor/index.html">jdxi_editor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/jdxi_editor/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/jdxi_editor/globals/index.html">jdxi_editor.globals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/jdxi_editor/jdxi/index.html">jdxi_editor.jdxi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/jdxi_editor/log/index.html">jdxi_editor.log</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/jdxi_editor/main/index.html">jdxi_editor.main</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/jdxi_editor/midi/index.html">jdxi_editor.midi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/jdxi_editor/project/index.html">jdxi_editor.project</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/jdxi_editor/resources/index.html">jdxi_editor.resources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/jdxi_editor/ui/index.html">jdxi_editor.ui</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/filter_plot/index.html">filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/filter_plot/index.html#filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/filter_plot/index.html#filter_plot.FilterPlot"><code class="docutils literal notranslate"><span class="pre">FilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/envelope_plot/index.html">envelope_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/envelope_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/envelope_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/envelope_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/envelope_plot/index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/envelope_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/envelope_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/envelope_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/envelope_plot/index.html#envelope_plot.midi_value_to_float"><code class="docutils literal notranslate"><span class="pre">midi_value_to_float()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/envelope_plot/index.html#envelope_plot.WMTEnvPlot"><code class="docutils literal notranslate"><span class="pre">WMTEnvPlot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/envelope_plot/index.html#envelope_plot.app"><code class="docutils literal notranslate"><span class="pre">app</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/wave_selector/index.html">wave_selector</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/wave_selector/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/wave_selector/wave_selector/index.html">wave_selector.wave_selector</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/analog_filter/index.html">analog_filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/analog_filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/analog_filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/analog_filter/index.html#analog_filter.AnalogFilterWidget"><code class="docutils literal notranslate"><span class="pre">AnalogFilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/slider_spinbox/index.html">slider_spinbox</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/slider_spinbox/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/slider_spinbox/slider_spinbox/index.html">slider_spinbox.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/analog_filter_plot/index.html">analog_filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/analog_filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/analog_filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/analog_filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/analog_filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/analog_filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/analog_filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/analog_filter_plot/index.html#analog_filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/analog_filter_plot/index.html#analog_filter_plot.AnalogFilterPlot"><code class="docutils literal notranslate"><span class="pre">AnalogFilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">JD-Xi Editor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">button.favorite</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for button.favorite</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Favorite Button</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">PySide6.QtWidgets</span><span class="w"> </span><span class="kn">import</span> <span class="n">QPushButton</span><span class="p">,</span> <span class="n">QWidget</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PySide6.QtCore</span><span class="w"> </span><span class="kn">import</span> <span class="n">Signal</span><span class="p">,</span> <span class="n">QSettings</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.log.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">Logger</span> <span class="k">as</span> <span class="n">log</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.io.helper</span><span class="w"> </span><span class="kn">import</span> <span class="n">MidiIOHelper</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.jdxi.preset.helper</span><span class="w"> </span><span class="kn">import</span> <span class="n">JDXiPresetHelper</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.jdxi.preset.button</span><span class="w"> </span><span class="kn">import</span> <span class="n">JDXiPresetButtonData</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.jdxi.synth.type</span><span class="w"> </span><span class="kn">import</span> <span class="n">JDXiSynth</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.jdxi.preset.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">JDXiPresetData</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.project</span><span class="w"> </span><span class="kn">import</span> <span class="n">__package_name__</span>
+
+
+<div class="viewcode-block" id="FavoriteButton">
+<a class="viewcode-back" href="../../autoapi/button/favorite/index.html#button.favorite.FavoriteButton">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">FavoriteButton</span><span class="p">(</span><span class="n">QPushButton</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Favorite preset button with save/recall functionality&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="FavoriteButton.preset_selected">
+<a class="viewcode-back" href="../../autoapi/button/favorite/index.html#button.favorite.FavoriteButton.preset_selected">[docs]</a>
+    <span class="n">preset_selected</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>  <span class="c1"># synth_type, preset_num, channel</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">slot_num</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">midi_helper</span><span class="p">:</span> <span class="n">MidiIOHelper</span><span class="p">,</span> <span class="n">parent</span><span class="p">:</span> <span class="n">QWidget</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the FavoriteButton</span>
+
+<span class="sd">        :param slot_num: int</span>
+<span class="sd">        :param midi_helper: MidiIOHelper</span>
+<span class="sd">        :param parent: QWidget</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+<div class="viewcode-block" id="FavoriteButton.last_preset">
+<a class="viewcode-back" href="../../autoapi/button/favorite/index.html#button.favorite.FavoriteButton.last_preset">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_preset</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="FavoriteButton.preset_helper">
+<a class="viewcode-back" href="../../autoapi/button/favorite/index.html#button.favorite.FavoriteButton.preset_helper">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">preset_helper</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="FavoriteButton.midi_helper">
+<a class="viewcode-back" href="../../autoapi/button/favorite/index.html#button.favorite.FavoriteButton.midi_helper">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span> <span class="o">=</span> <span class="n">midi_helper</span></div>
+
+<div class="viewcode-block" id="FavoriteButton.slot_num">
+<a class="viewcode-back" href="../../autoapi/button/favorite/index.html#button.favorite.FavoriteButton.slot_num">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slot_num</span> <span class="o">=</span> <span class="n">slot_num</span></div>
+
+<div class="viewcode-block" id="FavoriteButton.preset">
+<a class="viewcode-back" href="../../autoapi/button/favorite/index.html#button.favorite.FavoriteButton.preset">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">preset</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setFixedSize</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="mi">30</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setFlat</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+<div class="viewcode-block" id="FavoriteButton.settings">
+<a class="viewcode-back" href="../../autoapi/button/favorite/index.html#button.favorite.FavoriteButton.settings">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span> <span class="o">=</span> <span class="n">QSettings</span><span class="p">(</span><span class="s2">&quot;mabsoft&quot;</span><span class="p">,</span> <span class="n">__package_name__</span><span class="p">)</span></div>
+
+        <span class="c1"># self._load_from_settings()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_style</span><span class="p">()</span>
+
+<div class="viewcode-block" id="FavoriteButton.save_preset_as_favourite">
+<a class="viewcode-back" href="../../autoapi/button/favorite/index.html#button.favorite.FavoriteButton.save_preset_as_favourite">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save_preset_as_favourite</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">synth_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">preset_num</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">preset_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">channel</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save current preset to this favorite slot</span>
+
+<span class="sd">        :param synth_type: str</span>
+<span class="sd">        :param preset_num: int</span>
+<span class="sd">        :param preset_name: str</span>
+<span class="sd">        :param channel: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># self.preset = PresetFavorite(synth_type, preset_num, preset_name, channel)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">preset</span> <span class="o">=</span> <span class="n">JDXiPresetButtonData</span><span class="p">(</span>
+            <span class="n">number</span><span class="o">=</span><span class="n">preset_num</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">preset_name</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">synth_type</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_style</span><span class="p">()</span>
+        <span class="c1"># self._save_to_settings()</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Saved preset to favorite </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">slot_num</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">preset_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FavoriteButton.load_preset_from_favourites">
+<a class="viewcode-back" href="../../autoapi/button/favorite/index.html#button.favorite.FavoriteButton.load_preset_from_favourites">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_preset_from_favourites</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load saved preset&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">preset</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No preset saved in favorite slot </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">slot_num</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="n">preset_data</span> <span class="o">=</span> <span class="n">JDXiPresetButtonData</span><span class="p">(</span>
+            <span class="nb">type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">preset</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>  <span class="c1"># Ensure this is address valid preset_type</span>
+            <span class="n">number</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">preset</span><span class="o">.</span><span class="n">tone_number</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>  <span class="c1"># Convert to 1-based index</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_preset</span><span class="p">(</span><span class="n">preset_data</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_style</span><span class="p">()</span>
+        <span class="c1"># Save as last loaded preset</span>
+        <span class="c1"># self.settings.setValue(&#39;last_preset/synth_type&#39;, self.preset.synth_type)</span>
+        <span class="c1"># self.settings.setValue(&#39;last_preset/preset_num&#39;, self.preset.preset_num)</span>
+        <span class="c1"># self.settings.setValue(&#39;last_preset/channel&#39;, self.preset.channel)</span>
+        <span class="c1"># self.settings.setValue(&#39;last_preset/preset_name&#39;, self.preset.preset_name)</span>
+        <span class="c1"># Update the display</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loading favorite </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">slot_num</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">preset</span><span class="o">.</span><span class="n">tone_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FavoriteButton.load_preset">
+<a class="viewcode-back" href="../../autoapi/button/favorite/index.html#button.favorite.FavoriteButton.load_preset">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_preset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">preset_data</span><span class="p">:</span> <span class="n">JDXiPresetData</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load preset data into synth&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span><span class="p">:</span>
+                <span class="c1"># Use PresetLoader for consistent preset loading</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">preset_helper</span> <span class="o">=</span> <span class="n">JDXiPresetHelper</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">preset_helper</span><span class="o">.</span><span class="n">load_preset</span><span class="p">(</span>
+                    <span class="n">preset_data</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="c1"># Store as last loaded preset</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">last_preset</span> <span class="o">=</span> <span class="n">preset_data</span>
+                <span class="c1"># self.settings.setValue(&quot;last_preset&quot;, preset_data)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error loading preset: </span><span class="si">{</span><span class="n">ex</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FavoriteButton._save_to_settings">
+<a class="viewcode-back" href="../../autoapi/button/favorite/index.html#button.favorite.FavoriteButton._save_to_settings">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_save_to_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save preset data to settings&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">preset</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;favorites/slot</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">slot_num</span><span class="si">}</span><span class="s2">/synth_type&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">preset</span><span class="o">.</span><span class="n">type</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;favorites/slot</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">slot_num</span><span class="si">}</span><span class="s2">/preset_num&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">preset</span><span class="o">.</span><span class="n">tone_number</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;favorites/slot</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">slot_num</span><span class="si">}</span><span class="s2">/preset_name&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">preset</span><span class="o">.</span><span class="n">tone_name</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;favorites/slot</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">slot_num</span><span class="si">}</span><span class="s2">/channel&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">preset</span><span class="o">.</span><span class="n">channel</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Clear settings if no preset</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;favorites/slot</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">slot_num</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FavoriteButton._load_from_settings">
+<a class="viewcode-back" href="../../autoapi/button/favorite/index.html#button.favorite.FavoriteButton._load_from_settings">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_load_from_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load preset data from settings&quot;&quot;&quot;</span>
+        <span class="n">synth_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">value</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;favorites/slot</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">slot_num</span><span class="si">}</span><span class="s2">/synth_type&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">synth_type</span><span class="p">:</span>
+            <span class="n">preset_num</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">value</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;favorites/slot</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">slot_num</span><span class="si">}</span><span class="s2">/preset_num&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span>
+            <span class="p">)</span>
+            <span class="n">preset_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">value</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;favorites/slot</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">slot_num</span><span class="si">}</span><span class="s2">/preset_name&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span>
+            <span class="p">)</span>
+            <span class="c1"># channel = self.settings.value(</span>
+            <span class="c1">#    f&quot;favorites/slot{self.slot_num}/channel&quot;, 0, type=int</span>
+            <span class="c1"># )</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">preset</span> <span class="o">=</span> <span class="n">JDXiPresetButtonData</span><span class="p">(</span>
+                <span class="n">number</span><span class="o">=</span><span class="n">preset_num</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">preset_name</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">synth_type</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FavoriteButton.clear_preset">
+<a class="viewcode-back" href="../../autoapi/button/favorite/index.html#button.favorite.FavoriteButton.clear_preset">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">clear_preset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Clear the saved preset&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">preset</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># self._save_to_settings()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_style</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="FavoriteButton._update_style">
+<a class="viewcode-back" href="../../autoapi/button/favorite/index.html#button.favorite.FavoriteButton._update_style">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_style</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update button appearance&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">preset</span><span class="p">:</span>
+            <span class="c1"># Get color based on synth preset_type</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">preset</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">JDXiSynth</span><span class="o">.</span><span class="n">ANALOG_SYNTH</span><span class="p">:</span>
+                <span class="n">color</span> <span class="o">=</span> <span class="s2">&quot;#00A3F0&quot;</span>  <span class="c1"># Analog blue</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">preset</span><span class="o">.</span><span class="n">type</span> <span class="ow">in</span> <span class="p">[</span><span class="n">JDXiSynth</span><span class="o">.</span><span class="n">DIGITAL_SYNTH_1</span><span class="p">,</span> <span class="n">JDXiSynth</span><span class="o">.</span><span class="n">DIGITAL_SYNTH_2</span><span class="p">]:</span>
+                <span class="n">color</span> <span class="o">=</span> <span class="s2">&quot;#FF0000&quot;</span>  <span class="c1"># Red for both digital synths</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">preset</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">JDXiSynth</span><span class="o">.</span><span class="n">DRUM_KIT</span><span class="p">:</span>
+                <span class="n">color</span> <span class="o">=</span> <span class="s2">&quot;#00FF00&quot;</span>  <span class="c1"># Green for drums</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">color</span> <span class="o">=</span> <span class="s2">&quot;#666666&quot;</span>  <span class="c1"># Gray for unknown types</span>
+
+            <span class="c1"># Set text to preset name</span>
+            <span class="c1"># Get just the preset name without the number prefix</span>
+            <span class="k">if</span> <span class="s2">&quot;:&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">preset</span><span class="o">.</span><span class="n">tone_name</span><span class="p">:</span>
+                <span class="n">preset_display_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">preset</span><span class="o">.</span><span class="n">tone_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">preset_display_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">preset</span><span class="o">.</span><span class="n">tone_name</span>
+
+            <span class="n">text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;FAV </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">slot_num</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="se">\n</span><span class="si">{</span><span class="n">preset_display_name</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">color</span> <span class="o">=</span> <span class="s2">&quot;#666666&quot;</span>  <span class="c1"># Gray for empty slot</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;FAV </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">slot_num</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="c1"># Create gradient background</span>
+        <span class="n">gradient</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">            background: qlineargradient(</span>
+<span class="s2">                x1:0, y1:0, x2:1, y2:0,</span>
+<span class="s2">                stop:0 </span><span class="si">{</span><span class="n">color</span><span class="si">}</span><span class="s2">22,</span>
+<span class="s2">                stop:0.5 </span><span class="si">{</span><span class="n">color</span><span class="si">}</span><span class="s2">11,</span>
+<span class="s2">                stop:1 </span><span class="si">{</span><span class="n">color</span><span class="si">}</span><span class="s2">22</span>
+<span class="s2">            );</span>
+<span class="s2">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Set button style</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">            QPushButton </span><span class="se">{{</span>
+<span class="s2">                </span><span class="si">{</span><span class="n">gradient</span><span class="si">}</span>
+<span class="s2">                font-family: &quot;Consolas&quot;, &quot;Fixed&quot;;</span>
+<span class="s2">                border: 1px solid red;</span>
+<span class="s2">                border-radius: 3px;</span>
+<span class="s2">                color: </span><span class="si">{</span><span class="n">color</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">                font-size: 9px;</span>
+<span class="s2">                font-weight: bold;</span>
+<span class="s2">                padding: 2px;</span>
+<span class="s2">                text-align: center;</span>
+<span class="s2">            </span><span class="se">}}</span>
+<span class="s2">            QPushButton:hover </span><span class="se">{{</span>
+<span class="s2">                background: </span><span class="si">{</span><span class="n">color</span><span class="si">}</span><span class="s2">33;</span>
+<span class="s2">            </span><span class="se">}}</span>
+<span class="s2">            QPushButton:pressed </span><span class="se">{{</span>
+<span class="s2">                background: </span><span class="si">{</span><span class="n">color</span><span class="si">}</span><span class="s2">44;</span>
+<span class="s2">            </span><span class="se">}}</span>
+<span class="s2">        &quot;&quot;&quot;</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">text</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Mark Mrooks.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,1423 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>jdxi_editor.midi.data.address.address &mdash; JD-Xi Editor 0.8.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../../_static/documentation_options.js?v=486e5634"></script>
+      <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../../index.html" class="icon icon-home">
+            JD-Xi Editor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../getting-started.html#getting-started-guide">Getting Started Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../editor-windows.html">Editor Windows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../editor-windows.html#available-editors">Available Editors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../additional-editors.html">Additional Editors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../additional-editors.html#available-editors">Available Editors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../playing-midi-files.html">Playing MIDI Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../playing-midi-files.html#available-tools">Available Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../troubleshooting.html#id1">Troubleshooting</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../legal.html">Legal Disclaimer</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../modules.html">jdxi_editor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../jdxi_editor.html">jdxi_editor package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.jdxi.html">jdxi_editor.jdxi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.log.html">jdxi_editor.log package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.midi.html">jdxi_editor.midi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.ui.html">jdxi_editor.ui package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.globals">jdxi_editor.globals module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.main">jdxi_editor.main module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.html#jdxi_editor.main.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.html#jdxi_editor.main.setup_splash_screen"><code class="docutils literal notranslate"><span class="pre">setup_splash_screen()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.project">jdxi_editor.project module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.resources">jdxi_editor.resources module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.html#jdxi_editor.resources.resource_path"><code class="docutils literal notranslate"><span class="pre">resource_path()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../autoapi/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/midi/index.html">midi</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/midi/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/colors/index.html">midi.colors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/slider/index.html">midi.slider</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/spin_box/index.html">midi.spin_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/time_ruler/index.html">midi.time_ruler</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/track/index.html">midi.track</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/track_viewer/index.html">midi.track_viewer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/utils/index.html">midi.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/adsr/index.html">adsr</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/adsr/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/adsr/adsr/index.html">adsr.adsr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/adsr/graph/index.html">adsr.graph</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/adsr/parameter/index.html">adsr.parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/adsr/plot/index.html">adsr.plot</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/pitch/index.html">pitch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/pitch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pitch/envelope/index.html">pitch.envelope</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pitch/envelope_plot/index.html">pitch.envelope_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pitch/pwm_plot/index.html">pitch.pwm_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pitch/slider_spinbox/index.html">pitch.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/piano/index.html">piano</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/piano/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/piano/key/index.html">piano.key</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/piano/keyboard/index.html">piano.keyboard</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/panel/index.html">panel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/panel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/panel/partial/index.html">panel.partial</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/wheel/index.html">wheel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/wheel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/wheel/mod/index.html">wheel.mod</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/wheel/pitch/index.html">wheel.pitch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/wheel/wheel/index.html">wheel.wheel</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/preset/index.html">preset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/preset/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/preset/combo_box/index.html">preset.combo_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/preset/panel/index.html">preset.panel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/preset/patch_name/index.html">preset.patch_name</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/slider/index.html">slider</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/slider/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/slider/slider/index.html">slider.slider</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/slider/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/slider/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/slider/index.html#slider.Slider"><code class="docutils literal notranslate"><span class="pre">Slider</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/dialog/index.html">dialog</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/dialog/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/dialog/progress/index.html">dialog.progress</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/viewer/index.html">viewer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/viewer/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/viewer/log/index.html">viewer.log</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/button/index.html">button</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/button/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/channel/index.html">button.channel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/favorite/index.html">button.favorite</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/sequencer/index.html">button.sequencer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/waveform/index.html">button.waveform</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/button/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/button/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/index.html#button.ChannelButton"><code class="docutils literal notranslate"><span class="pre">ChannelButton</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/index.html#button.SequencerSquare"><code class="docutils literal notranslate"><span class="pre">SequencerSquare</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/switch/index.html">switch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/switch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/switch/partial/index.html">switch.partial</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/switch/switch/index.html">switch.switch</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/filter/index.html">filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/filter/index.html#filter.FilterWidget"><code class="docutils literal notranslate"><span class="pre">FilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/display/index.html">display</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/display/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/display/digital/index.html">display.digital</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/display/pattern/index.html">display.pattern</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/display/value/index.html">display.value</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/pattern/index.html">pattern</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/pattern/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pattern/measure/index.html">pattern.measure</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/spin_box/index.html">spin_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/spin_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/spin_box/spin_box/index.html">spin_box.spin_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/envelope/index.html">envelope</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/envelope/base/index.html">envelope.base</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/indicator/index.html">indicator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/indicator/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/indicator/led/index.html">indicator.led</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/indicator/midi/index.html">indicator.midi</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/combo_box/index.html">combo_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/combo_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/combo_box/combo_box/index.html">combo_box.combo_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/index.html">jdxi_editor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/globals/index.html">jdxi_editor.globals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/jdxi/index.html">jdxi_editor.jdxi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/log/index.html">jdxi_editor.log</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/main/index.html">jdxi_editor.main</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/midi/index.html">jdxi_editor.midi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/project/index.html">jdxi_editor.project</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/resources/index.html">jdxi_editor.resources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/ui/index.html">jdxi_editor.ui</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html">filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#filter_plot.FilterPlot"><code class="docutils literal notranslate"><span class="pre">FilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html">envelope_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#envelope_plot.midi_value_to_float"><code class="docutils literal notranslate"><span class="pre">midi_value_to_float()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#envelope_plot.WMTEnvPlot"><code class="docutils literal notranslate"><span class="pre">WMTEnvPlot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#envelope_plot.app"><code class="docutils literal notranslate"><span class="pre">app</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/wave_selector/index.html">wave_selector</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/wave_selector/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/wave_selector/wave_selector/index.html">wave_selector.wave_selector</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/analog_filter/index.html">analog_filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/analog_filter/index.html#analog_filter.AnalogFilterWidget"><code class="docutils literal notranslate"><span class="pre">AnalogFilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/slider_spinbox/index.html">slider_spinbox</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/slider_spinbox/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/slider_spinbox/slider_spinbox/index.html">slider_spinbox.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html">analog_filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#analog_filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#analog_filter_plot.AnalogFilterPlot"><code class="docutils literal notranslate"><span class="pre">AnalogFilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">JD-Xi Editor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">jdxi_editor.midi.data.address.address</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for jdxi_editor.midi.data.address.address</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Parameter Address Map</span>
+
+<span class="sd">Example Usage:</span>
+<span class="sd">--------------</span>
+
+<span class="sd">&gt;&gt;&gt; class AddressMemoryAreaMSB(Address):</span>
+<span class="sd">...    PROGRAM = 0x18</span>
+<span class="sd">...    TEMPORARY_TONE = 0x19</span>
+<span class="sd">... # Add an offset to a base address</span>
+<span class="sd">... addr_bytes = AddressMemoryAreaMSB.PROGRAM.add_offset((0x00, 0x20, 0x00))</span>
+<span class="sd">... print(addr_bytes)  # (0x18, 0x00, 0x20, 0x00)</span>
+<span class="sd">... # Get SysEx-ready address</span>
+<span class="sd">... sysex_address = AddressMemoryAreaMSB.PROGRAM.to_sysex_address((0x00, 0x20, 0x00))</span>
+<span class="sd">... print(sysex_address)  # b&#39;\x18\x00\x20\x00&#39;</span>
+<span class="sd">... # Lookup</span>
+<span class="sd">... found = AddressMemoryAreaMSB.get_parameter_by_address(0x19)</span>
+<span class="sd">... print(found)  # ProgramAddress.TEMPORARY_TONE</span>
+
+<span class="sd">SysExByte</span>
+
+<span class="sd">Example usage:</span>
+<span class="sd">--------------</span>
+<span class="sd">&gt;&gt;&gt; command = CommandID.DT1</span>
+<span class="sd">... print(f&quot;Command: {command}, Value: {command.value}, Message Position: {command.message_position}&quot;)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">unique</span><span class="p">,</span> <span class="n">IntEnum</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">List</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.jdxi.sysex.bitmask</span><span class="w"> </span><span class="kn">import</span> <span class="n">BitMask</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.data.address.sysex</span><span class="w"> </span><span class="kn">import</span> <span class="n">ZERO_BYTE</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.data.address.sysex_byte</span><span class="w"> </span><span class="kn">import</span> <span class="n">SysExByte</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.data.parameter.drum.addresses</span><span class="w"> </span><span class="kn">import</span> <span class="n">DRUM_ADDRESS_MAP</span>
+
+<div class="viewcode-block" id="T">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.T">[docs]</a>
+<span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="s2">&quot;Address&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DIGITAL_PARTIAL_MAP">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.DIGITAL_PARTIAL_MAP">[docs]</a>
+<span class="n">DIGITAL_PARTIAL_MAP</span> <span class="o">=</span> <span class="p">{</span><span class="n">i</span><span class="p">:</span> <span class="mh">0x1F</span> <span class="o">+</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">)}</span>  <span class="c1"># 1: 0x20, 2: 0x21, 3: 0x22</span></div>
+
+
+
+<span class="nd">@unique</span>
+<div class="viewcode-block" id="RolandID">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.RolandID">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">RolandID</span><span class="p">(</span><span class="n">IntEnum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Roland IDs&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="RolandID.ROLAND_ID">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.RolandID.ROLAND_ID">[docs]</a>
+    <span class="n">ROLAND_ID</span> <span class="o">=</span> <span class="mh">0x41</span></div>
+
+<div class="viewcode-block" id="RolandID.DEVICE_ID">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.RolandID.DEVICE_ID">[docs]</a>
+    <span class="n">DEVICE_ID</span> <span class="o">=</span> <span class="mh">0x10</span></div>
+</div>
+
+
+
+<span class="nd">@unique</span>
+<div class="viewcode-block" id="ResponseID">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.ResponseID">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ResponseID</span><span class="p">(</span><span class="n">IntEnum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Midi responses&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ResponseID.ACK">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.ResponseID.ACK">[docs]</a>
+    <span class="n">ACK</span> <span class="o">=</span> <span class="mh">0x4F</span>  <span class="c1"># Acknowledge</span></div>
+
+<div class="viewcode-block" id="ResponseID.ERR">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.ResponseID.ERR">[docs]</a>
+    <span class="n">ERR</span> <span class="o">=</span> <span class="mh">0x4E</span>  <span class="c1"># Error</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="Address">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.Address">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Address</span><span class="p">(</span><span class="n">SysExByte</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for Roland-style hierarchical memory address enums (e.g., 0x18, 0x19, etc.)</span>
+<span class="sd">    Includes lookup, offset arithmetic, and SysEx-ready address formatting.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Address.add_offset">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.Address.add_offset">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_offset</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">address_offset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the full 4-byte address by adding a 3-byte offset to the base address.</span>
+<span class="sd">        The base address is assumed to be a single byte (e.g., 0x18).</span>
+<span class="sd">        :param address_offset: Union[int, Tuple[int, int, int]] The address offset</span>
+<span class="sd">        :return: tuple[int, Any] The full 4-byte address</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">base</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">address_offset</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">offset_bytes</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="p">(</span><span class="n">address_offset</span> <span class="o">&gt;&gt;</span> <span class="mi">16</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">BitMask</span><span class="o">.</span><span class="n">FULL_BYTE</span><span class="p">,</span>
+                <span class="p">(</span><span class="n">address_offset</span> <span class="o">&gt;&gt;</span> <span class="mi">8</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">BitMask</span><span class="o">.</span><span class="n">FULL_BYTE</span><span class="p">,</span>
+                <span class="n">address_offset</span> <span class="o">&amp;</span> <span class="n">BitMask</span><span class="o">.</span><span class="n">FULL_BYTE</span><span class="p">,</span>
+            <span class="p">]</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">address_offset</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">address_offset</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">offset_bytes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">address_offset</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Offset must be an int or a 3-byte tuple&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">b</span> <span class="o">&gt;</span> <span class="mh">0x7F</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">offset_bytes</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;SysEx address bytes must be 7-bit (0x00 to 0x7F)&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">base</span><span class="p">,</span> <span class="o">*</span><span class="n">offset_bytes</span></div>
+
+
+<div class="viewcode-block" id="Address.to_sysex_address">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.Address.to_sysex_address">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_sysex_address</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">address_offset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the full 4-byte address as a `bytes` object, suitable for SysEx messages.</span>
+
+<span class="sd">        :param address_offset: Union[int, Tuple[int, int, int]] The address offset</span>
+<span class="sd">        :return: bytes The full 4-byte address</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">bytes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">add_offset</span><span class="p">(</span><span class="n">address_offset</span><span class="p">))</span></div>
+
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="Address.from_sysex_bytes">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.Address.from_sysex_bytes">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_sysex_bytes</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">address</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create an Address object from a 4-byte SysEx address.</span>
+
+<span class="sd">        :param address: bytes The 4-byte SysEx address</span>
+<span class="sd">        :return: Optional[T] The Address object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">address</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_parameter_by_address</span><span class="p">(</span><span class="n">address</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="Address.__repr__">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.Address.__repr__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: 0x</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s2">02X</span><span class="si">}</span><span class="s2">&gt;&quot;</span></div>
+
+
+<div class="viewcode-block" id="Address.__str__">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.Address.__str__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: 0x</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s2">02X</span><span class="si">}</span><span class="s2">&quot;</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="RolandSysExAddress">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.RolandSysExAddress">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">RolandSysExAddress</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents a full 4-byte SysEx address (MSB, UMB, LMB, LSB), with support for</span>
+<span class="sd">    address arithmetic, formatting, and conversion to/from SysEx message bytes.</span>
+<span class="sd">    :param msb: int The MSB</span>
+<span class="sd">    :param umb: int The UMB</span>
+<span class="sd">    :param lmb: int The LMB</span>
+<span class="sd">    :param lsb: int The LSB</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="RolandSysExAddress.__init__">
+<a class="viewcode-back" href="../../../../../jdxi_editor.midi.data.address.html#jdxi_editor.midi.data.address.address.RolandSysExAddress.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msb</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">umb</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">lmb</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">lsb</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<div class="viewcode-block" id="RolandSysExAddress.msb">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.RolandSysExAddress.msb">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msb</span> <span class="o">=</span> <span class="n">msb</span></div>
+
+<div class="viewcode-block" id="RolandSysExAddress.umb">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.RolandSysExAddress.umb">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">umb</span> <span class="o">=</span> <span class="n">umb</span></div>
+
+<div class="viewcode-block" id="RolandSysExAddress.lmb">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.RolandSysExAddress.lmb">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lmb</span> <span class="o">=</span> <span class="n">lmb</span></div>
+
+<div class="viewcode-block" id="RolandSysExAddress.lsb">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.RolandSysExAddress.lsb">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lsb</span> <span class="o">=</span> <span class="n">lsb</span></div>
+</div>
+
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="RolandSysExAddress.from_bytes">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.RolandSysExAddress.from_bytes">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_bytes</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">RolandSysExAddress</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a RolandSysExAddress object from a 4-byte bytes object.</span>
+
+<span class="sd">        :param b: bytes The 4-byte bytes object</span>
+<span class="sd">        :return: Optional[RolandSysExAddress] The RolandSysExAddress object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="o">*</span><span class="n">b</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RolandSysExAddress.to_list">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.RolandSysExAddress.to_list">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert the RolandSysExAddress object to a list of integers.</span>
+
+<span class="sd">        :return: List[int] The list of integers</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">msb</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">umb</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lmb</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lsb</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="RolandSysExAddress.to_bytes">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.RolandSysExAddress.to_bytes">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert the RolandSysExAddress object to a 4-byte bytes object.</span>
+
+<span class="sd">        :return: bytes The 4-byte bytes object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">bytes</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">msb</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">umb</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lmb</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lsb</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="RolandSysExAddress.add_offset">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.RolandSysExAddress.add_offset">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_offset</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">offset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RolandSysExAddress</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds a 3-byte offset to the lower three bytes (UMB, LMB, LSB).</span>
+<span class="sd">        MSB remains unchanged.</span>
+<span class="sd">        :param offset: Union[int, tuple[int, int, int]] The offset</span>
+<span class="sd">        :return: RolandSysExAddress The RolandSysExAddress object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">offset</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">offset_bytes</span> <span class="o">=</span> <span class="p">[(</span><span class="n">offset</span> <span class="o">&gt;&gt;</span> <span class="mi">16</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0x7F</span><span class="p">,</span> <span class="p">(</span><span class="n">offset</span> <span class="o">&gt;&gt;</span> <span class="mi">8</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">BitMask</span><span class="o">.</span><span class="n">LOW_7_BITS</span><span class="p">,</span> <span class="n">offset</span> <span class="o">&amp;</span> <span class="n">BitMask</span><span class="o">.</span><span class="n">LOW_7_BITS</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">offset</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">offset</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">offset_bytes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">offset</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Offset must be an int or a 3-byte tuple&quot;</span><span class="p">)</span>
+
+        <span class="n">new_umb</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">umb</span> <span class="o">+</span> <span class="n">offset_bytes</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&amp;</span> <span class="n">BitMask</span><span class="o">.</span><span class="n">LOW_7_BITS</span>
+        <span class="n">new_lmb</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lmb</span> <span class="o">+</span> <span class="n">offset_bytes</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">&amp;</span> <span class="n">BitMask</span><span class="o">.</span><span class="n">LOW_7_BITS</span>
+        <span class="n">new_lsb</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lsb</span> <span class="o">+</span> <span class="n">offset_bytes</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">&amp;</span> <span class="n">BitMask</span><span class="o">.</span><span class="n">LOW_7_BITS</span>
+        <span class="k">return</span> <span class="n">RolandSysExAddress</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">msb</span><span class="p">,</span> <span class="n">new_umb</span><span class="p">,</span> <span class="n">new_lmb</span><span class="p">,</span> <span class="n">new_lsb</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RolandSysExAddress.__repr__">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.RolandSysExAddress.__repr__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a string representation of the RolandSysExAddress object.</span>
+
+<span class="sd">        :return: str The string representation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(msb=0x</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">msb</span><span class="p">)</span><span class="si">:</span><span class="s2">02X</span><span class="si">}</span><span class="s2">, umb=0x</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">umb</span><span class="p">)</span><span class="si">:</span><span class="s2">02X</span><span class="si">}</span><span class="s2">, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;lmb=0x</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lmb</span><span class="p">)</span><span class="si">:</span><span class="s2">02X</span><span class="si">}</span><span class="s2">, lsb=0x</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lsb</span><span class="p">)</span><span class="si">:</span><span class="s2">02X</span><span class="si">}</span><span class="s2">)&gt;&quot;</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RolandSysExAddress.__str__">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.RolandSysExAddress.__str__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a string representation of the RolandSysExAddress object.</span>
+
+<span class="sd">        :return: str The string representation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;0x</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">msb</span><span class="p">)</span><span class="si">:</span><span class="s2">02X</span><span class="si">}</span><span class="s2"> 0x</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">umb</span><span class="p">)</span><span class="si">:</span><span class="s2">02X</span><span class="si">}</span><span class="s2"> 0x</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lmb</span><span class="p">)</span><span class="si">:</span><span class="s2">02X</span><span class="si">}</span><span class="s2"> 0x</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lsb</span><span class="p">)</span><span class="si">:</span><span class="s2">02X</span><span class="si">}</span><span class="s2">&quot;</span></div>
+
+
+<div class="viewcode-block" id="RolandSysExAddress.__eq__">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.RolandSysExAddress.__eq__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if the RolandSysExAddress object is equal to another object.</span>
+
+<span class="sd">        :param other: object The other object</span>
+<span class="sd">        :return: bool True if the objects are equal, False otherwise</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">RolandSysExAddress</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">NotImplemented</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">()</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="RolandSysExAddress.__hash__">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.RolandSysExAddress.__hash__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the hash of the RolandSysExAddress object.</span>
+
+<span class="sd">        :return: int The hash of the RolandSysExAddress object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="RolandSysExAddress.copy">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.RolandSysExAddress.copy">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RolandSysExAddress</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">RolandSysExAddress</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">msb</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">umb</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lsb</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lsb</span><span class="p">)</span></div>
+</div>
+
+
+
+
+
+<span class="c1"># ==========================</span>
+<span class="c1"># JD-Xi SysEx Header</span>
+<span class="c1"># ==========================</span>
+
+
+<div class="viewcode-block" id="ModelID">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.ModelID">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ModelID</span><span class="p">(</span><span class="n">Address</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Model ID</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ModelID.ROLAND_ID">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.ModelID.ROLAND_ID">[docs]</a>
+    <span class="n">ROLAND_ID</span> <span class="o">=</span> <span class="mh">0x41</span></div>
+
+<div class="viewcode-block" id="ModelID.DEVICE_ID">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.ModelID.DEVICE_ID">[docs]</a>
+    <span class="n">DEVICE_ID</span> <span class="o">=</span> <span class="mh">0x10</span></div>
+
+    <span class="c1"># Model ID bytes</span>
+<div class="viewcode-block" id="ModelID.MODEL_ID_1">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.ModelID.MODEL_ID_1">[docs]</a>
+    <span class="n">MODEL_ID_1</span> <span class="o">=</span> <span class="n">ZERO_BYTE</span>  <span class="c1"># Manufacturer ID extension</span></div>
+
+<div class="viewcode-block" id="ModelID.MODEL_ID_2">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.ModelID.MODEL_ID_2">[docs]</a>
+    <span class="n">MODEL_ID_2</span> <span class="o">=</span> <span class="n">ZERO_BYTE</span>  <span class="c1"># Device family code MSB</span></div>
+
+<div class="viewcode-block" id="ModelID.MODEL_ID_3">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.ModelID.MODEL_ID_3">[docs]</a>
+    <span class="n">MODEL_ID_3</span> <span class="o">=</span> <span class="n">ZERO_BYTE</span>  <span class="c1"># Device family code LSB</span></div>
+
+<div class="viewcode-block" id="ModelID.MODEL_ID_4">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.ModelID.MODEL_ID_4">[docs]</a>
+    <span class="n">MODEL_ID_4</span> <span class="o">=</span> <span class="mh">0x0E</span>  <span class="c1"># JD-XI Product code</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="JD_XI_MODEL_ID">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.JD_XI_MODEL_ID">[docs]</a>
+<span class="n">JD_XI_MODEL_ID</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">ModelID</span><span class="o">.</span><span class="n">MODEL_ID_1</span><span class="p">,</span>
+    <span class="n">ModelID</span><span class="o">.</span><span class="n">MODEL_ID_2</span><span class="p">,</span>
+    <span class="n">ModelID</span><span class="o">.</span><span class="n">MODEL_ID_3</span><span class="p">,</span>
+    <span class="n">ModelID</span><span class="o">.</span><span class="n">MODEL_ID_4</span><span class="p">,</span>
+<span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="JD_XI_HEADER_LIST">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.JD_XI_HEADER_LIST">[docs]</a>
+<span class="n">JD_XI_HEADER_LIST</span> <span class="o">=</span> <span class="p">[</span><span class="n">RolandID</span><span class="o">.</span><span class="n">ROLAND_ID</span><span class="p">,</span> <span class="n">RolandID</span><span class="o">.</span><span class="n">DEVICE_ID</span><span class="p">,</span> <span class="o">*</span><span class="n">JD_XI_MODEL_ID</span><span class="p">]</span></div>
+
+
+
+<span class="nd">@unique</span>
+<div class="viewcode-block" id="CommandID">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.CommandID">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CommandID</span><span class="p">(</span><span class="n">SysExByte</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Roland Commands&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="CommandID.DT1">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.CommandID.DT1">[docs]</a>
+    <span class="n">DT1</span> <span class="o">=</span> <span class="mh">0x12</span>  <span class="c1"># Data Set 1</span></div>
+
+<div class="viewcode-block" id="CommandID.RQ1">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.CommandID.RQ1">[docs]</a>
+    <span class="n">RQ1</span> <span class="o">=</span> <span class="mh">0x11</span>  <span class="c1"># Data Request 1</span></div>
+
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="CommandID.message_position">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.CommandID.message_position">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">message_position</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the fixed message position for command bytes.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="mi">7</span></div>
+</div>
+
+
+
+<span class="c1"># ==========================</span>
+<span class="c1"># Memory and Program Areas</span>
+<span class="c1"># ==========================</span>
+
+
+<span class="nd">@unique</span>
+<div class="viewcode-block" id="AddressStartMSB">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressStartMSB">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">AddressStartMSB</span><span class="p">(</span><span class="n">Address</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Memory and Program Areas</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="AddressStartMSB.SYSTEM">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressStartMSB.SYSTEM">[docs]</a>
+    <span class="n">SYSTEM</span> <span class="o">=</span> <span class="mh">0x01</span></div>
+
+<div class="viewcode-block" id="AddressStartMSB.SETUP">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressStartMSB.SETUP">[docs]</a>
+    <span class="n">SETUP</span> <span class="o">=</span> <span class="mh">0x02</span></div>
+
+<div class="viewcode-block" id="AddressStartMSB.TEMPORARY_PROGRAM">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressStartMSB.TEMPORARY_PROGRAM">[docs]</a>
+    <span class="n">TEMPORARY_PROGRAM</span> <span class="o">=</span> <span class="mh">0x18</span></div>
+
+<div class="viewcode-block" id="AddressStartMSB.TEMPORARY_TONE">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressStartMSB.TEMPORARY_TONE">[docs]</a>
+    <span class="n">TEMPORARY_TONE</span> <span class="o">=</span> <span class="mh">0x19</span></div>
+
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="AddressStartMSB.message_position">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressStartMSB.message_position">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">message_position</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the fixed message position for command bytes.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="mi">8</span></div>
+</div>
+
+
+
+<span class="nd">@unique</span>
+<div class="viewcode-block" id="AddressOffsetTemporaryToneUMB">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetTemporaryToneUMB">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">AddressOffsetTemporaryToneUMB</span><span class="p">(</span><span class="n">Address</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Address Offset Temporary Tone UMB</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_1">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_1">[docs]</a>
+    <span class="n">DIGITAL_SYNTH_1</span> <span class="o">=</span> <span class="mh">0x01</span>  <span class="c1"># Avoiding &quot;Part&quot; because of Partials</span></div>
+
+<div class="viewcode-block" id="AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_2">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_2">[docs]</a>
+    <span class="n">DIGITAL_SYNTH_2</span> <span class="o">=</span> <span class="mh">0x21</span></div>
+
+<div class="viewcode-block" id="AddressOffsetTemporaryToneUMB.ANALOG_SYNTH">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetTemporaryToneUMB.ANALOG_SYNTH">[docs]</a>
+    <span class="n">ANALOG_SYNTH</span> <span class="o">=</span> <span class="mh">0x42</span></div>
+
+<div class="viewcode-block" id="AddressOffsetTemporaryToneUMB.DRUM_KIT">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetTemporaryToneUMB.DRUM_KIT">[docs]</a>
+    <span class="n">DRUM_KIT</span> <span class="o">=</span> <span class="mh">0x70</span></div>
+
+<div class="viewcode-block" id="AddressOffsetTemporaryToneUMB.COMMON">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetTemporaryToneUMB.COMMON">[docs]</a>
+    <span class="n">COMMON</span> <span class="o">=</span> <span class="mh">0x00</span></div>
+
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="AddressOffsetTemporaryToneUMB.message_position">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetTemporaryToneUMB.message_position">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">message_position</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the fixed message position for command bytes.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="mi">9</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="AddressOffsetSystemUMB">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetSystemUMB">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">AddressOffsetSystemUMB</span><span class="p">(</span><span class="n">Address</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Address Offset System UMB</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="AddressOffsetSystemUMB.COMMON">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetSystemUMB.COMMON">[docs]</a>
+    <span class="n">COMMON</span> <span class="o">=</span> <span class="mh">0x00</span></div>
+
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="AddressOffsetSystemUMB.message_position">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetSystemUMB.message_position">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">message_position</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the fixed message position for command bytes.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="mi">9</span></div>
+</div>
+
+
+
+<span class="nd">@unique</span>
+<div class="viewcode-block" id="AddressOffsetSystemLMB">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetSystemLMB">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">AddressOffsetSystemLMB</span><span class="p">(</span><span class="n">Address</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Address Offset System LMB</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="AddressOffsetSystemLMB.COMMON">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetSystemLMB.COMMON">[docs]</a>
+    <span class="n">COMMON</span> <span class="o">=</span> <span class="mh">0x00</span></div>
+
+<div class="viewcode-block" id="AddressOffsetSystemLMB.CONTROLLER">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetSystemLMB.CONTROLLER">[docs]</a>
+    <span class="n">CONTROLLER</span> <span class="o">=</span> <span class="mh">0x03</span></div>
+
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="AddressOffsetSystemLMB.message_position">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetSystemLMB.message_position">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">message_position</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the fixed message position for command bytes.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="mi">10</span></div>
+</div>
+
+
+
+<span class="nd">@unique</span>
+<div class="viewcode-block" id="AddressOffsetSuperNATURALLMB">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetSuperNATURALLMB">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">AddressOffsetSuperNATURALLMB</span><span class="p">(</span><span class="n">Address</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Address Offset SuperNATURAL LMB</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="AddressOffsetSuperNATURALLMB.COMMON">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetSuperNATURALLMB.COMMON">[docs]</a>
+    <span class="n">COMMON</span> <span class="o">=</span> <span class="mh">0x00</span></div>
+
+<div class="viewcode-block" id="AddressOffsetSuperNATURALLMB.PARTIAL_1">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetSuperNATURALLMB.PARTIAL_1">[docs]</a>
+    <span class="n">PARTIAL_1</span> <span class="o">=</span> <span class="mh">0x20</span></div>
+
+<div class="viewcode-block" id="AddressOffsetSuperNATURALLMB.PARTIAL_2">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetSuperNATURALLMB.PARTIAL_2">[docs]</a>
+    <span class="n">PARTIAL_2</span> <span class="o">=</span> <span class="mh">0x21</span></div>
+
+<div class="viewcode-block" id="AddressOffsetSuperNATURALLMB.PARTIAL_3">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetSuperNATURALLMB.PARTIAL_3">[docs]</a>
+    <span class="n">PARTIAL_3</span> <span class="o">=</span> <span class="mh">0x22</span></div>
+
+<div class="viewcode-block" id="AddressOffsetSuperNATURALLMB.MODIFY">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetSuperNATURALLMB.MODIFY">[docs]</a>
+    <span class="n">MODIFY</span> <span class="o">=</span> <span class="mh">0x50</span></div>
+
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="AddressOffsetSuperNATURALLMB.message_position">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetSuperNATURALLMB.message_position">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">message_position</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the fixed message position for command bytes.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="mi">10</span></div>
+
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="AddressOffsetSuperNATURALLMB.digital_partial_offset">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetSuperNATURALLMB.digital_partial_offset">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">digital_partial_offset</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">partial_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the LMB offset for the given drum partial (0–37).&quot;&quot;&quot;</span>
+        <span class="n">base_address</span> <span class="o">=</span> <span class="n">DIGITAL_PARTIAL_MAP</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">partial_number</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">base_address</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="AddressOffsetAnalogLMB">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetAnalogLMB">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">AddressOffsetAnalogLMB</span><span class="p">(</span><span class="n">Address</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Analog Synth Tone</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="AddressOffsetAnalogLMB.COMMON">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetAnalogLMB.COMMON">[docs]</a>
+    <span class="n">COMMON</span> <span class="o">=</span> <span class="mh">0x00</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="AddressOffsetProgramLMB">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">AddressOffsetProgramLMB</span><span class="p">(</span><span class="n">Address</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Address Offset Program LMB</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="AddressOffsetProgramLMB.COMMON">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.COMMON">[docs]</a>
+    <span class="n">COMMON</span> <span class="o">=</span> <span class="mh">0x00</span></div>
+
+<div class="viewcode-block" id="AddressOffsetProgramLMB.VOCAL_EFFECT">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.VOCAL_EFFECT">[docs]</a>
+    <span class="n">VOCAL_EFFECT</span> <span class="o">=</span> <span class="mh">0x01</span></div>
+
+<div class="viewcode-block" id="AddressOffsetProgramLMB.EFFECT_1">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.EFFECT_1">[docs]</a>
+    <span class="n">EFFECT_1</span> <span class="o">=</span> <span class="mh">0x02</span></div>
+
+<div class="viewcode-block" id="AddressOffsetProgramLMB.EFFECT_2">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.EFFECT_2">[docs]</a>
+    <span class="n">EFFECT_2</span> <span class="o">=</span> <span class="mh">0x04</span></div>
+
+<div class="viewcode-block" id="AddressOffsetProgramLMB.DELAY">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DELAY">[docs]</a>
+    <span class="n">DELAY</span> <span class="o">=</span> <span class="mh">0x06</span></div>
+
+<div class="viewcode-block" id="AddressOffsetProgramLMB.REVERB">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.REVERB">[docs]</a>
+    <span class="n">REVERB</span> <span class="o">=</span> <span class="mh">0x08</span></div>
+
+<div class="viewcode-block" id="AddressOffsetProgramLMB.PART_DIGITAL_SYNTH_1">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.PART_DIGITAL_SYNTH_1">[docs]</a>
+    <span class="n">PART_DIGITAL_SYNTH_1</span> <span class="o">=</span> <span class="mh">0x20</span></div>
+
+<div class="viewcode-block" id="AddressOffsetProgramLMB.PART_DIGITAL_SYNTH_2">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.PART_DIGITAL_SYNTH_2">[docs]</a>
+    <span class="n">PART_DIGITAL_SYNTH_2</span> <span class="o">=</span> <span class="mh">0x21</span></div>
+
+<div class="viewcode-block" id="AddressOffsetProgramLMB.PART_ANALOG">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.PART_ANALOG">[docs]</a>
+    <span class="n">PART_ANALOG</span> <span class="o">=</span> <span class="mh">0x22</span></div>
+
+<div class="viewcode-block" id="AddressOffsetProgramLMB.PART_DRUM">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.PART_DRUM">[docs]</a>
+    <span class="n">PART_DRUM</span> <span class="o">=</span> <span class="mh">0x23</span></div>
+
+<div class="viewcode-block" id="AddressOffsetProgramLMB.ZONE_DIGITAL_SYNTH_1">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.ZONE_DIGITAL_SYNTH_1">[docs]</a>
+    <span class="n">ZONE_DIGITAL_SYNTH_1</span> <span class="o">=</span> <span class="mh">0x30</span></div>
+
+<div class="viewcode-block" id="AddressOffsetProgramLMB.ZONE_DIGITAL_SYNTH_2">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.ZONE_DIGITAL_SYNTH_2">[docs]</a>
+    <span class="n">ZONE_DIGITAL_SYNTH_2</span> <span class="o">=</span> <span class="mh">0x31</span></div>
+
+<div class="viewcode-block" id="AddressOffsetProgramLMB.ZONE_ANALOG">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.ZONE_ANALOG">[docs]</a>
+    <span class="n">ZONE_ANALOG</span> <span class="o">=</span> <span class="mh">0x32</span></div>
+
+<div class="viewcode-block" id="AddressOffsetProgramLMB.ZONE_DRUM">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.ZONE_DRUM">[docs]</a>
+    <span class="n">ZONE_DRUM</span> <span class="o">=</span> <span class="mh">0x33</span></div>
+
+<div class="viewcode-block" id="AddressOffsetProgramLMB.CONTROLLER">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.CONTROLLER">[docs]</a>
+    <span class="n">CONTROLLER</span> <span class="o">=</span> <span class="mh">0x40</span></div>
+
+<div class="viewcode-block" id="AddressOffsetProgramLMB.DRUM_DEFAULT_PARTIAL">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_DEFAULT_PARTIAL">[docs]</a>
+    <span class="n">DRUM_DEFAULT_PARTIAL</span> <span class="o">=</span> <span class="n">DRUM_ADDRESS_MAP</span><span class="p">[</span><span class="s2">&quot;BD1&quot;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="AddressOffsetProgramLMB.DIGITAL_DEFAULT_PARTIAL">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DIGITAL_DEFAULT_PARTIAL">[docs]</a>
+    <span class="n">DIGITAL_DEFAULT_PARTIAL</span> <span class="o">=</span> <span class="n">DIGITAL_PARTIAL_MAP</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="AddressOffsetProgramLMB.DRUM_KIT_PART_1">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_1">[docs]</a>
+    <span class="n">DRUM_KIT_PART_1</span> <span class="o">=</span> <span class="mh">0x2E</span></div>
+
+<div class="viewcode-block" id="AddressOffsetProgramLMB.DRUM_KIT_PART_2">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_2">[docs]</a>
+    <span class="n">DRUM_KIT_PART_2</span> <span class="o">=</span> <span class="mh">0x30</span></div>
+
+<div class="viewcode-block" id="AddressOffsetProgramLMB.DRUM_KIT_PART_3">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_3">[docs]</a>
+    <span class="n">DRUM_KIT_PART_3</span> <span class="o">=</span> <span class="mh">0x32</span></div>
+
+<div class="viewcode-block" id="AddressOffsetProgramLMB.DRUM_KIT_PART_4">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_4">[docs]</a>
+    <span class="n">DRUM_KIT_PART_4</span> <span class="o">=</span> <span class="mh">0x34</span></div>
+
+<div class="viewcode-block" id="AddressOffsetProgramLMB.DRUM_KIT_PART_5">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_5">[docs]</a>
+    <span class="n">DRUM_KIT_PART_5</span> <span class="o">=</span> <span class="mh">0x36</span></div>
+
+<div class="viewcode-block" id="AddressOffsetProgramLMB.DRUM_KIT_PART_6">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_6">[docs]</a>
+    <span class="n">DRUM_KIT_PART_6</span> <span class="o">=</span> <span class="mh">0x38</span></div>
+
+<div class="viewcode-block" id="AddressOffsetProgramLMB.DRUM_KIT_PART_7">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_7">[docs]</a>
+    <span class="n">DRUM_KIT_PART_7</span> <span class="o">=</span> <span class="mh">0x3A</span></div>
+
+<div class="viewcode-block" id="AddressOffsetProgramLMB.DRUM_KIT_PART_8">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_8">[docs]</a>
+    <span class="n">DRUM_KIT_PART_8</span> <span class="o">=</span> <span class="mh">0x3C</span></div>
+
+<div class="viewcode-block" id="AddressOffsetProgramLMB.DRUM_KIT_PART_9">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_9">[docs]</a>
+    <span class="n">DRUM_KIT_PART_9</span> <span class="o">=</span> <span class="mh">0x3E</span></div>
+
+<div class="viewcode-block" id="AddressOffsetProgramLMB.DRUM_KIT_PART_10">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_10">[docs]</a>
+    <span class="n">DRUM_KIT_PART_10</span> <span class="o">=</span> <span class="mh">0x40</span></div>
+
+<div class="viewcode-block" id="AddressOffsetProgramLMB.DRUM_KIT_PART_11">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_11">[docs]</a>
+    <span class="n">DRUM_KIT_PART_11</span> <span class="o">=</span> <span class="mh">0x42</span></div>
+
+<div class="viewcode-block" id="AddressOffsetProgramLMB.DRUM_KIT_PART_12">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_12">[docs]</a>
+    <span class="n">DRUM_KIT_PART_12</span> <span class="o">=</span> <span class="mh">0x44</span></div>
+
+<div class="viewcode-block" id="AddressOffsetProgramLMB.DRUM_KIT_PART_13">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_13">[docs]</a>
+    <span class="n">DRUM_KIT_PART_13</span> <span class="o">=</span> <span class="mh">0x46</span></div>
+
+<div class="viewcode-block" id="AddressOffsetProgramLMB.DRUM_KIT_PART_14">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_14">[docs]</a>
+    <span class="n">DRUM_KIT_PART_14</span> <span class="o">=</span> <span class="mh">0x48</span></div>
+
+<div class="viewcode-block" id="AddressOffsetProgramLMB.DRUM_KIT_PART_15">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_15">[docs]</a>
+    <span class="n">DRUM_KIT_PART_15</span> <span class="o">=</span> <span class="mh">0x4A</span></div>
+
+<div class="viewcode-block" id="AddressOffsetProgramLMB.DRUM_KIT_PART_16">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_16">[docs]</a>
+    <span class="n">DRUM_KIT_PART_16</span> <span class="o">=</span> <span class="mh">0x4C</span></div>
+
+<div class="viewcode-block" id="AddressOffsetProgramLMB.DRUM_KIT_PART_17">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_17">[docs]</a>
+    <span class="n">DRUM_KIT_PART_17</span> <span class="o">=</span> <span class="mh">0x4E</span></div>
+
+<div class="viewcode-block" id="AddressOffsetProgramLMB.DRUM_KIT_PART_18">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_18">[docs]</a>
+    <span class="n">DRUM_KIT_PART_18</span> <span class="o">=</span> <span class="mh">0x50</span></div>
+
+<div class="viewcode-block" id="AddressOffsetProgramLMB.DRUM_KIT_PART_19">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_19">[docs]</a>
+    <span class="n">DRUM_KIT_PART_19</span> <span class="o">=</span> <span class="mh">0x52</span></div>
+
+<div class="viewcode-block" id="AddressOffsetProgramLMB.DRUM_KIT_PART_20">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_20">[docs]</a>
+    <span class="n">DRUM_KIT_PART_20</span> <span class="o">=</span> <span class="mh">0x54</span></div>
+
+<div class="viewcode-block" id="AddressOffsetProgramLMB.DRUM_KIT_PART_21">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_21">[docs]</a>
+    <span class="n">DRUM_KIT_PART_21</span> <span class="o">=</span> <span class="mh">0x56</span></div>
+
+<div class="viewcode-block" id="AddressOffsetProgramLMB.DRUM_KIT_PART_22">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_22">[docs]</a>
+    <span class="n">DRUM_KIT_PART_22</span> <span class="o">=</span> <span class="mh">0x58</span></div>
+
+<div class="viewcode-block" id="AddressOffsetProgramLMB.DRUM_KIT_PART_23">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_23">[docs]</a>
+    <span class="n">DRUM_KIT_PART_23</span> <span class="o">=</span> <span class="mh">0x5A</span></div>
+
+<div class="viewcode-block" id="AddressOffsetProgramLMB.DRUM_KIT_PART_24">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_24">[docs]</a>
+    <span class="n">DRUM_KIT_PART_24</span> <span class="o">=</span> <span class="mh">0x5C</span></div>
+
+<div class="viewcode-block" id="AddressOffsetProgramLMB.DRUM_KIT_PART_25">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_25">[docs]</a>
+    <span class="n">DRUM_KIT_PART_25</span> <span class="o">=</span> <span class="mh">0x5E</span></div>
+
+<div class="viewcode-block" id="AddressOffsetProgramLMB.DRUM_KIT_PART_26">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_26">[docs]</a>
+    <span class="n">DRUM_KIT_PART_26</span> <span class="o">=</span> <span class="mh">0x60</span></div>
+
+<div class="viewcode-block" id="AddressOffsetProgramLMB.DRUM_KIT_PART_27">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_27">[docs]</a>
+    <span class="n">DRUM_KIT_PART_27</span> <span class="o">=</span> <span class="mh">0x62</span></div>
+
+<div class="viewcode-block" id="AddressOffsetProgramLMB.DRUM_KIT_PART_28">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_28">[docs]</a>
+    <span class="n">DRUM_KIT_PART_28</span> <span class="o">=</span> <span class="mh">0x64</span></div>
+
+<div class="viewcode-block" id="AddressOffsetProgramLMB.DRUM_KIT_PART_29">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_29">[docs]</a>
+    <span class="n">DRUM_KIT_PART_29</span> <span class="o">=</span> <span class="mh">0x66</span></div>
+
+<div class="viewcode-block" id="AddressOffsetProgramLMB.DRUM_KIT_PART_30">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_30">[docs]</a>
+    <span class="n">DRUM_KIT_PART_30</span> <span class="o">=</span> <span class="mh">0x68</span></div>
+
+<div class="viewcode-block" id="AddressOffsetProgramLMB.DRUM_KIT_PART_31">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_31">[docs]</a>
+    <span class="n">DRUM_KIT_PART_31</span> <span class="o">=</span> <span class="mh">0x6A</span></div>
+
+<div class="viewcode-block" id="AddressOffsetProgramLMB.DRUM_KIT_PART_32">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_32">[docs]</a>
+    <span class="n">DRUM_KIT_PART_32</span> <span class="o">=</span> <span class="mh">0x6C</span></div>
+
+<div class="viewcode-block" id="AddressOffsetProgramLMB.DRUM_KIT_PART_33">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_33">[docs]</a>
+    <span class="n">DRUM_KIT_PART_33</span> <span class="o">=</span> <span class="mh">0x6E</span></div>
+
+<div class="viewcode-block" id="AddressOffsetProgramLMB.DRUM_KIT_PART_34">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_34">[docs]</a>
+    <span class="n">DRUM_KIT_PART_34</span> <span class="o">=</span> <span class="mh">0x70</span></div>
+
+<div class="viewcode-block" id="AddressOffsetProgramLMB.DRUM_KIT_PART_35">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_35">[docs]</a>
+    <span class="n">DRUM_KIT_PART_35</span> <span class="o">=</span> <span class="mh">0x72</span></div>
+
+<div class="viewcode-block" id="AddressOffsetProgramLMB.DRUM_KIT_PART_36">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_36">[docs]</a>
+    <span class="n">DRUM_KIT_PART_36</span> <span class="o">=</span> <span class="mh">0x74</span></div>
+
+<div class="viewcode-block" id="AddressOffsetProgramLMB.DRUM_KIT_PART_37">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.DRUM_KIT_PART_37">[docs]</a>
+    <span class="n">DRUM_KIT_PART_37</span> <span class="o">=</span> <span class="mh">0x76</span></div>
+
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="AddressOffsetProgramLMB.message_position">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.message_position">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">message_position</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the fixed message position for command bytes.</span>
+
+<span class="sd">        :return: int The fixed message position</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="mi">10</span></div>
+
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="AddressOffsetProgramLMB.drum_partial_offset">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetProgramLMB.drum_partial_offset">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">drum_partial_offset</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">partial_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the LMB offset for the given drum partial (0–37).</span>
+
+<span class="sd">        :param partial_number: int The partial number</span>
+<span class="sd">        :return: int The LMB offset</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">base_address</span> <span class="o">=</span> <span class="mh">0x00</span>
+        <span class="n">step</span> <span class="o">=</span> <span class="mh">0x2E</span>
+        <span class="k">return</span> <span class="n">base_address</span> <span class="o">+</span> <span class="p">(</span><span class="n">step</span> <span class="o">*</span> <span class="n">partial_number</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="AddressOffsetDrumKitLMB">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">AddressOffsetDrumKitLMB</span><span class="p">(</span><span class="n">Address</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Address Offset Program LMB</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="AddressOffsetDrumKitLMB.COMMON">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.COMMON">[docs]</a>
+    <span class="n">COMMON</span> <span class="o">=</span> <span class="mh">0x00</span></div>
+
+<div class="viewcode-block" id="AddressOffsetDrumKitLMB.DRUM_DEFAULT_PARTIAL">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_DEFAULT_PARTIAL">[docs]</a>
+    <span class="n">DRUM_DEFAULT_PARTIAL</span> <span class="o">=</span> <span class="n">DRUM_ADDRESS_MAP</span><span class="p">[</span><span class="s2">&quot;BD1&quot;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="AddressOffsetDrumKitLMB.DIGITAL_DEFAULT_PARTIAL">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DIGITAL_DEFAULT_PARTIAL">[docs]</a>
+    <span class="n">DIGITAL_DEFAULT_PARTIAL</span> <span class="o">=</span> <span class="n">DIGITAL_PARTIAL_MAP</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="AddressOffsetDrumKitLMB.DRUM_KIT_PART_1">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_1">[docs]</a>
+    <span class="n">DRUM_KIT_PART_1</span> <span class="o">=</span> <span class="mh">0x2E</span></div>
+
+<div class="viewcode-block" id="AddressOffsetDrumKitLMB.DRUM_KIT_PART_2">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_2">[docs]</a>
+    <span class="n">DRUM_KIT_PART_2</span> <span class="o">=</span> <span class="mh">0x30</span></div>
+
+<div class="viewcode-block" id="AddressOffsetDrumKitLMB.DRUM_KIT_PART_3">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_3">[docs]</a>
+    <span class="n">DRUM_KIT_PART_3</span> <span class="o">=</span> <span class="mh">0x32</span></div>
+
+<div class="viewcode-block" id="AddressOffsetDrumKitLMB.DRUM_KIT_PART_4">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_4">[docs]</a>
+    <span class="n">DRUM_KIT_PART_4</span> <span class="o">=</span> <span class="mh">0x34</span></div>
+
+<div class="viewcode-block" id="AddressOffsetDrumKitLMB.DRUM_KIT_PART_5">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_5">[docs]</a>
+    <span class="n">DRUM_KIT_PART_5</span> <span class="o">=</span> <span class="mh">0x36</span></div>
+
+<div class="viewcode-block" id="AddressOffsetDrumKitLMB.DRUM_KIT_PART_6">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_6">[docs]</a>
+    <span class="n">DRUM_KIT_PART_6</span> <span class="o">=</span> <span class="mh">0x38</span></div>
+
+<div class="viewcode-block" id="AddressOffsetDrumKitLMB.DRUM_KIT_PART_7">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_7">[docs]</a>
+    <span class="n">DRUM_KIT_PART_7</span> <span class="o">=</span> <span class="mh">0x3A</span></div>
+
+<div class="viewcode-block" id="AddressOffsetDrumKitLMB.DRUM_KIT_PART_8">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_8">[docs]</a>
+    <span class="n">DRUM_KIT_PART_8</span> <span class="o">=</span> <span class="mh">0x3C</span></div>
+
+<div class="viewcode-block" id="AddressOffsetDrumKitLMB.DRUM_KIT_PART_9">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_9">[docs]</a>
+    <span class="n">DRUM_KIT_PART_9</span> <span class="o">=</span> <span class="mh">0x3E</span></div>
+
+<div class="viewcode-block" id="AddressOffsetDrumKitLMB.DRUM_KIT_PART_10">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_10">[docs]</a>
+    <span class="n">DRUM_KIT_PART_10</span> <span class="o">=</span> <span class="mh">0x40</span></div>
+
+<div class="viewcode-block" id="AddressOffsetDrumKitLMB.DRUM_KIT_PART_11">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_11">[docs]</a>
+    <span class="n">DRUM_KIT_PART_11</span> <span class="o">=</span> <span class="mh">0x42</span></div>
+
+<div class="viewcode-block" id="AddressOffsetDrumKitLMB.DRUM_KIT_PART_12">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_12">[docs]</a>
+    <span class="n">DRUM_KIT_PART_12</span> <span class="o">=</span> <span class="mh">0x44</span></div>
+
+<div class="viewcode-block" id="AddressOffsetDrumKitLMB.DRUM_KIT_PART_13">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_13">[docs]</a>
+    <span class="n">DRUM_KIT_PART_13</span> <span class="o">=</span> <span class="mh">0x46</span></div>
+
+<div class="viewcode-block" id="AddressOffsetDrumKitLMB.DRUM_KIT_PART_14">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_14">[docs]</a>
+    <span class="n">DRUM_KIT_PART_14</span> <span class="o">=</span> <span class="mh">0x48</span></div>
+
+<div class="viewcode-block" id="AddressOffsetDrumKitLMB.DRUM_KIT_PART_15">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_15">[docs]</a>
+    <span class="n">DRUM_KIT_PART_15</span> <span class="o">=</span> <span class="mh">0x4A</span></div>
+
+<div class="viewcode-block" id="AddressOffsetDrumKitLMB.DRUM_KIT_PART_16">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_16">[docs]</a>
+    <span class="n">DRUM_KIT_PART_16</span> <span class="o">=</span> <span class="mh">0x4C</span></div>
+
+<div class="viewcode-block" id="AddressOffsetDrumKitLMB.DRUM_KIT_PART_17">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_17">[docs]</a>
+    <span class="n">DRUM_KIT_PART_17</span> <span class="o">=</span> <span class="mh">0x4E</span></div>
+
+<div class="viewcode-block" id="AddressOffsetDrumKitLMB.DRUM_KIT_PART_18">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_18">[docs]</a>
+    <span class="n">DRUM_KIT_PART_18</span> <span class="o">=</span> <span class="mh">0x50</span></div>
+
+<div class="viewcode-block" id="AddressOffsetDrumKitLMB.DRUM_KIT_PART_19">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_19">[docs]</a>
+    <span class="n">DRUM_KIT_PART_19</span> <span class="o">=</span> <span class="mh">0x52</span></div>
+
+<div class="viewcode-block" id="AddressOffsetDrumKitLMB.DRUM_KIT_PART_20">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_20">[docs]</a>
+    <span class="n">DRUM_KIT_PART_20</span> <span class="o">=</span> <span class="mh">0x54</span></div>
+
+<div class="viewcode-block" id="AddressOffsetDrumKitLMB.DRUM_KIT_PART_21">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_21">[docs]</a>
+    <span class="n">DRUM_KIT_PART_21</span> <span class="o">=</span> <span class="mh">0x56</span></div>
+
+<div class="viewcode-block" id="AddressOffsetDrumKitLMB.DRUM_KIT_PART_22">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_22">[docs]</a>
+    <span class="n">DRUM_KIT_PART_22</span> <span class="o">=</span> <span class="mh">0x58</span></div>
+
+<div class="viewcode-block" id="AddressOffsetDrumKitLMB.DRUM_KIT_PART_23">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_23">[docs]</a>
+    <span class="n">DRUM_KIT_PART_23</span> <span class="o">=</span> <span class="mh">0x5A</span></div>
+
+<div class="viewcode-block" id="AddressOffsetDrumKitLMB.DRUM_KIT_PART_24">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_24">[docs]</a>
+    <span class="n">DRUM_KIT_PART_24</span> <span class="o">=</span> <span class="mh">0x5C</span></div>
+
+<div class="viewcode-block" id="AddressOffsetDrumKitLMB.DRUM_KIT_PART_25">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_25">[docs]</a>
+    <span class="n">DRUM_KIT_PART_25</span> <span class="o">=</span> <span class="mh">0x5E</span></div>
+
+<div class="viewcode-block" id="AddressOffsetDrumKitLMB.DRUM_KIT_PART_26">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_26">[docs]</a>
+    <span class="n">DRUM_KIT_PART_26</span> <span class="o">=</span> <span class="mh">0x60</span></div>
+
+<div class="viewcode-block" id="AddressOffsetDrumKitLMB.DRUM_KIT_PART_27">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_27">[docs]</a>
+    <span class="n">DRUM_KIT_PART_27</span> <span class="o">=</span> <span class="mh">0x62</span></div>
+
+<div class="viewcode-block" id="AddressOffsetDrumKitLMB.DRUM_KIT_PART_28">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_28">[docs]</a>
+    <span class="n">DRUM_KIT_PART_28</span> <span class="o">=</span> <span class="mh">0x64</span></div>
+
+<div class="viewcode-block" id="AddressOffsetDrumKitLMB.DRUM_KIT_PART_29">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_29">[docs]</a>
+    <span class="n">DRUM_KIT_PART_29</span> <span class="o">=</span> <span class="mh">0x66</span></div>
+
+<div class="viewcode-block" id="AddressOffsetDrumKitLMB.DRUM_KIT_PART_30">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_30">[docs]</a>
+    <span class="n">DRUM_KIT_PART_30</span> <span class="o">=</span> <span class="mh">0x68</span></div>
+
+<div class="viewcode-block" id="AddressOffsetDrumKitLMB.DRUM_KIT_PART_31">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_31">[docs]</a>
+    <span class="n">DRUM_KIT_PART_31</span> <span class="o">=</span> <span class="mh">0x6A</span></div>
+
+<div class="viewcode-block" id="AddressOffsetDrumKitLMB.DRUM_KIT_PART_32">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_32">[docs]</a>
+    <span class="n">DRUM_KIT_PART_32</span> <span class="o">=</span> <span class="mh">0x6C</span></div>
+
+<div class="viewcode-block" id="AddressOffsetDrumKitLMB.DRUM_KIT_PART_33">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_33">[docs]</a>
+    <span class="n">DRUM_KIT_PART_33</span> <span class="o">=</span> <span class="mh">0x6E</span></div>
+
+<div class="viewcode-block" id="AddressOffsetDrumKitLMB.DRUM_KIT_PART_34">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_34">[docs]</a>
+    <span class="n">DRUM_KIT_PART_34</span> <span class="o">=</span> <span class="mh">0x70</span></div>
+
+<div class="viewcode-block" id="AddressOffsetDrumKitLMB.DRUM_KIT_PART_35">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_35">[docs]</a>
+    <span class="n">DRUM_KIT_PART_35</span> <span class="o">=</span> <span class="mh">0x72</span></div>
+
+<div class="viewcode-block" id="AddressOffsetDrumKitLMB.DRUM_KIT_PART_36">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_36">[docs]</a>
+    <span class="n">DRUM_KIT_PART_36</span> <span class="o">=</span> <span class="mh">0x74</span></div>
+
+<div class="viewcode-block" id="AddressOffsetDrumKitLMB.DRUM_KIT_PART_37">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.DRUM_KIT_PART_37">[docs]</a>
+    <span class="n">DRUM_KIT_PART_37</span> <span class="o">=</span> <span class="mh">0x76</span></div>
+
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="AddressOffsetDrumKitLMB.message_position">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.message_position">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">message_position</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the fixed message position for command bytes.</span>
+
+<span class="sd">        :return: int The fixed message position</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="mi">10</span></div>
+
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="AddressOffsetDrumKitLMB.drum_partial_offset">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/address/address/index.html#jdxi_editor.midi.data.address.address.AddressOffsetDrumKitLMB.drum_partial_offset">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">drum_partial_offset</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">partial_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the LMB offset for the given drum partial (0–37).</span>
+
+<span class="sd">        :param partial_number: int The partial number</span>
+<span class="sd">        :return: int The LMB offset</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">base_address</span> <span class="o">=</span> <span class="mh">0x00</span>
+        <span class="n">step</span> <span class="o">=</span> <span class="mh">0x2E</span>
+        <span class="k">return</span> <span class="n">base_address</span> <span class="o">+</span> <span class="p">(</span><span class="n">step</span> <span class="o">*</span> <span class="n">partial_number</span><span class="p">)</span></div>
+</div>
+
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Mark Mrooks.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

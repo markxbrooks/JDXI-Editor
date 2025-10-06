@@ -1,0 +1,674 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>jdxi_editor.ui.editors.arpeggio.arpeggio &mdash; JD-Xi Editor 0.8.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../../_static/documentation_options.js?v=486e5634"></script>
+      <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../../index.html" class="icon icon-home">
+            JD-Xi Editor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../getting-started.html#getting-started-guide">Getting Started Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../editor-windows.html">Editor Windows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../editor-windows.html#available-editors">Available Editors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../additional-editors.html">Additional Editors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../additional-editors.html#available-editors">Available Editors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../playing-midi-files.html">Playing MIDI Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../playing-midi-files.html#available-tools">Available Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../troubleshooting.html#id1">Troubleshooting</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../legal.html">Legal Disclaimer</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../modules.html">jdxi_editor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../jdxi_editor.html">jdxi_editor package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.jdxi.html">jdxi_editor.jdxi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.log.html">jdxi_editor.log package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.midi.html">jdxi_editor.midi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.ui.html">jdxi_editor.ui package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.globals">jdxi_editor.globals module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.main">jdxi_editor.main module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.html#jdxi_editor.main.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.html#jdxi_editor.main.setup_splash_screen"><code class="docutils literal notranslate"><span class="pre">setup_splash_screen()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.project">jdxi_editor.project module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.resources">jdxi_editor.resources module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.html#jdxi_editor.resources.resource_path"><code class="docutils literal notranslate"><span class="pre">resource_path()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../autoapi/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/midi/index.html">midi</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/midi/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/colors/index.html">midi.colors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/slider/index.html">midi.slider</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/spin_box/index.html">midi.spin_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/time_ruler/index.html">midi.time_ruler</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/track/index.html">midi.track</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/track_viewer/index.html">midi.track_viewer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/utils/index.html">midi.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/adsr/index.html">adsr</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/adsr/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/adsr/adsr/index.html">adsr.adsr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/adsr/graph/index.html">adsr.graph</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/adsr/parameter/index.html">adsr.parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/adsr/plot/index.html">adsr.plot</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/pitch/index.html">pitch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/pitch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pitch/envelope/index.html">pitch.envelope</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pitch/envelope_plot/index.html">pitch.envelope_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pitch/pwm_plot/index.html">pitch.pwm_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pitch/slider_spinbox/index.html">pitch.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/piano/index.html">piano</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/piano/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/piano/key/index.html">piano.key</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/piano/keyboard/index.html">piano.keyboard</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/panel/index.html">panel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/panel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/panel/partial/index.html">panel.partial</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/wheel/index.html">wheel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/wheel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/wheel/mod/index.html">wheel.mod</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/wheel/pitch/index.html">wheel.pitch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/wheel/wheel/index.html">wheel.wheel</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/preset/index.html">preset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/preset/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/preset/combo_box/index.html">preset.combo_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/preset/panel/index.html">preset.panel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/preset/patch_name/index.html">preset.patch_name</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/slider/index.html">slider</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/slider/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/slider/slider/index.html">slider.slider</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/slider/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/slider/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/slider/index.html#slider.Slider"><code class="docutils literal notranslate"><span class="pre">Slider</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/dialog/index.html">dialog</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/dialog/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/dialog/progress/index.html">dialog.progress</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/viewer/index.html">viewer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/viewer/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/viewer/log/index.html">viewer.log</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/button/index.html">button</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/button/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/channel/index.html">button.channel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/favorite/index.html">button.favorite</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/sequencer/index.html">button.sequencer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/waveform/index.html">button.waveform</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/button/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/button/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/index.html#button.ChannelButton"><code class="docutils literal notranslate"><span class="pre">ChannelButton</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/index.html#button.SequencerSquare"><code class="docutils literal notranslate"><span class="pre">SequencerSquare</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/switch/index.html">switch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/switch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/switch/partial/index.html">switch.partial</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/switch/switch/index.html">switch.switch</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/filter/index.html">filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/filter/index.html#filter.FilterWidget"><code class="docutils literal notranslate"><span class="pre">FilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/display/index.html">display</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/display/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/display/digital/index.html">display.digital</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/display/pattern/index.html">display.pattern</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/display/value/index.html">display.value</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/pattern/index.html">pattern</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/pattern/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pattern/measure/index.html">pattern.measure</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/spin_box/index.html">spin_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/spin_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/spin_box/spin_box/index.html">spin_box.spin_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/envelope/index.html">envelope</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/envelope/base/index.html">envelope.base</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/indicator/index.html">indicator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/indicator/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/indicator/led/index.html">indicator.led</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/indicator/midi/index.html">indicator.midi</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/combo_box/index.html">combo_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/combo_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/combo_box/combo_box/index.html">combo_box.combo_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/index.html">jdxi_editor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/globals/index.html">jdxi_editor.globals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/jdxi/index.html">jdxi_editor.jdxi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/log/index.html">jdxi_editor.log</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/main/index.html">jdxi_editor.main</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/midi/index.html">jdxi_editor.midi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/project/index.html">jdxi_editor.project</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/resources/index.html">jdxi_editor.resources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/ui/index.html">jdxi_editor.ui</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html">filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#filter_plot.FilterPlot"><code class="docutils literal notranslate"><span class="pre">FilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html">envelope_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#envelope_plot.midi_value_to_float"><code class="docutils literal notranslate"><span class="pre">midi_value_to_float()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#envelope_plot.WMTEnvPlot"><code class="docutils literal notranslate"><span class="pre">WMTEnvPlot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#envelope_plot.app"><code class="docutils literal notranslate"><span class="pre">app</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/wave_selector/index.html">wave_selector</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/wave_selector/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/wave_selector/wave_selector/index.html">wave_selector.wave_selector</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/analog_filter/index.html">analog_filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/analog_filter/index.html#analog_filter.AnalogFilterWidget"><code class="docutils literal notranslate"><span class="pre">AnalogFilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/slider_spinbox/index.html">slider_spinbox</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/slider_spinbox/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/slider_spinbox/slider_spinbox/index.html">slider_spinbox.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html">analog_filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#analog_filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#analog_filter_plot.AnalogFilterPlot"><code class="docutils literal notranslate"><span class="pre">AnalogFilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">JD-Xi Editor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">jdxi_editor.ui.editors.arpeggio.arpeggio</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for jdxi_editor.ui.editors.arpeggio.arpeggio</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Arpeggio Editor Module</span>
+
+<span class="sd">This module defines the `ArpeggioEditor` class, a specialized editor for configuring arpeggiator</span>
+<span class="sd">settings within a synthesizer. It extends the `SynthEditor` class, providing a user-friendly</span>
+<span class="sd">interface to control various arpeggiator parameters.</span>
+
+<span class="sd">Classes:</span>
+<span class="sd">    - ArpeggioEditor: A `QWidget` subclass that allows users to modify arpeggiator parameters</span>
+<span class="sd">      such as style, grid, duration, velocity, accent, swing, octave range, and motif.</span>
+
+<span class="sd">Features:</span>
+<span class="sd">    - Provides an intuitive UI with labeled controls and dropdown menus for parameter selection.</span>
+<span class="sd">    - Includes a toggle switch to enable or disable the arpeggiator.</span>
+<span class="sd">    - Displays an instrument image for better user engagement.</span>
+<span class="sd">    - Uses MIDI integration to send real-time parameter changes to the synthesizer.</span>
+<span class="sd">    - Supports dynamic visualization and interaction through sliders and combo boxes.</span>
+
+<span class="sd">Usage:</span>
+<span class="sd">    ```python</span>
+<span class="sd">    from PySide6.QtWidgets import QApplication</span>
+<span class="sd">    from midi_helper import MIDIHelper</span>
+
+<span class="sd">    app = QApplication([])</span>
+<span class="sd">    midi_helper = MIDIHelper()</span>
+<span class="sd">    editor = ArpeggioEditor(midi_helper=midi_helper)</span>
+<span class="sd">    editor.show()</span>
+<span class="sd">    app.exec()</span>
+<span class="sd">    ```</span>
+
+<span class="sd">Dependencies:</span>
+<span class="sd">    - PySide6 (for UI components)</span>
+<span class="sd">    - MIDIHelper (for MIDI communication)</span>
+<span class="sd">    - ArpeggioParameter (for managing parameter addresses and value ranges)</span>
+<span class="sd">    - Slider (for smooth control over numerical parameters)</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">PySide6.QtWidgets</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">QVBoxLayout</span><span class="p">,</span>
+    <span class="n">QHBoxLayout</span><span class="p">,</span>
+    <span class="n">QLabel</span><span class="p">,</span>
+    <span class="n">QWidget</span><span class="p">,</span> <span class="n">QGroupBox</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PySide6.QtCore</span><span class="w"> </span><span class="kn">import</span> <span class="n">Qt</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.jdxi.preset.helper</span><span class="w"> </span><span class="kn">import</span> <span class="n">JDXiPresetHelper</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.data.address.address</span><span class="w"> </span><span class="kn">import</span> <span class="n">RolandSysExAddress</span><span class="p">,</span> <span class="n">ZERO_BYTE</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.data.arpeggio.arpeggio</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArpeggioSwitch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.data.arpeggio.arpeggio</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">ArpeggioMotif</span><span class="p">,</span>
+    <span class="n">ArpeggioOctaveRange</span><span class="p">,</span>
+    <span class="n">ArpeggioGrid</span><span class="p">,</span>
+    <span class="n">ArpeggioDuration</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.data.arpeggio.data</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">ARPEGGIO_STYLE</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.data.address.arpeggio</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArpeggioAddress</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.data.parameter.arpeggio</span><span class="w"> </span><span class="kn">import</span> <span class="n">AddressParameterArpeggio</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.data.parameter.program.zone</span><span class="w"> </span><span class="kn">import</span> <span class="n">AddressParameterProgramZone</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.data.parameter.synth</span><span class="w"> </span><span class="kn">import</span> <span class="n">AddressParameter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.io.helper</span><span class="w"> </span><span class="kn">import</span> <span class="n">MidiIOHelper</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.ui.editors.synth.simple</span><span class="w"> </span><span class="kn">import</span> <span class="n">BasicEditor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.jdxi.style</span><span class="w"> </span><span class="kn">import</span> <span class="n">JDXiStyle</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.ui.widgets.display.digital</span><span class="w"> </span><span class="kn">import</span> <span class="n">DigitalTitle</span>
+
+
+<div class="viewcode-block" id="ArpeggioEditor">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/index.html#jdxi_editor.ui.editors.arpeggio.arpeggio.ArpeggioEditor">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ArpeggioEditor</span><span class="p">(</span><span class="n">BasicEditor</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Arpeggio Editor Window&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ArpeggioEditor.__init__">
+<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.arpeggio.html#jdxi_editor.ui.editors.arpeggio.arpeggio.ArpeggioEditor.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">midi_helper</span><span class="p">:</span> <span class="n">MidiIOHelper</span><span class="p">,</span>
+        <span class="n">preset_helper</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">JDXiPresetHelper</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">parent</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">QWidget</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">midi_helper</span><span class="o">=</span><span class="n">midi_helper</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the ArpeggioEditor</span>
+
+<span class="sd">        :param midi_helper: MidiIOHelper</span>
+<span class="sd">        :param preset_helper: JDXIPresetHelper</span>
+<span class="sd">        :param parent: QWidget</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setWindowTitle</span><span class="p">(</span><span class="s2">&quot;Arpeggio Editor&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="ArpeggioEditor.midi_helper">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/arpeggio/arpeggio/index.html#jdxi_editor.ui.editors.arpeggio.arpeggio.ArpeggioEditor.midi_helper">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span> <span class="o">=</span> <span class="n">midi_helper</span></div>
+
+<div class="viewcode-block" id="ArpeggioEditor.preset_helper">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/arpeggio/arpeggio/index.html#jdxi_editor.ui.editors.arpeggio.arpeggio.ArpeggioEditor.preset_helper">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">preset_helper</span> <span class="o">=</span> <span class="n">preset_helper</span></div>
+
+<div class="viewcode-block" id="ArpeggioEditor.address">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/arpeggio/arpeggio/index.html#jdxi_editor.ui.editors.arpeggio.arpeggio.ArpeggioEditor.address">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">=</span> <span class="n">RolandSysExAddress</span><span class="p">(</span>
+            <span class="n">msb</span><span class="o">=</span><span class="n">ArpeggioAddress</span><span class="o">.</span><span class="n">TEMPORARY_PROGRAM</span><span class="p">,</span>
+            <span class="n">umb</span><span class="o">=</span><span class="n">ArpeggioAddress</span><span class="o">.</span><span class="n">ARP_PART</span><span class="p">,</span>
+            <span class="n">lmb</span><span class="o">=</span><span class="n">ArpeggioAddress</span><span class="o">.</span><span class="n">ARP_GROUP</span><span class="p">,</span>
+            <span class="n">lsb</span><span class="o">=</span><span class="n">ZERO_BYTE</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="ArpeggioEditor.partial_number">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/arpeggio/arpeggio/index.html#jdxi_editor.ui.editors.arpeggio.arpeggio.ArpeggioEditor.partial_number">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">partial_number</span> <span class="o">=</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="ArpeggioEditor.instrument_icon_folder">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/arpeggio/arpeggio/index.html#jdxi_editor.ui.editors.arpeggio.arpeggio.ArpeggioEditor.instrument_icon_folder">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">instrument_icon_folder</span> <span class="o">=</span> <span class="s2">&quot;arpeggiator&quot;</span></div>
+
+<div class="viewcode-block" id="ArpeggioEditor.default_image">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/arpeggio/arpeggio/index.html#jdxi_editor.ui.editors.arpeggio.arpeggio.ArpeggioEditor.default_image">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default_image</span> <span class="o">=</span> <span class="s2">&quot;arpeggiator2.png&quot;</span></div>
+
+<div class="viewcode-block" id="ArpeggioEditor.controls">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/arpeggio/arpeggio/index.html#jdxi_editor.ui.editors.arpeggio.arpeggio.ArpeggioEditor.controls">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">AddressParameter</span><span class="p">,</span> <span class="n">QWidget</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span></div>
+
+
+        <span class="k">if</span> <span class="n">parent</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">parent</span><span class="o">.</span><span class="n">current_synth_type</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">parent</span><span class="o">.</span><span class="n">current_synth_type</span> <span class="o">==</span> <span class="s2">&quot;Digital 1&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">partial_number</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">elif</span> <span class="n">parent</span><span class="o">.</span><span class="n">current_synth_type</span> <span class="o">==</span> <span class="s2">&quot;Digital 2&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">partial_number</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="k">elif</span> <span class="n">parent</span><span class="o">.</span><span class="n">current_synth_type</span> <span class="o">==</span> <span class="s2">&quot;Digital 3&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">partial_number</span> <span class="o">=</span> <span class="mi">2</span>
+                <span class="k">elif</span> <span class="n">parent</span><span class="o">.</span><span class="n">current_synth_type</span> <span class="o">==</span> <span class="s2">&quot;Digital 4&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">partial_number</span> <span class="o">=</span> <span class="mi">3</span>
+
+        <span class="c1"># Main layout</span>
+        <span class="n">layout</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">layout</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ArpeggioEditor.title_label">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/arpeggio/arpeggio/index.html#jdxi_editor.ui.editors.arpeggio.arpeggio.ArpeggioEditor.title_label">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">title_label</span> <span class="o">=</span> <span class="n">DigitalTitle</span><span class="p">(</span><span class="n">tone_name</span><span class="o">=</span><span class="s2">&quot;Arpeggiator&quot;</span><span class="p">)</span></div>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">title_label</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">INSTRUMENT_TITLE_LABEL</span><span class="p">)</span>
+
+        <span class="c1"># Image display</span>
+<div class="viewcode-block" id="ArpeggioEditor.image_label">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/arpeggio/arpeggio/index.html#jdxi_editor.ui.editors.arpeggio.arpeggio.ArpeggioEditor.image_label">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">image_label</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">()</span></div>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">image_label</span><span class="o">.</span><span class="n">setAlignment</span><span class="p">(</span>
+            <span class="n">Qt</span><span class="o">.</span><span class="n">AlignmentFlag</span><span class="o">.</span><span class="n">AlignCenter</span>
+        <span class="p">)</span>  <span class="c1"># Center align the image</span>
+
+        <span class="n">title_group_box</span> <span class="o">=</span> <span class="n">QGroupBox</span><span class="p">()</span>
+        <span class="n">title_group_layout</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+        <span class="n">title_group_box</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">title_group_layout</span><span class="p">)</span>
+        <span class="n">title_group_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">title_label</span><span class="p">)</span>
+        <span class="n">title_group_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">image_label</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_instrument_image</span><span class="p">()</span>
+
+        <span class="n">main_row_hlayout</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">main_row_hlayout</span><span class="p">)</span>
+        <span class="n">main_row_hlayout</span><span class="o">.</span><span class="n">addStretch</span><span class="p">()</span>
+        <span class="n">rows_layout</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">()</span>
+        <span class="n">main_row_hlayout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">rows_layout</span><span class="p">)</span>
+        <span class="n">rows_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">title_group_box</span><span class="p">)</span>
+        <span class="c1"># Add on-off switch</span>
+        <span class="n">program_zone_row</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+        <span class="n">common_button</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_switch</span><span class="p">(</span>
+            <span class="n">AddressParameterProgramZone</span><span class="o">.</span><span class="n">ARPEGGIO_SWITCH</span><span class="p">,</span>
+            <span class="s2">&quot;Master Arpeggiator&quot;</span><span class="p">,</span>
+            <span class="p">[</span><span class="n">switch_setting</span><span class="o">.</span><span class="n">display_name</span> <span class="k">for</span> <span class="n">switch_setting</span> <span class="ow">in</span> <span class="n">ArpeggioSwitch</span><span class="p">],</span>
+        <span class="p">)</span>
+        <span class="n">program_zone_row</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">common_button</span><span class="p">)</span>
+
+        <span class="n">rows_layout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">program_zone_row</span><span class="p">)</span>
+
+        <span class="c1"># Add on-off switch</span>
+        <span class="n">switch_row</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+<div class="viewcode-block" id="ArpeggioEditor.switch_button">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/arpeggio/arpeggio/index.html#jdxi_editor.ui.editors.arpeggio.arpeggio.ArpeggioEditor.switch_button">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">switch_button</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_switch</span><span class="p">(</span>
+            <span class="n">AddressParameterArpeggio</span><span class="o">.</span><span class="n">ARPEGGIO_SWITCH</span><span class="p">,</span>
+            <span class="s2">&quot;Arpeggiator&quot;</span><span class="p">,</span>
+            <span class="p">[</span><span class="n">switch_setting</span><span class="o">.</span><span class="n">display_name</span> <span class="k">for</span> <span class="n">switch_setting</span> <span class="ow">in</span> <span class="n">ArpeggioSwitch</span><span class="p">],</span>
+        <span class="p">)</span></div>
+
+        <span class="n">switch_row</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">switch_button</span><span class="p">)</span>
+        <span class="n">rows_layout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">switch_row</span><span class="p">)</span>
+
+        <span class="c1"># Create address combo box for Arpeggio Style</span>
+<div class="viewcode-block" id="ArpeggioEditor.style_combo">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/arpeggio/arpeggio/index.html#jdxi_editor.ui.editors.arpeggio.arpeggio.ArpeggioEditor.style_combo">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">style_combo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_combo_box</span><span class="p">(</span>
+            <span class="n">AddressParameterArpeggio</span><span class="o">.</span><span class="n">ARPEGGIO_STYLE</span><span class="p">,</span> <span class="s2">&quot;Style&quot;</span><span class="p">,</span> <span class="n">ARPEGGIO_STYLE</span>
+        <span class="p">)</span></div>
+
+        <span class="n">style_row</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+        <span class="n">style_row</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">style_combo</span><span class="p">)</span>
+        <span class="n">rows_layout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">style_row</span><span class="p">)</span>
+
+        <span class="c1"># Create address combo box for Arpeggio Grid</span>
+        <span class="c1"># Add grid combo box</span>
+        <span class="n">grid_row</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+<div class="viewcode-block" id="ArpeggioEditor.grid_combo">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/arpeggio/arpeggio/index.html#jdxi_editor.ui.editors.arpeggio.arpeggio.ArpeggioEditor.grid_combo">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grid_combo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_combo_box</span><span class="p">(</span>
+            <span class="n">AddressParameterArpeggio</span><span class="o">.</span><span class="n">ARPEGGIO_GRID</span><span class="p">,</span>
+            <span class="s2">&quot;Grid:&quot;</span><span class="p">,</span>
+            <span class="p">[</span><span class="n">grid</span><span class="o">.</span><span class="n">display_name</span> <span class="k">for</span> <span class="n">grid</span> <span class="ow">in</span> <span class="n">ArpeggioGrid</span><span class="p">],</span>
+        <span class="p">)</span></div>
+
+        <span class="n">grid_row</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid_combo</span><span class="p">)</span>
+        <span class="n">rows_layout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">grid_row</span><span class="p">)</span>
+
+        <span class="c1"># Add grid combo box</span>
+        <span class="n">duration_row</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+        <span class="c1"># Create address combo box for Arpeggio Duration</span>
+<div class="viewcode-block" id="ArpeggioEditor.duration_combo">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/arpeggio/arpeggio/index.html#jdxi_editor.ui.editors.arpeggio.arpeggio.ArpeggioEditor.duration_combo">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">duration_combo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_combo_box</span><span class="p">(</span>
+            <span class="n">AddressParameterArpeggio</span><span class="o">.</span><span class="n">ARPEGGIO_DURATION</span><span class="p">,</span>
+            <span class="s2">&quot;Duration&quot;</span><span class="p">,</span>
+            <span class="p">[</span><span class="n">duration</span><span class="o">.</span><span class="n">display_name</span> <span class="k">for</span> <span class="n">duration</span> <span class="ow">in</span> <span class="n">ArpeggioDuration</span><span class="p">],</span>
+        <span class="p">)</span></div>
+
+        <span class="n">duration_row</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">duration_combo</span><span class="p">)</span>
+        <span class="n">rows_layout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">duration_row</span><span class="p">)</span>
+
+        <span class="c1"># Add sliders</span>
+<div class="viewcode-block" id="ArpeggioEditor.velocity_slider">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/arpeggio/arpeggio/index.html#jdxi_editor.ui.editors.arpeggio.arpeggio.ArpeggioEditor.velocity_slider">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">velocity_slider</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_slider</span><span class="p">(</span>
+            <span class="n">AddressParameterArpeggio</span><span class="o">.</span><span class="n">ARPEGGIO_VELOCITY</span><span class="p">,</span> <span class="s2">&quot;Velocity&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">127</span>
+        <span class="p">)</span></div>
+
+        <span class="n">rows_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">velocity_slider</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ArpeggioEditor.accent_slider">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/arpeggio/arpeggio/index.html#jdxi_editor.ui.editors.arpeggio.arpeggio.ArpeggioEditor.accent_slider">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">accent_slider</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_slider</span><span class="p">(</span>
+            <span class="n">AddressParameterArpeggio</span><span class="o">.</span><span class="n">ARPEGGIO_ACCENT_RATE</span><span class="p">,</span> <span class="s2">&quot;Accent&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">127</span>
+        <span class="p">)</span></div>
+
+        <span class="n">rows_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">accent_slider</span><span class="p">)</span>
+
+        <span class="c1"># Add octave range combo box</span>
+        <span class="n">octave_row</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+<div class="viewcode-block" id="ArpeggioEditor.octave_combo">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/arpeggio/arpeggio/index.html#jdxi_editor.ui.editors.arpeggio.arpeggio.ArpeggioEditor.octave_combo">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">octave_combo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_combo_box</span><span class="p">(</span>
+            <span class="n">AddressParameterArpeggio</span><span class="o">.</span><span class="n">ARPEGGIO_OCTAVE_RANGE</span><span class="p">,</span>
+            <span class="s2">&quot;Octave Range:&quot;</span><span class="p">,</span>
+            <span class="p">[</span><span class="n">octave</span><span class="o">.</span><span class="n">display_name</span> <span class="k">for</span> <span class="n">octave</span> <span class="ow">in</span> <span class="n">ArpeggioOctaveRange</span><span class="p">],</span>
+            <span class="p">[</span><span class="n">octave</span><span class="o">.</span><span class="n">midi_value</span> <span class="k">for</span> <span class="n">octave</span> <span class="ow">in</span> <span class="n">ArpeggioOctaveRange</span><span class="p">],</span>
+        <span class="p">)</span></div>
+
+        <span class="c1"># Set default to 0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">octave_combo</span><span class="o">.</span><span class="n">combo_box</span><span class="o">.</span><span class="n">setCurrentIndex</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>  <span class="c1"># Index 3 is OCT_ZERO</span>
+        <span class="n">octave_row</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">octave_combo</span><span class="p">)</span>
+        <span class="n">rows_layout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">octave_row</span><span class="p">)</span>
+
+        <span class="c1"># Add motif combo box</span>
+        <span class="n">motif_row</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+<div class="viewcode-block" id="ArpeggioEditor.motif_combo">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/arpeggio/arpeggio/index.html#jdxi_editor.ui.editors.arpeggio.arpeggio.ArpeggioEditor.motif_combo">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">motif_combo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_parameter_combo_box</span><span class="p">(</span>
+            <span class="n">AddressParameterArpeggio</span><span class="o">.</span><span class="n">ARPEGGIO_MOTIF</span><span class="p">,</span>
+            <span class="s2">&quot;Motif:&quot;</span><span class="p">,</span>
+            <span class="p">[</span><span class="n">motif</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">motif</span> <span class="ow">in</span> <span class="n">ArpeggioMotif</span><span class="p">],</span>
+        <span class="p">)</span></div>
+
+        <span class="n">motif_row</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">motif_combo</span><span class="p">)</span>
+        <span class="n">rows_layout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">motif_row</span><span class="p">)</span>
+        <span class="n">rows_layout</span><span class="o">.</span><span class="n">addStretch</span><span class="p">()</span>
+        <span class="n">main_row_hlayout</span><span class="o">.</span><span class="n">addStretch</span><span class="p">()</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Mark Mrooks.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

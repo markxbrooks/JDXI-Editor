@@ -22,16 +22,13 @@ It’s designed to implement as many features as possible from Roland’s MIDI i
 
 Designed for musicians, sound designers, and MIDI enthusiasts looking to unlock the full potential of the Roland JD-Xi synthesizer!
 
-### 🖥️ Current App Preview
+### 🖥️ Current 'Keyboard Window' Screenshot
 
 <a href="./resources/main_window_0.6.gif" rel="Current view of the Roland JD-Xi Editor App">
   <img src="./resources/main_window_0.6.gif" alt="Roland JD-Xi Main Editor Window" />
 </a>
 
----****
-## 📺 Roland JD-Xi MIDI Editor Video Demo
-Watch how **JDXI-Editor** simplifies sound design and MIDI editing for the **Roland JD-Xi synthesizer**:
-
+---
 ## 🎥 Watch JDXI-Editor in Action
 
 Check out some great performances and demos of the Roland JD-Xi:
@@ -56,13 +53,14 @@ Lady Gaga – *Telephone* performed on the Roland JD-Xi
 ## 🚀 Getting Started
 
 
-### 🖥️ MacOS
-📥 There is a new build for MacOS Sequoia. See the [releases page:](https://github.com/markxbrooks/JDXI-Editor/releases/tag/v0.0.4)
+### MacOS 🖥️
+There is a new build for MacOS Sequoia. See the [releases page:](https://github.com/markxbrooks/JDXI-Editor/releases/tag/v0.0.8)
 
-### 📦 Windows 
-📥 There is a new build for Windows see the [releases page](https://github.com/markxbrooks/JDXI-Editor/releases/tag/v0.0.8)
+### Windows 📦
+There is a new build for Windows See the [releases page:](https://github.com/markxbrooks/JDXI-Editor/releases/tag/v0.0.8)
 
-### Python 🐍 If you're a developer, you may want to run it from a Python Environment :
+### Python 🐍
+If you're a Python , you may wish to run the program from a Python environment:
 
 ```bash
 $ git clone https://github.com/markxbrooks/JDXI-Editor.git
@@ -73,7 +71,16 @@ $ python -m pip install -r requirements.txt
 $ python -m jdxi_editor.main
 ```
 
----
+# 📖 Documentation
+Access JD-Xi documentation in the format that works best for you:
+
+## ℹ Available Formats:
+### 📃 HTML Documentation:
+
+https://markxbrooks.github.io/JDXI-Editor/
+
+### 📃 PDF Documentation:
+[PDF Documentation](https://github.com/markxbrooks/JDXI-Editor/blob/main/doc/JD-Xi_Editor-0.8.pdf)
 
 ### 🎹 UI Previews
 

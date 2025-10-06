@@ -1,0 +1,1122 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>jdxi_editor.midi.data.effects.effects &mdash; JD-Xi Editor 0.8.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../../_static/documentation_options.js?v=486e5634"></script>
+      <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../../index.html" class="icon icon-home">
+            JD-Xi Editor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../getting-started.html#getting-started-guide">Getting Started Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../editor-windows.html">Editor Windows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../editor-windows.html#available-editors">Available Editors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../additional-editors.html">Additional Editors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../additional-editors.html#available-editors">Available Editors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../playing-midi-files.html">Playing MIDI Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../playing-midi-files.html#available-tools">Available Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../troubleshooting.html#id1">Troubleshooting</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../legal.html">Legal Disclaimer</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../modules.html">jdxi_editor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../jdxi_editor.html">jdxi_editor package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.jdxi.html">jdxi_editor.jdxi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.log.html">jdxi_editor.log package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.midi.html">jdxi_editor.midi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.ui.html">jdxi_editor.ui package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.globals">jdxi_editor.globals module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.main">jdxi_editor.main module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.html#jdxi_editor.main.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.html#jdxi_editor.main.setup_splash_screen"><code class="docutils literal notranslate"><span class="pre">setup_splash_screen()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.project">jdxi_editor.project module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.resources">jdxi_editor.resources module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.html#jdxi_editor.resources.resource_path"><code class="docutils literal notranslate"><span class="pre">resource_path()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../autoapi/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/midi/index.html">midi</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/midi/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/colors/index.html">midi.colors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/slider/index.html">midi.slider</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/spin_box/index.html">midi.spin_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/time_ruler/index.html">midi.time_ruler</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/track/index.html">midi.track</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/track_viewer/index.html">midi.track_viewer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/utils/index.html">midi.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/adsr/index.html">adsr</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/adsr/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/adsr/adsr/index.html">adsr.adsr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/adsr/graph/index.html">adsr.graph</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/adsr/parameter/index.html">adsr.parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/adsr/plot/index.html">adsr.plot</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/pitch/index.html">pitch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/pitch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pitch/envelope/index.html">pitch.envelope</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pitch/envelope_plot/index.html">pitch.envelope_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pitch/pwm_plot/index.html">pitch.pwm_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pitch/slider_spinbox/index.html">pitch.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/piano/index.html">piano</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/piano/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/piano/key/index.html">piano.key</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/piano/keyboard/index.html">piano.keyboard</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/panel/index.html">panel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/panel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/panel/partial/index.html">panel.partial</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/wheel/index.html">wheel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/wheel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/wheel/mod/index.html">wheel.mod</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/wheel/pitch/index.html">wheel.pitch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/wheel/wheel/index.html">wheel.wheel</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/preset/index.html">preset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/preset/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/preset/combo_box/index.html">preset.combo_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/preset/panel/index.html">preset.panel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/preset/patch_name/index.html">preset.patch_name</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/slider/index.html">slider</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/slider/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/slider/slider/index.html">slider.slider</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/slider/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/slider/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/slider/index.html#slider.Slider"><code class="docutils literal notranslate"><span class="pre">Slider</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/dialog/index.html">dialog</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/dialog/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/dialog/progress/index.html">dialog.progress</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/viewer/index.html">viewer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/viewer/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/viewer/log/index.html">viewer.log</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/button/index.html">button</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/button/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/channel/index.html">button.channel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/favorite/index.html">button.favorite</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/sequencer/index.html">button.sequencer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/waveform/index.html">button.waveform</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/button/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/button/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/index.html#button.ChannelButton"><code class="docutils literal notranslate"><span class="pre">ChannelButton</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/index.html#button.SequencerSquare"><code class="docutils literal notranslate"><span class="pre">SequencerSquare</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/switch/index.html">switch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/switch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/switch/partial/index.html">switch.partial</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/switch/switch/index.html">switch.switch</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/filter/index.html">filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/filter/index.html#filter.FilterWidget"><code class="docutils literal notranslate"><span class="pre">FilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/display/index.html">display</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/display/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/display/digital/index.html">display.digital</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/display/pattern/index.html">display.pattern</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/display/value/index.html">display.value</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/pattern/index.html">pattern</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/pattern/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pattern/measure/index.html">pattern.measure</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/spin_box/index.html">spin_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/spin_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/spin_box/spin_box/index.html">spin_box.spin_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/envelope/index.html">envelope</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/envelope/base/index.html">envelope.base</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/indicator/index.html">indicator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/indicator/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/indicator/led/index.html">indicator.led</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/indicator/midi/index.html">indicator.midi</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/combo_box/index.html">combo_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/combo_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/combo_box/combo_box/index.html">combo_box.combo_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/index.html">jdxi_editor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/globals/index.html">jdxi_editor.globals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/jdxi/index.html">jdxi_editor.jdxi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/log/index.html">jdxi_editor.log</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/main/index.html">jdxi_editor.main</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/midi/index.html">jdxi_editor.midi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/project/index.html">jdxi_editor.project</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/resources/index.html">jdxi_editor.resources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/ui/index.html">jdxi_editor.ui</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html">filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#filter_plot.FilterPlot"><code class="docutils literal notranslate"><span class="pre">FilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html">envelope_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#envelope_plot.midi_value_to_float"><code class="docutils literal notranslate"><span class="pre">midi_value_to_float()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#envelope_plot.WMTEnvPlot"><code class="docutils literal notranslate"><span class="pre">WMTEnvPlot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#envelope_plot.app"><code class="docutils literal notranslate"><span class="pre">app</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/wave_selector/index.html">wave_selector</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/wave_selector/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/wave_selector/wave_selector/index.html">wave_selector.wave_selector</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/analog_filter/index.html">analog_filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/analog_filter/index.html#analog_filter.AnalogFilterWidget"><code class="docutils literal notranslate"><span class="pre">AnalogFilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/slider_spinbox/index.html">slider_spinbox</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/slider_spinbox/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/slider_spinbox/slider_spinbox/index.html">slider_spinbox.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html">analog_filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#analog_filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#analog_filter_plot.AnalogFilterPlot"><code class="docutils literal notranslate"><span class="pre">AnalogFilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">JD-Xi Editor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">jdxi_editor.midi.data.effects.effects</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for jdxi_editor.midi.data.effects.effects</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Effects</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.jdxi.midi.constant</span><span class="w"> </span><span class="kn">import</span> <span class="n">MidiConstant</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.jdxi.sysex.bitmask</span><span class="w"> </span><span class="kn">import</span> <span class="n">BitMask</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.data.address.address</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">CommandID</span><span class="p">,</span>
+    <span class="n">AddressStartMSB</span><span class="p">,</span>
+    <span class="n">AddressOffsetProgramLMB</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.message.roland</span><span class="w"> </span><span class="kn">import</span> <span class="n">RolandSysEx</span>
+
+
+<div class="viewcode-block" id="EffectType">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EffectType">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">EffectType</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Effect types available on JD-Xi&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="EffectType.THRU">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EffectType.THRU">[docs]</a>
+    <span class="n">THRU</span> <span class="o">=</span> <span class="mh">0x00</span></div>
+
+<div class="viewcode-block" id="EffectType.DISTORTION">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EffectType.DISTORTION">[docs]</a>
+    <span class="n">DISTORTION</span> <span class="o">=</span> <span class="mh">0x01</span></div>
+
+<div class="viewcode-block" id="EffectType.FUZZ">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EffectType.FUZZ">[docs]</a>
+    <span class="n">FUZZ</span> <span class="o">=</span> <span class="mh">0x02</span></div>
+
+<div class="viewcode-block" id="EffectType.COMPRESSOR">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EffectType.COMPRESSOR">[docs]</a>
+    <span class="n">COMPRESSOR</span> <span class="o">=</span> <span class="mh">0x03</span></div>
+
+<div class="viewcode-block" id="EffectType.BITCRUSHER">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EffectType.BITCRUSHER">[docs]</a>
+    <span class="n">BITCRUSHER</span> <span class="o">=</span> <span class="mh">0x04</span></div>
+
+<div class="viewcode-block" id="EffectType.FLANGER">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EffectType.FLANGER">[docs]</a>
+    <span class="n">FLANGER</span> <span class="o">=</span> <span class="mh">0x05</span></div>
+
+<div class="viewcode-block" id="EffectType.PHASER">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EffectType.PHASER">[docs]</a>
+    <span class="n">PHASER</span> <span class="o">=</span> <span class="mh">0x06</span></div>
+
+<div class="viewcode-block" id="EffectType.RING_MOD">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EffectType.RING_MOD">[docs]</a>
+    <span class="n">RING_MOD</span> <span class="o">=</span> <span class="mh">0x07</span></div>
+
+<div class="viewcode-block" id="EffectType.SLICER">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EffectType.SLICER">[docs]</a>
+    <span class="n">SLICER</span> <span class="o">=</span> <span class="mh">0x08</span></div>
+
+
+    <span class="c1"># Common parameters</span>
+<div class="viewcode-block" id="EffectType.LEVEL">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EffectType.LEVEL">[docs]</a>
+    <span class="n">LEVEL</span> <span class="o">=</span> <span class="mh">0x00</span></div>
+
+<div class="viewcode-block" id="EffectType.MIX">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EffectType.MIX">[docs]</a>
+    <span class="n">MIX</span> <span class="o">=</span> <span class="mh">0x01</span></div>
+
+
+    <span class="c1"># Effect-specific parameters</span>
+<div class="viewcode-block" id="EffectType.DRIVE">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EffectType.DRIVE">[docs]</a>
+    <span class="n">DRIVE</span> <span class="o">=</span> <span class="mh">0x10</span></div>
+
+<div class="viewcode-block" id="EffectType.TONE">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EffectType.TONE">[docs]</a>
+    <span class="n">TONE</span> <span class="o">=</span> <span class="mh">0x11</span></div>
+
+<div class="viewcode-block" id="EffectType.ATTACK">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EffectType.ATTACK">[docs]</a>
+    <span class="n">ATTACK</span> <span class="o">=</span> <span class="mh">0x12</span></div>
+
+<div class="viewcode-block" id="EffectType.RELEASE">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EffectType.RELEASE">[docs]</a>
+    <span class="n">RELEASE</span> <span class="o">=</span> <span class="mh">0x13</span></div>
+
+<div class="viewcode-block" id="EffectType.THRESHOLD">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EffectType.THRESHOLD">[docs]</a>
+    <span class="n">THRESHOLD</span> <span class="o">=</span> <span class="mh">0x14</span></div>
+
+<div class="viewcode-block" id="EffectType.RATIO">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EffectType.RATIO">[docs]</a>
+    <span class="n">RATIO</span> <span class="o">=</span> <span class="mh">0x15</span></div>
+
+<div class="viewcode-block" id="EffectType.BIT_DEPTH">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EffectType.BIT_DEPTH">[docs]</a>
+    <span class="n">BIT_DEPTH</span> <span class="o">=</span> <span class="mh">0x16</span></div>
+
+<div class="viewcode-block" id="EffectType.RATE">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EffectType.RATE">[docs]</a>
+    <span class="n">RATE</span> <span class="o">=</span> <span class="mh">0x17</span></div>
+
+<div class="viewcode-block" id="EffectType.DEPTH">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EffectType.DEPTH">[docs]</a>
+    <span class="n">DEPTH</span> <span class="o">=</span> <span class="mh">0x18</span></div>
+
+<div class="viewcode-block" id="EffectType.FEEDBACK">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EffectType.FEEDBACK">[docs]</a>
+    <span class="n">FEEDBACK</span> <span class="o">=</span> <span class="mh">0x19</span></div>
+
+<div class="viewcode-block" id="EffectType.FREQUENCY">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EffectType.FREQUENCY">[docs]</a>
+    <span class="n">FREQUENCY</span> <span class="o">=</span> <span class="mh">0x1A</span></div>
+
+<div class="viewcode-block" id="EffectType.BALANCE">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EffectType.BALANCE">[docs]</a>
+    <span class="n">BALANCE</span> <span class="o">=</span> <span class="mh">0x1B</span></div>
+
+<div class="viewcode-block" id="EffectType.PATTERN">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EffectType.PATTERN">[docs]</a>
+    <span class="n">PATTERN</span> <span class="o">=</span> <span class="mh">0x1C</span></div>
+
+
+    <span class="c1"># Send levels</span>
+<div class="viewcode-block" id="EffectType.REVERB_SEND">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EffectType.REVERB_SEND">[docs]</a>
+    <span class="n">REVERB_SEND</span> <span class="o">=</span> <span class="mh">0x20</span></div>
+
+<div class="viewcode-block" id="EffectType.DELAY_SEND">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EffectType.DELAY_SEND">[docs]</a>
+    <span class="n">DELAY_SEND</span> <span class="o">=</span> <span class="mh">0x21</span></div>
+
+<div class="viewcode-block" id="EffectType.CHORUS_SEND">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EffectType.CHORUS_SEND">[docs]</a>
+    <span class="n">CHORUS_SEND</span> <span class="o">=</span> <span class="mh">0x22</span></div>
+
+
+    <span class="c1"># Reverb parameters</span>
+<div class="viewcode-block" id="EffectType.REVERB_TYPE">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EffectType.REVERB_TYPE">[docs]</a>
+    <span class="n">REVERB_TYPE</span> <span class="o">=</span> <span class="mh">0x30</span></div>
+
+<div class="viewcode-block" id="EffectType.REVERB_TIME">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EffectType.REVERB_TIME">[docs]</a>
+    <span class="n">REVERB_TIME</span> <span class="o">=</span> <span class="mh">0x31</span></div>
+
+<div class="viewcode-block" id="EffectType.REVERB_PRE_DELAY">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EffectType.REVERB_PRE_DELAY">[docs]</a>
+    <span class="n">REVERB_PRE_DELAY</span> <span class="o">=</span> <span class="mh">0x32</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="FX">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.FX">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">FX</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Effect parameter ranges and defaults&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="FX.RANGES">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.FX.RANGES">[docs]</a>
+    <span class="n">RANGES</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="c1"># Common parameters</span>
+        <span class="s2">&quot;level&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">),</span>
+        <span class="c1"># Distortion parameters</span>
+        <span class="s2">&quot;dist_drive&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">),</span>
+        <span class="s2">&quot;dist_tone&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">),</span>
+        <span class="c1"># Compressor parameters</span>
+        <span class="s2">&quot;comp_attack&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">),</span>
+        <span class="s2">&quot;comp_release&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">),</span>
+        <span class="s2">&quot;comp_threshold&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">),</span>
+        <span class="s2">&quot;comp_ratio&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">),</span>
+        <span class="c1"># Bitcrusher parameters</span>
+        <span class="s2">&quot;bit_depth&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">),</span>
+        <span class="s2">&quot;sample_rate&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">),</span>
+        <span class="c1"># Flanger parameters</span>
+        <span class="s2">&quot;flanger_rate&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">),</span>
+        <span class="s2">&quot;flanger_depth&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">),</span>
+        <span class="s2">&quot;flanger_feedback&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">),</span>
+        <span class="c1"># Phaser parameters</span>
+        <span class="s2">&quot;phaser_rate&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">),</span>
+        <span class="s2">&quot;phaser_depth&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">),</span>
+        <span class="s2">&quot;phaser_resonance&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">),</span>
+        <span class="c1"># Ring Modulator parameters</span>
+        <span class="s2">&quot;ring_freq&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">),</span>
+        <span class="s2">&quot;ring_balance&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">),</span>
+        <span class="c1"># Slicer parameters</span>
+        <span class="s2">&quot;slicer_rate&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">127</span><span class="p">),</span>
+        <span class="s2">&quot;slicer_pattern&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">15</span><span class="p">),</span>
+    <span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="FX.DEFAULTS">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.FX.DEFAULTS">[docs]</a>
+    <span class="n">DEFAULTS</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;level&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+        <span class="s2">&quot;dist_drive&quot;</span><span class="p">:</span> <span class="mi">64</span><span class="p">,</span>
+        <span class="s2">&quot;dist_tone&quot;</span><span class="p">:</span> <span class="mi">64</span><span class="p">,</span>
+        <span class="s2">&quot;comp_attack&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;comp_release&quot;</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span>
+        <span class="s2">&quot;comp_threshold&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;comp_ratio&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;bit_depth&quot;</span><span class="p">:</span> <span class="mi">127</span><span class="p">,</span>
+        <span class="s2">&quot;sample_rate&quot;</span><span class="p">:</span> <span class="mi">127</span><span class="p">,</span>
+        <span class="s2">&quot;flanger_rate&quot;</span><span class="p">:</span> <span class="mi">64</span><span class="p">,</span>
+        <span class="s2">&quot;flanger_depth&quot;</span><span class="p">:</span> <span class="mi">64</span><span class="p">,</span>
+        <span class="s2">&quot;flanger_feedback&quot;</span><span class="p">:</span> <span class="mi">64</span><span class="p">,</span>
+        <span class="s2">&quot;phaser_rate&quot;</span><span class="p">:</span> <span class="mi">64</span><span class="p">,</span>
+        <span class="s2">&quot;phaser_depth&quot;</span><span class="p">:</span> <span class="mi">64</span><span class="p">,</span>
+        <span class="s2">&quot;phaser_resonance&quot;</span><span class="p">:</span> <span class="mi">64</span><span class="p">,</span>
+        <span class="s2">&quot;ring_freq&quot;</span><span class="p">:</span> <span class="mi">64</span><span class="p">,</span>
+        <span class="s2">&quot;ring_balance&quot;</span><span class="p">:</span> <span class="mi">64</span><span class="p">,</span>
+        <span class="s2">&quot;slicer_rate&quot;</span><span class="p">:</span> <span class="mi">64</span><span class="p">,</span>
+        <span class="s2">&quot;slicer_pattern&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="p">}</span></div>
+</div>
+
+
+
+<span class="nd">@dataclass</span>
+<div class="viewcode-block" id="EffectPatch">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EffectPatch">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">EffectPatch</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Effect patch data&quot;&quot;&quot;</span>
+
+    <span class="c1"># Effect preset_type and common parameters</span>
+<div class="viewcode-block" id="EffectPatch.type">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EffectPatch.type">[docs]</a>
+    <span class="nb">type</span><span class="p">:</span> <span class="n">EffectType</span> <span class="o">=</span> <span class="n">EffectType</span><span class="o">.</span><span class="n">THRU</span></div>
+
+<div class="viewcode-block" id="EffectPatch.level">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EffectPatch.level">[docs]</a>
+    <span class="n">level</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span></div>
+
+
+    <span class="c1"># Effect-specific parameters</span>
+<div class="viewcode-block" id="EffectPatch.param1">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EffectPatch.param1">[docs]</a>
+    <span class="n">param1</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="EffectPatch.param2">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EffectPatch.param2">[docs]</a>
+    <span class="n">param2</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span></div>
+
+
+    <span class="c1"># Send levels</span>
+<div class="viewcode-block" id="EffectPatch.reverb_send">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EffectPatch.reverb_send">[docs]</a>
+    <span class="n">reverb_send</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="EffectPatch.delay_send">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EffectPatch.delay_send">[docs]</a>
+    <span class="n">delay_send</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="EffectPatch.chorus_send">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EffectPatch.chorus_send">[docs]</a>
+    <span class="n">chorus_send</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span></div>
+
+
+<div class="viewcode-block" id="EffectPatch.validate_param">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EffectPatch.validate_param">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate_param</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate parameter value is in range&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">FX</span><span class="o">.</span><span class="n">RANGES</span><span class="p">:</span>
+            <span class="n">min_val</span><span class="p">,</span> <span class="n">max_val</span> <span class="o">=</span> <span class="n">FX</span><span class="o">.</span><span class="n">RANGES</span><span class="p">[</span><span class="n">param</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">min_val</span> <span class="o">&lt;=</span> <span class="n">value</span> <span class="o">&lt;=</span> <span class="n">max_val</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+</div>
+
+
+
+<span class="nd">@dataclass</span>
+<div class="viewcode-block" id="EffectParam">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EffectParam">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">EffectParam</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Effect parameter definition&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="EffectParam.name">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EffectParam.name">[docs]</a>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span></div>
+
+<div class="viewcode-block" id="EffectParam.min_value">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EffectParam.min_value">[docs]</a>
+    <span class="n">min_value</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">20000</span></div>
+
+<div class="viewcode-block" id="EffectParam.max_value">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EffectParam.max_value">[docs]</a>
+    <span class="n">max_value</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20000</span></div>
+
+<div class="viewcode-block" id="EffectParam.default">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EffectParam.default">[docs]</a>
+    <span class="n">default</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="EffectParam.unit">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EffectParam.unit">[docs]</a>
+    <span class="n">unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="EfxType">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EfxType">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">EfxType</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Effect types for JD-Xi&quot;&quot;&quot;</span>
+
+    <span class="c1"># Reverb Types (0-7)</span>
+<div class="viewcode-block" id="EfxType.ROOM1">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EfxType.ROOM1">[docs]</a>
+    <span class="n">ROOM1</span> <span class="o">=</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="EfxType.ROOM2">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EfxType.ROOM2">[docs]</a>
+    <span class="n">ROOM2</span> <span class="o">=</span> <span class="mi">1</span></div>
+
+<div class="viewcode-block" id="EfxType.STAGE1">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EfxType.STAGE1">[docs]</a>
+    <span class="n">STAGE1</span> <span class="o">=</span> <span class="mi">2</span></div>
+
+<div class="viewcode-block" id="EfxType.STAGE2">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EfxType.STAGE2">[docs]</a>
+    <span class="n">STAGE2</span> <span class="o">=</span> <span class="mi">3</span></div>
+
+<div class="viewcode-block" id="EfxType.HALL1">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EfxType.HALL1">[docs]</a>
+    <span class="n">HALL1</span> <span class="o">=</span> <span class="mi">4</span></div>
+
+<div class="viewcode-block" id="EfxType.HALL2">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EfxType.HALL2">[docs]</a>
+    <span class="n">HALL2</span> <span class="o">=</span> <span class="mi">5</span></div>
+
+<div class="viewcode-block" id="EfxType.PLATE">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EfxType.PLATE">[docs]</a>
+    <span class="n">PLATE</span> <span class="o">=</span> <span class="mi">6</span></div>
+
+<div class="viewcode-block" id="EfxType.SPRING">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EfxType.SPRING">[docs]</a>
+    <span class="n">SPRING</span> <span class="o">=</span> <span class="mi">7</span></div>
+
+
+    <span class="c1"># Delay Types (0-4)</span>
+<div class="viewcode-block" id="EfxType.STEREO">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EfxType.STEREO">[docs]</a>
+    <span class="n">STEREO</span> <span class="o">=</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="EfxType.PANNING">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EfxType.PANNING">[docs]</a>
+    <span class="n">PANNING</span> <span class="o">=</span> <span class="mi">1</span></div>
+
+<div class="viewcode-block" id="EfxType.MONO">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EfxType.MONO">[docs]</a>
+    <span class="n">MONO</span> <span class="o">=</span> <span class="mi">2</span></div>
+
+<div class="viewcode-block" id="EfxType.TAPE_ECHO">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EfxType.TAPE_ECHO">[docs]</a>
+    <span class="n">TAPE_ECHO</span> <span class="o">=</span> <span class="mi">3</span></div>
+
+<div class="viewcode-block" id="EfxType.MOD_DELAY">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EfxType.MOD_DELAY">[docs]</a>
+    <span class="n">MOD_DELAY</span> <span class="o">=</span> <span class="mi">4</span></div>
+
+
+    <span class="c1"># FX Types (0-12)</span>
+<div class="viewcode-block" id="EfxType.DISTORTION">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EfxType.DISTORTION">[docs]</a>
+    <span class="n">DISTORTION</span> <span class="o">=</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="EfxType.FUZZ">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EfxType.FUZZ">[docs]</a>
+    <span class="n">FUZZ</span> <span class="o">=</span> <span class="mi">1</span></div>
+
+<div class="viewcode-block" id="EfxType.COMPRESSOR">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EfxType.COMPRESSOR">[docs]</a>
+    <span class="n">COMPRESSOR</span> <span class="o">=</span> <span class="mi">2</span></div>
+
+<div class="viewcode-block" id="EfxType.BITCRUSHER">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EfxType.BITCRUSHER">[docs]</a>
+    <span class="n">BITCRUSHER</span> <span class="o">=</span> <span class="mi">3</span></div>
+
+<div class="viewcode-block" id="EfxType.EQUALIZER">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EfxType.EQUALIZER">[docs]</a>
+    <span class="n">EQUALIZER</span> <span class="o">=</span> <span class="mi">4</span></div>
+
+<div class="viewcode-block" id="EfxType.PHASER">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EfxType.PHASER">[docs]</a>
+    <span class="n">PHASER</span> <span class="o">=</span> <span class="mi">5</span></div>
+
+<div class="viewcode-block" id="EfxType.FLANGER">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EfxType.FLANGER">[docs]</a>
+    <span class="n">FLANGER</span> <span class="o">=</span> <span class="mi">6</span></div>
+
+<div class="viewcode-block" id="EfxType.CHORUS">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EfxType.CHORUS">[docs]</a>
+    <span class="n">CHORUS</span> <span class="o">=</span> <span class="mi">7</span></div>
+
+<div class="viewcode-block" id="EfxType.TREMOLO">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EfxType.TREMOLO">[docs]</a>
+    <span class="n">TREMOLO</span> <span class="o">=</span> <span class="mi">8</span></div>
+
+<div class="viewcode-block" id="EfxType.AUTOPAN">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EfxType.AUTOPAN">[docs]</a>
+    <span class="n">AUTOPAN</span> <span class="o">=</span> <span class="mi">9</span></div>
+
+<div class="viewcode-block" id="EfxType.SLICER">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EfxType.SLICER">[docs]</a>
+    <span class="n">SLICER</span> <span class="o">=</span> <span class="mi">10</span></div>
+
+<div class="viewcode-block" id="EfxType.RING_MOD">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EfxType.RING_MOD">[docs]</a>
+    <span class="n">RING_MOD</span> <span class="o">=</span> <span class="mi">11</span></div>
+
+<div class="viewcode-block" id="EfxType.ISOLATOR">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EfxType.ISOLATOR">[docs]</a>
+    <span class="n">ISOLATOR</span> <span class="o">=</span> <span class="mi">12</span></div>
+
+
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="EfxType.get_display_name">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EfxType.get_display_name">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_display_name</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">effect_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get display name for effect preset_type&quot;&quot;&quot;</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;reverb&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="mi">0</span><span class="p">:</span> <span class="s2">&quot;Room 1&quot;</span><span class="p">,</span>
+                <span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;Room 2&quot;</span><span class="p">,</span>
+                <span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;Stage 1&quot;</span><span class="p">,</span>
+                <span class="mi">3</span><span class="p">:</span> <span class="s2">&quot;Stage 2&quot;</span><span class="p">,</span>
+                <span class="mi">4</span><span class="p">:</span> <span class="s2">&quot;Hall 1&quot;</span><span class="p">,</span>
+                <span class="mi">5</span><span class="p">:</span> <span class="s2">&quot;Hall 2&quot;</span><span class="p">,</span>
+                <span class="mi">6</span><span class="p">:</span> <span class="s2">&quot;Plate&quot;</span><span class="p">,</span>
+                <span class="mi">7</span><span class="p">:</span> <span class="s2">&quot;Spring&quot;</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;delay&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="mi">0</span><span class="p">:</span> <span class="s2">&quot;Stereo&quot;</span><span class="p">,</span>
+                <span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;Panning&quot;</span><span class="p">,</span>
+                <span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;Mono&quot;</span><span class="p">,</span>
+                <span class="mi">3</span><span class="p">:</span> <span class="s2">&quot;Tape Echo&quot;</span><span class="p">,</span>
+                <span class="mi">4</span><span class="p">:</span> <span class="s2">&quot;Mod Delay&quot;</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;fx&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="mi">0</span><span class="p">:</span> <span class="s2">&quot;Distortion&quot;</span><span class="p">,</span>
+                <span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;Fuzz&quot;</span><span class="p">,</span>
+                <span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;Compressor&quot;</span><span class="p">,</span>
+                <span class="mi">3</span><span class="p">:</span> <span class="s2">&quot;Bitcrusher&quot;</span><span class="p">,</span>
+                <span class="mi">4</span><span class="p">:</span> <span class="s2">&quot;Equalizer&quot;</span><span class="p">,</span>
+                <span class="mi">5</span><span class="p">:</span> <span class="s2">&quot;Phaser&quot;</span><span class="p">,</span>
+                <span class="mi">6</span><span class="p">:</span> <span class="s2">&quot;Flanger&quot;</span><span class="p">,</span>
+                <span class="mi">7</span><span class="p">:</span> <span class="s2">&quot;Chorus&quot;</span><span class="p">,</span>
+                <span class="mi">8</span><span class="p">:</span> <span class="s2">&quot;Tremolo&quot;</span><span class="p">,</span>
+                <span class="mi">9</span><span class="p">:</span> <span class="s2">&quot;Auto Pan&quot;</span><span class="p">,</span>
+                <span class="mi">10</span><span class="p">:</span> <span class="s2">&quot;Slicer&quot;</span><span class="p">,</span>
+                <span class="mi">11</span><span class="p">:</span> <span class="s2">&quot;Ring Mod&quot;</span><span class="p">,</span>
+                <span class="mi">12</span><span class="p">:</span> <span class="s2">&quot;Isolator&quot;</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">names</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">effect_type</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s2">&quot;???&quot;</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="EffectGroup">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EffectGroup">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">EffectGroup</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Effect parameter groups&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="EffectGroup.COMMON">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EffectGroup.COMMON">[docs]</a>
+    <span class="n">COMMON</span> <span class="o">=</span> <span class="mh">0x00</span>  <span class="c1"># Common parameters</span></div>
+
+<div class="viewcode-block" id="EffectGroup.INSERT">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EffectGroup.INSERT">[docs]</a>
+    <span class="n">INSERT</span> <span class="o">=</span> <span class="mh">0x10</span>  <span class="c1"># Insert effect parameters</span></div>
+
+<div class="viewcode-block" id="EffectGroup.REVERB">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EffectGroup.REVERB">[docs]</a>
+    <span class="n">REVERB</span> <span class="o">=</span> <span class="mh">0x20</span>  <span class="c1"># Reverb parameters</span></div>
+
+<div class="viewcode-block" id="EffectGroup.DELAY">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.EffectGroup.DELAY">[docs]</a>
+    <span class="n">DELAY</span> <span class="o">=</span> <span class="mh">0x30</span>  <span class="c1"># Delay parameters</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="Effect1">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.Effect1">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Effect1</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Program Effect 1 parameters&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Effect1.TYPE">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.Effect1.TYPE">[docs]</a>
+    <span class="n">TYPE</span> <span class="o">=</span> <span class="mh">0x00</span>  <span class="c1"># Effect preset_type (0-4)</span></div>
+
+<div class="viewcode-block" id="Effect1.LEVEL">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.Effect1.LEVEL">[docs]</a>
+    <span class="n">LEVEL</span> <span class="o">=</span> <span class="mh">0x01</span>  <span class="c1"># Effect level (0-127)</span></div>
+
+<div class="viewcode-block" id="Effect1.DELAY_SEND">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.Effect1.DELAY_SEND">[docs]</a>
+    <span class="n">DELAY_SEND</span> <span class="o">=</span> <span class="mh">0x02</span>  <span class="c1"># Delay send level (0-127)</span></div>
+
+<div class="viewcode-block" id="Effect1.REVERB_SEND">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.Effect1.REVERB_SEND">[docs]</a>
+    <span class="n">REVERB_SEND</span> <span class="o">=</span> <span class="mh">0x03</span>  <span class="c1"># Reverb send level (0-127)</span></div>
+
+<div class="viewcode-block" id="Effect1.OUTPUT_ASSIGN">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.Effect1.OUTPUT_ASSIGN">[docs]</a>
+    <span class="n">OUTPUT_ASSIGN</span> <span class="o">=</span> <span class="mh">0x04</span>  <span class="c1"># Output assign (0: DIR, 1: EFX2)</span></div>
+
+
+    <span class="c1"># Parameters start at 0x11 and go up to 0x10D</span>
+    <span class="c1"># Each parameter is 4 bytes (12768-52768: -20000 to +20000)</span>
+<div class="viewcode-block" id="Effect1.PARAM_1">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.Effect1.PARAM_1">[docs]</a>
+    <span class="n">PARAM_1</span> <span class="o">=</span> <span class="mh">0x11</span>  <span class="c1"># Parameter 1</span></div>
+
+<div class="viewcode-block" id="Effect1.PARAM_2">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.Effect1.PARAM_2">[docs]</a>
+    <span class="n">PARAM_2</span> <span class="o">=</span> <span class="mh">0x15</span>  <span class="c1"># Parameter 2</span></div>
+
+    <span class="c1"># ... continue for all 32 parameters</span>
+<div class="viewcode-block" id="Effect1.PARAM_32">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.Effect1.PARAM_32">[docs]</a>
+    <span class="n">PARAM_32</span> <span class="o">=</span> <span class="mh">0x10D</span>  <span class="c1"># Parameter 32</span></div>
+
+
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Effect1.get_param_offset">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.Effect1.get_param_offset">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_param_offset</span><span class="p">(</span><span class="n">param_num</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get parameter offset from parameter number (1-32)&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">param_num</span> <span class="o">&lt;=</span> <span class="mi">32</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mh">0x11</span> <span class="o">+</span> <span class="p">((</span><span class="n">param_num</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mh">0x00</span></div>
+
+
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Effect1.get_display_value">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.Effect1.get_display_value">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_display_value</span><span class="p">(</span><span class="n">param</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert raw value to display value&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">param</span> <span class="o">==</span> <span class="mh">0x00</span><span class="p">:</span>  <span class="c1"># Effect preset_type</span>
+            <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;OFF&quot;</span><span class="p">,</span> <span class="s2">&quot;DISTORTION&quot;</span><span class="p">,</span> <span class="s2">&quot;FUZZ&quot;</span><span class="p">,</span> <span class="s2">&quot;COMPRESSOR&quot;</span><span class="p">,</span> <span class="s2">&quot;BITCRUSHER&quot;</span><span class="p">][</span><span class="n">value</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">param</span> <span class="o">==</span> <span class="mh">0x04</span><span class="p">:</span>  <span class="c1"># Output assign</span>
+            <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;DIR&quot;</span><span class="p">,</span> <span class="s2">&quot;EFX2&quot;</span><span class="p">][</span><span class="n">value</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="mh">0x11</span> <span class="o">&lt;=</span> <span class="n">param</span> <span class="o">&lt;=</span> <span class="mh">0x10D</span><span class="p">:</span>  <span class="c1"># Effect parameters</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">value</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">32768</span><span class="si">:</span><span class="s2">+d</span><span class="si">}</span><span class="s2">&quot;</span>  <span class="c1"># Convert 12768-52768 to -20000/+20000</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+</div>
+
+
+
+<span class="nd">@dataclass</span>
+<div class="viewcode-block" id="Effect1Message">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.Effect1Message">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Effect1Message</span><span class="p">(</span><span class="n">RolandSysEx</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Program Effect 1 parameter message&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Effect1Message.command">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.Effect1Message.command">[docs]</a>
+    <span class="n">command</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">CommandID</span><span class="o">.</span><span class="n">DT1</span></div>
+
+<div class="viewcode-block" id="Effect1Message.area">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.Effect1Message.area">[docs]</a>
+    <span class="n">area</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">AddressStartMSB</span><span class="o">.</span><span class="n">TEMPORARY_PROGRAM</span>  <span class="c1"># 0x18: Program area</span></div>
+
+<div class="viewcode-block" id="Effect1Message.section">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.Effect1Message.section">[docs]</a>
+    <span class="n">section</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mh">0x02</span>  <span class="c1"># 0x02: Effect 1 section</span></div>
+
+<div class="viewcode-block" id="Effect1Message.group">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.Effect1Message.group">[docs]</a>
+    <span class="n">group</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">AddressOffsetProgramLMB</span><span class="o">.</span><span class="n">COMMON</span>  <span class="c1"># Always 0x00</span></div>
+
+<div class="viewcode-block" id="Effect1Message.lsb">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.Effect1Message.lsb">[docs]</a>
+    <span class="n">lsb</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mh">0x00</span>  <span class="c1"># Parameter number</span></div>
+
+<div class="viewcode-block" id="Effect1Message.value">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.Effect1Message.value">[docs]</a>
+    <span class="n">value</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mh">0x00</span>  <span class="c1"># Parameter value</span></div>
+
+
+<div class="viewcode-block" id="Effect1Message.__post_init__">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.Effect1Message.__post_init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set up address and data&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msb</span><span class="p">,</span>  <span class="c1"># Program area (0x18)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">section</span><span class="p">,</span>  <span class="c1"># Effect 1 section (0x02)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">group</span><span class="p">,</span>  <span class="c1"># Always 0x00</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="p">,</span>  <span class="c1"># Parameter number</span>
+        <span class="p">]</span>
+        <span class="c1"># Handle 4-byte parameters</span>
+        <span class="k">if</span> <span class="mh">0x11</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">param</span> <span class="o">&lt;=</span> <span class="mh">0x10D</span><span class="p">:</span>
+            <span class="c1"># Convert -20000/+20000 to 12768-52768</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">+</span> <span class="mi">32768</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="p">(</span><span class="n">value</span> <span class="o">&gt;&gt;</span> <span class="mi">24</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">BitMask</span><span class="o">.</span><span class="n">LOW_4_BITS</span><span class="p">,</span>  <span class="c1"># High nibble</span>
+                <span class="p">(</span><span class="n">value</span> <span class="o">&gt;&gt;</span> <span class="mi">16</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">BitMask</span><span class="o">.</span><span class="n">LOW_4_BITS</span><span class="p">,</span>
+                <span class="p">(</span><span class="n">value</span> <span class="o">&gt;&gt;</span> <span class="mi">8</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">BitMask</span><span class="o">.</span><span class="n">LOW_4_BITS</span><span class="p">,</span>
+                <span class="n">value</span> <span class="o">&amp;</span> <span class="n">BitMask</span><span class="o">.</span><span class="n">LOW_4_BITS</span><span class="p">,</span>  <span class="c1"># Low nibble</span>
+            <span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">]</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="Effect2">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.Effect2">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Effect2</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Program Effect 2 parameters&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Effect2.TYPE">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.Effect2.TYPE">[docs]</a>
+    <span class="n">TYPE</span> <span class="o">=</span> <span class="mh">0x00</span>  <span class="c1"># Effect preset_type (0, 5-8: OFF, PHASER, FLANGER, DELAY, CHORUS)</span></div>
+
+<div class="viewcode-block" id="Effect2.LEVEL">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.Effect2.LEVEL">[docs]</a>
+    <span class="n">LEVEL</span> <span class="o">=</span> <span class="mh">0x01</span>  <span class="c1"># Effect level (0-127)</span></div>
+
+<div class="viewcode-block" id="Effect2.DELAY_SEND">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.Effect2.DELAY_SEND">[docs]</a>
+    <span class="n">DELAY_SEND</span> <span class="o">=</span> <span class="mh">0x02</span>  <span class="c1"># Delay send level (0-127)</span></div>
+
+<div class="viewcode-block" id="Effect2.REVERB_SEND">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.Effect2.REVERB_SEND">[docs]</a>
+    <span class="n">REVERB_SEND</span> <span class="o">=</span> <span class="mh">0x03</span>  <span class="c1"># Reverb send level (0-127)</span></div>
+
+
+    <span class="c1"># Reserved (0x04-0x10)</span>
+
+    <span class="c1"># Parameters start at 0x11 and go up to 0x10D</span>
+    <span class="c1"># Each parameter is 4 bytes (12768-52768: -20000 to +20000)</span>
+<div class="viewcode-block" id="Effect2.PARAM_1">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.Effect2.PARAM_1">[docs]</a>
+    <span class="n">PARAM_1</span> <span class="o">=</span> <span class="mh">0x11</span>  <span class="c1"># Parameter 1</span></div>
+
+<div class="viewcode-block" id="Effect2.PARAM_2">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.Effect2.PARAM_2">[docs]</a>
+    <span class="n">PARAM_2</span> <span class="o">=</span> <span class="mh">0x15</span>  <span class="c1"># Parameter 2</span></div>
+
+    <span class="c1"># ... continue for all 32 parameters</span>
+<div class="viewcode-block" id="Effect2.PARAM_32">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.Effect2.PARAM_32">[docs]</a>
+    <span class="n">PARAM_32</span> <span class="o">=</span> <span class="mh">0x10D</span>  <span class="c1"># Parameter 32</span></div>
+
+
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Effect2.get_param_offset">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.Effect2.get_param_offset">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_param_offset</span><span class="p">(</span><span class="n">param_num</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get parameter offset from parameter number (1-32)&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">param_num</span> <span class="o">&lt;=</span> <span class="mi">32</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mh">0x11</span> <span class="o">+</span> <span class="p">((</span><span class="n">param_num</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mh">0x00</span></div>
+
+
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Effect2.get_display_value">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.Effect2.get_display_value">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_display_value</span><span class="p">(</span><span class="n">param</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert raw value to display value&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">param</span> <span class="o">==</span> <span class="n">MidiConstant</span><span class="o">.</span><span class="n">ZERO_BYTE</span><span class="p">:</span>  <span class="c1"># Effect preset_type</span>
+            <span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s2">&quot;OFF&quot;</span>
+            <span class="n">types</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;OFF&quot;</span><span class="p">,</span> <span class="s2">&quot;PHASER&quot;</span><span class="p">,</span> <span class="s2">&quot;FLANGER&quot;</span><span class="p">,</span> <span class="s2">&quot;DELAY&quot;</span><span class="p">,</span> <span class="s2">&quot;CHORUS&quot;</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">types</span><span class="p">[</span><span class="n">value</span> <span class="o">-</span> <span class="mi">4</span><span class="p">]</span> <span class="k">if</span> <span class="mi">5</span> <span class="o">&lt;=</span> <span class="n">value</span> <span class="o">&lt;=</span> <span class="mi">8</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="mh">0x11</span> <span class="o">&lt;=</span> <span class="n">param</span> <span class="o">&lt;=</span> <span class="mh">0x10D</span><span class="p">:</span>  <span class="c1"># Effect parameters</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">value</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">32768</span><span class="si">:</span><span class="s2">+d</span><span class="si">}</span><span class="s2">&quot;</span>  <span class="c1"># Convert 12768-52768 to -20000/+20000</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+</div>
+
+
+
+<span class="nd">@dataclass</span>
+<div class="viewcode-block" id="Effect2Message">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.Effect2Message">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Effect2Message</span><span class="p">(</span><span class="n">RolandSysEx</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Program Effect 2 parameter message&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Effect2Message.command">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.Effect2Message.command">[docs]</a>
+    <span class="n">command</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">CommandID</span><span class="o">.</span><span class="n">DT1</span></div>
+
+<div class="viewcode-block" id="Effect2Message.msb">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.Effect2Message.msb">[docs]</a>
+    <span class="n">msb</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">AddressStartMSB</span><span class="o">.</span><span class="n">TEMPORARY_PROGRAM</span>  <span class="c1"># 0x18: Program area</span></div>
+
+<div class="viewcode-block" id="Effect2Message.umb">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.Effect2Message.umb">[docs]</a>
+    <span class="n">umb</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mh">0x04</span>  <span class="c1"># 0x04: Effect 2 section</span></div>
+
+<div class="viewcode-block" id="Effect2Message.lmb">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.Effect2Message.lmb">[docs]</a>
+    <span class="n">lmb</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mh">0x00</span>  <span class="c1"># Always 0x00</span></div>
+
+<div class="viewcode-block" id="Effect2Message.lsb">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.Effect2Message.lsb">[docs]</a>
+    <span class="n">lsb</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mh">0x00</span>  <span class="c1"># Parameter number</span></div>
+
+<div class="viewcode-block" id="Effect2Message.value">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.Effect2Message.value">[docs]</a>
+    <span class="n">value</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mh">0x00</span>  <span class="c1"># Parameter value</span></div>
+
+
+<div class="viewcode-block" id="Effect2Message.__post_init__">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/midi/data/effects/effects/index.html#jdxi_editor.midi.data.effects.effects.Effect2Message.__post_init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set up address and data&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">param</span> <span class="o">=</span> <span class="n">param</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msb</span><span class="p">,</span>  <span class="c1"># Program area (0x18)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">umb</span><span class="p">,</span>  <span class="c1"># Effect 2 section (0x04)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lmb</span><span class="p">,</span>  <span class="c1"># Always 0x00</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="p">,</span>  <span class="c1"># Parameter number</span>
+        <span class="p">]</span>
+        <span class="c1"># Handle 4-byte parameters</span>
+        <span class="k">if</span> <span class="mh">0x11</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">param</span> <span class="o">&lt;=</span> <span class="mh">0x10D</span><span class="p">:</span>
+            <span class="c1"># Convert -20000/+20000 to 12768-52768</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">+</span> <span class="mi">32768</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="p">(</span><span class="n">value</span> <span class="o">&gt;&gt;</span> <span class="mi">24</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">BitMask</span><span class="o">.</span><span class="n">LOW_4_BITS</span><span class="p">,</span>  <span class="c1"># High nibble</span>
+                <span class="p">(</span><span class="n">value</span> <span class="o">&gt;&gt;</span> <span class="mi">16</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">BitMask</span><span class="o">.</span><span class="n">LOW_4_BITS</span><span class="p">,</span>
+                <span class="p">(</span><span class="n">value</span> <span class="o">&gt;&gt;</span> <span class="mi">8</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">BitMask</span><span class="o">.</span><span class="n">LOW_4_BITS</span><span class="p">,</span>
+                <span class="n">value</span> <span class="o">&amp;</span> <span class="n">BitMask</span><span class="o">.</span><span class="n">LOW_4_BITS</span><span class="p">,</span>  <span class="c1"># Low nibble</span>
+            <span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">]</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Mark Mrooks.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

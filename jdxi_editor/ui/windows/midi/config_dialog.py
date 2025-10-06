@@ -34,13 +34,21 @@ from PySide6.QtWidgets import (
     QPushButton,
     QGroupBox,
     QDialogButtonBox,
+    QCheckBox,
+    QLineEdit,
+    QFileDialog,
 )
 from PySide6.QtCore import Qt
+import os
 import qtawesome as qta
 
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.midi.io.helper import MidiIOHelper
+
+# In-app FluidSynth defaults
+HW_PORT_HINT = "Roland JDXi"  # adjust if your port name differs
+SF2_PATH = os.path.expanduser("~/SoundFonts/FluidR3_GM.sf2")
 
 
 class MIDIConfigDialog(QDialog):
@@ -54,7 +62,24 @@ class MIDIConfigDialog(QDialog):
         self.output_ports = midi_helper.get_output_ports()
         self.current_in = midi_helper.current_in
         self.current_out = midi_helper.current_out
+        # FluidSynth runtime state (optional)
+        self.fs = None
+        self.sfid = None
+        self.sf2_path = ""
         self._create_ui()
+        # Prefill default SoundFont path if present
+        try:
+            if os.path.isfile(SF2_PATH):
+                self.sf2_edit.setText(SF2_PATH)
+                self.sf2_path = SF2_PATH
+        except Exception:
+            pass
+        # Default to enabling in-app synth option
+        self.fluidsynth_enable.setChecked(True)
+        # Populate soundfont combo and sync with field
+        self._populate_sf2_combo()
+        if self.sf2_edit.text().strip():
+            self._select_sf2_in_combo(self.sf2_edit.text().strip())
 
     def _create_ui(self):
         """Create the dialog UI"""
@@ -108,6 +133,52 @@ class MIDIConfigDialog(QDialog):
         output_layout.addWidget(self.output_combo)
         layout.addWidget(output_group)
 
+        # Software Synth (FluidSynth)
+        synth_group = QGroupBox("Software Synth (FluidSynth)")
+        synth_layout = QVBoxLayout(synth_group)
+
+        self.fluidsynth_enable = QCheckBox("Enable FluidSynth for local playback")
+        self.fluidsynth_enable.toggled.connect(self._toggle_fluidsynth_controls)
+        synth_layout.addWidget(self.fluidsynth_enable)
+
+        sf_row = QHBoxLayout()
+        sf_row.addWidget(QLabel("SoundFont (SF2/SF3):"))
+        self.sf2_edit = QLineEdit()
+        self.sf2_edit.setPlaceholderText("FluidR3_GM.sf2") # default SoundFont
+        sf_row.addWidget(self.sf2_edit)
+        browse_btn = QPushButton("Browse…")
+        browse_btn.clicked.connect(self._browse_sf2)
+        sf_row.addWidget(browse_btn)
+        synth_layout.addLayout(sf_row)
+
+        # Available SoundFonts selector
+        combo_row = QHBoxLayout()
+        combo_row.addWidget(QLabel("Available:"))
+        self.sf2_combo = QComboBox()
+        self.sf2_combo.currentIndexChanged.connect(self._on_sf2_combo_changed)
+        combo_row.addWidget(self.sf2_combo)
+        synth_layout.addLayout(combo_row)
+
+        btn_row = QHBoxLayout()
+        self.fs_start_btn = QPushButton("Start")
+        self.fs_start_btn.clicked.connect(self._start_fluidsynth)
+        self.fs_stop_btn = QPushButton("Stop")
+        self.fs_stop_btn.clicked.connect(self._stop_fluidsynth)
+        self.fs_test_btn = QPushButton("Test Note")
+        self.fs_test_btn.clicked.connect(self._test_fluidsynth)
+        btn_row.addWidget(self.fs_start_btn)
+        btn_row.addWidget(self.fs_stop_btn)
+        btn_row.addWidget(self.fs_test_btn)
+        synth_layout.addLayout(btn_row)
+
+        self.fs_status = QLabel("")
+        synth_layout.addWidget(self.fs_status)
+
+        layout.addWidget(synth_group)
+
+        # Initially disable subordinate controls
+        self._toggle_fluidsynth_controls(False)
+
         # Refresh button
         refresh_button = QPushButton("Refresh Ports")
         refresh_button.clicked.connect(self.refresh_ports)
@@ -132,6 +203,127 @@ class MIDIConfigDialog(QDialog):
         self.input_combo.addItems(self.input_ports)
         self.output_combo.clear()
         self.output_combo.addItems(self.output_ports)
+
+    def _toggle_fluidsynth_controls(self, enabled: bool) -> None:
+        controls_enabled = bool(self.fluidsynth_enable.isChecked())
+        for w in [self.sf2_edit, self.fs_start_btn, self.fs_stop_btn, self.fs_test_btn]:
+            w.setEnabled(controls_enabled)
+        if not controls_enabled:
+            self.fs_status.setText("")
+        else:
+            # Auto-start if a valid SoundFont is already set and synth not running
+            try:
+                if self.fs is None and self.sf2_edit.text().strip() and os.path.isfile(self.sf2_edit.text().strip()):
+                    self._start_fluidsynth()
+            except Exception:
+                pass
+
+    def _browse_sf2(self) -> None:
+        start_dir = os.path.expanduser("~/SoundFonts")
+        file_path, _ = QFileDialog.getOpenFileName(
+            self, "Select SoundFont", start_dir if os.path.isdir(start_dir) else "", "SoundFonts (*.sf2 *.sf3)"
+        )
+        if file_path:
+            self.sf2_edit.setText(file_path)
+            self.sf2_path = file_path
+            # Add to combo if missing and select
+            self._ensure_sf2_in_combo(file_path)
+            self._select_sf2_in_combo(file_path)
+
+    def _start_fluidsynth(self) -> None:
+        try:
+            import fluidsynth
+        except Exception as ex:
+            self.fs_status.setText("FluidSynth not installed: pip install pyfluidsynth")
+            log.warning(f"FluidSynth import failed: {ex}")
+            return
+
+        try:
+            sf_path = self.sf2_edit.text().strip()
+            if not sf_path:
+                self.fs_status.setText("Please select a SoundFont first.")
+                return
+            if self.fs is None:
+                self.fs = fluidsynth.Synth()
+                # On macOS, CoreAudio driver provides audio output
+                self.fs.start(driver="coreaudio")
+            # Load and select program
+            self.sfid = self.fs.sfload(sf_path)
+            self.fs.program_select(0, self.sfid, 0, 0)
+            self.fs_status.setText("FluidSynth: started")
+        except Exception as ex:
+            self.fs_status.setText(f"FluidSynth error: {ex}")
+            log.error(f"FluidSynth error: {ex}")
+
+    def _stop_fluidsynth(self) -> None:
+        try:
+            if self.fs is not None:
+                self.fs.delete()
+                self.fs = None
+                self.fs_status.setText("FluidSynth: stopped")
+        except Exception as ex:
+            self.fs_status.setText(f"Stop error: {ex}")
+            log.error(f"FluidSynth stop error: {ex}")
+
+    def _test_fluidsynth(self) -> None:
+        try:
+            if self.fs is None:
+                self.fs_status.setText("Start FluidSynth first.")
+                return
+            # Middle C test
+            self.fs.noteon(0, 60, 110)
+            self.fs.noteoff(0, 60)
+            self.fs_status.setText("Test note triggered.")
+        except Exception as ex:
+            self.fs_status.setText(f"Test error: {ex}")
+            log.error(f"FluidSynth test error: {ex}")
+
+    def _populate_sf2_combo(self) -> None:
+        """Scan ~/SoundFonts for .sf2/.sf3 files and populate the combo box."""
+        if not hasattr(self, "sf2_combo"):
+            return
+        self.sf2_combo.blockSignals(True)
+        self.sf2_combo.clear()
+        base_dir = os.path.expanduser("~/SoundFonts")
+        found = []
+        try:
+            if os.path.isdir(base_dir):
+                for root, dirs, files in os.walk(base_dir):
+                    for f in files:
+                        if f.lower().endswith((".sf2", ".sf3")):
+                            full = os.path.join(root, f)
+                            found.append(full)
+        except Exception:
+            pass
+        # Add items (display basename, store full path)
+        for path in sorted(found):
+            self.sf2_combo.addItem(os.path.basename(path), path)
+        self.sf2_combo.blockSignals(False)
+
+    def _on_sf2_combo_changed(self, index: int) -> None:
+        if index < 0:
+            return
+        path = self.sf2_combo.currentData()
+        if isinstance(path, str) and path:
+            self.sf2_edit.setText(path)
+            self.sf2_path = path
+
+    def _ensure_sf2_in_combo(self, path: str) -> None:
+        if not hasattr(self, "sf2_combo"):
+            return
+        # If already present, do nothing
+        for i in range(self.sf2_combo.count()):
+            if self.sf2_combo.itemData(i) == path:
+                return
+        self.sf2_combo.addItem(os.path.basename(path), path)
+
+    def _select_sf2_in_combo(self, path: str) -> None:
+        if not hasattr(self, "sf2_combo"):
+            return
+        for i in range(self.sf2_combo.count()):
+            if self.sf2_combo.itemData(i) == path:
+                self.sf2_combo.setCurrentIndex(i)
+                return
 
     def accept(self):
         super().accept()

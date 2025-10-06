@@ -8,10 +8,21 @@
       <excludeFolder url="file://$MODULE_DIR$/../jdxi_editor/dist" />
       <excludeFolder url="file://$MODULE_DIR$/../jdxi_manager.egg-info" />
       <excludeFolder url="file://$MODULE_DIR$/../venv" />
+<<<<<<< HEAD
       <excludeFolder url="file://$MODULE_DIR$/../.eggs" />
       <excludeFolder url="file://$MODULE_DIR$/build" />
       <excludeFolder url="file://$MODULE_DIR$/perl/Mac-CoreMIDI-0.04/lib" />
       <excludeFolder url="file://$MODULE_DIR$/../jdxi_dmg" />
+=======
+      <excludeFolder url="file://$MODULE_DIR$/_build/html/.doctrees/autoapi/jdxi_editor/ui/windows/jdxi/containers/parts" />
+      <excludeFolder url="file://$MODULE_DIR$/_build/html/.doctrees/autoapi/jdxi_editor/ui/windows/jdxi/containers/wheels" />
+      <excludeFolder url="file://$MODULE_DIR$/_build/html/_sources/autoapi/jdxi_editor/ui/windows/jdxi/containers/parts" />
+      <excludeFolder url="file://$MODULE_DIR$/_build/html/_sources/autoapi/jdxi_editor/ui/windows/jdxi/containers/wheels" />
+      <excludeFolder url="file://$MODULE_DIR$/_build/html/autoapi/jdxi_editor/ui/windows/jdxi/containers/parts" />
+      <excludeFolder url="file://$MODULE_DIR$/_build/html/autoapi/jdxi_editor/ui/windows/jdxi/containers/wheels" />
+      <excludeFolder url="file://$MODULE_DIR$/_build/latex/.doctrees/autoapi/jdxi_editor/ui/windows/jdxi/containers/parts" />
+      <excludeFolder url="file://$MODULE_DIR$/_build/latex/.doctrees/autoapi/jdxi_editor/ui/windows/jdxi/containers/wheels" />
+>>>>>>> bbe8019216b2c06079f32345e86c6fd4f743c641
     </content>
     <orderEntry type="jdk" jdkName="Python 3.10 virtualenv at ~/projects/JDXI-Editor/venv" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
