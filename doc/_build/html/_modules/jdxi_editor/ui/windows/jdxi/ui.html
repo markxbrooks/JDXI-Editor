@@ -1,0 +1,1198 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>jdxi_editor.ui.windows.jdxi.ui &mdash; JD-Xi Editor 0.8.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../../_static/documentation_options.js?v=486e5634"></script>
+      <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../../index.html" class="icon icon-home">
+            JD-Xi Editor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../getting-started.html#getting-started-guide">Getting Started Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../editor-windows.html">Editor Windows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../editor-windows.html#available-editors">Available Editors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../additional-editors.html">Additional Editors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../additional-editors.html#available-editors">Available Editors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../playing-midi-files.html">Playing MIDI Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../playing-midi-files.html#available-tools">Available Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../troubleshooting.html#id1">Troubleshooting</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../legal.html">Legal Disclaimer</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../modules.html">jdxi_editor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../jdxi_editor.html">jdxi_editor package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.jdxi.html">jdxi_editor.jdxi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.log.html">jdxi_editor.log package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.midi.html">jdxi_editor.midi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.ui.html">jdxi_editor.ui package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.globals">jdxi_editor.globals module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.main">jdxi_editor.main module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.html#jdxi_editor.main.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.html#jdxi_editor.main.setup_splash_screen"><code class="docutils literal notranslate"><span class="pre">setup_splash_screen()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.project">jdxi_editor.project module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.resources">jdxi_editor.resources module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.html#jdxi_editor.resources.resource_path"><code class="docutils literal notranslate"><span class="pre">resource_path()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../autoapi/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/midi/index.html">midi</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/midi/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/colors/index.html">midi.colors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/slider/index.html">midi.slider</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/spin_box/index.html">midi.spin_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/time_ruler/index.html">midi.time_ruler</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/track/index.html">midi.track</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/track_viewer/index.html">midi.track_viewer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/utils/index.html">midi.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/adsr/index.html">adsr</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/adsr/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/adsr/adsr/index.html">adsr.adsr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/adsr/graph/index.html">adsr.graph</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/adsr/parameter/index.html">adsr.parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/adsr/plot/index.html">adsr.plot</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/pitch/index.html">pitch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/pitch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pitch/envelope/index.html">pitch.envelope</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pitch/envelope_plot/index.html">pitch.envelope_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pitch/pwm_plot/index.html">pitch.pwm_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pitch/slider_spinbox/index.html">pitch.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/piano/index.html">piano</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/piano/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/piano/key/index.html">piano.key</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/piano/keyboard/index.html">piano.keyboard</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/panel/index.html">panel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/panel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/panel/partial/index.html">panel.partial</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/wheel/index.html">wheel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/wheel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/wheel/mod/index.html">wheel.mod</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/wheel/pitch/index.html">wheel.pitch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/wheel/wheel/index.html">wheel.wheel</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/preset/index.html">preset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/preset/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/preset/combo_box/index.html">preset.combo_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/preset/panel/index.html">preset.panel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/preset/patch_name/index.html">preset.patch_name</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/slider/index.html">slider</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/slider/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/slider/slider/index.html">slider.slider</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/slider/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/slider/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/slider/index.html#slider.Slider"><code class="docutils literal notranslate"><span class="pre">Slider</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/dialog/index.html">dialog</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/dialog/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/dialog/progress/index.html">dialog.progress</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/viewer/index.html">viewer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/viewer/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/viewer/log/index.html">viewer.log</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/button/index.html">button</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/button/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/channel/index.html">button.channel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/favorite/index.html">button.favorite</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/sequencer/index.html">button.sequencer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/waveform/index.html">button.waveform</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/button/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/button/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/index.html#button.ChannelButton"><code class="docutils literal notranslate"><span class="pre">ChannelButton</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/index.html#button.SequencerSquare"><code class="docutils literal notranslate"><span class="pre">SequencerSquare</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/switch/index.html">switch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/switch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/switch/partial/index.html">switch.partial</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/switch/switch/index.html">switch.switch</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/filter/index.html">filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/filter/index.html#filter.FilterWidget"><code class="docutils literal notranslate"><span class="pre">FilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/display/index.html">display</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/display/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/display/digital/index.html">display.digital</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/display/pattern/index.html">display.pattern</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/display/value/index.html">display.value</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/pattern/index.html">pattern</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/pattern/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pattern/measure/index.html">pattern.measure</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/spin_box/index.html">spin_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/spin_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/spin_box/spin_box/index.html">spin_box.spin_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/envelope/index.html">envelope</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/envelope/base/index.html">envelope.base</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/indicator/index.html">indicator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/indicator/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/indicator/led/index.html">indicator.led</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/indicator/midi/index.html">indicator.midi</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/combo_box/index.html">combo_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/combo_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/combo_box/combo_box/index.html">combo_box.combo_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/index.html">jdxi_editor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/globals/index.html">jdxi_editor.globals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/jdxi/index.html">jdxi_editor.jdxi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/log/index.html">jdxi_editor.log</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/main/index.html">jdxi_editor.main</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/midi/index.html">jdxi_editor.midi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/project/index.html">jdxi_editor.project</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/resources/index.html">jdxi_editor.resources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/ui/index.html">jdxi_editor.ui</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html">filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#filter_plot.FilterPlot"><code class="docutils literal notranslate"><span class="pre">FilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html">envelope_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#envelope_plot.midi_value_to_float"><code class="docutils literal notranslate"><span class="pre">midi_value_to_float()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#envelope_plot.WMTEnvPlot"><code class="docutils literal notranslate"><span class="pre">WMTEnvPlot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#envelope_plot.app"><code class="docutils literal notranslate"><span class="pre">app</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/wave_selector/index.html">wave_selector</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/wave_selector/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/wave_selector/wave_selector/index.html">wave_selector.wave_selector</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/analog_filter/index.html">analog_filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/analog_filter/index.html#analog_filter.AnalogFilterWidget"><code class="docutils literal notranslate"><span class="pre">AnalogFilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/slider_spinbox/index.html">slider_spinbox</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/slider_spinbox/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/slider_spinbox/slider_spinbox/index.html">slider_spinbox.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html">analog_filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#analog_filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#analog_filter_plot.AnalogFilterPlot"><code class="docutils literal notranslate"><span class="pre">AnalogFilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">JD-Xi Editor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">jdxi_editor.ui.windows.jdxi.ui</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for jdxi_editor.ui.windows.jdxi.ui</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">JD-Xi Editor UI setup.</span>
+
+<span class="sd">This class defines the main user interface for the JD-Xi Editor application, inheriting from QMainWindow. It handles the creation of the UI elements, including the main layout, menus, status bar, and MIDI indicators. It also provides functionality for displaying and managing synth presets, favorites, and MIDI connectivity.</span>
+
+<span class="sd">Key Features:</span>
+<span class="sd">- Sets up a frameless window with a customizable layout.</span>
+<span class="sd">- Initializes MIDI helper and indicators for MIDI input/output.</span>
+<span class="sd">- Loads and displays a digital font for instrument displays.</span>
+<span class="sd">- Allows users to manage and load favorite presets.</span>
+<span class="sd">- Displays a virtual piano keyboard in the status bar.</span>
+<span class="sd">- Integrates with MIDIHelper for MIDI communication.</span>
+<span class="sd">- Loads and saves application settings and preferences.</span>
+
+<span class="sd">Methods:</span>
+<span class="sd">    - __init__: Initializes the UI, settings, MIDI components, and layout.</span>
+<span class="sd">    - _create_main_layout: Sets up the central layout for displaying instrument images and overlays.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">PySide6.QtWidgets</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">QMainWindow</span><span class="p">,</span>
+    <span class="n">QWidget</span><span class="p">,</span>
+    <span class="n">QVBoxLayout</span><span class="p">,</span>
+    <span class="n">QHBoxLayout</span><span class="p">,</span>
+    <span class="n">QMessageBox</span><span class="p">,</span>
+    <span class="n">QLabel</span><span class="p">,</span>
+    <span class="n">QLayout</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PySide6.QtCore</span><span class="w"> </span><span class="kn">import</span> <span class="n">Qt</span><span class="p">,</span> <span class="n">QSettings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PySide6.QtGui</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">QAction</span><span class="p">,</span>
+    <span class="n">QFontDatabase</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">qtawesome</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">qta</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.project</span><span class="w"> </span><span class="kn">import</span> <span class="n">__program__</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.log.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">Logger</span> <span class="k">as</span> <span class="n">log</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.channel.channel</span><span class="w"> </span><span class="kn">import</span> <span class="n">MidiChannel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.jdxi.synth.factory</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_synth_data</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.io.helper</span><span class="w"> </span><span class="kn">import</span> <span class="n">MidiIOHelper</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.jdxi.preset.manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">JDXiPresetManager</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.jdxi.synth.type</span><span class="w"> </span><span class="kn">import</span> <span class="n">JDXiSynth</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.sysex.request.midi_requests</span><span class="w"> </span><span class="kn">import</span> <span class="n">MidiRequests</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.resources</span><span class="w"> </span><span class="kn">import</span> <span class="n">resource_path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.ui.editors.helpers.program</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">get_program_name_by_id</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.ui.editors.helpers.preset</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_preset_list_number_by_name</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.ui.image.instrument</span><span class="w"> </span><span class="kn">import</span> <span class="n">draw_instrument_pixmap</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.jdxi.style.jdxi</span><span class="w"> </span><span class="kn">import</span> <span class="n">JDXiStyle</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.ui.widgets.button.sequencer</span><span class="w"> </span><span class="kn">import</span> <span class="n">SequencerSquare</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.ui.widgets.button.favorite</span><span class="w"> </span><span class="kn">import</span> <span class="n">FavoriteButton</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.ui.widgets.piano.keyboard</span><span class="w"> </span><span class="kn">import</span> <span class="n">PianoKeyboard</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.ui.widgets.indicator.led</span><span class="w"> </span><span class="kn">import</span> <span class="n">LEDIndicator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.ui.windows.jdxi.containers</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">add_arpeggiator_buttons</span><span class="p">,</span>
+    <span class="n">add_slider_container</span><span class="p">,</span>
+    <span class="n">add_digital_display</span><span class="p">,</span>
+    <span class="n">add_effects_container</span><span class="p">,</span>
+    <span class="n">add_octave_buttons</span><span class="p">,</span>
+    <span class="n">add_program_container</span><span class="p">,</span>
+    <span class="n">add_sequencer_container</span><span class="p">,</span>
+    <span class="n">add_favorite_button_container</span><span class="p">,</span>
+    <span class="n">add_title_container</span><span class="p">,</span>
+    <span class="n">add_tone_container</span><span class="p">,</span>
+    <span class="n">build_wheel_row</span><span class="p">,</span>
+    <span class="n">build_wheel_label_row</span><span class="p">,</span>
+    <span class="n">create_tone_buttons_row</span><span class="p">,</span>
+    <span class="n">create_program_buttons_row</span><span class="p">,</span>
+    <span class="n">create_parts_container</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.ui.windows.jdxi.dimensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">JDXiDimensions</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.project</span><span class="w"> </span><span class="kn">import</span> <span class="n">__program__</span><span class="p">,</span> <span class="n">__package_name__</span>
+
+
+<div class="viewcode-block" id="JDXiUi">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">JDXiUi</span><span class="p">(</span><span class="n">QMainWindow</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;JD-Xi UI setup, with as little as possible functionality, which is to be super-classed&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="JDXiUi.__init__">
+<a class="viewcode-back" href="../../../../../jdxi_editor.ui.windows.jdxi.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+<div class="viewcode-block" id="JDXiUi.digital_font_family">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi.digital_font_family">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">digital_font_family</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="JDXiUi.editor_registry">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi.editor_registry">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">editor_registry</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="JDXiUi.editors">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi.editors">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">editors</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+<div class="viewcode-block" id="JDXiUi.log_viewer">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi.log_viewer">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_viewer</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="JDXiUi.midi_debugger">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi.midi_debugger">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">midi_debugger</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="JDXiUi.midi_message_monitor">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi.midi_message_monitor">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">midi_message_monitor</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="JDXiUi.old_pos">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi.old_pos">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">old_pos</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="JDXiUi.preset_helpers">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi.preset_helpers">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">preset_helpers</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="JDXiUi.slot_number">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi.slot_number">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slot_number</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="JDXiUi.sequencer_buttons">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi.sequencer_buttons">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sequencer_buttons</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+<div class="viewcode-block" id="JDXiUi.current_program_bank_letter">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi.current_program_bank_letter">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_program_bank_letter</span> <span class="o">=</span> <span class="s2">&quot;A&quot;</span></div>
+
+        <span class="c1"># Set up programs</span>
+<div class="viewcode-block" id="JDXiUi.current_program_id">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi.current_program_id">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_program_id</span> <span class="o">=</span> <span class="s2">&quot;A01&quot;</span></div>
+
+<div class="viewcode-block" id="JDXiUi.current_program_number">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi.current_program_number">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_program_number</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_program_id</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span></div>
+
+<div class="viewcode-block" id="JDXiUi.current_program_name">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi.current_program_name">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_program_name</span> <span class="o">=</span> <span class="n">get_program_name_by_id</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_program_id</span><span class="p">)</span></div>
+
+        <span class="c1"># Set up presets</span>
+<div class="viewcode-block" id="JDXiUi.preset_manager">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi.preset_manager">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">preset_manager</span> <span class="o">=</span> <span class="n">JDXiPresetManager</span><span class="p">()</span></div>
+
+        <span class="c1"># Initialize synth preset_type</span>
+<div class="viewcode-block" id="JDXiUi.current_synth_type">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi.current_synth_type">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_synth_type</span> <span class="o">=</span> <span class="n">JDXiSynth</span><span class="o">.</span><span class="n">DIGITAL_SYNTH_1</span></div>
+
+        <span class="c1"># Initialize octave</span>
+<div class="viewcode-block" id="JDXiUi.current_octave">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi.current_octave">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_octave</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># Initialize octave tracking first</span></div>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setWindowFlags</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">WindowType</span><span class="o">.</span><span class="n">Window</span> <span class="o">|</span> <span class="n">Qt</span><span class="o">.</span><span class="n">WindowType</span><span class="o">.</span><span class="n">FramelessWindowHint</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setWindowTitle</span><span class="p">(</span><span class="n">__program__</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMinimumSize</span><span class="p">(</span><span class="n">JDXiDimensions</span><span class="o">.</span><span class="n">WIDTH</span><span class="p">,</span> <span class="n">JDXiDimensions</span><span class="o">.</span><span class="n">HEIGHT</span><span class="p">)</span>
+
+        <span class="c1"># Initialize MIDI helper</span>
+<div class="viewcode-block" id="JDXiUi.midi_helper">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi.midi_helper">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span> <span class="o">=</span> <span class="n">MidiIOHelper</span><span class="p">()</span></div>
+
+        <span class="c1">#  Initialize MIDI connectivity</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span><span class="o">.</span><span class="n">close_ports</span><span class="p">()</span>
+<div class="viewcode-block" id="JDXiUi.channel">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi.channel">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">channel</span> <span class="o">=</span> <span class="n">MidiChannel</span><span class="o">.</span><span class="n">DIGITAL_SYNTH_1</span></div>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span><span class="o">.</span><span class="n">midi_program_changed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_handle_program_change</span><span class="p">)</span>
+<div class="viewcode-block" id="JDXiUi.midi_key_hold_latched">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi.midi_key_hold_latched">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">midi_key_hold_latched</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="JDXiUi.midi_requests">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi.midi_requests">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">midi_requests</span> <span class="o">=</span> <span class="n">MidiRequests</span><span class="o">.</span><span class="n">PROGRAM_TONE_NAME_PARTIAL</span></div>
+
+
+        <span class="c1"># Load custom font</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_load_digital_font</span><span class="p">()</span>
+
+        <span class="c1"># Create UI</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_menu_bar</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_status_bar</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_main_layout</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_parts_menu</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_effects_menu</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_playback_menu</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_help_menu</span><span class="p">()</span>
+
+        <span class="c1"># Load settings</span>
+<div class="viewcode-block" id="JDXiUi.settings">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi.settings">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span> <span class="o">=</span> <span class="n">QSettings</span><span class="p">(</span><span class="s2">&quot;mabsoft&quot;</span><span class="p">,</span> <span class="n">__package_name__</span><span class="p">)</span></div>
+
+
+        <span class="c1"># Add piano keyboard at bottom</span>
+<div class="viewcode-block" id="JDXiUi.piano_keyboard">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi.piano_keyboard">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">piano_keyboard</span> <span class="o">=</span> <span class="n">PianoKeyboard</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span></div>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">statusBar</span><span class="p">()</span><span class="o">.</span><span class="n">addPermanentWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">piano_keyboard</span><span class="p">)</span>
+
+        <span class="c1"># Load saved favorites</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_load_saved_favorites</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="JDXiUi._create_main_layout">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi._create_main_layout">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_main_layout</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create the main dashboard&quot;&quot;&quot;</span>
+        <span class="n">central</span> <span class="o">=</span> <span class="n">QWidget</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setCentralWidget</span><span class="p">(</span><span class="n">central</span><span class="p">)</span>
+
+        <span class="c1"># Single layout to hold the image and overlays</span>
+        <span class="n">layout</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">(</span><span class="n">central</span><span class="p">)</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">setSpacing</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="c1"># Create container for image and overlays</span>
+        <span class="n">container</span> <span class="o">=</span> <span class="n">QWidget</span><span class="p">()</span>
+        <span class="n">container</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">QVBoxLayout</span><span class="p">())</span>
+        <span class="n">container</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="c1"># Store reference to image label</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">image_label</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">image_label</span><span class="o">.</span><span class="n">setPixmap</span><span class="p">(</span><span class="n">draw_instrument_pixmap</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">image_label</span><span class="o">.</span><span class="n">setAlignment</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignmentFlag</span><span class="o">.</span><span class="n">AlignCenter</span><span class="p">)</span>
+        <span class="n">container</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">image_label</span><span class="p">)</span>
+
+        <span class="c1"># Add overlaid controls</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">digital_display</span> <span class="o">=</span> <span class="n">add_digital_display</span><span class="p">(</span><span class="n">container</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">add_title_container</span><span class="p">(</span><span class="n">container</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parts_container</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">part_buttons</span> <span class="o">=</span> <span class="n">create_parts_container</span><span class="p">(</span>
+            <span class="n">parent_widget</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
+            <span class="n">on_open_d1</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_editor</span><span class="p">(</span><span class="s2">&quot;digital1&quot;</span><span class="p">),</span>
+            <span class="n">on_open_d2</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_editor</span><span class="p">(</span><span class="s2">&quot;digital2&quot;</span><span class="p">),</span>
+            <span class="n">on_open_drums</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_editor</span><span class="p">(</span><span class="s2">&quot;drums&quot;</span><span class="p">),</span>
+            <span class="n">on_open_analog</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_editor</span><span class="p">(</span><span class="s2">&quot;analog&quot;</span><span class="p">),</span>
+            <span class="n">on_open_arp</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_editor</span><span class="p">(</span><span class="s2">&quot;arpeggio&quot;</span><span class="p">),</span>
+            <span class="n">on_select_synth</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_select_synth</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">synth_buttons</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">JDXiSynth</span><span class="o">.</span><span class="n">DIGITAL_SYNTH_1</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">part_buttons</span><span class="p">[</span><span class="s2">&quot;digital1&quot;</span><span class="p">],</span>
+            <span class="n">JDXiSynth</span><span class="o">.</span><span class="n">DIGITAL_SYNTH_2</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">part_buttons</span><span class="p">[</span><span class="s2">&quot;digital2&quot;</span><span class="p">],</span>
+            <span class="n">JDXiSynth</span><span class="o">.</span><span class="n">ANALOG_SYNTH</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">part_buttons</span><span class="p">[</span><span class="s2">&quot;analog&quot;</span><span class="p">],</span>
+            <span class="n">JDXiSynth</span><span class="o">.</span><span class="n">DRUM_KIT</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">part_buttons</span><span class="p">[</span><span class="s2">&quot;drums&quot;</span><span class="p">],</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">arp_button</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">part_buttons</span><span class="p">[</span><span class="s2">&quot;arp&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">octave_down</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">octave_up</span> <span class="o">=</span> <span class="n">add_octave_buttons</span><span class="p">(</span>
+            <span class="n">container</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_midi_send_octave</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">arpeggiator_button</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">key_hold_button</span> <span class="o">=</span> <span class="n">add_arpeggiator_buttons</span><span class="p">(</span>
+            <span class="n">container</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vocal_effects_button</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">effects_button</span> <span class="o">=</span> <span class="n">add_effects_container</span><span class="p">(</span>
+            <span class="n">container</span><span class="p">,</span>
+            <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_editor</span><span class="p">(</span><span class="s2">&quot;vocal_fx&quot;</span><span class="p">),</span>
+            <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_editor</span><span class="p">(</span><span class="s2">&quot;effects&quot;</span><span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">program_down_button</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">program_up_button</span><span class="p">)</span> <span class="o">=</span> <span class="n">add_program_container</span><span class="p">(</span>
+            <span class="n">container</span><span class="p">,</span> <span class="n">create_program_buttons_row</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">tone_down_button</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tone_up_button</span> <span class="o">=</span> <span class="n">add_tone_container</span><span class="p">(</span>
+            <span class="n">container</span><span class="p">,</span> <span class="n">create_tone_buttons_row</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_preset_previous</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_preset_next</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sequencer_buttons</span> <span class="o">=</span> <span class="n">add_sequencer_container</span><span class="p">(</span>
+            <span class="n">container</span><span class="p">,</span>
+            <span class="n">midi_helper</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span><span class="p">,</span>
+            <span class="n">on_context_menu</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_show_favorite_context_menu</span><span class="p">,</span>
+            <span class="n">on_save_favorite</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_save_favorite</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">favorite_button</span> <span class="o">=</span> <span class="n">add_favorite_button_container</span><span class="p">(</span><span class="n">container</span><span class="p">)</span>
+        <span class="n">add_slider_container</span><span class="p">(</span><span class="n">container</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span><span class="p">)</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">container</span><span class="p">)</span>
+
+        <span class="c1"># Initialize current preset index</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_preset_index</span> <span class="o">=</span> <span class="mi">0</span></div>
+
+
+<div class="viewcode-block" id="JDXiUi._create_menu_bar">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi._create_menu_bar">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_menu_bar</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">menubar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">menuBar</span><span class="p">()</span>
+
+        <span class="c1"># File menu</span>
+        <span class="n">file_menu</span> <span class="o">=</span> <span class="n">menubar</span><span class="o">.</span><span class="n">addMenu</span><span class="p">(</span><span class="s2">&quot;File&quot;</span><span class="p">)</span>
+
+        <span class="n">load_midi_file_action</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="s2">&quot;Load MIDI file&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">load_midi_file_action</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_midi_file_load</span><span class="p">)</span>
+        <span class="n">file_menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">load_midi_file_action</span><span class="p">)</span>
+
+        <span class="n">save_midi_file_action</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="s2">&quot;Save MIDI file&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">save_midi_file_action</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_midi_file_save</span><span class="p">)</span>
+        <span class="n">file_menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">save_midi_file_action</span><span class="p">)</span>
+
+        <span class="n">file_menu</span><span class="o">.</span><span class="n">addSeparator</span><span class="p">()</span>
+
+        <span class="n">load_program_action</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span>
+            <span class="n">qta</span><span class="o">.</span><span class="n">icon</span><span class="p">(</span><span class="s2">&quot;msc.folder-opened&quot;</span><span class="p">),</span> <span class="s2">&quot;Load Program...&quot;</span><span class="p">,</span> <span class="bp">self</span>
+        <span class="p">)</span>
+        <span class="n">load_program_action</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_editor</span><span class="p">(</span><span class="s2">&quot;program&quot;</span><span class="p">))</span>
+        <span class="n">file_menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">load_program_action</span><span class="p">)</span>
+
+        <span class="n">load_preset_action</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="s2">&quot;Load Preset...&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">load_preset_action</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_editor</span><span class="p">(</span><span class="s2">&quot;preset&quot;</span><span class="p">))</span>
+        <span class="n">file_menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">load_preset_action</span><span class="p">)</span>
+
+        <span class="n">load_action</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="s2">&quot;Load Patch...&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">load_action</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_patch_load</span><span class="p">)</span>
+        <span class="n">file_menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">load_action</span><span class="p">)</span>
+
+        <span class="n">save_action</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="s2">&quot;Save Patch...&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">save_action</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_patch_save</span><span class="p">)</span>
+        <span class="n">file_menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">save_action</span><span class="p">)</span>
+
+        <span class="n">file_menu</span><span class="o">.</span><span class="n">addSeparator</span><span class="p">()</span>
+
+        <span class="n">quit_action</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="s2">&quot;Quit&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">quit_action</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">)</span>
+        <span class="n">file_menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">quit_action</span><span class="p">)</span>
+
+        <span class="c1"># Edit menu</span>
+        <span class="n">edit_menu</span> <span class="o">=</span> <span class="n">menubar</span><span class="o">.</span><span class="n">addMenu</span><span class="p">(</span><span class="s2">&quot;Edit&quot;</span><span class="p">)</span>
+
+        <span class="n">midi_config_action</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="s2">&quot;MIDI Configuration...&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">midi_config_action</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_show_midi_config</span><span class="p">)</span>
+        <span class="n">edit_menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">midi_config_action</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="JDXiUi._create_parts_menu">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi._create_parts_menu">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_parts_menu</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create editors menu&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parts_menu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">menuBar</span><span class="p">()</span><span class="o">.</span><span class="n">addMenu</span><span class="p">(</span><span class="s2">&quot;Parts&quot;</span><span class="p">)</span>
+
+        <span class="n">digital1_action</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="s2">&quot;Digital Synth 1&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">digital1_action</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_editor</span><span class="p">(</span><span class="s2">&quot;digital1&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parts_menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">digital1_action</span><span class="p">)</span>
+
+        <span class="n">digital2_action</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="s2">&quot;Digital Synth 2&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">digital2_action</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_editor</span><span class="p">(</span><span class="s2">&quot;digital2&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parts_menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">digital2_action</span><span class="p">)</span>
+
+        <span class="n">digital3_action</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="s2">&quot;Digital Synth 3&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">digital3_action</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_editor</span><span class="p">(</span><span class="s2">&quot;digital3&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parts_menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">digital3_action</span><span class="p">)</span>
+
+        <span class="n">drums_action</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="s2">&quot;Drums&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">drums_action</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_editor</span><span class="p">(</span><span class="s2">&quot;drums&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parts_menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">drums_action</span><span class="p">)</span>
+
+        <span class="n">analog_action</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="s2">&quot;Analog Synth&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">analog_action</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_editor</span><span class="p">(</span><span class="s2">&quot;analog&quot;</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">parts_menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">analog_action</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="JDXiUi._create_effects_menu">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi._create_effects_menu">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_effects_menu</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create editors menu&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">effects_menu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">menuBar</span><span class="p">()</span><span class="o">.</span><span class="n">addMenu</span><span class="p">(</span><span class="s2">&quot;Effects&quot;</span><span class="p">)</span>
+
+        <span class="n">effects_action</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="s2">&quot;Effects&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">effects_action</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_editor</span><span class="p">(</span><span class="s2">&quot;effects&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">effects_menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">effects_action</span><span class="p">)</span>
+
+        <span class="n">vocal_effects_action</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="s2">&quot;Vocal FX&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">vocal_effects_action</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_editor</span><span class="p">(</span><span class="s2">&quot;vocal_fx&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">effects_menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">vocal_effects_action</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="JDXiUi._create_playback_menu">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi._create_playback_menu">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_playback_menu</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Create editors menu</span>
+        <span class="n">playback_menu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">menuBar</span><span class="p">()</span><span class="o">.</span><span class="n">addMenu</span><span class="p">(</span><span class="s2">&quot;Playback&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Add MIDI file action</span>
+        <span class="n">midi_file_action</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="s2">&quot;MIDI File&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">midi_file_action</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_editor</span><span class="p">(</span><span class="s2">&quot;midi_file&quot;</span><span class="p">))</span>
+        <span class="n">playback_menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">midi_file_action</span><span class="p">)</span>
+
+        <span class="n">arpeggiator_action</span> <span class="o">=</span> <span class="n">playback_menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="s2">&quot;Arpeggiator&quot;</span><span class="p">)</span>
+        <span class="n">arpeggiator_action</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_editor</span><span class="p">(</span><span class="s2">&quot;arpeggio&quot;</span><span class="p">))</span>
+
+        <span class="n">sequencer_action</span> <span class="o">=</span> <span class="n">playback_menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="s2">&quot;Pattern Sequencer&quot;</span><span class="p">)</span>
+        <span class="n">sequencer_action</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_editor</span><span class="p">(</span><span class="s2">&quot;pattern&quot;</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="JDXiUi._create_debug_menu">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi._create_debug_menu">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_debug_menu</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Add debug menu</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">debug_menu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">menuBar</span><span class="p">()</span><span class="o">.</span><span class="n">addMenu</span><span class="p">(</span><span class="s2">&quot;Debug&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Add MIDI debugger action (SysEx decoder)</span>
+        <span class="n">midi_debugger_action</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="s2">&quot;MIDI SysEx Debugger&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">midi_debugger_action</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_show_midi_debugger</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">debug_menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">midi_debugger_action</span><span class="p">)</span>
+
+        <span class="c1"># Add MIDI message monitor action</span>
+        <span class="n">midi_monitor_action</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="s2">&quot;MIDI Monitor&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">midi_monitor_action</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_show_midi_message_monitor</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">debug_menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">midi_monitor_action</span><span class="p">)</span>
+
+        <span class="c1"># Add log viewer action</span>
+        <span class="n">log_viewer_action</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="s2">&quot;Log Viewer&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">log_viewer_action</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_show_log_viewer</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">debug_menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">log_viewer_action</span><span class="p">)</span>
+
+        <span class="c1"># Add About window action</span>
+        <span class="n">about_help_action</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="s2">&quot;About&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">about_help_action</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_show_about_help</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">debug_menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">about_help_action</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="JDXiUi._create_help_menu">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi._create_help_menu">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_help_menu</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">menubar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">menuBar</span><span class="p">()</span>
+
+        <span class="c1"># Help menu</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">help_menu</span> <span class="o">=</span> <span class="n">menubar</span><span class="o">.</span><span class="n">addMenu</span><span class="p">(</span><span class="s2">&quot;Help&quot;</span><span class="p">)</span>
+        <span class="n">log_viewer_action</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="s2">&quot;Log Viewer&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">log_viewer_action</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_show_log_viewer</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">help_menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">log_viewer_action</span><span class="p">)</span>
+
+        <span class="c1"># Add MIDI debugger action (SysEx decoder)</span>
+        <span class="n">midi_debugger_action</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="s2">&quot;MIDI SysEx Debugger&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">midi_debugger_action</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_show_midi_debugger</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">help_menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">midi_debugger_action</span><span class="p">)</span>
+
+        <span class="c1"># Add MIDI message monitor action</span>
+        <span class="n">midi_monitor_action</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="s2">&quot;MIDI Monitor&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">midi_monitor_action</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_show_midi_message_monitor</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">help_menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">midi_monitor_action</span><span class="p">)</span>
+
+        <span class="c1"># Add About window action</span>
+        <span class="n">about_help_action</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="s2">&quot;About&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">about_help_action</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_show_about_help</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">help_menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">about_help_action</span><span class="p">)</span>
+
+        <span class="n">preferences_action</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="n">qta</span><span class="o">.</span><span class="n">icon</span><span class="p">(</span><span class="s2">&quot;msc.settings&quot;</span><span class="p">),</span> <span class="s2">&quot;Preferences&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">preferences_action</span><span class="o">.</span><span class="n">setStatusTip</span><span class="p">(</span><span class="s2">&quot;Show the Preferences window&quot;</span><span class="p">)</span>
+        <span class="n">preferences_action</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">on_preferences</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">help_menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">preferences_action</span><span class="p">)</span>
+
+        <span class="n">documentation_action</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="n">qta</span><span class="o">.</span><span class="n">icon</span><span class="p">(</span><span class="s2">&quot;mdi6.help-rhombus-outline&quot;</span><span class="p">),</span><span class="s2">&quot;Documentation&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">documentation_action</span><span class="o">.</span><span class="n">setStatusTip</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Show </span><span class="si">{</span><span class="n">__program__</span><span class="si">}</span><span class="s2"> documentation&quot;</span><span class="p">)</span>
+        <span class="n">documentation_action</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">on_documentation</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">help_menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">documentation_action</span><span class="p">)</span>
+
+        <span class="c1"># Add Main Editor window action</span>
+        <span class="n">main_editor_action</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="s2">&quot;Main Editor&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">main_editor_action</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_show_main_editor</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">help_menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">main_editor_action</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="JDXiUi._create_status_bar">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi._create_status_bar">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_status_bar</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create status bar with MIDI indicators&quot;&quot;&quot;</span>
+        <span class="n">status_bar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">statusBar</span><span class="p">()</span>
+        <span class="n">status_bar</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">TRANSPARENT</span><span class="p">)</span>
+
+        <span class="n">midi_indicator_container</span> <span class="o">=</span> <span class="n">QWidget</span><span class="p">()</span>
+        <span class="n">midi_indicator_container</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_build_status_layout</span><span class="p">())</span>
+        <span class="n">status_bar</span><span class="o">.</span><span class="n">addPermanentWidget</span><span class="p">(</span><span class="n">midi_indicator_container</span><span class="p">)</span>
+
+        <span class="c1"># Set initial indicator states</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">midi_in_indicator</span><span class="o">.</span><span class="n">set_state</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span><span class="o">.</span><span class="n">is_input_open</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">midi_out_indicator</span><span class="o">.</span><span class="n">set_state</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span><span class="o">.</span><span class="n">is_output_open</span><span class="p">)</span>
+        <span class="n">status_bar</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="s1">&#39;background: &quot;black&quot;;&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="JDXiUi._build_status_layout">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi._build_status_layout">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_build_status_layout</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">layout</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">()</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addStretch</span><span class="p">()</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">build_wheel_label_row</span><span class="p">())</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addStretch</span><span class="p">()</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">build_wheel_row</span><span class="p">(</span><span class="n">midi_helper</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span><span class="p">))</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addStretch</span><span class="p">()</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_build_midi_indicator_row</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">layout</span></div>
+
+
+<div class="viewcode-block" id="JDXiUi._build_midi_indicator_row">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi._build_midi_indicator_row">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_build_midi_indicator_row</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">QLayout</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">midi_in_indicator</span> <span class="o">=</span> <span class="n">LEDIndicator</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">midi_out_indicator</span> <span class="o">=</span> <span class="n">LEDIndicator</span><span class="p">()</span>
+
+        <span class="n">row</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+        <span class="n">row</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">QLabel</span><span class="p">(</span><span class="s2">&quot;MIDI IN:&quot;</span><span class="p">))</span>
+        <span class="n">row</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">midi_in_indicator</span><span class="p">)</span>
+        <span class="n">row</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">QLabel</span><span class="p">(</span><span class="s2">&quot;MIDI OUT:&quot;</span><span class="p">))</span>
+        <span class="n">row</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">midi_out_indicator</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">row</span></div>
+
+
+<div class="viewcode-block" id="JDXiUi._update_display">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi._update_display">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_display</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the display with the current preset information&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_synth_type</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;No Synth type, defaulting to DIGITAL_1.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">current_synth_type</span> <span class="o">=</span> <span class="n">JDXiSynth</span><span class="o">.</span><span class="n">DIGITAL_SYNTH_1</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">synth_data</span> <span class="o">=</span> <span class="n">create_synth_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_synth_type</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Creating synth data for type: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">current_synth_type</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">synth_data</span><span class="p">:</span>
+                <span class="n">synth_data</span> <span class="o">=</span> <span class="n">create_synth_data</span><span class="p">(</span><span class="n">JDXiSynth</span><span class="o">.</span><span class="n">DIGITAL_SYNTH_1</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">preset_manager</span><span class="o">.</span><span class="n">current_preset_name</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">preset_manager</span><span class="o">.</span><span class="n">get_preset_name_by_type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_synth_type</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Current preset name: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">preset_manager</span><span class="o">.</span><span class="n">current_preset_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="c1"># Update preset number</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">preset_manager</span><span class="o">.</span><span class="n">current_preset_number</span> <span class="o">=</span> <span class="n">get_preset_list_number_by_name</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">preset_manager</span><span class="o">.</span><span class="n">current_preset_name</span><span class="p">,</span> <span class="n">synth_data</span><span class="o">.</span><span class="n">preset_list</span>
+            <span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Current preset number: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">preset_manager</span><span class="o">.</span><span class="n">current_preset_number</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">digital_display</span><span class="o">.</span><span class="n">repaint_display</span><span class="p">(</span>
+                <span class="n">current_octave</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">current_octave</span><span class="p">,</span>
+                <span class="n">tone_number</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">preset_manager</span><span class="o">.</span><span class="n">current_preset_number</span><span class="p">,</span>
+                <span class="n">tone_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">preset_manager</span><span class="o">.</span><span class="n">get_preset_name_by_type</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">current_synth_type</span>
+                <span class="p">),</span>
+                <span class="n">program_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">current_program_name</span><span class="p">,</span>
+                <span class="n">active_synth</span><span class="o">=</span><span class="n">synth_data</span><span class="o">.</span><span class="n">display_prefix</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error updating display: </span><span class="si">{</span><span class="n">ex</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="JDXiUi._load_digital_font">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi._load_digital_font">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_load_digital_font</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load the digital LCD font for the display&quot;&quot;&quot;</span>
+
+        <span class="n">font_name</span> <span class="o">=</span> <span class="s2">&quot;JdLCD.ttf&quot;</span>
+        <span class="n">font_path</span> <span class="o">=</span> <span class="n">resource_path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;resources&quot;</span><span class="p">,</span> <span class="s2">&quot;fonts&quot;</span><span class="p">,</span> <span class="n">font_name</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">font_path</span><span class="p">):</span>
+            <span class="n">font_path</span> <span class="o">=</span> <span class="n">resource_path</span><span class="p">(</span><span class="n">font_name</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;font_path: </span><span class="si">{</span><span class="n">font_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">font_path</span><span class="p">):</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="s2">&quot;Success: found font file, loading...&quot;</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;font_name: </span><span class="se">\t</span><span class="si">{</span><span class="n">font_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;font_path: </span><span class="se">\t</span><span class="si">{</span><span class="n">font_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">font_id</span> <span class="o">=</span> <span class="n">QFontDatabase</span><span class="o">.</span><span class="n">addApplicationFont</span><span class="p">(</span><span class="n">font_path</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">font_id</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error loading </span><span class="si">{</span><span class="n">font_name</span><span class="si">}</span><span class="s2"> font&quot;</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span>
+                <span class="n">font_families</span> <span class="o">=</span> <span class="n">QFontDatabase</span><span class="o">.</span><span class="n">applicationFontFamilies</span><span class="p">(</span><span class="n">font_id</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">font_families</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">digital_font_family</span> <span class="o">=</span> <span class="n">font_families</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Successfully loaded font family: </span><span class="se">\t</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">digital_font_family</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span>
+                        <span class="s2">&quot;No font families found after loading font&quot;</span><span class="p">,</span>
+                        <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">,</span>
+                    <span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error loading </span><span class="si">{</span><span class="n">font_name</span><span class="si">}</span><span class="s2"> font from </span><span class="si">{</span><span class="n">font_path</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">ex</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;File not found: </span><span class="si">{</span><span class="n">font_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="JDXiUi.update_preset_display">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi.update_preset_display">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_preset_display</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">preset_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">preset_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the current preset display&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">preset_manager</span><span class="o">.</span><span class="n">current_preset_number</span> <span class="o">=</span> <span class="n">preset_number</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">preset_manager</span><span class="o">.</span><span class="n">current_preset_name</span> <span class="o">=</span> <span class="n">preset_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_display</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="JDXiUi._update_display_preset">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi._update_display_preset">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_display_preset</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">preset_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">preset_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">channel</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the display with the new preset information.&quot;&quot;&quot;</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Updating display preset: # </span><span class="si">{</span><span class="n">preset_number</span><span class="si">}</span><span class="s2">, name: </span><span class="si">{</span><span class="n">preset_name</span><span class="si">}</span><span class="s2">, channel: </span><span class="si">{</span><span class="n">channel</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_preset_index</span> <span class="o">=</span> <span class="n">preset_number</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">channel</span> <span class="o">=</span> <span class="n">channel</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Extract actual number and name if the preset_name is like &#39;123:Some Name&#39;</span>
+            <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^(\d</span><span class="si">{3}</span><span class="s2">):(.*)&quot;</span><span class="p">,</span> <span class="n">preset_name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+                <span class="n">preset_number</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+                <span class="n">preset_name</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">preset_manager</span><span class="o">.</span><span class="n">current_preset_number</span> <span class="o">=</span> <span class="n">preset_number</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">preset_manager</span><span class="o">.</span><span class="n">current_preset_name</span> <span class="o">=</span> <span class="n">preset_name</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_display</span><span class="p">()</span>
+
+            <span class="c1"># Update piano keyboard MIDI channel if available</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;piano_keyboard&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">piano_keyboard</span><span class="o">.</span><span class="n">set_midi_channel</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span>
+
+            <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Updated display: </span><span class="si">{</span><span class="n">preset_number</span><span class="si">:</span><span class="s2">03d</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">preset_name</span><span class="si">}</span><span class="s2"> (channel </span><span class="si">{</span><span class="n">channel</span><span class="si">}</span><span class="s2">)&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error updating display: </span><span class="si">{</span><span class="n">ex</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="JDXiUi.show_error">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi.show_error">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">show_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Show error message dialog</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            title: Dialog title</span>
+<span class="sd">            message: Error message</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">QMessageBox</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="JDXiUi.show_warning">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi.show_warning">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">show_warning</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Show warning message dialog</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            title: Dialog title</span>
+<span class="sd">            message: Warning message</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">QMessageBox</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="JDXiUi.show_info">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi.show_info">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">show_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Show info message dialog</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            title: Dialog title</span>
+<span class="sd">            message: Info message</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">QMessageBox</span><span class="o">.</span><span class="n">information</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="JDXiUi._load_settings">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi._load_settings">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_load_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;to be implemented in subclass&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="JDXiUi.on_documentation">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi.on_documentation">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_documentation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;to be implemented in subclass&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="JDXiUi.on_preferences">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi.on_preferences">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_preferences</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;to be implemented in subclass&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="JDXiUi.show_editor">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi.show_editor">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">show_editor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;to be implemented in subclass&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="JDXiUi._show_midi_debugger">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi._show_midi_debugger">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_show_midi_debugger</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Should be implemented in subclass&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="JDXiUi._show_main_editor">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi._show_main_editor">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_show_main_editor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Should be implemented in subclass&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="JDXiUi._show_about_help">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi._show_about_help">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_show_about_help</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Should be implemented in subclass&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="JDXiUi._show_midi_message_monitor">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi._show_midi_message_monitor">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_show_midi_message_monitor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Should be implemented in subclass&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="JDXiUi._show_log_viewer">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi._show_log_viewer">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_show_log_viewer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Should be implemented in subclass&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="JDXiUi._show_midi_config">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi._show_midi_config">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_show_midi_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Should be implemented in subclass&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="JDXiUi._midi_send_octave">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi._midi_send_octave">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_midi_send_octave</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Should be implemented in subclass&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="JDXiUi._preset_previous">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi._preset_previous">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_preset_previous</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Should be implemented in subclass&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="JDXiUi._preset_next">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi._preset_next">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_preset_next</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Should be implemented in subclass&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="JDXiUi._load_saved_favorites">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi._load_saved_favorites">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_load_saved_favorites</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Should be implemented in subclass&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="JDXiUi._select_synth">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi._select_synth">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_select_synth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">synth_type</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Should be implemented in subclass&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="JDXiUi._show_favorite_context_menu">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi._show_favorite_context_menu">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_show_favorite_context_menu</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">button</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">FavoriteButton</span><span class="p">,</span> <span class="n">SequencerSquare</span><span class="p">]</span>
+    <span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Should be implemented in subclass&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="JDXiUi._save_favorite">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi._save_favorite">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_save_favorite</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">button</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;to be implemented in subclass&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="JDXiUi._midi_file_load">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi._midi_file_load">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_midi_file_load</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;to be implemented in subclass&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="JDXiUi._midi_file_save">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi._midi_file_save">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_midi_file_save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;to be implemented in subclass&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="JDXiUi._patch_load">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi._patch_load">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_patch_load</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;to be implemented in subclass&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="JDXiUi._patch_save">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi._patch_save">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_patch_save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;to be implemented in subclass&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="JDXiUi._handle_program_change">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/windows/jdxi/ui/index.html#jdxi_editor.ui.windows.jdxi.ui.JDXiUi._handle_program_change">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_handle_program_change</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bank_letter</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">program_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;to be implemented in subclass&quot;</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Mark Mrooks.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

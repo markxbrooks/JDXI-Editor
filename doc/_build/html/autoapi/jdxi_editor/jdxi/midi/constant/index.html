@@ -1,0 +1,738 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>jdxi_editor.jdxi.midi.constant &mdash; JD-Xi Editor 0.8.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../../_static/documentation_options.js?v=486e5634"></script>
+      <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <link rel="next" title="jdxi_editor.jdxi.preset" href="../../preset/index.html" />
+    <link rel="prev" title="jdxi_editor.jdxi.midi" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../../index.html" class="icon icon-home">
+            JD-Xi Editor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../getting-started.html#getting-started-guide">Getting Started Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../editor-windows.html">Editor Windows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../editor-windows.html#available-editors">Available Editors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../additional-editors.html">Additional Editors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../additional-editors.html#available-editors">Available Editors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../playing-midi-files.html">Playing MIDI Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../playing-midi-files.html#available-tools">Available Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../troubleshooting.html#id1">Troubleshooting</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../legal.html">Legal Disclaimer</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../../modules.html">jdxi_editor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../jdxi_editor.html">jdxi_editor package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.jdxi.html">jdxi_editor.jdxi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.log.html">jdxi_editor.log package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.midi.html">jdxi_editor.midi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.ui.html">jdxi_editor.ui package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.globals">jdxi_editor.globals module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.main">jdxi_editor.main module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.html#jdxi_editor.main.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.html#jdxi_editor.main.setup_splash_screen"><code class="docutils literal notranslate"><span class="pre">setup_splash_screen()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.project">jdxi_editor.project module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.resources">jdxi_editor.resources module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.html#jdxi_editor.resources.resource_path"><code class="docutils literal notranslate"><span class="pre">resource_path()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../../../midi/index.html">midi</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../midi/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../midi/colors/index.html">midi.colors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../midi/slider/index.html">midi.slider</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../midi/spin_box/index.html">midi.spin_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../midi/time_ruler/index.html">midi.time_ruler</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../midi/track/index.html">midi.track</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../midi/track_viewer/index.html">midi.track_viewer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../midi/utils/index.html">midi.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../adsr/index.html">adsr</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../adsr/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../adsr/adsr/index.html">adsr.adsr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../adsr/graph/index.html">adsr.graph</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../adsr/parameter/index.html">adsr.parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../adsr/plot/index.html">adsr.plot</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../pitch/index.html">pitch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../pitch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../pitch/envelope/index.html">pitch.envelope</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../pitch/envelope_plot/index.html">pitch.envelope_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../pitch/pwm_plot/index.html">pitch.pwm_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../pitch/slider_spinbox/index.html">pitch.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../piano/index.html">piano</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../piano/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../piano/key/index.html">piano.key</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../piano/keyboard/index.html">piano.keyboard</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../panel/index.html">panel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../panel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../panel/partial/index.html">panel.partial</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../wheel/index.html">wheel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../wheel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../wheel/mod/index.html">wheel.mod</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../wheel/pitch/index.html">wheel.pitch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../wheel/wheel/index.html">wheel.wheel</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../preset/index.html">preset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../preset/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../preset/combo_box/index.html">preset.combo_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../preset/panel/index.html">preset.panel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../preset/patch_name/index.html">preset.patch_name</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../slider/index.html">slider</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../slider/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../slider/slider/index.html">slider.slider</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../slider/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../slider/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../slider/index.html#slider.Slider"><code class="docutils literal notranslate"><span class="pre">Slider</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../dialog/index.html">dialog</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../dialog/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../dialog/progress/index.html">dialog.progress</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../viewer/index.html">viewer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../viewer/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../viewer/log/index.html">viewer.log</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../button/index.html">button</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../button/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../button/channel/index.html">button.channel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../button/favorite/index.html">button.favorite</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../button/sequencer/index.html">button.sequencer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../button/waveform/index.html">button.waveform</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../button/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../button/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../button/index.html#button.ChannelButton"><code class="docutils literal notranslate"><span class="pre">ChannelButton</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../button/index.html#button.SequencerSquare"><code class="docutils literal notranslate"><span class="pre">SequencerSquare</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../switch/index.html">switch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../switch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../switch/partial/index.html">switch.partial</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../switch/switch/index.html">switch.switch</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../filter/index.html">filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../filter/index.html#filter.FilterWidget"><code class="docutils literal notranslate"><span class="pre">FilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../display/index.html">display</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../display/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../display/digital/index.html">display.digital</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../display/pattern/index.html">display.pattern</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../display/value/index.html">display.value</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../pattern/index.html">pattern</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../pattern/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../pattern/measure/index.html">pattern.measure</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../spin_box/index.html">spin_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../spin_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../spin_box/spin_box/index.html">spin_box.spin_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../envelope/index.html">envelope</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../envelope/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../envelope/base/index.html">envelope.base</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../indicator/index.html">indicator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../indicator/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../indicator/led/index.html">indicator.led</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../indicator/midi/index.html">indicator.midi</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../combo_box/index.html">combo_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../combo_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../combo_box/combo_box/index.html">combo_box.combo_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../../index.html">jdxi_editor</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../../index.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../../globals/index.html">jdxi_editor.globals</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../../index.html">jdxi_editor.jdxi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../log/index.html">jdxi_editor.log</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../main/index.html">jdxi_editor.main</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../midi/index.html">jdxi_editor.midi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../project/index.html">jdxi_editor.project</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../resources/index.html">jdxi_editor.resources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../ui/index.html">jdxi_editor.ui</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../filter_plot/index.html">filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../filter_plot/index.html#filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../filter_plot/index.html#filter_plot.FilterPlot"><code class="docutils literal notranslate"><span class="pre">FilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../envelope_plot/index.html">envelope_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../envelope_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../envelope_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../envelope_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../envelope_plot/index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../envelope_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../envelope_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../envelope_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../envelope_plot/index.html#envelope_plot.midi_value_to_float"><code class="docutils literal notranslate"><span class="pre">midi_value_to_float()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../envelope_plot/index.html#envelope_plot.WMTEnvPlot"><code class="docutils literal notranslate"><span class="pre">WMTEnvPlot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../envelope_plot/index.html#envelope_plot.app"><code class="docutils literal notranslate"><span class="pre">app</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../wave_selector/index.html">wave_selector</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../wave_selector/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../wave_selector/wave_selector/index.html">wave_selector.wave_selector</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../analog_filter/index.html">analog_filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../analog_filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../analog_filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../analog_filter/index.html#analog_filter.AnalogFilterWidget"><code class="docutils literal notranslate"><span class="pre">AnalogFilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../slider_spinbox/index.html">slider_spinbox</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../slider_spinbox/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../slider_spinbox/slider_spinbox/index.html">slider_spinbox.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../analog_filter_plot/index.html">analog_filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../analog_filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../analog_filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../analog_filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../analog_filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../analog_filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../analog_filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../analog_filter_plot/index.html#analog_filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../analog_filter_plot/index.html#analog_filter_plot.AnalogFilterPlot"><code class="docutils literal notranslate"><span class="pre">AnalogFilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">JD-Xi Editor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">jdxi_editor</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">jdxi_editor.jdxi</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">jdxi_editor.jdxi.midi</a></li>
+      <li class="breadcrumb-item active">jdxi_editor.jdxi.midi.constant</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../../_sources/autoapi/jdxi_editor/jdxi/midi/constant/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-jdxi_editor.jdxi.midi.constant">
+<span id="jdxi-editor-jdxi-midi-constant"></span><h1>jdxi_editor.jdxi.midi.constant<a class="headerlink" href="#module-jdxi_editor.jdxi.midi.constant" title="Link to this heading"></a></h1>
+<p>Midi and JD-Xi Constant definitions</p>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#jdxi_editor.jdxi.midi.constant.MidiConstant" title="jdxi_editor.jdxi.midi.constant.MidiConstant"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MidiConstant</span></code></a></p></td>
+<td><p>Miscellaneous MIDI constants for JD-Xi communication.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#jdxi_editor.jdxi.midi.constant.JDXiConstant" title="jdxi_editor.jdxi.midi.constant.JDXiConstant"><code class="xref py py-obj docutils literal notranslate"><span class="pre">JDXiConstant</span></code></a></p></td>
+<td><p>JD-Xi-specific MIDI and SysEx constants.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.MidiConstant">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.jdxi.midi.constant.</span></span><span class="sig-name descname"><span class="pre">MidiConstant</span></span><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#MidiConstant"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.MidiConstant" title="Link to this definition"></a></dt>
+<dd><p>Miscellaneous MIDI constants for JD-Xi communication.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.MidiConstant.MIDI_CHANNELS_NUMBER">
+<span class="sig-name descname"><span class="pre">MIDI_CHANNELS_NUMBER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">16</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#MidiConstant.MIDI_CHANNELS_NUMBER"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.MidiConstant.MIDI_CHANNELS_NUMBER" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.MidiConstant.MIDI_NOTES_NUMBER">
+<span class="sig-name descname"><span class="pre">MIDI_NOTES_NUMBER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">128</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#MidiConstant.MIDI_NOTES_NUMBER"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.MidiConstant.MIDI_NOTES_NUMBER" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.MidiConstant.CONTROL_CHANGE_BANK_SELECT_MSB">
+<span class="sig-name descname"><span class="pre">CONTROL_CHANGE_BANK_SELECT_MSB</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">85</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#MidiConstant.CONTROL_CHANGE_BANK_SELECT_MSB"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.MidiConstant.CONTROL_CHANGE_BANK_SELECT_MSB" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.MidiConstant.CONTROL_CHANGE_BANK_SELECT_LSB_BANK_E_AND_F">
+<span class="sig-name descname"><span class="pre">CONTROL_CHANGE_BANK_SELECT_LSB_BANK_E_AND_F</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#MidiConstant.CONTROL_CHANGE_BANK_SELECT_LSB_BANK_E_AND_F"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.MidiConstant.CONTROL_CHANGE_BANK_SELECT_LSB_BANK_E_AND_F" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.MidiConstant.CONTROL_CHANGE_BANK_SELECT_LSB_BANK_G_AND_H">
+<span class="sig-name descname"><span class="pre">CONTROL_CHANGE_BANK_SELECT_LSB_BANK_G_AND_H</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#MidiConstant.CONTROL_CHANGE_BANK_SELECT_LSB_BANK_G_AND_H"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.MidiConstant.CONTROL_CHANGE_BANK_SELECT_LSB_BANK_G_AND_H" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.MidiConstant.CONTROL_CHANGE_BANK_SELECT_LSB_BANK_A_AND_B">
+<span class="sig-name descname"><span class="pre">CONTROL_CHANGE_BANK_SELECT_LSB_BANK_A_AND_B</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">64</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#MidiConstant.CONTROL_CHANGE_BANK_SELECT_LSB_BANK_A_AND_B"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.MidiConstant.CONTROL_CHANGE_BANK_SELECT_LSB_BANK_A_AND_B" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.MidiConstant.CONTROL_CHANGE_BANK_SELECT_LSB_BANK_C_AND_D">
+<span class="sig-name descname"><span class="pre">CONTROL_CHANGE_BANK_SELECT_LSB_BANK_C_AND_D</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">65</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#MidiConstant.CONTROL_CHANGE_BANK_SELECT_LSB_BANK_C_AND_D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.MidiConstant.CONTROL_CHANGE_BANK_SELECT_LSB_BANK_C_AND_D" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.MidiConstant.PROGRAM_CHANGE_BANK_A_AND_C_AND_E_AND_G">
+<span class="sig-name descname"><span class="pre">PROGRAM_CHANGE_BANK_A_AND_C_AND_E_AND_G</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#MidiConstant.PROGRAM_CHANGE_BANK_A_AND_C_AND_E_AND_G"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.MidiConstant.PROGRAM_CHANGE_BANK_A_AND_C_AND_E_AND_G" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.MidiConstant.PROGRAM_CHANGE_BANK_B_AND_D_AND_F_AND_H">
+<span class="sig-name descname"><span class="pre">PROGRAM_CHANGE_BANK_B_AND_D_AND_F_AND_H</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">64</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#MidiConstant.PROGRAM_CHANGE_BANK_B_AND_D_AND_F_AND_H"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.MidiConstant.PROGRAM_CHANGE_BANK_B_AND_D_AND_F_AND_H" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.MidiConstant.TEMPO_DEFAULT_120_BPM">
+<span class="sig-name descname"><span class="pre">TEMPO_DEFAULT_120_BPM</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">120</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#MidiConstant.TEMPO_DEFAULT_120_BPM"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.MidiConstant.TEMPO_DEFAULT_120_BPM" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.MidiConstant.TEMPO_CONVERT_SEC_TO_USEC">
+<span class="sig-name descname"><span class="pre">TEMPO_CONVERT_SEC_TO_USEC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1000000</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#MidiConstant.TEMPO_CONVERT_SEC_TO_USEC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.MidiConstant.TEMPO_CONVERT_SEC_TO_USEC" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.MidiConstant.TEMPO_100_BPM_USEC">
+<span class="sig-name descname"><span class="pre">TEMPO_100_BPM_USEC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">600000</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#MidiConstant.TEMPO_100_BPM_USEC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.MidiConstant.TEMPO_100_BPM_USEC" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.MidiConstant.TEMPO_120_BPM_USEC">
+<span class="sig-name descname"><span class="pre">TEMPO_120_BPM_USEC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">500000</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#MidiConstant.TEMPO_120_BPM_USEC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.MidiConstant.TEMPO_120_BPM_USEC" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.MidiConstant.TEMPO_150_BPM_USEC">
+<span class="sig-name descname"><span class="pre">TEMPO_150_BPM_USEC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">400000</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#MidiConstant.TEMPO_150_BPM_USEC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.MidiConstant.TEMPO_150_BPM_USEC" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.MidiConstant.TEMPO_162_BPM_USEC">
+<span class="sig-name descname"><span class="pre">TEMPO_162_BPM_USEC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">370370</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#MidiConstant.TEMPO_162_BPM_USEC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.MidiConstant.TEMPO_162_BPM_USEC" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.MidiConstant.CONTROL_CHANGE_NRPN_MSB">
+<span class="sig-name descname"><span class="pre">CONTROL_CHANGE_NRPN_MSB</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">99</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#MidiConstant.CONTROL_CHANGE_NRPN_MSB"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.MidiConstant.CONTROL_CHANGE_NRPN_MSB" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.MidiConstant.CONTROL_CHANGE_NRPN_LSB">
+<span class="sig-name descname"><span class="pre">CONTROL_CHANGE_NRPN_LSB</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">98</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#MidiConstant.CONTROL_CHANGE_NRPN_LSB"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.MidiConstant.CONTROL_CHANGE_NRPN_LSB" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.MidiConstant.SONG_STOP">
+<span class="sig-name descname"><span class="pre">SONG_STOP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">252</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#MidiConstant.SONG_STOP"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.MidiConstant.SONG_STOP" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.MidiConstant.SONG_START">
+<span class="sig-name descname"><span class="pre">SONG_START</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">250</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#MidiConstant.SONG_START"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.MidiConstant.SONG_START" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.MidiConstant.START_OF_SYSEX">
+<span class="sig-name descname"><span class="pre">START_OF_SYSEX</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">240</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#MidiConstant.START_OF_SYSEX"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.MidiConstant.START_OF_SYSEX" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.MidiConstant.END_OF_SYSEX">
+<span class="sig-name descname"><span class="pre">END_OF_SYSEX</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">247</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#MidiConstant.END_OF_SYSEX"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.MidiConstant.END_OF_SYSEX" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.MidiConstant.ZERO_BYTE">
+<span class="sig-name descname"><span class="pre">ZERO_BYTE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#MidiConstant.ZERO_BYTE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.MidiConstant.ZERO_BYTE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.MidiConstant.VALUE_ON">
+<span class="sig-name descname"><span class="pre">VALUE_ON</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#MidiConstant.VALUE_ON"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.MidiConstant.VALUE_ON" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.MidiConstant.VALUE_OFF">
+<span class="sig-name descname"><span class="pre">VALUE_OFF</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#MidiConstant.VALUE_OFF"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.MidiConstant.VALUE_OFF" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.MidiConstant.VALUE_MAX_FOUR_BIT">
+<span class="sig-name descname"><span class="pre">VALUE_MAX_FOUR_BIT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">15</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#MidiConstant.VALUE_MAX_FOUR_BIT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.MidiConstant.VALUE_MAX_FOUR_BIT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.MidiConstant.VALUE_MAX_SEVEN_BIT">
+<span class="sig-name descname"><span class="pre">VALUE_MAX_SEVEN_BIT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">127</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#MidiConstant.VALUE_MAX_SEVEN_BIT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.MidiConstant.VALUE_MAX_SEVEN_BIT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.MidiConstant.VALUE_MAX_EIGHT_BIT">
+<span class="sig-name descname"><span class="pre">VALUE_MAX_EIGHT_BIT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">255</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#MidiConstant.VALUE_MAX_EIGHT_BIT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.MidiConstant.VALUE_MAX_EIGHT_BIT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.MidiConstant.VALUE_MAX_FOURTEEN_BIT">
+<span class="sig-name descname"><span class="pre">VALUE_MAX_FOURTEEN_BIT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">16383</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#MidiConstant.VALUE_MAX_FOURTEEN_BIT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.MidiConstant.VALUE_MAX_FOURTEEN_BIT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.MidiConstant.VALUE_MAX_SIGNED_SIXTEEN_BIT">
+<span class="sig-name descname"><span class="pre">VALUE_MAX_SIGNED_SIXTEEN_BIT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">32767</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#MidiConstant.VALUE_MAX_SIGNED_SIXTEEN_BIT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.MidiConstant.VALUE_MAX_SIGNED_SIXTEEN_BIT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.MidiConstant.VALUE_MIN_SIGNED_SIXTEEN_BIT">
+<span class="sig-name descname"><span class="pre">VALUE_MIN_SIGNED_SIXTEEN_BIT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">32768</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#MidiConstant.VALUE_MIN_SIGNED_SIXTEEN_BIT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.MidiConstant.VALUE_MIN_SIGNED_SIXTEEN_BIT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.MidiConstant.VALUE_MAX_UNSIGNED_SIXTEEN_BIT">
+<span class="sig-name descname"><span class="pre">VALUE_MAX_UNSIGNED_SIXTEEN_BIT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">65535</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#MidiConstant.VALUE_MAX_UNSIGNED_SIXTEEN_BIT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.MidiConstant.VALUE_MAX_UNSIGNED_SIXTEEN_BIT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.MidiConstant.VALUE_MAX_THIRTY_TWO_BIT">
+<span class="sig-name descname"><span class="pre">VALUE_MAX_THIRTY_TWO_BIT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4294967295</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#MidiConstant.VALUE_MAX_THIRTY_TWO_BIT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.MidiConstant.VALUE_MAX_THIRTY_TWO_BIT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.MidiConstant.NOTE_OFF">
+<span class="sig-name descname"><span class="pre">NOTE_OFF</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">128</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#MidiConstant.NOTE_OFF"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.MidiConstant.NOTE_OFF" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.MidiConstant.NOTE_ON">
+<span class="sig-name descname"><span class="pre">NOTE_ON</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">144</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#MidiConstant.NOTE_ON"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.MidiConstant.NOTE_ON" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.MidiConstant.POLY_AFTERTOUCH">
+<span class="sig-name descname"><span class="pre">POLY_AFTERTOUCH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">160</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#MidiConstant.POLY_AFTERTOUCH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.MidiConstant.POLY_AFTERTOUCH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.MidiConstant.CONTROL_CHANGE">
+<span class="sig-name descname"><span class="pre">CONTROL_CHANGE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">176</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#MidiConstant.CONTROL_CHANGE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.MidiConstant.CONTROL_CHANGE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.MidiConstant.CONTROL_CHANGE_MAX">
+<span class="sig-name descname"><span class="pre">CONTROL_CHANGE_MAX</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">191</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#MidiConstant.CONTROL_CHANGE_MAX"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.MidiConstant.CONTROL_CHANGE_MAX" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.MidiConstant.PROGRAM_CHANGE">
+<span class="sig-name descname"><span class="pre">PROGRAM_CHANGE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">192</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#MidiConstant.PROGRAM_CHANGE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.MidiConstant.PROGRAM_CHANGE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.MidiConstant.PROGRAM_CHANGE_MAX">
+<span class="sig-name descname"><span class="pre">PROGRAM_CHANGE_MAX</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">207</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#MidiConstant.PROGRAM_CHANGE_MAX"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.MidiConstant.PROGRAM_CHANGE_MAX" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.MidiConstant.CHANNEL_AFTERTOUCH">
+<span class="sig-name descname"><span class="pre">CHANNEL_AFTERTOUCH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">208</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#MidiConstant.CHANNEL_AFTERTOUCH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.MidiConstant.CHANNEL_AFTERTOUCH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.MidiConstant.PITCH_BEND">
+<span class="sig-name descname"><span class="pre">PITCH_BEND</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">224</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#MidiConstant.PITCH_BEND"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.MidiConstant.PITCH_BEND" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.MidiConstant.BANK_SELECT_MSB">
+<span class="sig-name descname"><span class="pre">BANK_SELECT_MSB</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#MidiConstant.BANK_SELECT_MSB"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.MidiConstant.BANK_SELECT_MSB" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.MidiConstant.BANK_SELECT_LSB">
+<span class="sig-name descname"><span class="pre">BANK_SELECT_LSB</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">32</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#MidiConstant.BANK_SELECT_LSB"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.MidiConstant.BANK_SELECT_LSB" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.MidiConstant.MIDI_CHANNEL_MASK">
+<span class="sig-name descname"><span class="pre">MIDI_CHANNEL_MASK</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">15</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#MidiConstant.MIDI_CHANNEL_MASK"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.MidiConstant.MIDI_CHANNEL_MASK" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.MidiConstant.PITCH_BEND_RANGE">
+<span class="sig-name descname"><span class="pre">PITCH_BEND_RANGE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">16383</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#MidiConstant.PITCH_BEND_RANGE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.MidiConstant.PITCH_BEND_RANGE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.MidiConstant.PITCH_BEND_CENTER">
+<span class="sig-name descname"><span class="pre">PITCH_BEND_CENTER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">8192</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#MidiConstant.PITCH_BEND_CENTER"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.MidiConstant.PITCH_BEND_CENTER" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.MidiConstant.CHANNEL_BINARY_TO_DISPLAY">
+<span class="sig-name descname"><span class="pre">CHANNEL_BINARY_TO_DISPLAY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#MidiConstant.CHANNEL_BINARY_TO_DISPLAY"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.MidiConstant.CHANNEL_BINARY_TO_DISPLAY" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.MidiConstant.CHANNEL_DISPLAY_TO_BINARY">
+<span class="sig-name descname"><span class="pre">CHANNEL_DISPLAY_TO_BINARY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-1</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#MidiConstant.CHANNEL_DISPLAY_TO_BINARY"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.MidiConstant.CHANNEL_DISPLAY_TO_BINARY" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.JDXiConstant">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.jdxi.midi.constant.</span></span><span class="sig-name descname"><span class="pre">JDXiConstant</span></span><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#JDXiConstant"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.JDXiConstant" title="Link to this definition"></a></dt>
+<dd><p>JD-Xi-specific MIDI and SysEx constants.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.JDXiConstant.TIMER_INTERVAL">
+<span class="sig-name descname"><span class="pre">TIMER_INTERVAL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#JDXiConstant.TIMER_INTERVAL"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.JDXiConstant.TIMER_INTERVAL" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.JDXiConstant.FILTER_PLOT_DEPTH">
+<span class="sig-name descname"><span class="pre">FILTER_PLOT_DEPTH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1.0</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#JDXiConstant.FILTER_PLOT_DEPTH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.JDXiConstant.FILTER_PLOT_DEPTH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.JDXiConstant.CHECKED">
+<span class="sig-name descname"><span class="pre">CHECKED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#JDXiConstant.CHECKED"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.JDXiConstant.CHECKED" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.JDXiConstant.CENTER_OCTAVE_VALUE">
+<span class="sig-name descname"><span class="pre">CENTER_OCTAVE_VALUE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">64</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#JDXiConstant.CENTER_OCTAVE_VALUE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.JDXiConstant.CENTER_OCTAVE_VALUE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.JDXiConstant.ID_NUMBER">
+<span class="sig-name descname"><span class="pre">ID_NUMBER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">126</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#JDXiConstant.ID_NUMBER"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.JDXiConstant.ID_NUMBER" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.JDXiConstant.DEVICE_ID">
+<span class="sig-name descname"><span class="pre">DEVICE_ID</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">127</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#JDXiConstant.DEVICE_ID"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.JDXiConstant.DEVICE_ID" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.JDXiConstant.SUB_ID_1_GENERAL_INFORMATION">
+<span class="sig-name descname"><span class="pre">SUB_ID_1_GENERAL_INFORMATION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">6</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#JDXiConstant.SUB_ID_1_GENERAL_INFORMATION"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.JDXiConstant.SUB_ID_1_GENERAL_INFORMATION" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.JDXiConstant.SUB_ID_2_IDENTITY_REQUEST">
+<span class="sig-name descname"><span class="pre">SUB_ID_2_IDENTITY_REQUEST</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#JDXiConstant.SUB_ID_2_IDENTITY_REQUEST"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.JDXiConstant.SUB_ID_2_IDENTITY_REQUEST" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.JDXiConstant.SUB_ID_2_IDENTITY_REPLY">
+<span class="sig-name descname"><span class="pre">SUB_ID_2_IDENTITY_REPLY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#JDXiConstant.SUB_ID_2_IDENTITY_REPLY"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.JDXiConstant.SUB_ID_2_IDENTITY_REPLY" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.JDXiConstant.SYSEX_LENGTH_ONE_BYTE_DATA">
+<span class="sig-name descname"><span class="pre">SYSEX_LENGTH_ONE_BYTE_DATA</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">15</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#JDXiConstant.SYSEX_LENGTH_ONE_BYTE_DATA"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.JDXiConstant.SYSEX_LENGTH_ONE_BYTE_DATA" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.JDXiConstant.SYSEX_LENGTH_FOUR_BYTE_DATA">
+<span class="sig-name descname"><span class="pre">SYSEX_LENGTH_FOUR_BYTE_DATA</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">18</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#JDXiConstant.SYSEX_LENGTH_FOUR_BYTE_DATA"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.JDXiConstant.SYSEX_LENGTH_FOUR_BYTE_DATA" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.JDXiConstant.ROLAND_ID">
+<span class="sig-name descname"><span class="pre">ROLAND_ID</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[65,</span> <span class="pre">16,</span> <span class="pre">0]</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#JDXiConstant.ROLAND_ID"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.JDXiConstant.ROLAND_ID" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.jdxi.midi.constant.JDXiConstant.JD_XI_MODEL_ID">
+<span class="sig-name descname"><span class="pre">JD_XI_MODEL_ID</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">14</span></em><a class="reference internal" href="../../../../../_modules/jdxi_editor/jdxi/midi/constant.html#JDXiConstant.JD_XI_MODEL_ID"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.jdxi.midi.constant.JDXiConstant.JD_XI_MODEL_ID" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../index.html" class="btn btn-neutral float-left" title="jdxi_editor.jdxi.midi" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../../preset/index.html" class="btn btn-neutral float-right" title="jdxi_editor.jdxi.preset" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Mark Mrooks.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

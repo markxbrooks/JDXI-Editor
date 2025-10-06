@@ -1,0 +1,1001 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>jdxi_editor.jdxi.style.factory &mdash; JD-Xi Editor 0.8.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=486e5634"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            JD-Xi Editor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../getting-started.html#getting-started-guide">Getting Started Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../editor-windows.html">Editor Windows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../editor-windows.html#available-editors">Available Editors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../additional-editors.html">Additional Editors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../additional-editors.html#available-editors">Available Editors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../playing-midi-files.html">Playing MIDI Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../playing-midi-files.html#available-tools">Available Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../troubleshooting.html#id1">Troubleshooting</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../legal.html">Legal Disclaimer</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules.html">jdxi_editor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../jdxi_editor.html">jdxi_editor package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../jdxi_editor.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../jdxi_editor.jdxi.html">jdxi_editor.jdxi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../jdxi_editor.log.html">jdxi_editor.log package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../jdxi_editor.midi.html">jdxi_editor.midi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../jdxi_editor.ui.html">jdxi_editor.ui package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../jdxi_editor.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../jdxi_editor.html#module-jdxi_editor.globals">jdxi_editor.globals module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../jdxi_editor.html#module-jdxi_editor.main">jdxi_editor.main module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../jdxi_editor.html#jdxi_editor.main.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../jdxi_editor.html#jdxi_editor.main.setup_splash_screen"><code class="docutils literal notranslate"><span class="pre">setup_splash_screen()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../jdxi_editor.html#module-jdxi_editor.project">jdxi_editor.project module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../jdxi_editor.html#module-jdxi_editor.resources">jdxi_editor.resources module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../jdxi_editor.html#jdxi_editor.resources.resource_path"><code class="docutils literal notranslate"><span class="pre">resource_path()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../jdxi_editor.html#module-jdxi_editor">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../autoapi/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/midi/index.html">midi</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/midi/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/midi/colors/index.html">midi.colors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/midi/slider/index.html">midi.slider</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/midi/spin_box/index.html">midi.spin_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/midi/time_ruler/index.html">midi.time_ruler</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/midi/track/index.html">midi.track</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/midi/track_viewer/index.html">midi.track_viewer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/midi/utils/index.html">midi.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/adsr/index.html">adsr</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/adsr/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/adsr/adsr/index.html">adsr.adsr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/adsr/graph/index.html">adsr.graph</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/adsr/parameter/index.html">adsr.parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/adsr/plot/index.html">adsr.plot</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/pitch/index.html">pitch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/pitch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/pitch/envelope/index.html">pitch.envelope</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/pitch/envelope_plot/index.html">pitch.envelope_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/pitch/pwm_plot/index.html">pitch.pwm_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/pitch/slider_spinbox/index.html">pitch.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/piano/index.html">piano</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/piano/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/piano/key/index.html">piano.key</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/piano/keyboard/index.html">piano.keyboard</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/panel/index.html">panel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/panel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/panel/partial/index.html">panel.partial</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/wheel/index.html">wheel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/wheel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/wheel/mod/index.html">wheel.mod</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/wheel/pitch/index.html">wheel.pitch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/wheel/wheel/index.html">wheel.wheel</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/preset/index.html">preset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/preset/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/preset/combo_box/index.html">preset.combo_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/preset/panel/index.html">preset.panel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/preset/patch_name/index.html">preset.patch_name</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/slider/index.html">slider</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/slider/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/slider/slider/index.html">slider.slider</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/slider/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/slider/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/slider/index.html#slider.Slider"><code class="docutils literal notranslate"><span class="pre">Slider</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/dialog/index.html">dialog</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/dialog/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/dialog/progress/index.html">dialog.progress</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/viewer/index.html">viewer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/viewer/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/viewer/log/index.html">viewer.log</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/button/index.html">button</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/button/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/button/channel/index.html">button.channel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/button/favorite/index.html">button.favorite</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/button/sequencer/index.html">button.sequencer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/button/waveform/index.html">button.waveform</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/button/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/button/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/button/index.html#button.ChannelButton"><code class="docutils literal notranslate"><span class="pre">ChannelButton</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/button/index.html#button.SequencerSquare"><code class="docutils literal notranslate"><span class="pre">SequencerSquare</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/switch/index.html">switch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/switch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/switch/partial/index.html">switch.partial</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/switch/switch/index.html">switch.switch</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/filter/index.html">filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/filter/index.html#filter.FilterWidget"><code class="docutils literal notranslate"><span class="pre">FilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/display/index.html">display</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/display/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/display/digital/index.html">display.digital</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/display/pattern/index.html">display.pattern</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/display/value/index.html">display.value</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/pattern/index.html">pattern</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/pattern/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/pattern/measure/index.html">pattern.measure</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/spin_box/index.html">spin_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/spin_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/spin_box/spin_box/index.html">spin_box.spin_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/envelope/index.html">envelope</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/envelope/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/envelope/base/index.html">envelope.base</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/indicator/index.html">indicator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/indicator/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/indicator/led/index.html">indicator.led</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/indicator/midi/index.html">indicator.midi</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/combo_box/index.html">combo_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/combo_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/combo_box/combo_box/index.html">combo_box.combo_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/jdxi_editor/index.html">jdxi_editor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/jdxi_editor/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/jdxi_editor/globals/index.html">jdxi_editor.globals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/jdxi_editor/jdxi/index.html">jdxi_editor.jdxi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/jdxi_editor/log/index.html">jdxi_editor.log</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/jdxi_editor/main/index.html">jdxi_editor.main</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/jdxi_editor/midi/index.html">jdxi_editor.midi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/jdxi_editor/project/index.html">jdxi_editor.project</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/jdxi_editor/resources/index.html">jdxi_editor.resources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/jdxi_editor/ui/index.html">jdxi_editor.ui</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/filter_plot/index.html">filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/filter_plot/index.html#filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/filter_plot/index.html#filter_plot.FilterPlot"><code class="docutils literal notranslate"><span class="pre">FilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/envelope_plot/index.html">envelope_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/envelope_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/envelope_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/envelope_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/envelope_plot/index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/envelope_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/envelope_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/envelope_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/envelope_plot/index.html#envelope_plot.midi_value_to_float"><code class="docutils literal notranslate"><span class="pre">midi_value_to_float()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/envelope_plot/index.html#envelope_plot.WMTEnvPlot"><code class="docutils literal notranslate"><span class="pre">WMTEnvPlot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/envelope_plot/index.html#envelope_plot.app"><code class="docutils literal notranslate"><span class="pre">app</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/wave_selector/index.html">wave_selector</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/wave_selector/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/wave_selector/wave_selector/index.html">wave_selector.wave_selector</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/analog_filter/index.html">analog_filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/analog_filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/analog_filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/analog_filter/index.html#analog_filter.AnalogFilterWidget"><code class="docutils literal notranslate"><span class="pre">AnalogFilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/slider_spinbox/index.html">slider_spinbox</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/slider_spinbox/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/slider_spinbox/slider_spinbox/index.html">slider_spinbox.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/analog_filter_plot/index.html">analog_filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/analog_filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/analog_filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/analog_filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/analog_filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/analog_filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/analog_filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/analog_filter_plot/index.html#analog_filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/analog_filter_plot/index.html#analog_filter_plot.AnalogFilterPlot"><code class="docutils literal notranslate"><span class="pre">AnalogFilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">JD-Xi Editor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../style.html">jdxi_editor.jdxi.style</a></li>
+      <li class="breadcrumb-item active">jdxi_editor.jdxi.style.factory</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for jdxi_editor.jdxi.style.factory</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Module: style helpers</span>
+
+<span class="sd">This module provides functions for dynamically generating Qt style sheets for</span>
+<span class="sd">various UI components, including sequencer buttons, general buttons, tabs, and editors.</span>
+<span class="sd">These functions allow for flexible styling customization based on application states.</span>
+
+<span class="sd">Functions:</span>
+<span class="sd">----------</span>
+<span class="sd">- generate_polyend_sequencer_button_style(is_checked: bool, is_current: bool) -&gt; str:</span>
+<span class="sd">    Generates a button style for a Polyend-style sequencer based on its checked and current step state.</span>
+
+<span class="sd">- generate_sequencer_button_style(active: bool) -&gt; str:</span>
+<span class="sd">    Generates a QPushButton style for a step sequencer, updating colors based on active/inactive state.</span>
+
+<span class="sd">- generate_button_style(bg, border, radius, text_color, hover, border_pressed, ...) -&gt; str:</span>
+<span class="sd">    Creates a flexible button style dynamically with customizable properties.</span>
+
+<span class="sd">- generate_tab_style(bg, border, radius, text_color, hover_bg, hover_border, ...) -&gt; str:</span>
+<span class="sd">    Generates a QTabBar style for tabs with selectable and hover effects.</span>
+
+<span class="sd">- generate_editor_style(accent, accent_hover, background, foreground, font_family, ...) -&gt; str:</span>
+<span class="sd">    Defines the style for an editor-like UI component, including sliders, buttons, and group boxes.</span>
+
+<span class="sd">- toggle_button_style(button, checked: bool):</span>
+<span class="sd">    Updates the given button&#39;s style based on whether it is checked.</span>
+
+<span class="sd">- update_button_style(button, checked: bool):</span>
+<span class="sd">    Toggles the button style dynamically.</span>
+
+<span class="sd">- get_button_styles(active: bool) -&gt; str:</span>
+<span class="sd">    Returns a style sheet string for buttons in active or inactive states.</span>
+
+<span class="sd">These functions help ensure a cohesive and visually distinct UI experience, particularly in MIDI sequencers or</span>
+<span class="sd">other interactive applications.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">platform</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">PySide6.QtWidgets</span><span class="w"> </span><span class="kn">import</span> <span class="n">QPushButton</span>
+
+<span class="k">if</span> <span class="n">platform</span><span class="o">.</span><span class="n">system</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;Windows&quot;</span><span class="p">:</span>
+<div class="viewcode-block" id="FONT_FAMILY">
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/jdxi/style/factory/index.html#jdxi_editor.jdxi.style.factory.FONT_FAMILY">[docs]</a>
+    <span class="n">FONT_FAMILY</span> <span class="o">=</span> <span class="s2">&quot;Segoe UI&quot;</span></div>
+
+<span class="k">elif</span> <span class="n">platform</span><span class="o">.</span><span class="n">system</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;Darwin&quot;</span><span class="p">:</span>
+    <span class="n">FONT_FAMILY</span> <span class="o">=</span> <span class="s2">&quot;Myriad Pro&quot;</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">FONT_FAMILY</span> <span class="o">=</span> <span class="s2">&quot;Arial, sans-serif&quot;</span>
+
+
+<div class="viewcode-block" id="generate_polyend_sequencer_button_style">
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/jdxi/style/factory/index.html#jdxi_editor.jdxi.style.factory.generate_polyend_sequencer_button_style">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_polyend_sequencer_button_style</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">is_checked</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">is_current</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate button style based on state and current step</span>
+
+<span class="sd">    :param self: The instance of the class</span>
+<span class="sd">    :param is_checked: bool Whether the button is checked</span>
+<span class="sd">    :param is_current: bool Whether the button is the current step</span>
+<span class="sd">    :return: str The style sheet for the button</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">base_color</span> <span class="o">=</span> <span class="s2">&quot;#3498db&quot;</span> <span class="k">if</span> <span class="n">is_checked</span> <span class="k">else</span> <span class="s2">&quot;#2c3e50&quot;</span>
+    <span class="n">border_color</span> <span class="o">=</span> <span class="s2">&quot;#e74c3c&quot;</span> <span class="k">if</span> <span class="n">is_current</span> <span class="k">else</span> <span class="n">base_color</span>
+
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        QPushButton </span><span class="se">{{</span>
+<span class="s2">            font-family: </span><span class="si">{</span><span class="n">FONT_FAMILY</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">            background-color: </span><span class="si">{</span><span class="n">base_color</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">            border: 2px solid </span><span class="si">{</span><span class="n">border_color</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">            border-radius: 5px;</span>
+<span class="s2">            color: white;</span>
+<span class="s2">            padding: 2px;</span>
+<span class="s2">        </span><span class="se">}}</span>
+<span class="s2">        QPushButton:hover </span><span class="se">{{</span>
+<span class="s2">            background-color: </span><span class="si">{</span><span class="s1">&#39;#2980b9&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">is_checked</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;#34495e&#39;</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">            background: qlineargradient(x1:0, y1:0, x2:0, y2:1, </span>
+<span class="s2">            stop:0 #660000, stop:1 #ff1a1a);</span>
+<span class="s2">        </span><span class="se">}}</span>
+<span class="s2">        QPushButton:pressed </span><span class="se">{{</span>
+<span class="s2">            background-color: </span><span class="si">{</span><span class="s1">&#39;#2472a4&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">is_checked</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;#2c3e50&#39;</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">        </span><span class="se">}}</span>
+<span class="s2">    &quot;&quot;&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="generate_sequencer_button_style">
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/jdxi/style/factory/index.html#jdxi_editor.jdxi.style.factory.generate_sequencer_button_style">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_sequencer_button_style</span><span class="p">(</span><span class="n">active</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate button style based on active state</span>
+
+<span class="sd">    :param active: bool Whether the button is active</span>
+<span class="sd">    :return: str The style sheet for the button</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        QPushButton </span><span class="se">{{</span>
+<span class="s2">            border: 4px solid </span><span class="si">{</span><span class="s1">&#39;#ff6666&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">active</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;#666666&#39;</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">            background-color: </span><span class="si">{</span><span class="s1">&#39;#333333&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">active</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;black&#39;</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">            border-radius: 3px;</span>
+<span class="s2">            padding: 0px;</span>
+<span class="s2">        </span><span class="se">}}</span>
+<span class="s2">        QPushButton:hover </span><span class="se">{{</span>
+<span class="s2">            background-color: #1A1A1A;</span>
+<span class="s2">            border-color: #ff4d4d;</span>
+<span class="s2">        </span><span class="se">}}</span>
+<span class="s2">        QPushButton:border_pressed </span><span class="se">{{</span>
+<span class="s2">            background-color: #333333;</span>
+<span class="s2">            border-color: #ff6666;</span>
+<span class="s2">        </span><span class="se">}}</span>
+<span class="s2">    &quot;&quot;&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="generate_button_style">
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/jdxi/style/factory/index.html#jdxi_editor.jdxi.style.factory.generate_button_style">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_button_style</span><span class="p">(</span>
+        <span class="n">bg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">border</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">radius</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">text_color</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">hover</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">border_pressed</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">background_pressed</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;#666666&quot;</span><span class="p">,</span>
+        <span class="n">button_border_width</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>
+        <span class="n">font_family</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">FONT_FAMILY</span><span class="p">,</span>
+        <span class="n">font_size</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;12px&quot;</span><span class="p">,</span>
+        <span class="n">button_padding</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate address button style dynamically.</span>
+
+<span class="sd">    :param border_pressed: str The border color when pressed</span>
+<span class="sd">    :param background_pressed: str The background color when pressed</span>
+<span class="sd">    :param button_border_width: int The border width of the button</span>
+<span class="sd">    :param button_padding: int The padding of the button</span>
+<span class="sd">    :param font_size: str The font size</span>
+<span class="sd">    :param font_family: str The font family</span>
+<span class="sd">    :param bg: str The background color</span>
+<span class="sd">    :param border: str The border color</span>
+<span class="sd">    :param radius: int The radius of the button</span>
+<span class="sd">    :param text_color: str The text color</span>
+<span class="sd">    :param hover: str The hover color</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">            QPushButton </span><span class="se">{{</span>
+<span class="s2">                font-family: </span><span class="si">{</span><span class="n">FONT_FAMILY</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">                background-color: </span><span class="si">{</span><span class="n">bg</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">                border: </span><span class="si">{</span><span class="n">button_border_width</span><span class="si">}</span><span class="s2">px solid </span><span class="si">{</span><span class="n">border</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">                border-radius: </span><span class="si">{</span><span class="n">radius</span><span class="si">}</span><span class="s2">px;</span>
+<span class="s2">                color: </span><span class="si">{</span><span class="n">text_color</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">                font-family: &quot;</span><span class="si">{</span><span class="n">font_family</span><span class="si">}</span><span class="s2">&quot;;</span>
+<span class="s2">                font-size: </span><span class="si">{</span><span class="n">font_size</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">                padding: </span><span class="si">{</span><span class="n">button_padding</span><span class="si">}</span><span class="s2">px;</span>
+<span class="s2">            </span><span class="se">}}</span>
+<span class="s2">            QPushButton:hover </span><span class="se">{{</span>
+<span class="s2">                background-color: </span><span class="si">{</span><span class="n">hover</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">                background: qlineargradient(x1:0, y1:0, x2:0, y2:1, </span>
+<span class="s2">                stop:0 #660000, stop:1 </span><span class="si">{</span><span class="n">hover</span><span class="si">}</span><span class="s2">);</span>
+<span class="s2">            </span><span class="se">}}</span>
+<span class="s2">            QPushButton:border_pressed, QPushButton:checked </span><span class="se">{{</span>
+<span class="s2">                background-color: </span><span class="si">{</span><span class="n">background_pressed</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">                border: </span><span class="si">{</span><span class="n">button_border_width</span><span class="si">}</span><span class="s2">px solid </span><span class="si">{</span><span class="n">border_pressed</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">            </span><span class="se">}}</span>
+<span class="s2">        &quot;&quot;&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="generate_tab_style">
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/jdxi/style/factory/index.html#jdxi_editor.jdxi.style.factory.generate_tab_style">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_tab_style</span><span class="p">(</span>
+        <span class="n">bg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">border</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">radius</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">text_color</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">hover_bg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">hover_border</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">selected_bg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">selected_border</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">font_family</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">FONT_FAMILY</span><span class="p">,</span>
+        <span class="n">font_size</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;12px&quot;</span><span class="p">,</span>
+        <span class="n">padding</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;1px 1px&quot;</span><span class="p">,</span>
+        <span class="n">margin</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;1px&quot;</span><span class="p">,</span>
+        <span class="n">accent</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;#FF2200&quot;</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate address tab style dynamically.</span>
+
+<span class="sd">    :param accent:</span>
+<span class="sd">    :param selected_border:</span>
+<span class="sd">    :param selected_bg:</span>
+<span class="sd">    :param hover_border:</span>
+<span class="sd">    :param font_family: str The font family</span>
+<span class="sd">    :param margin: str The margin for the tab</span>
+<span class="sd">    :param padding: str The padding for the tab</span>
+<span class="sd">    :param font_size: str The font size</span>
+<span class="sd">    :param bg: str The background color</span>
+<span class="sd">    :param border: str The border color</span>
+<span class="sd">    :param radius: int The radius of the tab</span>
+<span class="sd">    :param text_color: str The text color</span>
+<span class="sd">    :param hover_bg: str The hover background color</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">                QTabBar::tab </span><span class="se">{{</span>
+<span class="s2">                font-family: </span><span class="si">{</span><span class="n">FONT_FAMILY</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">                background: </span><span class="si">{</span><span class="n">bg</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">                color: </span><span class="si">{</span><span class="n">text_color</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">                padding: </span><span class="si">{</span><span class="n">padding</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">                margin: </span><span class="si">{</span><span class="n">margin</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">                border: 2px solid </span><span class="si">{</span><span class="n">border</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">                border-radius: </span><span class="si">{</span><span class="n">radius</span><span class="si">}</span><span class="s2">px;</span>
+<span class="s2">                font-family: &quot;</span><span class="si">{</span><span class="n">font_family</span><span class="si">}</span><span class="s2">&quot;;</span>
+<span class="s2">                font-size: </span><span class="si">{</span><span class="n">font_size</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">            </span><span class="se">}}</span>
+
+<span class="s2">            QTabBar::tab:selected </span><span class="se">{{</span>
+<span class="s2">                font-family: </span><span class="si">{</span><span class="n">FONT_FAMILY</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">                background: </span><span class="si">{</span><span class="n">selected_bg</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">                color: </span><span class="si">{</span><span class="n">text_color</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">                border: 2px solid </span><span class="si">{</span><span class="n">selected_border</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">                font-family: &quot;</span><span class="si">{</span><span class="n">font_family</span><span class="si">}</span><span class="s2">&quot;;</span>
+<span class="s2">                font-size: </span><span class="si">{</span><span class="n">font_size</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">            </span><span class="se">}}</span>
+
+<span class="s2">            QTabBar::tab:hover </span><span class="se">{{</span>
+<span class="s2">                background: </span><span class="si">{</span><span class="n">hover_bg</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">                border: 2px solid </span><span class="si">{</span><span class="n">hover_border</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">                font-family: &quot;</span><span class="si">{</span><span class="n">font_family</span><span class="si">}</span><span class="s2">&quot;;</span>
+<span class="s2">                font-size: </span><span class="si">{</span><span class="n">font_size</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">            </span><span class="se">}}</span>
+<span class="s2">            QTabWidget </span><span class="se">{{</span>
+<span class="s2">                font-family: </span><span class="si">{</span><span class="n">FONT_FAMILY</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">                border: none</span>
+<span class="s2">            </span><span class="se">}}</span>
+<span class="s2">            QTabWidget::pane </span><span class="se">{{</span>
+<span class="s2">                border: none;</span>
+<span class="s2">            </span><span class="se">}}</span>
+<span class="s2">        &quot;&quot;&quot;</span></div>
+
+
+    <span class="c1"># Editor Styles</span>
+
+
+<div class="viewcode-block" id="generate_editor_style">
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/jdxi/style/factory/index.html#jdxi_editor.jdxi.style.factory.generate_editor_style">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_editor_style</span><span class="p">(</span>
+        <span class="n">accent</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">accent_hover</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">background</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">foreground</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">font_family</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">font_size</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">padding</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">button_padding</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">slider_handle</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">slider_handle_border</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">slider_groove</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">slider_neon</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">slider_neon_gradient_stop</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">font_weight</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;normal&quot;</span><span class="p">,</span>
+        <span class="n">box_width</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;100px&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate editor style dynamically.</span>
+
+<span class="sd">    :param box_width: str width of box widgets such as combo boxes, push button, line edit</span>
+<span class="sd">    :param font_weight: str The font weight</span>
+<span class="sd">    :param slider_neon_gradient_stop: str The gradient stop color for the slider handle</span>
+<span class="sd">    :param slider_neon: str The neon color for the slider handle</span>
+<span class="sd">    :param slider_groove: str The groove color for the slider</span>
+<span class="sd">    :param font_family: str The font family</span>
+<span class="sd">    :param font_size: str The font size</span>
+<span class="sd">    :param padding: int The padding for the group box</span>
+<span class="sd">    :param button_padding: int The padding for the button</span>
+<span class="sd">    :param slider_handle: str The color of the slider handle</span>
+<span class="sd">    :param slider_handle_border: str The color of the slider handle border</span>
+<span class="sd">    :param accent: str The accent color</span>
+<span class="sd">    :param accent_hover: str The accent hover color</span>
+<span class="sd">    :param background: str The background color</span>
+<span class="sd">    :param foreground: str The foreground color</span>
+<span class="sd">    :return: str The style sheet for the editor</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        QWidget </span><span class="se">{{</span>
+<span class="s2">            font-family: </span><span class="si">{</span><span class="n">FONT_FAMILY</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">            background-color: </span><span class="si">{</span><span class="n">background</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">            color: </span><span class="si">{</span><span class="n">foreground</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">            font-family: &quot;</span><span class="si">{</span><span class="n">font_family</span><span class="si">}</span><span class="s2">&quot;;</span>
+<span class="s2">            font-size: </span><span class="si">{</span><span class="n">font_size</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">            padding: 1px;</span>
+<span class="s2">        </span><span class="se">}}</span>
+<span class="s2">               QGroupBox </span><span class="se">{{</span>
+<span class="s2">             font-family: </span><span class="si">{</span><span class="n">FONT_FAMILY</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">             width: 200px;</span>
+<span class="s2">             border: none;</span>
+<span class="s2">             border-top: 1px solid </span><span class="si">{</span><span class="n">accent</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">             margin: 1px;</span>
+<span class="s2">             padding: 1px;</span>
+<span class="s2">         </span><span class="se">}}</span>
+<span class="s2">        /* Groove (Track) */</span>
+<span class="s2">        QSlider::groove:vertical </span><span class="se">{{</span>
+<span class="s2">            font-family: </span><span class="si">{</span><span class="n">FONT_FAMILY</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">            background: #111; /* Dark background */</span>
+<span class="s2">            width: 6px;</span>
+<span class="s2">            border-radius: 3px;</span>
+<span class="s2">        </span><span class="se">}}</span>
+
+<span class="s2">        /* Handle (Knob) */</span>
+<span class="s2">        QSlider::handle:vertical </span><span class="se">{{</span>
+<span class="s2">            background: black;</span>
+<span class="s2">            border: 2px solid #ff1a1a; /* Neon red border */</span>
+<span class="s2">            width: 10px;  /* More rectangular */</span>
+<span class="s2">            height: 10px;  </span>
+<span class="s2">            margin: -8px;</span>
+<span class="s2">            margin-bottom: 2px;</span>
+<span class="s2">            margin-top: 1px;</span>
+<span class="s2">            border-radius: 5px;</span>
+<span class="s2">        </span><span class="se">}}</span>
+<span class="s2">        /* Handle (Knob) */</span>
+<span class="s2">        QSlider::handle:vertical:disabled </span><span class="se">{{</span>
+<span class="s2">            background: black;</span>
+<span class="s2">            border: 2px solid #333333; /* grey border */</span>
+<span class="s2">            width: 10px;  /* More rectangular */</span>
+<span class="s2">            height: 10px;  </span>
+<span class="s2">            margin: -10px;</span>
+<span class="s2">            border-radius: 5px;</span>
+<span class="s2">        </span><span class="se">}}</span>
+<span class="s2">        /* greyed out groove */</span>
+<span class="s2">        QSlider::sub-page:vertical:disabled </span><span class="se">{{</span>
+<span class="s2">            background: #333333;</span>
+<span class="s2">            border-radius: 3px;</span>
+<span class="s2">        </span><span class="se">}}</span>
+
+<span class="s2">        /* Glowing effect when moving */</span>
+<span class="s2">        QSlider::sub-page:vertical </span><span class="se">{{</span>
+<span class="s2">            background: qlineargradient(x1:0, y1:0, x2:0, y2:1, </span>
+<span class="s2">                         stop:0 #660000, stop:1 #ff1a1a);</span>
+<span class="s2">            border-radius: 3px;</span>
+<span class="s2">        </span><span class="se">}}</span>
+<span class="s2">        /* Glowing effect when moving */</span>
+<span class="s2">        QSlider::sub-page:vertical:disabled:hover </span><span class="se">{{</span>
+<span class="s2">            background: qlineargradient(x1:0, y1:0, x2:0, y2:1, </span>
+<span class="s2">                         stop:0 #660000, stop:1 #ff1a1a);</span>
+<span class="s2">            border-radius: 3px;</span>
+<span class="s2">        </span><span class="se">}}</span>
+
+<span class="s2">        /* Unfilled portion */</span>
+<span class="s2">        QSlider::add-page:vertical </span><span class="se">{{</span>
+<span class="s2">            font-family: </span><span class="si">{</span><span class="n">FONT_FAMILY</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">            background: #222;</span>
+<span class="s2">            border-radius: 3px;</span>
+<span class="s2">        </span><span class="se">}}</span>
+
+<span class="s2">        /* Tick Marks (Small dashes on both sides) */</span>
+<span class="s2">        QSlider::tick-mark </span><span class="se">{{</span>
+<span class="s2">            background: #ff1a1a;</span>
+<span class="s2">            width: 4px;</span>
+<span class="s2">            height: 2px;</span>
+<span class="s2">            border-radius: 1px;</span>
+<span class="s2">            margin-left: -8px;</span>
+<span class="s2">            margin-right: 8px;</span>
+<span class="s2">        </span><span class="se">}}</span>
+<span class="s2">        QSlider::horizontal </span><span class="se">{{</span>
+<span class="s2">            margin-left: 6px;</span>
+<span class="s2">            margin-right: 6x;</span>
+<span class="s2">        </span><span class="se">}}</span>
+
+<span class="s2">        /* Handle Hover Effect */</span>
+<span class="s2">        QSlider::handle:vertical:hover </span><span class="se">{{</span>
+<span class="s2">            border: 2px solid #ff3333;</span>
+<span class="s2">            background: qlineargradient(x1:0, y1:0, x2:0, y2:1, </span>
+<span class="s2">             stop:0 #660000, stop:1 #ff1a1a);</span>
+<span class="s2">        </span><span class="se">}}</span>
+<span class="s2">        /* Spin Box */</span>
+<span class="s2">        QSpinBox, QDoubleSpinBox </span><span class="se">{{</span>
+<span class="s2">            background-color: #222;</span>
+<span class="s2">            border: 1px solid #ff1a1a;</span>
+<span class="s2">            border-radius: 3px;</span>
+<span class="s2">            padding: 1px;</span>
+<span class="s2">            margin: -2px;</span>
+<span class="s2">            color: #ff1a1a;</span>
+<span class="s2">        </span><span class="se">}}</span>
+
+<span class="s2">        QGroupBox </span><span class="se">{{</span>
+<span class="s2">            font-family: </span><span class="si">{</span><span class="n">font_family</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">            border: none;</span>
+<span class="s2">            border-top: 1px solid </span><span class="si">{</span><span class="n">accent</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">            border-radius: 3px;</span>
+<span class="s2">            margin-top: 1px;</span>
+<span class="s2">            width: 200px;</span>
+<span class="s2">            padding: </span><span class="si">{</span><span class="n">padding</span><span class="si">}</span><span class="s2">px;</span>
+<span class="s2">        </span><span class="se">}}</span>
+<span class="s2">        </span>
+<span class="s2">        QPushButton </span><span class="se">{{</span>
+<span class="s2">            width: </span><span class="si">{</span><span class="n">box_width</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">        </span><span class="se">}}</span>
+<span class="s2">        </span>
+<span class="s2">        QGroupBox[adsr=&quot;true&quot;] </span><span class="se">{{</span>
+<span class="s2">            min-height: 300px;  /* Reduced height for horizontal layout */</span>
+<span class="s2">            width: 200px;</span>
+<span class="s2">        </span><span class="se">}}</span>
+
+<span class="s2">        QSlider::handle:vertical </span><span class="se">{{</span>
+<span class="s2">            background: </span><span class="si">{</span><span class="n">slider_handle</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">            border: 2px solid </span><span class="si">{</span><span class="n">slider_handle_border</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">            margin: 1px 0;</span>
+<span class="s2">            border-radius: 4px;</span>
+<span class="s2">        </span><span class="se">}}</span>
+
+<span class="s2">        QSlider::handle:vertical:hover </span><span class="se">{{</span>
+<span class="s2">            border-color: </span><span class="si">{</span><span class="n">accent_hover</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">        </span><span class="se">}}</span>
+
+<span class="s2">        QGroupBox::title </span><span class="se">{{</span>
+<span class="s2">            subcontrol-origin: margin;</span>
+<span class="s2">            subcontrol-position: top center;</span>
+<span class="s2">            padding: 0 1px;</span>
+<span class="s2">            color: </span><span class="si">{</span><span class="n">foreground</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">            font-weight: </span><span class="si">{</span><span class="n">font_weight</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">        </span><span class="se">}}</span>
+
+<span class="s2">        QPushButton </span><span class="se">{{</span>
+<span class="s2">            font-family: </span><span class="si">{</span><span class="n">font_family</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">            background-color: </span><span class="si">{</span><span class="n">background</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">            border: 1px solid </span><span class="si">{</span><span class="n">accent</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">            border-radius: 3px;</span>
+<span class="s2">            padding: </span><span class="si">{</span><span class="n">button_padding</span><span class="si">}</span><span class="s2">px;</span>
+<span class="s2">            color: </span><span class="si">{</span><span class="n">foreground</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">        </span><span class="se">}}</span>
+
+<span class="s2">        QPushButton:hover, QPushButton:checked </span><span class="se">{{</span>
+<span class="s2">            background-color: </span><span class="si">{</span><span class="n">accent</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">            color: </span><span class="si">{</span><span class="n">background</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">        </span><span class="se">}}</span>
+
+<span class="s2">        QComboBox, QScrollBar </span><span class="se">{{</span>
+<span class="s2">            font-family: </span><span class="si">{</span><span class="n">font_family</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">            background-color: </span><span class="si">{</span><span class="n">background</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">            border: 1px solid </span><span class="si">{</span><span class="n">accent</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">            border-radius: 3px;</span>
+<span class="s2">            padding: 1px;</span>
+<span class="s2">            color: </span><span class="si">{</span><span class="n">foreground</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">        </span><span class="se">}}</span>
+<span class="s2">        QComboBox </span><span class="se">{{</span>
+<span class="s2">            width: </span><span class="si">{</span><span class="n">box_width</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">        </span><span class="se">}}</span>
+<span class="s2">        QComboBox:disabled </span><span class="se">{{</span>
+<span class="s2">            color: #333333;</span>
+<span class="s2">        </span><span class="se">}}</span>
+
+<span class="s2">        QScrollBar::handle </span><span class="se">{{</span>
+<span class="s2">            background: </span><span class="si">{</span><span class="n">slider_handle_border</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">            border-radius: 3px;</span>
+<span class="s2">        </span><span class="se">}}</span>
+
+<span class="s2">        QScrollBar::handle:hover </span><span class="se">{{</span>
+<span class="s2">            border: 2px solid </span><span class="si">{</span><span class="n">accent</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">        </span><span class="se">}}</span>
+
+<span class="s2">        QSlider::groove:horizontal </span><span class="se">{{</span>
+<span class="s2">            background: </span><span class="si">{</span><span class="n">slider_groove</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">            height: 6px;</span>
+<span class="s2">            border-radius: 2px;</span>
+<span class="s2">        </span><span class="se">}}</span>
+
+<span class="s2">        QSlider::handle:horizontal</span><span class="se">{{</span>
+<span class="s2">            background: </span><span class="si">{</span><span class="n">slider_handle</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">            border: 3px solid </span><span class="si">{</span><span class="n">slider_neon</span><span class="si">}</span><span class="s2">; /* Neon red border */</span>
+<span class="s2">            width: 8px;  /* More rectangular */</span>
+<span class="s2">            height: 2px;  </span>
+<span class="s2">            margin: -6px;</span>
+<span class="s2">            padding: 1px;</span>
+<span class="s2">            border-radius: 4px;</span>
+<span class="s2">        </span><span class="se">}}</span>
+<span class="s2">        QSlider::handle:disabled</span><span class="se">{{</span>
+<span class="s2">            background: </span><span class="si">{</span><span class="n">slider_handle</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">            border: 2px solid #333333; /* grey border */</span>
+<span class="s2">            width: 8px;  /* More rectangular */</span>
+<span class="s2">            height: 2px;  </span>
+<span class="s2">            margin: -6px;</span>
+<span class="s2">            padding: 1px;</span>
+<span class="s2">            border-radius: 4px;</span>
+<span class="s2">        </span><span class="se">}}</span>
+<span class="s2">        /* Unfilled portion */</span>
+<span class="s2">        QSlider::add-page:horizontal </span><span class="se">{{</span>
+<span class="s2">            background: #222;</span>
+<span class="s2">            border-radius: 3px;</span>
+<span class="s2">        </span><span class="se">}}</span>
+<span class="s2">        QSlider::handle:vertical </span><span class="se">{{</span>
+<span class="s2">            background: </span><span class="si">{</span><span class="n">slider_handle</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">            border: 2px solid </span><span class="si">{</span><span class="n">slider_handle_border</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">            width: 18px;</span>
+<span class="s2">            height: 12px;</span>
+<span class="s2">            margin: -9px 0;</span>
+<span class="s2">            border-radius: 9px;</span>
+<span class="s2">            background: qlineargradient(x1:0, y1:0, x2:0, y2:1, </span>
+<span class="s2">                         stop:0 </span><span class="si">{</span><span class="n">slider_neon_gradient_stop</span><span class="si">}</span><span class="s2">, stop:1 </span><span class="si">{</span><span class="n">slider_neon</span><span class="si">}</span><span class="s2">);</span>
+<span class="s2">            border-radius: 3px;</span>
+<span class="s2">        </span><span class="se">}}</span>
+<span class="s2">        QSlider::handle:vertical:disabled</span><span class="se">{{</span>
+<span class="s2">            background: </span><span class="si">{</span><span class="n">slider_handle</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">            border: 2px solid #333333; /* grey border */</span>
+<span class="s2">            width: 18px;  /* More rectangular */</span>
+<span class="s2">            height: 12px;  </span>
+<span class="s2">            margin: -9px;</span>
+<span class="s2">            border-radius: 4px;</span>
+<span class="s2">        </span><span class="se">}}</span>
+<span class="s2">        /* Glowing effect when moving */</span>
+<span class="s2">        QSlider::sub-page:horizontal </span><span class="se">{{</span>
+<span class="s2">            background: qlineargradient(x1:0, y1:0, x2:1, y2:0, </span>
+<span class="s2">                         stop:0 </span><span class="si">{</span><span class="n">slider_neon_gradient_stop</span><span class="si">}</span><span class="s2">, stop:1 </span><span class="si">{</span><span class="n">slider_neon</span><span class="si">}</span><span class="s2">);</span>
+<span class="s2">            border-radius: 3px;</span>
+<span class="s2">        </span><span class="se">}}</span>
+<span class="s2">        /* Glowing effect when moving */</span>
+<span class="s2">        QSlider::sub-page:horizontal:disabled </span><span class="se">{{</span>
+<span class="s2">            background: #333333;</span>
+<span class="s2">            border-radius: 3px;</span>
+<span class="s2">        </span><span class="se">}}</span>
+
+<span class="s2">        /* Unfilled portion */</span>
+<span class="s2">        QSlider::add-page:horizontal </span><span class="se">{{</span>
+<span class="s2">            background: #222;</span>
+<span class="s2">            border-radius: 3px;</span>
+<span class="s2">        </span><span class="se">}}</span>
+<span class="s2">        /* QLabels */</span>
+<span class="s2">        QLabel </span><span class="se">{{</span>
+<span class="s2">            color: #FFFFFF;</span>
+<span class="s2">            font-family: </span><span class="si">{</span><span class="n">FONT_FAMILY</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">        </span><span class="se">}}</span>
+<span class="s2">        QSlider::horizontal </span><span class="se">{{</span>
+<span class="s2">            margin-left: 5px;</span>
+<span class="s2">            margin-right: 5px;</span>
+<span class="s2">        </span><span class="se">}}</span>
+<span class="s2">        QLabel </span><span class="se">{{</span><span class="s2"> width: 100px; </span><span class="se">}}</span>
+<span class="s2">    &quot;&quot;&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="get_button_styles">
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/jdxi/style/factory/index.html#jdxi_editor.jdxi.style.factory.get_button_styles">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_button_styles</span><span class="p">(</span><span class="n">active</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the appropriate style for active/inactive button states</span>
+
+<span class="sd">    :param active: bool Whether the button is active</span>
+<span class="sd">    :return: str The style sheet for the button</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">base_style</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        QPushButton {</span>
+<span class="s2">            border-radius: 15px;</span>
+<span class="s2">            border: 4px solid;</span>
+<span class="s2">        }</span>
+<span class="s2">        QPushButton:border_pressed {</span>
+<span class="s2">            background-color: #333333;</span>
+<span class="s2">            border: 4px solid #ff6666;</span>
+<span class="s2">        }</span>
+<span class="s2">        QPushButton:hover {</span>
+<span class="s2">            background: qlineargradient(x1:0, y1:0, x2:0, y2:1, </span>
+<span class="s2">            stop:0 #660000, stop:1 #ff1a1a);</span>
+<span class="s2">        }</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">active</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span>
+                <span class="n">base_style</span>
+                <span class="o">+</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">            QPushButton {</span>
+<span class="s2">                background-color: #333333;</span>
+<span class="s2">                border-color: #ff6666;</span>
+<span class="s2">            }</span>
+<span class="s2">        &quot;&quot;&quot;</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span>
+                <span class="n">base_style</span>
+                <span class="o">+</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">            QPushButton {</span>
+<span class="s2">                background-color: #222222;</span>
+<span class="s2">                border-color: #666666;</span>
+<span class="s2">            }</span>
+<span class="s2">        &quot;&quot;&quot;</span>
+        <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="toggle_button_style">
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/jdxi/style/factory/index.html#jdxi_editor.jdxi.style.factory.toggle_button_style">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">toggle_button_style</span><span class="p">(</span><span class="n">button</span><span class="p">:</span> <span class="n">QPushButton</span><span class="p">,</span> <span class="n">checked</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Update button style based on its checked state</span>
+<span class="sd">    :param button: QPushButton The button to update</span>
+<span class="sd">    :param checked: bool Whether the button is checked</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">button</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span>
+        <span class="n">generate_sequencer_button_style</span><span class="p">(</span><span class="n">checked</span><span class="p">)</span>
+    <span class="p">)</span>  <span class="c1"># Example style for checked</span></div>
+
+
+
+<div class="viewcode-block" id="update_button_style">
+<a class="viewcode-back" href="../../../../autoapi/jdxi_editor/jdxi/style/factory/index.html#jdxi_editor.jdxi.style.factory.update_button_style">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">update_button_style</span><span class="p">(</span><span class="n">button</span><span class="p">:</span> <span class="n">QPushButton</span><span class="p">,</span> <span class="n">checked</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Toggle the button style based on the state</span>
+<span class="sd">    :param button: QPushButton The button to update</span>
+<span class="sd">    :param checked: bool Whether the button is checked</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">button</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">get_button_styles</span><span class="p">(</span><span class="n">checked</span><span class="p">))</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Mark Mrooks.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

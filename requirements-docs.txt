@@ -1,0 +1,7 @@
+# Essential dependencies for documentation build
+sphinx>=7.0.0
+sphinx-autoapi>=3.0.0
+alabaster>=0.7.16
+numpy
+mido
+sphinx_rtd_theme

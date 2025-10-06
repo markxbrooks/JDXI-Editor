@@ -1,0 +1,1003 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>jdxi_editor.midi.data.parameter.analog &mdash; JD-Xi Editor 0.8.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../../../_static/documentation_options.js?v=486e5634"></script>
+      <script src="../../../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../search.html" />
+    <link rel="next" title="jdxi_editor.midi.data.parameter.areas" href="../areas/index.html" />
+    <link rel="prev" title="jdxi_editor.midi.data.parameter" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../../../index.html" class="icon icon-home">
+            JD-Xi Editor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../getting-started.html#getting-started-guide">Getting Started Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../editor-windows.html">Editor Windows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../editor-windows.html#available-editors">Available Editors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../additional-editors.html">Additional Editors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../additional-editors.html#available-editors">Available Editors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../playing-midi-files.html">Playing MIDI Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../playing-midi-files.html#available-tools">Available Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../troubleshooting.html#id1">Troubleshooting</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../legal.html">Legal Disclaimer</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../modules.html">jdxi_editor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../jdxi_editor.html">jdxi_editor package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../jdxi_editor.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../jdxi_editor.jdxi.html">jdxi_editor.jdxi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../jdxi_editor.log.html">jdxi_editor.log package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../jdxi_editor.midi.html">jdxi_editor.midi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../jdxi_editor.ui.html">jdxi_editor.ui package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../jdxi_editor.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../jdxi_editor.html#module-jdxi_editor.globals">jdxi_editor.globals module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../jdxi_editor.html#module-jdxi_editor.main">jdxi_editor.main module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../jdxi_editor.html#jdxi_editor.main.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../jdxi_editor.html#jdxi_editor.main.setup_splash_screen"><code class="docutils literal notranslate"><span class="pre">setup_splash_screen()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../jdxi_editor.html#module-jdxi_editor.project">jdxi_editor.project module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../jdxi_editor.html#module-jdxi_editor.resources">jdxi_editor.resources module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../jdxi_editor.html#jdxi_editor.resources.resource_path"><code class="docutils literal notranslate"><span class="pre">resource_path()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../jdxi_editor.html#module-jdxi_editor">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../../../../midi/index.html">midi</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../midi/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../midi/colors/index.html">midi.colors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../midi/slider/index.html">midi.slider</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../midi/spin_box/index.html">midi.spin_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../midi/time_ruler/index.html">midi.time_ruler</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../midi/track/index.html">midi.track</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../midi/track_viewer/index.html">midi.track_viewer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../midi/utils/index.html">midi.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../adsr/index.html">adsr</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../adsr/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../adsr/adsr/index.html">adsr.adsr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../adsr/graph/index.html">adsr.graph</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../adsr/parameter/index.html">adsr.parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../adsr/plot/index.html">adsr.plot</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../pitch/index.html">pitch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../pitch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../pitch/envelope/index.html">pitch.envelope</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../pitch/envelope_plot/index.html">pitch.envelope_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../pitch/pwm_plot/index.html">pitch.pwm_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../pitch/slider_spinbox/index.html">pitch.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../piano/index.html">piano</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../piano/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../piano/key/index.html">piano.key</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../piano/keyboard/index.html">piano.keyboard</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../panel/index.html">panel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../panel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../panel/partial/index.html">panel.partial</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../wheel/index.html">wheel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../wheel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../wheel/mod/index.html">wheel.mod</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../wheel/pitch/index.html">wheel.pitch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../wheel/wheel/index.html">wheel.wheel</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../preset/index.html">preset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../preset/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../preset/combo_box/index.html">preset.combo_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../preset/panel/index.html">preset.panel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../preset/patch_name/index.html">preset.patch_name</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../slider/index.html">slider</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../slider/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../slider/slider/index.html">slider.slider</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../slider/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../slider/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../slider/index.html#slider.Slider"><code class="docutils literal notranslate"><span class="pre">Slider</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../dialog/index.html">dialog</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../dialog/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../dialog/progress/index.html">dialog.progress</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../viewer/index.html">viewer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../viewer/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../viewer/log/index.html">viewer.log</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../button/index.html">button</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../button/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../button/channel/index.html">button.channel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../button/favorite/index.html">button.favorite</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../button/sequencer/index.html">button.sequencer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../button/waveform/index.html">button.waveform</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../button/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../button/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../button/index.html#button.ChannelButton"><code class="docutils literal notranslate"><span class="pre">ChannelButton</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../button/index.html#button.SequencerSquare"><code class="docutils literal notranslate"><span class="pre">SequencerSquare</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../switch/index.html">switch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../switch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../switch/partial/index.html">switch.partial</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../switch/switch/index.html">switch.switch</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../filter/index.html">filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../filter/index.html#filter.FilterWidget"><code class="docutils literal notranslate"><span class="pre">FilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../display/index.html">display</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../display/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../display/digital/index.html">display.digital</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../display/pattern/index.html">display.pattern</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../display/value/index.html">display.value</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../pattern/index.html">pattern</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../pattern/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../pattern/measure/index.html">pattern.measure</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../spin_box/index.html">spin_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../spin_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../spin_box/spin_box/index.html">spin_box.spin_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../envelope/index.html">envelope</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../envelope/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../envelope/base/index.html">envelope.base</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../indicator/index.html">indicator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../indicator/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../indicator/led/index.html">indicator.led</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../indicator/midi/index.html">indicator.midi</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../combo_box/index.html">combo_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../combo_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../combo_box/combo_box/index.html">combo_box.combo_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../../../index.html">jdxi_editor</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../../../index.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../../../globals/index.html">jdxi_editor.globals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../jdxi/index.html">jdxi_editor.jdxi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../log/index.html">jdxi_editor.log</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../main/index.html">jdxi_editor.main</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../../../index.html">jdxi_editor.midi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../project/index.html">jdxi_editor.project</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../resources/index.html">jdxi_editor.resources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../ui/index.html">jdxi_editor.ui</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../filter_plot/index.html">filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../filter_plot/index.html#filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../filter_plot/index.html#filter_plot.FilterPlot"><code class="docutils literal notranslate"><span class="pre">FilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../envelope_plot/index.html">envelope_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../envelope_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../envelope_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../envelope_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../envelope_plot/index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../envelope_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../envelope_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../envelope_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../envelope_plot/index.html#envelope_plot.midi_value_to_float"><code class="docutils literal notranslate"><span class="pre">midi_value_to_float()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../envelope_plot/index.html#envelope_plot.WMTEnvPlot"><code class="docutils literal notranslate"><span class="pre">WMTEnvPlot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../envelope_plot/index.html#envelope_plot.app"><code class="docutils literal notranslate"><span class="pre">app</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../wave_selector/index.html">wave_selector</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../wave_selector/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../wave_selector/wave_selector/index.html">wave_selector.wave_selector</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../analog_filter/index.html">analog_filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../analog_filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../analog_filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../analog_filter/index.html#analog_filter.AnalogFilterWidget"><code class="docutils literal notranslate"><span class="pre">AnalogFilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../slider_spinbox/index.html">slider_spinbox</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../slider_spinbox/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../slider_spinbox/slider_spinbox/index.html">slider_spinbox.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../analog_filter_plot/index.html">analog_filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../analog_filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../analog_filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../analog_filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../analog_filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../analog_filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../analog_filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../analog_filter_plot/index.html#analog_filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../analog_filter_plot/index.html#analog_filter_plot.AnalogFilterPlot"><code class="docutils literal notranslate"><span class="pre">AnalogFilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../../index.html">JD-Xi Editor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../../../../index.html">jdxi_editor</a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">jdxi_editor.midi</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">jdxi_editor.midi.data</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">jdxi_editor.midi.data.parameter</a></li>
+      <li class="breadcrumb-item active">jdxi_editor.midi.data.parameter.analog</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../../../_sources/autoapi/jdxi_editor/midi/data/parameter/analog/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-jdxi_editor.midi.data.parameter.analog">
+<span id="jdxi-editor-midi-data-parameter-analog"></span><h1>jdxi_editor.midi.data.parameter.analog<a class="headerlink" href="#module-jdxi_editor.midi.data.parameter.analog" title="Link to this heading"></a></h1>
+<p>This class defines digital synthesizer parameters for the Roland JD-Xi, mapping
+various synthesis parameters to their corresponding memory addresses and valid
+value ranges.</p>
+<p>The parameters include:
+- Oscillator settings (waveform, pitch, detune, envelope, etc.)
+- Filter settings (cutoff, resonance, envelope, key follow, etc.)
+- Amplitude settings (level, velocity, envelope, pan, etc.)
+- LFO (Low-Frequency Oscillator) settings (waveform, rate, depth, sync, etc.)
+- Modulation LFO settings (waveform, rate, depth, sync, etc.)
+- Additional synthesis controls (aftertouch, wave gain, super saw detune, etc.)
+- PCM wave settings (wave number, gain, high-pass filter cutoff, etc.)</p>
+<dl class="simple">
+<dt>Each parameter is stored as address tuple containing:</dt><dd><p>(memory_address, min_value, max_value)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">-</span> <span class="pre">OSC_WAVE</span></span></dt>
+<dd><p>Defines the oscillator waveform preset_type.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">-</span> <span class="pre">FILTER_CUTOFF</span></span></dt>
+<dd><p>Controls the filter cutoff frequency.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">-</span> <span class="pre">AMP_LEVEL</span></span></dt>
+<dd><p>Sets the overall amplitude level.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">-</span> <span class="pre">LFO_RATE</span></span></dt>
+<dd><p>Adjusts the rate of the low-frequency oscillator.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">-</span> <span class="pre">MOD_LFO_PITCH_DEPTH</span></span></dt>
+<dd><p>Modulates pitch using the secondary LFO.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">-</span></span></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Other</span> <span class="pre">parameters</span> <span class="pre">follow</span> <span class="pre">address</span> <span class="pre">similar</span> <span class="pre">structure.</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">__init__(self,</span> <span class="pre">address</span></span></dt>
+<dd><p>int, min_val: int, max_val: int):
+Initializes address DigitalParameter instance with an address and value range.</p>
+</dd></dl>
+
+<dl class="simple">
+<dt>Usage Example:</dt><dd><p>filter_cutoff = DigitalParameter(0x0C, 0, 127)  # Filter Cutoff Frequency
+log.message(filter_cutoff.address)  # Output: 0x0C</p>
+</dd>
+</dl>
+<p>This class helps structure and manage parameter mappings for JD-Xi SysEx processing.</p>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog" title="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AddressParameterAnalog</span></code></a></p></td>
+<td><p>Analog synth parameters with area, address, and value range.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.data.parameter.analog.</span></span><span class="sig-name descname"><span class="pre">AddressParameterAnalog</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_val</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_val</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">display_min</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">display_max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tooltip</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../synth/index.html#jdxi_editor.midi.data.parameter.synth.AddressParameter" title="jdxi_editor.midi.data.parameter.synth.AddressParameter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">jdxi_editor.midi.data.parameter.synth.AddressParameter</span></code></a></p>
+<p>Analog synth parameters with area, address, and value range.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.TONE_NAME_1">
+<span class="sig-name descname"><span class="pre">TONE_NAME_1</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(0,</span> <span class="pre">32,</span> <span class="pre">127)</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.TONE_NAME_1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.TONE_NAME_1" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.TONE_NAME_2">
+<span class="sig-name descname"><span class="pre">TONE_NAME_2</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(1,</span> <span class="pre">32,</span> <span class="pre">127)</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.TONE_NAME_2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.TONE_NAME_2" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.TONE_NAME_3">
+<span class="sig-name descname"><span class="pre">TONE_NAME_3</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(2,</span> <span class="pre">32,</span> <span class="pre">127)</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.TONE_NAME_3"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.TONE_NAME_3" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.TONE_NAME_4">
+<span class="sig-name descname"><span class="pre">TONE_NAME_4</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(3,</span> <span class="pre">32,</span> <span class="pre">127)</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.TONE_NAME_4"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.TONE_NAME_4" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.TONE_NAME_5">
+<span class="sig-name descname"><span class="pre">TONE_NAME_5</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(4,</span> <span class="pre">32,</span> <span class="pre">127)</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.TONE_NAME_5"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.TONE_NAME_5" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.TONE_NAME_6">
+<span class="sig-name descname"><span class="pre">TONE_NAME_6</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(5,</span> <span class="pre">32,</span> <span class="pre">127)</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.TONE_NAME_6"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.TONE_NAME_6" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.TONE_NAME_7">
+<span class="sig-name descname"><span class="pre">TONE_NAME_7</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(6,</span> <span class="pre">32,</span> <span class="pre">127)</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.TONE_NAME_7"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.TONE_NAME_7" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.TONE_NAME_8">
+<span class="sig-name descname"><span class="pre">TONE_NAME_8</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(7,</span> <span class="pre">32,</span> <span class="pre">127)</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.TONE_NAME_8"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.TONE_NAME_8" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.TONE_NAME_9">
+<span class="sig-name descname"><span class="pre">TONE_NAME_9</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(8,</span> <span class="pre">32,</span> <span class="pre">127)</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.TONE_NAME_9"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.TONE_NAME_9" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.TONE_NAME_10">
+<span class="sig-name descname"><span class="pre">TONE_NAME_10</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(9,</span> <span class="pre">32,</span> <span class="pre">127)</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.TONE_NAME_10"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.TONE_NAME_10" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.TONE_NAME_11">
+<span class="sig-name descname"><span class="pre">TONE_NAME_11</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(10,</span> <span class="pre">32,</span> <span class="pre">127)</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.TONE_NAME_11"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.TONE_NAME_11" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.TONE_NAME_12">
+<span class="sig-name descname"><span class="pre">TONE_NAME_12</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(11,</span> <span class="pre">32,</span> <span class="pre">127)</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.TONE_NAME_12"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.TONE_NAME_12" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.LFO_SHAPE">
+<span class="sig-name descname"><span class="pre">LFO_SHAPE</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.LFO_SHAPE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.LFO_SHAPE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.LFO_RATE">
+<span class="sig-name descname"><span class="pre">LFO_RATE</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.LFO_RATE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.LFO_RATE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.LFO_FADE_TIME">
+<span class="sig-name descname"><span class="pre">LFO_FADE_TIME</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.LFO_FADE_TIME"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.LFO_FADE_TIME" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.LFO_TEMPO_SYNC_SWITCH">
+<span class="sig-name descname"><span class="pre">LFO_TEMPO_SYNC_SWITCH</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.LFO_TEMPO_SYNC_SWITCH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.LFO_TEMPO_SYNC_SWITCH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.LFO_TEMPO_SYNC_NOTE">
+<span class="sig-name descname"><span class="pre">LFO_TEMPO_SYNC_NOTE</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.LFO_TEMPO_SYNC_NOTE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.LFO_TEMPO_SYNC_NOTE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.LFO_PITCH_DEPTH">
+<span class="sig-name descname"><span class="pre">LFO_PITCH_DEPTH</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.LFO_PITCH_DEPTH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.LFO_PITCH_DEPTH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.LFO_FILTER_DEPTH">
+<span class="sig-name descname"><span class="pre">LFO_FILTER_DEPTH</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.LFO_FILTER_DEPTH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.LFO_FILTER_DEPTH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.LFO_AMP_DEPTH">
+<span class="sig-name descname"><span class="pre">LFO_AMP_DEPTH</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.LFO_AMP_DEPTH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.LFO_AMP_DEPTH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.LFO_KEY_TRIGGER">
+<span class="sig-name descname"><span class="pre">LFO_KEY_TRIGGER</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.LFO_KEY_TRIGGER"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.LFO_KEY_TRIGGER" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.OSC_WAVEFORM">
+<span class="sig-name descname"><span class="pre">OSC_WAVEFORM</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(22,</span> <span class="pre">0,</span> <span class="pre">2,</span> <span class="pre">0,</span> <span class="pre">2,</span> <span class="pre">'Selects</span> <span class="pre">the</span> <span class="pre">waveform;</span> <span class="pre">SAW,</span> <span class="pre">TRI,</span> <span class="pre">PW-SQR')</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.OSC_WAVEFORM"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.OSC_WAVEFORM" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.OSC_PITCH_COARSE">
+<span class="sig-name descname"><span class="pre">OSC_PITCH_COARSE</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.OSC_PITCH_COARSE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.OSC_PITCH_COARSE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.OSC_PITCH_FINE">
+<span class="sig-name descname"><span class="pre">OSC_PITCH_FINE</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.OSC_PITCH_FINE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.OSC_PITCH_FINE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.OSC_PULSE_WIDTH">
+<span class="sig-name descname"><span class="pre">OSC_PULSE_WIDTH</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.OSC_PULSE_WIDTH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.OSC_PULSE_WIDTH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.OSC_PULSE_WIDTH_MOD_DEPTH">
+<span class="sig-name descname"><span class="pre">OSC_PULSE_WIDTH_MOD_DEPTH</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.OSC_PULSE_WIDTH_MOD_DEPTH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.OSC_PULSE_WIDTH_MOD_DEPTH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.OSC_PITCH_ENV_VELOCITY_SENSITIVITY">
+<span class="sig-name descname"><span class="pre">OSC_PITCH_ENV_VELOCITY_SENSITIVITY</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.OSC_PITCH_ENV_VELOCITY_SENSITIVITY"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.OSC_PITCH_ENV_VELOCITY_SENSITIVITY" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.OSC_PITCH_ENV_ATTACK_TIME">
+<span class="sig-name descname"><span class="pre">OSC_PITCH_ENV_ATTACK_TIME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(28,</span> <span class="pre">0,</span> <span class="pre">127,</span> <span class="pre">0,</span> <span class="pre">127,</span> <span class="pre">'Attack</span> <span class="pre">time</span> <span class="pre">for</span> <span class="pre">pitch</span> <span class="pre">envelope')</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.OSC_PITCH_ENV_ATTACK_TIME"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.OSC_PITCH_ENV_ATTACK_TIME" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.OSC_PITCH_ENV_DECAY_TIME">
+<span class="sig-name descname"><span class="pre">OSC_PITCH_ENV_DECAY_TIME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(29,</span> <span class="pre">0,</span> <span class="pre">127,</span> <span class="pre">0,</span> <span class="pre">127,</span> <span class="pre">'Decay</span> <span class="pre">time</span> <span class="pre">for</span> <span class="pre">pitch</span> <span class="pre">envelope')</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.OSC_PITCH_ENV_DECAY_TIME"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.OSC_PITCH_ENV_DECAY_TIME" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.OSC_PITCH_ENV_DEPTH">
+<span class="sig-name descname"><span class="pre">OSC_PITCH_ENV_DEPTH</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.OSC_PITCH_ENV_DEPTH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.OSC_PITCH_ENV_DEPTH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.SUB_OSCILLATOR_TYPE">
+<span class="sig-name descname"><span class="pre">SUB_OSCILLATOR_TYPE</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.SUB_OSCILLATOR_TYPE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.SUB_OSCILLATOR_TYPE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.FILTER_MODE_SWITCH">
+<span class="sig-name descname"><span class="pre">FILTER_MODE_SWITCH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(32,</span> <span class="pre">0,</span> <span class="pre">1,</span> <span class="pre">0,</span> <span class="pre">1,</span> <span class="pre">'Specifies</span> <span class="pre">whether</span> <span class="pre">to</span> <span class="pre">use</span> <span class="pre">the</span> <span class="pre">analog</span> <span class="pre">LPF</span> <span class="pre">or</span> <span class="pre">not</span> <span class="pre">use</span> <span class="pre">it</span> <span class="pre">(BYPASS).')</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.FILTER_MODE_SWITCH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.FILTER_MODE_SWITCH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.FILTER_CUTOFF">
+<span class="sig-name descname"><span class="pre">FILTER_CUTOFF</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(33,</span> <span class="pre">0,</span> <span class="pre">127,</span> <span class="pre">0,</span> <span class="pre">127,</span> <span class="pre">'Specifies</span> <span class="pre">the</span> <span class="pre">cutoff</span> <span class="pre">frequency')</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.FILTER_CUTOFF"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.FILTER_CUTOFF" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.FILTER_CUTOFF_KEYFOLLOW">
+<span class="sig-name descname"><span class="pre">FILTER_CUTOFF_KEYFOLLOW</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.FILTER_CUTOFF_KEYFOLLOW"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.FILTER_CUTOFF_KEYFOLLOW" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.FILTER_RESONANCE">
+<span class="sig-name descname"><span class="pre">FILTER_RESONANCE</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.FILTER_RESONANCE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.FILTER_RESONANCE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.FILTER_ENV_VELOCITY_SENSITIVITY">
+<span class="sig-name descname"><span class="pre">FILTER_ENV_VELOCITY_SENSITIVITY</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.FILTER_ENV_VELOCITY_SENSITIVITY"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.FILTER_ENV_VELOCITY_SENSITIVITY" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.FILTER_ENV_ATTACK_TIME">
+<span class="sig-name descname"><span class="pre">FILTER_ENV_ATTACK_TIME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(37,</span> <span class="pre">0,</span> <span class="pre">127,</span> <span class="pre">0,</span> <span class="pre">127,</span> <span class="pre">'Attack</span> <span class="pre">time</span> <span class="pre">for</span> <span class="pre">filter</span> <span class="pre">envelope')</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.FILTER_ENV_ATTACK_TIME"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.FILTER_ENV_ATTACK_TIME" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.FILTER_ENV_DECAY_TIME">
+<span class="sig-name descname"><span class="pre">FILTER_ENV_DECAY_TIME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(38,</span> <span class="pre">0,</span> <span class="pre">127,</span> <span class="pre">0,</span> <span class="pre">127,</span> <span class="pre">'Decay</span> <span class="pre">time</span> <span class="pre">for</span> <span class="pre">filter</span> <span class="pre">envelope')</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.FILTER_ENV_DECAY_TIME"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.FILTER_ENV_DECAY_TIME" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.FILTER_ENV_SUSTAIN_LEVEL">
+<span class="sig-name descname"><span class="pre">FILTER_ENV_SUSTAIN_LEVEL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(39,</span> <span class="pre">0,</span> <span class="pre">127,</span> <span class="pre">0,</span> <span class="pre">127,</span> <span class="pre">'Sustain</span> <span class="pre">level</span> <span class="pre">for</span> <span class="pre">filter</span> <span class="pre">envelope')</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.FILTER_ENV_SUSTAIN_LEVEL"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.FILTER_ENV_SUSTAIN_LEVEL" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.FILTER_ENV_RELEASE_TIME">
+<span class="sig-name descname"><span class="pre">FILTER_ENV_RELEASE_TIME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(40,</span> <span class="pre">0,</span> <span class="pre">127,</span> <span class="pre">0,</span> <span class="pre">127,</span> <span class="pre">'Release</span> <span class="pre">time</span> <span class="pre">for</span> <span class="pre">filter</span> <span class="pre">envelope')</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.FILTER_ENV_RELEASE_TIME"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.FILTER_ENV_RELEASE_TIME" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.FILTER_ENV_DEPTH">
+<span class="sig-name descname"><span class="pre">FILTER_ENV_DEPTH</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.FILTER_ENV_DEPTH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.FILTER_ENV_DEPTH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.AMP_LEVEL">
+<span class="sig-name descname"><span class="pre">AMP_LEVEL</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.AMP_LEVEL"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.AMP_LEVEL" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.AMP_LEVEL_KEYFOLLOW">
+<span class="sig-name descname"><span class="pre">AMP_LEVEL_KEYFOLLOW</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.AMP_LEVEL_KEYFOLLOW"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.AMP_LEVEL_KEYFOLLOW" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.AMP_LEVEL_VELOCITY_SENSITIVITY">
+<span class="sig-name descname"><span class="pre">AMP_LEVEL_VELOCITY_SENSITIVITY</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.AMP_LEVEL_VELOCITY_SENSITIVITY"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.AMP_LEVEL_VELOCITY_SENSITIVITY" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.AMP_ENV_ATTACK_TIME">
+<span class="sig-name descname"><span class="pre">AMP_ENV_ATTACK_TIME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(45,</span> <span class="pre">0,</span> <span class="pre">127,</span> <span class="pre">0,</span> <span class="pre">127,</span> <span class="pre">'Attack</span> <span class="pre">time</span> <span class="pre">for</span> <span class="pre">amplitude</span> <span class="pre">envelope')</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.AMP_ENV_ATTACK_TIME"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.AMP_ENV_ATTACK_TIME" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.AMP_ENV_DECAY_TIME">
+<span class="sig-name descname"><span class="pre">AMP_ENV_DECAY_TIME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(46,</span> <span class="pre">0,</span> <span class="pre">127,</span> <span class="pre">0,</span> <span class="pre">127,</span> <span class="pre">'Decay</span> <span class="pre">time</span> <span class="pre">for</span> <span class="pre">amplitude</span> <span class="pre">envelope')</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.AMP_ENV_DECAY_TIME"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.AMP_ENV_DECAY_TIME" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.AMP_ENV_SUSTAIN_LEVEL">
+<span class="sig-name descname"><span class="pre">AMP_ENV_SUSTAIN_LEVEL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(47,</span> <span class="pre">0,</span> <span class="pre">127,</span> <span class="pre">0,</span> <span class="pre">127,</span> <span class="pre">'Sustain</span> <span class="pre">level</span> <span class="pre">for</span> <span class="pre">amplitude</span> <span class="pre">envelope')</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.AMP_ENV_SUSTAIN_LEVEL"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.AMP_ENV_SUSTAIN_LEVEL" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.AMP_ENV_RELEASE_TIME">
+<span class="sig-name descname"><span class="pre">AMP_ENV_RELEASE_TIME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(48,</span> <span class="pre">0,</span> <span class="pre">127,</span> <span class="pre">0,</span> <span class="pre">127,</span> <span class="pre">'Release</span> <span class="pre">time</span> <span class="pre">for</span> <span class="pre">amplitude</span> <span class="pre">envelope')</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.AMP_ENV_RELEASE_TIME"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.AMP_ENV_RELEASE_TIME" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.PORTAMENTO_SWITCH">
+<span class="sig-name descname"><span class="pre">PORTAMENTO_SWITCH</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.PORTAMENTO_SWITCH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.PORTAMENTO_SWITCH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.PORTAMENTO_TIME">
+<span class="sig-name descname"><span class="pre">PORTAMENTO_TIME</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.PORTAMENTO_TIME"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.PORTAMENTO_TIME" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.LEGATO_SWITCH">
+<span class="sig-name descname"><span class="pre">LEGATO_SWITCH</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.LEGATO_SWITCH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.LEGATO_SWITCH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.OCTAVE_SHIFT">
+<span class="sig-name descname"><span class="pre">OCTAVE_SHIFT</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.OCTAVE_SHIFT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.OCTAVE_SHIFT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.PITCH_BEND_UP">
+<span class="sig-name descname"><span class="pre">PITCH_BEND_UP</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.PITCH_BEND_UP"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.PITCH_BEND_UP" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.PITCH_BEND_DOWN">
+<span class="sig-name descname"><span class="pre">PITCH_BEND_DOWN</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.PITCH_BEND_DOWN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.PITCH_BEND_DOWN" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.LFO_PITCH_MODULATION_CONTROL">
+<span class="sig-name descname"><span class="pre">LFO_PITCH_MODULATION_CONTROL</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.LFO_PITCH_MODULATION_CONTROL"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.LFO_PITCH_MODULATION_CONTROL" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.LFO_FILTER_MODULATION_CONTROL">
+<span class="sig-name descname"><span class="pre">LFO_FILTER_MODULATION_CONTROL</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.LFO_FILTER_MODULATION_CONTROL"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.LFO_FILTER_MODULATION_CONTROL" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.LFO_AMP_MODULATION_CONTROL">
+<span class="sig-name descname"><span class="pre">LFO_AMP_MODULATION_CONTROL</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.LFO_AMP_MODULATION_CONTROL"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.LFO_AMP_MODULATION_CONTROL" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.LFO_RATE_MODULATION_CONTROL">
+<span class="sig-name descname"><span class="pre">LFO_RATE_MODULATION_CONTROL</span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.LFO_RATE_MODULATION_CONTROL"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.LFO_RATE_MODULATION_CONTROL" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.display_min">
+<span class="sig-name descname"><span class="pre">display_min</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.display_min"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.display_min" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.display_max">
+<span class="sig-name descname"><span class="pre">display_max</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.display_max"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.display_max" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.tooltip">
+<span class="sig-name descname"><span class="pre">tooltip</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.tooltip"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.tooltip" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.switches">
+<span class="sig-name descname"><span class="pre">switches</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['FILTER_SWITCH',</span> <span class="pre">'PORTAMENTO_SWITCH',</span> <span class="pre">'LEGATO_SWITCH',</span> <span class="pre">'LFO_TEMPO_SYNC_SWITCH']</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.switches"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.switches" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.bipolar_parameters">
+<span class="sig-name descname"><span class="pre">bipolar_parameters</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['LFO_PITCH_DEPTH',</span> <span class="pre">'LFO_FILTER_DEPTH',</span> <span class="pre">'LFO_AMP_DEPTH',</span> <span class="pre">'FILTER_ENV_VELOCITY_SENSITIVITY',...</span></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.bipolar_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.bipolar_parameters" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.get_bipolar_parameters">
+<span class="sig-name descname"><span class="pre">get_bipolar_parameters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.get_bipolar_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.get_bipolar_parameters" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.validate_value">
+<span class="sig-name descname"><span class="pre">validate_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.validate_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.validate_value" title="Link to this definition"></a></dt>
+<dd><p>Validate that the parameter value is within the allowed range.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.get_by_name">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_by_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><span class="pre">object</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.get_by_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.get_by_name" title="Link to this definition"></a></dt>
+<dd><p>Get the AnalogParameter by name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>param_name</strong> – str The parameter name</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Optional[object] The parameter</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.get_name_by_address">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_name_by_address</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.get_name_by_address"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.get_name_by_address" title="Link to this definition"></a></dt>
+<dd><p>Return the parameter name for address given address.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>address</strong> – int The address</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Optional[str] The parameter name</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.display_name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">display_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.display_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.display_name" title="Link to this definition"></a></dt>
+<dd><p>Get display name for the parameter</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.get_address">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_address</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.get_address"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.get_address" title="Link to this definition"></a></dt>
+<dd><p>Get the address of address parameter by name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>param_name</strong> – str The parameter name</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Optional[int] The address</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.get_range">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.get_range"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.get_range" title="Link to this definition"></a></dt>
+<dd><p>Get the value range (min, max) of address parameter by name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>param_name</strong> – str The parameter name</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Tuple[int, int] The value range</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.get_display_range">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_display_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.get_display_range"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.get_display_range" title="Link to this definition"></a></dt>
+<dd><p>Get the display value range (min, max) of address parameter by name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>param_name</strong> – str The parameter name</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Tuple[int, int] The display value range</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.get_display_value">
+<span class="sig-name descname"><span class="pre">get_display_value</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.get_display_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.get_display_value" title="Link to this definition"></a></dt>
+<dd><p>Get the display value range (min, max) for the parameter</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple[int, int] The display value range</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.convert_to_midi">
+<span class="sig-name descname"><span class="pre">convert_to_midi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">display_value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.convert_to_midi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.convert_to_midi" title="Link to this definition"></a></dt>
+<dd><p>Convert from display value to MIDI value</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>display_value</strong> – int The display value</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>int The MIDI value</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.convert_from_midi">
+<span class="sig-name descname"><span class="pre">convert_from_midi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">midi_value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.convert_from_midi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.convert_from_midi" title="Link to this definition"></a></dt>
+<dd><p>Convert from MIDI value to display value</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>midi_value</strong> – int The MIDI value</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>int The display value</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.get_display_value_by_name">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_display_value_by_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.get_display_value_by_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.get_display_value_by_name" title="Link to this definition"></a></dt>
+<dd><p>Get the display value for address parameter by name and value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>param_name</strong> – str The parameter name</p></li>
+<li><p><strong>value</strong> – int The value</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>int The display value</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.get_midi_range">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_midi_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.get_midi_range"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.get_midi_range" title="Link to this definition"></a></dt>
+<dd><p>Get the MIDI value range (min, max) of address parameter by name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>param_name</strong> – str The parameter name</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Tuple[int, int] The MIDI value range</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.get_midi_value">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_midi_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.get_midi_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.get_midi_value" title="Link to this definition"></a></dt>
+<dd><p>Get the MIDI value for address parameter by name and value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>param_name</strong> – str The parameter name</p></li>
+<li><p><strong>value</strong> – int The value</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Optional[int] The MIDI value</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.get_address_for_partial">
+<span class="sig-name descname"><span class="pre">get_address_for_partial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">partial_number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.get_address_for_partial"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.get_address_for_partial" title="Link to this definition"></a></dt>
+<dd><p>Get parameter area and address adjusted for partial number.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>partial_number</strong> – int The partial number</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Tuple[int, int] The parameter area and address</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.get_envelope_param_type">
+<span class="sig-name descname"><span class="pre">get_envelope_param_type</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../../../_modules/jdxi_editor/midi/data/parameter/analog.html#AddressParameterAnalog.get_envelope_param_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.data.parameter.analog.AddressParameterAnalog.get_envelope_param_type" title="Link to this definition"></a></dt>
+<dd><p>Returns a envelope_param_type, if the parameter is part of an envelope,
+otherwise returns None.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../index.html" class="btn btn-neutral float-left" title="jdxi_editor.midi.data.parameter" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../areas/index.html" class="btn btn-neutral float-right" title="jdxi_editor.midi.data.parameter.areas" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Mark Mrooks.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

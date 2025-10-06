@@ -1,0 +1,1501 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>jdxi_editor.ui.editors.pattern.pattern &mdash; JD-Xi Editor 0.8.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../../_static/documentation_options.js?v=486e5634"></script>
+      <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../../index.html" class="icon icon-home">
+            JD-Xi Editor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../getting-started.html#getting-started-guide">Getting Started Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../editor-windows.html">Editor Windows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../editor-windows.html#available-editors">Available Editors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../additional-editors.html">Additional Editors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../additional-editors.html#available-editors">Available Editors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../playing-midi-files.html">Playing MIDI Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../playing-midi-files.html#available-tools">Available Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../troubleshooting.html#id1">Troubleshooting</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../legal.html">Legal Disclaimer</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../modules.html">jdxi_editor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../jdxi_editor.html">jdxi_editor package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.jdxi.html">jdxi_editor.jdxi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.log.html">jdxi_editor.log package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.midi.html">jdxi_editor.midi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.ui.html">jdxi_editor.ui package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.globals">jdxi_editor.globals module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.main">jdxi_editor.main module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.html#jdxi_editor.main.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.html#jdxi_editor.main.setup_splash_screen"><code class="docutils literal notranslate"><span class="pre">setup_splash_screen()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.project">jdxi_editor.project module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor.resources">jdxi_editor.resources module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../jdxi_editor.html#jdxi_editor.resources.resource_path"><code class="docutils literal notranslate"><span class="pre">resource_path()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../jdxi_editor.html#module-jdxi_editor">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../autoapi/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/midi/index.html">midi</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/midi/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/colors/index.html">midi.colors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/slider/index.html">midi.slider</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/spin_box/index.html">midi.spin_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/time_ruler/index.html">midi.time_ruler</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/track/index.html">midi.track</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/track_viewer/index.html">midi.track_viewer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/midi/utils/index.html">midi.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/adsr/index.html">adsr</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/adsr/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/adsr/adsr/index.html">adsr.adsr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/adsr/graph/index.html">adsr.graph</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/adsr/parameter/index.html">adsr.parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/adsr/plot/index.html">adsr.plot</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/pitch/index.html">pitch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/pitch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pitch/envelope/index.html">pitch.envelope</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pitch/envelope_plot/index.html">pitch.envelope_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pitch/pwm_plot/index.html">pitch.pwm_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pitch/slider_spinbox/index.html">pitch.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/piano/index.html">piano</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/piano/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/piano/key/index.html">piano.key</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/piano/keyboard/index.html">piano.keyboard</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/panel/index.html">panel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/panel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/panel/partial/index.html">panel.partial</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/wheel/index.html">wheel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/wheel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/wheel/mod/index.html">wheel.mod</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/wheel/pitch/index.html">wheel.pitch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/wheel/wheel/index.html">wheel.wheel</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/preset/index.html">preset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/preset/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/preset/combo_box/index.html">preset.combo_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/preset/panel/index.html">preset.panel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/preset/patch_name/index.html">preset.patch_name</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/slider/index.html">slider</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/slider/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/slider/slider/index.html">slider.slider</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/slider/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/slider/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/slider/index.html#slider.Slider"><code class="docutils literal notranslate"><span class="pre">Slider</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/dialog/index.html">dialog</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/dialog/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/dialog/progress/index.html">dialog.progress</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/viewer/index.html">viewer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/viewer/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/viewer/log/index.html">viewer.log</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/button/index.html">button</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/button/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/channel/index.html">button.channel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/favorite/index.html">button.favorite</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/sequencer/index.html">button.sequencer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/waveform/index.html">button.waveform</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/button/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/button/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/index.html#button.ChannelButton"><code class="docutils literal notranslate"><span class="pre">ChannelButton</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/button/index.html#button.SequencerSquare"><code class="docutils literal notranslate"><span class="pre">SequencerSquare</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/switch/index.html">switch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/switch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/switch/partial/index.html">switch.partial</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/switch/switch/index.html">switch.switch</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/filter/index.html">filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/filter/index.html#filter.FilterWidget"><code class="docutils literal notranslate"><span class="pre">FilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/display/index.html">display</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/display/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/display/digital/index.html">display.digital</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/display/pattern/index.html">display.pattern</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/display/value/index.html">display.value</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/pattern/index.html">pattern</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/pattern/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/pattern/measure/index.html">pattern.measure</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/spin_box/index.html">spin_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/spin_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/spin_box/spin_box/index.html">spin_box.spin_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/envelope/index.html">envelope</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/envelope/base/index.html">envelope.base</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/indicator/index.html">indicator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/indicator/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/indicator/led/index.html">indicator.led</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/indicator/midi/index.html">indicator.midi</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/combo_box/index.html">combo_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/combo_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/combo_box/combo_box/index.html">combo_box.combo_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/index.html">jdxi_editor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/globals/index.html">jdxi_editor.globals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/jdxi/index.html">jdxi_editor.jdxi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/log/index.html">jdxi_editor.log</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/main/index.html">jdxi_editor.main</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/midi/index.html">jdxi_editor.midi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/project/index.html">jdxi_editor.project</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/resources/index.html">jdxi_editor.resources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/jdxi_editor/ui/index.html">jdxi_editor.ui</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html">filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/filter_plot/index.html#filter_plot.FilterPlot"><code class="docutils literal notranslate"><span class="pre">FilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html">envelope_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#envelope_plot.midi_value_to_float"><code class="docutils literal notranslate"><span class="pre">midi_value_to_float()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#envelope_plot.WMTEnvPlot"><code class="docutils literal notranslate"><span class="pre">WMTEnvPlot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/envelope_plot/index.html#envelope_plot.app"><code class="docutils literal notranslate"><span class="pre">app</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/wave_selector/index.html">wave_selector</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/wave_selector/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/wave_selector/wave_selector/index.html">wave_selector.wave_selector</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/analog_filter/index.html">analog_filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/analog_filter/index.html#analog_filter.AnalogFilterWidget"><code class="docutils literal notranslate"><span class="pre">AnalogFilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/slider_spinbox/index.html">slider_spinbox</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/slider_spinbox/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/slider_spinbox/slider_spinbox/index.html">slider_spinbox.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html">analog_filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#analog_filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../autoapi/analog_filter_plot/index.html#analog_filter_plot.AnalogFilterPlot"><code class="docutils literal notranslate"><span class="pre">AnalogFilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">JD-Xi Editor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">jdxi_editor.ui.editors.pattern.pattern</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for jdxi_editor.ui.editors.pattern.pattern</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">Module: Pattern Sequencer with MIDI Integration</span>
+
+<span class="sd">This module implements address Pattern Sequencer using PySide6, allowing users to toggle</span>
+<span class="sd">sequence steps using address grid of buttons. It supports MIDI input to control button states</span>
+<span class="sd">using note keys (e.g., C4, C#4, etc.).</span>
+
+<span class="sd">Features:</span>
+<span class="sd">- 4 rows of buttons labeled as Digital Synth 1, Digital Synth 2, Analog Synth, and Drums.</span>
+<span class="sd">- MIDI note-to-button mapping for real-time control.</span>
+<span class="sd">- Toggle button states programmatically or via MIDI.</span>
+<span class="sd">- Styled buttons with illumination effects.</span>
+<span class="sd">- Each button stores an associated MIDI note and its on/off state.</span>
+<span class="sd">- Start/Stop playback buttons for sequence control. ..</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">qtawesome</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">qta</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">PySide6.QtWidgets</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">QFileDialog</span><span class="p">,</span>
+    <span class="n">QVBoxLayout</span><span class="p">,</span>
+    <span class="n">QHBoxLayout</span><span class="p">,</span>
+    <span class="n">QLabel</span><span class="p">,</span>
+    <span class="n">QPushButton</span><span class="p">,</span>
+    <span class="n">QComboBox</span><span class="p">,</span>
+    <span class="n">QGroupBox</span><span class="p">,</span>
+    <span class="n">QSpinBox</span><span class="p">,</span>
+    <span class="n">QMessageBox</span><span class="p">,</span>
+    <span class="n">QWidget</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">PySide6.QtCore</span><span class="w"> </span><span class="kn">import</span> <span class="n">Qt</span><span class="p">,</span> <span class="n">QTimer</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">mido</span><span class="w"> </span><span class="kn">import</span> <span class="n">tempo2bpm</span><span class="p">,</span> <span class="n">MidiFile</span><span class="p">,</span> <span class="n">MidiTrack</span><span class="p">,</span> <span class="n">Message</span><span class="p">,</span> <span class="n">MetaMessage</span><span class="p">,</span> <span class="n">bpm2tempo</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rtmidi.midiconstants</span><span class="w"> </span><span class="kn">import</span> <span class="n">NOTE_ON</span><span class="p">,</span> <span class="n">CONTROL_CHANGE</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.log.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">Logger</span> <span class="k">as</span> <span class="n">log</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.channel.channel</span><span class="w"> </span><span class="kn">import</span> <span class="n">MidiChannel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.io.helper</span><span class="w"> </span><span class="kn">import</span> <span class="n">MidiIOHelper</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.jdxi.preset.helper</span><span class="w"> </span><span class="kn">import</span> <span class="n">JDXiPresetHelper</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.ui.editors.io.data.options</span><span class="w"> </span><span class="kn">import</span> <span class="n">DIGITAL_OPTIONS</span><span class="p">,</span> <span class="n">DRUM_OPTIONS</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.ui.editors.synth.editor</span><span class="w"> </span><span class="kn">import</span> <span class="n">SynthEditor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.jdxi.style</span><span class="w"> </span><span class="kn">import</span> <span class="n">JDXiStyle</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.ui.widgets.pattern.measure</span><span class="w"> </span><span class="kn">import</span> <span class="n">PatternMeasure</span>
+
+
+<div class="viewcode-block" id="PatternSequenceEditor">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">PatternSequenceEditor</span><span class="p">(</span><span class="n">SynthEditor</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Pattern Sequencer with MIDI Integration using mido&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="PatternSequenceEditor.__init__">
+<a class="viewcode-back" href="../../../../../jdxi_editor.ui.editors.pattern.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">midi_helper</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">MidiIOHelper</span><span class="p">],</span>
+        <span class="n">preset_helper</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">JDXiPresetHelper</span><span class="p">],</span>
+        <span class="n">parent</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">QWidget</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the PatternSequencer</span>
+
+<span class="sd">        :param midi_helper: Optional[MidiIOHelper]</span>
+<span class="sd">        :param preset_helper: Optional[JDXiPresetHelper]</span>
+<span class="sd">        :param parent: Optional[QWidget]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="PatternSequenceEditor.muted_channels">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor.muted_channels">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">muted_channels</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+<div class="viewcode-block" id="PatternSequenceEditor.total_measures">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor.total_measures">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">total_measures</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="PatternSequenceEditor.midi_helper">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor.midi_helper">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span> <span class="o">=</span> <span class="n">midi_helper</span></div>
+
+<div class="viewcode-block" id="PatternSequenceEditor.preset_helper">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor.preset_helper">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">preset_helper</span> <span class="o">=</span> <span class="n">preset_helper</span></div>
+
+<div class="viewcode-block" id="PatternSequenceEditor.buttons">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor.buttons">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">buttons</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+<div class="viewcode-block" id="PatternSequenceEditor.measures">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor.measures">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">measures</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+<div class="viewcode-block" id="PatternSequenceEditor.timer">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor.timer">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timer</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="PatternSequenceEditor.current_step">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor.current_step">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_step</span> <span class="o">=</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="PatternSequenceEditor.total_steps">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor.total_steps">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">total_steps</span> <span class="o">=</span> <span class="mi">16</span></div>
+
+<div class="viewcode-block" id="PatternSequenceEditor.beats_per_pattern">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor.beats_per_pattern">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">beats_per_pattern</span> <span class="o">=</span> <span class="mi">4</span></div>
+
+<div class="viewcode-block" id="PatternSequenceEditor.bpm">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor.bpm">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bpm</span> <span class="o">=</span> <span class="mi">120</span></div>
+
+<div class="viewcode-block" id="PatternSequenceEditor.last_tap_time">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor.last_tap_time">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_tap_time</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="PatternSequenceEditor.tap_times">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor.tap_times">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tap_times</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+<div class="viewcode-block" id="PatternSequenceEditor.learned_pattern">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor.learned_pattern">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">learned_pattern</span> <span class="o">=</span> <span class="p">[[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_steps</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)]</span></div>
+
+<div class="viewcode-block" id="PatternSequenceEditor.active_notes">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor.active_notes">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">active_notes</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># Track active notes</span></div>
+
+<div class="viewcode-block" id="PatternSequenceEditor.midi_file">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor.midi_file">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">midi_file</span> <span class="o">=</span> <span class="n">MidiFile</span><span class="p">()</span>  <span class="c1"># Initialize a new MIDI file</span></div>
+
+<div class="viewcode-block" id="PatternSequenceEditor.midi_track">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor.midi_track">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">midi_track</span> <span class="o">=</span> <span class="n">MidiTrack</span><span class="p">()</span>  <span class="c1"># Create a new track</span></div>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">midi_file</span><span class="o">.</span><span class="n">tracks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">midi_track</span><span class="p">)</span>  <span class="c1"># Add the track to the file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setup_ui</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_midi_file</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">EDITOR</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PatternSequenceEditor._setup_ui">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor._setup_ui">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_setup_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">()</span>
+        <span class="n">row_labels</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Digital Synth 1&quot;</span><span class="p">,</span> <span class="s2">&quot;Digital Synth 2&quot;</span><span class="p">,</span> <span class="s2">&quot;Analog Synth&quot;</span><span class="p">,</span> <span class="s2">&quot;Drums&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">buttons</span> <span class="o">=</span> <span class="p">[[]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mute_buttons</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># List to store mute buttons</span>
+
+        <span class="c1"># Define synth options</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">digital_options</span> <span class="o">=</span> <span class="n">DIGITAL_OPTIONS</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">analog_options</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">digital_options</span>
+
+        <span class="c1"># Define drum kit options</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">drum_options</span> <span class="o">=</span> <span class="n">DRUM_OPTIONS</span>
+
+        <span class="c1"># Add transport and file controls at the top</span>
+        <span class="n">control_panel</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+
+        <span class="c1"># File operations area</span>
+        <span class="n">file_group</span> <span class="o">=</span> <span class="n">QGroupBox</span><span class="p">(</span><span class="s2">&quot;Pattern&quot;</span><span class="p">)</span>
+        <span class="n">file_layout</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_button</span> <span class="o">=</span> <span class="n">QPushButton</span><span class="p">(</span>
+            <span class="n">qta</span><span class="o">.</span><span class="n">icon</span><span class="p">(</span><span class="s2">&quot;mdi.file-music-outline&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">FOREGROUND</span><span class="p">),</span> <span class="s2">&quot;Load&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_button</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_load_pattern_dialog</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_button</span> <span class="o">=</span> <span class="n">QPushButton</span><span class="p">(</span>
+            <span class="n">qta</span><span class="o">.</span><span class="n">icon</span><span class="p">(</span><span class="s2">&quot;fa.save&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">FOREGROUND</span><span class="p">),</span> <span class="s2">&quot;Save&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_button</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_save_pattern_dialog</span><span class="p">)</span>
+        <span class="c1"># Add the Clear Learned Pattern button</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clear_learn_button</span> <span class="o">=</span> <span class="n">QPushButton</span><span class="p">(</span>
+            <span class="n">qta</span><span class="o">.</span><span class="n">icon</span><span class="p">(</span><span class="s2">&quot;ei.broom&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">FOREGROUND</span><span class="p">),</span> <span class="s2">&quot;Clear&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clear_learn_button</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_clear_learned_pattern</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">drum_selector</span> <span class="o">=</span> <span class="n">QComboBox</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">drum_selector</span><span class="o">.</span><span class="n">addItems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">drum_options</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">drum_selector</span><span class="o">.</span><span class="n">currentIndexChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_update_drum_rows</span><span class="p">)</span>
+
+        <span class="n">file_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">load_button</span><span class="p">)</span>
+        <span class="n">file_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">save_button</span><span class="p">)</span>
+        <span class="n">file_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clear_learn_button</span><span class="p">)</span>
+        <span class="n">file_group</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">file_layout</span><span class="p">)</span>
+        <span class="n">control_panel</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">file_group</span><span class="p">)</span>
+
+        <span class="n">learn_group</span> <span class="o">=</span> <span class="n">QGroupBox</span><span class="p">(</span><span class="s2">&quot;Learn Pattern&quot;</span><span class="p">)</span>
+        <span class="n">learn_layout</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+
+        <span class="c1"># Add the Clear Learned Pattern button</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">learn_button</span> <span class="o">=</span> <span class="n">QPushButton</span><span class="p">(</span>
+            <span class="n">qta</span><span class="o">.</span><span class="n">icon</span><span class="p">(</span><span class="s2">&quot;ri.play-line&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">FOREGROUND</span><span class="p">),</span> <span class="s2">&quot;Start&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">learn_button</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">on_learn_pattern_button_clicked</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stop_learn_button</span> <span class="o">=</span> <span class="n">QPushButton</span><span class="p">(</span>
+            <span class="n">qta</span><span class="o">.</span><span class="n">icon</span><span class="p">(</span><span class="s2">&quot;ri.stop-line&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">FOREGROUND</span><span class="p">),</span> <span class="s2">&quot;Stop&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stop_learn_button</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">on_stop_learn_pattern_button_clicked</span>
+        <span class="p">)</span>
+        <span class="n">learn_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">learn_button</span><span class="p">)</span>
+        <span class="n">learn_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stop_learn_button</span><span class="p">)</span>
+        <span class="n">learn_group</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">learn_layout</span><span class="p">)</span>
+        <span class="c1"># control_panel.addWidget(learn_group)</span>
+
+        <span class="c1"># Tempo control area</span>
+        <span class="n">tempo_group</span> <span class="o">=</span> <span class="n">QGroupBox</span><span class="p">(</span><span class="s2">&quot;Tempo&quot;</span><span class="p">)</span>
+        <span class="n">tempo_layout</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">tempo_label</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">(</span><span class="s2">&quot;BPM:&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tempo_spinbox</span> <span class="o">=</span> <span class="n">QSpinBox</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tempo_spinbox</span><span class="o">.</span><span class="n">setRange</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">300</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tempo_spinbox</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="mi">120</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tempo_spinbox</span><span class="o">.</span><span class="n">valueChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_on_tempo_changed</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">tap_tempo_button</span> <span class="o">=</span> <span class="n">QPushButton</span><span class="p">(</span>
+            <span class="n">qta</span><span class="o">.</span><span class="n">icon</span><span class="p">(</span><span class="s2">&quot;fa5s.drum&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">FOREGROUND</span><span class="p">),</span> <span class="s2">&quot;Tap&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tap_tempo_button</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_on_tap_tempo</span><span class="p">)</span>
+
+        <span class="n">tempo_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tempo_label</span><span class="p">)</span>
+        <span class="n">tempo_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tempo_spinbox</span><span class="p">)</span>
+        <span class="n">tempo_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tap_tempo_button</span><span class="p">)</span>
+        <span class="n">tempo_group</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">tempo_layout</span><span class="p">)</span>
+        <span class="n">control_panel</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">tempo_group</span><span class="p">)</span>
+
+        <span class="c1"># Transport controls area</span>
+        <span class="n">transport_group</span> <span class="o">=</span> <span class="n">QGroupBox</span><span class="p">(</span><span class="s2">&quot;Transport&quot;</span><span class="p">)</span>
+        <span class="n">transport_layout</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_button</span> <span class="o">=</span> <span class="n">QPushButton</span><span class="p">(</span>
+            <span class="n">qta</span><span class="o">.</span><span class="n">icon</span><span class="p">(</span><span class="s2">&quot;ri.play-line&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">FOREGROUND</span><span class="p">),</span> <span class="s2">&quot;Play&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stop_button</span> <span class="o">=</span> <span class="n">QPushButton</span><span class="p">(</span>
+            <span class="n">qta</span><span class="o">.</span><span class="n">icon</span><span class="p">(</span><span class="s2">&quot;ri.stop-line&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">FOREGROUND</span><span class="p">),</span> <span class="s2">&quot;Stop&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_button</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">play_pattern</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stop_button</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stop_pattern</span><span class="p">)</span>
+
+        <span class="n">transport_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_button</span><span class="p">)</span>
+        <span class="n">transport_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stop_button</span><span class="p">)</span>
+        <span class="n">transport_group</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">transport_layout</span><span class="p">)</span>
+        <span class="n">control_panel</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">transport_group</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">control_panel</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span><span class="o">.</span><span class="n">midi_message_incoming</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_update_combo_boxes</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">row_idx</span><span class="p">,</span> <span class="n">label_text</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">row_labels</span><span class="p">):</span>
+            <span class="n">row_layout</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">()</span>
+            <span class="n">header_layout</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">label_text</span> <span class="o">==</span> <span class="s2">&quot;Drums&quot;</span><span class="p">:</span>
+                <span class="n">icon_name</span> <span class="o">=</span> <span class="s2">&quot;fa5s.drum&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">icon_name</span> <span class="o">=</span> <span class="s2">&quot;msc.piano&quot;</span>
+            <span class="c1"># Create and add label</span>
+            <span class="n">icon_label</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">()</span>
+            <span class="n">icon_label</span><span class="o">.</span><span class="n">setPixmap</span><span class="p">(</span>
+                <span class="n">qta</span><span class="o">.</span><span class="n">icon</span><span class="p">(</span><span class="n">icon_name</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">JDXiStyle</span><span class="o">.</span><span class="n">FOREGROUND</span><span class="p">)</span><span class="o">.</span><span class="n">pixmap</span><span class="p">(</span><span class="mi">40</span><span class="p">,</span> <span class="mi">40</span><span class="p">)</span>
+            <span class="p">)</span>
+
+            <span class="n">icon_label</span><span class="o">.</span><span class="n">setAlignment</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignmentFlag</span><span class="o">.</span><span class="n">AlignCenter</span><span class="p">)</span>
+            <span class="n">header_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">icon_label</span><span class="p">)</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">(</span><span class="n">label_text</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">label_text</span> <span class="o">==</span> <span class="s2">&quot;Analog Synth&quot;</span><span class="p">:</span>
+                <span class="n">color</span> <span class="o">=</span> <span class="n">JDXiStyle</span><span class="o">.</span><span class="n">ACCENT_ANALOG</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">color</span> <span class="o">=</span> <span class="n">JDXiStyle</span><span class="o">.</span><span class="n">ACCENT</span>
+            <span class="n">icon_label</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;color: </span><span class="si">{</span><span class="n">color</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">label</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;font-size: 20px; font-weight: bold; color: </span><span class="si">{</span><span class="n">color</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">label</span><span class="o">.</span><span class="n">setAlignment</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignmentFlag</span><span class="o">.</span><span class="n">AlignCenter</span><span class="p">)</span>
+            <span class="n">header_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+
+            <span class="c1"># Add appropriate selector combo box for each row</span>
+            <span class="k">if</span> <span class="n">row_idx</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># Digital Synth 1</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">digital1_selector</span> <span class="o">=</span> <span class="n">QComboBox</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">digital1_selector</span><span class="o">.</span><span class="n">addItems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">digital_options</span><span class="p">)</span>
+                <span class="n">header_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">digital1_selector</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">row_idx</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># Digital Synth 2</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">digital2_selector</span> <span class="o">=</span> <span class="n">QComboBox</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">digital2_selector</span><span class="o">.</span><span class="n">addItems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">digital_options</span><span class="p">)</span>
+                <span class="n">header_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">digital2_selector</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">row_idx</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>  <span class="c1"># Analog Synth</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">analog_selector</span> <span class="o">=</span> <span class="n">QComboBox</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">analog_selector</span><span class="o">.</span><span class="n">addItems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">analog_options</span><span class="p">)</span>
+                <span class="n">header_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">analog_selector</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">row_idx</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>  <span class="c1"># Drums</span>
+                <span class="n">header_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">drum_selector</span><span class="p">)</span>
+
+            <span class="n">row_layout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">header_layout</span><span class="p">)</span>
+            <span class="n">button_row_layout</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+
+            <span class="c1"># Add mute button</span>
+            <span class="n">mute_button</span> <span class="o">=</span> <span class="n">QPushButton</span><span class="p">(</span><span class="s2">&quot;Mute&quot;</span><span class="p">)</span>
+            <span class="n">mute_button</span><span class="o">.</span><span class="n">setCheckable</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">mute_button</span><span class="o">.</span><span class="n">setFixedSize</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="mi">40</span><span class="p">)</span>
+            <span class="n">mute_button</span><span class="o">.</span><span class="n">toggled</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+                <span class="k">lambda</span> <span class="n">checked</span><span class="p">,</span> <span class="n">row</span><span class="o">=</span><span class="n">row_idx</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_toggle_mute</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">checked</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mute_buttons</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mute_button</span><span class="p">)</span>
+            <span class="n">button_row_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">mute_button</span><span class="p">)</span>
+            <span class="n">button_row_layout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ui_generate_button_row</span><span class="p">(</span><span class="n">row_idx</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+            <span class="n">row_layout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">button_row_layout</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">row_layout</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">addStretch</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="PatternSequenceEditor.ui_generate_button_row">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor.ui_generate_button_row">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ui_generate_button_row</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">visible</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;generate sequencer button row&quot;&quot;&quot;</span>
+        <span class="n">button_row_layout</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">16</span><span class="p">):</span>
+            <span class="n">button</span> <span class="o">=</span> <span class="n">QPushButton</span><span class="p">()</span>
+            <span class="n">button</span><span class="o">.</span><span class="n">setCheckable</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">button</span><span class="o">.</span><span class="n">setFixedSize</span><span class="p">(</span><span class="mi">40</span><span class="p">,</span> <span class="mi">40</span><span class="p">)</span>
+            <span class="n">button</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">generate_sequencer_button_style</span><span class="p">(</span><span class="kc">False</span><span class="p">))</span>
+            <span class="c1"># Store the row and column indices in the button</span>
+            <span class="n">button</span><span class="o">.</span><span class="n">row</span> <span class="o">=</span> <span class="n">row_index</span>
+            <span class="n">button</span><span class="o">.</span><span class="n">column</span> <span class="o">=</span> <span class="n">i</span>
+            <span class="n">button</span><span class="o">.</span><span class="n">note</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">button</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+                <span class="k">lambda</span> <span class="n">checked</span><span class="p">,</span> <span class="n">btn</span><span class="o">=</span><span class="n">button</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_on_button_clicked</span><span class="p">(</span><span class="n">btn</span><span class="p">,</span> <span class="n">checked</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">buttons</span><span class="p">[</span><span class="n">row_index</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">button</span><span class="p">)</span>
+            <span class="n">button</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="n">visible</span><span class="p">)</span>  <span class="c1"># Initially hide all drum buttons</span>
+            <span class="n">button_row_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">button</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">button_row_layout</span></div>
+
+
+<div class="viewcode-block" id="PatternSequenceEditor.on_learn_pattern_button_clicked">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor.on_learn_pattern_button_clicked">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_learn_pattern_button_clicked</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Connect the MIDI input to the learn pattern function.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span><span class="o">.</span><span class="n">midi_message_incoming</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_learn_pattern</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span><span class="o">.</span><span class="n">midi_message_incoming</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_update_combo_boxes</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PatternSequenceEditor.on_stop_learn_pattern_button_clicked">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor.on_stop_learn_pattern_button_clicked">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_stop_learn_pattern_button_clicked</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Disconnect the MIDI input from the learn pattern function and update combo boxes.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span><span class="o">.</span><span class="n">midi_message_incoming</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_learn_pattern</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span><span class="o">.</span><span class="n">midi_message_incoming</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_update_combo_boxes</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PatternSequenceEditor._update_combo_boxes">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor._update_combo_boxes">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_combo_boxes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the combo box index to match the note for each channel.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">message</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;note_on&quot;</span> <span class="ow">and</span> <span class="n">message</span><span class="o">.</span><span class="n">velocity</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;message note: </span><span class="si">{</span><span class="n">message</span><span class="o">.</span><span class="n">note</span><span class="si">}</span><span class="s2"> channel: </span><span class="si">{</span><span class="n">message</span><span class="o">.</span><span class="n">channel</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">message</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;note_on&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">message</span><span class="o">.</span><span class="n">channel</span> <span class="o">==</span> <span class="n">MidiChannel</span><span class="o">.</span><span class="n">DIGITAL_SYNTH_1</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">digital1_selector</span><span class="o">.</span><span class="n">setCurrentIndex</span><span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">note</span> <span class="o">-</span> <span class="mi">36</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">message</span><span class="o">.</span><span class="n">channel</span> <span class="o">==</span> <span class="n">MidiChannel</span><span class="o">.</span><span class="n">DIGITAL_SYNTH_2</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">digital2_selector</span><span class="o">.</span><span class="n">setCurrentIndex</span><span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">note</span> <span class="o">-</span> <span class="mi">36</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">message</span><span class="o">.</span><span class="n">channel</span> <span class="o">==</span> <span class="n">MidiChannel</span><span class="o">.</span><span class="n">ANALOG_SYNTH</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">analog_selector</span><span class="o">.</span><span class="n">setCurrentIndex</span><span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">note</span> <span class="o">-</span> <span class="mi">36</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">message</span><span class="o">.</span><span class="n">channel</span> <span class="o">==</span> <span class="n">MidiChannel</span><span class="o">.</span><span class="n">DRUM_KIT</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">drum_selector</span><span class="o">.</span><span class="n">setCurrentIndex</span><span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">note</span> <span class="o">-</span> <span class="mi">36</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PatternSequenceEditor._midi_note_to_combo_index">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor._midi_note_to_combo_index">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_midi_note_to_combo_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">midi_note</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert a MIDI note number to the corresponding combo box index.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">row</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]:</span>  <span class="c1"># Digital Synths</span>
+            <span class="n">note_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">digital_options</span>
+        <span class="k">elif</span> <span class="n">row</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>  <span class="c1"># Analog Synth</span>
+            <span class="n">note_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">analog_options</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># Drums</span>
+            <span class="k">return</span> <span class="n">midi_note</span> <span class="o">-</span> <span class="mi">36</span>  <span class="c1"># Drum notes start at MIDI note 36</span>
+
+        <span class="n">note_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_midi_to_note_name</span><span class="p">(</span><span class="n">midi_note</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">note_list</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">note_name</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PatternSequenceEditor._set_combo_box_index">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor._set_combo_box_index">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_combo_box_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the combo box index for the specified row.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">row</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">digital1_selector</span><span class="o">.</span><span class="n">setCurrentIndex</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">row</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">digital2_selector</span><span class="o">.</span><span class="n">setCurrentIndex</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">row</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">analog_selector</span><span class="o">.</span><span class="n">setCurrentIndex</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">row</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">drum_selector</span><span class="o">.</span><span class="n">setCurrentIndex</span><span class="p">(</span><span class="n">index</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PatternSequenceEditor._add_measure">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor._add_measure">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_add_measure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a new measure tab&quot;&quot;&quot;</span>
+        <span class="n">measure</span> <span class="o">=</span> <span class="n">PatternMeasure</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">measures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">measure</span><span class="p">)</span>
+
+        <span class="c1"># Connect button signals</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">button</span> <span class="ow">in</span> <span class="n">measure</span><span class="o">.</span><span class="n">buttons</span><span class="p">[</span><span class="n">row</span><span class="p">]:</span>
+                <span class="n">button</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+                    <span class="k">lambda</span> <span class="n">checked</span><span class="p">,</span> <span class="n">btn</span><span class="o">=</span><span class="n">button</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_on_button_clicked</span><span class="p">(</span><span class="n">btn</span><span class="p">,</span> <span class="n">checked</span><span class="p">)</span>
+                <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">tab_widget</span><span class="o">.</span><span class="n">addTab</span><span class="p">(</span><span class="n">measure</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Measure </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">measures</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PatternSequenceEditor._clear_learned_pattern">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor._clear_learned_pattern">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_clear_learned_pattern</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Clear the learned pattern and reset button states.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">learned_pattern</span> <span class="o">=</span> <span class="p">[[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_steps</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)]</span>
+
+        <span class="c1"># Reset the UI buttons</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">button</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">buttons</span><span class="p">[</span><span class="n">row</span><span class="p">]:</span>
+                <span class="n">button</span><span class="o">.</span><span class="n">setChecked</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+                <span class="n">button</span><span class="o">.</span><span class="n">note</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">button</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">generate_sequencer_button_style</span><span class="p">(</span><span class="kc">False</span><span class="p">))</span>
+
+        <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="s2">&quot;Cleared learned pattern.&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PatternSequenceEditor._on_measure_count_changed">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor._on_measure_count_changed">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_on_measure_count_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">count</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Handle measure count changes&quot;&quot;&quot;</span>
+        <span class="n">current_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">measures</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">count</span> <span class="o">&gt;</span> <span class="n">current_count</span><span class="p">:</span>
+            <span class="c1"># Add new measures</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">count</span> <span class="o">-</span> <span class="n">current_count</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_add_measure</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Remove measures from the end</span>
+            <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">measures</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">count</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">measures</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+                <span class="c1"># the plan is to add more measures via tab 2, 3 &amp; 4</span>
+                <span class="c1"># index = self.tab_widget.indexOf(measure)</span>
+                <span class="c1"># self.tab_widget.removeTab(index)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">total_measures</span> <span class="o">=</span> <span class="n">count</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_pattern_length</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="PatternSequenceEditor._update_pattern_length">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor._update_pattern_length">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_pattern_length</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update total pattern length based on measure count&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">total_steps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_measures</span> <span class="o">*</span> <span class="mi">16</span></div>
+
+
+<div class="viewcode-block" id="PatternSequenceEditor._on_button_clicked">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor._on_button_clicked">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_on_button_clicked</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">button</span><span class="p">,</span> <span class="n">checked</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Handle button clicks and store the selected note&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">checked</span><span class="p">:</span>
+            <span class="c1"># Store the currently selected note when button is activated</span>
+            <span class="k">if</span> <span class="n">button</span><span class="o">.</span><span class="n">row</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># Digital Synth 1</span>
+                <span class="n">note_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">digital1_selector</span><span class="o">.</span><span class="n">currentText</span><span class="p">()</span>
+                <span class="n">button</span><span class="o">.</span><span class="n">note</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_note_name_to_midi</span><span class="p">(</span><span class="n">note_name</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">button</span><span class="o">.</span><span class="n">row</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># Digital Synth 2</span>
+                <span class="n">note_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">digital2_selector</span><span class="o">.</span><span class="n">currentText</span><span class="p">()</span>
+                <span class="n">button</span><span class="o">.</span><span class="n">note</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_note_name_to_midi</span><span class="p">(</span><span class="n">note_name</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">button</span><span class="o">.</span><span class="n">row</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>  <span class="c1"># Analog Synth</span>
+                <span class="n">note_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">analog_selector</span><span class="o">.</span><span class="n">currentText</span><span class="p">()</span>
+                <span class="n">button</span><span class="o">.</span><span class="n">note</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_note_name_to_midi</span><span class="p">(</span><span class="n">note_name</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># Drums</span>
+                <span class="n">button</span><span class="o">.</span><span class="n">note</span> <span class="o">=</span> <span class="mi">36</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">drum_selector</span><span class="o">.</span><span class="n">currentIndex</span><span class="p">()</span>
+            <span class="n">note_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_midi_to_note_name</span><span class="p">(</span><span class="n">button</span><span class="o">.</span><span class="n">note</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">button</span><span class="o">.</span><span class="n">row</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="n">drums_note_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_midi_to_note_name</span><span class="p">(</span><span class="n">button</span><span class="o">.</span><span class="n">note</span><span class="p">,</span> <span class="n">drums</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">button</span><span class="o">.</span><span class="n">setToolTip</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Note: </span><span class="si">{</span><span class="n">drums_note_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">button</span><span class="o">.</span><span class="n">setToolTip</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Note: </span><span class="si">{</span><span class="n">note_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Update button style</span>
+        <span class="n">button</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">generate_sequencer_button_style</span><span class="p">(</span>
+                <span class="n">checked</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_step</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_steps</span> <span class="o">==</span> <span class="n">button</span><span class="o">.</span><span class="n">column</span>
+            <span class="p">)</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PatternSequenceEditor._on_tempo_changed">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor._on_tempo_changed">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_on_tempo_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bpm</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Handle tempo changes from the spinbox&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_tempo</span><span class="p">(</span><span class="n">bpm</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">timer</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">timer</span><span class="o">.</span><span class="n">isActive</span><span class="p">():</span>
+            <span class="c1"># Update timer interval for running sequence</span>
+            <span class="n">ms_per_step</span> <span class="o">=</span> <span class="p">(</span><span class="mi">60000</span> <span class="o">/</span> <span class="n">bpm</span><span class="p">)</span> <span class="o">/</span> <span class="mi">4</span>  <span class="c1"># ms per 16th note</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">timer</span><span class="o">.</span><span class="n">setInterval</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">ms_per_step</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="PatternSequenceEditor._on_tap_tempo">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor._on_tap_tempo">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_on_tap_tempo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Handle tap tempo button clicks&quot;&quot;&quot;</span>
+        <span class="n">current_time</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_tap_time</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">last_tap_time</span> <span class="o">=</span> <span class="n">current_time</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tap_times</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Calculate interval since last tap</span>
+        <span class="n">interval</span> <span class="o">=</span> <span class="p">(</span><span class="n">current_time</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_tap_time</span><span class="p">)</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_tap_time</span> <span class="o">=</span> <span class="n">current_time</span>
+
+        <span class="c1"># Ignore if too long between taps</span>
+        <span class="k">if</span> <span class="n">interval</span> <span class="o">&gt;</span> <span class="mf">2.0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tap_times</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">tap_times</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">interval</span><span class="p">)</span>
+        <span class="c1"># Keep last 4 taps for averaging</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tap_times</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tap_times</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tap_times</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="c1"># Calculate average interval and convert to BPM</span>
+            <span class="n">avg_interval</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tap_times</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tap_times</span><span class="p">)</span>
+            <span class="n">bpm</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mi">60</span> <span class="o">/</span> <span class="n">avg_interval</span><span class="p">)</span>
+            <span class="c1"># Constrain to valid range</span>
+            <span class="n">bpm</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="mi">300</span><span class="p">,</span> <span class="n">bpm</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tempo_spinbox</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">bpm</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PatternSequenceEditor._save_pattern_dialog">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor._save_pattern_dialog">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_save_pattern_dialog</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Open save file dialog and save pattern&quot;&quot;&quot;</span>
+        <span class="n">filename</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">QFileDialog</span><span class="o">.</span><span class="n">getSaveFileName</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;Save Pattern&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;MIDI Files (*.mid);;All Files (*.*)&quot;</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">filename</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">filename</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.mid&quot;</span><span class="p">):</span>
+                <span class="n">filename</span> <span class="o">+=</span> <span class="s2">&quot;.mid&quot;</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">save_pattern</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Pattern saved to </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error saving pattern: </span><span class="si">{</span><span class="n">ex</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">QMessageBox</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;Error&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Could not save pattern: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PatternSequenceEditor._load_pattern_dialog">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor._load_pattern_dialog">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_load_pattern_dialog</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Open load file dialog and load pattern&quot;&quot;&quot;</span>
+
+        <span class="n">filename</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">QFileDialog</span><span class="o">.</span><span class="n">getOpenFileName</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;Load Pattern&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;MIDI Files (*.mid);;All Files (*.*)&quot;</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">filename</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">load_pattern</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Pattern loaded from </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+                <span class="c1"># Update tempo from loaded file</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">midi_file</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">midi_file</span><span class="o">.</span><span class="n">tracks</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">midi_file</span><span class="o">.</span><span class="n">tracks</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                        <span class="k">if</span> <span class="p">(</span>
+                            <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;set_tempo&quot;</span>
+                        <span class="p">):</span>  <span class="c1"># Compare with the string &quot;set_tempo&quot;</span>
+                            <span class="n">bpm</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span>
+                                <span class="n">tempo2bpm</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">midi_tempo_at_position</span><span class="p">)</span>
+                            <span class="p">)</span>  <span class="c1"># Use .tempo instead of .data</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">tempo_spinbox</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">bpm</span><span class="p">)</span>
+                            <span class="k">break</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error loading pattern: </span><span class="si">{</span><span class="n">ex</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">QMessageBox</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;Error&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Could not load pattern: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PatternSequenceEditor.set_tempo">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor.set_tempo">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_tempo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bpm</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the pattern tempo in BPM using mido.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bpm</span> <span class="o">=</span> <span class="n">bpm</span>
+        <span class="c1"># Calculate microseconds per beat</span>
+        <span class="n">microseconds_per_beat</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mi">60000000</span> <span class="o">/</span> <span class="n">bpm</span><span class="p">)</span>
+
+        <span class="c1"># Create a set_tempo MetaMessage</span>
+        <span class="n">tempo_message</span> <span class="o">=</span> <span class="n">MetaMessage</span><span class="p">(</span><span class="s2">&quot;set_tempo&quot;</span><span class="p">,</span> <span class="n">tempo</span><span class="o">=</span><span class="n">microseconds_per_beat</span><span class="p">)</span>
+
+        <span class="c1"># Add the tempo message to the first track</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">midi_file</span><span class="o">.</span><span class="n">tracks</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">midi_file</span><span class="o">.</span><span class="n">tracks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">tempo_message</span><span class="p">)</span>
+
+        <span class="c1"># Update playback speed if sequence is running</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;timer&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">timer</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">timer</span><span class="o">.</span><span class="n">isActive</span><span class="p">():</span>
+            <span class="n">ms_per_step</span> <span class="o">=</span> <span class="p">(</span><span class="mi">60000</span> <span class="o">/</span> <span class="n">bpm</span><span class="p">)</span> <span class="o">/</span> <span class="mi">4</span>  <span class="c1"># ms per 16th note</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">timer</span><span class="o">.</span><span class="n">setInterval</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">ms_per_step</span><span class="p">))</span>
+
+        <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tempo set to </span><span class="si">{</span><span class="n">bpm</span><span class="si">}</span><span class="s2"> BPM&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PatternSequenceEditor._init_midi_file">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor._init_midi_file">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_init_midi_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize a new MIDI file with 4 tracks&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">midi_file</span> <span class="o">=</span> <span class="n">MidiFile</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+            <span class="n">track</span> <span class="o">=</span> <span class="n">MidiTrack</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">midi_file</span><span class="o">.</span><span class="n">tracks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">track</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PatternSequenceEditor.update_pattern">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor.update_pattern">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_pattern</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the MIDI file with current pattern state&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">midi_file</span> <span class="o">=</span> <span class="n">MidiFile</span><span class="p">()</span>
+        <span class="n">track</span> <span class="o">=</span> <span class="n">MidiTrack</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">midi_file</span><span class="o">.</span><span class="n">tracks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">track</span><span class="p">)</span>
+
+        <span class="n">track</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">MetaMessage</span><span class="p">(</span><span class="s2">&quot;set_tempo&quot;</span><span class="p">,</span> <span class="n">tempo</span><span class="o">=</span><span class="n">bpm2tempo</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bpm</span><span class="p">)))</span>
+        <span class="n">track</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">MetaMessage</span><span class="p">(</span><span class="s2">&quot;time_signature&quot;</span><span class="p">,</span> <span class="n">numerator</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">denominator</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+            <span class="n">channel</span> <span class="o">=</span> <span class="n">row</span> <span class="k">if</span> <span class="n">row</span> <span class="o">&lt;</span> <span class="mi">3</span> <span class="k">else</span> <span class="mi">9</span>
+            <span class="k">for</span> <span class="n">measure_index</span><span class="p">,</span> <span class="n">measure</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">measures</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">16</span><span class="p">):</span>
+                    <span class="n">button</span> <span class="o">=</span> <span class="n">measure</span><span class="o">.</span><span class="n">buttons</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="n">step</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">button</span><span class="o">.</span><span class="n">isChecked</span><span class="p">()</span> <span class="ow">and</span> <span class="n">button</span><span class="o">.</span><span class="n">note</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">time</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span>
+                            <span class="p">(</span><span class="n">measure_index</span> <span class="o">*</span> <span class="mi">16</span> <span class="o">+</span> <span class="n">step</span><span class="p">)</span> <span class="o">*</span> <span class="mi">120</span>
+                        <span class="p">)</span>  <span class="c1"># Convert to ticks</span>
+                        <span class="n">track</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                            <span class="n">Message</span><span class="p">(</span>
+                                <span class="s2">&quot;note_on&quot;</span><span class="p">,</span>
+                                <span class="n">note</span><span class="o">=</span><span class="n">button</span><span class="o">.</span><span class="n">note</span><span class="p">,</span>
+                                <span class="n">velocity</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+                                <span class="n">time</span><span class="o">=</span><span class="n">time</span><span class="p">,</span>
+                                <span class="n">channel</span><span class="o">=</span><span class="n">channel</span><span class="p">,</span>
+                            <span class="p">)</span>
+                        <span class="p">)</span>
+                        <span class="n">track</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                            <span class="n">Message</span><span class="p">(</span>
+                                <span class="s2">&quot;note_off&quot;</span><span class="p">,</span>
+                                <span class="n">note</span><span class="o">=</span><span class="n">button</span><span class="o">.</span><span class="n">note</span><span class="p">,</span>
+                                <span class="n">velocity</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+                                <span class="n">time</span><span class="o">=</span><span class="n">time</span> <span class="o">+</span> <span class="mi">120</span><span class="p">,</span>
+                                <span class="n">channel</span><span class="o">=</span><span class="n">channel</span><span class="p">,</span>
+                            <span class="p">)</span>
+                        <span class="p">)</span>
+
+                        <span class="n">note_name</span> <span class="o">=</span> <span class="p">(</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_midi_to_note_name</span><span class="p">(</span><span class="n">button</span><span class="o">.</span><span class="n">note</span><span class="p">,</span> <span class="n">drums</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                            <span class="k">if</span> <span class="n">row</span> <span class="o">==</span> <span class="mi">3</span>
+                            <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_midi_to_note_name</span><span class="p">(</span><span class="n">button</span><span class="o">.</span><span class="n">note</span><span class="p">)</span>
+                        <span class="p">)</span>
+                        <span class="n">button</span><span class="o">.</span><span class="n">setToolTip</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Note: </span><span class="si">{</span><span class="n">note_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PatternSequenceEditor.save_pattern">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor.save_pattern">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save_pattern</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save the current pattern to a MIDI file using mido.&quot;&quot;&quot;</span>
+        <span class="n">midi_file</span> <span class="o">=</span> <span class="n">MidiFile</span><span class="p">()</span>
+
+        <span class="c1"># Create tracks for each row</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+            <span class="n">track</span> <span class="o">=</span> <span class="n">MidiTrack</span><span class="p">()</span>
+            <span class="n">midi_file</span><span class="o">.</span><span class="n">tracks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">track</span><span class="p">)</span>
+
+            <span class="c1"># Add track name and program change</span>
+            <span class="n">track</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Message</span><span class="p">(</span><span class="s2">&quot;program_change&quot;</span><span class="p">,</span> <span class="n">program</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+
+            <span class="c1"># Add notes to the track</span>
+            <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">total_steps</span><span class="p">):</span>
+                <span class="n">button</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">buttons</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="n">step</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">button</span><span class="o">.</span><span class="n">isChecked</span><span class="p">()</span> <span class="ow">and</span> <span class="n">button</span><span class="o">.</span><span class="n">note</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="c1"># Calculate the time for the note_on event</span>
+                    <span class="n">time</span> <span class="o">=</span> <span class="n">step</span> <span class="o">*</span> <span class="mi">480</span>  <span class="c1"># Assuming 480 ticks per beat</span>
+                    <span class="n">track</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="n">Message</span><span class="p">(</span><span class="s2">&quot;note_on&quot;</span><span class="p">,</span> <span class="n">note</span><span class="o">=</span><span class="n">button</span><span class="o">.</span><span class="n">note</span><span class="p">,</span> <span class="n">velocity</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="n">time</span><span class="p">)</span>
+                    <span class="p">)</span>
+                    <span class="c1"># Add a note_off event after a short duration</span>
+                    <span class="n">track</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="n">Message</span><span class="p">(</span>
+                            <span class="s2">&quot;note_off&quot;</span><span class="p">,</span> <span class="n">note</span><span class="o">=</span><span class="n">button</span><span class="o">.</span><span class="n">note</span><span class="p">,</span> <span class="n">velocity</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="n">time</span> <span class="o">+</span> <span class="mi">120</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
+
+        <span class="c1"># Save the MIDI file</span>
+        <span class="n">midi_file</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Pattern saved to </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PatternSequenceEditor.clear_pattern">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor.clear_pattern">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">clear_pattern</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Clear the current pattern, resetting all steps.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">total_steps</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">buttons</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="n">step</span><span class="p">]</span><span class="o">.</span><span class="n">setChecked</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">buttons</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="n">step</span><span class="p">]</span><span class="o">.</span><span class="n">note</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">buttons</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="n">step</span><span class="p">]</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">generate_sequencer_button_style</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">buttons</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="n">step</span><span class="p">]</span><span class="o">.</span><span class="n">setToolTip</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Note: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">buttons</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="n">step</span><span class="p">]</span><span class="o">.</span><span class="n">note</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PatternSequenceEditor.load_pattern">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor.load_pattern">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_pattern</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load a pattern from a MIDI file&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">clear_pattern</span><span class="p">()</span>
+            <span class="n">midi_file</span> <span class="o">=</span> <span class="n">MidiFile</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+            <span class="n">ppq</span> <span class="o">=</span> <span class="n">midi_file</span><span class="o">.</span><span class="n">ticks_per_beat</span>
+
+            <span class="k">for</span> <span class="n">track_num</span><span class="p">,</span> <span class="n">track</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">midi_file</span><span class="o">.</span><span class="n">tracks</span><span class="p">[:</span><span class="mi">4</span><span class="p">]):</span>
+                <span class="k">if</span> <span class="n">track_num</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buttons</span><span class="p">):</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Track </span><span class="si">{</span><span class="n">track_num</span><span class="si">}</span><span class="s2"> exceeds available button rows.&quot;</span><span class="p">)</span>
+                    <span class="k">continue</span>
+
+                <span class="n">absolute_time</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">for</span> <span class="n">msg</span> <span class="ow">in</span> <span class="n">track</span><span class="p">:</span>
+                    <span class="n">absolute_time</span> <span class="o">+=</span> <span class="n">msg</span><span class="o">.</span><span class="n">time</span>
+                    <span class="k">if</span> <span class="n">msg</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;note_on&quot;</span> <span class="ow">and</span> <span class="n">msg</span><span class="o">.</span><span class="n">velocity</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">step</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">absolute_time</span> <span class="o">/</span> <span class="n">ppq</span><span class="p">)</span> <span class="o">*</span> <span class="mi">4</span><span class="p">)</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_steps</span>
+                        <span class="k">if</span> <span class="n">step</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buttons</span><span class="p">[</span><span class="n">track_num</span><span class="p">]):</span>
+                            <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span>
+                                <span class="sa">f</span><span class="s2">&quot;Step </span><span class="si">{</span><span class="n">step</span><span class="si">}</span><span class="s2"> exceeds available buttons in row </span><span class="si">{</span><span class="n">track_num</span><span class="si">}</span><span class="s2">.&quot;</span>
+                            <span class="p">)</span>
+                            <span class="k">continue</span>
+
+                        <span class="n">button</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">buttons</span><span class="p">[</span><span class="n">track_num</span><span class="p">][</span><span class="n">step</span><span class="p">]</span>
+                        <span class="n">button</span><span class="o">.</span><span class="n">setChecked</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+                        <span class="n">button</span><span class="o">.</span><span class="n">note</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">note</span>
+                        <span class="k">if</span> <span class="n">track_num</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                            <span class="n">drums_note_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_midi_to_note_name</span><span class="p">(</span>
+                                <span class="n">button</span><span class="o">.</span><span class="n">note</span><span class="p">,</span> <span class="n">drums</span><span class="o">=</span><span class="kc">True</span>
+                            <span class="p">)</span>
+                            <span class="n">button</span><span class="o">.</span><span class="n">setToolTip</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Note: </span><span class="si">{</span><span class="n">drums_note_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">note_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_midi_to_note_name</span><span class="p">(</span><span class="n">button</span><span class="o">.</span><span class="n">note</span><span class="p">)</span>
+                            <span class="n">button</span><span class="o">.</span><span class="n">setToolTip</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Note: </span><span class="si">{</span><span class="n">note_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">midi_file</span><span class="o">.</span><span class="n">tracks</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;set_tempo&quot;</span><span class="p">:</span>
+                    <span class="n">bpm</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">tempo2bpm</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">midi_tempo_at_position</span><span class="p">))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">tempo_spinbox</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">bpm</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error loading pattern: </span><span class="si">{</span><span class="n">ex</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">QMessageBox</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;Error&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Could not load pattern: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PatternSequenceEditor.play_pattern">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor.play_pattern">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">play_pattern</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Start playing the pattern&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;timer&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">timer</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">timer</span><span class="o">.</span><span class="n">isActive</span><span class="p">():</span>
+            <span class="k">return</span>  <span class="c1"># Already playing</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_step</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># Calculate interval based on tempo (ms per 16th note)</span>
+        <span class="n">ms_per_step</span> <span class="o">=</span> <span class="p">(</span><span class="mi">60000</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">bpm</span><span class="p">)</span> <span class="o">/</span> <span class="mi">4</span>
+
+        <span class="c1"># Create and start timer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timer</span> <span class="o">=</span> <span class="n">QTimer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timer</span><span class="o">.</span><span class="n">timeout</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_play_step</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timer</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">ms_per_step</span><span class="p">))</span>
+
+        <span class="c1"># Update button states</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_button</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stop_button</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="s2">&quot;Pattern playback started&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PatternSequenceEditor.stop_pattern">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor.stop_pattern">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">stop_pattern</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Stop playing the pattern&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;timer&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">timer</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">timer</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">timer</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Reset step counter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_step</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># Update button states</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_button</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stop_button</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="c1"># Send all notes off</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">channel</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">16</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span><span class="o">.</span><span class="n">send_raw_message</span><span class="p">([</span><span class="n">CONTROL_CHANGE</span> <span class="o">|</span> <span class="n">channel</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+
+        <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="s2">&quot;Pattern playback stopped&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PatternSequenceEditor._note_name_to_midi">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor._note_name_to_midi">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_note_name_to_midi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">note_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert note name (e.g., &#39;C4&#39;) to MIDI note number&quot;&quot;&quot;</span>
+        <span class="c1"># Note name to semitone mapping</span>
+        <span class="n">note_to_semitone</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;C&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;C#&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s2">&quot;D&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="s2">&quot;D#&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+            <span class="s2">&quot;E&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+            <span class="s2">&quot;F&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+            <span class="s2">&quot;F#&quot;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
+            <span class="s2">&quot;G&quot;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span>
+            <span class="s2">&quot;G#&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+            <span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span>
+            <span class="s2">&quot;A#&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+            <span class="s2">&quot;B&quot;</span><span class="p">:</span> <span class="mi">11</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="c1"># Split note name into note and octave</span>
+        <span class="k">if</span> <span class="s2">&quot;#&quot;</span> <span class="ow">in</span> <span class="n">note_name</span><span class="p">:</span>
+            <span class="n">note</span> <span class="o">=</span> <span class="n">note_name</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># Everything except last character (octave)</span>
+            <span class="n">octave</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">note_name</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">note</span> <span class="o">=</span> <span class="n">note_name</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">octave</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">note_name</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="c1"># Calculate MIDI note number</span>
+        <span class="c1"># MIDI note 60 is middle C (C4)</span>
+        <span class="c1"># Each octave is 12 semitones</span>
+        <span class="c1"># Formula: (octave + 1) * 12 + semitone</span>
+        <span class="n">midi_note</span> <span class="o">=</span> <span class="p">(</span><span class="n">octave</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">12</span> <span class="o">+</span> <span class="n">note_to_semitone</span><span class="p">[</span><span class="n">note</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">midi_note</span></div>
+
+
+<div class="viewcode-block" id="PatternSequenceEditor._midi_to_note_name">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor._midi_to_note_name">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_midi_to_note_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">midi_note</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">drums</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert MIDI note number to note name (e.g., 60 -&gt; &#39;C4&#39;)&quot;&quot;&quot;</span>
+        <span class="c1"># Note mapping (reverse of note_to_semitone)</span>
+        <span class="n">semitone_to_note</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;C&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;C#&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;D&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;D#&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;E&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;F&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;F#&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;G&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;G#&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;A&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;A#&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;B&quot;</span><span class="p">,</span>
+        <span class="p">]</span>
+
+        <span class="c1"># Calculate octave and note</span>
+        <span class="n">octave</span> <span class="o">=</span> <span class="p">(</span><span class="n">midi_note</span> <span class="o">//</span> <span class="mi">12</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="n">note</span> <span class="o">=</span> <span class="n">semitone_to_note</span><span class="p">[</span><span class="n">midi_note</span> <span class="o">%</span> <span class="mi">12</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">drums</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">drum_options</span><span class="p">[</span><span class="n">midi_note</span> <span class="o">-</span> <span class="mi">36</span><span class="p">]</span>
+        <span class="c1"># so not drums</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">note</span><span class="si">}{</span><span class="n">octave</span><span class="si">}</span><span class="s2">&quot;</span></div>
+
+
+<div class="viewcode-block" id="PatternSequenceEditor._play_step">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor._play_step">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_play_step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plays the current step and advances to the next one.&quot;&quot;&quot;</span>
+        <span class="n">step</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_step</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_steps</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Playing step </span><span class="si">{</span><span class="n">step</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Check each row&#39;s button at the current step</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+            <span class="n">button</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">buttons</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="n">step</span><span class="p">]</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="n">button</span><span class="o">.</span><span class="n">isChecked</span><span class="p">()</span>
+                <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">button</span><span class="p">,</span> <span class="s2">&quot;note&quot;</span><span class="p">)</span>
+                <span class="ow">and</span> <span class="n">button</span><span class="o">.</span><span class="n">note</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="p">):</span>
+                <span class="c1"># Determine channel based on row</span>
+                <span class="n">channel</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">row</span> <span class="k">if</span> <span class="n">row</span> <span class="o">&lt;</span> <span class="mi">3</span> <span class="k">else</span> <span class="mi">9</span>
+                <span class="p">)</span>  <span class="c1"># channels 0,1,2 for synths, 9 for drums</span>
+
+                <span class="c1"># Send Note On message using the stored note</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">channel</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">muted_channels</span><span class="p">:</span>
+                        <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;Row </span><span class="si">{</span><span class="n">row</span><span class="si">}</span><span class="s2"> active at step </span><span class="si">{</span><span class="n">step</span><span class="si">}</span><span class="s2">, sending note </span><span class="si">{</span><span class="n">button</span><span class="o">.</span><span class="n">note</span><span class="si">}</span><span class="s2"> on channel </span><span class="si">{</span><span class="n">channel</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span><span class="o">.</span><span class="n">send_raw_message</span><span class="p">(</span>
+                            <span class="p">[</span><span class="n">NOTE_ON</span> <span class="o">|</span> <span class="n">channel</span><span class="p">,</span> <span class="n">button</span><span class="o">.</span><span class="n">note</span><span class="p">,</span> <span class="mi">100</span><span class="p">]</span>
+                        <span class="p">)</span>  <span class="c1"># velocity 100</span>
+                        <span class="c1"># Note Off message after a short delay</span>
+                        <span class="n">QTimer</span><span class="o">.</span><span class="n">singleShot</span><span class="p">(</span>
+                            <span class="mi">100</span><span class="p">,</span>
+                            <span class="k">lambda</span> <span class="n">ch</span><span class="o">=</span><span class="n">channel</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">button</span><span class="o">.</span><span class="n">note</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">midi_helper</span><span class="o">.</span><span class="n">send_raw_message</span><span class="p">(</span>
+                                <span class="p">[</span><span class="n">NOTE_ON</span> <span class="o">|</span> <span class="n">ch</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+                            <span class="p">),</span>
+                        <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;MIDI helper not available&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Advance to next step</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_step</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_step</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_steps</span>
+
+        <span class="c1"># Update UI to show current step</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">total_steps</span><span class="p">):</span>
+                <span class="n">button</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">buttons</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="n">col</span><span class="p">]</span>
+                <span class="n">button</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">generate_sequencer_button_style</span><span class="p">(</span>
+                        <span class="n">button</span><span class="o">.</span><span class="n">isChecked</span><span class="p">(),</span> <span class="n">col</span> <span class="o">==</span> <span class="n">step</span>
+                    <span class="p">)</span>
+                <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PatternSequenceEditor.generate_sequencer_button_style">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor.generate_sequencer_button_style">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">generate_sequencer_button_style</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">is_checked</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">is_current</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate button style based on state and current step&quot;&quot;&quot;</span>
+        <span class="n">base_color</span> <span class="o">=</span> <span class="s2">&quot;#3498db&quot;</span> <span class="k">if</span> <span class="n">is_checked</span> <span class="k">else</span> <span class="s2">&quot;#2c3e50&quot;</span>
+        <span class="n">border_color</span> <span class="o">=</span> <span class="s2">&quot;#e74c3c&quot;</span> <span class="k">if</span> <span class="n">is_current</span> <span class="k">else</span> <span class="n">base_color</span>
+
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">            QPushButton </span><span class="se">{{</span>
+<span class="s2">                background-color: </span><span class="si">{</span><span class="n">base_color</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">                border: 2px solid </span><span class="si">{</span><span class="n">border_color</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">                border-radius: 5px;</span>
+<span class="s2">                color: white;</span>
+<span class="s2">                padding: 5px;</span>
+<span class="s2">            </span><span class="se">}}</span>
+<span class="s2">            QPushButton:hover </span><span class="se">{{</span>
+<span class="s2">                background-color: </span><span class="si">{</span><span class="s1">&#39;#2980b9&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">is_checked</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;#34495e&#39;</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">            </span><span class="se">}}</span>
+<span class="s2">            QPushButton:pressed </span><span class="se">{{</span>
+<span class="s2">                background-color: </span><span class="si">{</span><span class="s1">&#39;#2472a4&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">is_checked</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;#2c3e50&#39;</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">            </span><span class="se">}}</span>
+<span class="s2">        &quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="PatternSequenceEditor._learn_pattern">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor._learn_pattern">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_learn_pattern</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Learn the pattern of incoming MIDI notes, preserving rests.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">message</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;note_on&quot;</span> <span class="ow">and</span> <span class="n">message</span><span class="o">.</span><span class="n">velocity</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">note</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">note</span>
+
+            <span class="c1"># Determine the correct row for the note</span>
+            <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">note</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_note_range_for_row</span><span class="p">(</span><span class="n">row</span><span class="p">):</span>
+                    <span class="c1"># Record the note in the current step</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Recording note: </span><span class="si">{</span><span class="n">note</span><span class="si">}</span><span class="s2"> at step </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">current_step</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">learned_pattern</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">current_step</span><span class="p">]</span> <span class="o">=</span> <span class="n">note</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">active_notes</span><span class="p">[</span><span class="n">note</span><span class="p">]</span> <span class="o">=</span> <span class="n">row</span>  <span class="c1"># Mark the note as active</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_apply_learned_pattern</span><span class="p">()</span>
+
+                    <span class="c1"># Add the note_on message to the MIDI track</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">midi_track</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="n">Message</span><span class="p">(</span><span class="s2">&quot;note_on&quot;</span><span class="p">,</span> <span class="n">note</span><span class="o">=</span><span class="n">note</span><span class="p">,</span> <span class="n">velocity</span><span class="o">=</span><span class="n">message</span><span class="o">.</span><span class="n">velocity</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                    <span class="p">)</span>
+                    <span class="k">break</span>  <span class="c1"># Stop checking once the note is assigned</span>
+
+        <span class="k">elif</span> <span class="n">message</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;note_off&quot;</span><span class="p">:</span>
+            <span class="n">note</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">note</span>
+            <span class="k">if</span> <span class="n">note</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_notes</span><span class="p">:</span>
+                <span class="c1"># Advance step only if the note was previously turned on</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Note off: </span><span class="si">{</span><span class="n">note</span><span class="si">}</span><span class="s2"> at step </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">current_step</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_notes</span><span class="p">[</span><span class="n">note</span><span class="p">]</span>  <span class="c1"># Remove the note from active notes</span>
+
+                <span class="c1"># Add the note_off message to the MIDI track</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">midi_track</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="n">Message</span><span class="p">(</span><span class="s2">&quot;note_off&quot;</span><span class="p">,</span> <span class="n">note</span><span class="o">=</span><span class="n">note</span><span class="p">,</span> <span class="n">velocity</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">current_step</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_step</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_steps</span></div>
+
+
+<div class="viewcode-block" id="PatternSequenceEditor._apply_learned_pattern">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor._apply_learned_pattern">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_apply_learned_pattern</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply the learned pattern to the sequencer UI.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+            <span class="c1"># Clear current button states for the row</span>
+            <span class="k">for</span> <span class="n">button</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">buttons</span><span class="p">[</span><span class="n">row</span><span class="p">]:</span>
+                <span class="n">button</span><span class="o">.</span><span class="n">setChecked</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+                <span class="n">button</span><span class="o">.</span><span class="n">note</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">button</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">generate_sequencer_button_style</span><span class="p">(</span><span class="kc">False</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">row</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                    <span class="n">drums_note_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_midi_to_note_name</span><span class="p">(</span><span class="n">button</span><span class="o">.</span><span class="n">note</span><span class="p">,</span> <span class="n">drums</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                    <span class="n">button</span><span class="o">.</span><span class="n">setToolTip</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Note: </span><span class="si">{</span><span class="n">drums_note_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">note_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_midi_to_note_name</span><span class="p">(</span><span class="n">button</span><span class="o">.</span><span class="n">note</span><span class="p">)</span>
+                    <span class="n">button</span><span class="o">.</span><span class="n">setToolTip</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Note: </span><span class="si">{</span><span class="n">note_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Apply the learned pattern</span>
+            <span class="k">for</span> <span class="n">time</span><span class="p">,</span> <span class="n">note</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">learned_pattern</span><span class="p">[</span><span class="n">row</span><span class="p">]):</span>
+                <span class="c1"># Ensure only one button is activated per note</span>
+                <span class="k">if</span> <span class="n">note</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">time</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buttons</span><span class="p">[</span><span class="n">row</span><span class="p">]):</span>
+                    <span class="n">button</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">buttons</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="n">time</span><span class="p">]</span>
+                    <span class="n">button</span><span class="o">.</span><span class="n">setChecked</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+                    <span class="n">button</span><span class="o">.</span><span class="n">note</span> <span class="o">=</span> <span class="n">note</span>
+                    <span class="n">button</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">generate_sequencer_button_style</span><span class="p">(</span><span class="kc">True</span><span class="p">))</span>
+                    <span class="k">if</span> <span class="n">row</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                        <span class="n">drums_note_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_midi_to_note_name</span><span class="p">(</span>
+                            <span class="n">button</span><span class="o">.</span><span class="n">note</span><span class="p">,</span> <span class="n">drums</span><span class="o">=</span><span class="kc">True</span>
+                        <span class="p">)</span>
+                        <span class="n">button</span><span class="o">.</span><span class="n">setToolTip</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Note: </span><span class="si">{</span><span class="n">drums_note_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">note_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_midi_to_note_name</span><span class="p">(</span><span class="n">button</span><span class="o">.</span><span class="n">note</span><span class="p">)</span>
+                        <span class="n">button</span><span class="o">.</span><span class="n">setToolTip</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Note: </span><span class="si">{</span><span class="n">note_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PatternSequenceEditor._get_note_range_for_row">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor._get_note_range_for_row">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_note_range_for_row</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the note range for a specific row.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">row</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="nb">range</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="mi">72</span><span class="p">)</span>  <span class="c1"># C4 to B4</span>
+        <span class="k">if</span> <span class="n">row</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">range</span><span class="p">(</span><span class="mi">48</span><span class="p">,</span> <span class="mi">60</span><span class="p">)</span>  <span class="c1"># C3 to B3</span>
+        <span class="k">return</span> <span class="nb">range</span><span class="p">(</span><span class="mi">36</span><span class="p">,</span> <span class="mi">48</span><span class="p">)</span>  <span class="c1"># C2 to B2</span></div>
+
+
+<div class="viewcode-block" id="PatternSequenceEditor._move_to_next_step">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor._move_to_next_step">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_move_to_next_step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Move to the next step in the pattern.&quot;&quot;&quot;</span>
+        <span class="c1"># Move to the next step</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_step</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_step</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_steps</span>
+
+        <span class="c1"># Stop learning after 16 steps</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_step</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="s2">&quot;Learning complete after 16 steps.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">on_stop_learn_pattern_button_clicked</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">timer</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">timer</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Moved to step </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">current_step</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PatternSequenceEditor.save_midi_file">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor.save_midi_file">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save_midi_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save the recorded MIDI messages to a file.&quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">output_file</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">midi_file</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">output_file</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;MIDI file saved to </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PatternSequenceEditor._toggle_mute">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor._toggle_mute">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_toggle_mute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">checked</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Toggle mute for a specific row.&quot;&quot;&quot;</span>
+        <span class="n">channel</span> <span class="o">=</span> <span class="n">row</span> <span class="k">if</span> <span class="n">row</span> <span class="o">&lt;</span> <span class="mi">3</span> <span class="k">else</span> <span class="mi">9</span>  <span class="c1"># channels 0,1,2 for synths, 9 for drums</span>
+        <span class="k">if</span> <span class="n">checked</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Row </span><span class="si">{</span><span class="n">row</span><span class="si">}</span><span class="s2"> muted&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">muted_channels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Row </span><span class="si">{</span><span class="n">row</span><span class="si">}</span><span class="s2"> unmuted&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">muted_channels</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span>
+
+        <span class="c1"># Update the UI or internal state to reflect the mute status</span>
+        <span class="c1"># For example, you might want to disable the buttons in the row</span>
+        <span class="k">for</span> <span class="n">button</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">buttons</span><span class="p">[</span><span class="n">row</span><span class="p">]:</span>
+            <span class="n">button</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="ow">not</span> <span class="n">checked</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PatternSequenceEditor._update_drum_rows">
+<a class="viewcode-back" href="../../../../../autoapi/jdxi_editor/ui/editors/pattern/pattern/index.html#jdxi_editor.ui.editors.pattern.pattern.PatternSequenceEditor._update_drum_rows">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_drum_rows</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update displayed buttons based on the selected drum option.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">drum_selector</span><span class="o">.</span><span class="n">currentText</span><span class="p">()</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        for option, layout in self.drum_row_layouts.items():</span>
+<span class="sd">            is_visible = option == selected_option</span>
+
+<span class="sd">            # Iterate over widgets inside the QHBoxLayout</span>
+<span class="sd">            for i in range(layout.count()):</span>
+<span class="sd">                button = layout.itemAt(i).widget()</span>
+<span class="sd">                if button:</span>
+<span class="sd">                    button.setVisible(is_visible)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Ensure UI updates properly</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Mark Mrooks.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

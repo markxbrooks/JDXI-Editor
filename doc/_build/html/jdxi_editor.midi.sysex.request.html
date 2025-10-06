@@ -1,0 +1,776 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>jdxi_editor.midi.sysex.request package &mdash; JD-Xi Editor 0.8.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=486e5634"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="jdxi_editor.midi.utils package" href="jdxi_editor.midi.utils.html" />
+    <link rel="prev" title="jdxi_editor.midi.sysex.parser package" href="jdxi_editor.midi.sysex.parser.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            JD-Xi Editor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#what-is-jdxi-editor">What is JDXI-Editor?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#key-features-capabilities">Key Features &amp; Capabilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#architecture-technology">Architecture &amp; Technology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#why-use-jdxi-editor">Why Use JDXI-Editor?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#getting-started">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#system-requirements">System Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#installation-methods">Installation Methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#method-1-pre-built-packages-recommended">Method 1: Pre-Built Packages (Recommended)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#method-2-python-package-installation">Method 2: Python Package Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#method-3-source-code-installation">Method 3: Source Code Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#method-4-development-setup">Method 4: Development Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#post-installation-setup">Post-Installation Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#troubleshooting">Troubleshooting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#getting-help">Getting Help</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html">Quick Start Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#what-you-ll-learn">What You’ll Learn</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#hardware-setup">Hardware Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#software-launch">Software Launch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#interface-overview">Interface Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#your-first-sound-creation">Your First Sound Creation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#essential-workflows">Essential Workflows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#quick-tips-for-success">Quick Tips for Success</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#common-issues-and-solutions">Common Issues and Solutions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#next-steps">Next Steps</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="editor-windows.html">Editor Windows</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="instrument.html">JDXi Instrument Window</a></li>
+<li class="toctree-l2"><a class="reference internal" href="instrument.html#what-is-the-jdxi-instrument-window">What is the JDXi Instrument Window?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="instrument.html#core-architecture-components">Core Architecture &amp; Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="instrument.html#key-features-capabilities">Key Features &amp; Capabilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="instrument.html#user-interface-components">User Interface Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="instrument.html#workflow-integration">Workflow Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="instrument.html#technical-specifications">Technical Specifications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="instrument.html#getting-started-with-the-instrument-window">Getting Started with the Instrument Window</a></li>
+<li class="toctree-l2"><a class="reference internal" href="editor.html">Editor Windows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="editor.html#what-are-the-editor-windows">What are the Editor Windows?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="editor.html#core-architecture-design">Core Architecture &amp; Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="editor.html#available-editors">Available Editors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="editor.html#getting-started-with-editor-windows">Getting Started with Editor Windows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="digital_synth.html">Digital Synth Editors (Parts 1 &amp; 2)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="digital_synth.html#what-are-the-digital-synth-editors">What are the Digital Synth Editors?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="digital_synth.html#core-architecture-design">Core Architecture &amp; Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="digital_synth.html#digital-synth-editor-features">Digital Synth Editor Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="digital_synth.html#partial-management-system">Partial Management System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="digital_synth.html#performance-features">Performance Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="digital_synth.html#visual-feedback-monitoring">Visual Feedback &amp; Monitoring</a></li>
+<li class="toctree-l2"><a class="reference internal" href="digital_synth.html#getting-started-with-digital-synth-editors">Getting Started with Digital Synth Editors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analog_synth.html">Analog Synth Editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analog_synth.html#what-is-the-analog-synth-editor">What is the Analog Synth Editor?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analog_synth.html#core-architecture-design">Core Architecture &amp; Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analog_synth.html#analog-synth-editor-features">Analog Synth Editor Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analog_synth.html#analog-synthesis-characteristics">Analog Synthesis Characteristics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analog_synth.html#advanced-features">Advanced Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analog_synth.html#performance-features">Performance Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analog_synth.html#getting-started-with-analog-synth-editor">Getting Started with Analog Synth Editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="drum_kit.html">Drum Kit Editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="drum_kit.html#what-is-the-drum-kit-editor">What is the Drum Kit Editor?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="drum_kit.html#core-architecture-design">Core Architecture &amp; Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="drum_kit.html#drum-kit-editor-features">Drum Kit Editor Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="drum_kit.html#kit-management-system">Kit Management System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="drum_kit.html#advanced-sound-design">Advanced Sound Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="drum_kit.html#visual-feedback-monitoring">Visual Feedback &amp; Monitoring</a></li>
+<li class="toctree-l2"><a class="reference internal" href="drum_kit.html#getting-started-with-drum-kit-editor">Getting Started with Drum Kit Editor</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="additional-editors.html">Additional Editors</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="arpeggiator.html">Arpeggiator Editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arpeggiator.html#what-is-the-arpeggiator-editor">What is the Arpeggiator Editor?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arpeggiator.html#core-architecture-design">Core Architecture &amp; Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arpeggiator.html#arpeggiator-editor-features">Arpeggiator Editor Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arpeggiator.html#advanced-pattern-features">Advanced Pattern Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arpeggiator.html#sequencing-tools">Sequencing Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arpeggiator.html#musical-integration">Musical Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arpeggiator.html#getting-started-with-arpeggiator-editor">Getting Started with Arpeggiator Editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="effects.html">Effects Editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="effects.html#what-is-the-effects-editor">What is the Effects Editor?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="effects.html#core-architecture-design">Core Architecture &amp; Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="effects.html#effects-editor-features">Effects Editor Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="effects.html#advanced-processing">Advanced Processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="effects.html#performance-integration">Performance Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="effects.html#visual-feedback-monitoring">Visual Feedback &amp; Monitoring</a></li>
+<li class="toctree-l2"><a class="reference internal" href="effects.html#getting-started-with-effects-editor">Getting Started with Effects Editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vocal_effects.html">Vocal Effects Editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vocal_effects.html#what-is-the-vocal-effects-editor">What is the Vocal Effects Editor?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vocal_effects.html#core-architecture-design">Core Architecture &amp; Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vocal_effects.html#vocal-effects-editor-features">Vocal Effects Editor Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vocal_effects.html#advanced-vocal-processing">Advanced Vocal Processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vocal_effects.html#performance-features">Performance Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vocal_effects.html#visual-feedback-monitoring">Visual Feedback &amp; Monitoring</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vocal_effects.html#getting-started-with-vocal-effects-editor">Getting Started with Vocal Effects Editor</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="playing-midi-files.html">Playing MIDI Files</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pattern_sequencer.html">Pattern Sequencer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pattern_sequencer.html#what-is-the-pattern-sequencer">What is the Pattern Sequencer?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pattern_sequencer.html#core-architecture-design">Core Architecture &amp; Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pattern_sequencer.html#pattern-sequencer-features">Pattern Sequencer Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pattern_sequencer.html#advanced-pattern-features">Advanced Pattern Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pattern_sequencer.html#performance-features">Performance Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pattern_sequencer.html#creative-tools">Creative Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pattern_sequencer.html#visual-feedback-monitoring">Visual Feedback &amp; Monitoring</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pattern_sequencer.html#getting-started-with-pattern-sequencer">Getting Started with Pattern Sequencer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="midi_file_player.html">MIDI File Player &amp; Recorder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="midi_file_player.html#what-is-the-midi-file-player-recorder">What is the MIDI File Player &amp; Recorder?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="midi_file_player.html#core-architecture-design">Core Architecture &amp; Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="midi_file_player.html#midi-file-player-features">MIDI File Player Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="midi_file_player.html#production-tools">Production Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="midi_file_player.html#advanced-features">Advanced Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="midi_file_player.html#performance-features">Performance Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="midi_file_player.html#visual-feedback-monitoring">Visual Feedback &amp; Monitoring</a></li>
+<li class="toctree-l2"><a class="reference internal" href="midi_file_player.html#getting-started-with-midi-file-player-recorder">Getting Started with MIDI File Player &amp; Recorder</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#id1">Troubleshooting</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="legal.html">Legal Disclaimer</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">jdxi_editor</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="jdxi_editor.html">jdxi_editor package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="jdxi_editor.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.html">jdxi_editor.jdxi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.log.html">jdxi_editor.log package</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="jdxi_editor.midi.html">jdxi_editor.midi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.ui.html">jdxi_editor.ui package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.html#module-jdxi_editor.globals">jdxi_editor.globals module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.html#module-jdxi_editor.main">jdxi_editor.main module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.html#jdxi_editor.main.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.html#jdxi_editor.main.setup_splash_screen"><code class="docutils literal notranslate"><span class="pre">setup_splash_screen()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.html#module-jdxi_editor.project">jdxi_editor.project module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.html#module-jdxi_editor.resources">jdxi_editor.resources module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.html#jdxi_editor.resources.resource_path"><code class="docutils literal notranslate"><span class="pre">resource_path()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.html#module-jdxi_editor">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="autoapi/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/midi/index.html">midi</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/midi/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/midi/colors/index.html">midi.colors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/midi/slider/index.html">midi.slider</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/midi/spin_box/index.html">midi.spin_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/midi/time_ruler/index.html">midi.time_ruler</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/midi/track/index.html">midi.track</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/midi/track_viewer/index.html">midi.track_viewer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/midi/utils/index.html">midi.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/adsr/index.html">adsr</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/adsr/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/adsr/adsr/index.html">adsr.adsr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/adsr/graph/index.html">adsr.graph</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/adsr/parameter/index.html">adsr.parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/adsr/plot/index.html">adsr.plot</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/pitch/index.html">pitch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/pitch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/pitch/envelope/index.html">pitch.envelope</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/pitch/envelope_plot/index.html">pitch.envelope_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/pitch/pwm_plot/index.html">pitch.pwm_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/pitch/slider_spinbox/index.html">pitch.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/piano/index.html">piano</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/piano/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/piano/key/index.html">piano.key</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/piano/keyboard/index.html">piano.keyboard</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/panel/index.html">panel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/panel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/panel/partial/index.html">panel.partial</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/wheel/index.html">wheel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/wheel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/wheel/mod/index.html">wheel.mod</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/wheel/pitch/index.html">wheel.pitch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/wheel/wheel/index.html">wheel.wheel</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/preset/index.html">preset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/preset/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/preset/combo_box/index.html">preset.combo_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/preset/panel/index.html">preset.panel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/preset/patch_name/index.html">preset.patch_name</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/slider/index.html">slider</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/slider/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/slider/slider/index.html">slider.slider</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/slider/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/slider/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/slider/index.html#slider.Slider"><code class="docutils literal notranslate"><span class="pre">Slider</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/dialog/index.html">dialog</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/dialog/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/dialog/progress/index.html">dialog.progress</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/viewer/index.html">viewer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/viewer/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/viewer/log/index.html">viewer.log</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/button/index.html">button</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/button/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/button/channel/index.html">button.channel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/button/favorite/index.html">button.favorite</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/button/sequencer/index.html">button.sequencer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/button/waveform/index.html">button.waveform</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/button/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/button/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/button/index.html#button.ChannelButton"><code class="docutils literal notranslate"><span class="pre">ChannelButton</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/button/index.html#button.SequencerSquare"><code class="docutils literal notranslate"><span class="pre">SequencerSquare</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/switch/index.html">switch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/switch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/switch/partial/index.html">switch.partial</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/switch/switch/index.html">switch.switch</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/filter/index.html">filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/filter/index.html#filter.FilterWidget"><code class="docutils literal notranslate"><span class="pre">FilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/display/index.html">display</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/display/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/display/digital/index.html">display.digital</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/display/pattern/index.html">display.pattern</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/display/value/index.html">display.value</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/pattern/index.html">pattern</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/pattern/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/pattern/measure/index.html">pattern.measure</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/spin_box/index.html">spin_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/spin_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/spin_box/spin_box/index.html">spin_box.spin_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/envelope/index.html">envelope</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/envelope/base/index.html">envelope.base</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/indicator/index.html">indicator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/indicator/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/indicator/led/index.html">indicator.led</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/indicator/midi/index.html">indicator.midi</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/combo_box/index.html">combo_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/combo_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/combo_box/combo_box/index.html">combo_box.combo_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/jdxi_editor/index.html">jdxi_editor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/jdxi_editor/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/globals/index.html">jdxi_editor.globals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/jdxi/index.html">jdxi_editor.jdxi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/log/index.html">jdxi_editor.log</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/main/index.html">jdxi_editor.main</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/midi/index.html">jdxi_editor.midi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/project/index.html">jdxi_editor.project</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/resources/index.html">jdxi_editor.resources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/ui/index.html">jdxi_editor.ui</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/filter_plot/index.html">filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/filter_plot/index.html#filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/filter_plot/index.html#filter_plot.FilterPlot"><code class="docutils literal notranslate"><span class="pre">FilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/envelope_plot/index.html">envelope_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope_plot/index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/envelope_plot/index.html#envelope_plot.midi_value_to_float"><code class="docutils literal notranslate"><span class="pre">midi_value_to_float()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/envelope_plot/index.html#envelope_plot.WMTEnvPlot"><code class="docutils literal notranslate"><span class="pre">WMTEnvPlot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/envelope_plot/index.html#envelope_plot.app"><code class="docutils literal notranslate"><span class="pre">app</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/wave_selector/index.html">wave_selector</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/wave_selector/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/wave_selector/wave_selector/index.html">wave_selector.wave_selector</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/analog_filter/index.html">analog_filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/analog_filter/index.html#analog_filter.AnalogFilterWidget"><code class="docutils literal notranslate"><span class="pre">AnalogFilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/slider_spinbox/index.html">slider_spinbox</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/slider_spinbox/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/slider_spinbox/slider_spinbox/index.html">slider_spinbox.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/analog_filter_plot/index.html">analog_filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#analog_filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#analog_filter_plot.AnalogFilterPlot"><code class="docutils literal notranslate"><span class="pre">AnalogFilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">JD-Xi Editor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">jdxi_editor</a></li>
+          <li class="breadcrumb-item"><a href="jdxi_editor.html">jdxi_editor package</a></li>
+          <li class="breadcrumb-item"><a href="jdxi_editor.midi.html">jdxi_editor.midi package</a></li>
+          <li class="breadcrumb-item"><a href="jdxi_editor.midi.sysex.html">jdxi_editor.midi.sysex package</a></li>
+      <li class="breadcrumb-item active">jdxi_editor.midi.sysex.request package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/jdxi_editor.midi.sysex.request.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="jdxi-editor-midi-sysex-request-package">
+<h1>jdxi_editor.midi.sysex.request package<a class="headerlink" href="#jdxi-editor-midi-sysex-request-package" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-jdxi_editor.midi.sysex.request.data">
+<span id="jdxi-editor-midi-sysex-request-data-module"></span><h2>jdxi_editor.midi.sysex.request.data module<a class="headerlink" href="#module-jdxi_editor.midi.sysex.request.data" title="Link to this heading"></a></h2>
+</section>
+<section id="module-jdxi_editor.midi.sysex.request.factory">
+<span id="jdxi-editor-midi-sysex-request-factory-module"></span><h2>jdxi_editor.midi.sysex.request.factory module<a class="headerlink" href="#module-jdxi_editor.midi.sysex.request.factory" title="Link to this heading"></a></h2>
+<p>This module contains constants, functions, and logic to generate and compute
+Roland JD-Xi SysEx messages for requesting program and tone names.</p>
+<p>It defines a set of SysEx constants specific to the JD-Xi and provides the
+following functionality:</p>
+<ol class="arabic simple">
+<li><p><strong>Constants</strong>: A dictionary <cite>SYSEX_CONSTANTS</cite> containing key constants
+required to construct the SysEx messages, including the JD-Xi header,
+tone areas, and other necessary fields.</p></li>
+<li><p><strong>Checksum Calculation</strong>: A function <cite>roland_checksum</cite> that computes the
+Roland checksum for a given SysEx data string. This checksum is used
+to ensure the integrity of the message.</p></li>
+<li><p><strong>Request Generation</strong>: A function <cite>create_request</cite> that dynamically generates
+a SysEx message based on the header, tone area, and parameters provided.</p></li>
+<li><p><strong>Program and Tone Requests</strong>: A list <cite>PROGRAM_AND_TONE_NAME_REQUESTS</cite>
+containing pre-generated SysEx requests for various program and tone areas
+like digital, analog, and drums.</p></li>
+</ol>
+<p>SysEx message format includes:
+- Start byte <cite>F0</cite>, end byte <cite>F7</cite>
+- JD-Xi specific header and command information
+- Roland checksum for data integrity</p>
+<p>Functions:
+- <cite>roland_checksum(data: str) -&gt; str</cite>: Computes and returns the Roland checksum</p>
+<blockquote>
+<div><p>based on the input SysEx data string.</p>
+</div></blockquote>
+<ul>
+<li><p><cite>create_request(header, tone_area, param1) -&gt; str</cite>: Constructs a complete
+SysEx request message, appends the checksum, and returns the full message.</p>
+<blockquote>
+<div><p>To generate a request for the program common area:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">request</span> <span class="o">=</span> <span class="n">create_request</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">TEMPORARY_PROGRAM_RQ11_HEADER</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">SYSEX_CONSTANTS</span><span class="p">[</span><span class="s1">&#39;PROGRAM_COMMON_AREA&#39;</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="s2">&quot;00 00 00 00 00 40&quot;</span>
+<span class="go">)</span>
+</pre></div>
+</div>
+<p>To retrieve a list of all program and tone name requests:
+all_requests = PROGRAM_AND_TONE_NAME_REQUESTS</p>
+</div></blockquote>
+</li>
+</ul>
+<dl class="py function">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.request.factory.roland_checksum">
+<span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.sysex.request.factory.</span></span><span class="sig-name descname"><span class="pre">roland_checksum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/request/factory.html#roland_checksum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.request.factory.roland_checksum" title="Link to this definition"></a></dt>
+<dd><p>Compute Roland checksum for a given SysEx data string (space-separated hex).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.request.factory.create_request">
+<span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.sysex.request.factory.</span></span><span class="sig-name descname"><span class="pre">create_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">header</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_area</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#jdxi_editor.midi.sysex.request.hex.JDXISysExHex" title="jdxi_editor.midi.sysex.request.hex.JDXISysExHex"><span class="pre">JDXISysExHex</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">part</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></span><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/request/factory.html#create_request"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.request.factory.create_request" title="Link to this definition"></a></dt>
+<dd><p>Create a SysEx request string using header, area, parameter, and Roland checksum.</p>
+</dd></dl>
+
+</section>
+<section id="module-jdxi_editor.midi.sysex.request.hex">
+<span id="jdxi-editor-midi-sysex-request-hex-module"></span><h2>jdxi_editor.midi.sysex.request.hex module<a class="headerlink" href="#module-jdxi_editor.midi.sysex.request.hex" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.request.hex.JDXISysExHex">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.sysex.request.hex.</span></span><span class="sig-name descname"><span class="pre">JDXISysExHex</span></span><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/request/hex.html#JDXISysExHex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.request.hex.JDXISysExHex" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>class to represent bytes as strings</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.request.hex.JDXISysExHex.JDXI_HEADER">
+<span class="sig-name descname"><span class="pre">JDXI_HEADER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'F0</span> <span class="pre">41</span> <span class="pre">10</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">0E'</span></em><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/request/hex.html#JDXISysExHex.JDXI_HEADER"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.request.hex.JDXISysExHex.JDXI_HEADER" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.request.hex.JDXISysExHex.START">
+<span class="sig-name descname"><span class="pre">START</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'F0'</span></em><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/request/hex.html#JDXISysExHex.START"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.request.hex.JDXISysExHex.START" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.request.hex.JDXISysExHex.END">
+<span class="sig-name descname"><span class="pre">END</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'F7'</span></em><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/request/hex.html#JDXISysExHex.END"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.request.hex.JDXISysExHex.END" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.request.hex.JDXISysExHex.RQ1_COMMAND_11">
+<span class="sig-name descname"><span class="pre">RQ1_COMMAND_11</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'11'</span></em><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/request/hex.html#JDXISysExHex.RQ1_COMMAND_11"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.request.hex.JDXISysExHex.RQ1_COMMAND_11" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.request.hex.JDXISysExHex.TEMPORARY_PROGRAM_AREA">
+<span class="sig-name descname"><span class="pre">TEMPORARY_PROGRAM_AREA</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'18'</span></em><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/request/hex.html#JDXISysExHex.TEMPORARY_PROGRAM_AREA"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.request.hex.JDXISysExHex.TEMPORARY_PROGRAM_AREA" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.request.hex.JDXISysExHex.TEMPORARY_TONE_AREA">
+<span class="sig-name descname"><span class="pre">TEMPORARY_TONE_AREA</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'19'</span></em><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/request/hex.html#JDXISysExHex.TEMPORARY_TONE_AREA"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.request.hex.JDXISysExHex.TEMPORARY_TONE_AREA" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.request.hex.JDXISysExHex.PROGRAM_COMMON_AREA">
+<span class="sig-name descname"><span class="pre">PROGRAM_COMMON_AREA</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'00'</span></em><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/request/hex.html#JDXISysExHex.PROGRAM_COMMON_AREA"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.request.hex.JDXISysExHex.PROGRAM_COMMON_AREA" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.request.hex.JDXISysExHex.DIGITAL1_COMMON">
+<span class="sig-name descname"><span class="pre">DIGITAL1_COMMON</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'01'</span></em><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/request/hex.html#JDXISysExHex.DIGITAL1_COMMON"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.request.hex.JDXISysExHex.DIGITAL1_COMMON" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.request.hex.JDXISysExHex.DIGITAL2_COMMON">
+<span class="sig-name descname"><span class="pre">DIGITAL2_COMMON</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'21'</span></em><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/request/hex.html#JDXISysExHex.DIGITAL2_COMMON"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.request.hex.JDXISysExHex.DIGITAL2_COMMON" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.request.hex.JDXISysExHex.ANALOG">
+<span class="sig-name descname"><span class="pre">ANALOG</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'42'</span></em><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/request/hex.html#JDXISysExHex.ANALOG"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.request.hex.JDXISysExHex.ANALOG" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.request.hex.JDXISysExHex.DRUMS">
+<span class="sig-name descname"><span class="pre">DRUMS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'70'</span></em><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/request/hex.html#JDXISysExHex.DRUMS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.request.hex.JDXISysExHex.DRUMS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.request.hex.JDXISysExHex.FOUR_ZERO_BYTES">
+<span class="sig-name descname"><span class="pre">FOUR_ZERO_BYTES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00'</span></em><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/request/hex.html#JDXISysExHex.FOUR_ZERO_BYTES"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.request.hex.JDXISysExHex.FOUR_ZERO_BYTES" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-jdxi_editor.midi.sysex.request.midi_requests">
+<span id="jdxi-editor-midi-sysex-request-midi-requests-module"></span><h2>jdxi_editor.midi.sysex.request.midi_requests module<a class="headerlink" href="#module-jdxi_editor.midi.sysex.request.midi_requests" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.request.midi_requests.MidiRequests">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jdxi_editor.midi.sysex.request.midi_requests.</span></span><span class="sig-name descname"><span class="pre">MidiRequests</span></span><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/request/midi_requests.html#MidiRequests"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.request.midi_requests.MidiRequests" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Class for creating MIDI requests.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.PROGRAM_COMMON">
+<span class="sig-name descname"><span class="pre">PROGRAM_COMMON</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'F0</span> <span class="pre">41</span> <span class="pre">10</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">0E</span> <span class="pre">11</span> <span class="pre">18</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">40</span> <span class="pre">40</span> <span class="pre">F7'</span></em><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/request/midi_requests.html#MidiRequests.PROGRAM_COMMON"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.PROGRAM_COMMON" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.DIGITAL1_COMMON">
+<span class="sig-name descname"><span class="pre">DIGITAL1_COMMON</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'F0</span> <span class="pre">41</span> <span class="pre">10</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">0E</span> <span class="pre">11</span> <span class="pre">19</span> <span class="pre">01</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">40</span> <span class="pre">3F</span> <span class="pre">F7'</span></em><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/request/midi_requests.html#MidiRequests.DIGITAL1_COMMON"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.DIGITAL1_COMMON" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.DIGITAL1_PARTIAL1">
+<span class="sig-name descname"><span class="pre">DIGITAL1_PARTIAL1</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'F0</span> <span class="pre">41</span> <span class="pre">10</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">0E</span> <span class="pre">11</span> <span class="pre">19</span> <span class="pre">01</span> <span class="pre">20</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">40</span> <span class="pre">1F</span> <span class="pre">F7'</span></em><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/request/midi_requests.html#MidiRequests.DIGITAL1_PARTIAL1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.DIGITAL1_PARTIAL1" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.DIGITAL1_PARTIAL2">
+<span class="sig-name descname"><span class="pre">DIGITAL1_PARTIAL2</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'F0</span> <span class="pre">41</span> <span class="pre">10</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">0E</span> <span class="pre">11</span> <span class="pre">19</span> <span class="pre">01</span> <span class="pre">21</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">40</span> <span class="pre">1E</span> <span class="pre">F7'</span></em><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/request/midi_requests.html#MidiRequests.DIGITAL1_PARTIAL2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.DIGITAL1_PARTIAL2" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.DIGITAL1_PARTIAL3">
+<span class="sig-name descname"><span class="pre">DIGITAL1_PARTIAL3</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'F0</span> <span class="pre">41</span> <span class="pre">10</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">0E</span> <span class="pre">11</span> <span class="pre">19</span> <span class="pre">01</span> <span class="pre">22</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">40</span> <span class="pre">1D</span> <span class="pre">F7'</span></em><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/request/midi_requests.html#MidiRequests.DIGITAL1_PARTIAL3"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.DIGITAL1_PARTIAL3" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.DIGITAL1_MODIFY">
+<span class="sig-name descname"><span class="pre">DIGITAL1_MODIFY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'F0</span> <span class="pre">41</span> <span class="pre">10</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">0E</span> <span class="pre">11</span> <span class="pre">19</span> <span class="pre">01</span> <span class="pre">50</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">40</span> <span class="pre">6F</span> <span class="pre">F7'</span></em><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/request/midi_requests.html#MidiRequests.DIGITAL1_MODIFY"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.DIGITAL1_MODIFY" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.DIGITAL2_COMMON">
+<span class="sig-name descname"><span class="pre">DIGITAL2_COMMON</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'F0</span> <span class="pre">41</span> <span class="pre">10</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">0E</span> <span class="pre">11</span> <span class="pre">19</span> <span class="pre">21</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">40</span> <span class="pre">1F</span> <span class="pre">F7'</span></em><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/request/midi_requests.html#MidiRequests.DIGITAL2_COMMON"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.DIGITAL2_COMMON" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.DIGITAL2_PARTIAL1">
+<span class="sig-name descname"><span class="pre">DIGITAL2_PARTIAL1</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'F0</span> <span class="pre">41</span> <span class="pre">10</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">0E</span> <span class="pre">11</span> <span class="pre">19</span> <span class="pre">21</span> <span class="pre">20</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">40</span> <span class="pre">7F</span> <span class="pre">F7'</span></em><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/request/midi_requests.html#MidiRequests.DIGITAL2_PARTIAL1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.DIGITAL2_PARTIAL1" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.DIGITAL2_PARTIAL2">
+<span class="sig-name descname"><span class="pre">DIGITAL2_PARTIAL2</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'F0</span> <span class="pre">41</span> <span class="pre">10</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">0E</span> <span class="pre">11</span> <span class="pre">19</span> <span class="pre">21</span> <span class="pre">21</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">40</span> <span class="pre">7E</span> <span class="pre">F7'</span></em><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/request/midi_requests.html#MidiRequests.DIGITAL2_PARTIAL2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.DIGITAL2_PARTIAL2" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.DIGITAL2_PARTIAL3">
+<span class="sig-name descname"><span class="pre">DIGITAL2_PARTIAL3</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'F0</span> <span class="pre">41</span> <span class="pre">10</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">0E</span> <span class="pre">11</span> <span class="pre">19</span> <span class="pre">21</span> <span class="pre">22</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">40</span> <span class="pre">7D</span> <span class="pre">F7'</span></em><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/request/midi_requests.html#MidiRequests.DIGITAL2_PARTIAL3"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.DIGITAL2_PARTIAL3" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.DIGITAL2_MODIFY">
+<span class="sig-name descname"><span class="pre">DIGITAL2_MODIFY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'F0</span> <span class="pre">41</span> <span class="pre">10</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">0E</span> <span class="pre">11</span> <span class="pre">19</span> <span class="pre">21</span> <span class="pre">50</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">40</span> <span class="pre">4F</span> <span class="pre">F7'</span></em><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/request/midi_requests.html#MidiRequests.DIGITAL2_MODIFY"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.DIGITAL2_MODIFY" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.ANALOG">
+<span class="sig-name descname"><span class="pre">ANALOG</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'F0</span> <span class="pre">41</span> <span class="pre">10</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">0E</span> <span class="pre">11</span> <span class="pre">19</span> <span class="pre">42</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">40</span> <span class="pre">7E</span> <span class="pre">F7'</span></em><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/request/midi_requests.html#MidiRequests.ANALOG"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.ANALOG" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.DRUMS">
+<span class="sig-name descname"><span class="pre">DRUMS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'F0</span> <span class="pre">41</span> <span class="pre">10</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">0E</span> <span class="pre">11</span> <span class="pre">19</span> <span class="pre">70</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">12</span> <span class="pre">7E</span> <span class="pre">F7'</span></em><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/request/midi_requests.html#MidiRequests.DRUMS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.DRUMS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.DRUMS_BD1">
+<span class="sig-name descname"><span class="pre">DRUMS_BD1</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'F0</span> <span class="pre">41</span> <span class="pre">10</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">0E</span> <span class="pre">11</span> <span class="pre">19</span> <span class="pre">70</span> <span class="pre">2E</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">01</span> <span class="pre">43</span> <span class="pre">1E</span> <span class="pre">F7'</span></em><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/request/midi_requests.html#MidiRequests.DRUMS_BD1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.DRUMS_BD1" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.DRUMS_RIM">
+<span class="sig-name descname"><span class="pre">DRUMS_RIM</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'F0</span> <span class="pre">41</span> <span class="pre">10</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">0E</span> <span class="pre">11</span> <span class="pre">19</span> <span class="pre">70</span> <span class="pre">30</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">01</span> <span class="pre">43</span> <span class="pre">1C</span> <span class="pre">F7'</span></em><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/request/midi_requests.html#MidiRequests.DRUMS_RIM"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.DRUMS_RIM" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.DRUMS_BD2">
+<span class="sig-name descname"><span class="pre">DRUMS_BD2</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'F0</span> <span class="pre">41</span> <span class="pre">10</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">0E</span> <span class="pre">11</span> <span class="pre">19</span> <span class="pre">70</span> <span class="pre">32</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">01</span> <span class="pre">43</span> <span class="pre">1A</span> <span class="pre">F7'</span></em><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/request/midi_requests.html#MidiRequests.DRUMS_BD2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.DRUMS_BD2" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.DRUMS_CLAP">
+<span class="sig-name descname"><span class="pre">DRUMS_CLAP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'F0</span> <span class="pre">41</span> <span class="pre">10</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">0E</span> <span class="pre">11</span> <span class="pre">19</span> <span class="pre">70</span> <span class="pre">34</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">01</span> <span class="pre">43</span> <span class="pre">18</span> <span class="pre">F7'</span></em><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/request/midi_requests.html#MidiRequests.DRUMS_CLAP"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.DRUMS_CLAP" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.DRUMS_BD3">
+<span class="sig-name descname"><span class="pre">DRUMS_BD3</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'F0</span> <span class="pre">41</span> <span class="pre">10</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">0E</span> <span class="pre">11</span> <span class="pre">19</span> <span class="pre">70</span> <span class="pre">36</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">01</span> <span class="pre">43</span> <span class="pre">16</span> <span class="pre">F7'</span></em><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/request/midi_requests.html#MidiRequests.DRUMS_BD3"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.DRUMS_BD3" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.DRUMS_BD1_RIM_BD2_CLAP_BD3">
+<span class="sig-name descname"><span class="pre">DRUMS_BD1_RIM_BD2_CLAP_BD3</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['F0</span> <span class="pre">41</span> <span class="pre">10</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">0E</span> <span class="pre">11</span> <span class="pre">19</span> <span class="pre">70</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">12</span> <span class="pre">7E</span> <span class="pre">F7',</span> <span class="pre">'F0</span> <span class="pre">41</span> <span class="pre">10</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">0E</span> <span class="pre">11</span> <span class="pre">19</span> <span class="pre">70</span> <span class="pre">2E</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">01</span> <span class="pre">43</span> <span class="pre">1E</span> <span class="pre">F7',</span> <span class="pre">'F0</span> <span class="pre">41</span> <span class="pre">10</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">0E</span> <span class="pre">11</span> <span class="pre">19</span> <span class="pre">70</span> <span class="pre">30</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">01</span> <span class="pre">43</span> <span class="pre">1C</span> <span class="pre">F7',</span> <span class="pre">'F0</span> <span class="pre">41</span> <span class="pre">10</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">0E</span> <span class="pre">11</span> <span class="pre">19</span> <span class="pre">70</span> <span class="pre">32</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">01</span> <span class="pre">43</span> <span class="pre">1A</span> <span class="pre">F7',</span> <span class="pre">'F0</span> <span class="pre">41</span> <span class="pre">10</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">0E</span> <span class="pre">11</span> <span class="pre">19</span> <span class="pre">70</span> <span class="pre">34</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">01</span> <span class="pre">43</span> <span class="pre">18</span> <span class="pre">F7',</span> <span class="pre">'F0</span> <span class="pre">41</span> <span class="pre">10</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">0E</span> <span class="pre">11</span> <span class="pre">19</span> <span class="pre">70</span> <span class="pre">36</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">01</span> <span class="pre">43</span> <span class="pre">16</span> <span class="pre">F7']</span></em><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/request/midi_requests.html#MidiRequests.DRUMS_BD1_RIM_BD2_CLAP_BD3"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.DRUMS_BD1_RIM_BD2_CLAP_BD3" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.DIGITAL1">
+<span class="sig-name descname"><span class="pre">DIGITAL1</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['F0</span> <span class="pre">41</span> <span class="pre">10</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">0E</span> <span class="pre">11</span> <span class="pre">19</span> <span class="pre">01</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">40</span> <span class="pre">3F</span> <span class="pre">F7',</span> <span class="pre">'F0</span> <span class="pre">41</span> <span class="pre">10</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">0E</span> <span class="pre">11</span> <span class="pre">19</span> <span class="pre">01</span> <span class="pre">20</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">40</span> <span class="pre">1F</span> <span class="pre">F7',</span> <span class="pre">'F0</span> <span class="pre">41</span> <span class="pre">10</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">0E</span> <span class="pre">11</span> <span class="pre">19</span> <span class="pre">01</span> <span class="pre">21</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">40</span> <span class="pre">1E</span> <span class="pre">F7',</span> <span class="pre">'F0</span> <span class="pre">41</span> <span class="pre">10</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">0E</span> <span class="pre">11</span> <span class="pre">19</span> <span class="pre">01</span> <span class="pre">22</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">40</span> <span class="pre">1D</span> <span class="pre">F7',</span> <span class="pre">'F0</span> <span class="pre">41</span> <span class="pre">10</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">0E</span> <span class="pre">11</span> <span class="pre">19</span> <span class="pre">01</span> <span class="pre">50</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">40</span> <span class="pre">6F</span> <span class="pre">F7']</span></em><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/request/midi_requests.html#MidiRequests.DIGITAL1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.DIGITAL1" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.DIGITAL2">
+<span class="sig-name descname"><span class="pre">DIGITAL2</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['F0</span> <span class="pre">41</span> <span class="pre">10</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">0E</span> <span class="pre">11</span> <span class="pre">19</span> <span class="pre">21</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">40</span> <span class="pre">1F</span> <span class="pre">F7',</span> <span class="pre">'F0</span> <span class="pre">41</span> <span class="pre">10</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">0E</span> <span class="pre">11</span> <span class="pre">19</span> <span class="pre">21</span> <span class="pre">20</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">40</span> <span class="pre">7F</span> <span class="pre">F7',</span> <span class="pre">'F0</span> <span class="pre">41</span> <span class="pre">10</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">0E</span> <span class="pre">11</span> <span class="pre">19</span> <span class="pre">21</span> <span class="pre">21</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">40</span> <span class="pre">7E</span> <span class="pre">F7',</span> <span class="pre">'F0</span> <span class="pre">41</span> <span class="pre">10</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">0E</span> <span class="pre">11</span> <span class="pre">19</span> <span class="pre">21</span> <span class="pre">22</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">40</span> <span class="pre">7D</span> <span class="pre">F7',</span> <span class="pre">'F0</span> <span class="pre">41</span> <span class="pre">10</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">0E</span> <span class="pre">11</span> <span class="pre">19</span> <span class="pre">21</span> <span class="pre">50</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">40</span> <span class="pre">4F</span> <span class="pre">F7']</span></em><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/request/midi_requests.html#MidiRequests.DIGITAL2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.DIGITAL2" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.PROGRAM_TONE_NAME_PARTIAL">
+<span class="sig-name descname"><span class="pre">PROGRAM_TONE_NAME_PARTIAL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['F0</span> <span class="pre">41</span> <span class="pre">10</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">0E</span> <span class="pre">11</span> <span class="pre">18</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">40</span> <span class="pre">40</span> <span class="pre">F7',</span> <span class="pre">'F0</span> <span class="pre">41</span> <span class="pre">10</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">0E</span> <span class="pre">11</span> <span class="pre">19</span> <span class="pre">42</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">40</span> <span class="pre">7E</span> <span class="pre">F7',</span> <span class="pre">'F0</span> <span class="pre">41</span> <span class="pre">10</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">0E</span> <span class="pre">11</span> <span class="pre">19</span> <span class="pre">70</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">12</span> <span class="pre">7E</span> <span class="pre">F7',</span> <span class="pre">'F0</span> <span class="pre">41</span> <span class="pre">10</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">0E</span> <span class="pre">11</span> <span class="pre">19</span> <span class="pre">01</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">40</span> <span class="pre">3F</span> <span class="pre">F7',</span> <span class="pre">'F0</span> <span class="pre">41</span> <span class="pre">10</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">0E</span> <span class="pre">11</span> <span class="pre">19</span> <span class="pre">01</span> <span class="pre">20</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">40</span> <span class="pre">1F</span> <span class="pre">F7',</span> <span class="pre">'F0</span> <span class="pre">41</span> <span class="pre">10</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">0E</span> <span class="pre">11</span> <span class="pre">19</span> <span class="pre">01</span> <span class="pre">21</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">40</span> <span class="pre">1E</span> <span class="pre">F7',</span> <span class="pre">'F0</span> <span class="pre">41</span> <span class="pre">10</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">0E</span> <span class="pre">11</span> <span class="pre">19</span> <span class="pre">01</span> <span class="pre">22</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">40</span> <span class="pre">1D</span> <span class="pre">F7',</span> <span class="pre">'F0</span> <span class="pre">41</span> <span class="pre">10</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">0E</span> <span class="pre">11</span> <span class="pre">19</span> <span class="pre">01</span> <span class="pre">50</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">40</span> <span class="pre">6F</span> <span class="pre">F7',</span> <span class="pre">'F0</span> <span class="pre">41</span> <span class="pre">10</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">0E</span> <span class="pre">11</span> <span class="pre">19</span> <span class="pre">21</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">40</span> <span class="pre">1F</span> <span class="pre">F7',</span> <span class="pre">'F0</span> <span class="pre">41</span> <span class="pre">10</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">0E</span> <span class="pre">11</span> <span class="pre">19</span> <span class="pre">21</span> <span class="pre">20</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">40</span> <span class="pre">7F</span> <span class="pre">F7',</span> <span class="pre">'F0</span> <span class="pre">41</span> <span class="pre">10</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">0E</span> <span class="pre">11</span> <span class="pre">19</span> <span class="pre">21</span> <span class="pre">21</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">40</span> <span class="pre">7E</span> <span class="pre">F7',</span> <span class="pre">'F0</span> <span class="pre">41</span> <span class="pre">10</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">0E</span> <span class="pre">11</span> <span class="pre">19</span> <span class="pre">21</span> <span class="pre">22</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">40</span> <span class="pre">7D</span> <span class="pre">F7',</span> <span class="pre">'F0</span> <span class="pre">41</span> <span class="pre">10</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">0E</span> <span class="pre">11</span> <span class="pre">19</span> <span class="pre">21</span> <span class="pre">50</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">40</span> <span class="pre">4F</span> <span class="pre">F7']</span></em><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/request/midi_requests.html#MidiRequests.PROGRAM_TONE_NAME_PARTIAL"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.PROGRAM_TONE_NAME_PARTIAL" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.PROGRAM_TONE_NAME">
+<span class="sig-name descname"><span class="pre">PROGRAM_TONE_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['F0</span> <span class="pre">41</span> <span class="pre">10</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">0E</span> <span class="pre">11</span> <span class="pre">18</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">40</span> <span class="pre">40</span> <span class="pre">F7',</span> <span class="pre">'F0</span> <span class="pre">41</span> <span class="pre">10</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">0E</span> <span class="pre">11</span> <span class="pre">19</span> <span class="pre">42</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">40</span> <span class="pre">7E</span> <span class="pre">F7',</span> <span class="pre">'F0</span> <span class="pre">41</span> <span class="pre">10</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">0E</span> <span class="pre">11</span> <span class="pre">19</span> <span class="pre">70</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">12</span> <span class="pre">7E</span> <span class="pre">F7',</span> <span class="pre">'F0</span> <span class="pre">41</span> <span class="pre">10</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">0E</span> <span class="pre">11</span> <span class="pre">19</span> <span class="pre">01</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">40</span> <span class="pre">3F</span> <span class="pre">F7',</span> <span class="pre">'F0</span> <span class="pre">41</span> <span class="pre">10</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">0E</span> <span class="pre">11</span> <span class="pre">19</span> <span class="pre">21</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">00</span> <span class="pre">40</span> <span class="pre">1F</span> <span class="pre">F7']</span></em><a class="reference internal" href="_modules/jdxi_editor/midi/sysex/request/midi_requests.html#MidiRequests.PROGRAM_TONE_NAME"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jdxi_editor.midi.sysex.request.midi_requests.MidiRequests.PROGRAM_TONE_NAME" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-jdxi_editor.midi.sysex.request">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-jdxi_editor.midi.sysex.request" title="Link to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="jdxi_editor.midi.sysex.parser.html" class="btn btn-neutral float-left" title="jdxi_editor.midi.sysex.parser package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="jdxi_editor.midi.utils.html" class="btn btn-neutral float-right" title="jdxi_editor.midi.utils package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Mark Mrooks.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

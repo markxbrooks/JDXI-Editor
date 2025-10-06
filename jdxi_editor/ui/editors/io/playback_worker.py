@@ -10,7 +10,6 @@ import time
 
 from jdxi_editor.jdxi.midi.constant import MidiConstant
 from jdxi_editor.jdxi.sysex.bitmask import BitMask
-from jdxi_editor.ui.widgets.midi.utils import ticks_to_seconds
 
 
 class MidiPlaybackWorker(QObject):

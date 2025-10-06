@@ -1,0 +1,863 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>display.digital &mdash; JD-Xi Editor 0.8.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=486e5634"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            JD-Xi Editor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../getting-started.html#getting-started-guide">Getting Started Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../editor-windows.html">Editor Windows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../editor-windows.html#available-editors">Available Editors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../additional-editors.html">Additional Editors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../additional-editors.html#available-editors">Available Editors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../playing-midi-files.html">Playing MIDI Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../playing-midi-files.html#available-tools">Available Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../troubleshooting.html#id1">Troubleshooting</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../legal.html">Legal Disclaimer</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">jdxi_editor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../jdxi_editor.html">jdxi_editor package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../jdxi_editor.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../jdxi_editor.jdxi.html">jdxi_editor.jdxi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../jdxi_editor.log.html">jdxi_editor.log package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../jdxi_editor.midi.html">jdxi_editor.midi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../jdxi_editor.ui.html">jdxi_editor.ui package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../jdxi_editor.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../jdxi_editor.html#module-jdxi_editor.globals">jdxi_editor.globals module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../jdxi_editor.html#module-jdxi_editor.main">jdxi_editor.main module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../jdxi_editor.html#jdxi_editor.main.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../jdxi_editor.html#jdxi_editor.main.setup_splash_screen"><code class="docutils literal notranslate"><span class="pre">setup_splash_screen()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../jdxi_editor.html#module-jdxi_editor.project">jdxi_editor.project module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../jdxi_editor.html#module-jdxi_editor.resources">jdxi_editor.resources module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../jdxi_editor.html#jdxi_editor.resources.resource_path"><code class="docutils literal notranslate"><span class="pre">resource_path()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../jdxi_editor.html#module-jdxi_editor">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../autoapi/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/midi/index.html">midi</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/midi/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/midi/colors/index.html">midi.colors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/midi/slider/index.html">midi.slider</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/midi/spin_box/index.html">midi.spin_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/midi/time_ruler/index.html">midi.time_ruler</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/midi/track/index.html">midi.track</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/midi/track_viewer/index.html">midi.track_viewer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/midi/utils/index.html">midi.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/adsr/index.html">adsr</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/adsr/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/adsr/adsr/index.html">adsr.adsr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/adsr/graph/index.html">adsr.graph</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/adsr/parameter/index.html">adsr.parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/adsr/plot/index.html">adsr.plot</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/pitch/index.html">pitch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/pitch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/pitch/envelope/index.html">pitch.envelope</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/pitch/envelope_plot/index.html">pitch.envelope_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/pitch/pwm_plot/index.html">pitch.pwm_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/pitch/slider_spinbox/index.html">pitch.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/piano/index.html">piano</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/piano/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/piano/key/index.html">piano.key</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/piano/keyboard/index.html">piano.keyboard</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/panel/index.html">panel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/panel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/panel/partial/index.html">panel.partial</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/wheel/index.html">wheel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/wheel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/wheel/mod/index.html">wheel.mod</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/wheel/pitch/index.html">wheel.pitch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/wheel/wheel/index.html">wheel.wheel</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/preset/index.html">preset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/preset/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/preset/combo_box/index.html">preset.combo_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/preset/panel/index.html">preset.panel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/preset/patch_name/index.html">preset.patch_name</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/slider/index.html">slider</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/slider/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/slider/slider/index.html">slider.slider</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/slider/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/slider/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/slider/index.html#slider.Slider"><code class="docutils literal notranslate"><span class="pre">Slider</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/dialog/index.html">dialog</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/dialog/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/dialog/progress/index.html">dialog.progress</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/viewer/index.html">viewer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/viewer/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/viewer/log/index.html">viewer.log</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/button/index.html">button</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/button/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/button/channel/index.html">button.channel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/button/favorite/index.html">button.favorite</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/button/sequencer/index.html">button.sequencer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/button/waveform/index.html">button.waveform</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/button/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/button/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/button/index.html#button.ChannelButton"><code class="docutils literal notranslate"><span class="pre">ChannelButton</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/button/index.html#button.SequencerSquare"><code class="docutils literal notranslate"><span class="pre">SequencerSquare</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/switch/index.html">switch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/switch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/switch/partial/index.html">switch.partial</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/switch/switch/index.html">switch.switch</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/filter/index.html">filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/filter/index.html#filter.FilterWidget"><code class="docutils literal notranslate"><span class="pre">FilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/display/index.html">display</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/display/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/display/digital/index.html">display.digital</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/display/pattern/index.html">display.pattern</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/display/value/index.html">display.value</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/pattern/index.html">pattern</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/pattern/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/pattern/measure/index.html">pattern.measure</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/spin_box/index.html">spin_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/spin_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/spin_box/spin_box/index.html">spin_box.spin_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/envelope/index.html">envelope</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/envelope/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/envelope/base/index.html">envelope.base</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/indicator/index.html">indicator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/indicator/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/indicator/led/index.html">indicator.led</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/indicator/midi/index.html">indicator.midi</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/combo_box/index.html">combo_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/combo_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/combo_box/combo_box/index.html">combo_box.combo_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/jdxi_editor/index.html">jdxi_editor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/jdxi_editor/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/jdxi_editor/globals/index.html">jdxi_editor.globals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/jdxi_editor/jdxi/index.html">jdxi_editor.jdxi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/jdxi_editor/log/index.html">jdxi_editor.log</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/jdxi_editor/main/index.html">jdxi_editor.main</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/jdxi_editor/midi/index.html">jdxi_editor.midi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/jdxi_editor/project/index.html">jdxi_editor.project</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/jdxi_editor/resources/index.html">jdxi_editor.resources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/jdxi_editor/ui/index.html">jdxi_editor.ui</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/filter_plot/index.html">filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/filter_plot/index.html#filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/filter_plot/index.html#filter_plot.FilterPlot"><code class="docutils literal notranslate"><span class="pre">FilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/envelope_plot/index.html">envelope_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/envelope_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/envelope_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/envelope_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/envelope_plot/index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/envelope_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/envelope_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/envelope_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/envelope_plot/index.html#envelope_plot.midi_value_to_float"><code class="docutils literal notranslate"><span class="pre">midi_value_to_float()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/envelope_plot/index.html#envelope_plot.WMTEnvPlot"><code class="docutils literal notranslate"><span class="pre">WMTEnvPlot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/envelope_plot/index.html#envelope_plot.app"><code class="docutils literal notranslate"><span class="pre">app</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/wave_selector/index.html">wave_selector</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/wave_selector/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/wave_selector/wave_selector/index.html">wave_selector.wave_selector</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/analog_filter/index.html">analog_filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/analog_filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/analog_filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/analog_filter/index.html#analog_filter.AnalogFilterWidget"><code class="docutils literal notranslate"><span class="pre">AnalogFilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/slider_spinbox/index.html">slider_spinbox</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/slider_spinbox/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/slider_spinbox/slider_spinbox/index.html">slider_spinbox.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/analog_filter_plot/index.html">analog_filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/analog_filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/analog_filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/analog_filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/analog_filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/analog_filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/analog_filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/analog_filter_plot/index.html#analog_filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/analog_filter_plot/index.html#analog_filter_plot.AnalogFilterPlot"><code class="docutils literal notranslate"><span class="pre">AnalogFilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">JD-Xi Editor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">display.digital</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for display.digital</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">digital_display.py</span>
+
+<span class="sd">This module provides the DigitalDisplay class, a custom PySide6 QWidget designed</span>
+<span class="sd">to simulate an LCD-style digital display for MIDI controllers, synthesizers,</span>
+<span class="sd">or other music-related applications. The display shows preset and program</span>
+<span class="sd">information along with an octave indicator.</span>
+
+<span class="sd">Features:</span>
+<span class="sd">- Displays a program name, program number, preset name, and preset number.</span>
+<span class="sd">- Shows the current octave with a digital-style font.</span>
+<span class="sd">- Customizable font family for the digital display.</span>
+<span class="sd">- Resizable and styled for a retro LCD appearance.</span>
+<span class="sd">- Provides setter methods to update displayed values dynamically.</span>
+
+<span class="sd">Classes:</span>
+<span class="sd">- DigitalDisplay: A QWidget subclass that renders a digital-style display.</span>
+
+<span class="sd">Usage Example:</span>
+<span class="sd">    display = DigitalDisplay()</span>
+<span class="sd">    display.setPresetText(&quot;Grand Piano&quot;)</span>
+<span class="sd">    display.setPresetNumber(12)</span>
+<span class="sd">    display.setProgramText(&quot;User Program 1&quot;)</span>
+<span class="sd">    display.setProgramNumber(5)</span>
+<span class="sd">    display.setOctave(1)</span>
+
+<span class="sd">Dependencies:</span>
+<span class="sd">- PySide6.QtWidgets (QWidget, QSizePolicy)</span>
+<span class="sd">- PySide6.QtGui (QPainter, QColor, QPen, QFont)</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">platform</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">PySide6.QtCore</span><span class="w"> </span><span class="kn">import</span> <span class="n">QRect</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PySide6.QtWidgets</span><span class="w"> </span><span class="kn">import</span> <span class="n">QWidget</span><span class="p">,</span> <span class="n">QSizePolicy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PySide6.QtGui</span><span class="w"> </span><span class="kn">import</span> <span class="n">QPainter</span><span class="p">,</span> <span class="n">QLinearGradient</span><span class="p">,</span> <span class="n">QColor</span><span class="p">,</span> <span class="n">QPen</span><span class="p">,</span> <span class="n">QFont</span><span class="p">,</span> <span class="n">QPaintEvent</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.log.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">Logger</span> <span class="k">as</span> <span class="n">log</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.data.programs.analog</span><span class="w"> </span><span class="kn">import</span> <span class="n">ANALOG_PRESET_LIST</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.data.programs.drum</span><span class="w"> </span><span class="kn">import</span> <span class="n">DRUM_KIT_LIST</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.midi.data.programs.digital</span><span class="w"> </span><span class="kn">import</span> <span class="n">DIGITAL_PRESET_LIST</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.jdxi.synth.type</span><span class="w"> </span><span class="kn">import</span> <span class="n">JDXiSynth</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.ui.editors.helpers.program</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">get_program_id_by_name</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.ui.editors.helpers.preset</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_preset_list_number_by_name</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jdxi_editor.ui.windows.jdxi.dimensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">JDXiDimensions</span>
+
+
+<div class="viewcode-block" id="DigitalDisplayBase">
+<a class="viewcode-back" href="../../autoapi/display/digital/index.html#display.digital.DigitalDisplayBase">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DigitalDisplayBase</span><span class="p">(</span><span class="n">QWidget</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for JD-Xi style digital displays.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">digital_font_family</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;JD LCD Rounded&quot;</span><span class="p">,</span> <span class="n">parent</span><span class="p">:</span> <span class="n">QWidget</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the DigitalDisplayBase</span>
+
+<span class="sd">        :param digital_font_family: str</span>
+<span class="sd">        :param parent: QWidget</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="DigitalDisplayBase.digital_font_family">
+<a class="viewcode-back" href="../../autoapi/display/digital/index.html#display.digital.DigitalDisplayBase.digital_font_family">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">digital_font_family</span> <span class="o">=</span> <span class="n">digital_font_family</span></div>
+
+<div class="viewcode-block" id="DigitalDisplayBase.display_texts">
+<a class="viewcode-back" href="../../autoapi/display/digital/index.html#display.digital.DigitalDisplayBase.display_texts">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">display_texts</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMinimumSize</span><span class="p">(</span><span class="mi">210</span><span class="p">,</span> <span class="mi">70</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setSizePolicy</span><span class="p">(</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Policy</span><span class="o">.</span><span class="n">Fixed</span><span class="p">,</span> <span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Policy</span><span class="o">.</span><span class="n">Fixed</span><span class="p">)</span>
+
+<div class="viewcode-block" id="DigitalDisplayBase.paintEvent">
+<a class="viewcode-back" href="../../autoapi/display/digital/index.html#display.digital.DigitalDisplayBase.paintEvent">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">paintEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">QPaintEvent</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Handles rendering of the digital display.&quot;&quot;&quot;</span>
+        <span class="n">painter</span> <span class="o">=</span> <span class="n">QPainter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">painter</span><span class="o">.</span><span class="n">isActive</span><span class="p">():</span>
+            <span class="k">return</span>
+        <span class="n">painter</span><span class="o">.</span><span class="n">setRenderHint</span><span class="p">(</span><span class="n">QPainter</span><span class="o">.</span><span class="n">Antialiasing</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">draw_display</span><span class="p">(</span><span class="n">painter</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DigitalDisplayBase.draw_display">
+<a class="viewcode-back" href="../../autoapi/display/digital/index.html#display.digital.DigitalDisplayBase.draw_display">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">draw_display</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">painter</span><span class="p">:</span> <span class="n">QPainter</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Draws the LCD-style display with a gradient glow effect.&quot;&quot;&quot;</span>
+        <span class="n">display_width</span><span class="p">,</span> <span class="n">display_height</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">()</span>
+
+        <span class="c1"># Gradient background</span>
+        <span class="n">gradient</span> <span class="o">=</span> <span class="n">QLinearGradient</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">display_width</span><span class="p">,</span> <span class="n">display_height</span><span class="p">)</span>
+        <span class="n">gradient</span><span class="o">.</span><span class="n">setColorAt</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">QColor</span><span class="p">(</span><span class="s2">&quot;#321212&quot;</span><span class="p">))</span>
+        <span class="n">gradient</span><span class="o">.</span><span class="n">setColorAt</span><span class="p">(</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">QColor</span><span class="p">(</span><span class="s2">&quot;#331111&quot;</span><span class="p">))</span>
+        <span class="n">gradient</span><span class="o">.</span><span class="n">setColorAt</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">QColor</span><span class="p">(</span><span class="s2">&quot;#551100&quot;</span><span class="p">))</span>
+        <span class="n">gradient</span><span class="o">.</span><span class="n">setColorAt</span><span class="p">(</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">QColor</span><span class="p">(</span><span class="s2">&quot;#331111&quot;</span><span class="p">))</span>
+        <span class="n">gradient</span><span class="o">.</span><span class="n">setColorAt</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">QColor</span><span class="p">(</span><span class="s2">&quot;#111111&quot;</span><span class="p">))</span>
+
+        <span class="n">painter</span><span class="o">.</span><span class="n">setBrush</span><span class="p">(</span><span class="n">gradient</span><span class="p">)</span>
+        <span class="n">painter</span><span class="o">.</span><span class="n">setPen</span><span class="p">(</span><span class="n">QPen</span><span class="p">(</span><span class="n">QColor</span><span class="p">(</span><span class="s2">&quot;#000000&quot;</span><span class="p">),</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="n">painter</span><span class="o">.</span><span class="n">drawRect</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">display_width</span><span class="p">,</span> <span class="n">display_height</span><span class="p">)</span>
+
+        <span class="c1"># Set font</span>
+        <span class="k">if</span> <span class="n">platform</span><span class="o">.</span><span class="n">system</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;Windows&quot;</span><span class="p">:</span>
+            <span class="n">font_size</span> <span class="o">=</span> <span class="mi">13</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">font_size</span> <span class="o">=</span> <span class="mi">19</span>
+        <span class="n">display_font</span> <span class="o">=</span> <span class="n">QFont</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">digital_font_family</span><span class="p">,</span> <span class="n">font_size</span><span class="p">,</span> <span class="n">QFont</span><span class="o">.</span><span class="n">Bold</span><span class="p">)</span>
+        <span class="n">painter</span><span class="o">.</span><span class="n">setFont</span><span class="p">(</span><span class="n">display_font</span><span class="p">)</span>
+
+        <span class="c1"># Draw text</span>
+        <span class="n">y_offset</span> <span class="o">=</span> <span class="mi">10</span>
+        <span class="k">for</span> <span class="n">text</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">display_texts</span><span class="p">:</span>
+            <span class="n">painter</span><span class="o">.</span><span class="n">setPen</span><span class="p">(</span><span class="n">QPen</span><span class="p">(</span><span class="n">QColor</span><span class="p">(</span><span class="s2">&quot;#FFAA33&quot;</span><span class="p">)))</span>
+            <span class="c1"># rect = QRect(10, y_offset, self.width() - 20, 30)  # Proper text bounding area</span>
+            <span class="n">rect</span> <span class="o">=</span> <span class="n">QRect</span><span class="p">(</span>
+                <span class="mi">10</span><span class="p">,</span> <span class="n">y_offset</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">()</span> <span class="o">-</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span>
+            <span class="p">)</span>  <span class="c1"># Proper text bounding area</span>
+            <span class="n">painter</span><span class="o">.</span><span class="n">drawText</span><span class="p">(</span><span class="n">rect</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">text</span><span class="p">))</span>
+            <span class="n">y_offset</span> <span class="o">+=</span> <span class="mi">30</span>  <span class="c1"># Space out text lines</span></div>
+
+
+<div class="viewcode-block" id="DigitalDisplayBase.update_display">
+<a class="viewcode-back" href="../../autoapi/display/digital/index.html#display.digital.DigitalDisplayBase.update_display">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_display</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">texts</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the display text and trigger repaint.</span>
+
+<span class="sd">        :param texts: list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">display_texts</span> <span class="o">=</span> <span class="n">texts</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="DigitalDisplayBase.set_upper_display_text">
+<a class="viewcode-back" href="../../autoapi/display/digital/index.html#display.digital.DigitalDisplayBase.set_upper_display_text">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_upper_display_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the display text and trigger repaint.</span>
+
+<span class="sd">        :param text: list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">display_texts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">text</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="DigitalTitle">
+<a class="viewcode-back" href="../../autoapi/display/digital/index.html#display.digital.DigitalTitle">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DigitalTitle</span><span class="p">(</span><span class="n">DigitalDisplayBase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Simplified display showing only the current tone name.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">tone_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Init Tone&quot;</span><span class="p">,</span>
+        <span class="n">digital_font_family</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;JD LCD Rounded&quot;</span><span class="p">,</span>
+        <span class="n">show_upper_text</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">parent</span><span class="p">:</span> <span class="n">QWidget</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">digital_font_family</span><span class="p">,</span> <span class="n">parent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMinimumSize</span><span class="p">(</span>
+            <span class="n">JDXiDimensions</span><span class="o">.</span><span class="n">DIGITAL_TITLE_WIDTH</span><span class="p">,</span> <span class="n">JDXiDimensions</span><span class="o">.</span><span class="n">DIGITAL_TITLE_HEIGHT</span>
+        <span class="p">)</span>
+<div class="viewcode-block" id="DigitalTitle.show_upper_text">
+<a class="viewcode-back" href="../../autoapi/display/digital/index.html#display.digital.DigitalTitle.show_upper_text">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_upper_text</span> <span class="o">=</span> <span class="n">show_upper_text</span></div>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_tone_name</span><span class="p">(</span><span class="n">tone_name</span><span class="p">)</span>
+
+<div class="viewcode-block" id="DigitalTitle.__del__">
+<a class="viewcode-back" href="../../autoapi/display/digital/index.html#display.digital.DigitalTitle.__del__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> was deleted&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DigitalTitle.set_tone_name">
+<a class="viewcode-back" href="../../autoapi/display/digital/index.html#display.digital.DigitalTitle.set_tone_name">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_tone_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tone_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the tone name display.</span>
+
+<span class="sd">        :param tone_name: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_upper_text</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_display</span><span class="p">([</span><span class="s2">&quot;Currently Editing:&quot;</span><span class="p">,</span> <span class="n">tone_name</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_display</span><span class="p">([</span><span class="n">tone_name</span><span class="p">])</span></div>
+
+
+
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="DigitalTitle.text">
+<a class="viewcode-back" href="../../autoapi/display/digital/index.html#display.digital.DigitalTitle.text">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">text</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">display_texts</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">display_texts</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="DigitalTitle.setText">
+<a class="viewcode-back" href="../../autoapi/display/digital/index.html#display.digital.DigitalTitle.setText">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setText</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Alias for set_tone_name.</span>
+
+<span class="sd">        :param value: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_tone_name</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="DigitalDisplay">
+<a class="viewcode-back" href="../../autoapi/display/digital/index.html#display.digital.DigitalDisplay">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DigitalDisplay</span><span class="p">(</span><span class="n">DigitalDisplayBase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Digital LCD-style display widget.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">current_octave</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">digital_font_family</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;JD LCD Rounded&quot;</span><span class="p">,</span>
+        <span class="n">active_synth</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;D1&quot;</span><span class="p">,</span>
+        <span class="n">tone_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Init Tone&quot;</span><span class="p">,</span>
+        <span class="n">tone_number</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">program_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Init Program&quot;</span><span class="p">,</span>
+        <span class="n">program_bank_letter</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;A&quot;</span><span class="p">,</span>
+        <span class="n">program_number</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">parent</span><span class="p">:</span> <span class="n">QWidget</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+<div class="viewcode-block" id="DigitalDisplay.active_synth">
+<a class="viewcode-back" href="../../autoapi/display/digital/index.html#display.digital.DigitalDisplay.active_synth">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">active_synth</span> <span class="o">=</span> <span class="n">active_synth</span></div>
+
+<div class="viewcode-block" id="DigitalDisplay.digital_font_family">
+<a class="viewcode-back" href="../../autoapi/display/digital/index.html#display.digital.DigitalDisplay.digital_font_family">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">digital_font_family</span> <span class="o">=</span> <span class="n">digital_font_family</span></div>
+
+<div class="viewcode-block" id="DigitalDisplay.current_octave">
+<a class="viewcode-back" href="../../autoapi/display/digital/index.html#display.digital.DigitalDisplay.current_octave">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_octave</span> <span class="o">=</span> <span class="n">current_octave</span></div>
+
+<div class="viewcode-block" id="DigitalDisplay.tone_name">
+<a class="viewcode-back" href="../../autoapi/display/digital/index.html#display.digital.DigitalDisplay.tone_name">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tone_name</span> <span class="o">=</span> <span class="n">tone_name</span></div>
+
+<div class="viewcode-block" id="DigitalDisplay.tone_number">
+<a class="viewcode-back" href="../../autoapi/display/digital/index.html#display.digital.DigitalDisplay.tone_number">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tone_number</span> <span class="o">=</span> <span class="n">tone_number</span></div>
+
+<div class="viewcode-block" id="DigitalDisplay.program_name">
+<a class="viewcode-back" href="../../autoapi/display/digital/index.html#display.digital.DigitalDisplay.program_name">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">program_name</span> <span class="o">=</span> <span class="n">program_name</span></div>
+
+<div class="viewcode-block" id="DigitalDisplay.program_number">
+<a class="viewcode-back" href="../../autoapi/display/digital/index.html#display.digital.DigitalDisplay.program_number">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">program_number</span> <span class="o">=</span> <span class="n">program_number</span></div>
+
+<div class="viewcode-block" id="DigitalDisplay.program_bank_letter">
+<a class="viewcode-back" href="../../autoapi/display/digital/index.html#display.digital.DigitalDisplay.program_bank_letter">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">program_bank_letter</span> <span class="o">=</span> <span class="n">program_bank_letter</span></div>
+
+<div class="viewcode-block" id="DigitalDisplay.program_id">
+<a class="viewcode-back" href="../../autoapi/display/digital/index.html#display.digital.DigitalDisplay.program_id">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">program_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">program_bank_letter</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">program_number</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DigitalDisplay.margin">
+<a class="viewcode-back" href="../../autoapi/display/digital/index.html#display.digital.DigitalDisplay.margin">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">margin</span> <span class="o">=</span> <span class="mi">10</span>  <span class="c1"># Default margin for display elements</span></div>
+
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMinimumSize</span><span class="p">(</span>
+            <span class="n">JDXiDimensions</span><span class="o">.</span><span class="n">DISPLAY_WIDTH</span><span class="p">,</span> <span class="n">JDXiDimensions</span><span class="o">.</span><span class="n">DISPLAY_HEIGHT</span>
+        <span class="p">)</span>  <span class="c1"># Set size matching display</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setSizePolicy</span><span class="p">(</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Policy</span><span class="o">.</span><span class="n">Fixed</span><span class="p">,</span> <span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Policy</span><span class="o">.</span><span class="n">Fixed</span><span class="p">)</span>
+
+<div class="viewcode-block" id="DigitalDisplay.paintEvent">
+<a class="viewcode-back" href="../../autoapi/display/digital/index.html#display.digital.DigitalDisplay.paintEvent">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">paintEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">QPaintEvent</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Handles the rendering of the digital display.</span>
+
+<span class="sd">        :param event: QPaintEvent</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">painter</span> <span class="o">=</span> <span class="n">QPainter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">painter</span><span class="o">.</span><span class="n">isActive</span><span class="p">():</span>
+            <span class="k">return</span>  <span class="c1"># Prevents drawing if painter failed to initialize</span>
+        <span class="n">painter</span><span class="o">.</span><span class="n">setRenderHint</span><span class="p">(</span><span class="n">QPainter</span><span class="o">.</span><span class="n">Antialiasing</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">draw_display</span><span class="p">(</span><span class="n">painter</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DigitalDisplay.draw_display">
+<a class="viewcode-back" href="../../autoapi/display/digital/index.html#display.digital.DigitalDisplay.draw_display">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">draw_display</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">painter</span><span class="p">:</span> <span class="n">QPainter</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Draws the JD-Xi style digital display with a gradient glow effect.&quot;&quot;&quot;</span>
+
+        <span class="n">display_x</span><span class="p">,</span> <span class="n">display_y</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+        <span class="n">display_width</span><span class="p">,</span> <span class="n">display_height</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">()</span>
+
+        <span class="c1"># 1. Create an orange glow gradient background</span>
+        <span class="n">gradient</span> <span class="o">=</span> <span class="n">QLinearGradient</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">display_width</span><span class="p">,</span> <span class="n">display_height</span><span class="p">)</span>
+        <span class="n">gradient</span><span class="o">.</span><span class="n">setColorAt</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">QColor</span><span class="p">(</span><span class="s2">&quot;#321212&quot;</span><span class="p">))</span>  <span class="c1"># Darker edges</span>
+        <span class="n">gradient</span><span class="o">.</span><span class="n">setColorAt</span><span class="p">(</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">QColor</span><span class="p">(</span><span class="s2">&quot;#331111&quot;</span><span class="p">))</span>  <span class="c1"># Gray transition</span>
+        <span class="n">gradient</span><span class="o">.</span><span class="n">setColorAt</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">QColor</span><span class="p">(</span><span class="s2">&quot;#551100&quot;</span><span class="p">))</span>  <span class="c1"># Orange glow center</span>
+        <span class="n">gradient</span><span class="o">.</span><span class="n">setColorAt</span><span class="p">(</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">QColor</span><span class="p">(</span><span class="s2">&quot;#331111&quot;</span><span class="p">))</span>  <span class="c1"># Gray transition</span>
+        <span class="n">gradient</span><span class="o">.</span><span class="n">setColorAt</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">QColor</span><span class="p">(</span><span class="s2">&quot;#111111&quot;</span><span class="p">))</span>  <span class="c1"># Darker edges</span>
+
+        <span class="n">painter</span><span class="o">.</span><span class="n">setBrush</span><span class="p">(</span><span class="n">gradient</span><span class="p">)</span>
+        <span class="n">painter</span><span class="o">.</span><span class="n">setRenderHint</span><span class="p">(</span><span class="n">QPainter</span><span class="o">.</span><span class="n">Antialiasing</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">painter</span><span class="o">.</span><span class="n">setPen</span><span class="p">(</span><span class="n">QPen</span><span class="p">(</span><span class="n">QColor</span><span class="p">(</span><span class="s2">&quot;#000000&quot;</span><span class="p">),</span> <span class="mi">2</span><span class="p">))</span>  <span class="c1"># black border</span>
+        <span class="n">painter</span><span class="o">.</span><span class="n">drawRect</span><span class="p">(</span><span class="n">display_x</span><span class="p">,</span> <span class="n">display_y</span><span class="p">,</span> <span class="n">display_width</span><span class="p">,</span> <span class="n">display_height</span><span class="p">)</span>
+
+        <span class="c1"># 2. Set font for digital display</span>
+        <span class="k">if</span> <span class="n">platform</span><span class="o">.</span><span class="n">system</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;Windows&quot;</span><span class="p">:</span>
+            <span class="n">font_size</span> <span class="o">=</span> <span class="mi">15</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">font_size</span> <span class="o">=</span> <span class="mi">19</span>
+        <span class="n">display_font</span> <span class="o">=</span> <span class="n">QFont</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">digital_font_family</span><span class="p">,</span> <span class="n">font_size</span><span class="p">,</span> <span class="n">QFont</span><span class="o">.</span><span class="n">Bold</span><span class="p">)</span>
+        <span class="n">painter</span><span class="o">.</span><span class="n">setFont</span><span class="p">(</span><span class="n">display_font</span><span class="p">)</span>
+        <span class="n">painter</span><span class="o">.</span><span class="n">setPen</span><span class="p">(</span><span class="n">QPen</span><span class="p">(</span><span class="n">QColor</span><span class="p">(</span><span class="s2">&quot;#FFBB33&quot;</span><span class="p">)))</span>  <span class="c1"># Lighter orange for text</span>
+
+        <span class="c1"># 3. Draw text with glowing effect</span>
+        <span class="n">tone_name_text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">active_synth</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tone_name</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">tone_name_text</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">tone_name_text</span><span class="p">[:</span><span class="mi">21</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;…&quot;</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tone_name_text</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">22</span> <span class="k">else</span> <span class="n">tone_name_text</span>
+        <span class="p">)</span>
+        <span class="n">program_text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">program_id</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">program_name</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">program_text</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">program_text</span><span class="p">[:</span><span class="mi">21</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;…&quot;</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">program_text</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">22</span> <span class="k">else</span> <span class="n">program_text</span>
+        <span class="p">)</span>
+        <span class="n">oct_text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Oct </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">current_octave</span><span class="si">:</span><span class="s2">+</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_octave</span> <span class="k">else</span> <span class="s2">&quot;Oct 0&quot;</span>
+
+        <span class="c1"># Glow effect simulation (by drawing text multiple times with slight offsets)</span>
+        <span class="n">offsets</span> <span class="o">=</span> <span class="p">[(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>
+        <span class="n">glow_color</span> <span class="o">=</span> <span class="n">QColor</span><span class="p">(</span><span class="s2">&quot;#FF00&quot;</span><span class="p">)</span>  <span class="c1"># Darker orange for glow effect</span>
+        <span class="k">for</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span> <span class="ow">in</span> <span class="n">offsets</span><span class="p">:</span>
+            <span class="n">painter</span><span class="o">.</span><span class="n">setPen</span><span class="p">(</span><span class="n">QPen</span><span class="p">(</span><span class="n">glow_color</span><span class="p">))</span>
+            <span class="n">painter</span><span class="o">.</span><span class="n">drawText</span><span class="p">(</span><span class="n">display_x</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="n">dx</span><span class="p">,</span> <span class="n">display_y</span> <span class="o">+</span> <span class="mi">20</span> <span class="o">+</span> <span class="n">dy</span><span class="p">,</span> <span class="n">program_text</span><span class="p">)</span>
+            <span class="n">painter</span><span class="o">.</span><span class="n">drawText</span><span class="p">(</span><span class="n">display_x</span> <span class="o">+</span> <span class="mi">3</span> <span class="o">+</span> <span class="n">dx</span><span class="p">,</span> <span class="n">display_y</span> <span class="o">+</span> <span class="mi">50</span> <span class="o">+</span> <span class="n">dy</span><span class="p">,</span> <span class="n">tone_name_text</span><span class="p">)</span>
+            <span class="n">painter</span><span class="o">.</span><span class="n">drawText</span><span class="p">(</span>
+                <span class="n">display_x</span> <span class="o">+</span> <span class="n">display_width</span> <span class="o">-</span> <span class="mi">20</span> <span class="o">+</span> <span class="n">dx</span><span class="p">,</span> <span class="n">display_y</span> <span class="o">+</span> <span class="mi">30</span> <span class="o">+</span> <span class="n">dy</span><span class="p">,</span> <span class="n">oct_text</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Draw the main text on top</span>
+        <span class="n">painter</span><span class="o">.</span><span class="n">setPen</span><span class="p">(</span><span class="n">QPen</span><span class="p">(</span><span class="n">QColor</span><span class="p">(</span><span class="s2">&quot;#FFAA33&quot;</span><span class="p">)))</span>  <span class="c1"># Bright orange text</span>
+        <span class="n">painter</span><span class="o">.</span><span class="n">drawText</span><span class="p">(</span><span class="n">display_x</span> <span class="o">+</span> <span class="mi">7</span><span class="p">,</span> <span class="n">display_y</span> <span class="o">+</span> <span class="mi">50</span><span class="p">,</span> <span class="n">tone_name_text</span><span class="p">)</span>
+        <span class="n">painter</span><span class="o">.</span><span class="n">drawText</span><span class="p">(</span><span class="n">display_x</span> <span class="o">+</span> <span class="mi">7</span><span class="p">,</span> <span class="n">display_y</span> <span class="o">+</span> <span class="mi">20</span><span class="p">,</span> <span class="n">program_text</span><span class="p">)</span>
+        <span class="n">painter</span><span class="o">.</span><span class="n">drawText</span><span class="p">(</span><span class="n">display_x</span> <span class="o">+</span> <span class="n">display_width</span> <span class="o">-</span> <span class="mi">66</span><span class="p">,</span> <span class="n">display_y</span> <span class="o">+</span> <span class="mi">50</span><span class="p">,</span> <span class="n">oct_text</span><span class="p">)</span></div>
+
+
+    <span class="c1"># --- Property Setters ---</span>
+<div class="viewcode-block" id="DigitalDisplay.setPresetText">
+<a class="viewcode-back" href="../../autoapi/display/digital/index.html#display.digital.DigitalDisplay.setPresetText">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setPresetText</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set preset name and trigger repaint.</span>
+
+<span class="sd">        :param text: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tone_name</span> <span class="o">=</span> <span class="n">text</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="DigitalDisplay.setPresetNumber">
+<a class="viewcode-back" href="../../autoapi/display/digital/index.html#display.digital.DigitalDisplay.setPresetNumber">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setPresetNumber</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">number</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set preset number and trigger repaint.</span>
+
+<span class="sd">        :param number: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tone_number</span> <span class="o">=</span> <span class="n">number</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="DigitalDisplay.setProgramText">
+<a class="viewcode-back" href="../../autoapi/display/digital/index.html#display.digital.DigitalDisplay.setProgramText">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setProgramText</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set program name and trigger repaint.</span>
+
+<span class="sd">        :param text: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">program_name</span> <span class="o">=</span> <span class="n">text</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="DigitalDisplay.setProgramNumber">
+<a class="viewcode-back" href="../../autoapi/display/digital/index.html#display.digital.DigitalDisplay.setProgramNumber">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setProgramNumber</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">number</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set program number and trigger repaint.</span>
+
+<span class="sd">        :param number: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">program_number</span> <span class="o">=</span> <span class="n">number</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="DigitalDisplay.setOctave">
+<a class="viewcode-back" href="../../autoapi/display/digital/index.html#display.digital.DigitalDisplay.setOctave">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setOctave</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">octave</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set current octave and trigger repaint.</span>
+
+<span class="sd">        :param octave: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_octave</span> <span class="o">=</span> <span class="n">octave</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="DigitalDisplay.repaint_display">
+<a class="viewcode-back" href="../../autoapi/display/digital/index.html#display.digital.DigitalDisplay.repaint_display">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">repaint_display</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">current_octave</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">tone_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">tone_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">program_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">active_synth</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;D1&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_octave</span> <span class="o">=</span> <span class="n">current_octave</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tone_number</span> <span class="o">=</span> <span class="n">tone_number</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tone_name</span> <span class="o">=</span> <span class="n">tone_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">program_name</span> <span class="o">=</span> <span class="n">program_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">program_id</span> <span class="o">=</span> <span class="n">get_program_id_by_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">program_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">active_synth</span> <span class="o">=</span> <span class="n">active_synth</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="DigitalDisplay._update_display">
+<a class="viewcode-back" href="../../autoapi/display/digital/index.html#display.digital.DigitalDisplay._update_display">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_display</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">synth_type</span><span class="p">,</span>
+        <span class="n">digital1_tone_name</span><span class="p">,</span>
+        <span class="n">digital2_tone_name</span><span class="p">,</span>
+        <span class="n">drums_tone_name</span><span class="p">,</span>
+        <span class="n">analog_tone_name</span><span class="p">,</span>
+        <span class="n">tone_number</span><span class="p">,</span>
+        <span class="n">tone_name</span><span class="p">,</span>
+        <span class="n">program_name</span><span class="p">,</span>
+        <span class="n">program_number</span><span class="p">,</span>
+        <span class="n">program_bank_letter</span><span class="o">=</span><span class="s2">&quot;A&quot;</span><span class="p">,</span>  <span class="c1"># Default bank</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the JD-Xi display image.</span>
+
+<span class="sd">        :param synth_type: str</span>
+<span class="sd">        :param digital1_tone_name: str</span>
+<span class="sd">        :param digital2_tone_name: str</span>
+<span class="sd">        :param drums_tone_name: str</span>
+<span class="sd">        :param analog_tone_name: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">synth_type</span> <span class="o">==</span> <span class="n">JDXiSynth</span><span class="o">.</span><span class="n">DIGITAL_SYNTH_1</span><span class="p">:</span>
+            <span class="n">tone_name</span> <span class="o">=</span> <span class="n">digital1_tone_name</span>
+            <span class="n">tone_number</span> <span class="o">=</span> <span class="n">get_preset_list_number_by_name</span><span class="p">(</span><span class="n">tone_name</span><span class="p">,</span> <span class="n">DIGITAL_PRESET_LIST</span><span class="p">)</span>
+            <span class="n">active_synth</span> <span class="o">=</span> <span class="s2">&quot;D1&quot;</span>
+        <span class="k">elif</span> <span class="n">synth_type</span> <span class="o">==</span> <span class="n">JDXiSynth</span><span class="o">.</span><span class="n">DIGITAL_SYNTH_2</span><span class="p">:</span>
+            <span class="n">tone_name</span> <span class="o">=</span> <span class="n">digital2_tone_name</span>
+            <span class="n">active_synth</span> <span class="o">=</span> <span class="s2">&quot;D2&quot;</span>
+            <span class="n">tone_number</span> <span class="o">=</span> <span class="n">get_preset_list_number_by_name</span><span class="p">(</span><span class="n">tone_name</span><span class="p">,</span> <span class="n">DIGITAL_PRESET_LIST</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">synth_type</span> <span class="o">==</span> <span class="n">JDXiSynth</span><span class="o">.</span><span class="n">DRUM_KIT</span><span class="p">:</span>
+            <span class="n">tone_name</span> <span class="o">=</span> <span class="n">drums_tone_name</span>
+            <span class="n">active_synth</span> <span class="o">=</span> <span class="s2">&quot;DR&quot;</span>
+            <span class="n">tone_number</span> <span class="o">=</span> <span class="n">get_preset_list_number_by_name</span><span class="p">(</span><span class="n">tone_name</span><span class="p">,</span> <span class="n">DRUM_KIT_LIST</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">synth_type</span> <span class="o">==</span> <span class="n">JDXiSynth</span><span class="o">.</span><span class="n">ANALOG_SYNTH</span><span class="p">:</span>
+            <span class="n">tone_name</span> <span class="o">=</span> <span class="n">analog_tone_name</span>
+            <span class="n">active_synth</span> <span class="o">=</span> <span class="s2">&quot;AN&quot;</span>
+            <span class="n">tone_number</span> <span class="o">=</span> <span class="n">get_preset_list_number_by_name</span><span class="p">(</span><span class="n">tone_name</span><span class="p">,</span> <span class="n">ANALOG_PRESET_LIST</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">active_synth</span> <span class="o">=</span> <span class="s2">&quot;D1&quot;</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;current tone number: </span><span class="si">{</span><span class="n">tone_number</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;current tone name: </span><span class="si">{</span><span class="n">tone_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">repaint_display</span><span class="p">(</span>
+            <span class="n">current_octave</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">current_octave</span><span class="p">,</span>
+            <span class="n">tone_number</span><span class="o">=</span><span class="n">tone_number</span><span class="p">,</span>
+            <span class="n">tone_name</span><span class="o">=</span><span class="n">tone_name</span><span class="p">,</span>
+            <span class="n">program_name</span><span class="o">=</span><span class="n">program_name</span><span class="p">,</span>
+            <span class="n">active_synth</span><span class="o">=</span><span class="n">active_synth</span><span class="p">,</span>
+        <span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Mark Mrooks.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

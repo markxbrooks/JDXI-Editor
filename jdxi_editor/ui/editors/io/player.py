@@ -46,6 +46,10 @@ from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 from jdxi_editor.ui.widgets.midi.track_viewer import MidiTrackViewer
 from jdxi_editor.ui.widgets.midi.utils import get_total_duration_in_seconds
 from jdxi_editor.ui.windows.jdxi.utils import show_message_box
+from jdxi_editor.ui.editors.helpers.preset import get_preset_parameter_value
+from jdxi_editor.midi.data.programs.digital import DIGITAL_PRESET_LIST
+from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
+from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
 
 # Expose Qt symbols for tests that patch via jdxi_editor.ui.editors.io.player
 # Tests expect these names to exist at module level
@@ -149,6 +153,7 @@ class MidiFileEditor(SynthEditor):
 
         # Modular control sections
         right_panel_layout.addLayout(self.init_midi_file_controls())
+        right_panel_layout.addLayout(self.init_automation_controls())
         right_panel_layout.addLayout(self.init_usb_port_controls())
         right_panel_layout.addLayout(self.init_usb_file_controls())
 
@@ -229,6 +234,174 @@ class MidiFileEditor(SynthEditor):
         layout.addWidget(self.ui.midi_suppress_control_changes_checkbox)
 
         return layout
+
+    def init_automation_controls(self) -> QHBoxLayout:
+        """
+        Create simple automation controls to insert Program Changes at the current position.
+        """
+        layout = QHBoxLayout()
+
+        layout.addWidget(QLabel("Automation:"))
+
+        # Channel selector (1-16)
+        self.ui.automation_channel_combo = QComboBox()
+        for ch in range(1, 17):
+            self.ui.automation_channel_combo.addItem(f"Ch {ch}", ch)
+        layout.addWidget(self.ui.automation_channel_combo)
+
+        # Source list selector
+        self.ui.automation_type_combo = QComboBox()
+        self.ui.automation_type_combo.addItems(["Digital", "Analog", "Drums"])
+        self.ui.automation_type_combo.currentIndexChanged.connect(self.on_automation_type_changed)
+        layout.addWidget(self.ui.automation_type_combo)
+
+        # Program selector (populated based on type)
+        self.ui.automation_program_combo = QComboBox()
+        layout.addWidget(self.ui.automation_program_combo)
+
+        # Insert button
+        self.ui.automation_insert_button = QPushButton(
+            qta.icon("mdi.plus", color=JDXiStyle.FOREGROUND), "Insert Program Change Here"
+        )
+        self.ui.automation_insert_button.clicked.connect(self.insert_program_change_current_position)
+        layout.addWidget(self.ui.automation_insert_button)
+
+        # Populate initial list
+        self.populate_automation_programs("Digital")
+
+        return layout
+
+    def populate_automation_programs(self, source: str) -> None:
+        """
+        Populate the program combo based on source list.
+        source: "Digital" | "Analog" | "Drums"
+        """
+        self.ui.automation_program_combo.clear()
+        if source == "Digital":
+            for item in DIGITAL_PRESET_LIST:
+                label = f"{str(item.get('id')).zfill(3)}  {item.get('name')}"
+                self.ui.automation_program_combo.addItem(label, (int(item.get("msb")), int(item.get("lsb")), int(item.get("pc"))))
+        elif source == "Analog":
+            for item in ANALOG_PRESET_LIST:
+                label = f"{str(item.get('id')).zfill(3)}  {item.get('name')}"
+                # analog list stores floats-as-numbers sometimes; cast to int
+                self.ui.automation_program_combo.addItem(label, (int(item.get("msb")), int(item.get("lsb")), int(item.get("pc"))))
+        else:  # Drums
+            for item in DRUM_KIT_LIST:
+                label = f"{str(item.get('id')).zfill(3)}  {item.get('name')}"
+                self.ui.automation_program_combo.addItem(label, (int(item.get("msb")), int(item.get("lsb")), int(item.get("pc"))))
+
+    def on_automation_type_changed(self, _: int) -> None:
+        text = self.ui.automation_type_combo.currentText()
+        self.populate_automation_programs(text)
+
+    def insert_program_change_current_position(self) -> None:
+        """
+        Insert Bank Select (CC#0, CC#32) and Program Change at the current slider time.
+        """
+        if not self.midi_state.file:
+            return
+
+        # Time in seconds from slider
+        current_seconds = float(self.ui.midi_file_position_slider.value())
+        # Channel (display is 1-16, convert to 0-based)
+        display_channel = int(self.ui.automation_channel_combo.currentData())
+        channel = display_channel - 1
+
+        # Selected program triple (msb, lsb, pc)
+        data = self.ui.automation_program_combo.currentData()
+        if not data:
+            return
+        msb, lsb, pc = data
+
+        # Convert seconds to absolute ticks (approx using current tempo at position)
+        try:
+            tempo_usecs = self.midi_state.tempo_at_position or MidiConstant.TEMPO_120_BPM_USEC
+            abs_ticks = int(mido.second2tick(current_seconds, self.midi_state.file.ticks_per_beat, tempo_usecs))
+        except Exception:
+            abs_ticks = int(current_seconds / max(self.tick_duration, 1e-9))
+
+        # Find a target track that uses this channel, else use track 0
+        track_index = self._find_track_for_channel(channel)
+        target_track = self.midi_state.file.tracks[track_index]
+
+        # Build messages: CC#0, CC#32, Program Change (PC is 0-based in MIDI spec)
+        msgs = [
+            mido.Message("control_change", control=0, value=int(msb), channel=channel, time=0),
+            mido.Message("control_change", control=32, value=int(lsb), channel=channel, time=0),
+            mido.Message("program_change", program=max(0, int(pc) - 1), channel=channel, time=0),
+        ]
+
+        self._insert_messages_at_abs_tick(target_track, abs_ticks, msgs)
+
+        # Refresh viewer and internal state
+        self.ui.midi_track_viewer.set_midi_file(self.midi_state.file)
+        self.midi_extract_events()
+        self.calculate_duration()
+        self.ui_position_label_update_time()
+
+        # Add a visual marker to the time ruler
+        try:
+            preset_label = self.ui.automation_program_combo.currentText()
+            short_label = preset_label.split("  ")[1] if "  " in preset_label else preset_label
+            self.ui.midi_track_viewer.ruler.add_marker(current_seconds, label=short_label)
+        except Exception:
+            # Fail-safe: add without label
+            self.ui.midi_track_viewer.ruler.add_marker(current_seconds)
+
+    def _find_track_for_channel(self, channel: int) -> int:
+        for i, track in enumerate(self.midi_state.file.tracks):
+            for msg in track:
+                if hasattr(msg, "channel") and msg.channel == channel:
+                    return i
+        return 0
+
+    def _insert_messages_at_abs_tick(self, track: mido.MidiTrack, abs_tick_target: int, new_msgs: list[mido.Message]) -> None:
+        """
+        Insert a list of messages at a given absolute tick, preserving delta times.
+        """
+        # Compute absolute ticks for each existing message, then rebuild with adjusted deltas
+        abs_tick = 0
+        rebuilt: list[mido.Message] = []
+        inserted = False
+
+        for msg in track:
+            next_abs = abs_tick + msg.time
+            if not inserted and next_abs >= abs_tick_target:
+                # Insert right before this message
+                # Delta from current abs_tick to target
+                insert_delta = max(0, abs_tick_target - abs_tick)
+                # First, push any time before insertion
+                if insert_delta > 0:
+                    rebuilt.append(mido.Message("note_on", note=0, velocity=0, time=insert_delta))
+                    # Replace the placeholder with zero-time; we will discard it below
+                    rebuilt.pop()
+                # Append new messages with proper delta times
+                first = True
+                for nm in new_msgs:
+                    nm_copy = nm.copy(time=insert_delta if first else 0)
+                    rebuilt.append(nm_copy)
+                    first = False
+                    insert_delta = 0
+                # Now adjust the current message's delta to account for insertion at target
+                adjusted_time = max(0, next_abs - abs_tick_target)
+                msg = msg.copy(time=adjusted_time)
+                inserted = True
+            rebuilt.append(msg)
+            abs_tick = next_abs
+
+        if not inserted:
+            # Append at end; ensure the first inserted msg gets appropriate delta
+            first = True
+            for nm in new_msgs:
+                nm_copy = nm.copy(time=0 if not first else max(0, abs_tick_target - abs_tick))
+                rebuilt.append(nm_copy)
+                first = False
+
+        # Write back
+        track.clear()
+        for m in rebuilt:
+            track.append(m)
 
     def init_usb_port_controls(self) -> QHBoxLayout:
         """

@@ -1,0 +1,1084 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>jdxi_editor.jdxi package &mdash; JD-Xi Editor 0.8.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=486e5634"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="jdxi_editor.jdxi.file package" href="jdxi_editor.jdxi.file.html" />
+    <link rel="prev" title="jdxi_editor package" href="jdxi_editor.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            JD-Xi Editor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#what-is-jdxi-editor">What is JDXI-Editor?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#key-features-capabilities">Key Features &amp; Capabilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#architecture-technology">Architecture &amp; Technology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#why-use-jdxi-editor">Why Use JDXI-Editor?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#getting-started">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#system-requirements">System Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#installation-methods">Installation Methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#method-1-pre-built-packages-recommended">Method 1: Pre-Built Packages (Recommended)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#method-2-python-package-installation">Method 2: Python Package Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#method-3-source-code-installation">Method 3: Source Code Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#method-4-development-setup">Method 4: Development Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#post-installation-setup">Post-Installation Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#troubleshooting">Troubleshooting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#getting-help">Getting Help</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html">Quick Start Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#what-you-ll-learn">What You’ll Learn</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#hardware-setup">Hardware Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#software-launch">Software Launch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#interface-overview">Interface Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#your-first-sound-creation">Your First Sound Creation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#essential-workflows">Essential Workflows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#quick-tips-for-success">Quick Tips for Success</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#common-issues-and-solutions">Common Issues and Solutions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#next-steps">Next Steps</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="editor-windows.html">Editor Windows</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="instrument.html">JDXi Instrument Window</a></li>
+<li class="toctree-l2"><a class="reference internal" href="instrument.html#what-is-the-jdxi-instrument-window">What is the JDXi Instrument Window?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="instrument.html#core-architecture-components">Core Architecture &amp; Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="instrument.html#key-features-capabilities">Key Features &amp; Capabilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="instrument.html#user-interface-components">User Interface Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="instrument.html#workflow-integration">Workflow Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="instrument.html#technical-specifications">Technical Specifications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="instrument.html#getting-started-with-the-instrument-window">Getting Started with the Instrument Window</a></li>
+<li class="toctree-l2"><a class="reference internal" href="editor.html">Editor Windows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="editor.html#what-are-the-editor-windows">What are the Editor Windows?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="editor.html#core-architecture-design">Core Architecture &amp; Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="editor.html#available-editors">Available Editors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="editor.html#getting-started-with-editor-windows">Getting Started with Editor Windows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="digital_synth.html">Digital Synth Editors (Parts 1 &amp; 2)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="digital_synth.html#what-are-the-digital-synth-editors">What are the Digital Synth Editors?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="digital_synth.html#core-architecture-design">Core Architecture &amp; Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="digital_synth.html#digital-synth-editor-features">Digital Synth Editor Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="digital_synth.html#partial-management-system">Partial Management System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="digital_synth.html#performance-features">Performance Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="digital_synth.html#visual-feedback-monitoring">Visual Feedback &amp; Monitoring</a></li>
+<li class="toctree-l2"><a class="reference internal" href="digital_synth.html#getting-started-with-digital-synth-editors">Getting Started with Digital Synth Editors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analog_synth.html">Analog Synth Editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analog_synth.html#what-is-the-analog-synth-editor">What is the Analog Synth Editor?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analog_synth.html#core-architecture-design">Core Architecture &amp; Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analog_synth.html#analog-synth-editor-features">Analog Synth Editor Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analog_synth.html#analog-synthesis-characteristics">Analog Synthesis Characteristics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analog_synth.html#advanced-features">Advanced Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analog_synth.html#performance-features">Performance Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analog_synth.html#getting-started-with-analog-synth-editor">Getting Started with Analog Synth Editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="drum_kit.html">Drum Kit Editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="drum_kit.html#what-is-the-drum-kit-editor">What is the Drum Kit Editor?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="drum_kit.html#core-architecture-design">Core Architecture &amp; Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="drum_kit.html#drum-kit-editor-features">Drum Kit Editor Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="drum_kit.html#kit-management-system">Kit Management System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="drum_kit.html#advanced-sound-design">Advanced Sound Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="drum_kit.html#visual-feedback-monitoring">Visual Feedback &amp; Monitoring</a></li>
+<li class="toctree-l2"><a class="reference internal" href="drum_kit.html#getting-started-with-drum-kit-editor">Getting Started with Drum Kit Editor</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="additional-editors.html">Additional Editors</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="arpeggiator.html">Arpeggiator Editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arpeggiator.html#what-is-the-arpeggiator-editor">What is the Arpeggiator Editor?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arpeggiator.html#core-architecture-design">Core Architecture &amp; Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arpeggiator.html#arpeggiator-editor-features">Arpeggiator Editor Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arpeggiator.html#advanced-pattern-features">Advanced Pattern Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arpeggiator.html#sequencing-tools">Sequencing Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arpeggiator.html#musical-integration">Musical Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arpeggiator.html#getting-started-with-arpeggiator-editor">Getting Started with Arpeggiator Editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="effects.html">Effects Editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="effects.html#what-is-the-effects-editor">What is the Effects Editor?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="effects.html#core-architecture-design">Core Architecture &amp; Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="effects.html#effects-editor-features">Effects Editor Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="effects.html#advanced-processing">Advanced Processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="effects.html#performance-integration">Performance Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="effects.html#visual-feedback-monitoring">Visual Feedback &amp; Monitoring</a></li>
+<li class="toctree-l2"><a class="reference internal" href="effects.html#getting-started-with-effects-editor">Getting Started with Effects Editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vocal_effects.html">Vocal Effects Editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vocal_effects.html#what-is-the-vocal-effects-editor">What is the Vocal Effects Editor?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vocal_effects.html#core-architecture-design">Core Architecture &amp; Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vocal_effects.html#vocal-effects-editor-features">Vocal Effects Editor Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vocal_effects.html#advanced-vocal-processing">Advanced Vocal Processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vocal_effects.html#performance-features">Performance Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vocal_effects.html#visual-feedback-monitoring">Visual Feedback &amp; Monitoring</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vocal_effects.html#getting-started-with-vocal-effects-editor">Getting Started with Vocal Effects Editor</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="playing-midi-files.html">Playing MIDI Files</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pattern_sequencer.html">Pattern Sequencer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pattern_sequencer.html#what-is-the-pattern-sequencer">What is the Pattern Sequencer?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pattern_sequencer.html#core-architecture-design">Core Architecture &amp; Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pattern_sequencer.html#pattern-sequencer-features">Pattern Sequencer Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pattern_sequencer.html#advanced-pattern-features">Advanced Pattern Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pattern_sequencer.html#performance-features">Performance Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pattern_sequencer.html#creative-tools">Creative Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pattern_sequencer.html#visual-feedback-monitoring">Visual Feedback &amp; Monitoring</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pattern_sequencer.html#getting-started-with-pattern-sequencer">Getting Started with Pattern Sequencer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="midi_file_player.html">MIDI File Player &amp; Recorder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="midi_file_player.html#what-is-the-midi-file-player-recorder">What is the MIDI File Player &amp; Recorder?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="midi_file_player.html#core-architecture-design">Core Architecture &amp; Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="midi_file_player.html#midi-file-player-features">MIDI File Player Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="midi_file_player.html#production-tools">Production Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="midi_file_player.html#advanced-features">Advanced Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="midi_file_player.html#performance-features">Performance Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="midi_file_player.html#visual-feedback-monitoring">Visual Feedback &amp; Monitoring</a></li>
+<li class="toctree-l2"><a class="reference internal" href="midi_file_player.html#getting-started-with-midi-file-player-recorder">Getting Started with MIDI File Player &amp; Recorder</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#id1">Troubleshooting</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="legal.html">Legal Disclaimer</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">jdxi_editor</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="jdxi_editor.html">jdxi_editor package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="jdxi_editor.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">jdxi_editor.jdxi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.log.html">jdxi_editor.log package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.midi.html">jdxi_editor.midi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.ui.html">jdxi_editor.ui package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.html#module-jdxi_editor.globals">jdxi_editor.globals module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.html#module-jdxi_editor.main">jdxi_editor.main module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.html#jdxi_editor.main.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.html#jdxi_editor.main.setup_splash_screen"><code class="docutils literal notranslate"><span class="pre">setup_splash_screen()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.html#module-jdxi_editor.project">jdxi_editor.project module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.html#module-jdxi_editor.resources">jdxi_editor.resources module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.html#jdxi_editor.resources.resource_path"><code class="docutils literal notranslate"><span class="pre">resource_path()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.html#module-jdxi_editor">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="autoapi/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/midi/index.html">midi</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/midi/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/midi/colors/index.html">midi.colors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/midi/slider/index.html">midi.slider</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/midi/spin_box/index.html">midi.spin_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/midi/time_ruler/index.html">midi.time_ruler</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/midi/track/index.html">midi.track</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/midi/track_viewer/index.html">midi.track_viewer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/midi/utils/index.html">midi.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/adsr/index.html">adsr</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/adsr/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/adsr/adsr/index.html">adsr.adsr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/adsr/graph/index.html">adsr.graph</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/adsr/parameter/index.html">adsr.parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/adsr/plot/index.html">adsr.plot</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/pitch/index.html">pitch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/pitch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/pitch/envelope/index.html">pitch.envelope</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/pitch/envelope_plot/index.html">pitch.envelope_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/pitch/pwm_plot/index.html">pitch.pwm_plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/pitch/slider_spinbox/index.html">pitch.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/piano/index.html">piano</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/piano/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/piano/key/index.html">piano.key</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/piano/keyboard/index.html">piano.keyboard</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/panel/index.html">panel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/panel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/panel/partial/index.html">panel.partial</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/wheel/index.html">wheel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/wheel/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/wheel/mod/index.html">wheel.mod</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/wheel/pitch/index.html">wheel.pitch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/wheel/wheel/index.html">wheel.wheel</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/preset/index.html">preset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/preset/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/preset/combo_box/index.html">preset.combo_box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/preset/panel/index.html">preset.panel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/preset/patch_name/index.html">preset.patch_name</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/slider/index.html">slider</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/slider/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/slider/slider/index.html">slider.slider</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/slider/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/slider/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/slider/index.html#slider.Slider"><code class="docutils literal notranslate"><span class="pre">Slider</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/dialog/index.html">dialog</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/dialog/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/dialog/progress/index.html">dialog.progress</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/viewer/index.html">viewer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/viewer/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/viewer/log/index.html">viewer.log</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/button/index.html">button</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/button/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/button/channel/index.html">button.channel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/button/favorite/index.html">button.favorite</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/button/sequencer/index.html">button.sequencer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/button/waveform/index.html">button.waveform</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/button/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/button/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/button/index.html#button.ChannelButton"><code class="docutils literal notranslate"><span class="pre">ChannelButton</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/button/index.html#button.SequencerSquare"><code class="docutils literal notranslate"><span class="pre">SequencerSquare</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/switch/index.html">switch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/switch/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/switch/partial/index.html">switch.partial</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/switch/switch/index.html">switch.switch</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/filter/index.html">filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/filter/index.html#filter.FilterWidget"><code class="docutils literal notranslate"><span class="pre">FilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/display/index.html">display</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/display/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/display/digital/index.html">display.digital</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/display/pattern/index.html">display.pattern</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/display/value/index.html">display.value</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/pattern/index.html">pattern</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/pattern/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/pattern/measure/index.html">pattern.measure</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/spin_box/index.html">spin_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/spin_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/spin_box/spin_box/index.html">spin_box.spin_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/envelope/index.html">envelope</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/envelope/base/index.html">envelope.base</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/indicator/index.html">indicator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/indicator/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/indicator/led/index.html">indicator.led</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/indicator/midi/index.html">indicator.midi</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/combo_box/index.html">combo_box</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/combo_box/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/combo_box/combo_box/index.html">combo_box.combo_box</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/jdxi_editor/index.html">jdxi_editor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/jdxi_editor/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/globals/index.html">jdxi_editor.globals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/jdxi/index.html">jdxi_editor.jdxi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/log/index.html">jdxi_editor.log</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/main/index.html">jdxi_editor.main</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/midi/index.html">jdxi_editor.midi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/project/index.html">jdxi_editor.project</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/resources/index.html">jdxi_editor.resources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/jdxi_editor/ui/index.html">jdxi_editor.ui</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/filter_plot/index.html">filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/filter_plot/index.html#filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/filter_plot/index.html#filter_plot.FilterPlot"><code class="docutils literal notranslate"><span class="pre">FilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/envelope_plot/index.html">envelope_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope_plot/index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/envelope_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/envelope_plot/index.html#envelope_plot.midi_value_to_float"><code class="docutils literal notranslate"><span class="pre">midi_value_to_float()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/envelope_plot/index.html#envelope_plot.WMTEnvPlot"><code class="docutils literal notranslate"><span class="pre">WMTEnvPlot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/envelope_plot/index.html#envelope_plot.app"><code class="docutils literal notranslate"><span class="pre">app</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/wave_selector/index.html">wave_selector</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/wave_selector/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/wave_selector/wave_selector/index.html">wave_selector.wave_selector</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/analog_filter/index.html">analog_filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter/index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/analog_filter/index.html#analog_filter.AnalogFilterWidget"><code class="docutils literal notranslate"><span class="pre">AnalogFilterWidget</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/slider_spinbox/index.html">slider_spinbox</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/slider_spinbox/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/slider_spinbox/slider_spinbox/index.html">slider_spinbox.slider_spinbox</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/analog_filter_plot/index.html">analog_filter_plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#classes">Classes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#methods">Methods:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#customization">Customization:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#id1">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#analog_filter_plot.generate_filter_plot"><code class="docutils literal notranslate"><span class="pre">generate_filter_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/analog_filter_plot/index.html#analog_filter_plot.AnalogFilterPlot"><code class="docutils literal notranslate"><span class="pre">AnalogFilterPlot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">JD-Xi Editor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">jdxi_editor</a></li>
+          <li class="breadcrumb-item"><a href="jdxi_editor.html">jdxi_editor package</a></li>
+      <li class="breadcrumb-item active">jdxi_editor.jdxi package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/jdxi_editor.jdxi.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="jdxi-editor-jdxi-package">
+<h1>jdxi_editor.jdxi package<a class="headerlink" href="#jdxi-editor-jdxi-package" title="Link to this heading"></a></h1>
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="jdxi_editor.jdxi.file.html">jdxi_editor.jdxi.file package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.jdxi.file.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.jdxi.file.html#module-jdxi_editor.jdxi.file.utils">jdxi_editor.jdxi.file.utils module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.jdxi.file.html#jdxi_editor.jdxi.file.utils.documentation_file_path"><code class="docutils literal notranslate"><span class="pre">documentation_file_path()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.jdxi.file.html#jdxi_editor.jdxi.file.utils.os_file_open"><code class="docutils literal notranslate"><span class="pre">os_file_open()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.jdxi.file.html#module-jdxi_editor.jdxi.file">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="jdxi_editor.jdxi.midi.html">jdxi_editor.jdxi.midi package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#module-jdxi_editor.jdxi.midi.constant">jdxi_editor.jdxi.midi.constant module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.MidiConstant"><code class="docutils literal notranslate"><span class="pre">MidiConstant</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.MidiConstant.MIDI_CHANNELS_NUMBER"><code class="docutils literal notranslate"><span class="pre">MidiConstant.MIDI_CHANNELS_NUMBER</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.MidiConstant.MIDI_NOTES_NUMBER"><code class="docutils literal notranslate"><span class="pre">MidiConstant.MIDI_NOTES_NUMBER</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.MidiConstant.CONTROL_CHANGE_BANK_SELECT_MSB"><code class="docutils literal notranslate"><span class="pre">MidiConstant.CONTROL_CHANGE_BANK_SELECT_MSB</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.MidiConstant.CONTROL_CHANGE_BANK_SELECT_LSB_BANK_E_AND_F"><code class="docutils literal notranslate"><span class="pre">MidiConstant.CONTROL_CHANGE_BANK_SELECT_LSB_BANK_E_AND_F</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.MidiConstant.CONTROL_CHANGE_BANK_SELECT_LSB_BANK_G_AND_H"><code class="docutils literal notranslate"><span class="pre">MidiConstant.CONTROL_CHANGE_BANK_SELECT_LSB_BANK_G_AND_H</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.MidiConstant.CONTROL_CHANGE_BANK_SELECT_LSB_BANK_A_AND_B"><code class="docutils literal notranslate"><span class="pre">MidiConstant.CONTROL_CHANGE_BANK_SELECT_LSB_BANK_A_AND_B</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.MidiConstant.CONTROL_CHANGE_BANK_SELECT_LSB_BANK_C_AND_D"><code class="docutils literal notranslate"><span class="pre">MidiConstant.CONTROL_CHANGE_BANK_SELECT_LSB_BANK_C_AND_D</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.MidiConstant.PROGRAM_CHANGE_BANK_A_AND_C_AND_E_AND_G"><code class="docutils literal notranslate"><span class="pre">MidiConstant.PROGRAM_CHANGE_BANK_A_AND_C_AND_E_AND_G</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.MidiConstant.PROGRAM_CHANGE_BANK_B_AND_D_AND_F_AND_H"><code class="docutils literal notranslate"><span class="pre">MidiConstant.PROGRAM_CHANGE_BANK_B_AND_D_AND_F_AND_H</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.MidiConstant.TEMPO_DEFAULT_120_BPM"><code class="docutils literal notranslate"><span class="pre">MidiConstant.TEMPO_DEFAULT_120_BPM</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.MidiConstant.TEMPO_CONVERT_SEC_TO_USEC"><code class="docutils literal notranslate"><span class="pre">MidiConstant.TEMPO_CONVERT_SEC_TO_USEC</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.MidiConstant.TEMPO_100_BPM_USEC"><code class="docutils literal notranslate"><span class="pre">MidiConstant.TEMPO_100_BPM_USEC</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.MidiConstant.TEMPO_120_BPM_USEC"><code class="docutils literal notranslate"><span class="pre">MidiConstant.TEMPO_120_BPM_USEC</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.MidiConstant.TEMPO_150_BPM_USEC"><code class="docutils literal notranslate"><span class="pre">MidiConstant.TEMPO_150_BPM_USEC</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.MidiConstant.TEMPO_162_BPM_USEC"><code class="docutils literal notranslate"><span class="pre">MidiConstant.TEMPO_162_BPM_USEC</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.MidiConstant.CONTROL_CHANGE_NRPN_MSB"><code class="docutils literal notranslate"><span class="pre">MidiConstant.CONTROL_CHANGE_NRPN_MSB</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.MidiConstant.CONTROL_CHANGE_NRPN_LSB"><code class="docutils literal notranslate"><span class="pre">MidiConstant.CONTROL_CHANGE_NRPN_LSB</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.MidiConstant.SONG_STOP"><code class="docutils literal notranslate"><span class="pre">MidiConstant.SONG_STOP</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.MidiConstant.SONG_START"><code class="docutils literal notranslate"><span class="pre">MidiConstant.SONG_START</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.MidiConstant.START_OF_SYSEX"><code class="docutils literal notranslate"><span class="pre">MidiConstant.START_OF_SYSEX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.MidiConstant.END_OF_SYSEX"><code class="docutils literal notranslate"><span class="pre">MidiConstant.END_OF_SYSEX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.MidiConstant.ZERO_BYTE"><code class="docutils literal notranslate"><span class="pre">MidiConstant.ZERO_BYTE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.MidiConstant.VALUE_ON"><code class="docutils literal notranslate"><span class="pre">MidiConstant.VALUE_ON</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.MidiConstant.VALUE_OFF"><code class="docutils literal notranslate"><span class="pre">MidiConstant.VALUE_OFF</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.MidiConstant.VALUE_MAX_FOUR_BIT"><code class="docutils literal notranslate"><span class="pre">MidiConstant.VALUE_MAX_FOUR_BIT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.MidiConstant.VALUE_MAX_SEVEN_BIT"><code class="docutils literal notranslate"><span class="pre">MidiConstant.VALUE_MAX_SEVEN_BIT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.MidiConstant.VALUE_MAX_EIGHT_BIT"><code class="docutils literal notranslate"><span class="pre">MidiConstant.VALUE_MAX_EIGHT_BIT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.MidiConstant.VALUE_MAX_FOURTEEN_BIT"><code class="docutils literal notranslate"><span class="pre">MidiConstant.VALUE_MAX_FOURTEEN_BIT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.MidiConstant.VALUE_MAX_SIGNED_SIXTEEN_BIT"><code class="docutils literal notranslate"><span class="pre">MidiConstant.VALUE_MAX_SIGNED_SIXTEEN_BIT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.MidiConstant.VALUE_MIN_SIGNED_SIXTEEN_BIT"><code class="docutils literal notranslate"><span class="pre">MidiConstant.VALUE_MIN_SIGNED_SIXTEEN_BIT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.MidiConstant.VALUE_MAX_UNSIGNED_SIXTEEN_BIT"><code class="docutils literal notranslate"><span class="pre">MidiConstant.VALUE_MAX_UNSIGNED_SIXTEEN_BIT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.MidiConstant.VALUE_MAX_THIRTY_TWO_BIT"><code class="docutils literal notranslate"><span class="pre">MidiConstant.VALUE_MAX_THIRTY_TWO_BIT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.MidiConstant.NOTE_OFF"><code class="docutils literal notranslate"><span class="pre">MidiConstant.NOTE_OFF</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.MidiConstant.NOTE_ON"><code class="docutils literal notranslate"><span class="pre">MidiConstant.NOTE_ON</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.MidiConstant.POLY_AFTERTOUCH"><code class="docutils literal notranslate"><span class="pre">MidiConstant.POLY_AFTERTOUCH</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.MidiConstant.CONTROL_CHANGE"><code class="docutils literal notranslate"><span class="pre">MidiConstant.CONTROL_CHANGE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.MidiConstant.CONTROL_CHANGE_MAX"><code class="docutils literal notranslate"><span class="pre">MidiConstant.CONTROL_CHANGE_MAX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.MidiConstant.PROGRAM_CHANGE"><code class="docutils literal notranslate"><span class="pre">MidiConstant.PROGRAM_CHANGE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.MidiConstant.PROGRAM_CHANGE_MAX"><code class="docutils literal notranslate"><span class="pre">MidiConstant.PROGRAM_CHANGE_MAX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.MidiConstant.CHANNEL_AFTERTOUCH"><code class="docutils literal notranslate"><span class="pre">MidiConstant.CHANNEL_AFTERTOUCH</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.MidiConstant.PITCH_BEND"><code class="docutils literal notranslate"><span class="pre">MidiConstant.PITCH_BEND</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.MidiConstant.BANK_SELECT_MSB"><code class="docutils literal notranslate"><span class="pre">MidiConstant.BANK_SELECT_MSB</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.MidiConstant.BANK_SELECT_LSB"><code class="docutils literal notranslate"><span class="pre">MidiConstant.BANK_SELECT_LSB</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.MidiConstant.MIDI_CHANNEL_MASK"><code class="docutils literal notranslate"><span class="pre">MidiConstant.MIDI_CHANNEL_MASK</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.MidiConstant.PITCH_BEND_RANGE"><code class="docutils literal notranslate"><span class="pre">MidiConstant.PITCH_BEND_RANGE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.MidiConstant.PITCH_BEND_CENTER"><code class="docutils literal notranslate"><span class="pre">MidiConstant.PITCH_BEND_CENTER</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.MidiConstant.CHANNEL_BINARY_TO_DISPLAY"><code class="docutils literal notranslate"><span class="pre">MidiConstant.CHANNEL_BINARY_TO_DISPLAY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.MidiConstant.CHANNEL_DISPLAY_TO_BINARY"><code class="docutils literal notranslate"><span class="pre">MidiConstant.CHANNEL_DISPLAY_TO_BINARY</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.JDXiConstant"><code class="docutils literal notranslate"><span class="pre">JDXiConstant</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.JDXiConstant.TIMER_INTERVAL"><code class="docutils literal notranslate"><span class="pre">JDXiConstant.TIMER_INTERVAL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.JDXiConstant.FILTER_PLOT_DEPTH"><code class="docutils literal notranslate"><span class="pre">JDXiConstant.FILTER_PLOT_DEPTH</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.JDXiConstant.CHECKED"><code class="docutils literal notranslate"><span class="pre">JDXiConstant.CHECKED</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.JDXiConstant.CENTER_OCTAVE_VALUE"><code class="docutils literal notranslate"><span class="pre">JDXiConstant.CENTER_OCTAVE_VALUE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.JDXiConstant.ID_NUMBER"><code class="docutils literal notranslate"><span class="pre">JDXiConstant.ID_NUMBER</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.JDXiConstant.DEVICE_ID"><code class="docutils literal notranslate"><span class="pre">JDXiConstant.DEVICE_ID</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.JDXiConstant.SUB_ID_1_GENERAL_INFORMATION"><code class="docutils literal notranslate"><span class="pre">JDXiConstant.SUB_ID_1_GENERAL_INFORMATION</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.JDXiConstant.SUB_ID_2_IDENTITY_REQUEST"><code class="docutils literal notranslate"><span class="pre">JDXiConstant.SUB_ID_2_IDENTITY_REQUEST</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.JDXiConstant.SUB_ID_2_IDENTITY_REPLY"><code class="docutils literal notranslate"><span class="pre">JDXiConstant.SUB_ID_2_IDENTITY_REPLY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.JDXiConstant.SYSEX_LENGTH_ONE_BYTE_DATA"><code class="docutils literal notranslate"><span class="pre">JDXiConstant.SYSEX_LENGTH_ONE_BYTE_DATA</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.JDXiConstant.SYSEX_LENGTH_FOUR_BYTE_DATA"><code class="docutils literal notranslate"><span class="pre">JDXiConstant.SYSEX_LENGTH_FOUR_BYTE_DATA</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.JDXiConstant.ROLAND_ID"><code class="docutils literal notranslate"><span class="pre">JDXiConstant.ROLAND_ID</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#jdxi_editor.jdxi.midi.constant.JDXiConstant.JD_XI_MODEL_ID"><code class="docutils literal notranslate"><span class="pre">JDXiConstant.JD_XI_MODEL_ID</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.jdxi.midi.html#module-jdxi_editor.jdxi.midi">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="jdxi_editor.jdxi.preset.html">jdxi_editor.jdxi.preset package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#module-jdxi_editor.jdxi.preset.button">jdxi_editor.jdxi.preset.button module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.button.JDXiPresetButtonData"><code class="docutils literal notranslate"><span class="pre">JDXiPresetButtonData</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.button.JDXiPresetButtonData.type"><code class="docutils literal notranslate"><span class="pre">JDXiPresetButtonData.type</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.button.JDXiPresetButtonData.number"><code class="docutils literal notranslate"><span class="pre">JDXiPresetButtonData.number</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.button.JDXiPresetButtonData.modified"><code class="docutils literal notranslate"><span class="pre">JDXiPresetButtonData.modified</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.button.JDXiPresetButtonData.channel"><code class="docutils literal notranslate"><span class="pre">JDXiPresetButtonData.channel</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.button.JDXiPresetButtonData.name"><code class="docutils literal notranslate"><span class="pre">JDXiPresetButtonData.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#id0"><code class="docutils literal notranslate"><span class="pre">JDXiPresetButtonData.type</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#id1"><code class="docutils literal notranslate"><span class="pre">JDXiPresetButtonData.number</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#id2"><code class="docutils literal notranslate"><span class="pre">JDXiPresetButtonData.modified</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#id3"><code class="docutils literal notranslate"><span class="pre">JDXiPresetButtonData.channel</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#id4"><code class="docutils literal notranslate"><span class="pre">JDXiPresetButtonData.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.button.JDXiPresetButtonData.__init__"><code class="docutils literal notranslate"><span class="pre">JDXiPresetButtonData.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#module-jdxi_editor.jdxi.preset.data">jdxi_editor.jdxi.preset.data module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#example-usage">Example usage:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.data.JDXiPresetData"><code class="docutils literal notranslate"><span class="pre">JDXiPresetData</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.data.JDXiPresetData.name"><code class="docutils literal notranslate"><span class="pre">JDXiPresetData.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.data.JDXiPresetData.presets"><code class="docutils literal notranslate"><span class="pre">JDXiPresetData.presets</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.data.JDXiPresetData.bank_msb"><code class="docutils literal notranslate"><span class="pre">JDXiPresetData.bank_msb</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.data.JDXiPresetData.bank_lsb"><code class="docutils literal notranslate"><span class="pre">JDXiPresetData.bank_lsb</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.data.JDXiPresetData.program"><code class="docutils literal notranslate"><span class="pre">JDXiPresetData.program</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.data.JDXiPresetData.from_dict"><code class="docutils literal notranslate"><span class="pre">JDXiPresetData.from_dict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.data.JDXiPresetData.get_preset_details"><code class="docutils literal notranslate"><span class="pre">JDXiPresetData.get_preset_details()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.data.JDXiPresetData.to_dict"><code class="docutils literal notranslate"><span class="pre">JDXiPresetData.to_dict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.data.JDXiPresetData.__init__"><code class="docutils literal notranslate"><span class="pre">JDXiPresetData.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#module-jdxi_editor.jdxi.preset.helper">jdxi_editor.jdxi.preset.helper module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#module-preset-helper">Module: preset_helper</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#classes">Classes:</a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#dependencies">Dependencies:</a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#functionality">Functionality:</a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#usage">Usage:</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.helper.JDXiPresetHelper"><code class="docutils literal notranslate"><span class="pre">JDXiPresetHelper</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.helper.JDXiPresetHelper.update_display"><code class="docutils literal notranslate"><span class="pre">JDXiPresetHelper.update_display</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.helper.JDXiPresetHelper.preset_changed"><code class="docutils literal notranslate"><span class="pre">JDXiPresetHelper.preset_changed</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.helper.JDXiPresetHelper.__init__"><code class="docutils literal notranslate"><span class="pre">JDXiPresetHelper.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.helper.JDXiPresetHelper.get_current_preset"><code class="docutils literal notranslate"><span class="pre">JDXiPresetHelper.get_current_preset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.helper.JDXiPresetHelper.get_available_presets"><code class="docutils literal notranslate"><span class="pre">JDXiPresetHelper.get_available_presets()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.helper.JDXiPresetHelper.load_preset_by_program_change"><code class="docutils literal notranslate"><span class="pre">JDXiPresetHelper.load_preset_by_program_change()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.helper.JDXiPresetHelper.load_preset"><code class="docutils literal notranslate"><span class="pre">JDXiPresetHelper.load_preset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.helper.JDXiPresetHelper.data_request"><code class="docutils literal notranslate"><span class="pre">JDXiPresetHelper.data_request()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.helper.JDXiPresetHelper.send_program_change"><code class="docutils literal notranslate"><span class="pre">JDXiPresetHelper.send_program_change()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.helper.JDXiPresetHelper.staticMetaObject"><code class="docutils literal notranslate"><span class="pre">JDXiPresetHelper.staticMetaObject</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#module-jdxi_editor.jdxi.preset.incoming_data">jdxi_editor.jdxi.preset.incoming_data module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.incoming_data.IncomingPresetData"><code class="docutils literal notranslate"><span class="pre">IncomingPresetData</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.incoming_data.IncomingPresetData.program_number"><code class="docutils literal notranslate"><span class="pre">IncomingPresetData.program_number</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.incoming_data.IncomingPresetData.program_name"><code class="docutils literal notranslate"><span class="pre">IncomingPresetData.program_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.incoming_data.IncomingPresetData.channel"><code class="docutils literal notranslate"><span class="pre">IncomingPresetData.channel</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.incoming_data.IncomingPresetData.msb"><code class="docutils literal notranslate"><span class="pre">IncomingPresetData.msb</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.incoming_data.IncomingPresetData.lsb"><code class="docutils literal notranslate"><span class="pre">IncomingPresetData.lsb</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.incoming_data.IncomingPresetData.tone_names"><code class="docutils literal notranslate"><span class="pre">IncomingPresetData.tone_names</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.incoming_data.IncomingPresetData.set_tone_name"><code class="docutils literal notranslate"><span class="pre">IncomingPresetData.set_tone_name()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.incoming_data.IncomingPresetData.get_tone_name"><code class="docutils literal notranslate"><span class="pre">IncomingPresetData.get_tone_name()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.incoming_data.IncomingPresetData.clear"><code class="docutils literal notranslate"><span class="pre">IncomingPresetData.clear()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.incoming_data.IncomingPresetData.__init__"><code class="docutils literal notranslate"><span class="pre">IncomingPresetData.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#module-jdxi_editor.jdxi.preset.lists">jdxi_editor.jdxi.preset.lists module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.lists.JDXiPresetToneList"><code class="docutils literal notranslate"><span class="pre">JDXiPresetToneList</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.lists.JDXiPresetToneList.ANALOG_ENUMERATED"><code class="docutils literal notranslate"><span class="pre">JDXiPresetToneList.ANALOG_ENUMERATED</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.lists.JDXiPresetToneList.ANALOG_PROGRAM_CHANGE"><code class="docutils literal notranslate"><span class="pre">JDXiPresetToneList.ANALOG_PROGRAM_CHANGE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.lists.JDXiPresetToneList.ANALOG"><code class="docutils literal notranslate"><span class="pre">JDXiPresetToneList.ANALOG</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.lists.JDXiPresetToneList.DIGITAL_PROGRAM_CHANGE"><code class="docutils literal notranslate"><span class="pre">JDXiPresetToneList.DIGITAL_PROGRAM_CHANGE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.lists.JDXiPresetToneList.DIGITAL_ENUMERATED"><code class="docutils literal notranslate"><span class="pre">JDXiPresetToneList.DIGITAL_ENUMERATED</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.lists.JDXiPresetToneList.DIGITAL"><code class="docutils literal notranslate"><span class="pre">JDXiPresetToneList.DIGITAL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.lists.JDXiPresetToneList.DIGITAL_LIST"><code class="docutils literal notranslate"><span class="pre">JDXiPresetToneList.DIGITAL_LIST</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.lists.JDXiPresetToneList.DRUM_PROGRAM_CHANGE"><code class="docutils literal notranslate"><span class="pre">JDXiPresetToneList.DRUM_PROGRAM_CHANGE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.lists.JDXiPresetToneList.DRUM_ENUMERATED"><code class="docutils literal notranslate"><span class="pre">JDXiPresetToneList.DRUM_ENUMERATED</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.lists.JDXiPresetToneList.DRUM_CATEGORIES"><code class="docutils literal notranslate"><span class="pre">JDXiPresetToneList.DRUM_CATEGORIES</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#module-jdxi_editor.jdxi.preset.manager">jdxi_editor.jdxi.preset.manager module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.manager.JDXiPresetManager"><code class="docutils literal notranslate"><span class="pre">JDXiPresetManager</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.manager.JDXiPresetManager.__init__"><code class="docutils literal notranslate"><span class="pre">JDXiPresetManager.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.manager.JDXiPresetManager.get_preset_name_by_type_and_index"><code class="docutils literal notranslate"><span class="pre">JDXiPresetManager.get_preset_name_by_type_and_index()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.manager.JDXiPresetManager.get_presets_for_synth"><code class="docutils literal notranslate"><span class="pre">JDXiPresetManager.get_presets_for_synth()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.manager.JDXiPresetManager.get_presets_for_channel"><code class="docutils literal notranslate"><span class="pre">JDXiPresetManager.get_presets_for_channel()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.manager.JDXiPresetManager.set_current_preset_name"><code class="docutils literal notranslate"><span class="pre">JDXiPresetManager.set_current_preset_name()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.manager.JDXiPresetManager.set_preset_name_by_type"><code class="docutils literal notranslate"><span class="pre">JDXiPresetManager.set_preset_name_by_type()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.manager.JDXiPresetManager.get_preset_name_by_type"><code class="docutils literal notranslate"><span class="pre">JDXiPresetManager.get_preset_name_by_type()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.manager.JDXiPresetManager.reset_all_presets"><code class="docutils literal notranslate"><span class="pre">JDXiPresetManager.reset_all_presets()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#module-jdxi_editor.jdxi.preset.save">jdxi_editor.jdxi.preset.save module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.save.load_programs"><code class="docutils literal notranslate"><span class="pre">load_programs()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.save.save_programs"><code class="docutils literal notranslate"><span class="pre">save_programs()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.save.add_program_and_save"><code class="docutils literal notranslate"><span class="pre">add_program_and_save()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#module-jdxi_editor.jdxi.preset.utils">jdxi_editor.jdxi.preset.utils module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#jdxi_editor.jdxi.preset.utils.get_preset_values"><code class="docutils literal notranslate"><span class="pre">get_preset_values()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.jdxi.preset.html#module-jdxi_editor.jdxi.preset">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="jdxi_editor.jdxi.program.html">jdxi_editor.jdxi.program package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.jdxi.program.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.jdxi.program.html#module-jdxi_editor.jdxi.program.program">jdxi_editor.jdxi.program.program module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.jdxi.program.html#jdxi_editor.jdxi.program.program.JDXiProgram"><code class="docutils literal notranslate"><span class="pre">JDXiProgram</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.program.html#jdxi_editor.jdxi.program.program.JDXiProgram.id"><code class="docutils literal notranslate"><span class="pre">JDXiProgram.id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.program.html#jdxi_editor.jdxi.program.program.JDXiProgram.name"><code class="docutils literal notranslate"><span class="pre">JDXiProgram.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.program.html#jdxi_editor.jdxi.program.program.JDXiProgram.genre"><code class="docutils literal notranslate"><span class="pre">JDXiProgram.genre</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.program.html#jdxi_editor.jdxi.program.program.JDXiProgram.tempo"><code class="docutils literal notranslate"><span class="pre">JDXiProgram.tempo</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.program.html#jdxi_editor.jdxi.program.program.JDXiProgram.measure_length"><code class="docutils literal notranslate"><span class="pre">JDXiProgram.measure_length</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.program.html#jdxi_editor.jdxi.program.program.JDXiProgram.scale"><code class="docutils literal notranslate"><span class="pre">JDXiProgram.scale</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.program.html#jdxi_editor.jdxi.program.program.JDXiProgram.msb"><code class="docutils literal notranslate"><span class="pre">JDXiProgram.msb</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.program.html#jdxi_editor.jdxi.program.program.JDXiProgram.lsb"><code class="docutils literal notranslate"><span class="pre">JDXiProgram.lsb</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.program.html#jdxi_editor.jdxi.program.program.JDXiProgram.pc"><code class="docutils literal notranslate"><span class="pre">JDXiProgram.pc</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.program.html#jdxi_editor.jdxi.program.program.JDXiProgram.analog"><code class="docutils literal notranslate"><span class="pre">JDXiProgram.analog</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.program.html#jdxi_editor.jdxi.program.program.JDXiProgram.digital_1"><code class="docutils literal notranslate"><span class="pre">JDXiProgram.digital_1</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.program.html#jdxi_editor.jdxi.program.program.JDXiProgram.digital_2"><code class="docutils literal notranslate"><span class="pre">JDXiProgram.digital_2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.program.html#jdxi_editor.jdxi.program.program.JDXiProgram.drums"><code class="docutils literal notranslate"><span class="pre">JDXiProgram.drums</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.program.html#jdxi_editor.jdxi.program.program.JDXiProgram.from_patch"><code class="docutils literal notranslate"><span class="pre">JDXiProgram.from_patch()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.program.html#jdxi_editor.jdxi.program.program.JDXiProgram.to_json"><code class="docutils literal notranslate"><span class="pre">JDXiProgram.to_json()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.program.html#jdxi_editor.jdxi.program.program.JDXiProgram.to_dict"><code class="docutils literal notranslate"><span class="pre">JDXiProgram.to_dict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.program.html#jdxi_editor.jdxi.program.program.JDXiProgram.from_json"><code class="docutils literal notranslate"><span class="pre">JDXiProgram.from_json()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.program.html#jdxi_editor.jdxi.program.program.JDXiProgram.from_dict"><code class="docutils literal notranslate"><span class="pre">JDXiProgram.from_dict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.program.html#jdxi_editor.jdxi.program.program.JDXiProgram.__init__"><code class="docutils literal notranslate"><span class="pre">JDXiProgram.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.jdxi.program.html#jdxi_editor.jdxi.program.program.JDXiProgramOld"><code class="docutils literal notranslate"><span class="pre">JDXiProgramOld</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.program.html#jdxi_editor.jdxi.program.program.JDXiProgramOld.id"><code class="docutils literal notranslate"><span class="pre">JDXiProgramOld.id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.program.html#jdxi_editor.jdxi.program.program.JDXiProgramOld.name"><code class="docutils literal notranslate"><span class="pre">JDXiProgramOld.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.program.html#jdxi_editor.jdxi.program.program.JDXiProgramOld.genre"><code class="docutils literal notranslate"><span class="pre">JDXiProgramOld.genre</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.program.html#jdxi_editor.jdxi.program.program.JDXiProgramOld.tempo"><code class="docutils literal notranslate"><span class="pre">JDXiProgramOld.tempo</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.program.html#jdxi_editor.jdxi.program.program.JDXiProgramOld.measure_length"><code class="docutils literal notranslate"><span class="pre">JDXiProgramOld.measure_length</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.program.html#jdxi_editor.jdxi.program.program.JDXiProgramOld.scale"><code class="docutils literal notranslate"><span class="pre">JDXiProgramOld.scale</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.program.html#jdxi_editor.jdxi.program.program.JDXiProgramOld.msb"><code class="docutils literal notranslate"><span class="pre">JDXiProgramOld.msb</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.program.html#jdxi_editor.jdxi.program.program.JDXiProgramOld.lsb"><code class="docutils literal notranslate"><span class="pre">JDXiProgramOld.lsb</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.program.html#jdxi_editor.jdxi.program.program.JDXiProgramOld.pc"><code class="docutils literal notranslate"><span class="pre">JDXiProgramOld.pc</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.program.html#jdxi_editor.jdxi.program.program.JDXiProgramOld.analog"><code class="docutils literal notranslate"><span class="pre">JDXiProgramOld.analog</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.program.html#jdxi_editor.jdxi.program.program.JDXiProgramOld.digital_1"><code class="docutils literal notranslate"><span class="pre">JDXiProgramOld.digital_1</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.program.html#jdxi_editor.jdxi.program.program.JDXiProgramOld.digital_2"><code class="docutils literal notranslate"><span class="pre">JDXiProgramOld.digital_2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.program.html#jdxi_editor.jdxi.program.program.JDXiProgramOld.drums"><code class="docutils literal notranslate"><span class="pre">JDXiProgramOld.drums</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.program.html#jdxi_editor.jdxi.program.program.JDXiProgramOld.from_patch"><code class="docutils literal notranslate"><span class="pre">JDXiProgramOld.from_patch()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.program.html#jdxi_editor.jdxi.program.program.JDXiProgramOld.to_json"><code class="docutils literal notranslate"><span class="pre">JDXiProgramOld.to_json()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.program.html#jdxi_editor.jdxi.program.program.JDXiProgramOld.to_dict"><code class="docutils literal notranslate"><span class="pre">JDXiProgramOld.to_dict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.program.html#jdxi_editor.jdxi.program.program.JDXiProgramOld.from_json"><code class="docutils literal notranslate"><span class="pre">JDXiProgramOld.from_json()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.program.html#jdxi_editor.jdxi.program.program.JDXiProgramOld.from_dict"><code class="docutils literal notranslate"><span class="pre">JDXiProgramOld.from_dict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.program.html#jdxi_editor.jdxi.program.program.JDXiProgramOld.__init__"><code class="docutils literal notranslate"><span class="pre">JDXiProgramOld.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.jdxi.program.html#module-jdxi_editor.jdxi.program">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="jdxi_editor.jdxi.style.html">jdxi_editor.jdxi.style package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.jdxi.style.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.jdxi.style.html#module-jdxi_editor.jdxi.style.factory">jdxi_editor.jdxi.style.factory module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.jdxi.style.html#functions">Functions:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.factory.generate_polyend_sequencer_button_style"><code class="docutils literal notranslate"><span class="pre">generate_polyend_sequencer_button_style()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.factory.generate_sequencer_button_style"><code class="docutils literal notranslate"><span class="pre">generate_sequencer_button_style()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.factory.generate_button_style"><code class="docutils literal notranslate"><span class="pre">generate_button_style()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.factory.generate_tab_style"><code class="docutils literal notranslate"><span class="pre">generate_tab_style()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.factory.generate_editor_style"><code class="docutils literal notranslate"><span class="pre">generate_editor_style()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.factory.get_button_styles"><code class="docutils literal notranslate"><span class="pre">get_button_styles()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.factory.toggle_button_style"><code class="docutils literal notranslate"><span class="pre">toggle_button_style()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.factory.update_button_style"><code class="docutils literal notranslate"><span class="pre">update_button_style()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.jdxi.style.html#module-jdxi_editor.jdxi.style.jdxi">jdxi_editor.jdxi.style.jdxi module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.Colors"><code class="docutils literal notranslate"><span class="pre">Colors</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.Dimensions"><code class="docutils literal notranslate"><span class="pre">Dimensions</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.Fonts"><code class="docutils literal notranslate"><span class="pre">Fonts</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle"><code class="docutils literal notranslate"><span class="pre">JDXiStyle</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.TRACK_LABEL_WIDTH"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.TRACK_LABEL_WIDTH</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.TRACK_BUTTON_WIDTH"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.TRACK_BUTTON_WIDTH</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.TRACK_SPINBOX_WIDTH"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.TRACK_SPINBOX_WIDTH</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.PWM_WIDGET_HEIGHT"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.PWM_WIDGET_HEIGHT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.ADSR_PLOT_WIDTH"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.ADSR_PLOT_WIDTH</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.ADSR_PLOT_HEIGHT"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.ADSR_PLOT_HEIGHT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.INSTRUMENT_IMAGE_WIDTH"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.INSTRUMENT_IMAGE_WIDTH</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.TITLE_TEXT"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.TITLE_TEXT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.BACKGROUND"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.BACKGROUND</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.BACKGROUND_PRESSED"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.BACKGROUND_PRESSED</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.BUTTON_BACKGROUND"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.BUTTON_BACKGROUND</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.BUTTON_BACKGROUND_PRESSED"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.BUTTON_BACKGROUND_PRESSED</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.FOREGROUND"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.FOREGROUND</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.PADDING"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.PADDING</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.SPACING"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.SPACING</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.ICON_PIXMAP_SIZE"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.ICON_PIXMAP_SIZE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.TRACK_ICON_PIXMAP_SIZE"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.TRACK_ICON_PIXMAP_SIZE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.BUTTON_PADDING"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.BUTTON_PADDING</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.ACCENT"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.ACCENT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.ACCENT_HOVER"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.ACCENT_HOVER</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.ACCENT_ANALOG"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.ACCENT_ANALOG</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.ACCENT_ANALOG_HOVER"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.ACCENT_ANALOG_HOVER</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.BORDER"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.BORDER</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.SLIDER_HANDLE"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.SLIDER_HANDLE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.SLIDER_HANDLE_BORDER"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.SLIDER_HANDLE_BORDER</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.SLIDER_GROOVE"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.SLIDER_GROOVE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.SLIDER_NEON"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.SLIDER_NEON</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.SLIDER_NEON_GRADIENT_STOP"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.SLIDER_NEON_GRADIENT_STOP</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.SLIDER_NEON_ANALOG"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.SLIDER_NEON_ANALOG</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.SLIDER_NEON_GRADIENT_STOP_ANALOG"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.SLIDER_NEON_GRADIENT_STOP_ANALOG</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.ACCENT_PRESSED"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.ACCENT_PRESSED</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.ACCENT_ANALOG_PRESSED"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.ACCENT_ANALOG_PRESSED</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.BUTTON_ROUND_RADIUS"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.BUTTON_ROUND_RADIUS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.BUTTON_RECT_RADIUS"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.BUTTON_RECT_RADIUS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.BUTTON_BORDER_WIDTH"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.BUTTON_BORDER_WIDTH</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.HANDLE_SIZE"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.HANDLE_SIZE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.GROOVE_WIDTH"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.GROOVE_WIDTH</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.ICON_SIZE"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.ICON_SIZE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.TAB_BUTTON_RECT_RADIUS"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.TAB_BUTTON_RECT_RADIUS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.MAX_RULER_HEIGHT"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.MAX_RULER_HEIGHT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.TRACK_HEIGHT_MINIMUM"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.TRACK_HEIGHT_MINIMUM</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.FONT_RED"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.FONT_RED</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.FONT_SIZE"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.FONT_SIZE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.FONT_FAMILY"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.FONT_FAMILY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.FONT_SIZE_SPLASH_SCREEN"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.FONT_SIZE_SPLASH_SCREEN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.FONT_SIZE_MAIN_TABS"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.FONT_SIZE_MAIN_TABS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.FONT_WEIGHT_BOLD"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.FONT_WEIGHT_BOLD</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.FONT_WEIGHT_NORMAL"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.FONT_WEIGHT_NORMAL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.GREY"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.GREY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.BUTTON_ROUND"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.BUTTON_ROUND</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.BORDER_PRESSED"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.BORDER_PRESSED</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.BUTTON_ROUND_SELECTED"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.BUTTON_ROUND_SELECTED</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.BUTTON_ROUND_ACTIVE"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.BUTTON_ROUND_ACTIVE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.BUTTON_ROUND_SMALL"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.BUTTON_ROUND_SMALL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.BUTTON_RECT"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.BUTTON_RECT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.BUTTON_RECT_SELECTED"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.BUTTON_RECT_SELECTED</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.BUTTON_RECT_ACTIVE"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.BUTTON_RECT_ACTIVE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.BUTTON_RECT_ANALOG"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.BUTTON_RECT_ANALOG</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.BUTTON_ANALOG_ACTIVE"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.BUTTON_ANALOG_ACTIVE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.BUTTON_WAVEFORM"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.BUTTON_WAVEFORM</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.BUTTON_WAVEFORM_ANALOG"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.BUTTON_WAVEFORM_ANALOG</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.CREDITS_LABEL_STYLE"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.CREDITS_LABEL_STYLE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.EDITOR"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.EDITOR</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.EDITOR_ANALOG"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.EDITOR_ANALOG</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.EDITOR_TITLE_LABEL"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.EDITOR_TITLE_LABEL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.INSTRUMENT"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.INSTRUMENT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.LOG_VIEWER"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.LOG_VIEWER</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.MIDI_MESSAGE_MONITOR"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.MIDI_MESSAGE_MONITOR</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.MIXER_LABEL_ANALOG"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.MIXER_LABEL_ANALOG</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.MIXER_LABEL"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.MIXER_LABEL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.PROGRAM_PRESET_GROUPS"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.PROGRAM_PRESET_GROUPS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.PROGRAM_PRESET_GROUP_WIDTH"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.PROGRAM_PRESET_GROUP_WIDTH</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.PROGRESS_BAR"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.PROGRESS_BAR</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.SLIDER_VERTICAL"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.SLIDER_VERTICAL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.SPLASH_SCREEN"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.SPLASH_SCREEN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.SPLITTER"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.SPLITTER</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.TABS"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.TABS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.TABS_ANALOG"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.TABS_ANALOG</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.TABS_DRUMS"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.TABS_DRUMS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.TABS_MAIN_EDITOR"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.TABS_MAIN_EDITOR</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.SLIDER"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.SLIDER</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.SLIDER_DISABLED"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.SLIDER_DISABLED</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.TRANSPARENT"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.TRANSPARENT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.TRANSPARENT_WHITE"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.TRANSPARENT_WHITE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.ADSR_ANALOG"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.ADSR_ANALOG</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.ADSR"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.ADSR</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.ADSR_DISABLED"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.ADSR_DISABLED</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.ADSR_PLOT"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.ADSR_PLOT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.COMBO_BOX"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.COMBO_BOX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.COMBO_BOX_ANALOG"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.COMBO_BOX_ANALOG</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.LABEL_SUB"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.LABEL_SUB</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.LABEL"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.LABEL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.QLABEL"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.QLABEL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.KEYBOARD_DRUM_LABELS"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.KEYBOARD_DRUM_LABELS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.INSTRUMENT_TITLE_LABEL"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.INSTRUMENT_TITLE_LABEL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.INSTRUMENT_IMAGE_LABEL"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.INSTRUMENT_IMAGE_LABEL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.LABEL_SYNTH_PART"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.LABEL_SYNTH_PART</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.LABEL_ANALOG_SYNTH_PART"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.LABEL_ANALOG_SYNTH_PART</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.DRUM_GROUP"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.DRUM_GROUP</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.PATCH_MANAGER"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.PATCH_MANAGER</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.LABEL_WHEEL"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.LABEL_WHEEL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.PARTIAL_SWITCH"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.PARTIAL_SWITCH</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.PARTIALS_PANEL"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.PARTIALS_PANEL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.DEBUGGER"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.DEBUGGER</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.SEQUENCER"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.SEQUENCER</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.style.html#jdxi_editor.jdxi.style.jdxi.JDXiStyle.PARTS_SELECT"><code class="docutils literal notranslate"><span class="pre">JDXiStyle.PARTS_SELECT</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.jdxi.style.html#module-jdxi_editor.jdxi.style">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="jdxi_editor.jdxi.synth.html">jdxi_editor.jdxi.synth package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#module-jdxi_editor.jdxi.synth.analog">jdxi_editor.jdxi.synth.analog module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.analog.AnalogSynthData"><code class="docutils literal notranslate"><span class="pre">AnalogSynthData</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.analog.AnalogSynthData.group_map"><code class="docutils literal notranslate"><span class="pre">AnalogSynthData.group_map</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.analog.AnalogSynthData.__init__"><code class="docutils literal notranslate"><span class="pre">AnalogSynthData.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#module-jdxi_editor.jdxi.synth.data">jdxi_editor.jdxi.synth.data module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.data.JDXISynthData"><code class="docutils literal notranslate"><span class="pre">JDXISynthData</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.data.JDXISynthData.msb"><code class="docutils literal notranslate"><span class="pre">JDXISynthData.msb</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.data.JDXISynthData.umb"><code class="docutils literal notranslate"><span class="pre">JDXISynthData.umb</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.data.JDXISynthData.lmb"><code class="docutils literal notranslate"><span class="pre">JDXISynthData.lmb</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.data.JDXISynthData.address"><code class="docutils literal notranslate"><span class="pre">JDXISynthData.address</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.data.JDXISynthData.common_parameters"><code class="docutils literal notranslate"><span class="pre">JDXISynthData.common_parameters</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.data.JDXISynthData.__post_init__"><code class="docutils literal notranslate"><span class="pre">JDXISynthData.__post_init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.data.JDXISynthData.group_map"><code class="docutils literal notranslate"><span class="pre">JDXISynthData.group_map</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.data.JDXISynthData.get_partial_lmb"><code class="docutils literal notranslate"><span class="pre">JDXISynthData.get_partial_lmb()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.data.JDXISynthData.__init__"><code class="docutils literal notranslate"><span class="pre">JDXISynthData.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#module-jdxi_editor.jdxi.synth.digital">jdxi_editor.jdxi.synth.digital module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.digital.DigitalSynthData"><code class="docutils literal notranslate"><span class="pre">DigitalSynthData</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.digital.DigitalSynthData.synth_number"><code class="docutils literal notranslate"><span class="pre">DigitalSynthData.synth_number</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.digital.DigitalSynthData.partial_number"><code class="docutils literal notranslate"><span class="pre">DigitalSynthData.partial_number</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.digital.DigitalSynthData.partial_parameters"><code class="docutils literal notranslate"><span class="pre">DigitalSynthData.partial_parameters</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.digital.DigitalSynthData.__post_init__"><code class="docutils literal notranslate"><span class="pre">DigitalSynthData.__post_init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.digital.DigitalSynthData.group_map"><code class="docutils literal notranslate"><span class="pre">DigitalSynthData.group_map</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.digital.DigitalSynthData.__init__"><code class="docutils literal notranslate"><span class="pre">DigitalSynthData.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.digital.DigitalSynthData.partial_lmb"><code class="docutils literal notranslate"><span class="pre">DigitalSynthData.partial_lmb</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#module-jdxi_editor.jdxi.synth.drum">jdxi_editor.jdxi.synth.drum module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.drum.DrumSynthData"><code class="docutils literal notranslate"><span class="pre">DrumSynthData</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.drum.DrumSynthData.partial_number"><code class="docutils literal notranslate"><span class="pre">DrumSynthData.partial_number</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.drum.DrumSynthData.partial_parameters"><code class="docutils literal notranslate"><span class="pre">DrumSynthData.partial_parameters</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.drum.DrumSynthData.__post_init__"><code class="docutils literal notranslate"><span class="pre">DrumSynthData.__post_init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.drum.DrumSynthData.group_map"><code class="docutils literal notranslate"><span class="pre">DrumSynthData.group_map</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.drum.DrumSynthData.partial_lmb"><code class="docutils literal notranslate"><span class="pre">DrumSynthData.partial_lmb</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.drum.DrumSynthData.get_partial_lmb"><code class="docutils literal notranslate"><span class="pre">DrumSynthData.get_partial_lmb()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.drum.DrumSynthData.__init__"><code class="docutils literal notranslate"><span class="pre">DrumSynthData.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#module-jdxi_editor.jdxi.synth.factory">jdxi_editor.jdxi.synth.factory module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.factory.create_synth_data"><code class="docutils literal notranslate"><span class="pre">create_synth_data()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#module-jdxi_editor.jdxi.synth.instrument_display">jdxi_editor.jdxi.synth.instrument_display module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.instrument_display.InstrumentDisplayConfig"><code class="docutils literal notranslate"><span class="pre">InstrumentDisplayConfig</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.instrument_display.InstrumentDisplayConfig.instrument_icon_folder"><code class="docutils literal notranslate"><span class="pre">InstrumentDisplayConfig.instrument_icon_folder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.instrument_display.InstrumentDisplayConfig.instrument_default_image"><code class="docutils literal notranslate"><span class="pre">InstrumentDisplayConfig.instrument_default_image</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.instrument_display.InstrumentDisplayConfig.window_title"><code class="docutils literal notranslate"><span class="pre">InstrumentDisplayConfig.window_title</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.instrument_display.InstrumentDisplayConfig.display_prefix"><code class="docutils literal notranslate"><span class="pre">InstrumentDisplayConfig.display_prefix</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.instrument_display.InstrumentDisplayConfig.__init__"><code class="docutils literal notranslate"><span class="pre">InstrumentDisplayConfig.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#module-jdxi_editor.jdxi.synth.midi_config">jdxi_editor.jdxi.synth.midi_config module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.midi_config.MidiSynthConfig"><code class="docutils literal notranslate"><span class="pre">MidiSynthConfig</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.midi_config.MidiSynthConfig.midi_requests"><code class="docutils literal notranslate"><span class="pre">MidiSynthConfig.midi_requests</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.midi_config.MidiSynthConfig.midi_channel"><code class="docutils literal notranslate"><span class="pre">MidiSynthConfig.midi_channel</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.midi_config.MidiSynthConfig.presets"><code class="docutils literal notranslate"><span class="pre">MidiSynthConfig.presets</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.midi_config.MidiSynthConfig.preset_list"><code class="docutils literal notranslate"><span class="pre">MidiSynthConfig.preset_list</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.midi_config.MidiSynthConfig.preset_type"><code class="docutils literal notranslate"><span class="pre">MidiSynthConfig.preset_type</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.midi_config.MidiSynthConfig.__init__"><code class="docutils literal notranslate"><span class="pre">MidiSynthConfig.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#module-jdxi_editor.jdxi.synth.type">jdxi_editor.jdxi.synth.type module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.type.JDXiSynth"><code class="docutils literal notranslate"><span class="pre">JDXiSynth</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.type.JDXiSynth.PROGRAM"><code class="docutils literal notranslate"><span class="pre">JDXiSynth.PROGRAM</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.type.JDXiSynth.ANALOG_SYNTH"><code class="docutils literal notranslate"><span class="pre">JDXiSynth.ANALOG_SYNTH</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.type.JDXiSynth.DIGITAL_SYNTH_1"><code class="docutils literal notranslate"><span class="pre">JDXiSynth.DIGITAL_SYNTH_1</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.type.JDXiSynth.DIGITAL_SYNTH_2"><code class="docutils literal notranslate"><span class="pre">JDXiSynth.DIGITAL_SYNTH_2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.type.JDXiSynth.DIGITAL_SYNTH_3"><code class="docutils literal notranslate"><span class="pre">JDXiSynth.DIGITAL_SYNTH_3</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.type.JDXiSynth.DRUM_KIT"><code class="docutils literal notranslate"><span class="pre">JDXiSynth.DRUM_KIT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.type.JDXiSynth.VOCAL_FX"><code class="docutils literal notranslate"><span class="pre">JDXiSynth.VOCAL_FX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.type.JDXiSynth.get_area_code"><code class="docutils literal notranslate"><span class="pre">JDXiSynth.get_area_code()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#jdxi_editor.jdxi.synth.type.JDXiSynth.midi_channel_number"><code class="docutils literal notranslate"><span class="pre">JDXiSynth.midi_channel_number()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.jdxi.synth.html#module-jdxi_editor.jdxi.synth">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html">jdxi_editor.jdxi.sysex package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html#module-jdxi_editor.jdxi.sysex.bitmask">jdxi_editor.jdxi.sysex.bitmask module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html#jdxi_editor.jdxi.sysex.bitmask.BitMask"><code class="docutils literal notranslate"><span class="pre">BitMask</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html#jdxi_editor.jdxi.sysex.bitmask.BitMask.LOW_1_BIT"><code class="docutils literal notranslate"><span class="pre">BitMask.LOW_1_BIT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html#jdxi_editor.jdxi.sysex.bitmask.BitMask.LOW_2_BITS"><code class="docutils literal notranslate"><span class="pre">BitMask.LOW_2_BITS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html#jdxi_editor.jdxi.sysex.bitmask.BitMask.LOW_4_BITS"><code class="docutils literal notranslate"><span class="pre">BitMask.LOW_4_BITS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html#jdxi_editor.jdxi.sysex.bitmask.BitMask.LOW_7_BITS"><code class="docutils literal notranslate"><span class="pre">BitMask.LOW_7_BITS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html#jdxi_editor.jdxi.sysex.bitmask.BitMask.FULL_BYTE"><code class="docutils literal notranslate"><span class="pre">BitMask.FULL_BYTE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html#jdxi_editor.jdxi.sysex.bitmask.BitMask.HIGH_4_BITS"><code class="docutils literal notranslate"><span class="pre">BitMask.HIGH_4_BITS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html#jdxi_editor.jdxi.sysex.bitmask.BitMask.WORD"><code class="docutils literal notranslate"><span class="pre">BitMask.WORD</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html#module-jdxi_editor.jdxi.sysex.offset">jdxi_editor.jdxi.sysex.offset module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html#jd-xi-sysex-offsets">JD-Xi SysEx Offsets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html#jdxi_editor.jdxi.sysex.offset.JDXIControlChangeOffset"><code class="docutils literal notranslate"><span class="pre">JDXIControlChangeOffset</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html#jdxi_editor.jdxi.sysex.offset.JDXIControlChangeOffset.STATUS_BYTE"><code class="docutils literal notranslate"><span class="pre">JDXIControlChangeOffset.STATUS_BYTE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html#jdxi_editor.jdxi.sysex.offset.JDXIControlChangeOffset.CONTROL"><code class="docutils literal notranslate"><span class="pre">JDXIControlChangeOffset.CONTROL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html#jdxi_editor.jdxi.sysex.offset.JDXIControlChangeOffset.VALUE"><code class="docutils literal notranslate"><span class="pre">JDXIControlChangeOffset.VALUE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html#jdxi_editor.jdxi.sysex.offset.JDXIControlChangeOffset.END"><code class="docutils literal notranslate"><span class="pre">JDXIControlChangeOffset.END</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html#jdxi_editor.jdxi.sysex.offset.JDXIProgramChangeOffset"><code class="docutils literal notranslate"><span class="pre">JDXIProgramChangeOffset</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html#jdxi_editor.jdxi.sysex.offset.JDXIProgramChangeOffset.STATUS_BYTE"><code class="docutils literal notranslate"><span class="pre">JDXIProgramChangeOffset.STATUS_BYTE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html#jdxi_editor.jdxi.sysex.offset.JDXIProgramChangeOffset.PROGRAM_NUMBER"><code class="docutils literal notranslate"><span class="pre">JDXIProgramChangeOffset.PROGRAM_NUMBER</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html#jdxi_editor.jdxi.sysex.offset.JDXIProgramChangeOffset.END"><code class="docutils literal notranslate"><span class="pre">JDXIProgramChangeOffset.END</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html#jdxi_editor.jdxi.sysex.offset.JDXIPitchBendOffset"><code class="docutils literal notranslate"><span class="pre">JDXIPitchBendOffset</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html#jdxi_editor.jdxi.sysex.offset.JDXIPitchBendOffset.STATUS_BYTE"><code class="docutils literal notranslate"><span class="pre">JDXIPitchBendOffset.STATUS_BYTE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html#jdxi_editor.jdxi.sysex.offset.JDXIPitchBendOffset.PITCH_BEND_VALUE"><code class="docutils literal notranslate"><span class="pre">JDXIPitchBendOffset.PITCH_BEND_VALUE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html#jdxi_editor.jdxi.sysex.offset.JDXIPitchBendOffset.END"><code class="docutils literal notranslate"><span class="pre">JDXIPitchBendOffset.END</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html#jdxi_editor.jdxi.sysex.offset.JDXiSysExOffset"><code class="docutils literal notranslate"><span class="pre">JDXiSysExOffset</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html#jdxi_editor.jdxi.sysex.offset.JDXiSysExOffset.SYSEX_START"><code class="docutils literal notranslate"><span class="pre">JDXiSysExOffset.SYSEX_START</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html#jdxi_editor.jdxi.sysex.offset.JDXiSysExOffset.ROLAND_ID"><code class="docutils literal notranslate"><span class="pre">JDXiSysExOffset.ROLAND_ID</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html#jdxi_editor.jdxi.sysex.offset.JDXiSysExOffset.DEVICE_ID"><code class="docutils literal notranslate"><span class="pre">JDXiSysExOffset.DEVICE_ID</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html#jdxi_editor.jdxi.sysex.offset.JDXiSysExOffset.MODEL_ID_1"><code class="docutils literal notranslate"><span class="pre">JDXiSysExOffset.MODEL_ID_1</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html#jdxi_editor.jdxi.sysex.offset.JDXiSysExOffset.MODEL_ID_2"><code class="docutils literal notranslate"><span class="pre">JDXiSysExOffset.MODEL_ID_2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html#jdxi_editor.jdxi.sysex.offset.JDXiSysExOffset.MODEL_ID_3"><code class="docutils literal notranslate"><span class="pre">JDXiSysExOffset.MODEL_ID_3</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html#jdxi_editor.jdxi.sysex.offset.JDXiSysExOffset.MODEL_ID_4"><code class="docutils literal notranslate"><span class="pre">JDXiSysExOffset.MODEL_ID_4</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html#jdxi_editor.jdxi.sysex.offset.JDXiSysExOffset.COMMAND_ID"><code class="docutils literal notranslate"><span class="pre">JDXiSysExOffset.COMMAND_ID</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html#jdxi_editor.jdxi.sysex.offset.JDXiSysExOffset.ADDRESS_MSB"><code class="docutils literal notranslate"><span class="pre">JDXiSysExOffset.ADDRESS_MSB</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html#jdxi_editor.jdxi.sysex.offset.JDXiSysExOffset.ADDRESS_UMB"><code class="docutils literal notranslate"><span class="pre">JDXiSysExOffset.ADDRESS_UMB</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html#jdxi_editor.jdxi.sysex.offset.JDXiSysExOffset.ADDRESS_LMB"><code class="docutils literal notranslate"><span class="pre">JDXiSysExOffset.ADDRESS_LMB</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html#jdxi_editor.jdxi.sysex.offset.JDXiSysExOffset.ADDRESS_LSB"><code class="docutils literal notranslate"><span class="pre">JDXiSysExOffset.ADDRESS_LSB</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html#jdxi_editor.jdxi.sysex.offset.JDXiSysExOffset.TONE_NAME_START"><code class="docutils literal notranslate"><span class="pre">JDXiSysExOffset.TONE_NAME_START</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html#jdxi_editor.jdxi.sysex.offset.JDXiSysExOffset.TONE_NAME_END"><code class="docutils literal notranslate"><span class="pre">JDXiSysExOffset.TONE_NAME_END</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html#jdxi_editor.jdxi.sysex.offset.JDXiSysExOffset.VALUE"><code class="docutils literal notranslate"><span class="pre">JDXiSysExOffset.VALUE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html#jdxi_editor.jdxi.sysex.offset.JDXiSysExOffset.CHECKSUM"><code class="docutils literal notranslate"><span class="pre">JDXiSysExOffset.CHECKSUM</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html#jdxi_editor.jdxi.sysex.offset.JDXiSysExOffset.SYSEX_END"><code class="docutils literal notranslate"><span class="pre">JDXiSysExOffset.SYSEX_END</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html#jdxi_editor.jdxi.sysex.offset.JDXIIdentityOffset"><code class="docutils literal notranslate"><span class="pre">JDXIIdentityOffset</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html#jdxi_editor.jdxi.sysex.offset.JDXIIdentityOffset.SYSEX_START"><code class="docutils literal notranslate"><span class="pre">JDXIIdentityOffset.SYSEX_START</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html#jdxi_editor.jdxi.sysex.offset.JDXIIdentityOffset.ID_NUMBER"><code class="docutils literal notranslate"><span class="pre">JDXIIdentityOffset.ID_NUMBER</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html#jdxi_editor.jdxi.sysex.offset.JDXIIdentityOffset.DEVICE_ID"><code class="docutils literal notranslate"><span class="pre">JDXIIdentityOffset.DEVICE_ID</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html#jdxi_editor.jdxi.sysex.offset.JDXIIdentityOffset.SUB_ID_1_GENERAL_INFORMATION"><code class="docutils literal notranslate"><span class="pre">JDXIIdentityOffset.SUB_ID_1_GENERAL_INFORMATION</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html#jdxi_editor.jdxi.sysex.offset.JDXIIdentityOffset.SUB_ID_2_IDENTITY_REPLY"><code class="docutils literal notranslate"><span class="pre">JDXIIdentityOffset.SUB_ID_2_IDENTITY_REPLY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html#jdxi_editor.jdxi.sysex.offset.JDXIIdentityOffset.ROLAND_ID"><code class="docutils literal notranslate"><span class="pre">JDXIIdentityOffset.ROLAND_ID</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html#jdxi_editor.jdxi.sysex.offset.JDXIIdentityOffset.DEVICE_FAMILY_CODE_1"><code class="docutils literal notranslate"><span class="pre">JDXIIdentityOffset.DEVICE_FAMILY_CODE_1</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html#jdxi_editor.jdxi.sysex.offset.JDXIIdentityOffset.DEVICE_FAMILY_CODE_2"><code class="docutils literal notranslate"><span class="pre">JDXIIdentityOffset.DEVICE_FAMILY_CODE_2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html#jdxi_editor.jdxi.sysex.offset.JDXIIdentityOffset.DEVICE_FAMILY_NUMBER_CODE_1"><code class="docutils literal notranslate"><span class="pre">JDXIIdentityOffset.DEVICE_FAMILY_NUMBER_CODE_1</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html#jdxi_editor.jdxi.sysex.offset.JDXIIdentityOffset.DEVICE_FAMILY_NUMBER_CODE_2"><code class="docutils literal notranslate"><span class="pre">JDXIIdentityOffset.DEVICE_FAMILY_NUMBER_CODE_2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html#jdxi_editor.jdxi.sysex.offset.JDXIIdentityOffset.SOFTWARE_REVISION_1"><code class="docutils literal notranslate"><span class="pre">JDXIIdentityOffset.SOFTWARE_REVISION_1</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html#jdxi_editor.jdxi.sysex.offset.JDXIIdentityOffset.SOFTWARE_REVISION_2"><code class="docutils literal notranslate"><span class="pre">JDXIIdentityOffset.SOFTWARE_REVISION_2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html#jdxi_editor.jdxi.sysex.offset.JDXIIdentityOffset.SOFTWARE_REVISION_3"><code class="docutils literal notranslate"><span class="pre">JDXIIdentityOffset.SOFTWARE_REVISION_3</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html#jdxi_editor.jdxi.sysex.offset.JDXIIdentityOffset.SOFTWARE_REVISION_4"><code class="docutils literal notranslate"><span class="pre">JDXIIdentityOffset.SOFTWARE_REVISION_4</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html#jdxi_editor.jdxi.sysex.offset.JDXIIdentityOffset.SYSEX_END"><code class="docutils literal notranslate"><span class="pre">JDXIIdentityOffset.SYSEX_END</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html#jdxi_editor.jdxi.sysex.offset.JDXIIdentityOffset.expected_length"><code class="docutils literal notranslate"><span class="pre">JDXIIdentityOffset.expected_length()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="jdxi_editor.jdxi.sysex.html#module-jdxi_editor.jdxi.sysex">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="module-jdxi_editor.jdxi">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-jdxi_editor.jdxi" title="Link to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="jdxi_editor.html" class="btn btn-neutral float-left" title="jdxi_editor package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="jdxi_editor.jdxi.file.html" class="btn btn-neutral float-right" title="jdxi_editor.jdxi.file package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Mark Mrooks.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
