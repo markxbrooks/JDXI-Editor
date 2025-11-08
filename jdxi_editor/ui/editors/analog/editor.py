@@ -44,7 +44,6 @@ Example:
 import logging
 from typing import Optional, Dict, Union
 
-from PySide6 import QtCore, QtWidgets
 from PySide6.QtWidgets import (
     QWidget,
     QVBoxLayout,
@@ -277,20 +276,6 @@ class AnalogSynthEditor(SynthEditor):
             controls=self.controls,
         )
         self.tab_widget.addTab(self.common_section, "Common")
-        # After creating your QTabWidget:
-        tab_bar = self.tab_widget.tabBar()
-
-        # Create a wrapper widget with a centered layout
-        wrapper = QtWidgets.QWidget()
-        layout = QtWidgets.QHBoxLayout(wrapper)
-        layout.addStretch()
-        layout.addWidget(tab_bar)
-        layout.addStretch()
-        layout.setContentsMargins(0, 0, 0, 0)
-
-        # Replace the default tab bar
-        self.tab_widget.setTabBar(tab_bar)
-        self.tab_widget.setCornerWidget(wrapper, QtCore.Qt.TopLeftCorner)
 
     def _init_parameter_mappings(self):
         """Initialize MIDI parameter mappings."""

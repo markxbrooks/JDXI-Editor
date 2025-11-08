@@ -63,20 +63,6 @@ class MidiPlaybackWorker(QObject):
         else:
             self.start_time = start_time
         self.should_stop = False
-        
-        # Set initial tempo (use provided value or default)
-        if initial_tempo is not None:
-            self.initial_tempo = initial_tempo
-            self.position_tempo = initial_tempo
-        else:
-            # Use default tempo if none provided
-            self.initial_tempo = MidiConstant.TEMPO_120_BPM_USEC
-            self.position_tempo = MidiConstant.TEMPO_120_BPM_USEC
-
-        # Debug logging
-        print(f"🎵 Worker setup: received {len(buffered_msgs)} buffered messages")
-        if len(buffered_msgs) > 0:
-            print(f"🎵 First few buffered messages: {buffered_msgs[:3]}")
 
         # Set initial tempo (use provided value or default)
         if initial_tempo is not None:
@@ -126,22 +112,6 @@ class MidiPlaybackWorker(QObject):
 
         now = time.time()
         elapsed = now - self.start_time
-        
-        # Add small delay to prevent immediate processing of events at tick 0
-        if elapsed < 0.1:  # Wait 100ms before processing any events
-            return
-        
-        # Print format header on first run
-        if not hasattr(self, '_header_printed'):
-            print("🎵 Real-time Playback Tracking:")
-            print("Format: [Elapsed] Bar X.X | BPM XXX.X | Expected: X.XXs | Real: X.XXs | Diff: ±X.XXs | Index: XXXX")
-            print("=" * 100)
-            self._header_printed = True
-            
-        # Debug logging
-        if len(self.buffered_msgs) == 0:
-            print(f"⚠️ No buffered messages available (elapsed: {elapsed:.3f}s)")
-            return
 
         # Add small delay to prevent immediate processing of events at tick 0
         if elapsed < 0.1:  # Wait 100ms before processing any events
@@ -214,52 +184,25 @@ class MidiPlaybackWorker(QObject):
         """
         if not hasattr(self, '_cached_times'):
             self._cached_times = {}
-<<<<<<< HEAD
-        
-        # Return cached time if available
-        if target_ticks in self._cached_times:
-            return self._cached_times[target_ticks]
-        
-=======
 
         # Return cached time if available
         if target_ticks in self._cached_times:
             return self._cached_times[target_ticks]
 
->>>>>>> 089e41371e148f15ced20093e0b19fa8457041fd
         # Calculate time incrementally like get_total_duration_in_seconds does
         current_tempo = self.initial_tempo
         time_seconds = 0.0
         last_tick = 0
-<<<<<<< HEAD
-        
-=======
 
->>>>>>> 089e41371e148f15ced20093e0b19fa8457041fd
         # Process all messages up to target_ticks in chronological order
         for abs_ticks, raw_bytes, msg_tempo in self.buffered_msgs:
             if abs_ticks > target_ticks:
                 break
-<<<<<<< HEAD
-                
-=======
 
->>>>>>> 089e41371e148f15ced20093e0b19fa8457041fd
             # Calculate time for this segment using the tempo that was active
             delta_ticks = abs_ticks - last_tick
             time_seconds += (current_tempo / 1_000_000.0) * (delta_ticks / self.ticks_per_beat)
             last_tick = abs_ticks
-<<<<<<< HEAD
-            
-            # Update tempo if this is a tempo change message
-            if raw_bytes is None:  # This is a tempo change message
-                current_tempo = msg_tempo
-        
-        # Cache the result
-        self._cached_times[target_ticks] = time_seconds
-        return time_seconds
-
-=======
 
             # Update tempo if this is a tempo change message
             if raw_bytes is None:  # This is a tempo change message
@@ -268,4 +211,3 @@ class MidiPlaybackWorker(QObject):
         # Cache the result
         self._cached_times[target_ticks] = time_seconds
         return time_seconds
->>>>>>> 089e41371e148f15ced20093e0b19fa8457041fd

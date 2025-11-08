@@ -852,7 +852,7 @@ class MidiFileEditor(SynthEditor):
         """
         Start playback of the MIDI file from the beginning (or resume if paused).
         """
-a        # Reset position slider to beginning
+        # Reset position slider to beginning
         self.ui_position_slider_reset()
 
         if PROFILING:

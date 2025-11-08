@@ -124,6 +124,8 @@ class JDXiInstrument(JDXiUi):
         self.program_helper = JDXiProgramHelper(self.midi_helper, MidiChannel.PROGRAM)
         self.settings = QSettings("mabsoft", __package_name__)
         self._load_settings()
+        self._toggle_illuminate_sequencer_lightshow(True)
+        self._load_saved_favorites()
         self._update_synth_button_styles()
         self._set_callbacks()
         self._init_preset_helpers()
@@ -210,10 +212,6 @@ class JDXiInstrument(JDXiUi):
         self.data_request()
         self._show_main_editor()
         self.init_main_editor()
-        # Load saved favorites after UI is fully initialized
-        self._load_saved_favorites()
-        # Start sequencer lightshow after UI is fully initialized
-        self._toggle_illuminate_sequencer_lightshow(True)
         # Initialize the current preset and synth type
         self.current_synth_type = JDXiSynth.DIGITAL_SYNTH_1
         self.channel = MidiChannel.DIGITAL_SYNTH_1
