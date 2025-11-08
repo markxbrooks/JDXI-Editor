@@ -18,6 +18,8 @@
       <excludeFolder url="file://$MODULE_DIR$/_build/latex/.doctrees/autoapi/jdxi_editor/ui/windows/jdxi/containers/wheels" />
       <excludeFolder url="file://$MODULE_DIR$/../jdxi_dmg" />
       <excludeFolder url="file://$MODULE_DIR$/../spleeter-env" />
+      <excludeFolder url="file://$MODULE_DIR$/../.eggs" />
+      <excludeFolder url="file://$MODULE_DIR$/build" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.10 virtualenv at ~/projects/JDXI-Editor/venv" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
