@@ -69,8 +69,16 @@ class JDXiSysExComposer:
             # Determine size (1 byte or 4 nibble-based)
             size = getattr(param, "get_nibbled_size", lambda: 1)()
             if size == 1:
+                # Single byte value must be 0-127 (MIDI range)
+                if midi_value < 0 or midi_value > 127:
+                    raise ValueError(f"MIDI value {midi_value} out of range for 1-byte parameter (0-127)")
                 data_bytes = midi_value
             elif size == 4:
+                # 4-nibble value can be up to 16 bits (0-65535), but validate it's reasonable
+                if midi_value < 0:
+                    raise ValueError(f"MIDI value {midi_value} cannot be negative for 4-nibble parameter")
+                if midi_value > 65535:
+                    raise ValueError(f"MIDI value {midi_value} exceeds 16-bit range (0-65535)")
                 data_bytes = split_16bit_value_to_nibbles(midi_value)
                 log.message(f"Converting value {value} midi_value {midi_value} to {size} nibbles for SysEx message: data_bytes={data_bytes}")
             else:

@@ -37,7 +37,6 @@ Dependencies:
 
 """
 
-import logging
 from typing import Optional
 
 from PySide6.QtWidgets import (
@@ -319,7 +318,7 @@ class PresetEditor(BasicEditor):
         preset_vlayout.addWidget(self.load_button)
         return preset_group
 
-    def on_preset_type_changed(self, index: int) -> None:
+    def on_preset_type_changed(self, index: int) -> None:  # pylint: disable=unused-argument
         """Handle preset type selection change."""
         preset_type = self.digital_preset_type_combo.currentText()
         log.message(f"preset_type: {preset_type}")
@@ -353,7 +352,7 @@ class PresetEditor(BasicEditor):
         else:
             log.warning(f"synth type: {synth_type} not found in mapping. Cannot update tone name.")
 
-    def load_preset_by_program_change(self, preset_index: int) -> None:
+    def load_preset_by_program_change(self, preset_index: int) -> None:  # pylint: disable=unused-argument
         """
         Load a preset by program change.
 
@@ -424,7 +423,7 @@ class PresetEditor(BasicEditor):
             if (selected_category in ["No Category Selected", preset["category"]])
         ]
         filtered_presets = []
-        for i, preset in enumerate(filtered_list):
+        for preset in filtered_list:
             if search_text.lower() in preset["name"].lower():
                 filtered_presets.append(preset)
 

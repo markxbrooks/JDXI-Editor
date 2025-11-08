@@ -190,7 +190,7 @@ class RolandSysExAddress:
             f"lmb=0x{int(self.lmb):02X}, lsb=0x{int(self.lsb):02X})>"
         )
 
-    def __str__(self):
+    def __str__(self) -> str:
         """
         Return a string representation of the RolandSysExAddress object.
 
@@ -425,7 +425,7 @@ class AddressOffsetProgramLMB(Address):
     DRUM_KIT_PART_37 = 0x76
 
     @classmethod
-    def message_position(cls):
+    def message_position(cls) -> int:
         """
         Return the fixed message position for command bytes.
 

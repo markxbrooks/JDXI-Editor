@@ -69,8 +69,21 @@ class JDXiJSONComposer:
                     editor_data[k] = v[0]
                 else:
                     editor_data[k] = v
-                # Convert combined_data to JSON string
-                self.json_string = editor_data # json.dumps(editor_data, indent=4)
+            
+            # Add tone name parameters if available
+            if hasattr(editor, "tone_names") and hasattr(editor, "preset_type"):
+                tone_name = editor.tone_names.get(editor.preset_type, "")
+                if tone_name:
+                    # Convert tone name string to TONE_NAME_1 through TONE_NAME_12
+                    # Pad to 12 characters and truncate if longer
+                    tone_name_padded = tone_name.ljust(12)[:12]
+                    for i, char in enumerate(tone_name_padded, start=1):
+                        ascii_value = ord(char)
+                        editor_data[f"TONE_NAME_{i}"] = ascii_value
+                    log.message(f"Including tone name in JSON: '{tone_name}'")
+            
+            # Convert combined_data to JSON string
+            self.json_string = editor_data # json.dumps(editor_data, indent=4)
             return self.json_string
 
         except (ValueError, TypeError, OSError, IOError) as ex:

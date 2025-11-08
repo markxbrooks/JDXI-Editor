@@ -10,7 +10,7 @@ from jdxi_editor.log.logger import Logger as log
 class WaveSelector(QWidget):
     """Wave Selector"""
 
-    def __init__(self, wave_list):
+    def __init__(self, wave_list: list[dict[str, str]]) -> None:
         super().__init__()
 
         self.setWindowTitle("Wave Selector")
@@ -28,7 +28,7 @@ class WaveSelector(QWidget):
         layout.addWidget(self.wave_combo)
         self.update_waves()
 
-    def update_waves(self):
+    def update_waves(self) -> None:
         selected_category = self.category_combo.currentText()
 
         if not isinstance(self.wave_list, list):
@@ -46,7 +46,7 @@ class WaveSelector(QWidget):
             [f"{w['Wave Number']}: {w['Wave Name']}" for w in filtered_waves]
         )
 
-    def get_selected_wave_number(self):
+    def get_selected_wave_number(self) -> int | None:
         """
         Returns the wave number of the selected wave from the wave_combo.
 

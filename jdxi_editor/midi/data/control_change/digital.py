@@ -95,12 +95,12 @@ class DigitalControlChange:
     }
 
     @staticmethod
-    def get_cc_value(group: str, partial: int) -> int:
+    def get_cc_value(group: str, partial: int) -> int | None:
         """Retrieve CC value based on group and partial."""
         return DigitalControlChange.CC.get(group, {}).get(partial)
 
     @staticmethod
-    def get_nrpn_value(group: str, partial: int) -> int:
+    def get_nrpn_value(group: str, partial: int) -> int | None:
         """Retrieve NRPN value based on group and partial."""
         return DigitalControlChange.NRPN.get(group, {}).get(partial)
 
@@ -114,11 +114,11 @@ class DigitalControlChange:
         return str(value)
 
     @staticmethod
-    def get_nrpn_map(group: str) -> dict:
+    def get_nrpn_map(group: str) -> dict[int, int]:
         """Return dynamic NRPN values for each partial from the given group."""
         return DigitalControlChange.NRPN.get(group, {}).copy()
 
     @staticmethod
-    def get_cc_map(group: str) -> dict:
+    def get_cc_map(group: str) -> dict[int, int]:
         """Return dynamic CC values for each partial from the given group."""
         return DigitalControlChange.CC.get(group, {}).copy()

@@ -299,6 +299,13 @@ class EffectsCommonEditor(BasicEditor):
         # self.efx1_type.combo_box.currentIndexChanged.connect(self.data_request)
         self.efx2_type.combo_box.currentIndexChanged.connect(self._update_efx2_labels)
         # self.efx2_type.combo_box.currentIndexChanged.connect(self.data_request)
+        
+        # Connect to MIDI helper signals to receive SysEx data
+        if self.midi_helper:
+            self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
+        
+        # Request current settings from the synthesizer
+        self.data_request()
 
     def update_flanger_rate_note_controls(self) -> None:
         """Update Flanger rate/note controls based on rate note switch."""
@@ -648,3 +655,90 @@ class EffectsCommonEditor(BasicEditor):
         except Exception as ex:
             log.error(f"MIDI error setting {param.name}: {ex}")
             return False
+
+    def _dispatch_sysex_to_area(self, json_sysex_data: str) -> None:
+        """
+        Dispatch SysEx data to update effects controls.
+        
+        :param json_sysex_data: str JSON string containing SysEx data
+        :return: None
+        """
+        try:
+            import json
+            from jdxi_editor.ui.editors.digital.utils import filter_sysex_keys
+            
+            # Parse JSON SysEx data
+            sysex_data = json.loads(json_sysex_data)
+            if not sysex_data:
+                return
+            
+            # Check if this is effects data (TEMPORARY_AREA should be "TEMPORARY_PROGRAM")
+            temporary_area = sysex_data.get("TEMPORARY_AREA", "")
+            if temporary_area != "TEMPORARY_PROGRAM":
+                # Not effects data, skip
+                return
+            
+            log.header_message(
+                f"Updating Effects UI components from SysEx data for {temporary_area}"
+            )
+            
+            # Filter out metadata keys
+            sysex_data = filter_sysex_keys(sysex_data)
+            
+            # Update controls based on parameter names
+            successes, failures = [], []
+            for param_name, param_value in sysex_data.items():
+                try:
+                    # Try to find the parameter in our controls
+                    param = None
+                    widget = None
+                    
+                    # Check all parameter types
+                    for param_type in [
+                        AddressParameterEffect1,
+                        AddressParameterEffect2,
+                        AddressParameterDelay,
+                        AddressParameterReverb,
+                        AddressParameterEffectCommon
+                    ]:
+                        if hasattr(param_type, "get_by_name"):
+                            param = param_type.get_by_name(param_name)
+                            if param:
+                                widget = self.controls.get(param)
+                                if widget:
+                                    break
+                    
+                    if param and widget:
+                        # Convert value if needed and update widget
+                        value = int(param_value) if not isinstance(param_value, int) else param_value
+                        
+                        # Convert from MIDI to display value if parameter has conversion
+                        if hasattr(param, "convert_from_midi"):
+                            display_value = param.convert_from_midi(value)
+                        else:
+                            display_value = value
+                        
+                        # Update widget value
+                        if hasattr(widget, "setValue"):
+                            widget.blockSignals(True)  # Prevent triggering MIDI sends
+                            widget.setValue(display_value)
+                            widget.blockSignals(False)
+                            successes.append(param_name)
+                        else:
+                            failures.append(f"{param_name}: widget has no setValue method")
+                    else:
+                        failures.append(f"{param_name}: parameter or widget not found")
+                        
+                except Exception as ex:
+                    failures.append(f"{param_name}: {ex}")
+                    log.warning(f"Error updating {param_name}: {ex}")
+            
+            if successes:
+                log.message(f"Successfully updated {len(successes)} effects parameters")
+            if failures:
+                log.warning(f"Failed to update {len(failures)} effects parameters")
+                
+        except json.JSONDecodeError as ex:
+            log.error(f"Invalid JSON in SysEx data: {ex}")
+        except Exception as ex:
+            log.error(f"Error dispatching SysEx to effects area: {ex}")

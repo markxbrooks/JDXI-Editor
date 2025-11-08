@@ -39,7 +39,7 @@ class MainEditor(QMainWindow):
         self.setStyleSheet(JDXiStyle.EDITOR)
         self.setWindowTitle(f"{__program__} - {__version__}")
 
-    def closeEvent(self, event):
+    def closeEvent(self, event) -> None:  # pylint: disable=unused-argument
         """
         close the editor tab widget, but dont delete it
 

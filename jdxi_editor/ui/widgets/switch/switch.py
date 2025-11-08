@@ -31,7 +31,7 @@ class Switch(QWidget):
 
     def __init__(self, label: str,
                  values: list[str],
-                 parent: QWidget =None,
+                 parent: QWidget | None = None,
                  tooltip: str = ""):
         super().__init__(parent)
         self.values = values
@@ -52,13 +52,13 @@ class Switch(QWidget):
         self.button.clicked.connect(self._on_clicked)
         layout.addWidget(self.button)
 
-    def _on_clicked(self):
+    def _on_clicked(self) -> None:
         """Handle button clicks"""
         self.current_index = (self.current_index + 1) % len(self.values)
         self.button.setText(self.values[self.current_index])
         self.valueChanged.emit(self.current_index)
 
-    def setValue(self, value: int):
+    def setValue(self, value: int) -> None:
         """Set current value"""
         if not value:
             return
@@ -67,7 +67,7 @@ class Switch(QWidget):
             self.button.setText(self.values[value])
             self.button.setChecked(value > 0)
 
-    def setLabel(self, text: str):
+    def setLabel(self, text: str) -> None:
         """Set label text"""
         if not text:
             return

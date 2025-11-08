@@ -31,7 +31,7 @@ import base64
 from PySide6.QtGui import QPixmap
 
 
-def base64_to_pixmap(base64_str: str = None) -> QPixmap:
+def base64_to_pixmap(base64_str: str | None = None) -> QPixmap:
     """
     Convert a Base64-encoded string into a QPixmap object.
 

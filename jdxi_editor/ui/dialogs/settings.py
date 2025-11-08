@@ -14,7 +14,7 @@ from jdxi_editor.project import __version__, __program__, __package_name__, __or
 from jdxi_editor.log.logger import Logger as log
 
 
-def log_settings():
+def log_settings() -> None:
     settings = QSettings(__organization_name__, __program__)
     print(f'log_level {settings.value("log_level", logging.DEBUG, type=int)}')
     print(f'logging {settings.value("logging", True, type=bool)}')

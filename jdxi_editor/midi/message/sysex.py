@@ -55,7 +55,7 @@ class SysexParameter(Enum):
 
     PROGRAM_COMMON = ("PROGRAM_COMMON", AddressOffsetProgramLMB.COMMON)
 
-    def __new__(cls, *args):
+    def __new__(cls, *args: int | tuple[str, int]) -> "SysexParameter":
         if len(args) == 1:
             obj = object.__new__(cls)
             obj._value_ = args[0]
@@ -70,7 +70,7 @@ class SysexParameter(Enum):
         return obj
 
     @classmethod
-    def get_command_name(cls, command_type):
+    def get_command_name(cls, command_type: int) -> str | None:
         """Retrieve the command name given a command type."""
         for item in cls:
             if hasattr(item, "param_name") and item.value == command_type:
@@ -85,13 +85,13 @@ class SysExMessage(MidiMessage):
     start_of_sysex: int = MidiConstant.START_OF_SYSEX  # Start of SysEx
     manufacturer_id: int = RolandID.ROLAND_ID  # Manufacturer ID (e.g., [0x41] for Roland)
     device_id: int = RolandID.DEVICE_ID  # Default device ID
-    model_id: list[int] = None  # Model ID (4 bytes)
+    model_id: list[int] | None = None  # Model ID (4 bytes)
     command: int = CommandID.DT1  # SysEx command (DT1, RQ1, etc.)
-    address: list[int] = None  # Address (4 bytes)
-    data: list[int] = None  # Data payload
+    address: list[int] | None = None  # Address (4 bytes)
+    data: list[int] | None = None  # Data payload
     end_of_sysex: int = MidiConstant.END_OF_SYSEX  # End of SysEx
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         """Ensure proper initialization of address, model_id, and data fields."""
         if self.manufacturer_id is None:
             raise ValueError("manufacturer_id must be provided.")
@@ -124,7 +124,7 @@ class SysExMessage(MidiMessage):
         return msg
 
     @classmethod
-    def from_bytes(cls, data: bytes):
+    def from_bytes(cls, data: bytes) -> "SysExMessage":
         """Parse a received SysEx message into an instance."""
         if len(data) < 12:
             raise ValueError(f"Invalid SysEx message: too short ({len(data)} bytes)")

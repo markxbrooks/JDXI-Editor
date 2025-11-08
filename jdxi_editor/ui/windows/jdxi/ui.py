@@ -249,6 +249,12 @@ class JDXiUi(QMainWindow):
 
         file_menu.addSeparator()
 
+        dump_settings_action = QAction("Dump Settings to Synth", self)
+        dump_settings_action.triggered.connect(self._dump_settings_to_synth)
+        file_menu.addAction(dump_settings_action)
+
+        file_menu.addSeparator()
+
         quit_action = QAction("Quit", self)
         quit_action.triggered.connect(self.close)
         file_menu.addAction(quit_action)
@@ -608,6 +614,9 @@ class JDXiUi(QMainWindow):
         raise NotImplementedError("to be implemented in subclass")
 
     def _patch_save(self):
+        raise NotImplementedError("to be implemented in subclass")
+
+    def _dump_settings_to_synth(self):
         raise NotImplementedError("to be implemented in subclass")
 
     def _handle_program_change(self, bank_letter: str, program_number: int):

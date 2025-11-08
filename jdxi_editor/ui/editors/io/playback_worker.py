@@ -4,9 +4,10 @@ Playback Worker to play Midi files in a new thread
 """
 
 
-from PySide6.QtCore import QObject, Signal, Slot
 import threading
 import time
+
+from PySide6.QtCore import QObject, Signal, Slot
 
 from jdxi_editor.jdxi.midi.constant import MidiConstant
 from jdxi_editor.jdxi.sysex.bitmask import BitMask
@@ -18,7 +19,7 @@ class MidiPlaybackWorker(QObject):
     result_ready = Signal(str)  # optional
     finished = Signal()
 
-    def __init__(self, parent=None):
+    def __init__(self, parent: QObject | None = None) -> None:  # pylint: disable=unsupported-binary-operation
         super().__init__()
         self.parent = parent
         self.position_tempo = MidiConstant.TEMPO_120_BPM_USEC
@@ -32,16 +33,25 @@ class MidiPlaybackWorker(QObject):
         self.index = 0
         self.start_time = time.time()
 
-    def __str__(self):
-        return f"MidiPlaybackWorker(position_tempo={self.position_tempo}, should_stop={self.should_stop}, buffered_msgs={len(self.buffered_msgs)}, midi_out_port={self.midi_out_port}, play_program_changes={self.play_program_changes}, ticks_per_beat={self.ticks_per_beat}, index={self.index}, start_time={self.start_time})"
+    def __str__(self) -> str:
+        return (
+            f"MidiPlaybackWorker(position_tempo={self.position_tempo}, "
+            f"should_stop={self.should_stop}, buffered_msgs={len(self.buffered_msgs)}, "
+            f"midi_out_port={self.midi_out_port}, play_program_changes={self.play_program_changes}, "
+            f"ticks_per_beat={self.ticks_per_beat}, index={self.index}, "
+            f"start_time={self.start_time})"
+        )
 
-    def setup(self,
-              buffered_msgs: list,
-              midi_out_port,
-              ticks_per_beat: int = 480,
-              play_program_changes: bool = True,
-              start_time: float = None,
-              initial_tempo: int = MidiConstant.TEMPO_120_BPM_USEC):
+    def setup(
+        self,
+        buffered_msgs: list,
+        midi_out_port: object,
+        ticks_per_beat: int = 480,
+        play_program_changes: bool = True,
+        start_time: float | None = None,  # pylint: disable=unsupported-binary-operation
+        initial_tempo: int = MidiConstant.TEMPO_120_BPM_USEC
+    ) -> None:
+        """Setup the playback worker with buffered messages and configuration."""
         self.buffered_msgs = buffered_msgs
         self.midi_out_port = midi_out_port
         self.ticks_per_beat = ticks_per_beat
@@ -84,7 +94,8 @@ class MidiPlaybackWorker(QObject):
 
         # existing setup...
 
-    def stop(self):
+    def stop(self) -> None:
+        """Stop the playback worker."""
         with self.lock:
             self.should_stop = True
 
@@ -108,7 +119,8 @@ class MidiPlaybackWorker(QObject):
                 self.parent.set_display_tempo_usecs(new_tempo)
 
     @Slot()
-    def do_work(self):
+    def do_work(self) -> None:
+        """Process MIDI messages for playback."""
         if self.should_stop:
             return
 
@@ -162,7 +174,11 @@ class MidiPlaybackWorker(QObject):
                 current_bar = abs_ticks / (4 * self.ticks_per_beat)
                 current_bpm = 60000000 / self.position_tempo
                 time_diff = elapsed - msg_time_sec
-                print(f"[{elapsed:6.1f}s] Bar {current_bar:5.1f} | BPM {current_bpm:6.1f} | Expected: {msg_time_sec:5.2f}s | Real: {elapsed:5.2f}s | Diff: {time_diff:+5.2f}s | Index: {self.index:4d}")
+                print(
+                    f"[{elapsed:6.1f}s] Bar {current_bar:5.1f} | BPM {current_bpm:6.1f} | "
+                    f"Expected: {msg_time_sec:5.2f}s | Real: {elapsed:5.2f}s | "
+                    f"Diff: {time_diff:+5.2f}s | Index: {self.index:4d}"
+                )
 
             # Process the message
             if raw_bytes is None:
@@ -221,7 +237,7 @@ class MidiPlaybackWorker(QObject):
 
 >>>>>>> 089e41371e148f15ced20093e0b19fa8457041fd
         # Process all messages up to target_ticks in chronological order
-        for i, (abs_ticks, raw_bytes, msg_tempo) in enumerate(self.buffered_msgs):
+        for abs_ticks, raw_bytes, msg_tempo in self.buffered_msgs:
             if abs_ticks > target_ticks:
                 break
 <<<<<<< HEAD

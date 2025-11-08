@@ -46,7 +46,6 @@ from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 from jdxi_editor.ui.widgets.midi.track_viewer import MidiTrackViewer
 from jdxi_editor.ui.widgets.midi.utils import get_total_duration_in_seconds
 from jdxi_editor.ui.windows.jdxi.utils import show_message_box
-from jdxi_editor.ui.editors.helpers.preset import get_preset_parameter_value
 from jdxi_editor.midi.data.programs.digital import DIGITAL_PRESET_LIST
 from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
 from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
@@ -280,18 +279,28 @@ class MidiFileEditor(SynthEditor):
         if source == "Digital":
             for item in DIGITAL_PRESET_LIST:
                 label = f"{str(item.get('id')).zfill(3)}  {item.get('name')}"
-                self.ui.automation_program_combo.addItem(label, (int(item.get("msb")), int(item.get("lsb")), int(item.get("pc"))))
+                msb = int(item.get("msb"))
+                lsb = int(item.get("lsb"))
+                pc = int(item.get("pc"))
+                self.ui.automation_program_combo.addItem(label, (msb, lsb, pc))
         elif source == "Analog":
             for item in ANALOG_PRESET_LIST:
                 label = f"{str(item.get('id')).zfill(3)}  {item.get('name')}"
                 # analog list stores floats-as-numbers sometimes; cast to int
-                self.ui.automation_program_combo.addItem(label, (int(item.get("msb")), int(item.get("lsb")), int(item.get("pc"))))
+                msb = int(item.get("msb"))
+                lsb = int(item.get("lsb"))
+                pc = int(item.get("pc"))
+                self.ui.automation_program_combo.addItem(label, (msb, lsb, pc))
         else:  # Drums
             for item in DRUM_KIT_LIST:
                 label = f"{str(item.get('id')).zfill(3)}  {item.get('name')}"
-                self.ui.automation_program_combo.addItem(label, (int(item.get("msb")), int(item.get("lsb")), int(item.get("pc"))))
+                msb = int(item.get("msb"))
+                lsb = int(item.get("lsb"))
+                pc = int(item.get("pc"))
+                self.ui.automation_program_combo.addItem(label, (msb, lsb, pc))
 
     def on_automation_type_changed(self, _: int) -> None:
+        """Handle automation type selection change."""
         text = self.ui.automation_type_combo.currentText()
         self.populate_automation_programs(text)
 
@@ -356,7 +365,9 @@ class MidiFileEditor(SynthEditor):
                     return i
         return 0
 
-    def _insert_messages_at_abs_tick(self, track: mido.MidiTrack, abs_tick_target: int, new_msgs: list[mido.Message]) -> None:
+    def _insert_messages_at_abs_tick(
+        self, track: mido.MidiTrack, abs_tick_target: int, new_msgs: list[mido.Message]
+    ) -> None:
         """
         Insert a list of messages at a given absolute tick, preserving delta times.
         """
@@ -839,33 +850,37 @@ class MidiFileEditor(SynthEditor):
 
     def midi_playback_start(self):
         """
-        Start playback of the MIDI file
+        Start playback of the MIDI file from the beginning (or resume if paused).
         """
-        # In setup_worker or midi_start_playback
+a        # Reset position slider to beginning
         self.ui_position_slider_reset()
 
         if PROFILING:
             self.profiler = cProfile.Profile()
             self.profiler.enable()
 
+        if not self.midi_state.file or not self.midi_state.events:
+            return
+
+        # If not paused, reset everything to start from beginning
+        if not self.midi_state.playback_paused:
+            # Clear buffer and reset playback position to beginning
+            self.midi_state.event_buffer.clear()
+            self.midi_state.buffer_end_time = 0
+            self.midi_state.event_index = 0
+            self.midi_state.playback_start_time = time.time()
+        # If paused, resume from current position (pause logic handles this)
+
         # Ensure worker is properly set up before connecting
         self.setup_playback_worker()
-<<<<<<< HEAD
-        
-=======
 
->>>>>>> 089e41371e148f15ced20093e0b19fa8457041fd
         # Disconnect all existing connections first
         try:
             self.midi_state.timer.timeout.disconnect()  # Disconnect all
             log.debug("Disconnected all timeout signals")
         except Exception as ex:
             log.debug(f"Disconnecting all timeout signals: {ex}")
-<<<<<<< HEAD
-        
-=======
 
->>>>>>> 089e41371e148f15ced20093e0b19fa8457041fd
         # Connect worker if available
         try:
             if self.midi_playback_worker is not None:
@@ -875,20 +890,13 @@ class MidiFileEditor(SynthEditor):
                 log.warning("⚠️ midi_playback_worker is None, skipping connection")
         except Exception as ex:
             log.error(f"Error {ex} connecting worker to timeout")
-<<<<<<< HEAD
-        
-=======
 
->>>>>>> 089e41371e148f15ced20093e0b19fa8457041fd
         # Connect UI update
         try:
             self.midi_state.timer.timeout.connect(self.midi_play_next_event)
             log.message("Success: Connected midi_play_next_event to timeout")
         except Exception as ex:
             log.error(f"Error {ex} connecting midi_play_next_event to timeout")
-
-        if not self.midi_state.file or not self.midi_state.events:
-            return
 
         if self.usb_recorder.file_save_recording:
             recording_rate = "32bit"  # Default to 32-bit recording
@@ -901,12 +909,6 @@ class MidiFileEditor(SynthEditor):
                 log.error(f"Error {ex} occurred starting USB recording")
 
         try:
-            # Clear buffer and reset playback position
-            self.midi_state.event_buffer.clear()
-            self.midi_state.buffer_end_time = 0
-            self.midi_state.event_index = 0
-            self.midi_state.playback_start_time = time.time()
-
             # Start the playback worker (already set up above)
             self.start_playback_worker()
 
@@ -978,11 +980,7 @@ class MidiFileEditor(SynthEditor):
             if self.midi_state.playback_start_time is None:
                 log.debug("playback_start_time not initialized, using 0")
                 return 0
-<<<<<<< HEAD
-            
-=======
 
->>>>>>> 089e41371e148f15ced20093e0b19fa8457041fd
             elapsed_time_secs = time.time() - self.midi_state.playback_start_time
             return int(
                 mido.second2tick(
@@ -1035,11 +1033,7 @@ class MidiFileEditor(SynthEditor):
             )
         else:
             self.midi_state.tempo_at_position = msg.tempo
-<<<<<<< HEAD
-        
-=======
 
->>>>>>> 089e41371e148f15ced20093e0b19fa8457041fd
         # Store tempo change for later playback - don't update worker immediately
         self.midi_state.buffered_msgs.append(
             (absolute_time_ticks, None, self.midi_state.tempo_at_position)
@@ -1086,17 +1080,6 @@ class MidiFileEditor(SynthEditor):
         self.process_tracks(start_tick)
 
         self.midi_state.buffered_msgs.sort(key=lambda x: x[0])
-        
-        # Fix tempo assignments - each message should use the tempo that was active at its tick
-        self._fix_buffer_tempo_assignments()
-        
-        # Print segment statistics
-        self._print_segment_statistics()
-        
-        # Debug logging
-        log.message(f"🎵 Buffered {len(self.midi_state.buffered_msgs)} messages for playback")
-        if len(self.midi_state.buffered_msgs) > 0:
-            log.message(f"🎵 First few messages: {self.midi_state.buffered_msgs[:3]}")
 
         # Fix tempo assignments - each message should use the tempo that was active at its tick
         self._fix_buffer_tempo_assignments()
@@ -1140,11 +1123,7 @@ class MidiFileEditor(SynthEditor):
         messages_processed = 0
         messages_buffered = 0
         current_tempo = self.midi_state.tempo_at_position  # Track tempo as we go
-<<<<<<< HEAD
-        
-=======
 
->>>>>>> 089e41371e148f15ced20093e0b19fa8457041fd
         for msg in track:
             absolute_time_ticks += msg.time
             messages_processed += 1
@@ -1161,11 +1140,7 @@ class MidiFileEditor(SynthEditor):
                     continue
                 self.buffer_message_with_tempo(absolute_time_ticks, msg, current_tempo)
                 messages_buffered += 1
-<<<<<<< HEAD
-        
-=======
 
->>>>>>> 089e41371e148f15ced20093e0b19fa8457041fd
         log.message(f"🎵 Track processed: {messages_processed} messages, {messages_buffered} buffered")
 
     def get_muted_tracks(self):
@@ -1295,7 +1270,7 @@ class MidiFileEditor(SynthEditor):
                 return
         self.midi_state.event_index = 0  # Default to the start if no match
 
-    def update_playback_start_time(self, target_time: float) -> None:
+    def update_playback_start_time(self, target_time: float) -> None:  # pylint: disable=unused-argument
         """
         Adjusts the playback start time based on the scrub position.
         """
@@ -1332,17 +1307,39 @@ class MidiFileEditor(SynthEditor):
 
     def midi_stop_playback(self):
         """
-        Stops playback and resets everything.
+        Stops playback and resets everything to the beginning.
         """
-        self.ui_position_slider_reset()
+        # Reset the worker's index before stopping (if it exists)
+        if self.midi_playback_worker:
+            self.midi_playback_worker.index = 0
+            self.midi_playback_worker.should_stop = True
+
+        # Stop the playback worker
         self.stop_playback_worker()
+
+        # Reset all MIDI state (including event_index and playback_start_time)
         self.reset_midi_state()
+
+        # Reset UI position slider to beginning
+        self.ui_position_slider_reset()
+
+        # Stop all notes and reset tempo
         self.stop_all_notes()
         self.reset_tempo()
         self.clear_active_notes()
+
+        # Clear event buffer to ensure clean state
+        self.midi_state.event_buffer.clear()
+        self.midi_state.buffer_end_time = 0
+
+        # Stop USB recording if active
         self.usb_recorder.stop_recording()
+
+        # Logging and profiling
         self.log_event_buffer()
         self.perform_profiling()
+
+        log.message("MIDI playback stopped and reset to beginning")
 
     def stop_playback_worker(self):
         """
@@ -1358,6 +1355,8 @@ class MidiFileEditor(SynthEditor):
         """
         self.midi_state.playback_paused = False
         self.midi_state.event_index = 0
+        self.midi_state.playback_start_time = None  # Reset start time so playback starts from beginning
+        self.midi_state.playback_paused_time = None  # Clear paused time
 
     def reset_tempo(self):
         """
@@ -1409,11 +1408,7 @@ class MidiFileEditor(SynthEditor):
         if not hasattr(self.midi_state, 'timer') or self.midi_state.timer is None:
             log.debug("Timer not initialized, skipping disconnect")
             return
-<<<<<<< HEAD
-            
-=======
 
->>>>>>> 089e41371e148f15ced20093e0b19fa8457041fd
         # Disconnect midi_play_next_event safely
         try:
             self.midi_state.timer.timeout.disconnect(self.midi_play_next_event)
@@ -1533,104 +1528,65 @@ class MidiFileEditor(SynthEditor):
         """Print segment statistics for the buffered MIDI file."""
         if not self.midi_state.buffered_msgs:
             return
-<<<<<<< HEAD
-        
-=======
 
->>>>>>> 089e41371e148f15ced20093e0b19fa8457041fd
         # Extract tempo changes from buffered messages
         tempo_changes = []
         for tick, raw_bytes, tempo in self.midi_state.buffered_msgs:
             if raw_bytes is None:  # This is a tempo change message
                 tempo_changes.append((tick, tempo))
-<<<<<<< HEAD
-        
-        if not tempo_changes:
-            log.message("🎵 No tempo changes found in MIDI file")
-            return
-        
-=======
 
         if not tempo_changes:
             log.message("🎵 No tempo changes found in MIDI file")
             return
 
->>>>>>> 089e41371e148f15ced20093e0b19fa8457041fd
         # Find the last MIDI event to calculate total duration
         last_event_tick = 0
         for tick, raw_bytes, tempo in self.midi_state.buffered_msgs:
             if raw_bytes is not None:  # This is a regular MIDI message
                 last_event_tick = max(last_event_tick, tick)
-<<<<<<< HEAD
-        
-=======
 
->>>>>>> 089e41371e148f15ced20093e0b19fa8457041fd
         # Calculate segment statistics
         total_duration = 0
         current_tempo = 967745  # Start with default tempo
         current_tick = 0
-<<<<<<< HEAD
-        
-        log.message("🎵 MIDI File Segment Statistics:")
-        
-=======
 
         log.message("🎵 MIDI File Segment Statistics:")
 
->>>>>>> 089e41371e148f15ced20093e0b19fa8457041fd
         for i, (tick, tempo) in enumerate(tempo_changes):
             # Calculate duration of this segment
             segment_duration = mido.tick2second(tick - current_tick, self.ticks_per_beat, current_tempo)
             total_duration += segment_duration
-<<<<<<< HEAD
-            
-            bar_start = current_tick / (4 * self.ticks_per_beat)
-            bar_end = tick / (4 * self.ticks_per_beat)
-            bpm = 60000000 / current_tempo
-            
-            log.message(f"  Segment {i+1}: Bars {bar_start:.1f}-{bar_end:.1f} at {bpm:.1f} BPM = {segment_duration:.2f}s")
-            
-            current_tick = tick
-            current_tempo = tempo
-        
-=======
 
             bar_start = current_tick / (4 * self.ticks_per_beat)
             bar_end = tick / (4 * self.ticks_per_beat)
             bpm = 60000000 / current_tempo
 
-            log.message(f"  Segment {i+1}: Bars {bar_start:.1f}-{bar_end:.1f} at {bpm:.1f} BPM = {segment_duration:.2f}s")
+            log.message(
+                f"  Segment {i+1}: Bars {bar_start:.1f}-{bar_end:.1f} "
+                f"at {bpm:.1f} BPM = {segment_duration:.2f}s"
+            )
 
             current_tick = tick
             current_tempo = tempo
 
->>>>>>> 089e41371e148f15ced20093e0b19fa8457041fd
         # Add duration of final segment (from last tempo change to end)
         if last_event_tick > current_tick:
-            final_segment_duration = mido.tick2second(last_event_tick - current_tick, self.ticks_per_beat, current_tempo)
+            final_segment_duration = mido.tick2second(
+                last_event_tick - current_tick, self.ticks_per_beat, current_tempo
+            )
             total_duration += final_segment_duration
-<<<<<<< HEAD
-            
-            bar_start = current_tick / (4 * self.ticks_per_beat)
-            bar_end = last_event_tick / (4 * self.ticks_per_beat)
-            bpm = 60000000 / current_tempo
-            
-            log.message(f"  Final segment: Bars {bar_start:.1f}-{bar_end:.1f} at {bpm:.1f} BPM = {final_segment_duration:.2f}s")
-        
-        log.message(f"Total duration by segments: {total_duration:.2f}s ({total_duration/60:.2f} minutes)")
-        
-=======
 
             bar_start = current_tick / (4 * self.ticks_per_beat)
             bar_end = last_event_tick / (4 * self.ticks_per_beat)
             bpm = 60000000 / current_tempo
 
-            log.message(f"  Final segment: Bars {bar_start:.1f}-{bar_end:.1f} at {bpm:.1f} BPM = {final_segment_duration:.2f}s")
+            log.message(
+                f"  Final segment: Bars {bar_start:.1f}-{bar_end:.1f} "
+                f"at {bpm:.1f} BPM = {final_segment_duration:.2f}s"
+            )
 
         log.message(f"Total duration by segments: {total_duration:.2f}s ({total_duration/60:.2f} minutes)")
 
->>>>>>> 089e41371e148f15ced20093e0b19fa8457041fd
         # Also print tempo changes summary
         log.message(f"Found {len(tempo_changes)} tempo changes:")
         for i, (tick, tempo) in enumerate(tempo_changes):
@@ -1643,19 +1599,11 @@ class MidiFileEditor(SynthEditor):
         """Fix tempo assignments in the buffer - each message should use the tempo that was active at its tick."""
         if not self.midi_state.buffered_msgs:
             return
-<<<<<<< HEAD
-        
-        # Process messages in chronological order and assign correct tempo
-        fixed_msgs = []
-        current_tempo = 967745  # Start with initial tempo (62 BPM)
-        
-=======
 
         # Process messages in chronological order and assign correct tempo
         fixed_msgs = []
         current_tempo = 967745  # Start with initial tempo (62 BPM)
 
->>>>>>> 089e41371e148f15ced20093e0b19fa8457041fd
         for tick, raw_bytes, tempo in self.midi_state.buffered_msgs:
             if raw_bytes is None:
                 # This is a tempo change - update current tempo
@@ -1664,12 +1612,6 @@ class MidiFileEditor(SynthEditor):
             else:
                 # This is a regular message - use the current tempo
                 fixed_msgs.append((tick, raw_bytes, current_tempo))
-<<<<<<< HEAD
-        
-        # Replace the buffer with the fixed messages
-        self.midi_state.buffered_msgs = fixed_msgs
-=======
 
         # Replace the buffer with the fixed messages
         self.midi_state.buffered_msgs = fixed_msgs
->>>>>>> 089e41371e148f15ced20093e0b19fa8457041fd

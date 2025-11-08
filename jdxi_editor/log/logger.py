@@ -330,7 +330,7 @@ class LoggerNew2(QObject):
 
 class Logger:
     """ Logger class """
-    def __init__(self):
+    def __init__(self) -> None:
         pass
 
     @staticmethod

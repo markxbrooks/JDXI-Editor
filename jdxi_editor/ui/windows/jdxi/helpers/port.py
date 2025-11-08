@@ -3,7 +3,7 @@
 from jdxi_editor.log.logger import Logger as log
 
 
-def find_jdxi_port(port_list: list):
+def find_jdxi_port(port_list: list[str]) -> str | None:
     """Helper function to find address JD-Xi MIDI port."""
     jdxi_names = ["jd-xi", "jdxi", "roland jd-xi"]
     for port in port_list:

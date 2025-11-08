@@ -50,9 +50,7 @@ from PySide6.QtWidgets import (
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.drum.data import rm_waves
-from jdxi_editor.midi.data.parameter.drum.common import AddressParameterDrumCommon
 from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
-from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 from jdxi_editor.ui.widgets.wmt.envelope import WMTEnvelopeWidget
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
@@ -480,7 +478,8 @@ class DrumWMTSection(QWidget):
                 index_in_rm_waves = rm_waves.index(wave)
                 combo.combo_box.addItem(wave, index_in_rm_waves)
             log.message(
-                f"WMT{wmt_index}: Showing {len(filtered)} R wave results for group '{group_filter}' + search '{search_text}'"
+                f"WMT{wmt_index}: Showing {len(filtered)} R wave results for "
+                f"group '{group_filter}' + search '{search_text}'"
             )
         except Exception as ex:
             log.error(f"WMT{wmt_index}: Error filtering R waves: {ex}")

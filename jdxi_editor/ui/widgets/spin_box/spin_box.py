@@ -54,9 +54,9 @@ class SpinBox(QWidget):
 
     def __init__(self, label: str,
                  low: int,
-                 high: int = None,
+                 high: int | None = None,
                  tooltip: str = "",
-                 parent=None):
+                 parent: object | None = None) -> None:
         """
         Initialize the SpinBox widget.
 
@@ -94,11 +94,11 @@ class SpinBox(QWidget):
         self.setVisible(True)
 
     @Slot(int)
-    def _on_valueChanged(self, value: int):
+    def _on_valueChanged(self, value: int) -> None:
         """Emit the corresponding value when the selected value changes."""
         self.valueChanged.emit(value)
 
-    def setValue(self, value: int):
+    def setValue(self, value: int) -> None:
         """Set spin box index based on the value."""
         self.spin_box.setValue(value)
 
@@ -107,20 +107,20 @@ class SpinBox(QWidget):
         value = self.spin_box.value()
         return value
 
-    def setEnabled(self, enabled: bool):
+    def setEnabled(self, enabled: bool) -> None:
         """Enable or disable the sipn box and label."""
         self.spin_box.setEnabled(enabled)
         self.label_widget.setEnabled(enabled)
 
-    def setVisible(self, visible: bool):
+    def setVisible(self, visible: bool) -> None:
         """Show or hide the spin box and label."""
         self.spin_box.setVisible(visible)
         self.label_widget.setVisible(visible)
 
-    def setMinimumWidth(self, width: int):
+    def setMinimumWidth(self, width: int) -> None:
         """Set the minimum width of the label."""
         self.label_widget.setMinimumWidth(width)
 
-    def setMaximumWidth(self, width: int):
+    def setMaximumWidth(self, width: int) -> None:
         """Set the maximum width of the label."""
         self.label_widget.setMaximumWidth(width)

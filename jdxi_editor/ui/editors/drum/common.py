@@ -9,8 +9,9 @@ parameter adjustments and preset management.
 
 Key Features:
 -------------
-- Provides a graphical editor for modifying drum common parameters, including
-  kit level, partial pitch bend range, and partial receive expression.
+- Provides a graphical editor for modifying drum common parameters.
+- Currently includes Kit Level control (the primary common parameter for drum kits).
+- Note: Tone name is handled by the instrument preset group, not this section.
 
 """
 
@@ -60,22 +61,22 @@ class DrumCommonSection(QWidget):
         common_scrolled_widget = QWidget()
         scrolled_layout = QVBoxLayout(common_scrolled_widget)
 
-        # Add widgets to scrolled_layout here if needed
-
         common_scroll_area.setWidget(common_scrolled_widget)
 
         # Common controls
         common_group = QGroupBox("Common")
         common_layout = QFormLayout()
+
         # Kit Level control
         self.address.lmb = AddressOffsetProgramLMB.COMMON
         kit_level_slider = self._create_parameter_slider(
             AddressParameterDrumCommon.KIT_LEVEL, "Kit Level"
         )
-        common_layout.addRow(kit_level_slider)
-        # Partial Receive Expression
+        common_layout.addRow("Kit Level:", kit_level_slider)
 
         common_group.setLayout(common_layout)
         common_group.setContentsMargins(0, 0, 0, 0)
         scrolled_layout.addWidget(common_group)
         scrolled_layout.setContentsMargins(0, 0, 0, 0)
+        # Add stretch to push content to top
+        scrolled_layout.addStretch()

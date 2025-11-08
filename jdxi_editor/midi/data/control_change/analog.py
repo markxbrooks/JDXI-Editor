@@ -34,7 +34,7 @@ class RPNValue:
     msb_lsb: Tuple[int, int]
     value_range: Tuple[int, int]
 
-    def midi_bytes(self, value: int):
+    def midi_bytes(self, value: int) -> list[int]:
         """Generate CC messages for this RPN and a given value."""
         msb, lsb = self.msb_lsb
         value = max(min(value, self.value_range[1]), self.value_range[0])

@@ -897,6 +897,65 @@ class JDXiInstrument(JDXiUi):
         except Exception as ex:
             log.error("Error saving patch", exception=ex)
 
+    def _dump_settings_to_synth(self) -> None:
+        """
+        Dump all current settings from all editors to the synthesizer.
+        This sends all parameters from all active editors to the JD-Xi.
+        """
+        try:
+            if not self.midi_helper:
+                log.warning("MIDI helper not initialized. Cannot dump settings.")
+                return
+            
+            if not self.midi_helper.midi_out or not self.midi_helper.midi_out.is_port_open():
+                log.warning("MIDI output port is not open. Cannot dump settings.")
+                return
+            
+            log.message("Starting to dump all settings to synthesizer...")
+            
+            from jdxi_editor.midi.sysex.json_composer import JDXiJSONComposer
+            json_composer = JDXiJSONComposer()
+            
+            total_sent = 0
+            total_skipped = 0
+            
+            # Iterate through all registered editors
+            for editor in self.editors:
+                # Skip editors that don't have the required attributes
+                if not hasattr(editor, "address") or not hasattr(editor, "get_controls_as_dict"):
+                    continue
+                
+                # Skip certain editor types
+                from jdxi_editor.ui.editors.io.player import MidiFileEditor
+                from jdxi_editor.ui.editors.pattern.pattern import PatternSequenceEditor
+                from jdxi_editor.ui.editors import ProgramEditor
+                
+                if isinstance(editor, (PatternSequenceEditor, ProgramEditor, MidiFileEditor)):
+                    continue
+                
+                try:
+                    # Compose JSON from current editor state
+                    editor_json = json_composer.compose_message(editor)
+                    if editor_json:
+                        # Convert to JSON string and send to instrument
+                        import json
+                        json_string = json.dumps(editor_json)
+                        self.midi_helper.send_json_patch_to_instrument(json_string)
+                        
+                        # Count parameters sent
+                        metadata_fields = {"JD_XI_HEADER", "ADDRESS", "TEMPORARY_AREA", "SYNTH_TONE"}
+                        param_count = len([k for k in editor_json.keys() if k not in metadata_fields])
+                        total_sent += param_count
+                        log.message(f"Sent {param_count} parameters from {editor.__class__.__name__}")
+                except Exception as ex:
+                    log.error(f"Error dumping settings from {editor.__class__.__name__}: {ex}")
+                    total_skipped += 1
+            
+            log.message(f"Settings dump complete: {total_sent} parameters sent to synthesizer")
+            
+        except Exception as ex:
+            log.error(f"Error dumping settings to synth: {ex}")
+
     def load_button_preset(self, button: SequencerSquare) -> None:
         """
         load preset data stored on the button

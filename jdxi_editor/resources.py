@@ -1,3 +1,4 @@
+"""Resource path utilities for locating files in bundled applications."""
 import os
 import sys
 

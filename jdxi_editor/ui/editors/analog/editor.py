@@ -60,7 +60,7 @@ import qtawesome as qta
 
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.log.slider_parameter import log_slider_parameters
-from jdxi_editor.midi.data.control_change.analog import AnalogControlChange, DigitalRPN_Partial1, AnalogRPN
+from jdxi_editor.midi.data.control_change.analog import AnalogControlChange, AnalogRPN
 from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.jdxi.synth.type import JDXiSynth
@@ -208,7 +208,7 @@ class AnalogSynthEditor(SynthEditor):
         self.tab_widget.addTab(instrument_widget, "Presets")
 
         # Configure sliders
-        for param, slider in self.controls.items():
+        for slider in self.controls.values():
             if isinstance(slider, QSlider):
                 slider.setTickPosition(QSlider.TickPosition.TicksBothSides)
                 slider.setTickInterval(10)

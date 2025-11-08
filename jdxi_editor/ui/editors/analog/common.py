@@ -13,6 +13,7 @@ from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
 
 
 class AnalogCommonSection(QWidget):
+    """Common section for analog synth parameters."""
     def __init__(
         self,
         create_parameter_slider: Callable,

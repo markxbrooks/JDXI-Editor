@@ -10,7 +10,7 @@ class JDXiProgramManager:
     ROM_PROGRAMS = []  # Assuming ROM_PROGRAMS is defined elsewhere
 
     @classmethod
-    def setup(cls):
+    def setup(cls) -> None:
         json_folder = Path.home() / f".{__package_name__}"
         json_folder.mkdir(parents=True, exist_ok=True)
         cls.USER_PROGRAMS_FILE = str(json_folder / "user_programs.json")

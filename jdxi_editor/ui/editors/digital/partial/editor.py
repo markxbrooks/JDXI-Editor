@@ -190,10 +190,12 @@ class DigitalPartialEditor(PartialEditor):
         log.parameter(f"DigitalPartialEditor initialized for",  self)
 
     def __str__(self):
-        return f"{self.__class__.__name__} {self.preset_type} partial: {self.partial_number}"
+        preset_str = str(self.preset_type) if self.preset_type else "None"
+        return f"{preset_str} partial: {self.partial_number}"
 
     def __repr__(self):
-        return f"{self.__class__.__name__} {self.preset_type} partial: {self.partial_number}"
+        preset_str = str(self.preset_type) if self.preset_type else "None"
+        return f"{self.__class__.__name__}({preset_str}, partial={self.partial_number})"
 
     def update_filter_controls_state(self, mode: int):
         """

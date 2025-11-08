@@ -1,7 +1,7 @@
 """Drum"""
 from dataclasses import dataclass
 from enum import Enum
-from typing import Dict
+from typing import Dict, Optional
 
 
 class MuteGroup(Enum):
@@ -49,7 +49,7 @@ class DrumPad:
     DELAY_SEND = 0x07
     FX_SEND = 0x08
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.wave = 0
         self.level = 100
         self.pan = 64  # Center
@@ -88,9 +88,9 @@ class DrumKitPatch:
     fx_send: int = 0
 
     # Individual pad settings
-    pads: Dict[int, DrumPadSettings] = None
+    pads: Optional[Dict[int, DrumPadSettings]] = None
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         """Initialize pad settings"""
         if self.pads is None:
             self.pads = {i: DrumPadSettings() for i in range(16)}

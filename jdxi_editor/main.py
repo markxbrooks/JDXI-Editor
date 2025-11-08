@@ -34,7 +34,6 @@ from PySide6.QtWidgets import (
     QApplication,
     QProgressBar,
     QLabel,
-    QWidget,
     QVBoxLayout,
     QHBoxLayout,
     QGroupBox, QSplashScreen,
@@ -52,10 +51,8 @@ from jdxi_editor.project import __version__, __program__, __organization_name__
 os.environ["QT_LOGGING_RULES"] = "qt.qpa.fonts=false"
 
 
-def main():
-    import faulthandler
-    faulthandler.enable()
-
+def main() -> None:
+    """Main entry point for the JD-Xi Editor application."""
     try:
         # Set up logging first
         settings = QSettings(__organization_name__, __program__)
@@ -120,7 +117,8 @@ def main():
         raise
 
 
-def setup_splash_screen(app):
+def setup_splash_screen(app: QApplication) -> None:
+    """Setup and display the application splash screen."""
     splash = QSplashScreen()
     splash.setWindowFlags(
         Qt.SplashScreen | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint
@@ -217,4 +215,3 @@ if __name__ == "__main__":
         print(f"Application crashed: {str(ex)}")  # Fallback if logging fails
         logging.exception("Application crashed")
         sys.exit(1)
-
