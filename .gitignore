@@ -19,6 +19,7 @@ dist/
 downloads/
 eggs/
 .eggs/
+.pretrained_models/
 lib/
 lib64/
 parts/
