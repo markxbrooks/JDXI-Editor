@@ -986,7 +986,7 @@ class ProgramEditor(BasicEditor):
         log.parameter("self.controls", self.controls)
         for control in self.controls:
             log.parameter("control @@", control, silent=False)
-        sysex_data.pop("SYNTH_TONE")
+        sysex_data.pop("SYNTH_TONE", None)
         for param_name, param_value in sysex_data.items():
             log.parameter(f"{param_name} {param_value}", param_value, silent=True)
             param = AddressParameterDigitalCommon.get_by_name(param_name)

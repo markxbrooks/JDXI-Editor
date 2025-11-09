@@ -32,11 +32,9 @@ from typing import Optional, Type, Union, Tuple, Any, TypeVar, List
 from jdxi_editor.jdxi.sysex.bitmask import BitMask
 from jdxi_editor.midi.data.address.sysex import ZERO_BYTE
 from jdxi_editor.midi.data.address.sysex_byte import SysExByte
-from jdxi_editor.midi.data.parameter.drum.addresses import DRUM_ADDRESS_MAP
 
 T = TypeVar("T", bound="Address")
 DIGITAL_PARTIAL_MAP = {i: 0x1F + i for i in range(1, 4)}  # 1: 0x20, 2: 0x21, 3: 0x22
-
 
 @unique
 class RolandID(IntEnum):
@@ -384,7 +382,7 @@ class AddressOffsetProgramLMB(Address):
     ZONE_ANALOG = 0x32
     ZONE_DRUM = 0x33
     CONTROLLER = 0x40
-    DRUM_DEFAULT_PARTIAL = DRUM_ADDRESS_MAP["BD1"]
+    DRUM_DEFAULT_PARTIAL = 0x2E  # BD1 from DRUM_ADDRESS_MAP (lazy import to avoid circular dependency)
     DIGITAL_DEFAULT_PARTIAL = DIGITAL_PARTIAL_MAP[1]
     DRUM_KIT_PART_1 = 0x2E
     DRUM_KIT_PART_2 = 0x30
@@ -452,7 +450,7 @@ class AddressOffsetDrumKitLMB(Address):
     """
 
     COMMON = 0x00
-    DRUM_DEFAULT_PARTIAL = DRUM_ADDRESS_MAP["BD1"]
+    DRUM_DEFAULT_PARTIAL = 0x2E  # BD1 from DRUM_ADDRESS_MAP (lazy import to avoid circular dependency)
     DIGITAL_DEFAULT_PARTIAL = DIGITAL_PARTIAL_MAP[1]
     DRUM_KIT_PART_1 = 0x2E
     DRUM_KIT_PART_2 = 0x30

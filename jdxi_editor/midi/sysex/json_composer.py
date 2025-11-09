@@ -8,7 +8,8 @@ from pathlib import Path
 from typing import Optional, Union, Any
 
 from jdxi_editor.log.logger import Logger as log
-from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB
+from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB, RolandSysExAddress
+from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
 from jdxi_editor.ui.editors import SynthEditor
 from jdxi_editor.ui.windows.midi.debugger import parse_sysex_byte
 from jdxi_editor.project import __package_name__
@@ -123,9 +124,9 @@ class JDXiJSONComposer:
             AddressParameterDigitalCommon,
             AddressParameterDigitalModify
         )
-        from jdxi_editor.midi.data.parameter.drum import (
+        from jdxi_editor.midi.data.parameter.drum.common import (
             AddressParameterDrumCommon,
-            AddressParameterDrumPartial
+
         )
         from jdxi_editor.midi.data.address.address import (
             AddressOffsetSuperNATURALLMB,
@@ -193,19 +194,97 @@ class JDXiJSONComposer:
             partial_controls = {}
             
             controls_dict = editor.get_controls_as_dict()
+            log.message(f"DrumCommonEditor: Found {len(editor.controls)} controls in editor")
+            log.message(f"DrumCommonEditor: controls_dict has {len(controls_dict)} entries")
+            
+            # First, check if KIT_LEVEL is in controls_dict (from get_controls_as_dict)
+            if 'KIT_LEVEL' in controls_dict:
+                log.message(f"DrumCommonEditor: KIT_LEVEL found in controls_dict = {controls_dict['KIT_LEVEL']}")
+            else:
+                log.warning("DrumCommonEditor: KIT_LEVEL NOT found in controls_dict")
+                log.message(f"DrumCommonEditor: Available keys in controls_dict: {list(controls_dict.keys())[:10]}...")
+            
             for param, widget in editor.controls.items():
                 param_name = param.name
-                value = controls_dict.get(param_name)
+                
+                # Get value directly from widget to ensure we have the current value
+                # This is more reliable than using controls_dict which might have stale values
+                widget_value = None
+                try:
+                    if hasattr(widget, 'value'):
+                        # Custom Slider widget has value() method that returns slider.value()
+                        widget_value = widget.value()
+                    elif hasattr(widget, 'slider'):
+                        # Direct QSlider access (fallback)
+                        widget_value = widget.slider.value()
+                    else:
+                        # Fallback to controls_dict
+                        widget_value = controls_dict.get(param_name)
+                    
+                    # Ensure we have a valid integer value
+                    if widget_value is None:
+                        widget_value = controls_dict.get(param_name)
+                    
+                    value = int(widget_value) if widget_value is not None else 0
+                except Exception as ex:
+                    log.warning(f"DrumCommonEditor: Error getting value for {param_name}: {ex}")
+                    value = controls_dict.get(param_name, 0)
+                
+                log.message(f"DrumCommonEditor: Parameter {param_name}: widget.value()={widget_value}, controls_dict={controls_dict.get(param_name)}, final={value}")
                 
                 # Check if this is a Common parameter
+                # Use isinstance to check if param is an instance of the enum class
                 if isinstance(param, AddressParameterDrumCommon):
+                    # Special check for KIT_LEVEL - warn if it's 0 as it might indicate the slider wasn't updated
+                    if param_name == 'KIT_LEVEL' and value == 0:
+                        log.warning(f"DrumCommonEditor: KIT_LEVEL is 0 - this might indicate the slider wasn't updated from the synth")
+                        log.message(f"DrumCommonEditor: Widget value: {widget_value}, controls_dict value: {controls_dict.get(param_name)}")
                     common_controls[param_name] = value
+                    log.message(f"DrumCommonEditor: Added Common parameter {param_name} = {value}")
                 # Check if this is a Partial parameter
                 elif isinstance(param, AddressParameterDrumPartial):
                     partial_controls[param_name] = value
+                    log.message(f"DrumCommonEditor: Added Partial parameter {param_name} = {value}")
+                else:
+                    log.warning(f"DrumCommonEditor: Unknown parameter type for {param_name}: {type(param)}")
+            
+            log.message(f"DrumCommonEditor: Separated {len(common_controls)} Common and {len(partial_controls)} Partial controls")
+            
+            # If no common controls found, try alternative identification methods
+            if not common_controls:
+                log.warning("DrumCommonEditor: No Common controls found via isinstance check")
+                log.message("DrumCommonEditor: Trying alternative method to identify Common parameters...")
+                
+                # Get all Common parameter names from the enum
+                common_param_names = {param.name for param in AddressParameterDrumCommon}
+                log.message(f"DrumCommonEditor: Known Common parameter names: {common_param_names}")
+                
+                # Check each control by name
+                for param, widget in editor.controls.items():
+                    param_name = param.name
+                    value = controls_dict.get(param_name)
+                    
+                    # Check if parameter name is in Common enum
+                    if param_name in common_param_names:
+                        common_controls[param_name] = value
+                        log.message(f"DrumCommonEditor: Added Common parameter by name: {param_name} = {value}")
+                    # Also check if it's a known Common parameter
+                    elif param_name == 'KIT_LEVEL':
+                        common_controls[param_name] = value
+                        log.message(f"DrumCommonEditor: Force-added KIT_LEVEL by name = {value}")
+                
+                if common_controls:
+                    log.message(f"DrumCommonEditor: Found {len(common_controls)} Common controls via name matching")
+                else:
+                    log.error("DrumCommonEditor: Still no Common controls found after name matching!")
+                    # Last resort: if KIT_LEVEL is in controls_dict, add it anyway
+                    if 'KIT_LEVEL' in controls_dict:
+                        common_controls['KIT_LEVEL'] = controls_dict['KIT_LEVEL']
+                        log.message(f"DrumCommonEditor: Force-added KIT_LEVEL from controls_dict = {common_controls['KIT_LEVEL']}")
             
             # Save Common section with Common address (19700000)
-            if common_controls:
+            # Always try to save Common if we have any Common controls or KIT_LEVEL
+            if common_controls or 'KIT_LEVEL' in controls_dict:
                 # For Drum Common: MSB=0x19, UMB=0x70, LMB=0x00 (COMMON), LSB=0x00
                 common_address = RolandSysExAddress(
                     msb=editor.address.msb,  # 0x19 (TEMPORARY_TONE)
@@ -213,9 +292,19 @@ class JDXiJSONComposer:
                     lmb=AddressOffsetProgramLMB.COMMON.value,  # 0x00 (COMMON)
                     lsb=MidiConstant.ZERO_BYTE  # 0x00
                 )
-                self._save_editor_section(
-                    editor, common_controls, common_address, temp_folder, "COMMON"
-                )
+                
+                # Ensure KIT_LEVEL is included if it exists
+                if 'KIT_LEVEL' in controls_dict and 'KIT_LEVEL' not in common_controls:
+                    common_controls['KIT_LEVEL'] = controls_dict['KIT_LEVEL']
+                    log.message(f"DrumCommonEditor: Added KIT_LEVEL to common_controls = {common_controls['KIT_LEVEL']}")
+                
+                if common_controls:
+                    self._save_editor_section(
+                        editor, common_controls, common_address, temp_folder, "COMMON"
+                    )
+                    log.message(f"DrumCommonEditor: Saved Common section with {len(common_controls)} parameters to address {common_address.to_bytes()}")
+                else:
+                    log.warning("DrumCommonEditor: common_controls is empty, skipping Common section save")
             
             # Save Partial sections - each partial has its own address
             # Note: Partial controls are typically saved by individual partial editors,
