@@ -34,6 +34,7 @@ from jdxi_editor.midi.data.parameter.digital.common import AddressParameterDigit
 from jdxi_editor.midi.data.parameter.digital.partial import AddressParameterDigitalPartial
 from jdxi_editor.midi.data.parameter.drum.common import AddressParameterDrumCommon
 from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
+from jdxi_editor.midi.data.parameter.program.common import AddressParameterProgramCommon
 
 
 class MidiIOHelper(MidiInHandler, MidiOutHandler):
@@ -118,7 +119,14 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
             
             # Map to parameter class
             param_class = None
-            if temporary_area == AddressOffsetTemporaryToneUMB.ANALOG_SYNTH.name:
+            if temporary_area == "TEMPORARY_PROGRAM":
+                # Program common parameters
+                if synth_tone == "COMMON":
+                    param_class = AddressParameterProgramCommon
+                else:
+                    log.warning(f"Unsupported synth_tone for TEMPORARY_PROGRAM: {synth_tone}")
+                    return
+            elif temporary_area == AddressOffsetTemporaryToneUMB.ANALOG_SYNTH.name:
                 param_class = AddressParameterAnalog
             elif temporary_area == AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_1.name or \
                  temporary_area == AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_2.name:
@@ -155,15 +163,63 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
                 
                 # Convert value to int if needed
                 try:
-                    value = int(param_value) if not isinstance(param_value, int) else param_value
+                    raw_value = int(param_value) if not isinstance(param_value, int) else param_value
                 except (ValueError, TypeError):
                     log.warning(f"Invalid value type for {param_name}: {param_value}")
                     skipped_count += 1
                     continue
                 
+                # Check if this is a raw MIDI value (> 127) that needs conversion to display value
+                # Parsed SysEx JSON contains raw MIDI values (0-255), but compose_message expects display values
+                value = raw_value
+                
+                # Get parameter max value (for 1-byte parameters, this should be <= 127)
+                param_max = getattr(param, "max_val", None)
+                if param_max is None:
+                    # If max_val is not set, try to infer from the parameter definition
+                    # Most parameters have max_val, but if not, assume 127 for safety
+                    param_max = 127
+                
+                # If value is > 127, it's likely a raw MIDI byte that needs handling
+                if raw_value > 127:
+                    # Try to convert from MIDI to display value if the parameter supports it
+                    if hasattr(param, "convert_from_midi"):
+                        try:
+                            value = param.convert_from_midi(raw_value)
+                            log.message(f"Converted {param_name} from MIDI value {raw_value} to display value {value}", silent=True)
+                        except Exception as conv_ex:
+                            log.warning(f"Failed to convert {param_name} from MIDI {raw_value}: {conv_ex}")
+                            # If conversion fails and value is still out of range, skip it
+                            if param_max <= 127:
+                                log.warning(f"Skipping {param_name}: MIDI value {raw_value} out of range (max: {param_max})")
+                                skipped_count += 1
+                                continue
+                            # If param_max > 127, it might be a 4-nibble parameter, so use value as-is
+                            value = raw_value
+                    elif param_max <= 127:
+                        # Parameter doesn't support conversion and max is <= 127, so value > 127 is invalid
+                        # In Roland SysEx, 0x80 (128) often means "no change" - skip these
+                        log.warning(f"Skipping {param_name}: MIDI value {raw_value} out of range for 1-byte parameter (max: {param_max})", silent=True)
+                        skipped_count += 1
+                        continue
+                    # If param_max > 127, it's likely a 4-nibble parameter, so value > 127 might be valid
+                    # But still check - if it's way too large, skip it
+                    if raw_value > 65535:
+                        log.warning(f"Skipping {param_name}: MIDI value {raw_value} exceeds 16-bit range")
+                        skipped_count += 1
+                        continue
+                    # Use value as-is and let compose_message handle it
+                
                 # Note: compose_message expects display values and will convert them to MIDI internally
-                # The JSON stores display values (from widgets), so we pass them as-is
-                # compose_message will handle conversion and validation
+                # We've now ensured value is a display value (either it was already one, or we converted it)
+                
+                # Final validation: if value is still > 127 and param is 1-byte, skip it
+                # This catches cases where conversion didn't work or wasn't available
+                param_size = getattr(param, "get_nibbled_size", lambda: 1)()
+                if param_size == 1 and value > 127:
+                    log.warning(f"Skipping {param_name}: final value {value} still out of range for 1-byte parameter", silent=True)
+                    skipped_count += 1
+                    continue
                 
                 # Compose and send SysEx message
                 try:
@@ -183,8 +239,9 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
                         skipped_count += 1
                 except ValueError as ve:
                     # Catch validation errors from compose_message
-                    if "range" in str(ve).lower() or "256" in str(ve):
-                        log.warning(f"Value out of range for {param_name}={value}: {ve}")
+                    if "range" in str(ve).lower() or "256" in str(ve) or "out of range" in str(ve).lower():
+                        # Silently skip out-of-range values - these are expected for invalid parsed data
+                        log.warning(f"Skipping {param_name}: {ve}", silent=True)
                     else:
                         log.warning(f"Error composing message for {param_name}: {ve}")
                     skipped_count += 1

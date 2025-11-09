@@ -247,14 +247,18 @@ class SynthEditor(SynthBase):
         """
         try:
             controls_data = {}
-
-            for param in self.controls:
-                controls_data[param.name] = param.value
-            log.message(f"{controls_data}")
+            for param, widget in self.controls.items():
+                # Get value from widget - all custom widgets have a value() method
+                # (Slider, ComboBox, SpinBox, Switch all implement value())
+                if hasattr(widget, 'value'):
+                    controls_data[param.name] = widget.value()
+                else:
+                    # Fallback for unexpected widget types
+                    log.warning(f"Widget for {param.name} has no value() method: {type(widget)}")
+                    controls_data[param.name] = 0
             return controls_data
-
         except Exception as ex:
-            log.message(f"Failed to get controls: {ex}")
+            log.error(f"Failed to get controls: {ex}")
             return {}
 
     def _get_preset_helper_for_current_synth(self):

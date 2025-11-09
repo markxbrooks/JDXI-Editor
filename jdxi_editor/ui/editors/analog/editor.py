@@ -349,6 +349,29 @@ class AnalogSynthEditor(SynthEditor):
                 selected_btn.setStyleSheet(JDXiStyle.BUTTON_ANALOG_ACTIVE)
             self._update_pw_controls_state(waveform)
 
+    def get_controls_as_dict(self):
+        """
+        Get the current values of self.controls as a dictionary.
+        Override to handle waveform buttons specially.
+
+        :returns: dict A dictionary of control parameter names and their values.
+        """
+        # Get base controls
+        controls_data = super().get_controls_as_dict()
+        
+        # Handle OSC_WAVEFORM specially - find which waveform button is checked
+        if AddressParameterAnalog.OSC_WAVEFORM in self.controls:
+            # Check which waveform button is currently checked
+            for waveform, btn in self.wave_buttons.items():
+                if btn.isChecked():
+                    controls_data[AddressParameterAnalog.OSC_WAVEFORM.name] = waveform.value
+                    break
+            # If no button is checked, use default (SAW = 0)
+            if AddressParameterAnalog.OSC_WAVEFORM.name not in controls_data:
+                controls_data[AddressParameterAnalog.OSC_WAVEFORM.name] = AnalogOscWave.SAW.value
+        
+        return controls_data
+
     def _on_lfo_shape_changed(self, value: int):
         """
         Handle LFO shape change

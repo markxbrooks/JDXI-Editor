@@ -198,6 +198,15 @@ class SynthBase(QWidget):
                 # (Slider, ComboBox, SpinBox, Switch all implement value())
                 if hasattr(widget, 'value'):
                     controls_data[param.name] = widget.value()
+                elif hasattr(widget, 'isChecked') and hasattr(widget, 'waveform'):
+                    # Handle waveform buttons (AnalogWaveformButton, etc.)
+                    # Check if this button is checked, and if so, use its waveform value
+                    if widget.isChecked():
+                        controls_data[param.name] = widget.waveform.value
+                    # If not checked, don't add it - the checked button will be found by the editor's override
+                elif hasattr(widget, 'isChecked'):
+                    # QPushButton or other checkable widgets
+                    controls_data[param.name] = 1 if widget.isChecked() else 0
                 else:
                     # Fallback for unexpected widget types
                     log.warning(f"Widget for {param.name} has no value() method: {type(widget)}")

@@ -115,12 +115,207 @@ class JDXiJSONComposer:
         if temp_folder:
             self.temp_folder = temp_folder
         os.makedirs(temp_folder, exist_ok=True)
-        self.compose_message(editor)
-        address_hex = ''.join([f"{x:02x}" for x in editor.address.to_bytes()])
-        json_temp_file = (
-                self.temp_folder
-                / f"jdxi_tone_data_{address_hex}.json"
+        
+        # Special handling for DigitalSynthEditor: save Common and Modify separately
+        from jdxi_editor.ui.editors.digital.editor import DigitalSynthEditor
+        from jdxi_editor.ui.editors.drum.editor import DrumCommonEditor
+        from jdxi_editor.midi.data.parameter.digital import (
+            AddressParameterDigitalCommon,
+            AddressParameterDigitalModify
         )
-        self.save_json(str(json_temp_file))
-        log.message(f"JSON saved successfully to {json_temp_file}")
-        return json_temp_file
+        from jdxi_editor.midi.data.parameter.drum import (
+            AddressParameterDrumCommon,
+            AddressParameterDrumPartial
+        )
+        from jdxi_editor.midi.data.address.address import (
+            AddressOffsetSuperNATURALLMB,
+            AddressOffsetProgramLMB,
+            RolandSysExAddress,
+            AddressStartMSB
+        )
+        from jdxi_editor.jdxi.midi.constant import MidiConstant
+        
+        if isinstance(editor, DigitalSynthEditor):
+            # Separate Common and Modify controls
+            common_controls = {}
+            modify_controls = {}
+            other_controls = {}
+            
+            controls_dict = editor.get_controls_as_dict()
+            for param, widget in editor.controls.items():
+                param_name = param.name
+                value = controls_dict.get(param_name)
+                
+                # Check if this is a Common parameter
+                if isinstance(param, AddressParameterDigitalCommon):
+                    common_controls[param_name] = value
+                # Check if this is a Modify parameter
+                elif isinstance(param, AddressParameterDigitalModify):
+                    modify_controls[param_name] = value
+                else:
+                    other_controls[param_name] = value
+            
+            # Save Common section with Common address
+            if common_controls:
+                # For Common, we need: MSB=0x19, UMB=editor.address.umb, LMB=0x00 (COMMON), LSB=0x00
+                # The editor.address.umb is already correct (0x01 for DS1, 0x21 for DS2)
+                # We just need to ensure LMB is set to COMMON (0x00)
+                from jdxi_editor.jdxi.midi.constant import MidiConstant
+                common_address = RolandSysExAddress(
+                    msb=editor.address.msb,  # 0x19 (TEMPORARY_TONE)
+                    umb=editor.address.umb,  # 0x01 for DS1, 0x21 for DS2 (includes SuperNATURAL offset)
+                    lmb=AddressOffsetSuperNATURALLMB.COMMON.value,  # 0x00 (COMMON)
+                    lsb=MidiConstant.ZERO_BYTE  # 0x00
+                )
+                self._save_editor_section(
+                    editor, common_controls, common_address, temp_folder, "COMMON"
+                )
+            
+            # Save Modify section with Modify address (current editor address)
+            if modify_controls or other_controls:
+                # Combine modify and other controls
+                all_modify_controls = {**modify_controls, **other_controls}
+                self._save_editor_section(
+                    editor, all_modify_controls, editor.address, temp_folder, "MODIFY"
+                )
+            
+            # Return the Common file path if it exists, otherwise Modify
+            if common_controls:
+                common_address_hex = ''.join([f"{x:02x}" for x in common_address.to_bytes()])
+                return temp_folder / f"jdxi_tone_data_{common_address_hex}.json"
+            else:
+                address_hex = ''.join([f"{x:02x}" for x in editor.address.to_bytes()])
+                return temp_folder / f"jdxi_tone_data_{address_hex}.json"
+        elif isinstance(editor, DrumCommonEditor):
+            # Special handling for DrumCommonEditor: save Common and Partial separately
+            # Separate Common and Partial controls
+            common_controls = {}
+            partial_controls = {}
+            
+            controls_dict = editor.get_controls_as_dict()
+            for param, widget in editor.controls.items():
+                param_name = param.name
+                value = controls_dict.get(param_name)
+                
+                # Check if this is a Common parameter
+                if isinstance(param, AddressParameterDrumCommon):
+                    common_controls[param_name] = value
+                # Check if this is a Partial parameter
+                elif isinstance(param, AddressParameterDrumPartial):
+                    partial_controls[param_name] = value
+            
+            # Save Common section with Common address (19700000)
+            if common_controls:
+                # For Drum Common: MSB=0x19, UMB=0x70, LMB=0x00 (COMMON), LSB=0x00
+                common_address = RolandSysExAddress(
+                    msb=editor.address.msb,  # 0x19 (TEMPORARY_TONE)
+                    umb=editor.address.umb,  # 0x70 (DRUM_KIT)
+                    lmb=AddressOffsetProgramLMB.COMMON.value,  # 0x00 (COMMON)
+                    lsb=MidiConstant.ZERO_BYTE  # 0x00
+                )
+                self._save_editor_section(
+                    editor, common_controls, common_address, temp_folder, "COMMON"
+                )
+            
+            # Save Partial sections - each partial has its own address
+            # Note: Partial controls are typically saved by individual partial editors,
+            # but if there are any in the main editor, we'll save them with the editor's address
+            if partial_controls:
+                # Use the editor's current address for partials (which may be a partial address)
+                self._save_editor_section(
+                    editor, partial_controls, editor.address, temp_folder, "PARTIAL"
+                )
+            
+            # Return the Common file path if it exists, otherwise the first partial
+            if common_controls:
+                common_address_hex = ''.join([f"{x:02x}" for x in common_address.to_bytes()])
+                return temp_folder / f"jdxi_tone_data_{common_address_hex}.json"
+            else:
+                address_hex = ''.join([f"{x:02x}" for x in editor.address.to_bytes()])
+                return temp_folder / f"jdxi_tone_data_{address_hex}.json"
+        else:
+            # Standard processing for other editors
+            self.compose_message(editor)
+            address_hex = ''.join([f"{x:02x}" for x in editor.address.to_bytes()])
+            json_temp_file = (
+                    self.temp_folder
+                    / f"jdxi_tone_data_{address_hex}.json"
+            )
+            self.save_json(str(json_temp_file))
+            log.message(f"JSON saved successfully to {json_temp_file}")
+            return json_temp_file
+    
+    def _save_editor_section(
+        self,
+        editor: SynthEditor,
+        controls_dict: dict,
+        address: RolandSysExAddress,
+        temp_folder: Path,
+        section_name: str
+    ) -> Path:
+        """
+        Save a specific section (Common or Modify) of an editor with a given address.
+        
+        :param editor: SynthEditor Editor instance
+        :param controls_dict: dict Dictionary of parameter names to values
+        :param address: RolandSysExAddress Address to use for this section
+        :param temp_folder: Path Temporary folder to save the JSON
+        :param section_name: str Name of the section (e.g., "COMMON", "MODIFY")
+        :return: Path Path to the saved JSON file
+        """
+        try:
+            editor_data = {"JD_XI_HEADER": "f041100000000e"}
+            
+            # Convert address to hex string
+            address_hex = ''.join([f"{x:02x}" for x in address.to_bytes()])
+            editor_data["ADDRESS"] = address_hex
+            
+            # Determine TEMPORARY_AREA and SYNTH_TONE
+            from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB
+            from jdxi_editor.ui.windows.midi.debugger import parse_sysex_byte
+            
+            editor_data["TEMPORARY_AREA"] = parse_sysex_byte(
+                address.umb, AddressOffsetTemporaryToneUMB
+            )
+            
+            # Determine SYNTH_TONE based on LMB
+            synth_tone_byte = address_hex[4:6]
+            synth_tone_map = {
+                "00": "COMMON",
+                "20": "PARTIAL_1",
+                "21": "PARTIAL_2",
+                "22": "PARTIAL_3",
+                "50": "MODIFY",
+            }
+            editor_data["SYNTH_TONE"] = synth_tone_map.get(synth_tone_byte, "UNKNOWN_SYNTH_TONE")
+            
+            # Add control values
+            for k, v in controls_dict.items():
+                # If the value is a list/array, take just the first value
+                if isinstance(v, (list, tuple)) and len(v) > 0:
+                    editor_data[k] = v[0]
+                else:
+                    editor_data[k] = v
+            
+            # Add tone name parameters if available
+            if hasattr(editor, "tone_names") and hasattr(editor, "preset_type"):
+                tone_name = editor.tone_names.get(editor.preset_type, "")
+                if tone_name:
+                    # Convert tone name string to TONE_NAME_1 through TONE_NAME_12
+                    tone_name_padded = tone_name.ljust(12)[:12]
+                    for i, char in enumerate(tone_name_padded, start=1):
+                        ascii_value = ord(char)
+                        editor_data[f"TONE_NAME_{i}"] = ascii_value
+                    log.message(f"Including tone name in JSON: '{tone_name}'")
+            
+            # Save JSON file
+            json_temp_file = temp_folder / f"jdxi_tone_data_{address_hex}.json"
+            with open(json_temp_file, "w", encoding="utf-8") as file_handle:
+                json.dump(editor_data, file_handle, ensure_ascii=False, indent=2)
+            
+            log.message(f"JSON saved successfully for {section_name} section: {json_temp_file}")
+            return json_temp_file
+            
+        except Exception as ex:
+            log.error(f"Error saving {section_name} section: {ex}")
+            raise
