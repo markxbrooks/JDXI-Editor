@@ -40,9 +40,9 @@ import threading
 from typing import Union, Optional
 import qtawesome as qta
 
-from PySide6.QtCore import Qt, QSettings, QTimer
+from PySide6.QtCore import Qt, QSettings, QTimer, Signal
 from PySide6.QtGui import QShortcut, QKeySequence, QMouseEvent, QCloseEvent
-from PySide6.QtWidgets import QMenu, QMessageBox
+from PySide6.QtWidgets import QMenu, QMessageBox, QProgressDialog
 
 from jdxi_editor.jdxi.file.utils import documentation_file_path, os_file_open
 from jdxi_editor.jdxi.preset.button import JDXiPresetButtonData
@@ -83,7 +83,10 @@ from jdxi_editor.ui.editors.config import EditorConfig
 from jdxi_editor.ui.editors.digital.editor import DigitalSynth2Editor, DigitalSynth3Editor
 from jdxi_editor.ui.editors.helpers.program import (
     get_program_id_by_name,
+    calculate_midi_values,
 )
+from jdxi_editor.midi.io.input_handler import add_or_replace_program_and_save
+from jdxi_editor.jdxi.program.program import JDXiProgram
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.jdxi.style.factory import generate_sequencer_button_style
@@ -953,6 +956,402 @@ class JDXiInstrument(JDXiUi):
             
         except Exception as ex:
             log.error(f"Error dumping settings to synth: {ex}")
+
+    def _update_user_program_database(self) -> None:
+        """
+        Update the User Program database by scanning through all user banks (E, F, G, H)
+        and reading program names from the synthesizer.
+        
+        This method:
+        1. Iterates through each user bank (E, F, G, H)
+        2. For each bank, iterates through programs 1-64
+        3. Selects each program on the synthesizer
+        4. Waits for program name and tone data to be received
+        5. Saves the program to the database
+        6. Shows progress to the user
+        """
+        if not self.midi_helper or not self.midi_helper.is_output_open:
+            QMessageBox.warning(
+                self,
+                "MIDI Not Connected",
+                "Please connect to the JD-Xi synthesizer before updating the database."
+            )
+            return
+
+        # Confirm with user
+        reply = QMessageBox.question(
+            self,
+            "Update User Program Database",
+            "This will scan through all user banks (E, F, G, H) and update the program database.\n"
+            "This may take several minutes. Continue?",
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+            QMessageBox.StandardButton.No
+        )
+        
+        if reply != QMessageBox.StandardButton.Yes:
+            return
+
+        # User banks to scan
+        user_banks = ["E", "F", "G", "H"]
+        programs_per_bank = 64
+        total_programs = len(user_banks) * programs_per_bank
+
+        # Create progress dialog
+        progress = QProgressDialog("Updating User Program Database...", "Cancel", 0, total_programs, self)
+        progress.setWindowTitle("Updating Database")
+        progress.setWindowModality(Qt.WindowModality.WindowModal)
+        progress.setMinimumDuration(0)
+        progress.setValue(0)
+
+        # Initialize state
+        self._db_update_banks = user_banks.copy()
+        self._db_update_current_bank_index = 0
+        self._db_update_current_program = 1
+        self._db_update_progress = progress
+        self._db_update_programs_saved = 0
+        self._db_update_waiting_for_data = False
+        self._db_update_timeout_count = 0
+        self._db_update_program_name_received = False
+        self._db_update_tone_names_received = set()
+
+        # Disable auto-add during database update to prevent premature saves
+        self._db_update_auto_add_enabled = True
+        if hasattr(self.midi_helper, '_auto_add_enabled'):
+            self._db_update_auto_add_enabled = getattr(self.midi_helper, '_auto_add_enabled', True)
+        # Temporarily disable auto-add
+        self.midi_helper._auto_add_enabled = False
+
+        # Connect to MIDI input handler to detect when program data is received
+        # MidiIOHelper inherits from MidiInHandler, so we can connect directly
+        try:
+            self.midi_helper.update_program_name.disconnect()
+        except:
+            pass
+        # Connect to program name updates
+        self.midi_helper.update_program_name.connect(
+            self._on_program_name_received
+        )
+        
+        # Also connect to tone name updates to track when all data is received
+        try:
+            self.midi_helper.update_tone_name.disconnect()
+        except:
+            pass
+        self.midi_helper.update_tone_name.connect(
+            self._on_tone_name_received
+        )
+
+        # Start the update process
+        self._process_next_program()
+
+    def _process_next_program(self) -> None:
+        """Process the next program in the update sequence."""
+        if self._db_update_progress.wasCanceled():
+            self._cleanup_db_update()
+            return
+
+        # Check if we've completed all banks
+        if self._db_update_current_bank_index >= len(self._db_update_banks):
+            self._cleanup_db_update()
+            
+            # Reload programs from database to refresh the UI
+            from jdxi_editor.midi.data.programs.programs import JDXiProgramList
+            JDXiProgramList.USER_PROGRAMS = JDXiProgramList._load_user_programs()
+            
+            # Refresh program editor if it's open
+            if hasattr(self, 'editors'):
+                for editor in self.editors:
+                    if hasattr(editor, 'populate_programs'):
+                        editor.populate_programs()
+                    # Also refresh User Programs table if it exists
+                    if hasattr(editor, '_populate_user_programs_table'):
+                        editor._populate_user_programs_table()
+            
+            QMessageBox.information(
+                self,
+                "Update Complete",
+                f"Successfully updated {self._db_update_programs_saved} programs in the database.\n\n"
+                f"The program list has been refreshed with the updated names."
+            )
+            return
+
+        current_bank = self._db_update_banks[self._db_update_current_bank_index]
+        
+        # Check if we've completed all programs in current bank
+        if self._db_update_current_program > 64:
+            self._db_update_current_bank_index += 1
+            self._db_update_current_program = 1
+            self._process_next_program()
+            return
+
+        # Update progress
+        current_progress = (
+            self._db_update_current_bank_index * 64 + 
+            self._db_update_current_program - 1
+        )
+        self._db_update_progress.setValue(current_progress)
+        self._db_update_progress.setLabelText(
+            f"Reading {current_bank}{self._db_update_current_program:02d}..."
+        )
+
+        # Calculate MIDI values for this program
+        try:
+            result = calculate_midi_values(current_bank, self._db_update_current_program)
+            if result is None:
+                log.error(f"Failed to calculate MIDI values for {current_bank}{self._db_update_current_program:02d}")
+                self._move_to_next_program()
+                return
+            msb, lsb, pc = result
+        except (ValueError, TypeError) as e:
+            log.error(f"Error calculating MIDI values for {current_bank}{self._db_update_current_program:02d}: {e}")
+            self._move_to_next_program()
+            return
+        
+        # Clear incoming preset data before selecting program
+        self.midi_helper._incoming_preset_data.clear()
+        self.midi_helper._incoming_preset_data.msb = msb
+        self.midi_helper._incoming_preset_data.lsb = lsb
+        # Store the program number (1-based) that we're requesting
+        # For user banks: E=1-64, F=65-128, G=1-64, H=65-128 (1-based PC values)
+        if current_bank == "E":
+            program_num_1based = self._db_update_current_program  # 1-64
+        elif current_bank == "F":
+            program_num_1based = self._db_update_current_program + 64  # 65-128
+        elif current_bank == "G":
+            program_num_1based = self._db_update_current_program  # 1-64
+        elif current_bank == "H":
+            program_num_1based = self._db_update_current_program + 64  # 65-128
+        else:
+            program_num_1based = self._db_update_current_program
+        self.midi_helper._incoming_preset_data.program_number = program_num_1based
+        log.message(f"🔍 Requesting program {current_bank}{self._db_update_current_program:02d} (PC={program_num_1based})")
+        
+        # Reset tracking flags
+        self._db_update_program_name_received = False
+        self._db_update_tone_names_received = set()
+
+        # Select the program on the synthesizer
+        log.message(f"🎹 Selecting program {current_bank}{self._db_update_current_program:02d} (MSB={msb}, LSB={lsb}, PC={pc})")
+        self.midi_helper.send_bank_select_and_program_change(
+            MidiChannel.PROGRAM,
+            msb,
+            lsb,
+            pc
+        )
+
+        # Wait longer for program to load on synthesizer before requesting data
+        # Set flag to wait for data
+        self._db_update_waiting_for_data = True
+        self._db_update_timeout_count = 0
+
+        # Request data from synthesizer after a delay to allow program to load
+        QTimer.singleShot(1000, self._request_program_data)
+
+        # Set timeout timer (8 seconds max wait per program - increased for reliability)
+        QTimer.singleShot(8000, self._handle_program_data_timeout)
+
+    def _request_program_data(self) -> None:
+        """Request program data from the synthesizer."""
+        if hasattr(self, 'program_helper'):
+            self.program_helper.data_request()
+
+    def _on_program_name_received(self, program_name: str) -> None:
+        """Handle when program name is received from the synthesizer."""
+        if not self._db_update_waiting_for_data:
+            return
+
+        self._db_update_program_name_received = True
+        log.message(f"📝 Program name received: {program_name}")
+        
+        # Check if we have all required data, then save
+        self._check_and_save_program()
+
+    def _on_tone_name_received(self, area: str, tone_name: str) -> None:
+        """Handle when tone name is received from the synthesizer."""
+        if not self._db_update_waiting_for_data:
+            return
+
+        # Track which tone names we've received
+        if area in ["digital_1", "digital_2", "analog", "drum"]:
+            self._db_update_tone_names_received.add(area)
+            log.message(f"🎵 Tone name received: {area} = {tone_name}")
+        
+        # Check if we have all required data, then save
+        self._check_and_save_program()
+
+    def _check_and_save_program(self) -> None:
+        """Check if we have all required data and save if ready."""
+        if not self._db_update_waiting_for_data:
+            return
+
+        # We need program name - that's the most important
+        if not self._db_update_program_name_received:
+            return
+
+        # Check if we already started a save timer
+        if hasattr(self, '_db_update_save_timer_started'):
+            return
+        
+        # Wait a bit to collect tone names, but don't wait forever
+        required_tones = {"digital_1", "digital_2", "analog", "drum"}
+        has_all_tones = required_tones.issubset(self._db_update_tone_names_received)
+        
+        if has_all_tones:
+            # We have everything, save immediately after a short delay
+            self._db_update_save_timer_started = True
+            QTimer.singleShot(500, self._save_current_program)
+        else:
+            # Wait a bit more for remaining tone names (max 2.5 seconds after program name)
+            self._db_update_save_timer_started = True
+            QTimer.singleShot(2500, self._save_current_program)
+
+    def _save_current_program(self) -> None:
+        """Save the current program data to the database."""
+        if not self._db_update_waiting_for_data:
+            return
+
+        try:
+            current_bank = self._db_update_banks[self._db_update_current_bank_index]
+            data = self.midi_helper._incoming_preset_data
+
+            # Check if we have program name
+            if not data.program_name:
+                log.warning(f"No program name received for {current_bank}{self._db_update_current_program:02d}")
+                self._move_to_next_program()
+                return
+
+            # Create program ID
+            program_id = f"{current_bank}{self._db_update_current_program:02d}"
+            
+            # Use the program number from data if available, otherwise calculate it
+            # The program_number in data should be 1-based (1-128)
+            if data.program_number is not None:
+                program_number = data.program_number
+            else:
+                # Calculate based on bank and program index
+                if current_bank == "E":
+                    program_number = self._db_update_current_program  # 1-64
+                elif current_bank == "F":
+                    program_number = self._db_update_current_program + 64  # 65-128
+                elif current_bank == "G":
+                    program_number = self._db_update_current_program  # 1-64
+                elif current_bank == "H":
+                    program_number = self._db_update_current_program + 64  # 65-128
+                else:
+                    program_number = self._db_update_current_program
+            
+            log.message(f"💾 Saving program {program_id}: name='{data.program_name}', PC={program_number}")
+
+            # Check if program already exists in database
+            from jdxi_editor.ui.editors.helpers.program import get_program_by_id
+            existing_program = get_program_by_id(program_id)
+            
+            # Determine genre: preserve existing genre if program data is unchanged
+            genre = "Unknown"
+            if existing_program:
+                # Compare all fields except genre to see if program data has changed
+                new_msb = data.msb if data.msb is not None else 85
+                new_lsb = data.lsb if data.lsb is not None else (0 if current_bank in ["E", "F"] else 1)
+                new_digital_1 = data.tone_names.get("digital_1")
+                new_digital_2 = data.tone_names.get("digital_2")
+                new_analog = data.tone_names.get("analog")
+                new_drums = data.tone_names.get("drum")
+                
+                # Check if all program data matches (excluding genre)
+                data_matches = (
+                    existing_program.name == data.program_name and
+                    existing_program.pc == program_number and
+                    existing_program.msb == new_msb and
+                    existing_program.lsb == new_lsb and
+                    existing_program.digital_1 == new_digital_1 and
+                    existing_program.digital_2 == new_digital_2 and
+                    existing_program.analog == new_analog and
+                    existing_program.drums == new_drums
+                )
+                
+                if data_matches:
+                    # Program data is unchanged, preserve existing genre
+                    genre = existing_program.genre if existing_program.genre else "Unknown"
+                    log.message(f"📋 Program {program_id} data unchanged, preserving genre: '{genre}'")
+                else:
+                    # Program data has changed, use "Unknown" (user can edit genre manually)
+                    log.message(f"🔄 Program {program_id} data changed, resetting genre to 'Unknown'")
+
+            # Create JDXiProgram object
+            program = JDXiProgram(
+                id=program_id,
+                name=data.program_name,
+                genre=genre,
+                pc=program_number,
+                msb=data.msb if data.msb is not None else 85,
+                lsb=data.lsb if data.lsb is not None else (0 if current_bank in ["E", "F"] else 1),
+                digital_1=data.tone_names.get("digital_1"),
+                digital_2=data.tone_names.get("digital_2"),
+                analog=data.tone_names.get("analog"),
+                drums=data.tone_names.get("drum"),
+            )
+
+            # Save the program
+            if add_or_replace_program_and_save(program):
+                self._db_update_programs_saved += 1
+                log.message(f"✅ Saved program {program_id}: {program.name} (genre: '{genre}')")
+            else:
+                log.warning(f"⚠️ Failed to save program {program_id}")
+
+        except Exception as ex:
+            log.error(f"Error saving program: {ex}")
+
+        # Move to next program
+        self._move_to_next_program()
+
+    def _handle_program_data_timeout(self) -> None:
+        """Handle timeout when waiting for program data."""
+        if self._db_update_waiting_for_data:
+            log.warning(
+                f"Timeout waiting for program data: "
+                f"{self._db_update_banks[self._db_update_current_bank_index]}"
+                f"{self._db_update_current_program:02d}"
+            )
+            self._move_to_next_program()
+
+    def _move_to_next_program(self) -> None:
+        """Move to the next program in the sequence."""
+        self._db_update_waiting_for_data = False
+        self._db_update_program_name_received = False
+        self._db_update_tone_names_received = set()
+        if hasattr(self, '_db_update_save_timer_started'):
+            delattr(self, '_db_update_save_timer_started')
+        self._db_update_current_program += 1
+        
+        # Process next program after a short delay
+        QTimer.singleShot(500, self._process_next_program)
+
+    def _cleanup_db_update(self) -> None:
+        """Clean up after database update is complete."""
+        self._db_update_waiting_for_data = False
+        self._db_update_program_name_received = False
+        self._db_update_tone_names_received = set()
+        
+        # Re-enable auto-add if it was enabled before
+        if hasattr(self, '_db_update_auto_add_enabled'):
+            self.midi_helper._auto_add_enabled = self._db_update_auto_add_enabled
+        
+        # Disconnect signals
+        try:
+            self.midi_helper.update_program_name.disconnect(
+                self._on_program_name_received
+            )
+        except:
+            pass
+        try:
+            self.midi_helper.update_tone_name.disconnect(
+                self._on_tone_name_received
+            )
+        except:
+            pass
+        
+        if hasattr(self, '_db_update_progress'):
+            self._db_update_progress.close()
 
     def load_button_preset(self, button: SequencerSquare) -> None:
         """

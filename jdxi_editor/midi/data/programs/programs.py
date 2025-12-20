@@ -3799,7 +3799,10 @@ class JDXiProgramList:
 
         :return: List[JDXiProgram]
         """
-        cls.USER_PROGRAMS = cls._load_user_programs()
+        # Use SQLite database instead of JSON
+        from jdxi_editor.midi.data.programs.database import get_database
+        db = get_database()
+        cls.USER_PROGRAMS = db.get_all_programs()
         return cls.ROM_PROGRAM_LIST + cls.USER_PROGRAMS
 
     @classmethod
@@ -3809,16 +3812,10 @@ class JDXiProgramList:
 
         :return: List[JDXiProgram]
         """
-        try:
-            with open(cls.USER_PROGRAMS_FILE, "r") as f:
-                data = json.load(f)
-                return [JDXiProgram.from_dict(d) for d in data]
-        except FileNotFoundError:
-            log.warning("User programs file not found, starting with ROM programs only.")
-            return []
-        except Exception as e:
-            log.error(f"Error loading user programs: {e}")
-            return []
+        # Use SQLite database instead of JSON
+        from jdxi_editor.midi.data.programs.database import get_database
+        db = get_database()
+        return db.get_all_programs()
 
     @classmethod
     def save_to_file(cls, filepath: Optional[str] = None) -> None:

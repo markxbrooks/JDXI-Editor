@@ -68,14 +68,23 @@ def get_program_index_by_id(program_id: str) -> Optional[int]:
 
 def get_program_by_id(program_id: str) -> Optional[JDXiProgram]:
     """
-    Retrieve a program by its ID from PROGRAM_LIST
+    Retrieve a program by its ID from the database.
+    Uses SQLite for faster lookups.
 
     :param program_id: str
     :return: Optional[JDXiProgram]
     """
-    return next(
-        (program for program in JDXiProgramList.list_rom_and_user_programs() if program.id == program_id), None
+    # Check ROM programs first (they're in memory)
+    rom_program = next(
+        (program for program in JDXiProgramList.ROM_PROGRAM_LIST if program.id == program_id), None
     )
+    if rom_program:
+        return rom_program
+    
+    # Check user programs in SQLite database
+    from jdxi_editor.midi.data.programs.database import get_database
+    db = get_database()
+    return db.get_program_by_id(program_id)
 
 
 def get_program_by_bank_and_number(
@@ -196,10 +205,15 @@ def calculate_midi_values(bank: str, program_number: int) -> tuple[int, int, int
     Calculate MSB, LSB, and PC based on bank and program number
 
     :param bank: str
-    :param program_number: int
+    :param program_number: int (1-based, should be 1-64)
     :return: tuple[int, int, int] msb lsb pc
     """
     try:
+        # Validate program_number is in valid range (1-64)
+        # Program numbers are 1-based in the UI, but 0-based for MIDI
+        if program_number is None or program_number < 1 or program_number > 64:
+            raise ValueError(f"Program number must be between 1 and 64, got {program_number}")
+        
         if bank in ["A", "B"]:
             msb = 85
             lsb = 64
@@ -217,14 +231,23 @@ def calculate_midi_values(bank: str, program_number: int) -> tuple[int, int, int
             lsb = 1
             pc = program_number if bank == "G" else program_number + 64
         else:
-            msb, lsb, pc = None, None, None
-        # Ensure PC is within range
-        if not 0 <= pc <= MidiConstant.VALUE_MAX_SEVEN_BIT:
-            log.message(f"Invalid Program Change value: {pc}")
-            raise ValueError(f"Program Change value {pc} is out of range")
-        return msb, lsb, pc - 1
+            log.error(f"Unknown bank: {bank}")
+            return None, None, None
+        
+        # Convert to 0-based PC value for MIDI (PC values are 0-127)
+        pc_midi = pc - 1
+        
+        # Ensure PC is within range (0-127 for MIDI)
+        if pc_midi is None or not 0 <= pc_midi <= MidiConstant.VALUE_MAX_SEVEN_BIT:
+            log.message(f"Invalid Program Change value: {pc_midi} (calculated from program_number={program_number}, bank={bank}, pc={pc})")
+            raise ValueError(f"Program Change value {pc_midi} is out of range (must be 0-127)")
+        return msb, lsb, pc_midi
+    except ValueError:
+        # Re-raise ValueError so caller can handle it
+        raise
     except Exception as ex:
         log.error(f"Error {ex} occurred calculating midi values")
+        raise
 
 
 def calculate_index(bank: str, program_number: int) -> int:
