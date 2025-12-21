@@ -10,8 +10,7 @@ from typing import List, Optional, Dict
 from contextlib import contextmanager
 
 from jdxi_editor.jdxi.program.program import JDXiProgram
-
-from decologr.logger import Logger as log
+from jdxi_editor.log.logger import Logger as log
 
 
 class ProgramDatabase:

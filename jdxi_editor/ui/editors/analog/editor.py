@@ -52,6 +52,11 @@ from PySide6.QtWidgets import (
     QSlider,
     QTabWidget,
     QSplitter,
+    QLineEdit,
+    QComboBox,
+    QPushButton,
+    QLabel,
+    QGroupBox,
 )
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QShortcut, QKeySequence
@@ -79,6 +84,12 @@ from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
+from jdxi_editor.midi.data.programs.digital import DIGITAL_PRESET_LIST
+from jdxi_editor.midi.channel.channel import MidiChannel
+from jdxi_editor.ui.editors.helpers.preset import get_preset_parameter_value
+from jdxi_editor.log.midi_info import log_midi_info
+from jdxi_editor.ui.widgets.display.digital import DigitalTitle
+from jdxi_editor.ui.widgets.preset.combo_box import PresetComboBox
 
 
 class AnalogSynthEditor(SynthEditor):
@@ -687,3 +698,190 @@ class AnalogSynthEditor(SynthEditor):
         self.controls[AddressParameterAnalog.OSC_PULSE_WIDTH_MOD_DEPTH].setStyleSheet(
             "" if pw_enabled else "QSlider::groove:vertical { background: #000000; }"
         )
+    
+    def _create_instrument_preset_group(self, synth_type: str = "Analog") -> QGroupBox:
+        """
+        Create the instrument preset group box with tabs for normal and cheat presets.
+        
+        :param synth_type: str
+        :return: QGroupBox
+        """
+        instrument_preset_group = QGroupBox(f"{synth_type} Synth")
+        instrument_title_group_layout = QVBoxLayout(instrument_preset_group)
+        
+        # Create tabbed widget inside the group box
+        preset_tabs = QTabWidget()
+        instrument_title_group_layout.addWidget(preset_tabs)
+        
+        # === Tab 1: Normal Analog Presets ===
+        normal_preset_widget = QWidget()
+        normal_preset_layout = QVBoxLayout(normal_preset_widget)
+        
+        self.instrument_title_label = DigitalTitle()
+        normal_preset_layout.addWidget(self.instrument_title_label)
+        
+        # update_tone_name
+        self.edit_tone_name_button = QPushButton("Edit tone name")
+        self.edit_tone_name_button.clicked.connect(self.edit_tone_name)
+        normal_preset_layout.addWidget(self.edit_tone_name_button)
+        
+        # read request button
+        self.read_request_button = QPushButton("Send Read Request to Synth")
+        self.read_request_button.clicked.connect(self.data_request)
+        normal_preset_layout.addWidget(self.read_request_button)
+        
+        self.instrument_selection_label = QLabel(f"Select a {synth_type} synth:")
+        normal_preset_layout.addWidget(self.instrument_selection_label)
+        
+        self.instrument_selection_combo = PresetComboBox(self.preset_list)
+        self.instrument_selection_combo.setStyleSheet(JDXiStyle.COMBO_BOX_ANALOG)
+        self.instrument_selection_combo.combo_box.setEditable(True)
+        self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
+            self.update_instrument_image
+        )
+        self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
+            self.update_instrument_title
+        )
+        self.instrument_selection_combo.load_button.clicked.connect(
+            self.update_instrument_preset
+        )
+        self.instrument_selection_combo.preset_loaded.connect(self.load_preset)
+        normal_preset_layout.addWidget(self.instrument_selection_combo)
+        normal_preset_layout.addStretch()
+        
+        preset_tabs.addTab(normal_preset_widget, "Analog Presets")
+        
+        # === Tab 2: Cheat Presets (Digital Synth presets on Analog channel) ===
+        cheat_preset_widget = QWidget()
+        cheat_preset_layout = QVBoxLayout(cheat_preset_widget)
+        
+        # Search Box
+        search_row = QHBoxLayout()
+        search_row.addWidget(QLabel("Search Presets:"))
+        self.cheat_search_box = QLineEdit()
+        self.cheat_search_box.setPlaceholderText("Search presets...")
+        self.cheat_search_box.textChanged.connect(lambda text: self._populate_cheat_presets(text))
+        search_row.addWidget(self.cheat_search_box)
+        cheat_preset_layout.addLayout(search_row)
+        
+        # Preset List Combobox
+        self.cheat_preset_label = QLabel("Preset")
+        cheat_preset_layout.addWidget(self.cheat_preset_label)
+        self.cheat_preset_combo_box = QComboBox()
+        # Will be populated by _populate_cheat_presets()
+        cheat_preset_layout.addWidget(self.cheat_preset_combo_box)
+        
+        # Category Combobox
+        self.cheat_category_label = QLabel("Category")
+        cheat_preset_layout.addWidget(self.cheat_category_label)
+        self.cheat_category_combo_box = QComboBox()
+        self.cheat_category_combo_box.addItem("No Category Selected")
+        categories = set(preset["category"] for preset in DIGITAL_PRESET_LIST)
+        self.cheat_category_combo_box.addItems(sorted(categories))
+        self.cheat_category_combo_box.currentIndexChanged.connect(self._on_cheat_category_changed)
+        cheat_preset_layout.addWidget(self.cheat_category_combo_box)
+        
+        # Load Button
+        self.cheat_load_button = QPushButton(
+            qta.icon("ph.folder-notch-open-fill", color=JDXiStyle.FOREGROUND),
+            "Load Preset",
+        )
+        self.cheat_load_button.clicked.connect(self._load_cheat_preset)
+        cheat_preset_layout.addWidget(self.cheat_load_button)
+        
+        cheat_preset_layout.addStretch()
+        preset_tabs.addTab(cheat_preset_widget, "Cheat Presets")
+        
+        # Initialize cheat presets
+        self.cheat_presets = {}  # Maps preset names to indices
+        self._populate_cheat_presets()
+        
+        return instrument_preset_group
+    
+    def _populate_cheat_presets(self, search_text: str = ""):
+        """
+        Populate the cheat preset combo box with Digital Synth presets.
+        
+        :param search_text: str Search filter text
+        """
+        if not hasattr(self, 'cheat_preset_combo_box'):
+            return
+        
+        selected_category = self.cheat_category_combo_box.currentText()
+        
+        self.cheat_preset_combo_box.clear()
+        self.cheat_presets.clear()
+        
+        # Filter presets by category and search text
+        filtered_list = [
+            preset
+            for preset in DIGITAL_PRESET_LIST
+            if (selected_category in ["No Category Selected", preset["category"]])
+        ]
+        
+        filtered_presets = []
+        for preset in filtered_list:
+            if search_text.lower() in preset["name"].lower():
+                filtered_presets.append(preset)
+        
+        # Add presets to combo box
+        for preset in filtered_presets:
+            preset_name = preset["name"]
+            preset_id = preset["id"]
+            index = len(self.cheat_presets)
+            self.cheat_preset_combo_box.addItem(f"{preset_id} - {preset_name}", index)
+            self.cheat_presets[preset_name] = index
+        
+        if self.cheat_preset_combo_box.count() > 0:
+            self.cheat_preset_combo_box.setCurrentIndex(0)
+    
+    def _on_cheat_category_changed(self, index: int):  # pylint: disable=unused-argument
+        """Handle category selection change for cheat presets."""
+        search_text = self.cheat_search_box.text() if hasattr(self, 'cheat_search_box') else ""
+        self._populate_cheat_presets(search_text)
+    
+    def _load_cheat_preset(self):
+        """
+        Load a Digital Synth preset on the Analog Synth channel (Cheat Mode).
+        """
+        if not self.midi_helper:
+            log.warning("⚠️ MIDI helper not available for cheat preset loading")
+            return
+        
+        preset_name = self.cheat_preset_combo_box.currentText()
+        log.message("=======load_cheat_preset (Cheat Mode)=======")
+        log.parameter("combo box preset_name", preset_name)
+        
+        # Extract program number from preset name (format: "001 - Preset Name")
+        program_number = preset_name[:3]
+        log.parameter("combo box program_number", program_number)
+        
+        # Get MSB, LSB, PC values from the Digital preset list
+        msb = get_preset_parameter_value("msb", program_number, DIGITAL_PRESET_LIST)
+        lsb = get_preset_parameter_value("lsb", program_number, DIGITAL_PRESET_LIST)
+        pc = get_preset_parameter_value("pc", program_number, DIGITAL_PRESET_LIST)
+        
+        if None in [msb, lsb, pc]:
+            log.warning(
+                f"Could not retrieve preset parameters for program {program_number}"
+            )
+            return
+        
+        log.message("retrieved msb, lsb, pc for cheat preset:")
+        log.parameter("combo box msb", msb)
+        log.parameter("combo box lsb", lsb)
+        log.parameter("combo box pc", pc)
+        log_midi_info(msb, lsb, pc)
+        
+        # Send bank select and program change on ANALOG_SYNTH channel (Ch3)
+        # Note: PC is 0-based in MIDI, so subtract 1
+        self.midi_helper.send_bank_select_and_program_change(
+            MidiChannel.ANALOG_SYNTH,  # Send to Analog Synth channel (Ch3)
+            msb,  # MSB is already correct
+            lsb,  # LSB is already correct
+            pc - 1,  # Convert 1-based PC to 0-based
+        )
+        
+        # Request data update
+        if hasattr(self, 'data_request'):
+            self.data_request()

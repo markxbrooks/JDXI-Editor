@@ -2130,21 +2130,60 @@ class ProgramEditor(BasicEditor):
         if column != 2:
             return
         
-        # Get the parent instrument to show the Program Editor
+        log.message("📝 Opening Program Editor from playlist double-click")
+        
+        # Try to get the parent instrument to show the Program Editor
         parent_instrument = getattr(self, 'parent', None)
         
         # Walk up the parent chain to find JDXiInstrument if needed
-        while parent_instrument and not hasattr(parent_instrument, 'show_editor'):
+        # JDXiInstrument should have both 'show_editor' and 'get_existing_editor' methods
+        while parent_instrument:
+            if hasattr(parent_instrument, 'show_editor') and hasattr(parent_instrument, 'get_existing_editor'):
+                # Found JDXiInstrument
+                try:
+                    # Check if ProgramEditor is already open
+                    from jdxi_editor.ui.editors.io.program import ProgramEditor
+                    existing_editor = parent_instrument.get_existing_editor(ProgramEditor)
+                    if existing_editor:
+                        # Already open, just raise it
+                        existing_editor.show()
+                        existing_editor.raise_()
+                        existing_editor.activateWindow()
+                        log.message("✅ Raised existing Program Editor window")
+                    else:
+                        # Not open, show it via parent
+                        parent_instrument.show_editor("program")
+                        log.message("✅ Opened Program Editor via parent")
+                    return
+                except Exception as e:
+                    log.error(f"❌ Error showing Program Editor: {e}")
+                    import traceback
+                    log.error(traceback.format_exc())
+                    return
+            
+            # Try to get parent's parent
             next_parent = getattr(parent_instrument, 'parent', None)
             if not next_parent:
+                # Try QWidget.parent() method as fallback
+                try:
+                    if hasattr(parent_instrument, 'parent'):
+                        next_parent = parent_instrument.parent()
+                except:
+                    pass
+            
+            if not next_parent or next_parent == parent_instrument:
                 break
             parent_instrument = next_parent
         
-        if parent_instrument and hasattr(parent_instrument, 'show_editor'):
-            log.message("📝 Opening Program Editor from playlist double-click")
-            parent_instrument.show_editor("program")
-        else:
-            log.warning("⚠️ Could not access parent instrument to show Program Editor")
+        # If we couldn't find JDXiInstrument, try to show/raise this window itself
+        log.warning("⚠️ Could not find parent JDXiInstrument, trying to show current window")
+        try:
+            self.show()
+            self.raise_()
+            self.activateWindow()
+            log.message("✅ Raised current Program Editor window")
+        except Exception as e:
+            log.error(f"❌ Error raising Program Editor window: {e}")
     
     def _load_program_from_table_for_playlist(self, row: int) -> None:
         """
