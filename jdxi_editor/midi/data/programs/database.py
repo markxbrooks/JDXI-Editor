@@ -78,6 +78,7 @@ class ProgramDatabase:
                     program_id TEXT NOT NULL,
                     position INTEGER NOT NULL,
                     midi_file_path TEXT,
+                    cheat_preset_id TEXT,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     FOREIGN KEY (playlist_id) REFERENCES playlists(id) ON DELETE CASCADE,
                     FOREIGN KEY (program_id) REFERENCES programs(id) ON DELETE CASCADE,
@@ -88,6 +89,13 @@ class ProgramDatabase:
             # Add midi_file_path column if it doesn't exist (migration for existing databases)
             try:
                 conn.execute("ALTER TABLE playlist_items ADD COLUMN midi_file_path TEXT")
+            except sqlite3.OperationalError:
+                # Column already exists, ignore
+                pass
+            
+            # Add cheat_preset_id column if it doesn't exist (migration for existing databases)
+            try:
+                conn.execute("ALTER TABLE playlist_items ADD COLUMN cheat_preset_id TEXT")
             except sqlite3.OperationalError:
                 # Column already exists, ignore
                 pass
@@ -466,7 +474,7 @@ class ProgramDatabase:
         try:
             with self._get_connection() as conn:
                 rows = conn.execute("""
-                    SELECT pi.program_id, pi.position, pi.midi_file_path
+                    SELECT pi.program_id, pi.position, pi.midi_file_path, pi.cheat_preset_id
                     FROM playlist_items pi
                     WHERE pi.playlist_id = ?
                     ORDER BY pi.position
@@ -476,9 +484,12 @@ class ProgramDatabase:
                 for row in rows:
                     program = self.get_program_by_id(row["program_id"])
                     if program:
+                        # sqlite3.Row doesn't have .get(), use dictionary access
+                        # NULL values in SQLite become None in Python
                         result.append({
                             "program": program,
-                            "midi_file_path": row["midi_file_path"]
+                            "midi_file_path": row["midi_file_path"],
+                            "cheat_preset_id": row["cheat_preset_id"],  # Will be None if NULL in DB
                         })
                 return result
         except Exception as e:
@@ -506,6 +517,29 @@ class ProgramDatabase:
                 return True
         except Exception as e:
             log.error(f"❌ Failed to update MIDI file for playlist {playlist_id}, program {program_id}: {e}")
+            return False
+    
+    def update_playlist_item_cheat_preset(self, playlist_id: int, program_id: str, cheat_preset_id: Optional[str] = None) -> bool:
+        """
+        Update the cheat preset ID for a playlist item.
+        
+        :param playlist_id: Playlist ID
+        :param program_id: Program ID
+        :param cheat_preset_id: Cheat preset ID (e.g., "113") or None to clear
+        :return: True if updated, False otherwise
+        """
+        try:
+            with self._get_connection() as conn:
+                conn.execute("""
+                    UPDATE playlist_items
+                    SET cheat_preset_id = ?
+                    WHERE playlist_id = ? AND program_id = ?
+                """, (cheat_preset_id if cheat_preset_id else None, playlist_id, program_id))
+                conn.commit()
+                log.info(f"✅ Updated cheat preset for playlist {playlist_id}, program {program_id}: {cheat_preset_id}")
+                return True
+        except Exception as e:
+            log.error(f"❌ Failed to update cheat preset for playlist {playlist_id}, program {program_id}: {e}")
             return False
     
     def migrate_from_json(self, json_file: Path) -> int:

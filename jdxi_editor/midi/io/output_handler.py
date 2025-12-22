@@ -71,15 +71,21 @@ class MidiOutHandler(MidiIOController):
                     log.message("MIDI output port is not open.")
                     return False
 
-                # Parse SysEx safely
-                try:
-                    parsed_data = self.sysex_parser.parse_bytes(bytes(message))
-                    filtered_data = {
-                        k: v for k, v in parsed_data.items() if k not in OUTBOUND_MESSAGE_IGNORED_KEYS
-                    }
-                except Exception as parse_ex:
-                    log.message(f"SysEx parsing failed: {parse_ex}", level=logging.WARNING)
-                    filtered_data = {}
+                # Parse SysEx safely - only attempt if message is actually SysEx (starts with 0xF0)
+                filtered_data = {}
+                message_list = list(message)
+                if message_list and message_list[0] == MidiConstant.START_OF_SYSEX:
+                    # This is a SysEx message, try to parse it
+                    try:
+                        parsed_data = self.sysex_parser.parse_bytes(bytes(message))
+                        filtered_data = {
+                            k: v for k, v in parsed_data.items() if k not in OUTBOUND_MESSAGE_IGNORED_KEYS
+                        }
+                    except Exception as parse_ex:
+                        # Only log warning for actual SysEx messages that fail to parse
+                        log.message(f"SysEx parsing failed: {parse_ex}", level=logging.WARNING)
+                        filtered_data = {}
+                # For non-SysEx messages, filtered_data remains empty (no warning needed)
 
                 # Log safely
                 log.message(
@@ -411,7 +417,8 @@ class MidiOutHandler(MidiIOController):
         self, channel: int, bank_msb: int, bank_lsb: int, program: int
     ) -> bool:
         """
-        Sends Bank Select and Program Change messages.
+        Sends Bank Select and Program Change messages with delays between messages
+        to ensure the synthesizer can process them correctly.
 
         :param channel: int MIDI channel (1-16).
         :param bank_msb: int Bank MSB value.
@@ -420,6 +427,9 @@ class MidiOutHandler(MidiIOController):
         :return: bool True if all messages are sent successfully, False otherwise.
         """
         try:
+            import time
+            from jdxi_editor.midi.sleep import MIDI_SLEEP_TIME
+            
             log.message("========send_bank_select_and_program_change=========")
             log.parameter("channel", channel)
             log.parameter("bank_msb", bank_msb)
@@ -429,10 +439,14 @@ class MidiOutHandler(MidiIOController):
                 f"-------#1 send_control_change controller=0, bank_msb={bank_msb}, channel: {channel} --------"
             )
             self.send_control_change(0, bank_msb, channel)
+            time.sleep(MIDI_SLEEP_TIME)  # Small delay between bank select messages
+            
             log.message(
                 f"-------#2 send_control_change controller=32, bank_lsb={bank_lsb}, channel: {channel} --------"
             )
             self.send_control_change(32, bank_lsb, channel)
+            time.sleep(MIDI_SLEEP_TIME)  # Small delay before program change
+            
             log.message(
                 f"-------#3 send_program_change program: {program} channel: {channel} --------"
             )

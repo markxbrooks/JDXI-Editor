@@ -7,6 +7,7 @@ import io
 import pstats
 import re
 import time
+from datetime import datetime
 from pathlib import Path
 from typing import Optional
 import pyaudio
@@ -457,9 +458,80 @@ class MidiFileEditor(SynthEditor):
         )
         layout.addWidget(self.ui.usb_file_record_checkbox)
 
-        self.ui.usb_file_output_name = ""  # Set externally
+        # Auto generate filename based on current date and time and Midi file
+        self.ui.usb_file_auto_generate_checkbox = QCheckBox("Auto generate .Wav filename based on date, time and Midi file")
+        self.ui.usb_file_auto_generate_checkbox.setChecked(False)
+        self.ui.usb_file_auto_generate_checkbox.stateChanged.connect(
+            self.on_usb_file_auto_generate_toggled
+        )
+        layout.addWidget(self.ui.usb_file_auto_generate_checkbox)
 
         return layout
+
+    def generate_auto_wav_filename(self) -> Optional[str]:
+        """
+        Generate an automatic WAV filename based on current date/time and MIDI file name.
+        
+        :return: Generated filename path or None if no MIDI file is loaded
+        """
+        if not self.midi_state.file or not hasattr(self.midi_state.file, 'filename') or not self.midi_state.file.filename:
+            return None
+        
+        # Get MIDI file path
+        midi_path = Path(self.midi_state.file.filename)
+        midi_stem = midi_path.stem  # filename without extension
+        
+        # Generate timestamp: YYYYMMDD_HHMMSS
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        
+        # Create WAV filename: YYYYMMDD_HHMMSS_<midi_filename>.wav
+        wav_filename = f"{timestamp}_{midi_stem}.wav"
+        
+        # Use the same directory as the MIDI file, or current directory if no path
+        if midi_path.parent:
+            wav_path = midi_path.parent / wav_filename
+        else:
+            wav_path = Path(wav_filename)
+        
+        return str(wav_path)
+    
+    def update_auto_wav_filename(self) -> None:
+        """
+        Update the WAV filename automatically if auto-generate is enabled.
+        """
+        if self.ui.usb_file_auto_generate_checkbox.isChecked():
+            auto_filename = self.generate_auto_wav_filename()
+            if auto_filename:
+                self.ui.usb_file_output_name = auto_filename
+                self.ui.usb_file_select.setText(Path(auto_filename).name)
+                log.message(f"Auto-generated WAV filename: {auto_filename}")
+            else:
+                log.warning("⚠️ Cannot auto-generate filename: No MIDI file loaded")
+    
+    def on_usb_file_auto_generate_toggled(self, state: Qt.CheckState):
+        """
+        on_usb_file_auto_generate_toggled
+
+        :param state: Qt.CheckState
+        :return:
+        """
+        self.ui.usb_file_auto_generate_checkbox.setChecked(state == JDXiConstant.CHECKED)
+        is_enabled = self.ui.usb_file_auto_generate_checkbox.isChecked()
+        log.message(f"Auto generate filename based on current date and time and Midi file = {is_enabled}")
+        
+        # If enabled, generate filename immediately
+        if is_enabled:
+            self.update_auto_wav_filename()
+
+    def on_usb_file_output_name_changed(self, state: Qt.CheckState):
+        """
+        on_usb_file_output_name_changed
+
+        :param state: Qt.CheckState
+        :return:
+        """
+        self.ui.usb_file_auto_generate_checkbox.setChecked(state == JDXiConstant.CHECKED)
+        log.message(f"Auto generate filename based on current date and time and Midi file = {self.ui.usb_file_auto_generate_checkbox.isChecked()}")
 
     def init_transport_controls(self) -> QGroupBox:
         """
@@ -644,6 +716,10 @@ class MidiFileEditor(SynthEditor):
         Start recording in a separate thread
         """
         try:
+            # If auto-generate is enabled, regenerate filename with fresh timestamp
+            if self.ui.usb_file_auto_generate_checkbox.isChecked():
+                self.update_auto_wav_filename()
+            
             if not self.ui.usb_file_output_name:
                 log.message("No output file selected.")
                 return
@@ -702,9 +778,15 @@ class MidiFileEditor(SynthEditor):
             return
 
         self.midi_state.file = MidiFile(file_path)
+        # Store filename in the MidiFile object for later use
+        self.midi_state.file.filename = file_path
         self.ui.digital_title_file_name.setText(f"Loaded: {Path(file_path).name}")
         self.ui.midi_track_viewer.clear()
         self.ui.midi_track_viewer.set_midi_file(self.midi_state.file)
+        
+        # Auto-generate WAV filename if checkbox is enabled
+        if self.ui.usb_file_auto_generate_checkbox.isChecked():
+            self.update_auto_wav_filename()
 
         # Ensure ticks_per_beat is available early
         self.ticks_per_beat = self.midi_state.file.ticks_per_beat

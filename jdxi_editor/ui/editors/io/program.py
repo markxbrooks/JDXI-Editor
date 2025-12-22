@@ -50,7 +50,7 @@ from PySide6.QtWidgets import (
     QTableWidget, QTableWidgetItem, QHeaderView, QStyledItemDelegate, QFileDialog,
     QStyleOptionButton, QStyle,
 )
-from PySide6.QtCore import Signal, Qt, QRect, QSize
+from PySide6.QtCore import Signal, Qt, QRect, QSize, QTimer
 from PySide6.QtGui import QPainter
 import qtawesome as qta
 
@@ -948,29 +948,63 @@ class ProgramEditor(BasicEditor):
         if selected_bank in user_banks:
             # Load all programs from the selected user bank directly from SQLite
             from jdxi_editor.midi.data.programs.database import get_database
+            from jdxi_editor.jdxi.program.program import JDXiProgram
+            from jdxi_editor.ui.editors.helpers.program import calculate_midi_values
+            
             db = get_database()
             bank_programs = db.get_programs_by_bank(selected_bank)
             log.message(f"🔍 Bank {selected_bank}: Found {len(bank_programs)} programs in database")
             
-            # Filter by genre and search text
-            filtered_list = [
-                program
-                for program in bank_programs
-                if (selected_genre in ["No Genre Selected", program.genre])
-                   and (not search_text or search_text.lower() in program.name.lower())
-            ]
-            log.message(f"🔍 Bank {selected_bank}: After filtering (genre='{selected_genre}', search='{search_text}'): {len(filtered_list)} programs")
+            # Create a dictionary of existing programs by ID for quick lookup
+            existing_programs = {program.id: program for program in bank_programs}
             
-            # Add all programs from the selected user bank (database is single source of truth)
-            # Only show programs that actually exist in the database
-            for program in filtered_list:
-                program_name = program.name
-                program_id = program.id
+            # Ensure all 64 programs are shown (create placeholders for missing ones)
+            for i in range(1, 65):
+                program_id = f"{selected_bank}{i:02}"
+                
+                # Check if program exists in database
+                if program_id in existing_programs:
+                    program = existing_programs[program_id]
+                    # Filter by genre and search text
+                    if selected_genre not in ["No Genre Selected", program.genre]:
+                        continue
+                    if search_text and search_text.lower() not in program.name.lower():
+                        continue
+                    
+                    program_name = program.name
+                else:
+                    # Create placeholder program for missing entry
+                    try:
+                        msb, lsb, pc = calculate_midi_values(selected_bank, i)
+                    except:
+                        msb, lsb, pc = 85, (0 if selected_bank in ["E", "F"] else 1), i
+                    
+                    program = JDXiProgram(
+                        id=program_id,
+                        name=f"User bank {selected_bank} program {i:02}",
+                        genre=None,
+                        pc=pc,
+                        msb=msb,
+                        lsb=lsb,
+                        digital_1=None,
+                        digital_2=None,
+                        analog=None,
+                        drums=None,
+                    )
+                    program_name = program.name
+                    
+                    # Filter placeholder by search text
+                    if search_text and search_text.lower() not in program_name.lower():
+                        continue
+                
+                # Add program to combo box
                 index = len(self.programs)
                 self.program_number_combo_box.addItem(
                     f"{program_id} - {program_name}", index
                 )
                 self.programs[program_name] = index
+            
+            log.message(f"🔍 Bank {selected_bank}: Populated {self.program_number_combo_box.count()} programs (including placeholders)")
         else:
             # For ROM banks (A, B, C, D) or "No Bank Selected", use standard filtering
             filtered_list = [  # Filter programs based on bank and genre
@@ -1191,8 +1225,11 @@ class ProgramEditor(BasicEditor):
             
             # Create items
             self.user_programs_table.setItem(row, 0, QTableWidgetItem(program.id or ""))
-            self.user_programs_table.setItem(row, 1, QTableWidgetItem(program.name or ""))
-            # Make Genre column editable
+            # Make Name column editable (column 1)
+            name_item = QTableWidgetItem(program.name or "")
+            name_item.setFlags(name_item.flags() | Qt.ItemFlag.ItemIsEditable)
+            self.user_programs_table.setItem(row, 1, name_item)
+            # Make Genre column editable (column 2)
             genre_item = QTableWidgetItem(program.genre or "")
             genre_item.setFlags(genre_item.flags() | Qt.ItemFlag.ItemIsEditable)
             self.user_programs_table.setItem(row, 2, genre_item)
@@ -1239,45 +1276,57 @@ class ProgramEditor(BasicEditor):
             if not program or not isinstance(program, JDXiProgram):
                 continue
             
+            # Get the updated name from the table (column 1)
+            name_item = self.user_programs_table.item(row, 1)
+            new_name = name_item.text().strip() if name_item else (program.name or "")
+            
             # Get the updated genre from the table (column 2)
             genre_item = self.user_programs_table.item(row, 2)
-            if genre_item:
-                new_genre = genre_item.text().strip()
-                # Only update if genre has changed
-                if new_genre != program.genre:
-                    # Create updated program object
-                    updated_program = JDXiProgram(
-                        id=program.id,
-                        name=program.name,
-                        genre=new_genre if new_genre else None,
-                        pc=program.pc,
-                        msb=program.msb,
-                        lsb=program.lsb,
-                        tempo=program.tempo,
-                        measure_length=program.measure_length,
-                        scale=program.scale,
-                        analog=program.analog,
-                        digital_1=program.digital_1,
-                        digital_2=program.digital_2,
-                        drums=program.drums,
-                    )
-                    
-                    # Save to database
-                    if add_or_replace_program_and_save(updated_program):
-                        saved_count += 1
-                        log.message(f"✅ Updated genre for {program.id}: '{program.genre}' -> '{new_genre}'")
-                        # Update the stored program object in item data
-                        for col in range(11):
-                            item = self.user_programs_table.item(row, col)
-                            if item:
-                                item.setData(Qt.ItemDataRole.UserRole, updated_program)
-                    else:
-                        error_count += 1
-                        log.error(f"❌ Failed to save genre update for {program.id}")
+            new_genre = genre_item.text().strip() if genre_item else (program.genre or "")
+            
+            # Check if name or genre has changed
+            name_changed = new_name != (program.name or "")
+            genre_changed = new_genre != (program.genre or "")
+            
+            if name_changed or genre_changed:
+                # Create updated program object
+                updated_program = JDXiProgram(
+                    id=program.id,
+                    name=new_name if new_name else None,
+                    genre=new_genre if new_genre else None,
+                    pc=program.pc,
+                    msb=program.msb,
+                    lsb=program.lsb,
+                    tempo=program.tempo,
+                    measure_length=program.measure_length,
+                    scale=program.scale,
+                    analog=program.analog,
+                    digital_1=program.digital_1,
+                    digital_2=program.digital_2,
+                    drums=program.drums,
+                )
+                
+                # Save to database
+                if add_or_replace_program_and_save(updated_program):
+                    saved_count += 1
+                    changes = []
+                    if name_changed:
+                        changes.append(f"name: '{program.name}' -> '{new_name}'")
+                    if genre_changed:
+                        changes.append(f"genre: '{program.genre}' -> '{new_genre}'")
+                    log.message(f"✅ Updated {program.id}: {', '.join(changes)}")
+                    # Update the stored program object in item data
+                    for col in range(11):
+                        item = self.user_programs_table.item(row, col)
+                        if item:
+                            item.setData(Qt.ItemDataRole.UserRole, updated_program)
+                else:
+                    error_count += 1
+                    log.error(f"❌ Failed to save update for {program.id}")
         
         # Show summary message
         if saved_count > 0:
-            log.message(f"✅ Saved {saved_count} program genre update(s)")
+            log.message(f"✅ Saved {saved_count} program update(s)")
             if error_count > 0:
                 log.warning(f"⚠️ {error_count} program(s) failed to save")
         else:
@@ -1600,9 +1649,9 @@ class ProgramEditor(BasicEditor):
         
         # Create playlist programs table
         self.playlist_programs_table = QTableWidget()
-        self.playlist_programs_table.setColumnCount(5)
+        self.playlist_programs_table.setColumnCount(6)
         self.playlist_programs_table.setHorizontalHeaderLabels([
-            "Bank", "Number", "Program Name", "MIDI File Name", "Play"
+            "Bank", "Number", "Program Name", "MIDI File Name", "Cheat Preset", "Play"
         ])
         
         # Enable sorting
@@ -1614,7 +1663,8 @@ class ProgramEditor(BasicEditor):
         header.setSectionResizeMode(1, QHeaderView.ResizeMode.ResizeToContents)  # Number
         header.setSectionResizeMode(2, QHeaderView.ResizeMode.Stretch)  # Program Name
         header.setSectionResizeMode(3, QHeaderView.ResizeMode.Stretch)  # MIDI File Name
-        header.setSectionResizeMode(4, QHeaderView.ResizeMode.ResizeToContents)  # Play
+        header.setSectionResizeMode(4, QHeaderView.ResizeMode.ResizeToContents)  # Cheat Preset
+        header.setSectionResizeMode(5, QHeaderView.ResizeMode.ResizeToContents)  # Play
         
         # Set delegates
         midi_file_delegate = MidiFileDelegate(table_widget=self.playlist_programs_table, parent=self.playlist_programs_table)
@@ -1624,7 +1674,7 @@ class ProgramEditor(BasicEditor):
             self.playlist_programs_table,
             play_callback=self._play_playlist_program
         )
-        self.playlist_programs_table.setItemDelegateForColumn(4, play_button_delegate)
+        self.playlist_programs_table.setItemDelegateForColumn(5, play_button_delegate)
         
         # Connect item changed to save MIDI file paths
         self.playlist_programs_table.itemChanged.connect(self._on_playlist_program_item_changed)
@@ -1723,6 +1773,7 @@ class ProgramEditor(BasicEditor):
         for item_data in playlist_items:
             program = item_data["program"]
             midi_file_path = item_data.get("midi_file_path")
+            cheat_preset_id = item_data.get("cheat_preset_id")
             row = self.playlist_programs_table.rowCount()
             self.playlist_programs_table.insertRow(row)
             
@@ -1755,18 +1806,68 @@ class ProgramEditor(BasicEditor):
             midi_file_item.setData(Qt.ItemDataRole.UserRole + 1, {"playlist_id": playlist_id, "program_id": program.id})
             self.playlist_programs_table.setItem(row, 3, midi_file_item)
             
+            # Cheat Preset ComboBox
+            cheat_preset_combo = QComboBox()
+            cheat_preset_combo.addItem("None", None)  # No cheat preset
+            # Add Digital Synth presets
+            from jdxi_editor.midi.data.programs.digital import DIGITAL_PRESET_LIST
+            for preset in DIGITAL_PRESET_LIST:
+                preset_id = preset["id"]
+                preset_name = preset["name"]
+                cheat_preset_combo.addItem(f"{preset_id} - {preset_name}", preset_id)
+            # Set current selection
+            if cheat_preset_id:
+                index = cheat_preset_combo.findData(cheat_preset_id)
+                if index >= 0:
+                    cheat_preset_combo.setCurrentIndex(index)
+            # Connect change handler
+            cheat_preset_combo.currentIndexChanged.connect(
+                lambda idx, r=row: self._on_cheat_preset_changed(r, cheat_preset_combo.itemData(idx))
+            )
+            # Store playlist_id and program_id for saving
+            cheat_preset_combo.setProperty("playlist_id", playlist_id)
+            cheat_preset_combo.setProperty("program_id", program.id)
+            self.playlist_programs_table.setCellWidget(row, 4, cheat_preset_combo)
+            
             # Play button (delegate handles this)
             play_item = QTableWidgetItem("")
             play_item.setFlags(play_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
-            self.playlist_programs_table.setItem(row, 4, play_item)
+            self.playlist_programs_table.setItem(row, 5, play_item)
             
             # Store program object in item data (except MIDI file column which has its own data)
-            for col in [0, 1, 2, 4]:  # Bank, Number, Program Name, Play columns
+            for col in [0, 1, 2, 5]:  # Bank, Number, Program Name, Play columns
                 table_item = self.playlist_programs_table.item(row, col)
                 if table_item:
                     table_item.setData(Qt.ItemDataRole.UserRole, program)
         
         log.message(f"✅ Populated playlist programs table with {len(playlist_items)} programs")
+    
+    def _on_cheat_preset_changed(self, row: int, cheat_preset_id: Optional[str]) -> None:
+        """
+        Handle cheat preset selection change.
+        
+        :param row: Table row index
+        :param cheat_preset_id: Selected cheat preset ID or None
+        """
+        combo = self.playlist_programs_table.cellWidget(row, 4)
+        if not combo:
+            return
+        
+        playlist_id = combo.property("playlist_id")
+        program_id = combo.property("program_id")
+        
+        if not playlist_id or not program_id:
+            return
+        
+        try:
+            from jdxi_editor.midi.data.programs.database import get_database
+            db = get_database()
+            db.update_playlist_item_cheat_preset(playlist_id, program_id, cheat_preset_id)
+            log.message(f"✅ Updated cheat preset for playlist {playlist_id}, program {program_id}: {cheat_preset_id}")
+        except Exception as e:
+            log.error(f"❌ Failed to update cheat preset: {e}")
+            import traceback
+            log.error(traceback.format_exc())
     
     def _on_playlist_program_item_changed(self, item: QTableWidgetItem) -> None:
         """
@@ -1954,6 +2055,23 @@ class ProgramEditor(BasicEditor):
         # Always load the program via MIDI Program Change first
         self._load_program_from_table_for_playlist(row)
         
+        # Load cheat preset if selected (send on Analog Synth channel 3)
+        # Add a delay to ensure the main program change is processed first
+        cheat_preset_combo = self.playlist_programs_table.cellWidget(row, 4)
+        log.message(f"🔍 Checking cheat preset for row {row}: combo={cheat_preset_combo}")
+        if cheat_preset_combo:
+            cheat_preset_id = cheat_preset_combo.currentData()
+            log.message(f"🔍 Cheat preset ID from combo: {cheat_preset_id} (type: {type(cheat_preset_id)})")
+            if cheat_preset_id:
+                log.message(f"🎹 Scheduling cheat preset load: {cheat_preset_id} (delayed by 500ms)")
+                # Delay cheat preset loading to ensure main program change is processed first
+                # Use a longer delay to ensure the synthesizer has time to process the first program change
+                QTimer.singleShot(500, lambda: self._load_cheat_preset(cheat_preset_id))
+            else:
+                log.message("ℹ️ No cheat preset selected (None)")
+        else:
+            log.warning(f"⚠️ Cheat preset combo box not found for row {row}")
+        
         # If MIDI file is specified, load and play it
         if midi_file_path:
             import os
@@ -2106,11 +2224,11 @@ class ProgramEditor(BasicEditor):
         
         # Play the next item
         log.message(f"🎵 Auto-advancing to next playlist item (row {next_row})")
-        # Create a QModelIndex for the play button column (column 4)
+        # Create a QModelIndex for the play button column (column 5)
         from PySide6.QtCore import QModelIndex
         model = self.playlist_programs_table.model()
         if model:
-            next_index = model.index(next_row, 4)  # Play button column
+            next_index = model.index(next_row, 5)  # Play button column
             self._play_playlist_program(next_index)
         else:
             log.error("❌ Could not get table model for auto-advance")
@@ -2237,6 +2355,65 @@ class ProgramEditor(BasicEditor):
         self.set_current_program_name(program.name)
         if hasattr(self, 'update_current_synths'):
             self.update_current_synths(program)
+    
+    def _load_cheat_preset(self, preset_id: str) -> None:
+        """
+        Load a cheat preset (Digital Synth preset) on the Analog Synth channel (Ch3).
+        
+        :param preset_id: Preset ID (e.g., "113")
+        """
+        log.message(f"🎹 _load_cheat_preset called with preset_id: {preset_id} (type: {type(preset_id)})")
+        
+        if not self.midi_helper:
+            log.warning("⚠️ MIDI helper not available for cheat preset loading")
+            return
+        
+        if not preset_id:
+            log.warning("⚠️ Preset ID is None or empty")
+            return
+        
+        log.message(f"🎹 Loading cheat preset {preset_id} on Analog Synth channel (Ch3)")
+        
+        # Get preset parameters from DIGITAL_PRESET_LIST
+        from jdxi_editor.midi.data.programs.digital import DIGITAL_PRESET_LIST
+        from jdxi_editor.ui.editors.helpers.preset import get_preset_parameter_value
+        from jdxi_editor.midi.channel.channel import MidiChannel
+        from jdxi_editor.log.midi_info import log_midi_info
+        
+        # Find preset in DIGITAL_PRESET_LIST
+        preset = None
+        for p in DIGITAL_PRESET_LIST:
+            if str(p["id"]) == str(preset_id):  # Compare as strings to handle any type mismatches
+                preset = p
+                break
+        
+        if not preset:
+            log.warning(f"⚠️ Cheat preset {preset_id} not found in DIGITAL_PRESET_LIST")
+            log.message(f"🔍 Available preset IDs (first 10): {[p['id'] for p in DIGITAL_PRESET_LIST[:10]]}")
+            return
+        
+        # Get MSB, LSB, PC values and convert to integers (preset data has floats)
+        msb = int(preset.get("msb", 95))
+        lsb = int(preset.get("lsb", 64))
+        pc = int(preset.get("pc", int(preset_id)))
+        
+        log.message(f"📊 Cheat preset parameters: MSB={msb}, LSB={lsb}, PC={pc}")
+        log_midi_info(msb, lsb, pc)
+        
+        # Send bank select and program change on ANALOG_SYNTH channel (Ch3)
+        # Note: PC is 0-based in MIDI, so subtract 1
+        try:
+            self.midi_helper.send_bank_select_and_program_change(
+                MidiChannel.ANALOG_SYNTH,  # Send to Analog Synth channel (Ch3)
+                msb,  # MSB (typically 95 for Digital Synth presets)
+                lsb,  # LSB (typically 64)
+                pc - 1,  # Convert 1-based PC to 0-based
+            )
+            log.message(f"✅ Sent cheat preset Program Change: Ch3, MSB={msb}, LSB={lsb}, PC={pc-1} (0-based)")
+        except Exception as e:
+            log.error(f"❌ Error sending cheat preset Program Change: {e}")
+            import traceback
+            log.error(traceback.format_exc())
     
     def _on_user_program_selected(self, item: QTableWidgetItem) -> None:
         """

@@ -1214,14 +1214,13 @@ class JDXiInstrument(JDXiUi):
             current_bank = self._db_update_banks[self._db_update_current_bank_index]
             data = self.midi_helper._incoming_preset_data
 
-            # Check if we have program name
-            if not data.program_name:
-                log.warning(f"No program name received for {current_bank}{self._db_update_current_program:02d}")
-                self._move_to_next_program()
-                return
-
             # Create program ID
             program_id = f"{current_bank}{self._db_update_current_program:02d}"
+            
+            # Use placeholder name if no program name received
+            if not data.program_name:
+                log.warning(f"No program name received for {program_id}, using placeholder name")
+                data.program_name = f"User bank {current_bank} program {self._db_update_current_program:02d}"
             
             # Use the program number from data if available, otherwise calculate it
             # The program_number in data should be 1-based (1-128)
