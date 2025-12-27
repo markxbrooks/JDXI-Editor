@@ -41,7 +41,7 @@ from typing import Union, Optional
 import qtawesome as qta
 
 from PySide6.QtCore import Qt, QSettings, QTimer, Signal
-from PySide6.QtGui import QShortcut, QKeySequence, QMouseEvent, QCloseEvent
+from PySide6.QtGui import QShortcut, QKeySequence, QMouseEvent, QCloseEvent, QAction
 from PySide6.QtWidgets import QMenu, QMessageBox, QProgressDialog
 
 from jdxi_editor.jdxi.file.utils import documentation_file_path, os_file_open
@@ -104,6 +104,7 @@ from jdxi_editor.ui.windows.jdxi.ui import JDXiUi
 from jdxi_editor.ui.widgets.viewer.log import LogViewer
 from jdxi_editor.ui.widgets.button.favorite import FavoriteButton
 from jdxi_editor.project import __package_name__
+from jdxi_editor.ui.windows.jdxi.recent_files import RecentFilesManager
 
 
 class JDXiInstrument(JDXiUi):
@@ -126,6 +127,10 @@ class JDXiInstrument(JDXiUi):
         self.sysex_composer = JDXiSysExComposer()
         self.program_helper = JDXiProgramHelper(self.midi_helper, MidiChannel.PROGRAM)
         self.settings = QSettings("mabsoft", __package_name__)
+        self.recent_files_manager = RecentFilesManager()
+        self.recent_files_menu = None
+        # Add Recent Files menu now that recent_files_manager is initialized
+        self._add_recent_files_menu()
         self._load_settings()
         self._toggle_illuminate_sequencer_lightshow(True)
         self._load_saved_favorites()
@@ -842,6 +847,101 @@ class JDXiInstrument(JDXiUi):
         self.main_editor.show()
         self.main_editor.raise_()
 
+    def _create_menu_bar(self) -> None:
+        """Override to add Recent Files submenu."""
+        super()._create_menu_bar()
+        # Note: Recent Files menu is added later in _add_recent_files_menu()
+        # because recent_files_manager is initialized after super().__init__()
+    
+    def _add_recent_files_menu(self) -> None:
+        """Add Recent Files submenu to File menu."""
+        if not hasattr(self, 'recent_files_manager') or self.recent_files_manager is None:
+            return
+        
+        # Get the File menu by finding the action
+        file_menu = None
+        for action in self.menuBar().actions():
+            if action.text() == "File":
+                file_menu = action.menu()
+                break
+        
+        if file_menu:
+            # Find the position after "Load MIDI file" and "Save MIDI file"
+            actions = file_menu.actions()
+            insert_pos = 2  # After "Load MIDI file" and "Save MIDI file"
+            
+            # Add separator before Recent Files
+            file_menu.insertSeparator(actions[insert_pos] if insert_pos < len(actions) else None)
+            
+            # Create Recent Files submenu
+            self.recent_files_menu = file_menu.addMenu("Recent MIDI Files")
+            self._update_recent_files_menu()
+    
+    def _update_recent_files_menu(self) -> None:
+        """Update the Recent Files menu with current recent files."""
+        if not self.recent_files_menu:
+            return
+        
+        if not hasattr(self, 'recent_files_manager') or self.recent_files_manager is None:
+            return
+        
+        # Clear existing actions
+        self.recent_files_menu.clear()
+        
+        recent_files = self.recent_files_manager.get_recent_files()
+        
+        if not recent_files:
+            action = QAction("No recent files", self)
+            action.setEnabled(False)
+            self.recent_files_menu.addAction(action)
+        else:
+            for file_path in recent_files:
+                # Create display name (just filename)
+                from pathlib import Path
+                display_name = Path(file_path).name
+                action = QAction(display_name, self)
+                action.setData(file_path)  # Store full path
+                action.triggered.connect(lambda checked, path=file_path: self._load_recent_file(path))
+                self.recent_files_menu.addAction(action)
+            
+            # Add separator and clear action
+            self.recent_files_menu.addSeparator()
+            clear_action = QAction("Clear Recent Files", self)
+            clear_action.triggered.connect(self._clear_recent_files)
+            self.recent_files_menu.addAction(clear_action)
+    
+    def _load_recent_file(self, file_path: str) -> None:
+        """
+        Load a recent MIDI file.
+        
+        :param file_path: Path to the MIDI file
+        """
+        from pathlib import Path
+        
+        if not Path(file_path).exists():
+            from PySide6.QtWidgets import QMessageBox
+            QMessageBox.warning(
+                self,
+                "File Not Found",
+                f"The file '{file_path}' no longer exists."
+            )
+            self._update_recent_files_menu()
+            return
+        
+        # Get or create MIDI file editor
+        self.midi_file_editor = self.get_existing_editor(MidiFileEditor)
+        if not self.midi_file_editor:
+            self.show_editor("midi_file")
+        
+        # Load the file directly
+        self.midi_file_editor.midi_load_file_from_path(file_path)
+        self.show_editor("midi_file")
+    
+    def _clear_recent_files(self) -> None:
+        """Clear all recent files."""
+        self.recent_files_manager.clear_recent_files()
+        self._update_recent_files_menu()
+
     def _midi_file_load(self):
         """
         _midi_file_load
@@ -855,6 +955,9 @@ class JDXiInstrument(JDXiUi):
         self.midi_file_editor = self.get_existing_editor(MidiFileEditor)
         if not self.midi_file_editor:
             self.show_editor("midi_file")
+        # Set parent so midi_load_file can access recent_files_manager
+        if self.midi_file_editor:
+            self.midi_file_editor.parent = self
         self.midi_file_editor.midi_load_file()
         self.show_editor("midi_file")
 

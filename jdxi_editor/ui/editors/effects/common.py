@@ -64,7 +64,8 @@ from PySide6.QtWidgets import (
     QLabel,
     QTabWidget,
     QFormLayout, QScrollArea, QSlider, QSplitter, QGroupBox, )
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QEvent
+from PySide6.QtGui import QShowEvent
 
 from jdxi_editor.jdxi.midi.constant import MidiConstant
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
@@ -303,8 +304,25 @@ class EffectsCommonEditor(BasicEditor):
         # Connect to MIDI helper signals to receive SysEx data
         if self.midi_helper:
             self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
+            log.message("🎛️ Effects Editor: Connected to midi_sysex_json signal")
+        else:
+            log.warning("🎛️ Effects Editor: midi_helper is None, cannot connect to signals")
         
         # Request current settings from the synthesizer
+        # Note: data_request() will also be called in showEvent when editor is shown
+        self.data_request()
+    
+    def showEvent(self, event: QShowEvent) -> None:
+        """
+        Override showEvent to request current settings from the instrument when the editor is shown.
+        This ensures the sliders pick up the current settings from the instrument, similar to
+        Digital 1, Digital 2, and Analog synth editors.
+        
+        :param event: QShowEvent
+        """
+        super().showEvent(event)
+        if self.midi_helper:
+            log.message("🎛️ Effects Editor shown - requesting current settings from instrument")
         self.data_request()
 
     def update_flanger_rate_note_controls(self) -> None:
@@ -663,23 +681,40 @@ class EffectsCommonEditor(BasicEditor):
         :param json_sysex_data: str JSON string containing SysEx data
         :return: None
         """
+        # Log that the method was called
+        log.message("🎛️ Effects Editor _dispatch_sysex_to_area called")
+        
         try:
-            import json
             from jdxi_editor.ui.editors.digital.utils import filter_sysex_keys
             
-            # Parse JSON SysEx data
-            sysex_data = json.loads(json_sysex_data)
+            # Parse JSON SysEx data using the same method as SynthEditor
+            sysex_data = self._parse_sysex_json(json_sysex_data)
             if not sysex_data:
+                log.message("🎛️ Effects Editor: sysex_data is None or empty after parsing")
                 return
             
             # Check if this is effects data (TEMPORARY_AREA should be "TEMPORARY_PROGRAM")
             temporary_area = sysex_data.get("TEMPORARY_AREA", "")
+            synth_tone = sysex_data.get("SYNTH_TONE", "")
+            
+            # Log what we received for debugging
+            log.message(
+                f"🎛️ Effects Editor received SysEx: TEMPORARY_AREA={temporary_area}, SYNTH_TONE={synth_tone}"
+            )
+            
             if temporary_area != "TEMPORARY_PROGRAM":
                 # Not effects data, skip
+                log.message(
+                    f"🎛️ Effects Editor skipping: TEMPORARY_AREA={temporary_area} != TEMPORARY_PROGRAM"
+                )
                 return
             
+            # For TEMPORARY_PROGRAM area, we accept any SYNTH_TONE (COMMON, EFFECT_1, EFFECT_2, DELAY, REVERB, etc.)
+            # The parser may return "COMMON" for effects because JDXiMapSynthTone doesn't include effects tones
+            # We'll process all parameters regardless of SYNTH_TONE value
+            
             log.header_message(
-                f"Updating Effects UI components from SysEx data for {temporary_area}"
+                f"Updating Effects UI components from SysEx data for \t{temporary_area} \t{synth_tone}"
             )
             
             # Filter out metadata keys
@@ -712,6 +747,41 @@ class EffectsCommonEditor(BasicEditor):
                         # Convert value if needed and update widget
                         value = int(param_value) if not isinstance(param_value, int) else param_value
                         
+                        # Special handling for Effect Type combo boxes
+                        if param_name == "EFX1_TYPE":
+                            # Find index in efx1_type_values that matches the value
+                            try:
+                                index = EffectsData.efx1_type_values.index(value)
+                                if hasattr(self, 'efx1_type') and hasattr(self.efx1_type, 'combo_box'):
+                                    self.efx1_type.combo_box.blockSignals(True)
+                                    self.efx1_type.combo_box.setCurrentIndex(index)
+                                    self.efx1_type.combo_box.blockSignals(False)
+                                    # Trigger label update to show correct parameters
+                                    self._update_efx1_labels(value)
+                                    successes.append(param_name)
+                                    log.message(f"✅ Updated EFX1_TYPE to index {index} (value {value})")
+                                else:
+                                    failures.append(f"{param_name}: efx1_type combo box not found")
+                            except ValueError:
+                                failures.append(f"{param_name}: value {value} not found in efx1_type_values")
+                        elif param_name == "EFX2_TYPE":
+                            # Find index in efx2_type_values that matches the value
+                            try:
+                                index = EffectsData.efx2_type_values.index(value)
+                                if hasattr(self, 'efx2_type') and hasattr(self.efx2_type, 'combo_box'):
+                                    self.efx2_type.combo_box.blockSignals(True)
+                                    self.efx2_type.combo_box.setCurrentIndex(index)
+                                    self.efx2_type.combo_box.blockSignals(False)
+                                    # Trigger label update to show correct parameters
+                                    self._update_efx2_labels(value)
+                                    successes.append(param_name)
+                                    log.message(f"✅ Updated EFX2_TYPE to index {index} (value {value})")
+                                else:
+                                    failures.append(f"{param_name}: efx2_type combo box not found")
+                            except ValueError:
+                                failures.append(f"{param_name}: value {value} not found in efx2_type_values")
+                        else:
+                            # Regular parameter update (sliders, etc.)
                         # Convert from MIDI to display value if parameter has conversion
                         if hasattr(param, "convert_from_midi"):
                             display_value = param.convert_from_midi(value)
@@ -724,8 +794,23 @@ class EffectsCommonEditor(BasicEditor):
                             widget.setValue(display_value)
                             widget.blockSignals(False)
                             successes.append(param_name)
+                            elif hasattr(widget, "combo_box"):
+                                # Handle combo box widgets (for switches, etc.)
+                                widget.combo_box.blockSignals(True)
+                                # Try to find the index in values
+                                if hasattr(widget, 'values') and widget.values:
+                                    try:
+                                        index = widget.values.index(value)
+                                        widget.combo_box.setCurrentIndex(index)
+                                    except (ValueError, AttributeError):
+                                        # If value not found, try direct index
+                                        widget.combo_box.setCurrentIndex(value)
+                                else:
+                                    widget.combo_box.setCurrentIndex(value)
+                                widget.combo_box.blockSignals(False)
+                                successes.append(param_name)
                         else:
-                            failures.append(f"{param_name}: widget has no setValue method")
+                                failures.append(f"{param_name}: widget has no setValue or combo_box method")
                     else:
                         failures.append(f"{param_name}: parameter or widget not found")
                         
@@ -733,12 +818,16 @@ class EffectsCommonEditor(BasicEditor):
                     failures.append(f"{param_name}: {ex}")
                     log.warning(f"Error updating {param_name}: {ex}")
             
+            # Log summary similar to Analog Synth editor
             if successes:
-                log.message(f"Successfully updated {len(successes)} effects parameters")
+                log.message(f"ℹ️✅  Successes ({len(successes)}): {successes[:10]}{'...' if len(successes) > 10 else ''}")
             if failures:
-                log.warning(f"Failed to update {len(failures)} effects parameters")
+                log.warning(f"ℹ️❌  Failures ({len(failures)}): {failures[:10]}{'...' if len(failures) > 10 else ''}")
+            
+            success_rate = (len(successes) / (len(successes) + len(failures)) * 100) if (successes or failures) else 0
+            log.message(f"ℹ️📊  Success Rate: {success_rate:.1f}%")
                 
-        except json.JSONDecodeError as ex:
-            log.error(f"Invalid JSON in SysEx data: {ex}")
         except Exception as ex:
-            log.error(f"Error dispatching SysEx to effects area: {ex}")
+            import traceback
+            log.error(f"🎛️ Effects Editor error in _dispatch_sysex_to_area: {ex}")
+            log.error(f"🎛️ Traceback: {traceback.format_exc()}")
