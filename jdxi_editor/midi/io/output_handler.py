@@ -76,15 +76,15 @@ class MidiOutHandler(MidiIOController):
                 message_list = list(message)
                 if message_list and message_list[0] == MidiConstant.START_OF_SYSEX:
                     # This is a SysEx message, try to parse it
-                    try:
-                        parsed_data = self.sysex_parser.parse_bytes(bytes(message))
-                        filtered_data = {
-                            k: v for k, v in parsed_data.items() if k not in OUTBOUND_MESSAGE_IGNORED_KEYS
-                        }
-                    except Exception as parse_ex:
+                try:
+                    parsed_data = self.sysex_parser.parse_bytes(bytes(message))
+                    filtered_data = {
+                        k: v for k, v in parsed_data.items() if k not in OUTBOUND_MESSAGE_IGNORED_KEYS
+                    }
+                except Exception as parse_ex:
                         # Only log warning for actual SysEx messages that fail to parse
-                        log.message(f"SysEx parsing failed: {parse_ex}", level=logging.WARNING)
-                        filtered_data = {}
+                    log.message(f"SysEx parsing failed: {parse_ex}", level=logging.WARNING)
+                    filtered_data = {}
                 # For non-SysEx messages, filtered_data remains empty (no warning needed)
 
                 # Log safely

@@ -1007,32 +1007,32 @@ class ProgramEditor(BasicEditor):
             log.message(f"🔍 Bank {selected_bank}: Populated {self.program_number_combo_box.count()} programs (including placeholders)")
         else:
             # For ROM banks (A, B, C, D) or "No Bank Selected", use standard filtering
-            filtered_list = [  # Filter programs based on bank and genre
-                program
-                for program in JDXiProgramList.list_rom_and_user_programs()
-                if (selected_bank in ["No Bank Selected", program.id[0]])
-                   and (selected_genre in ["No Genre Selected", program.genre])
-            ]
+        filtered_list = [  # Filter programs based on bank and genre
+            program
+            for program in JDXiProgramList.list_rom_and_user_programs()
+            if (selected_bank in ["No Bank Selected", program.id[0]])
+               and (selected_genre in ["No Genre Selected", program.genre])
+        ]
 
-            for program in filtered_list:  # Add programs to the combo box
-                if search_text and search_text.lower() not in program.name.lower():
-                    continue
-                program_name = program.name
-                program_id = program.id
-                index = len(self.programs)  # Use the current number of programs
-                self.program_number_combo_box.addItem(
-                    f"{program_id} - {program_name}", index
-                )
-                self.programs[program_name] = index
+        for program in filtered_list:  # Add programs to the combo box
+            if search_text and search_text.lower() not in program.name.lower():
+                continue
+            program_name = program.name
+            program_id = program.id
+            index = len(self.programs)  # Use the current number of programs
+            self.program_number_combo_box.addItem(
+                f"{program_id} - {program_name}", index
+            )
+            self.programs[program_name] = index
 
             # If "No Bank Selected" and no genre filter, add user banks
-            if (
-                    selected_bank == "No Bank Selected"
-                    and selected_genre == "No Genre Selected"
-            ):
-                self.add_user_banks(
-                    filtered_list, selected_bank, search_text
-                )  # Handle user banks if necessary
+        if (
+                selected_bank == "No Bank Selected"
+                and selected_genre == "No Genre Selected"
+        ):
+            self.add_user_banks(
+                filtered_list, selected_bank, search_text
+            )  # Handle user banks if necessary
 
         self.program_number_combo_box.setCurrentIndex(
             0
@@ -1079,13 +1079,13 @@ class ProgramEditor(BasicEditor):
                     if existing_program:
                         # Program exists in database, add it with real name
                         program_name = existing_program.name
-                        if search_text and search_text.lower() not in program_name.lower():
-                            continue
-                        index = len(self.programs)
-                        self.program_number_combo_box.addItem(
-                            f"{program_id} - {program_name}", index
-                        )
-                        self.programs[program_name] = index
+                    if search_text and search_text.lower() not in program_name.lower():
+                        continue
+                    index = len(self.programs)
+                    self.program_number_combo_box.addItem(
+                        f"{program_id} - {program_name}", index
+                    )
+                    self.programs[program_name] = index
                     # If program doesn't exist in database, skip it (no placeholders)
 
     def _create_user_programs_tab(self) -> QWidget:
@@ -1113,10 +1113,10 @@ class ProgramEditor(BasicEditor):
         
         # Create table
         self.user_programs_table = QTableWidget()
-        self.user_programs_table.setColumnCount(11)
+        self.user_programs_table.setColumnCount(12)
         self.user_programs_table.setHorizontalHeaderLabels([
             "ID", "Name", "Genre", "Bank", "PC", "MSB", "LSB",
-            "Digital 1", "Digital 2", "Analog", "Drums"
+            "Digital 1", "Digital 2", "Analog", "Drums", "Play"
         ])
         
         # Enable sorting
@@ -1135,6 +1135,14 @@ class ProgramEditor(BasicEditor):
         header.setSectionResizeMode(8, QHeaderView.ResizeMode.ResizeToContents)  # Digital 2
         header.setSectionResizeMode(9, QHeaderView.ResizeMode.ResizeToContents)  # Analog
         header.setSectionResizeMode(10, QHeaderView.ResizeMode.ResizeToContents)  # Drums
+        header.setSectionResizeMode(11, QHeaderView.ResizeMode.ResizeToContents)  # Play
+        
+        # Set up Play button delegate for column 11
+        play_button_delegate = PlayButtonDelegate(
+            self.user_programs_table,
+            play_callback=self._play_user_program
+        )
+        self.user_programs_table.setItemDelegateForColumn(11, play_button_delegate)
         
         # Make Genre column editable (column 2)
         # Note: We'll handle editing by making items editable
@@ -2433,6 +2441,16 @@ class ProgramEditor(BasicEditor):
         if selected_rows:
             row = selected_rows[0].row()
             self._load_program_from_table(row)
+    
+    def _play_user_program(self, index) -> None:
+        """
+        Callback for Play button delegate - loads and plays the program.
+        
+        :param index: QModelIndex from the delegate
+        """
+        row = index.row()
+        log.message(f"🎹 Play button clicked for row {row}")
+        self._load_program_from_table(row)
     
     def _load_program_from_table(self, row: int) -> None:
         """
