@@ -4,7 +4,7 @@ Analog Oscillator Section
 
 from typing import Callable
 from PySide6.QtGui import QIcon
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QGroupBox
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QGroupBox, QTabWidget
 
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
@@ -65,15 +65,23 @@ class AnalogOscillatorSection(QWidget):
         self.setStyleSheet(JDXiStyle.ADSR_ANALOG)
         # Waveform buttons
         layout.addLayout(self.create_waveform_buttons())
+        self.oscillator_tab_widget = QTabWidget()
+        layout.addWidget(self.oscillator_tab_widget)
 
-        # Tuning controls
-        layout.addWidget(self.create_tuning_group())
+        # Tuning and pitch controls
+        pitch_layout = QHBoxLayout()
+        pitch_layout.addStretch()
+        pitch_layout.addWidget(self.create_tuning_group())
+        pitch_layout.addStretch()
+        pitch_layout.addWidget(self.create_pitch_env_group())
+        pitch_layout.addStretch()
+        pitch_widget = QWidget()
+        pitch_widget.setLayout(pitch_layout)
+        # Pitch Envelope
+        self.oscillator_tab_widget.addTab(pitch_widget, "Tuning and Pitch")
 
         # Pulse Width controls
-        layout.addWidget(self.create_pw_group())
-
-        # Pitch Envelope
-        layout.addWidget(self.create_pitch_env_group())
+        self.oscillator_tab_widget.addTab(self.create_pw_group(), "Pulse Width")
 
         # Sub Oscillator
         # layout.addWidget(self.create_sub_osc_group())
@@ -155,9 +163,11 @@ class AnalogOscillatorSection(QWidget):
         :return: QGroupBox
         """
         pw_group = QGroupBox("Pulse Width")
-        pw_layout = QVBoxLayout()
-        pw_group.setLayout(pw_layout)
 
+        pw_layout = QVBoxLayout()
+        pw_layout.addStretch()
+        pw_group.setLayout(pw_layout)
+        pw_layout.addStretch()
         self.pwm_widget = PWMWidget(pulse_width_param=AddressParameterAnalog.OSC_PULSE_WIDTH,
                                     mod_depth_param=AddressParameterAnalog.OSC_PULSE_WIDTH_MOD_DEPTH,
                                     midi_helper=self.midi_helper,
@@ -167,6 +177,7 @@ class AnalogOscillatorSection(QWidget):
         self.pwm_widget.setStyleSheet(JDXiStyle.ADSR_ANALOG)
         self.pwm_widget.setMaximumHeight(JDXiStyle.PWM_WIDGET_HEIGHT)
         pw_layout.addWidget(self.pwm_widget)
+        pw_layout.addStretch()
 
         return pw_group
 

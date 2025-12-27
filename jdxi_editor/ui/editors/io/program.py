@@ -950,18 +950,18 @@ class ProgramEditor(BasicEditor):
             from jdxi_editor.midi.data.programs.database import get_database
             from jdxi_editor.jdxi.program.program import JDXiProgram
             from jdxi_editor.ui.editors.helpers.program import calculate_midi_values
-            
+
             db = get_database()
             bank_programs = db.get_programs_by_bank(selected_bank)
             log.message(f"🔍 Bank {selected_bank}: Found {len(bank_programs)} programs in database")
-            
+
             # Create a dictionary of existing programs by ID for quick lookup
             existing_programs = {program.id: program for program in bank_programs}
-            
+
             # Ensure all 64 programs are shown (create placeholders for missing ones)
             for i in range(1, 65):
                 program_id = f"{selected_bank}{i:02}"
-                
+
                 # Check if program exists in database
                 if program_id in existing_programs:
                     program = existing_programs[program_id]
@@ -970,7 +970,7 @@ class ProgramEditor(BasicEditor):
                         continue
                     if search_text and search_text.lower() not in program.name.lower():
                         continue
-                    
+
                     program_name = program.name
                 else:
                     # Create placeholder program for missing entry
@@ -978,7 +978,7 @@ class ProgramEditor(BasicEditor):
                         msb, lsb, pc = calculate_midi_values(selected_bank, i)
                     except:
                         msb, lsb, pc = 85, (0 if selected_bank in ["E", "F"] else 1), i
-                    
+
                     program = JDXiProgram(
                         id=program_id,
                         name=f"User bank {selected_bank} program {i:02}",
@@ -992,47 +992,48 @@ class ProgramEditor(BasicEditor):
                         drums=None,
                     )
                     program_name = program.name
-                    
+
                     # Filter placeholder by search text
                     if search_text and search_text.lower() not in program_name.lower():
                         continue
-                
+
                 # Add program to combo box
                 index = len(self.programs)
                 self.program_number_combo_box.addItem(
                     f"{program_id} - {program_name}", index
                 )
                 self.programs[program_name] = index
-            
-            log.message(f"🔍 Bank {selected_bank}: Populated {self.program_number_combo_box.count()} programs (including placeholders)")
+
+            log.message(
+                f"🔍 Bank {selected_bank}: Populated {self.program_number_combo_box.count()} programs (including placeholders)")
         else:
             # For ROM banks (A, B, C, D) or "No Bank Selected", use standard filtering
-        filtered_list = [  # Filter programs based on bank and genre
-            program
-            for program in JDXiProgramList.list_rom_and_user_programs()
-            if (selected_bank in ["No Bank Selected", program.id[0]])
-               and (selected_genre in ["No Genre Selected", program.genre])
-        ]
+            filtered_list = [  # Filter programs based on bank and genre
+                program
+                for program in JDXiProgramList.list_rom_and_user_programs()
+                if (selected_bank in ["No Bank Selected", program.id[0]])
+                   and (selected_genre in ["No Genre Selected", program.genre])
+            ]
 
-        for program in filtered_list:  # Add programs to the combo box
-            if search_text and search_text.lower() not in program.name.lower():
-                continue
-            program_name = program.name
-            program_id = program.id
-            index = len(self.programs)  # Use the current number of programs
-            self.program_number_combo_box.addItem(
-                f"{program_id} - {program_name}", index
-            )
-            self.programs[program_name] = index
+            for program in filtered_list:  # Add programs to the combo box
+                if search_text and search_text.lower() not in program.name.lower():
+                    continue
+                program_name = program.name
+                program_id = program.id
+                index = len(self.programs)  # Use the current number of programs
+                self.program_number_combo_box.addItem(
+                    f"{program_id} - {program_name}", index
+                )
+                self.programs[program_name] = index
 
             # If "No Bank Selected" and no genre filter, add user banks
-        if (
-                selected_bank == "No Bank Selected"
-                and selected_genre == "No Genre Selected"
-        ):
-            self.add_user_banks(
-                filtered_list, selected_bank, search_text
-            )  # Handle user banks if necessary
+            if (
+                    selected_bank == "No Bank Selected"
+                    and selected_genre == "No Genre Selected"
+            ):
+                self.add_user_banks(
+                    filtered_list, selected_bank, search_text
+                )  # Handle user banks if necessary
 
         self.program_number_combo_box.setCurrentIndex(
             0
@@ -1042,6 +1043,7 @@ class ProgramEditor(BasicEditor):
         """Add user banks to the program list.
         Only adds generic entries for programs that don't exist in the database.
         Uses SQLite database for reliable lookups.
+        :param search_text:
         :param filtered_list: list of programs already loaded from database
         :param bank: str
         """

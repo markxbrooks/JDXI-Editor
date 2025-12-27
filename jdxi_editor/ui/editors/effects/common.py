@@ -780,8 +780,8 @@ class EffectsCommonEditor(BasicEditor):
                                     failures.append(f"{param_name}: efx2_type combo box not found")
                             except ValueError:
                                 failures.append(f"{param_name}: value {value} not found in efx2_type_values")
-                        else:
-                            # Regular parameter update (sliders, etc.)
+                        #else:
+                        # Regular parameter update (sliders, etc.)
                         # Convert from MIDI to display value if parameter has conversion
                         if hasattr(param, "convert_from_midi"):
                             display_value = param.convert_from_midi(value)
@@ -794,19 +794,19 @@ class EffectsCommonEditor(BasicEditor):
                             widget.setValue(display_value)
                             widget.blockSignals(False)
                             successes.append(param_name)
-                            elif hasattr(widget, "combo_box"):
-                                # Handle combo box widgets (for switches, etc.)
-                                widget.combo_box.blockSignals(True)
-                                # Try to find the index in values
-                                if hasattr(widget, 'values') and widget.values:
-                                    try:
-                                        index = widget.values.index(value)
-                                        widget.combo_box.setCurrentIndex(index)
-                                    except (ValueError, AttributeError):
-                                        # If value not found, try direct index
-                                        widget.combo_box.setCurrentIndex(value)
-                                else:
+                        elif hasattr(widget, "combo_box"):
+                            # Handle combo box widgets (for switches, etc.)
+                            widget.combo_box.blockSignals(True)
+                            # Try to find the index in values
+                            if hasattr(widget, 'values') and widget.values:
+                                try:
+                                    index = widget.values.index(value)
+                                    widget.combo_box.setCurrentIndex(index)
+                                except (ValueError, AttributeError):
+                                    # If value not found, try direct index
                                     widget.combo_box.setCurrentIndex(value)
+                            else:
+                                widget.combo_box.setCurrentIndex(value)
                                 widget.combo_box.blockSignals(False)
                                 successes.append(param_name)
                         else:

@@ -40,11 +40,11 @@ import platform
 from PySide6.QtWidgets import QPushButton
 
 if platform.system() == "Windows":
-    FONT_FAMILY = "Segoe UI"
+    FONT_FAMILY = "Orbitron"
 elif platform.system() == "Darwin":
-    FONT_FAMILY = "Myriad Pro"
+    FONT_FAMILY = "Orbitron"
 else:
-    FONT_FAMILY = "Arial, sans-serif"
+    FONT_FAMILY = "Orbitron"
 
 
 def generate_polyend_sequencer_button_style(
