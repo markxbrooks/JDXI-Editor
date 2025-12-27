@@ -232,7 +232,7 @@ class MIDIConfigDialog(QDialog):
 
     def _start_fluidsynth(self) -> None:
         try:
-            import fluidsynth
+            from fluidsynth import Synth
         except Exception as ex:
             self.fs_status.setText("FluidSynth not installed: pip install pyfluidsynth")
             log.warning(f"FluidSynth import failed: {ex}")
@@ -243,14 +243,15 @@ class MIDIConfigDialog(QDialog):
             if not sf_path:
                 self.fs_status.setText("Please select a SoundFont first.")
                 return
+
             if self.fs is None:
-                self.fs = fluidsynth.Synth()
-                # On macOS, CoreAudio driver provides audio output
-                self.fs.start(driver="coreaudio")
-            # Load and select program
+                self.fs = Synth()
+                self.fs.start(driver="coreaudio")  # macOS
+
             self.sfid = self.fs.sfload(sf_path)
             self.fs.program_select(0, self.sfid, 0, 0)
             self.fs_status.setText("FluidSynth: started")
+
         except Exception as ex:
             self.fs_status.setText(f"FluidSynth error: {ex}")
             log.error(f"FluidSynth error: {ex}")
