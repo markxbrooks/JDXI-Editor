@@ -4,7 +4,7 @@ Analog Filter Section
 
 from typing import Callable
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QGroupBox
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QGroupBox, QTabWidget
 from PySide6.QtCore import Qt
 import qtawesome as qta
 
@@ -57,7 +57,39 @@ class AnalogFilterSection(QWidget):
         layout = QVBoxLayout()
         self.setLayout(layout)
 
-        # ADSR Icon Row
+        # --- Add fancy icons ---
+        adsr_icon_row_layout = self._create_adsr_icons_row()
+        layout.addLayout(adsr_icon_row_layout)
+
+        self.analog_filter_tab_widget = QTabWidget()
+
+        # --- Filter Selection Buttons ---
+        filter_row = self._create_filter_controls_row()
+        layout.addLayout(filter_row)
+        layout.addWidget(self.analog_filter_tab_widget)
+        # --- Filter Controls ---
+        self.analog_filter_tab_widget.addTab(self._create_filter_controls_group(), "Controls")
+        # --- Filter ADSR ---
+        self.analog_filter_tab_widget.addTab(self._create_filter_adsr_env_group(), "ADSR")
+        layout.addSpacing(JDXiStyle.SPACING)
+        layout.addStretch()
+
+    def _create_filter_controls_row(self) -> QHBoxLayout:
+        """Filter controls"""
+        filter_row = QHBoxLayout()
+        filter_row.addStretch(1)
+        self.filter_mode_switch = self._create_parameter_switch(
+            AddressParameterAnalog.FILTER_MODE_SWITCH, "Filter", ["BYPASS", "LPF"]
+        )
+        self.filter_mode_switch.valueChanged.connect(
+            lambda v: self._on_filter_mode_changed(v)
+        )
+        filter_row.addWidget(self.filter_mode_switch)
+        filter_row.addStretch(1)
+        return filter_row
+
+    def _create_adsr_icons_row(self) -> QHBoxLayout:
+        """ADSR Icon Row"""
         adsr_icon_row_layout = QHBoxLayout()
         for icon in [
             "mdi.triangle-wave",
@@ -73,23 +105,12 @@ class AnalogFilterSection(QWidget):
             adsr_icon_label.setPixmap(icon_pixmap)
             adsr_icon_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
             adsr_icon_row_layout.addWidget(adsr_icon_label)
-        layout.addLayout(adsr_icon_row_layout)
+        return adsr_icon_row_layout
 
-        # Filter Controls
-        filter_row = QHBoxLayout()
-        filter_row.addStretch(1)
-        self.filter_mode_switch = self._create_parameter_switch(
-            AddressParameterAnalog.FILTER_MODE_SWITCH, "Filter", ["BYPASS", "LPF"]
-        )
-        self.filter_mode_switch.valueChanged.connect(
-            lambda v: self._on_filter_mode_changed(v)
-        )
-        filter_row.addWidget(self.filter_mode_switch)
-        filter_row.addStretch(1)
-        layout.addLayout(filter_row)
-        # Controls Group
+    def _create_filter_controls_group(self) -> QGroupBox:
+        """Controls Group"""
         controls_group = QGroupBox("Controls")
-        layout.addWidget(controls_group)
+
         controls_layout = QHBoxLayout()
         controls_group.setLayout(controls_layout)
         controls_layout.addStretch()
@@ -115,11 +136,12 @@ class AnalogFilterSection(QWidget):
         controls_layout.addWidget(self.filter_widget)
         # layout.addWidget(self.filter_env_depth)
         controls_layout.addWidget(self.filter_env_velocity_sens)
-        layout.addSpacing(JDXiStyle.SPACING)
         controls_layout.addStretch()
         controls_group.setStyleSheet(JDXiStyle.ADSR_ANALOG)
+        return controls_group
 
-        # ADSR Widget
+    def _create_filter_adsr_env_group(self) -> QGroupBox:
+        """ADSR Widget"""
         self.filter_adsr_widget = ADSR(
             attack_param=AddressParameterAnalog.FILTER_ENV_ATTACK_TIME,
             decay_param=AddressParameterAnalog.FILTER_ENV_DECAY_TIME,
@@ -138,6 +160,4 @@ class AnalogFilterSection(QWidget):
         env_layout = QHBoxLayout()
         env_layout.addWidget(self.filter_adsr_widget)
         env_group.setLayout(env_layout)
-        layout.addWidget(env_group)
-
-        layout.addStretch()
+        return env_group

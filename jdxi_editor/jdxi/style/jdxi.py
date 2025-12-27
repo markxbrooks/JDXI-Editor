@@ -138,15 +138,15 @@ class JDXiStyle:
 
     # Fonts
     if platform.system() == "Windows":
-        FONT_FAMILY = "Segoe UI"
+        FONT_FAMILY = "Orbitron"
         FONT_SIZE = "10px"
         FONT_SIZE_SPLASH_SCREEN = "14px"
     elif platform.system() == "Darwin":
-        FONT_FAMILY = "Myriad Pro"
+        FONT_FAMILY = "Orbitron"  # "Myriad Pro"
         FONT_SIZE = "11px"
         FONT_SIZE_SPLASH_SCREEN = "14px"
     else:
-        FONT_FAMILY = "Arial, sans-serif"
+        FONT_FAMILY = "Orbitron"
         FONT_SIZE_SPLASH_SCREEN = "36px"
     FONT_SIZE_MAIN_TABS = "14px"
     FONT_WEIGHT_BOLD = "bold"
@@ -291,6 +291,7 @@ class JDXiStyle:
     )
 
     EDITOR_TITLE_LABEL = """
+                font-family: Orbitron, sans-serif;
                 font-size: 16px;
                 font-weight: bold;
             """
@@ -394,7 +395,7 @@ class JDXiStyle:
             QTextEdit {
                 font-family: monospace;
                 background-color: #1E1E1E;
-                color: #FFFFFF;
+                color: #FFCC00;
             }
         """
 

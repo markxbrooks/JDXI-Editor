@@ -76,15 +76,15 @@ class MidiOutHandler(MidiIOController):
                 message_list = list(message)
                 if message_list and message_list[0] == MidiConstant.START_OF_SYSEX:
                     # This is a SysEx message, try to parse it
-                try:
-                    parsed_data = self.sysex_parser.parse_bytes(bytes(message))
-                    filtered_data = {
-                        k: v for k, v in parsed_data.items() if k not in OUTBOUND_MESSAGE_IGNORED_KEYS
-                    }
-                except Exception as parse_ex:
+                    try:
+                        parsed_data = self.sysex_parser.parse_bytes(bytes(message))
+                        filtered_data = {
+                            k: v for k, v in parsed_data.items() if k not in OUTBOUND_MESSAGE_IGNORED_KEYS
+                        }
+                    except Exception as parse_ex:
                         # Only log warning for actual SysEx messages that fail to parse
-                    log.message(f"SysEx parsing failed: {parse_ex}", level=logging.WARNING)
-                    filtered_data = {}
+                        log.message(f"SysEx parsing failed: {parse_ex}", level=logging.WARNING)
+                        filtered_data = {}
                 # For non-SysEx messages, filtered_data remains empty (no warning needed)
 
                 # Log safely
@@ -93,7 +93,6 @@ class MidiOutHandler(MidiIOController):
                     level=logging.INFO,
                     silent=False
                 )
-
                 # Send the message
                 self.midi_out.send_message(message)
                 self.midi_message_outgoing.emit(message)
@@ -103,47 +102,6 @@ class MidiOutHandler(MidiIOController):
                 # Catch everything to prevent C-level crash from propagating
                 log.error(f"Unexpected error sending MIDI message: {ex}")
                 return False
-
-    def send_raw_message_old(self,
-                         message: Iterable[int]) -> bool:
-        """
-        Send a validated raw MIDI message through the output port.
-        This method logs the message, checks the validity using `validate_midi_message`,
-        and attempts to send it via the MIDI output port.
-        :param message: A MIDI message represented as a list of integers or a bytes object.
-        :type message: Union[bytes, List[int]]
-        :return: True if the message was successfully sent, False otherwise.
-        :rtype: bool
-        """
-
-        if not validate_midi_message(message):
-            log.message("MIDI message validation failed.")
-            return False
-
-        formatted_message = format_midi_message_to_hex_string(message)
-
-        if not self.midi_out.is_port_open():
-            log.message("MIDI output port is not open.")
-            return False
-        try:
-            parsed_data = self.sysex_parser.parse_bytes(bytes(message))
-            filtered_data = {
-                k: v for k, v in parsed_data.items() if k not in OUTBOUND_MESSAGE_IGNORED_KEYS
-            }
-        except Exception:
-            filtered_data = {}
-        try:
-            log.message(
-                f"[MIDI QC passed] — [ Sending message: {formatted_message} ] {filtered_data}",
-                level=logging.INFO,
-                silent=False
-            )
-            self.midi_out.send_message(message)
-            self.midi_message_outgoing.emit(message)
-            return True
-        except (ValueError, TypeError, OSError, IOError) as ex:
-            log.error(f"Error sending message: {ex}")
-            return False
 
     def send_note_on(self,
                      note: int = 60,
