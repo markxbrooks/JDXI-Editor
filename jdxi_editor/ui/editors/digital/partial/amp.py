@@ -3,7 +3,7 @@
 """
 
 from typing import Callable
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QGroupBox
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QGroupBox, QTabWidget
 from PySide6.QtCore import Qt
 import qtawesome as qta
 
@@ -17,6 +17,7 @@ from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
+from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
 class DigitalAmpSection(QWidget):
@@ -51,8 +52,34 @@ class DigitalAmpSection(QWidget):
         """Setup the amplifier section UI."""
         amp_section_layout = QVBoxLayout()
         self.setLayout(amp_section_layout)
+        amp_section_layout.setContentsMargins(5, 15, 5, 5)
+        amp_section_layout.setSpacing(5)
+        self.setStyleSheet(JDXiStyle.ADSR)
+        self.setMinimumHeight(JDXiDimensions.EDITOR_MINIMUM_HEIGHT)
 
         # Icons layout
+        icons_hlayout = self._create_icons_layout()
+        amp_section_layout.addLayout(icons_hlayout)
+
+        # Create tab widget
+        self.digital_amp_tab_widget = QTabWidget()
+        amp_section_layout.addWidget(self.digital_amp_tab_widget)
+
+        # Add Controls tab
+        amp_controls_layout = self._create_amp_controls_layout()
+        amp_controls_widget = QWidget()
+        amp_controls_widget.setLayout(amp_controls_layout)
+        self.digital_amp_tab_widget.addTab(amp_controls_widget, "Controls")
+
+        # Add ADSR tab
+        amp_adsr_group = self._create_amp_adsr_group()
+        self.digital_amp_tab_widget.addTab(amp_adsr_group, "ADSR")
+
+        amp_section_layout.addSpacing(10)
+        amp_section_layout.addStretch()
+
+    def _create_icons_layout(self) -> QHBoxLayout:
+        """Create icons layout"""
         icons_hlayout = QHBoxLayout()
         for icon in [
             "mdi.volume-variant-off",
@@ -62,20 +89,18 @@ class DigitalAmpSection(QWidget):
             "mdi.waveform",
         ]:
             icon_label = QLabel()
-            icon = qta.icon(icon, color="#666666")
-            pixmap = icon.pixmap(JDXiStyle.ICON_SIZE, JDXiStyle.ICON_SIZE)
-            icon_label.setPixmap(pixmap)
+            icon_pixmap = qta.icon(icon, color="#666666").pixmap(30, 30)
+            icon_label.setPixmap(icon_pixmap)
             icon_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
             icons_hlayout.addWidget(icon_label)
-        amp_section_layout.addLayout(icons_hlayout)
+        return icons_hlayout
 
-        # Level and velocity controls
-        controls_group = QGroupBox("Controls")
-        controls_layout = QVBoxLayout()
-        controls_group.setLayout(controls_layout)
-
+    def _create_amp_controls_layout(self) -> QVBoxLayout:
+        """Create amp controls layout"""
+        main_layout = QVBoxLayout()
+        
+        # Level and velocity controls row
         controls_row_layout = QHBoxLayout()
-        controls_layout.addLayout(controls_row_layout)
         controls_row_layout.addStretch()
 
         controls_row_layout.addWidget(
@@ -88,22 +113,42 @@ class DigitalAmpSection(QWidget):
                 AddressParameterDigitalPartial.AMP_VELOCITY, "Velocity", vertical=True
             )
         )
+        controls_row_layout.addWidget(
+            self._create_parameter_slider(
+                AddressParameterDigitalPartial.AMP_LEVEL_KEYFOLLOW, "KeyFollow", vertical=True
+            )
+        )
+        controls_row_layout.addWidget(
+            self._create_parameter_slider(
+                AddressParameterDigitalPartial.LEVEL_AFTERTOUCH, "After-touch Sensitivity", vertical=True
+            )
+        )
+        controls_row_layout.addWidget(
+            self._create_parameter_slider(
+                AddressParameterDigitalPartial.CUTOFF_AFTERTOUCH, "After-touch Cutoff", vertical=True
+            )
+        )
+        controls_row_layout.addStretch()
+        main_layout.addLayout(controls_row_layout)
+
+        # Pan slider in a separate row
         pan_row_layout = QHBoxLayout()
-        controls_layout.addLayout(pan_row_layout)
         pan_row_layout.addStretch()
-        # Create and center the pan slider
         pan_slider = self._create_parameter_slider(
             AddressParameterDigitalPartial.AMP_PAN, "Pan"
         )
         pan_slider.setValue(0)
         pan_row_layout.addWidget(pan_slider)
         pan_row_layout.addStretch()
-        amp_section_layout.addWidget(controls_group)
+        main_layout.addLayout(pan_row_layout)
+        
+        main_layout.addStretch()
+        return main_layout
 
-        # Amp envelope
+    def _create_amp_adsr_group(self) -> QGroupBox:
+        """Create amp ADSR group"""
         env_group = QGroupBox("Envelope")
         env_group.setProperty("adsr", True)
-        env_layout = QHBoxLayout()
         amp_env_adsr_vlayout = QVBoxLayout()
         env_group.setLayout(amp_env_adsr_vlayout)
 
@@ -116,7 +161,7 @@ class DigitalAmpSection(QWidget):
         icon_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
         icons_hlayout = QHBoxLayout()
         icons_hlayout.addWidget(icon_label)
-        amp_section_layout.addLayout(icons_hlayout)
+        amp_env_adsr_vlayout.addLayout(icons_hlayout)
 
         # Create ADSRWidget
         (
@@ -136,28 +181,5 @@ class DigitalAmpSection(QWidget):
             address=self.address,
         )
         self.amp_env_adsr_widget.setStyleSheet(JDXiStyle.ADSR)
-        env_layout.addLayout(amp_env_adsr_vlayout)
         amp_env_adsr_vlayout.addWidget(self.amp_env_adsr_widget)
-        amp_env_adsr_vlayout.setStretchFactor(self.amp_env_adsr_widget, 5)
-        amp_env_adsr_vlayout.addLayout(env_layout)
-        amp_section_layout.addWidget(env_group)
-        amp_section_layout.addStretch()
-
-        # Keyfollow and aftertouch
-        controls_row_layout.addWidget(
-            self._create_parameter_slider(
-                AddressParameterDigitalPartial.AMP_LEVEL_KEYFOLLOW, "KeyFollow", vertical=True
-            )
-        )
-        controls_row_layout.addWidget(
-            self._create_parameter_slider(
-                AddressParameterDigitalPartial.LEVEL_AFTERTOUCH, "After-touch Sensitivity", vertical=True
-            )
-        )
-        controls_row_layout.addWidget(
-            self._create_parameter_slider(
-                AddressParameterDigitalPartial.CUTOFF_AFTERTOUCH, "After-touch Cutoff", vertical=True
-            )
-        )
-        controls_group.setStyleSheet(JDXiStyle.ADSR)
-        controls_row_layout.addStretch()
+        return env_group

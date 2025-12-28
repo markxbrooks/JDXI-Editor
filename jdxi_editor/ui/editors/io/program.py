@@ -911,7 +911,7 @@ class ProgramEditor(BasicEditor):
         :param synth_type: str (optional), discarded for now
         :return: None
         """
-        self.program_name = program_name
+        self.program_name = program_name or "Untitled Program"
         if self.file_label:
             self.file_label.setText(program_name)
         else:
@@ -1078,9 +1078,12 @@ class ProgramEditor(BasicEditor):
                     # Check database directly using SQLite
                     # Only add programs that exist in the database (single source of truth)
                     existing_program = db.get_program_by_id(program_id)
-                    if existing_program:
-                        # Program exists in database, add it with real name
-                        program_name = existing_program.name
+                    if not existing_program:
+                        # If program doesn't exist in database, skip it (no placeholders)
+                        continue
+                    
+                    # Program exists in database, add it with real name
+                    program_name = existing_program.name
                     if search_text and search_text.lower() not in program_name.lower():
                         continue
                     index = len(self.programs)
@@ -1088,7 +1091,6 @@ class ProgramEditor(BasicEditor):
                         f"{program_id} - {program_name}", index
                     )
                     self.programs[program_name] = index
-                    # If program doesn't exist in database, skip it (no placeholders)
 
     def _create_user_programs_tab(self) -> QWidget:
         """
@@ -1120,6 +1122,9 @@ class ProgramEditor(BasicEditor):
             "ID", "Name", "Genre", "Bank", "PC", "MSB", "LSB",
             "Digital 1", "Digital 2", "Analog", "Drums", "Play"
         ])
+        
+        # Apply custom styling
+        self.user_programs_table.setStyleSheet(self._get_table_style())
         
         # Enable sorting
         self.user_programs_table.setSortingEnabled(True)
@@ -1183,6 +1188,82 @@ class ProgramEditor(BasicEditor):
         
         log.message(f"✅ Returning User Programs tab widget (size: {widget.size()})")
         return widget
+    
+    def _get_table_style(self) -> str:
+        """
+        Get custom styling for tables with rounded corners and charcoal embossed cells.
+        
+        :return: str CSS style string
+        """
+        return """
+            QTableWidget {
+                background-color: #1a1a1a;
+                border: 1px solid #333333;
+                border-radius: 8px;
+                gridline-color: #2a2a2a;
+                color: #ffffff;
+                selection-background-color: #3a3a3a;
+                selection-color: #ffffff;
+            }
+            
+            QTableWidget::item {
+                background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                    stop:0 #2a2a2a,
+                    stop:0.5 #252525,
+                    stop:1 #1f1f1f);
+                border: 1px solid #1a1a1a;
+                border-radius: 4px;
+                padding: 4px;
+                color: #ffffff;
+            }
+            
+            QTableWidget::item:selected {
+                background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                    stop:0 #3a3a3a,
+                    stop:0.5 #353535,
+                    stop:1 #2f2f2f);
+                border: 1px solid #4a4a4a;
+            }
+            
+            QTableWidget::item:hover {
+                background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                    stop:0 #323232,
+                    stop:0.5 #2d2d2d,
+                    stop:1 #282828);
+                border: 1px solid #3a3a3a;
+            }
+            
+            QTableWidget::item:focus {
+                background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                    stop:0 #3a3a3a,
+                    stop:0.5 #353535,
+                    stop:1 #2f2f2f);
+                border: 1px solid #ff2200;
+            }
+            
+            QHeaderView::section {
+                background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                    stop:0 #2a2a2a,
+                    stop:1 #1f1f1f);
+                color: #ffffff;
+                padding: 6px;
+                border: 1px solid #1a1a1a;
+                border-radius: 4px;
+                font-weight: bold;
+            }
+            
+            QHeaderView::section:hover {
+                background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                    stop:0 #323232,
+                    stop:1 #272727);
+            }
+            
+            QTableCornerButton::section {
+                background-color: #1a1a1a;
+                border: 1px solid #333333;
+                border-radius: 8px 0 0 0;
+            }
+        """
     
     def _populate_user_programs_table(self, search_text: str = "") -> None:
         """
@@ -1382,6 +1463,9 @@ class ProgramEditor(BasicEditor):
             "ID", "Name", "Description", "Programs"
         ])
         
+        # Apply custom styling
+        self.playlist_table.setStyleSheet(self._get_table_style())
+        
         # Enable sorting
         self.playlist_table.setSortingEnabled(True)
         
@@ -1579,13 +1663,16 @@ class ProgramEditor(BasicEditor):
         
         if col == 1:  # Name column
             if db.update_playlist(playlist_id, name=new_value):
-                log.message(f"✅ Updated playlist {playlist_id} name to: {new_value}")
-                # Update stored playlist data
-                playlist["name"] = new_value
-                for c in range(4):
-                    table_item = self.playlist_table.item(row, c)
-                    if table_item:
-                        table_item.setData(Qt.ItemDataRole.UserRole, playlist)
+                try:
+                    log.message(f"✅ Updated playlist {playlist_id} name to: {new_value}")
+                    # Update stored playlist data
+                    playlist["name"] = new_value
+                    for c in range(4):
+                        table_item = self.playlist_table.item(row, c)
+                        if table_item:
+                            table_item.setData(Qt.ItemDataRole.UserRole, playlist)
+                except Exception as ex:
+                    log.error(f"Error {ex} occurred updating playlist")
             else:
                 log.error(f"❌ Failed to update playlist {playlist_id} name")
                 # Revert the change
@@ -1593,16 +1680,19 @@ class ProgramEditor(BasicEditor):
                 item.setText(playlist.get("name", ""))
                 self.playlist_table.blockSignals(False)
         elif col == 2:  # Description column
-            if db.update_playlist(playlist_id, description=new_value if new_value else None):
-                log.message(f"✅ Updated playlist {playlist_id} description")
-                # Update stored playlist data
-                playlist["description"] = new_value if new_value else None
+            value = new_value or ""  # never pass None
+            if db.update_playlist(playlist_id, description=value):
+                log.message(f"Updated playlist {playlist_id} description")
+                playlist["description"] = value
                 for c in range(4):
                     table_item = self.playlist_table.item(row, c)
                     if table_item:
                         table_item.setData(Qt.ItemDataRole.UserRole, playlist)
             else:
-                log.error(f"❌ Failed to update playlist {playlist_id} description")
+                log.error(f"Failed to update playlist {playlist_id} description")
+                self.playlist_table.blockSignals(True)
+                item.setText(playlist.get("description", "") or "")
+                self.playlist_table.blockSignals(False)
     
     def _on_playlist_selected(self, item: QTableWidgetItem) -> None:
         """
@@ -1663,6 +1753,9 @@ class ProgramEditor(BasicEditor):
         self.playlist_programs_table.setHorizontalHeaderLabels([
             "Bank", "Number", "Program Name", "MIDI File Name", "Cheat Preset", "Play"
         ])
+        
+        # Apply custom styling
+        self.playlist_programs_table.setStyleSheet(self._get_table_style())
         
         # Enable sorting
         self.playlist_programs_table.setSortingEnabled(True)

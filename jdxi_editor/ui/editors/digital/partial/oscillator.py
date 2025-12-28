@@ -13,6 +13,7 @@ from PySide6.QtWidgets import (
     QGroupBox,
     QGridLayout,
     QComboBox,
+    QTabWidget,
 )
 
 from jdxi_editor.jdxi.style import JDXiStyle
@@ -28,9 +29,7 @@ from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from jdxi_editor.ui.widgets.button.waveform.waveform import WaveformButton
 from jdxi_editor.ui.widgets.pitch.envelope import PitchEnvelopeWidget
-
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel
-
+from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 from jdxi_editor.ui.widgets.slider import Slider
 
 
@@ -64,9 +63,38 @@ class DigitalOscillatorSection(QWidget):
     def setup_ui(self):
         """Setup the oscillator section UI."""
         layout = QVBoxLayout()
+        layout.setContentsMargins(1, 1, 1, 1)
         self.setLayout(layout)
+        self.setStyleSheet(JDXiStyle.ADSR)
 
         # Top row: Waveform buttons and variation switch
+        layout.addLayout(self.create_waveform_buttons())
+
+        # Create tab widget
+        self.oscillator_tab_widget = QTabWidget()
+        layout.addWidget(self.oscillator_tab_widget)
+
+        # Tuning and Pitch tab (combines Tuning and Pitch Envelope like Analog)
+        tuning_pitch_widget = self._create_tuning_pitch_widget()
+        self.oscillator_tab_widget.addTab(tuning_pitch_widget, "Tuning and Pitch")
+
+        # Pulse Width tab
+        pw_group = self._create_pw_group()
+        self.oscillator_tab_widget.addTab(pw_group, "Pulse Width")
+
+        # PCM Wave tab (unique to Digital)
+        pcm_group = self._create_pcm_group()
+        self.oscillator_tab_widget.addTab(pcm_group, "PCM Wave")
+
+        layout.addStretch()
+
+        # Initialize states
+        self._update_pw_controls_enabled_state(DigitalOscWave.SAW)
+        self._update_pcm_controls_enabled_state(DigitalOscWave.PCM)
+        self._update_supersaw_controls_enabled_state(DigitalOscWave.PCM)
+
+    def create_waveform_buttons(self) -> QHBoxLayout:
+        """Create waveform buttons layout"""
         top_row = QHBoxLayout()
         top_row.addStretch()
         wave_layout = QHBoxLayout()
@@ -101,9 +129,23 @@ class DigitalOscillatorSection(QWidget):
         )
         top_row.addWidget(self.wave_variation_switch)
         top_row.addStretch()
-        layout.addLayout(top_row)
+        return top_row
 
-        # Tuning controls
+    def _create_tuning_pitch_widget(self) -> QWidget:
+        """Create tuning and pitch widget combining Tuning and Pitch Envelope"""
+        pitch_layout = QHBoxLayout()
+        pitch_layout.addStretch()
+        pitch_layout.addWidget(self._create_tuning_group())
+        pitch_layout.addStretch()
+        pitch_layout.addWidget(self._create_pitch_env_group())
+        pitch_layout.addStretch()
+        pitch_widget = QWidget()
+        pitch_widget.setLayout(pitch_layout)
+        pitch_widget.setMinimumHeight(JDXiDimensions.EDITOR_MINIMUM_HEIGHT)
+        return pitch_widget
+
+    def _create_tuning_group(self) -> QGroupBox:
+        """Create tuning group"""
         tuning_group = QGroupBox("Tuning")
         tuning_layout = QHBoxLayout()
         tuning_layout.addStretch()
@@ -124,11 +166,32 @@ class DigitalOscillatorSection(QWidget):
         tuning_layout.addWidget(self.super_saw_detune)
         tuning_layout.addStretch()
         tuning_group.setStyleSheet(JDXiStyle.ADSR)
-        layout.addWidget(tuning_group)
+        return tuning_group
 
-        # Pulse Width controls
+    def _create_pitch_env_group(self) -> QGroupBox:
+        """Create pitch envelope group"""
+        pitch_env_group = QGroupBox("Pitch Envelope")
+        pitch_env_layout = QVBoxLayout()
+        pitch_env_group.setLayout(pitch_env_layout)
+        # Pitch Env Widget
+        self.pitch_env_widget = PitchEnvelopeWidget(
+            attack_param=AddressParameterDigitalPartial.OSC_PITCH_ENV_ATTACK_TIME,
+            decay_param=AddressParameterDigitalPartial.OSC_PITCH_ENV_DECAY_TIME,
+            depth_param=AddressParameterDigitalPartial.OSC_PITCH_ENV_DEPTH,
+            midi_helper=self.midi_helper,
+            create_parameter_slider=self._create_parameter_slider,
+            controls=self.controls,
+            address=self.address,
+        )
+        self.pitch_env_widget.setStyleSheet(JDXiStyle.ADSR)
+        pitch_env_layout.addWidget(self.pitch_env_widget)
+        return pitch_env_group
+
+    def _create_pw_group(self) -> QGroupBox:
+        """Create pulse width group"""
         pw_group = QGroupBox("Pulse Width")
         pw_layout = QVBoxLayout()
+        pw_layout.addStretch()
         pw_group.setLayout(pw_layout)
 
         self.pw_shift_slider = self._create_parameter_slider(
@@ -137,23 +200,26 @@ class DigitalOscillatorSection(QWidget):
         )
         self.pw_shift_slider.setStyleSheet(JDXiStyle.ADSR)
         pwm_widget_layout = QHBoxLayout()
-        pw_layout.addLayout(pwm_widget_layout)
         pwm_widget_layout.addStretch()
-        self.pwm_widget = PWMWidget(pulse_width_param=AddressParameterDigitalPartial.OSC_PULSE_WIDTH,
-                                    mod_depth_param=AddressParameterDigitalPartial.OSC_PULSE_WIDTH_MOD_DEPTH,
-                                    midi_helper=self.midi_helper,
-                                    address=self.address,
-                                    create_parameter_slider=self._create_parameter_slider,
-                                    controls=self.controls)
+        self.pwm_widget = PWMWidget(
+            pulse_width_param=AddressParameterDigitalPartial.OSC_PULSE_WIDTH,
+            mod_depth_param=AddressParameterDigitalPartial.OSC_PULSE_WIDTH_MOD_DEPTH,
+            midi_helper=self.midi_helper,
+            address=self.address,
+            create_parameter_slider=self._create_parameter_slider,
+            controls=self.controls
+        )
         self.pwm_widget.setStyleSheet(JDXiStyle.ADSR)
         self.pwm_widget.setMaximumHeight(JDXiStyle.PWM_WIDGET_HEIGHT)
         pwm_widget_layout.addWidget(self.pwm_widget)
-
         pwm_widget_layout.addWidget(self.pw_shift_slider)
         pwm_widget_layout.addStretch()
-        layout.addWidget(pw_group)
+        pw_layout.addLayout(pwm_widget_layout)
+        pw_layout.addStretch()
+        return pw_group
 
-        # PCM Wave controls
+    def _create_pcm_group(self) -> QGroupBox:
+        """Create PCM wave group"""
         pcm_group = QGroupBox("PCM Wave")
         pcm_layout = QGridLayout()
         pcm_group.setLayout(pcm_layout)
@@ -178,30 +244,8 @@ class DigitalOscillatorSection(QWidget):
         pcm_layout.addWidget(QLabel("Category"), 0, 2)
         pcm_layout.addWidget(self.pcm_category_combo, 0, 3)
         pcm_layout.addWidget(self.pcm_wave_number, 0, 4)
-        pcm_layout.setColumnStretch(5, 1)  # left side stretches
-        layout.addWidget(pcm_group)
-
-        # Pitch Envelope
-        pitch_env_group = QGroupBox("Pitch Envelope")
-        pitch_env_layout = QVBoxLayout()
-        pitch_env_group.setLayout(pitch_env_layout)
-        # Pitch Env Widget
-        self.pitch_env_widget = PitchEnvelopeWidget(
-            attack_param=AddressParameterDigitalPartial.OSC_PITCH_ENV_ATTACK_TIME,
-            decay_param=AddressParameterDigitalPartial.OSC_PITCH_ENV_DECAY_TIME,
-            depth_param=AddressParameterDigitalPartial.OSC_PITCH_ENV_DEPTH,
-            midi_helper=self.midi_helper,
-            create_parameter_slider=self._create_parameter_slider,
-            controls=self.controls,
-            address=self.address,
-        )
-        self.pitch_env_widget.setStyleSheet(JDXiStyle.ADSR)
-        pitch_env_layout.addWidget(self.pitch_env_widget)
-        layout.addWidget(pitch_env_group)
-        # Initialize states
-        self._update_pw_controls_enabled_state(DigitalOscWave.SAW)
-        self._update_pcm_controls_enabled_state(DigitalOscWave.PCM)
-        self._update_supersaw_controls_enabled_state(DigitalOscWave.PCM)
+        pcm_layout.setColumnStretch(5, 1)  # right side stretches
+        return pcm_group
 
     def _on_waveform_selected(self, waveform: DigitalOscWave):
         """Handle waveform button clicks"""
