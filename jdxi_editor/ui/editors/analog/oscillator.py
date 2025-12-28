@@ -73,7 +73,6 @@ class AnalogOscillatorSection(QWidget):
         pitch_layout = QHBoxLayout()
         pitch_layout.addStretch()
         pitch_layout.addWidget(self.create_tuning_group())
-        pitch_layout.addStretch()
         pitch_layout.addWidget(self.create_pitch_env_group())
         pitch_layout.addStretch()
         pitch_widget = QWidget()
