@@ -62,8 +62,10 @@ def midi_to_time_normalized(midi_value: int, max_time: float = 10.0) -> float:
 class DrumTVFEnvPlot(QWidget):
     """Plot widget for drum TVF envelope visualization."""
     
-    def __init__(self, width: int = JDXiStyle.ADSR_PLOT_WIDTH, height: int = JDXiStyle.ADSR_PLOT_HEIGHT,
-                 envelope: dict = None, parent: QWidget = None):
+    def __init__(self, width: int = JDXiStyle.ADSR_PLOT_WIDTH,
+                 height: int = JDXiStyle.ADSR_PLOT_HEIGHT,
+                 envelope: dict = None,
+                 parent: QWidget = None):
         super().__init__(parent)
         self.enabled = True
         self.envelope = envelope or {}
@@ -270,15 +272,15 @@ class DrumTVFSection(QWidget):
             "v_sens": 64,
             "t1_v_sens": 64,
             "t4_v_sens": 64,
-            "time_1": 64,
-            "time_2": 64,
-            "time_3": 64,
-            "time_4": 64,
-            "level_0": 64,
-            "level_1": 64,
-            "level_2": 64,
-            "level_3": 64,
-            "level_4": 64,
+            "time_1": 21,
+            "time_2": 16,
+            "time_3": 40,
+            "time_4": 25,
+            "level_0": 0,
+            "level_1": 127,
+            "level_2": 70,
+            "level_3": 70,
+            "level_4": 0,
         }
         self.setup_ui()
 
