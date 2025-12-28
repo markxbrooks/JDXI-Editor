@@ -120,5 +120,5 @@ class JDXiDimensions:
     EFFECTS_WIDTH = 80
     EFFECTS_HEIGHT = 120
 
-    SCROLL_AREA_HEIGHT = 220
-    DRUM_PARTIAL_TAB_MIN_WIDTH = 900  # Minimum width for drum partial tabs to match WMT width
+    SCROLL_AREA_HEIGHT = 100
+    DRUM_PARTIAL_TAB_MIN_WIDTH = 400  # Minimum width for drum partial tabs to match WMT width

@@ -261,15 +261,15 @@ class DrumPitchEnvSection(QWidget):
             "v_sens": 64,
             "t1_v_sens": 64,
             "t4_v_sens": 64,
-            "time_1": 64,
-            "time_2": 64,
-            "time_3": 64,
-            "time_4": 64,
-            "level_0": 64,
+            "time_1": 10,
+            "time_2": 10,
+            "time_3": 34,
+            "time_4": 9,
+            "level_0": 0,
             "level_1": 64,
-            "level_2": 64,
-            "level_3": 64,
-            "level_4": 64,
+            "level_2": 16,
+            "level_3": 15,
+            "level_4": -25,
         }
         self.setup_ui()
 

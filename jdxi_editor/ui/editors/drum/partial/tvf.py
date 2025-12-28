@@ -307,17 +307,17 @@ class DrumTVFSection(QWidget):
         self.tvf_tab_widget = QTabWidget()
 
         # --- Basic TVF controls and envelope controls ---
-        self.tvf_tab_widget.addTab(self._create_tvf_basic_group(), "TVF Basic Controls")
+        self.tvf_tab_widget.addTab(self._create_tvf_basic_group(), "Controls")
 
         # --- TVF Envelope Controls
-        self.tvf_tab_widget.addTab(self._create_tvf_env_group(), "TVF Envelope Controls")
+        self.tvf_tab_widget.addTab(self._create_tvf_env_group(), "Envelope")
 
         main_layout.addWidget(self.tvf_tab_widget)
         main_layout.addStretch()
 
     def _create_tvf_env_group(self) -> QGroupBox:
         """Envelope controls group"""
-        envelope_group = QGroupBox("TVF Envelope Controls")
+        envelope_group = QGroupBox("Envelope")
         envelope_group_layout = QHBoxLayout()
         #  --- Left side: Envelope sliders  ---
         envelope_slider_layout = QGridLayout()
@@ -473,7 +473,7 @@ class DrumTVFSection(QWidget):
 
     def _create_tvf_basic_group(self) -> QGroupBox:
         """Basic TVF controls group"""
-        basic_tvf_group = QGroupBox("TVF Basic")
+        basic_tvf_group = QGroupBox("Controls")
         basic_tvf_layout = QFormLayout()
         basic_tvf_group.setLayout(basic_tvf_layout)
 
