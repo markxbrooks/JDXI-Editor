@@ -5,6 +5,7 @@ The `DrumPartialEditor` class allows users to modify various parameters related 
 drum sounds, including pitch, output, TVF (Time Variant Filter), pitch envelope,
 WMT (Wave Modulation Time), and TVA (Time Variant Amplitude) settings.
 """
+from functools import partial
 from typing import Dict, Optional
 
 from PySide6.QtWidgets import (
@@ -21,7 +22,7 @@ from jdxi_editor.midi.data.parameter.drum.addresses import DRUM_GROUP_MAP
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.drum.partial.output import DrumOutputSection
-from jdxi_editor.ui.editors.drum.partial.pitch import DrumPitchSection
+from jdxi_editor.ui.editors.drum.partial.partial import DrumPartialSection
 from jdxi_editor.ui.editors.drum.partial.pitch_env import DrumPitchEnvSection
 from jdxi_editor.ui.editors.drum.partial.tva import DrumTVASection
 from jdxi_editor.ui.editors.drum.partial.tvf import DrumTVFSection
@@ -71,17 +72,17 @@ class DrumPartialEditor(PartialEditor):
         tab_widget.setMinimumWidth(JDXiDimensions.DRUM_PARTIAL_TAB_MIN_WIDTH)
         scroll_layout.addWidget(tab_widget)
 
-        tab_pitch = QWidget()
-        tab_pitch_layout = QVBoxLayout(tab_pitch)
-        tab_widget.addTab(tab_pitch, "Pitch")
+        tab_partial = QWidget()
+        tab_partial_layout = QVBoxLayout(tab_partial)
+        tab_widget.addTab(tab_partial, "Partial")
 
-        pitch_group = DrumPitchSection(
+        partial_group = DrumPartialSection(
             controls=self.controls,
             create_parameter_combo_box=self._create_parameter_combo_box,
             create_parameter_slider=self._create_parameter_slider,
             midi_helper=self.midi_helper,
         )
-        tab_pitch_layout.addWidget(pitch_group)
+        tab_partial_layout.addWidget(partial_group)
 
         tab_wmt = QWidget()
         tab_wmt_layout = QVBoxLayout(tab_wmt)

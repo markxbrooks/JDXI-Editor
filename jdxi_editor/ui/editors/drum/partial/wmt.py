@@ -33,6 +33,7 @@ Example:
     editor.show()
 """
 import re
+from typing import Callable, Any
 
 from PySide6.QtWidgets import (
     QGroupBox,
@@ -149,7 +150,7 @@ class DrumWMTSection(QWidget):
         wmt4_tab.setLayout(wmt4_layout)
         scrolled_layout.addWidget(wmt_group)
 
-    def _create_wmt_layout(self, wmt_index: int) -> QFormLayout:
+    def _create_wmt_layout(self, wmt_index: int) -> QHBoxLayout:
         """
         _create_wmt_layout
 
@@ -157,18 +158,44 @@ class DrumWMTSection(QWidget):
         :return: QFormLayout
         """
         main_row_hlayout = QHBoxLayout()
-        main_row_hlayout.addStretch()
-        form_layout = QFormLayout()
-        main_row_hlayout.addLayout(form_layout)
         prefix = f"WMT{wmt_index}_"
 
         def p(name):  # helper to get DrumPartialParameter by name
             return getattr(DrumPartialParam, prefix + name)
+
+        self.wmt_controls_tab_widget = QTabWidget()
+        main_row_hlayout.addWidget(self.wmt_controls_tab_widget)
+        self.wmt_controls_tab_widget.addTab(self._create_wmt_controls_group(p), "Controls")
+        self.wmt_controls_tab_widget.addTab(self._create_wave_combo_group(p, wmt_index), "Waves")
+        self.wmt_controls_tab_widget.addTab(self._create_fxm_group(p), "FXM")
+        self.wmt_controls_tab_widget.addTab(self._create_tuning_group(p), "Tuning")
+        self.wmt_controls_tab_widget.addTab(self._create_wmt_pan_group(p), "Pan")
+        self.wmt_controls_tab_widget.addTab(self._create_adsr_widget(p), "ADSR Envelope")
+        return main_row_hlayout
+
+    def _create_wmt_controls_group(self, p: Callable[[Any], Any]):
+        wmt_controls_group = QGroupBox()
+        form_layout = QFormLayout()
+        wmt_controls_group.setLayout(form_layout)
         self.wave_switch = self._create_parameter_switch(
             p("WAVE_SWITCH"), "Wave Switch", ["OFF", "ON"]
         )
         form_layout.addWidget(self.wave_switch)
+        form_layout.addRow(
+            self._create_parameter_combo_box(
+                p("WAVE_GAIN"), "Wave Gain", ["-6", "0", "6", "12"], [0, 1, 2, 3]
+            )
+        )
+        form_layout.addRow(
+            self._create_parameter_slider(p("WAVE_TEMPO_SYNC"), "Wave Tempo Sync")
+        )
+        return wmt_controls_group
 
+    def _create_wave_combo_group(self, p: Callable[[Any], Any], wmt_index: int):
+        """create wave combo"""
+        wmt_wave_group = QGroupBox()
+        form_layout = QFormLayout()
+        wmt_wave_group.setLayout(form_layout)
         rm_wave_groups = [
             "",  # Empty string for the first item
             # === Drum Machine Sources ===
@@ -343,34 +370,31 @@ class DrumWMTSection(QWidget):
         r_search_row.addStretch()
         form_layout.addRow(r_search_row)
         form_layout.addRow(r_wave_combo)
+        return wmt_wave_group
 
+    def _create_fxm_group(self, p: Callable[[Any], Any]):
+        """create fxm group"""
+        wmt_fxm_group = QGroupBox("FXM")
+        form_layout = QFormLayout()
+        wmt_fxm_group.setLayout(form_layout)
         form_layout.addRow(
             self._create_parameter_combo_box(
-                p("WAVE_GAIN"), "Wave Gain", ["-6", "0", "6", "12"], [0, 1, 2, 3]
-            )
-        )
-        form_layout.addRow(
-            self._create_parameter_combo_box(
-                p("WAVE_GAIN"), "Wave FXM Switch", ["OFF", "ON"], [0, 1]
+                p("WAVE_FXM_SWITCH"), "Wave FXM Switch", ["OFF", "ON"], [0, 1]
             )
         )  # If this is correct — maybe it’s a typo?
-
-        # Sliders
         form_layout.addRow(
             self._create_parameter_slider(p("WAVE_FXM_COLOR"), "Wave FXM Color")
         )
         form_layout.addRow(
             self._create_parameter_slider(p("WAVE_FXM_DEPTH"), "Wave FXM Depth")
         )
-        form_layout.addRow(
-            self._create_parameter_slider(p("WAVE_TEMPO_SYNC"), "Wave Tempo Sync")
-        )
-        form_layout.addRow(
-            self._create_parameter_slider(p("WAVE_COARSE_TUNE"), "Wave Coarse Tune")
-        )
-        form_layout.addRow(
-            self._create_parameter_slider(p("WAVE_FINE_TUNE"), "Wave Fine Tune")
-        )
+        return wmt_fxm_group
+
+    def _create_wmt_pan_group(self, p: Callable[[Any], Any]):
+        """create wmt pan"""
+        wmt_pan_group = QGroupBox("Pan")
+        form_layout = QFormLayout()
+        wmt_pan_group.setLayout(form_layout)
         form_layout.addRow(self._create_parameter_slider(p("WAVE_PAN"), "Wave Pan"))
 
         # More combo boxes
@@ -390,48 +414,34 @@ class DrumWMTSection(QWidget):
                 [0, 1, 2],
             )
         )
+        return wmt_pan_group
 
-        # More sliders
-        """
-        layout.addRow(self._create_parameter_slider(p("WAVE_LEVEL"), "Wave Level"))
-        layout.addRow(
-            self._create_parameter_slider(
-                p("VELOCITY_RANGE_LOWER"), "Velocity Range Lower"
-            )
-        )
-        layout.addRow(
-            self._create_parameter_slider(
-                p("VELOCITY_RANGE_UPPER"), "Velocity Range Upper"
-            )
-        )
-        layout.addRow(
-            self._create_parameter_slider(
-                p("VELOCITY_FADE_WIDTH_LOWER"), "Velocity Fade Width Lower"
-            )
-        )
-        layout.addRow(
-            self._create_parameter_slider(
-                p("VELOCITY_FADE_WIDTH_UPPER"), "Velocity Fade Width Upper"
-            )
-        )"""
-        try:
+    def _create_adsr_widget(self, p: Callable[[Any], Any]) -> WMTEnvelopeWidget:
+        adsr_widget = WMTEnvelopeWidget(fade_lower_param=p("VELOCITY_FADE_WIDTH_LOWER"),
+                                        range_lower_param=p("VELOCITY_RANGE_LOWER"),
+                                        range_upper_param=p("VELOCITY_RANGE_UPPER"),
+                                        depth_param=p("WAVE_LEVEL"),
+                                        fade_upper_param=p("VELOCITY_FADE_WIDTH_UPPER"),
+                                        create_parameter_slider=self._create_parameter_slider,
+                                        controls=self.controls,
+                                        midi_helper=self.midi_helper,
+                                        address=self.address,
+                                        )
+        adsr_widget.setStyleSheet(JDXiStyle.ADSR)
+        return adsr_widget
 
-            adsr_widget = WMTEnvelopeWidget(fade_lower_param=p("VELOCITY_FADE_WIDTH_LOWER"),
-                                            range_lower_param=p("VELOCITY_RANGE_LOWER"),
-                                            range_upper_param=p("VELOCITY_RANGE_UPPER"),
-                                            depth_param=p("WAVE_LEVEL"),
-                                            fade_upper_param=p("VELOCITY_FADE_WIDTH_UPPER"),
-                                            create_parameter_slider=self._create_parameter_slider,
-                                            controls=self.controls,
-                                            midi_helper=self.midi_helper,
-                                            address=self.address,
-                                            )
-            adsr_widget.setStyleSheet(JDXiStyle.ADSR)
-            form_layout.addRow(adsr_widget)
-        except Exception as ex:
-            log.error(f"WMT{wmt_index}: Error creating ADSR:", exception=ex)
-        main_row_hlayout.addStretch()
-        return main_row_hlayout
+    def _create_tuning_group(self, p: Callable[[Any], Any]):
+        """ Tuning Group"""
+        tuning_group = QGroupBox("Tuning")
+        form_layout = QFormLayout()
+        tuning_group.setLayout(form_layout)
+        form_layout.addRow(
+            self._create_parameter_slider(p("WAVE_COARSE_TUNE"), "Wave Coarse Tune")
+        )
+        form_layout.addRow(
+            self._create_parameter_slider(p("WAVE_FINE_TUNE"), "Wave Fine Tune")
+        )
+        return tuning_group
 
     def _populate_l_waves(self, wmt_index):
         try:
