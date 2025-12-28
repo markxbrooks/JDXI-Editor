@@ -2,6 +2,10 @@
 Analog LFO Section
 """
 
+from typing import Dict
+from PySide6.QtWidgets import (QGridLayout,
+                               QSizePolicy, QButtonGroup, QTabWidget
+                               )
 
 from typing import Callable
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton
@@ -10,18 +14,189 @@ import qtawesome as qta
 
 from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
 from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
+
+
+class AnalogLFOSectionNew(QWidget):
+    """Analog LFO Section (responsive layout version)"""
+
+    SPACING = 8
+    MARGIN = 10
+    MIN_CONTROL_WIDTH = 56
+    MIN_CONTROL_HEIGHT = 28
+
+    def __init__(
+            self,
+            create_parameter_slider: Callable,
+            create_parameter_switch: Callable,
+            create_parameter_combo_box: Callable,
+            on_lfo_shape_changed: Callable,
+            lfo_shape_buttons: Dict[int, QPushButton],
+    ):
+        super().__init__()
+
+        self._create_parameter_slider = create_parameter_slider
+        self._create_parameter_switch = create_parameter_switch
+        self._create_parameter_combo_box = create_parameter_combo_box
+        self._on_lfo_shape_changed = on_lfo_shape_changed
+        self.lfo_shape_buttons = lfo_shape_buttons
+
+        self.setStyleSheet(JDXiStyle.ADSR_ANALOG)
+
+        self._init_ui()
+
+    # ------------------------------------------------------------------
+    # UI Construction
+    # ------------------------------------------------------------------
+    def _init_ui(self):
+        layout = QGridLayout(self)
+        layout.setSpacing(self.SPACING)
+        layout.setContentsMargins(self.MARGIN, self.MARGIN, self.MARGIN, self.MARGIN)
+
+        row = 0
+
+        # LFO Shape Row
+        layout.addLayout(self._create_shape_row(), row, 0, 1, 1)
+        row += 1
+
+        # Tempo Sync Row
+        layout.addLayout(self._create_tempo_sync_controls(), row, 0, 1, 1)
+        row += 1
+
+        # Rate / Fade Row
+        layout.addLayout(self._create_lfo_fade_rate_controls_row_layout(), row, 0, 1, 1)
+        row += 1
+
+        # Depth Row
+        layout.addLayout(self._create_lfo_depth_controls(), row, 0, 1, 1)
+
+    # ------------------------------------------------------------------
+    # Shape Controls
+    # ------------------------------------------------------------------
+    def _create_shape_row(self) -> QHBoxLayout:
+        shape_layout = QHBoxLayout()
+        shape_layout.setSpacing(self.SPACING)
+
+        shape_layout.addWidget(QLabel("Shape"))
+
+        shapes = [
+            ("TRI", "mdi.triangle-wave", 0),
+            ("SIN", "mdi.sine-wave", 1),
+            ("SAW", "mdi.sawtooth-wave", 2),
+            ("SQR", "mdi.square-wave", 3),
+            ("S&H", "mdi.waveform", 4),
+            ("RND", "mdi.wave", 5),
+        ]
+
+        button_group = QButtonGroup(self)
+        button_group.setExclusive(True)
+
+        for label, icon_name, value in shapes:
+            btn = QPushButton(label)
+            btn.setCheckable(True)
+            btn.setProperty("value", value)
+            btn.setIcon(qta.icon(icon_name, color="#FFFFFF", scale_factor=0.9))
+            btn.setStyleSheet(JDXiStyle.BUTTON_RECT_ANALOG)
+
+            btn.setMinimumSize(
+                QSize(self.MIN_CONTROL_WIDTH, self.MIN_CONTROL_HEIGHT)
+            )
+            btn.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
+
+            btn.clicked.connect(lambda _, v=value: self._on_lfo_shape_changed(v))
+
+            button_group.addButton(btn)
+            self.lfo_shape_buttons[value] = btn
+            shape_layout.addWidget(btn)
+
+        shape_layout.addStretch()
+        return shape_layout
+
+    # ------------------------------------------------------------------
+    # Depth Controls
+    # ------------------------------------------------------------------
+    def _create_lfo_depth_controls(self) -> QHBoxLayout:
+        layout = QHBoxLayout()
+        layout.setSpacing(self.SPACING)
+
+        controls = [
+            (AddressParameterAnalog.LFO_PITCH_DEPTH, "Pitch Depth"),
+            (AddressParameterAnalog.LFO_PITCH_MODULATION_CONTROL, "Pitch Modulation"),
+            (AddressParameterAnalog.LFO_FILTER_DEPTH, "Filter Depth"),
+            (AddressParameterAnalog.LFO_FILTER_MODULATION_CONTROL, "Filter Modulation"),
+            (AddressParameterAnalog.LFO_AMP_DEPTH, "Amp Depth"),
+            (AddressParameterAnalog.LFO_AMP_MODULATION_CONTROL, "Amp Modulation"),
+        ]
+
+        for address, label in controls:
+            control = self._create_parameter_slider(address, label, vertical=True)
+            control.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+            layout.addWidget(control)
+
+        return layout
+
+    # ------------------------------------------------------------------
+    # Rate / Fade Controls
+    # ------------------------------------------------------------------
+    def _create_lfo_fade_rate_controls_row_layout(self) -> QHBoxLayout:
+        layout = QHBoxLayout()
+        layout.setSpacing(self.SPACING)
+
+        controls = [
+            (AddressParameterAnalog.LFO_RATE, "Rate"),
+            (AddressParameterAnalog.LFO_RATE_MODULATION_CONTROL, "Rate Modulation"),
+            (AddressParameterAnalog.LFO_FADE_TIME, "Fade Time"),
+        ]
+
+        for address, label in controls:
+            control = self._create_parameter_slider(address, label, vertical=True)
+            control.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+            layout.addWidget(control)
+
+        return layout
+
+    # ------------------------------------------------------------------
+    # Sync Controls
+    # ------------------------------------------------------------------
+    def _create_tempo_sync_controls(self) -> QHBoxLayout:
+        layout = QHBoxLayout()
+        layout.setSpacing(self.SPACING)
+
+        self.lfo_sync_switch = self._create_parameter_switch(
+            AddressParameterAnalog.LFO_TEMPO_SYNC_SWITCH,
+            "Tempo Sync",
+            ["OFF", "ON"],
+        )
+        layout.addWidget(self.lfo_sync_switch)
+
+        self.lfo_sync_note = self._create_parameter_combo_box(
+            AddressParameterAnalog.LFO_TEMPO_SYNC_NOTE,
+            "Sync Note",
+            options=["1/1", "1/2", "1/4", "1/8", "1/16"],
+        )
+        layout.addWidget(self.lfo_sync_note)
+
+        self.key_trigger_switch = self._create_parameter_switch(
+            AddressParameterAnalog.LFO_KEY_TRIGGER,
+            "Key Trigger",
+            ["OFF", "ON"],
+        )
+        layout.addWidget(self.key_trigger_switch)
+
+        layout.addStretch()
+        return layout
 
 
 class AnalogLFOSection(QWidget):
     """Analog LFO Section"""
 
     def __init__(
-        self,
-        create_parameter_slider: Callable,
-        create_parameter_switch: Callable,
-        create_parameter_combo_box: Callable,
-        on_lfo_shape_changed: Callable,
-        lfo_shape_buttons: dict,
+            self,
+            create_parameter_slider: Callable,
+            create_parameter_switch: Callable,
+            create_parameter_combo_box: Callable,
+            on_lfo_shape_changed: Callable,
+            lfo_shape_buttons: dict,
     ):
         super().__init__()
         """
@@ -73,48 +248,35 @@ class AnalogLFOSection(QWidget):
             shape_row_layout.addWidget(btn)
             shape_row_layout.addStretch()
 
+        # main_rows_vlayout.addStretch()
         main_rows_vlayout.addLayout(shape_row_layout)
 
-        # Tempo Sync controls
-        sync_row_layout = QHBoxLayout()
-        sync_row_layout.addStretch()
-        self.lfo_sync_switch = self._create_parameter_switch(
-            AddressParameterAnalog.LFO_TEMPO_SYNC_SWITCH, "Tempo Sync", ["OFF", "ON"]
-        )
-        sync_row_layout.addWidget(self.lfo_sync_switch)
-        self.lfo_sync_note = self._create_parameter_combo_box(
-            AddressParameterAnalog.LFO_TEMPO_SYNC_NOTE,
-            "Sync Note",
-            options=["1/1", "1/2", "1/4", "1/8", "1/16"],
-        )
-        sync_row_layout.addWidget(self.lfo_sync_note)
-        # Key Trigger switch
-        self.key_trigger_switch = self._create_parameter_switch(
-            AddressParameterAnalog.LFO_KEY_TRIGGER, "Key Trigger", ["OFF", "ON"]
-        )
-        sync_row_layout.addWidget(self.key_trigger_switch)
-        sync_row_layout.addStretch()
+        # --- Add Tempo Sync Controls ---
+        sync_row_layout = self._create_tempo_sync_controls()
 
         main_rows_vlayout.addLayout(sync_row_layout)
 
-        # Rate and Fade Time
-        self.lfo_rate = self._create_parameter_slider(
-            AddressParameterAnalog.LFO_RATE, "Rate", vertical=True
-        )
-        self.lfo_rate_modulation = self._create_parameter_slider(
-            AddressParameterAnalog.LFO_RATE_MODULATION_CONTROL, "Rate Modulation", vertical=True
-        )
-        self.lfo_fade = self._create_parameter_slider(
-            AddressParameterAnalog.LFO_FADE_TIME, "Fade Time", vertical=True
-        )
+        self.lfo_controls_tab_widget = QTabWidget()
+        main_rows_vlayout.addWidget(self.lfo_controls_tab_widget)
 
-        fade_rate_controls_row_layout = QHBoxLayout()
+        # ---LFO Rate and Fade Time ---
+        fade_rate_controls_row_layout = self._create_lfo_fade_rate_controls_row_layout()
+        fade_rate_controls_row_widget = QWidget()
+        fade_rate_controls_row_widget.setMinimumHeight(JDXiDimensions.EDITOR_MINIMUM_HEIGHT)
+        fade_rate_controls_row_widget.setLayout(fade_rate_controls_row_layout)
+
+        self.lfo_controls_tab_widget.addTab(fade_rate_controls_row_widget, "Fade and Rate Controls")
+
+        # --- Depth controls ---
+        depth_controls_row_layout = self._create_lfo_depth_controls()
+        depth_controls_row_widget = QWidget()
+        depth_controls_row_widget.setMinimumHeight(JDXiDimensions.EDITOR_MINIMUM_HEIGHT)
+        depth_controls_row_widget.setLayout(depth_controls_row_layout)
+        self.lfo_controls_tab_widget.addTab(depth_controls_row_widget, "Depth Controls")
+        main_rows_vlayout.addStretch()
+
+    def _create_lfo_depth_controls(self) -> QHBoxLayout:
         depth_controls_row_layout = QHBoxLayout()
-
-        main_rows_vlayout.addLayout(fade_rate_controls_row_layout)
-        main_rows_vlayout.addLayout(depth_controls_row_layout)
-
-        # Depth controls
         self.lfo_pitch = self._create_parameter_slider(
             AddressParameterAnalog.LFO_PITCH_DEPTH, "Pitch Depth", vertical=True
         )
@@ -133,20 +295,57 @@ class AnalogLFOSection(QWidget):
         self.lfo_amp_modulation = self._create_parameter_slider(
             AddressParameterAnalog.LFO_AMP_MODULATION_CONTROL, "AMP Modulation", vertical=True
         )
-        # Add all controls to layout
-        fade_rate_controls_row_layout.addStretch()
-        fade_rate_controls_row_layout.addWidget(self.lfo_rate)
-        fade_rate_controls_row_layout.addWidget(self.lfo_rate_modulation)
-        fade_rate_controls_row_layout.addWidget(self.lfo_fade)
-        fade_rate_controls_row_layout.addStretch()
 
-        depth_controls_row_layout.addStretch()
+        # depth_controls_row_layout.addStretch()
         depth_controls_row_layout.addWidget(self.lfo_pitch)
         depth_controls_row_layout.addWidget(self.lfo_pitch_modulation)
         depth_controls_row_layout.addWidget(self.lfo_filter)
         depth_controls_row_layout.addWidget(self.lfo_filter_modulation)
         depth_controls_row_layout.addWidget(self.lfo_amp)
         depth_controls_row_layout.addWidget(self.lfo_amp_modulation)
-        depth_controls_row_layout.addStretch()
+        # depth_controls_row_layout.addStretch()
+        return depth_controls_row_layout
 
-        main_rows_vlayout.addStretch()
+    def _create_lfo_fade_rate_controls_row_layout(self) -> QHBoxLayout:
+        """create lfo fate rate layout"""
+        self.lfo_rate = self._create_parameter_slider(
+            AddressParameterAnalog.LFO_RATE, "Rate", vertical=True
+        )
+        self.lfo_rate_modulation = self._create_parameter_slider(
+            AddressParameterAnalog.LFO_RATE_MODULATION_CONTROL, "Rate Modulation", vertical=True
+        )
+        self.lfo_fade = self._create_parameter_slider(
+            AddressParameterAnalog.LFO_FADE_TIME, "Fade Time", vertical=True
+        )
+
+        fade_rate_controls_row_layout = QHBoxLayout()
+
+        # Add all controls to layout
+        # fade_rate_controls_row_layout.addStretch()
+        fade_rate_controls_row_layout.addWidget(self.lfo_rate)
+        fade_rate_controls_row_layout.addWidget(self.lfo_rate_modulation)
+        fade_rate_controls_row_layout.addWidget(self.lfo_fade)
+        # fade_rate_controls_row_layout.addStretch()
+        return fade_rate_controls_row_layout
+
+    def _create_tempo_sync_controls(self) -> QHBoxLayout:
+        # Tempo Sync controls
+        sync_row_layout = QHBoxLayout()
+        # sync_row_layout.addStretch()
+        self.lfo_sync_switch = self._create_parameter_switch(
+            AddressParameterAnalog.LFO_TEMPO_SYNC_SWITCH, "Tempo Sync", ["OFF", "ON"]
+        )
+        sync_row_layout.addWidget(self.lfo_sync_switch)
+        self.lfo_sync_note = self._create_parameter_combo_box(
+            AddressParameterAnalog.LFO_TEMPO_SYNC_NOTE,
+            "Sync Note",
+            options=["1/1", "1/2", "1/4", "1/8", "1/16"],
+        )
+        sync_row_layout.addWidget(self.lfo_sync_note)
+        # Key Trigger switch
+        self.key_trigger_switch = self._create_parameter_switch(
+            AddressParameterAnalog.LFO_KEY_TRIGGER, "Key Trigger", ["OFF", "ON"]
+        )
+        sync_row_layout.addWidget(self.key_trigger_switch)
+        # sync_row_layout.addStretch()
+        return sync_row_layout

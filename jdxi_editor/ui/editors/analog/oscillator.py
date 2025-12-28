@@ -17,6 +17,7 @@ from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from jdxi_editor.ui.widgets.pitch.envelope import PitchEnvelopeWidget
 from jdxi_editor.ui.widgets.button.waveform.analog import AnalogWaveformButton
+from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
 class AnalogOscillatorSection(QWidget):
@@ -77,9 +78,10 @@ class AnalogOscillatorSection(QWidget):
         pitch_layout.addStretch()
         pitch_widget = QWidget()
         pitch_widget.setLayout(pitch_layout)
+        pitch_widget.setMinimumHeight(JDXiDimensions.EDITOR_MINIMUM_HEIGHT)
         # Pitch Envelope
         self.oscillator_tab_widget.addTab(pitch_widget, "Tuning and Pitch")
-
+        layout.addStretch()
         # Pulse Width controls
         self.oscillator_tab_widget.addTab(self.create_pw_group(), "Pulse Width")
 

@@ -4,7 +4,7 @@ Digital Filter Section for the JDXI Editor
 
 from typing import Callable
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QGroupBox
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QGroupBox, QTabWidget
 from PySide6.QtCore import Qt
 import qtawesome as qta
 
@@ -17,6 +17,7 @@ from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 from jdxi_editor.ui.widgets.filter.filter import FilterWidget
+from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
 class DigitalFilterSection(QWidget):
@@ -56,18 +57,54 @@ class DigitalFilterSection(QWidget):
         """Set up the UI for the filter section."""
         layout = QVBoxLayout()
         self.setLayout(layout)
+        layout.setContentsMargins(5, 15, 5, 5)
+        layout.setSpacing(5)
+        self.setStyleSheet(JDXiStyle.ADSR)
+        self.setMinimumHeight(JDXiDimensions.EDITOR_MINIMUM_HEIGHT)
 
         # Icons
+        icon_hlayout = self._create_adsr_icons_row()
+        layout.addLayout(icon_hlayout)
+
+        # Filter mode and slope
+        filter_mode_row = self._create_filter_controls_row()
+        layout.addLayout(filter_mode_row)
+
+        # Create tab widget
+        self.digital_filter_tab_widget = QTabWidget()
+        layout.addWidget(self.digital_filter_tab_widget)
+
+        # Add Controls tab
+        controls_group = self._create_filter_controls_group()
+        self.digital_filter_tab_widget.addTab(controls_group, "Controls")
+
+        # Add ADSR tab
+        adsr_group = self._create_filter_adsr_env_group()
+        self.digital_filter_tab_widget.addTab(adsr_group, "ADSR")
+
+        layout.addSpacing(JDXiStyle.SPACING)
+        layout.addStretch()
+
+    def _create_adsr_icons_row(self) -> QHBoxLayout:
+        """Create ADSR icons row"""
         icon_hlayout = QHBoxLayout()
-        for icon in ["mdi.sine-wave", "ri.filter-3-fill", "mdi.waveform"]:
+        for icon in [
+            "mdi.triangle-wave",
+            "mdi.sine-wave",
+            "fa5s.wave-square",
+            "mdi.cosine-wave",
+            "mdi.triangle-wave",
+            "mdi.waveform",
+        ]:
             icon_label = QLabel()
             icon_pixmap = qta.icon(icon, color="#666666").pixmap(30, 30)
             icon_label.setPixmap(icon_pixmap)
             icon_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
             icon_hlayout.addWidget(icon_label)
-        layout.addLayout(icon_hlayout)
+        return icon_hlayout
 
-        # Filter mode and slope
+    def _create_filter_controls_row(self) -> QHBoxLayout:
+        """Filter mode controls row"""
         filter_mode_row = QHBoxLayout()
         filter_mode_row.addStretch()
         self.filter_mode_switch = self._create_parameter_switch(
@@ -78,21 +115,25 @@ class DigitalFilterSection(QWidget):
         self.filter_mode_switch.valueChanged.connect(self._on_filter_mode_changed)
         filter_mode_row.addWidget(self.filter_mode_switch)
         filter_mode_row.addStretch()
-        layout.addLayout(filter_mode_row)
+        return filter_mode_row
 
-        # Controls Group
+    def _create_filter_controls_group(self) -> QGroupBox:
+        """Create filter controls group"""
         controls_group = QGroupBox("Controls")
         controls_layout = QHBoxLayout()
         controls_layout.addStretch()
         controls_group.setLayout(controls_layout)
-        self.filter_widget = FilterWidget(cutoff_param=AddressParameterDigitalPartial.FILTER_CUTOFF,
-                                          slope_param=AddressParameterDigitalPartial.FILTER_SLOPE,
-                                          create_parameter_slider=self._create_parameter_slider,
-                                          create_parameter_switch=self._create_parameter_switch,
-                                          midi_helper=self.midi_helper,
-                                          parent=self,
-                                          controls=self.controls,
-                                          address=self.address)
+        
+        self.filter_widget = FilterWidget(
+            cutoff_param=AddressParameterDigitalPartial.FILTER_CUTOFF,
+            slope_param=AddressParameterDigitalPartial.FILTER_SLOPE,
+            create_parameter_slider=self._create_parameter_slider,
+            create_parameter_switch=self._create_parameter_switch,
+            midi_helper=self.midi_helper,
+            parent=self,
+            controls=self.controls,
+            address=self.address
+        )
         controls_group.setStyleSheet(JDXiStyle.ADSR)
         controls_layout.addWidget(self.filter_widget)
         controls_layout.addWidget(
@@ -112,9 +153,10 @@ class DigitalFilterSection(QWidget):
             )
         )
         controls_layout.addStretch()
-        layout.addWidget(controls_group)
+        return controls_group
 
-        # Filter Envelope
+    def _create_filter_adsr_env_group(self) -> QGroupBox:
+        """Create filter ADSR group"""
         env_group = QGroupBox("Envelope")
         env_group.setProperty("adsr", True)
         env_layout = QVBoxLayout()
@@ -147,8 +189,7 @@ class DigitalFilterSection(QWidget):
         )
         self.filter_adsr_widget.setStyleSheet(JDXiStyle.ADSR)
         env_layout.addWidget(self.filter_adsr_widget)
-        layout.addWidget(env_group)
-        layout.addStretch()
+        return env_group
 
     def _on_filter_mode_changed(self, mode: int):
         """Handle filter mode changes"""

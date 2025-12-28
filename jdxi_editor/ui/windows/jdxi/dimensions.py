@@ -16,6 +16,7 @@ class JDXiDimensions:
     A class to store dimensions for the JD-Xi editor UI.
     """
 
+    EDITOR_MINIMUM_HEIGHT = 250
     HEIGHT = 400
     WIDTH = 1000
 

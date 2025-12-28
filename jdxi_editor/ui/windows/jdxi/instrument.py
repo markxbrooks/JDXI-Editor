@@ -597,12 +597,11 @@ class JDXiInstrument(JDXiUi):
         self.main_editor.setUpdatesEnabled(True)
         self.main_editor.show()
 
-    def show_editor(self, editor_type: str) -> None:
+    def show_editor(self, editor_type: str, **kwargs) -> None:
         """
         Show editor of given type
 
         :param editor_type: str Editor type
-        :return: None
         """
         config = self.editor_registry.get(editor_type)
         if not config:
@@ -613,8 +612,16 @@ class JDXiInstrument(JDXiUi):
             self.current_synth_type = config.synth_type
         if config.midi_channel:
             self.channel = config.midi_channel
-        kwargs = config.kwargs
-        self._show_editor_tab(config.title, config.editor_class, config.icon, **kwargs)
+
+        # Merge registry kwargs with call-site kwargs
+        merged_kwargs = {**config.kwargs, **kwargs}
+
+        self._show_editor_tab(
+            config.title,
+            config.editor_class,
+            config.icon,
+            **merged_kwargs
+        )
 
     def on_documentation(self):
         """
@@ -711,7 +718,9 @@ class JDXiInstrument(JDXiUi):
                     self.register_editor(partial)
 
         except Exception as ex:
-            log.error(f"Error showing {title} editor", exception=ex)
+            import traceback
+            log.error(f"Error showing {title} editor: {ex}", exception=ex)
+            log.error(f"Traceback: {traceback.format_exc()}")
 
     def _show_editor(self, title: str, editor_class, **kwargs) -> None:
         """
