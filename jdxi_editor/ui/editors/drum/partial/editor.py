@@ -27,6 +27,7 @@ from jdxi_editor.ui.editors.drum.partial.tva import DrumTVASection
 from jdxi_editor.ui.editors.drum.partial.tvf import DrumTVFSection
 from jdxi_editor.ui.editors.drum.partial.wmt import DrumWMTSection
 from jdxi_editor.ui.editors.synth.partial import PartialEditor
+from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
 class DrumPartialEditor(PartialEditor):
@@ -67,6 +68,7 @@ class DrumPartialEditor(PartialEditor):
         scroll_layout.addLayout(grid_layout)
 
         tab_widget = QTabWidget()
+        tab_widget.setMinimumWidth(JDXiDimensions.DRUM_PARTIAL_TAB_MIN_WIDTH)
         scroll_layout.addWidget(tab_widget)
 
         tab_pitch = QWidget()

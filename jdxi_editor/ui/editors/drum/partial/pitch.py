@@ -66,6 +66,7 @@ class DrumPitchSection(QWidget):
 
     def setup_ui(self) -> None:
         """setup UI"""
+        self.setMinimumWidth(JDXiDimensions.DRUM_PARTIAL_TAB_MIN_WIDTH)
         main_row_hlayout = QHBoxLayout(self)
         main_row_hlayout.addStretch()
 

@@ -149,10 +149,13 @@ def generate_button_style(
                 background-color: {hover};
                 background: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
                 stop:0 #660000, stop:1 {hover});
+                border: {button_border_width}px solid {hover};
             }}
             QPushButton:border_pressed, QPushButton:checked {{
                 background-color: {background_pressed};
                 border: {button_border_width}px solid {border_pressed};
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
+                stop:0 #330000, stop:1 {background_pressed});
             }}
         """
 

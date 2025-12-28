@@ -93,7 +93,7 @@ class DigitalSynthEditor(SynthEditor):
             Union[AddressParameterDigitalPartial, AddressParameterDigitalCommon],
             QWidget,
         ] = {}
-        synth_map = {1: JDXiSynth.DIGITAL_SYNTH_1, 2: JDXiSynth.DIGITAL_SYNTH_2, 3: JDXiSynth.DIGITAL_SYNTH_3}
+        synth_map = {1: JDXiSynth.DIGITAL_SYNTH_1, 2: JDXiSynth.DIGITAL_SYNTH_2}
         if synth_number not in synth_map:
             raise ValueError(f"Invalid synth_number: {synth_number}. Must be 1, 2 or 3.")
         self.synth_number = synth_number
@@ -166,9 +166,11 @@ class DigitalSynthEditor(SynthEditor):
 
         container = QWidget()
         container_layout = QVBoxLayout()
+        container_layout.setSpacing(5)  # Reduced spacing
+        container_layout.setContentsMargins(5, 5, 5, 5)  # Reduced margins
         container.setLayout(container_layout)
         instrument_hrow_layout = QHBoxLayout()
-        # instrument_hrow_layout.addStretch()
+        instrument_hrow_layout.setSpacing(10)  # Reduced spacing between elements
         instrument_layout.addLayout(instrument_hrow_layout)
         # top_layout.addWidget(self.partials_panel)
         instrument_preset_group = self._create_instrument_preset_group(
@@ -181,10 +183,12 @@ class DigitalSynthEditor(SynthEditor):
         instrument_hrow_layout.addWidget(self.instrument_image_group)
         instrument_hrow_layout.addStretch()
         instrument_layout.addLayout(instrument_hrow_layout)
-        instrument_layout.addStretch()
+        # Removed addStretch() to bring content higher
+        # Reduced spacing - removed addStretch() to bring content higher
+        instrument_layout.setSpacing(5)  # Minimal spacing
         self.update_instrument_image()
         container_layout.addWidget(self.partials_panel)
-        container_layout.addStretch()
+        container_layout.setSpacing(5)  # Minimal spacing instead of stretch
         self.partial_tab_widget = QTabWidget()
         instrument_widget.setLayout(instrument_layout)
         self.partial_tab_widget.addTab(instrument_widget, "Presets")

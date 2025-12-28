@@ -95,8 +95,10 @@ class JDXiStyle:
     ADSR_PLOT_WIDTH = 300
     ADSR_PLOT_HEIGHT = 200
     INSTRUMENT_IMAGE_WIDTH = 350
+    INSTRUMENT_IMAGE_HEIGHT = 200  # Maximum height to prevent elongation
     TITLE_TEXT = "#FFFFFF"
     BACKGROUND = "#000000"  # 1A1A1A"
+    BACKGROUND_GRADIENT = "qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #000000, stop:1 #1A1A1A)"
     BACKGROUND_PRESSED = "#666666"
     BUTTON_BACKGROUND = "#222222"
     BUTTON_BACKGROUND_PRESSED = "#333333"
@@ -107,9 +109,11 @@ class JDXiStyle:
     TRACK_ICON_PIXMAP_SIZE = 50  # in px
     BUTTON_PADDING = 1
     ACCENT = "#FF2200"  # Red accent color
-    ACCENT_HOVER = "#FF2200"  # Red for hover
+    ACCENT_HOVER = "#FF4400"  # Brighter red for hover
     ACCENT_ANALOG = "#00A0E9"
-    ACCENT_ANALOG_HOVER = "#00A0E9"
+    ACCENT_ANALOG_HOVER = "#00C0FF"  # Brighter cyan for hover
+    ACCENT_GLOW = "#FF6666"  # Glow color for red accents
+    ACCENT_ANALOG_GLOW = "#66C0FF"  # Glow color for analog accents
     BORDER = "#333333"
     SLIDER_HANDLE = "#000000"  # Black fill
     SLIDER_HANDLE_BORDER = "#666666"  # Light grey outline
@@ -118,6 +122,9 @@ class JDXiStyle:
     SLIDER_NEON_GRADIENT_STOP = "#660000"
     SLIDER_NEON_ANALOG = "#1a1aff"
     SLIDER_NEON_GRADIENT_STOP_ANALOG = "#000066"
+    # Enhanced neon gradients for better glow effect
+    SLIDER_NEON_GRADIENT = f"qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 {SLIDER_NEON_GRADIENT_STOP}, stop:0.5 {SLIDER_NEON}, stop:1 #ff3333)"
+    SLIDER_NEON_ANALOG_GRADIENT = f"qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 {SLIDER_NEON_GRADIENT_STOP_ANALOG}, stop:0.5 {SLIDER_NEON_ANALOG}, stop:1 #3399ff)"
     ACCENT_PRESSED = "#FF6666"
 
     ACCENT_ANALOG_PRESSED = "#417ffa"
@@ -224,12 +231,12 @@ class JDXiStyle:
     BUTTON_WAVEFORM = generate_button_style(
         bg=BUTTON_BACKGROUND,
         border=BACKGROUND_PRESSED,
-        radius=3,
+        radius=12,  # More circular
         text_color=GREY,
         hover="#444444",
         border_pressed=ACCENT_PRESSED,
         background_pressed=BUTTON_BACKGROUND_PRESSED,
-        button_border_width=BUTTON_BORDER_WIDTH,
+        button_border_width=2,  # Thinner border for waveform buttons
         font_family=FONT_FAMILY,
         font_size=FONT_SIZE,
         button_padding=BUTTON_PADDING,
@@ -290,21 +297,39 @@ class JDXiStyle:
         slider_neon_gradient_stop=SLIDER_NEON_GRADIENT_STOP_ANALOG,
     )
 
-    EDITOR_TITLE_LABEL = """
-                font-family: Orbitron, sans-serif;
-                font-size: 16px;
+    EDITOR_TITLE_LABEL = f"""
+                font-family: {FONT_FAMILY}, sans-serif;
+                font-size: 20px;
                 font-weight: bold;
+                letter-spacing: 2px;
+                color: {ACCENT};
+            """
+    
+    ANALOG_SECTION_HEADER = f"""
+                font-family: {FONT_FAMILY}, sans-serif;
+                font-weight: bold;
+                font-size: 18px;
+                color: {ACCENT_ANALOG};
+                letter-spacing: 1px;
+            """
+    
+    DIGITAL_SECTION_HEADER = f"""
+                font-family: {FONT_FAMILY}, sans-serif;
+                font-weight: bold;
+                font-size: 18px;
+                color: {ACCENT};
+                letter-spacing: 1px;
             """
 
     INSTRUMENT = f"""
             QMainWindow {{
-                background-color: black;
+                background: {BACKGROUND_GRADIENT};
             }}
             QWidget {{
                 font-family: {FONT_FAMILY};
                 margin: 0px;
                 padding: 0px;
-                background-color: black;
+                background: {BACKGROUND_GRADIENT};
                 color: white;
             }}
             QMenuBar {{
@@ -391,12 +416,20 @@ class JDXiStyle:
             }
         """
 
-    MIDI_MESSAGE_MONITOR = """
-            QTextEdit {
-                font-family: monospace;
+    MIDI_MESSAGE_MONITOR = f"""
+            QTextEdit {{
+                font-family: 'Consolas', 'Courier New', monospace;
                 background-color: #1E1E1E;
                 color: #FFCC00;
-            }
+                border: 1px solid {ACCENT};
+                border-radius: 4px;
+                padding: 5px;
+                font-size: 11px;
+            }}
+            QTextEdit:focus {{
+                border: 2px solid {ACCENT};
+                background-color: #252525;
+            }}
         """
 
     MIXER_LABEL_ANALOG = f"""
@@ -787,6 +820,74 @@ class JDXiStyle:
             color: "{FONT_RED}";
         }}
     """
+    
+    # Status indicator styles with glow effect
+    STATUS_INDICATOR_ACTIVE = f"""
+        QLabel {{
+            background-color: {ACCENT};
+            border-radius: 8px;
+            min-width: 12px;
+            min-height: 12px;
+            max-width: 12px;
+            max-height: 12px;
+        }}
+    """
+    
+    STATUS_INDICATOR_INACTIVE = f"""
+        QLabel {{
+            background-color: #333333;
+            border: 1px solid #666666;
+            border-radius: 8px;
+            min-width: 12px;
+            min-height: 12px;
+            max-width: 12px;
+            max-height: 12px;
+        }}
+    """
+    
+    STATUS_INDICATOR_ANALOG_ACTIVE = f"""
+        QLabel {{
+            background-color: {ACCENT_ANALOG};
+            border-radius: 8px;
+            min-width: 12px;
+            min-height: 12px;
+            max-width: 12px;
+            max-height: 12px;
+        }}
+    """
+    
+    # Enhanced button glow style
+    BUTTON_GLOW_RED = f"""
+        QPushButton {{
+            border: 2px solid {ACCENT};
+            background-color: {BUTTON_BACKGROUND};
+        }}
+        QPushButton:hover {{
+            border: 2px solid {ACCENT_HOVER};
+            background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
+                stop:0 #330000, stop:1 {ACCENT_HOVER});
+        }}
+        QPushButton:pressed {{
+            border: 2px solid {ACCENT_PRESSED};
+            background-color: {BUTTON_BACKGROUND_PRESSED};
+        }}
+    """
+    
+    BUTTON_GLOW_ANALOG = f"""
+        QPushButton {{
+            border: 2px solid {ACCENT_ANALOG};
+            background-color: {BUTTON_BACKGROUND};
+        }}
+        QPushButton:hover {{
+            border: 2px solid {ACCENT_ANALOG_HOVER};
+            background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
+                stop:0 #003333, stop:1 {ACCENT_ANALOG_HOVER});
+        }}
+        QPushButton:pressed {{
+            border: 2px solid {ACCENT_ANALOG_PRESSED};
+            background-color: {BUTTON_BACKGROUND_PRESSED};
+        }}
+    """
 
     ADSR_ANALOG = f"""
         QGroupBox {{
@@ -1165,6 +1266,16 @@ class JDXiStyle:
             color: #d51e35;
             font-weight: bold;
             background: transparent;
+        }}
+    """
+
+    QLINEEDIT = f"""
+        QLineEdit {{
+            font-family: "{FONT_FAMILY}";
+            font-size: 12px;
+            color: #FFFFFF;
+            background: #1a1a1a;
+            font-weight: bold;
         }}
     """
 
