@@ -16,12 +16,11 @@ from jdxi_editor.midi.data.address.address import (
 from jdxi_editor.jdxi.synth.analog import AnalogSynthData
 from jdxi_editor.jdxi.synth.digital import DigitalSynthData
 from jdxi_editor.jdxi.synth.drum import DrumSynthData
-from jdxi_editor.jdxi.synth.data import JDXISynthData
-from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
-from jdxi_editor.midi.data.parameter.digital import AddressParameterDigitalCommon, AddressParameterDigitalPartial
+from jdxi_editor.midi.data.parameter.analog import AnalogParam
+from jdxi_editor.midi.data.parameter.digital import DigitalCommonParam, DigitalPartialParam
 from jdxi_editor.midi.data.parameter.drum.addresses import DRUM_GROUP_MAP
-from jdxi_editor.midi.data.parameter.drum.common import AddressParameterDrumCommon
-from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
+from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParam
+from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.sysex.request.midi_requests import MidiRequests
 from jdxi_editor.log.logger import Logger as log
 
@@ -58,8 +57,8 @@ def create_synth_data(synth_type: JDXiSynth, partial_number: int = 0) -> Union[
             umb=AddressOffsetTemporaryToneUMB.DRUM_KIT,
             lmb=address_lmb,
             partial_number=partial_number,
-            common_parameters=AddressParameterDrumCommon,
-            partial_parameters=AddressParameterDrumPartial
+            common_parameters=DrumCommonParam,
+            partial_parameters=DrumPartialParam
         )
 
     elif synth_type in [JDXiSynth.DIGITAL_SYNTH_1, JDXiSynth.DIGITAL_SYNTH_2]:
@@ -103,8 +102,8 @@ def create_synth_data(synth_type: JDXiSynth, partial_number: int = 0) -> Union[
             lmb=address_lmb,
             synth_number=synth_number,
             partial_number=partial_number,
-            common_parameters=AddressParameterDigitalCommon,
-            partial_parameters=AddressParameterDigitalPartial,
+            common_parameters=DigitalCommonParam,
+            partial_parameters=DigitalPartialParam,
         )
 
     elif synth_type == JDXiSynth.ANALOG_SYNTH:
@@ -121,7 +120,7 @@ def create_synth_data(synth_type: JDXiSynth, partial_number: int = 0) -> Union[
             msb=AddressStartMSB.TEMPORARY_TONE,
             umb=AddressOffsetTemporaryToneUMB.ANALOG_SYNTH,
             lmb=AddressOffsetProgramLMB.COMMON,
-            common_parameters=AddressParameterAnalog,
+            common_parameters=AnalogParam,
         )
     else:
         log.warning(f"synth type: {synth_type} not implemented")

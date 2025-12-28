@@ -32,7 +32,7 @@ from jdxi_editor.midi.data.parameter.drum.addresses import (
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 
 
-class AddressParameterDrumPartial(AddressParameter):
+class DrumPartialParam(AddressParameter):
     """Drum kit parameters with their addresses and value ranges"""
 
     def __init__(
@@ -658,7 +658,7 @@ class AddressParameterDrumPartial(AddressParameter):
         :return: Optional[AddressParameterDrumPartial] The parameter
         Return the parameter member by name, or None if not found
         """
-        return AddressParameterDrumPartial.__members__.get(param_name, None)
+        return DrumPartialParam.__members__.get(param_name, None)
 
     def convert_from_midi(self, midi_value: int) -> int:
         """Convert from MIDI value to display value

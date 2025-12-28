@@ -72,8 +72,8 @@ from PySide6.QtCore import Qt
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import AddressOffsetProgramLMB
 from jdxi_editor.midi.data.drum.data import JDXiMapPartialDrum
-from jdxi_editor.midi.data.parameter.drum.common import AddressParameterDrumCommon
-from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
+from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParam
+from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.ui.editors.drum.common import DrumCommonSection
@@ -109,7 +109,7 @@ class DrumCommonEditor(SynthEditor):
         self.partial_tab_widget = QTabWidget()
         self.instrument_image_label = None
         self.instrument_title_label = None
-        self.controls: Dict[Union[AddressParameterDrumPartial, AddressParameterDrumCommon], QWidget] = {}
+        self.controls: Dict[Union[DrumPartialParam, DrumCommonParam], QWidget] = {}
         self.setup_ui()
         self.update_instrument_image()
         # Setup signal handlers
@@ -249,7 +249,7 @@ class DrumCommonEditor(SynthEditor):
         """
 
         for param_name, param_value in sysex_data.items():
-            param = AddressParameterDrumPartial.get_by_name(param_name)
+            param = DrumPartialParam.get_by_name(param_name)
             if param:
                 self._update_partial_slider(partial_no, param, param_value, successes, failures)
             else:
@@ -273,7 +273,7 @@ class DrumCommonEditor(SynthEditor):
         """
         log.header_message("Tone common")
         for param_name, param_value in sysex_data.items():
-            param = AddressParameterDrumCommon.get_by_name(param_name)
+            param = DrumCommonParam.get_by_name(param_name)
             log.message(f"Tone common: param_name: {param} {param_value}")
             try:
                 if param:

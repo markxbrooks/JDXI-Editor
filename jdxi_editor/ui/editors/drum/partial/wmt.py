@@ -50,7 +50,7 @@ from PySide6.QtWidgets import (
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.drum.data import rm_waves
-from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
+from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.ui.widgets.wmt.envelope import WMTEnvelopeWidget
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
@@ -117,7 +117,7 @@ class DrumWMTSection(QWidget):
         wmt_velocity_control_combo_row_layout = QHBoxLayout()
         wmt_layout.addLayout(wmt_velocity_control_combo_row_layout)
         wmt_velocity_control_combo_row_layout.addStretch()
-        wmt_velocity_control_combo = self._create_parameter_switch(AddressParameterDrumPartial.WMT_VELOCITY_CONTROL,
+        wmt_velocity_control_combo = self._create_parameter_switch(DrumPartialParam.WMT_VELOCITY_CONTROL,
                                                                    "Velocity control",
                                                                    ["OFF", "ON", "RANDOM"])
         wmt_velocity_control_combo_row_layout.addWidget(wmt_velocity_control_combo)
@@ -163,7 +163,7 @@ class DrumWMTSection(QWidget):
         prefix = f"WMT{wmt_index}_"
 
         def p(name):  # helper to get DrumPartialParameter by name
-            return getattr(AddressParameterDrumPartial, prefix + name)
+            return getattr(DrumPartialParam, prefix + name)
         self.wave_switch = self._create_parameter_switch(
             p("WAVE_SWITCH"), "Wave Switch", ["OFF", "ON"]
         )

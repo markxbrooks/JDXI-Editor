@@ -34,7 +34,7 @@ Example:
 from typing import Callable
 
 from PySide6.QtWidgets import QGroupBox, QFormLayout, QWidget, QVBoxLayout, QScrollArea, QHBoxLayout
-from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
+from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 from jdxi_editor.midi.io.helper import MidiIOHelper
 
@@ -44,7 +44,7 @@ class DrumPitchSection(QWidget):
 
     def __init__(
         self,
-        controls: dict[AddressParameterDrumPartial, QWidget],
+        controls: dict[DrumPartialParam, QWidget],
         create_parameter_combo_box: Callable,
         create_parameter_slider: Callable,
         midi_helper: MidiIOHelper,
@@ -89,7 +89,7 @@ class DrumPitchSection(QWidget):
         pitch_group.setLayout(pitch_layout)
         # grid_layout.addWidget(pitch_group, 0, 0)
         assign_type_combo = self._create_parameter_combo_box(
-            AddressParameterDrumPartial.ASSIGN_TYPE,
+            DrumPartialParam.ASSIGN_TYPE,
             "Assign Type",
             ["MULTI", "SINGLE"],
             [0, 1],
@@ -97,7 +97,7 @@ class DrumPitchSection(QWidget):
         pitch_layout.addRow(assign_type_combo)
         # Mute Group control
         mute_group_combo = self._create_parameter_combo_box(
-            AddressParameterDrumPartial.MUTE_GROUP,
+            DrumPartialParam.MUTE_GROUP,
             "Mute Group",
             ["OFF"] + [str(i) for i in range(1, 31)],
             list(range(0, 31)),
@@ -105,45 +105,45 @@ class DrumPitchSection(QWidget):
         pitch_layout.addRow(mute_group_combo)
         # Add pitch parameters
         partial_level_slider = self._create_parameter_slider(
-            AddressParameterDrumPartial.PARTIAL_LEVEL, "Partial Level"
+            DrumPartialParam.PARTIAL_LEVEL, "Partial Level"
         )
         pitch_layout.addRow(partial_level_slider)
 
         partial_coarse_tune_slider = self._create_parameter_slider(
-            AddressParameterDrumPartial.PARTIAL_COARSE_TUNE, "Partial Coarse Tune"
+            DrumPartialParam.PARTIAL_COARSE_TUNE, "Partial Coarse Tune"
         )
         pitch_layout.addRow(partial_coarse_tune_slider)
 
         partial_fine_tune_slider = self._create_parameter_slider(
-            AddressParameterDrumPartial.PARTIAL_FINE_TUNE, "Partial Fine Tune"
+            DrumPartialParam.PARTIAL_FINE_TUNE, "Partial Fine Tune"
         )
         pitch_layout.addRow(partial_fine_tune_slider)
 
         partial_random_pitch_depth_slider = self._create_parameter_slider(
-            AddressParameterDrumPartial.PARTIAL_RANDOM_PITCH_DEPTH,
+            DrumPartialParam.PARTIAL_RANDOM_PITCH_DEPTH,
             "Partial Random Pitch Depth",
         )
         pitch_layout.addRow(partial_random_pitch_depth_slider)
 
         partial_pan_slider = self._create_parameter_slider(
-            AddressParameterDrumPartial.PARTIAL_PAN, "Partial Pan"
+            DrumPartialParam.PARTIAL_PAN, "Partial Pan"
         )
         pitch_layout.addRow(partial_pan_slider)
 
         partial_random_pan_depth_slider = self._create_parameter_slider(
-            AddressParameterDrumPartial.PARTIAL_RANDOM_PAN_DEPTH,
+            DrumPartialParam.PARTIAL_RANDOM_PAN_DEPTH,
             "Partial Random Pan Depth",
         )
         pitch_layout.addRow(partial_random_pan_depth_slider)
 
         partial_alternate_pan_depth_slider = self._create_parameter_slider(
-            AddressParameterDrumPartial.PARTIAL_ALTERNATE_PAN_DEPTH,
+            DrumPartialParam.PARTIAL_ALTERNATE_PAN_DEPTH,
             "Partial Alternate Pan Depth",
         )
         pitch_layout.addRow(partial_alternate_pan_depth_slider)
 
         partial_env_mode_combo = self._create_parameter_combo_box(
-            AddressParameterDrumPartial.PARTIAL_ENV_MODE,
+            DrumPartialParam.PARTIAL_ENV_MODE,
             "Partial Env Mode",
             ["NO-SUS", "SUSTAIN"],
             [0, 1],
@@ -152,12 +152,12 @@ class DrumPitchSection(QWidget):
 
         # Partial Pitch Bend Range
         pitch_bend_range_slider = self._create_parameter_slider(
-            AddressParameterDrumPartial.PARTIAL_PITCH_BEND_RANGE, "Pitch Bend Range"
+            DrumPartialParam.PARTIAL_PITCH_BEND_RANGE, "Pitch Bend Range"
         )
         pitch_layout.addRow(pitch_bend_range_slider)
 
         receive_expression_combo = self._create_parameter_combo_box(
-            AddressParameterDrumPartial.PARTIAL_RECEIVE_EXPRESSION,
+            DrumPartialParam.PARTIAL_RECEIVE_EXPRESSION,
             "Receive Expression",
             ["OFF", "ON"],
             [0, 1],
@@ -165,7 +165,7 @@ class DrumPitchSection(QWidget):
         pitch_layout.addRow(receive_expression_combo)
         # Partial Receive Hold-1
         receive_hold_combo = self._create_parameter_combo_box(
-            AddressParameterDrumPartial.PARTIAL_RECEIVE_HOLD_1,
+            DrumPartialParam.PARTIAL_RECEIVE_HOLD_1,
             "Receive Hold-1",
             ["OFF", "ON"],
             [0, 1],
@@ -173,7 +173,7 @@ class DrumPitchSection(QWidget):
         pitch_layout.addRow(receive_hold_combo)
         # One Shot Mode
         one_shot_mode_combo = self._create_parameter_combo_box(
-            AddressParameterDrumPartial.ONE_SHOT_MODE,
+            DrumPartialParam.ONE_SHOT_MODE,
             "One Shot Mode",
             ["OFF", "ON"],
             [0, 1],

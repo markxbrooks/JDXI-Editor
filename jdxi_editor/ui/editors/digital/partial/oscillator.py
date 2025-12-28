@@ -21,7 +21,7 @@ from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.digital.oscillator import DigitalOscWave
 from jdxi_editor.midi.data.parameter import AddressParameter
-from jdxi_editor.midi.data.parameter.digital.partial import AddressParameterDigitalPartial
+from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParam
 from jdxi_editor.midi.data.pcm.waves import PCM_WAVES_CATEGORIZED
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.digital.partial.pwm import PWMWidget
@@ -67,28 +67,28 @@ class DigitalOscillatorSection(QWidget):
         self.setLayout(layout)
         self.setStyleSheet(JDXiStyle.ADSR)
 
-        # Top row: Waveform buttons and variation switch
+        # --- Top row: Waveform buttons and variation switch ---
         layout.addLayout(self.create_waveform_buttons())
 
-        # Create tab widget
+        # --- Create tab widget ---
         self.oscillator_tab_widget = QTabWidget()
         layout.addWidget(self.oscillator_tab_widget)
 
-        # Tuning and Pitch tab (combines Tuning and Pitch Envelope like Analog)
+        # --- Tuning and Pitch tab (combines Tuning and Pitch Envelope like Analog) ---
         tuning_pitch_widget = self._create_tuning_pitch_widget()
         self.oscillator_tab_widget.addTab(tuning_pitch_widget, "Tuning and Pitch")
 
-        # Pulse Width tab
+        # --- Pulse Width tab ---
         pw_group = self._create_pw_group()
         self.oscillator_tab_widget.addTab(pw_group, "Pulse Width")
 
-        # PCM Wave tab (unique to Digital)
+        # --- PCM Wave tab (unique to Digital) ---
         pcm_group = self._create_pcm_group()
         self.oscillator_tab_widget.addTab(pcm_group, "PCM Wave")
 
         layout.addStretch()
 
-        # Initialize states
+        # --- Initialize states ---
         self._update_pw_controls_enabled_state(DigitalOscWave.SAW)
         self._update_pcm_controls_enabled_state(DigitalOscWave.PCM)
         self._update_supersaw_controls_enabled_state(DigitalOscWave.PCM)
@@ -118,12 +118,12 @@ class DigitalOscillatorSection(QWidget):
             btn.setIcon(QIcon(base64_to_pixmap(icon_base64)))
             btn.clicked.connect(lambda checked, w=wave: self._on_waveform_selected(w))
             self.wave_buttons[wave] = btn
-            self.controls[AddressParameterDigitalPartial.OSC_WAVE] = btn
+            self.controls[DigitalPartialParam.OSC_WAVE] = btn
             wave_layout.addWidget(btn)
 
         top_row.addLayout(wave_layout)
         self.wave_variation_switch = self._create_parameter_switch(
-            AddressParameterDigitalPartial.OSC_WAVE_VARIATION,
+            DigitalPartialParam.OSC_WAVE_VARIATION,
             "Variation",
             ["A", "B", "C"],
         )
@@ -151,16 +151,16 @@ class DigitalOscillatorSection(QWidget):
         tuning_group.setLayout(tuning_layout)
         tuning_layout.addWidget(
             self._create_parameter_slider(
-                AddressParameterDigitalPartial.OSC_PITCH, "Pitch (1/2 tones)", vertical=True
+                DigitalPartialParam.OSC_PITCH, "Pitch (1/2 tones)", vertical=True
             )
         )
         tuning_layout.addWidget(
             self._create_parameter_slider(
-                AddressParameterDigitalPartial.OSC_DETUNE, "Detune (cents)", vertical=True
+                DigitalPartialParam.OSC_DETUNE, "Detune (cents)", vertical=True
             )
         )
         self.super_saw_detune = self._create_parameter_slider(
-            AddressParameterDigitalPartial.SUPER_SAW_DETUNE, "Super-Saw Detune", vertical=True
+            DigitalPartialParam.SUPER_SAW_DETUNE, "Super-Saw Detune", vertical=True
         )
         tuning_layout.addWidget(self.super_saw_detune)
         tuning_layout.addStretch()
@@ -172,11 +172,11 @@ class DigitalOscillatorSection(QWidget):
         pitch_env_group = QGroupBox("Pitch Envelope")
         pitch_env_layout = QVBoxLayout()
         pitch_env_group.setLayout(pitch_env_layout)
-        # Pitch Env Widget
+        # --- Pitch Env Widget ---
         self.pitch_env_widget = PitchEnvelopeWidget(
-            attack_param=AddressParameterDigitalPartial.OSC_PITCH_ENV_ATTACK_TIME,
-            decay_param=AddressParameterDigitalPartial.OSC_PITCH_ENV_DECAY_TIME,
-            depth_param=AddressParameterDigitalPartial.OSC_PITCH_ENV_DEPTH,
+            attack_param=DigitalPartialParam.OSC_PITCH_ENV_ATTACK_TIME,
+            decay_param=DigitalPartialParam.OSC_PITCH_ENV_DECAY_TIME,
+            depth_param=DigitalPartialParam.OSC_PITCH_ENV_DEPTH,
             midi_helper=self.midi_helper,
             create_parameter_slider=self._create_parameter_slider,
             controls=self.controls,
@@ -194,15 +194,15 @@ class DigitalOscillatorSection(QWidget):
         pw_group.setLayout(pw_layout)
 
         self.pw_shift_slider = self._create_parameter_slider(
-            AddressParameterDigitalPartial.OSC_PULSE_WIDTH_SHIFT,
+            DigitalPartialParam.OSC_PULSE_WIDTH_SHIFT,
             "Shift (range of change)", vertical=True
         )
         self.pw_shift_slider.setStyleSheet(JDXiStyle.ADSR)
         pwm_widget_layout = QHBoxLayout()
         pwm_widget_layout.addStretch()
         self.pwm_widget = PWMWidget(
-            pulse_width_param=AddressParameterDigitalPartial.OSC_PULSE_WIDTH,
-            mod_depth_param=AddressParameterDigitalPartial.OSC_PULSE_WIDTH_MOD_DEPTH,
+            pulse_width_param=DigitalPartialParam.OSC_PULSE_WIDTH,
+            mod_depth_param=DigitalPartialParam.OSC_PULSE_WIDTH_MOD_DEPTH,
             midi_helper=self.midi_helper,
             address=self.address,
             create_parameter_slider=self._create_parameter_slider,
@@ -223,12 +223,12 @@ class DigitalOscillatorSection(QWidget):
         pcm_layout = QGridLayout()
         pcm_group.setLayout(pcm_layout)
         self.pcm_wave_gain = self._create_parameter_combo_box(
-            AddressParameterDigitalPartial.PCM_WAVE_GAIN,
+            DigitalPartialParam.PCM_WAVE_GAIN,
             "Gain [dB]",
             ["-6", "0", "+6", "+12"],
         )
         self.pcm_wave_number = self._create_parameter_combo_box(
-            AddressParameterDigitalPartial.PCM_WAVE_NUMBER,
+            DigitalPartialParam.PCM_WAVE_NUMBER,
             "Number",
             [f"{w['Wave Number']}: {w['Wave Name']}" for w in PCM_WAVES_CATEGORIZED],
         )
@@ -248,20 +248,20 @@ class DigitalOscillatorSection(QWidget):
 
     def _on_waveform_selected(self, waveform: DigitalOscWave):
         """Handle waveform button clicks"""
-        # Reset all buttons to default style
+        # --- Reset all buttons to default style ---
         for btn in self.wave_buttons.values():
             btn.setChecked(False)
             btn.setStyleSheet(JDXiStyle.BUTTON_RECT)
 
-        # Apply active style to the selected waveform button
+        # --- Apply active style to the selected waveform button ---
         selected_btn = self.wave_buttons.get(waveform)
         if selected_btn:
             selected_btn.setChecked(True)
             selected_btn.setStyleSheet(JDXiStyle.BUTTON_RECT_ACTIVE)
 
-        # Send MIDI message
+        # --- Send MIDI message ---
         if not self.send_midi_parameter(
-                AddressParameterDigitalPartial.OSC_WAVE, waveform.value
+                DigitalPartialParam.OSC_WAVE, waveform.value
         ):
             logging.warning(f"Failed to set waveform to {waveform.name}")
 
@@ -284,7 +284,7 @@ class DigitalOscillatorSection(QWidget):
         """Update PCM waves based on selected category"""
         selected_category = self.pcm_category_combo.currentText()
 
-        # Filter waves or show all if "No selection"
+        # --- Filter waves or show all if "No selection" ---
         if selected_category == "No selection":
             filtered_waves = PCM_WAVES_CATEGORIZED  # Show all waves
         else:
@@ -292,7 +292,7 @@ class DigitalOscillatorSection(QWidget):
                 w for w in PCM_WAVES_CATEGORIZED if w["Category"] == selected_category
             ]
 
-        # Update wave combo box
+        # --- Update wave combo box ---
         self.pcm_wave_number.combo_box.clear()
         self.pcm_wave_number.combo_box.addItems(
             [f"{w['Wave Number']}: {w['Wave Name']}" for w in filtered_waves]

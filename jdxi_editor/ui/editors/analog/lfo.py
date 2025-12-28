@@ -12,7 +12,7 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushBu
 from PySide6.QtCore import QSize
 import qtawesome as qta
 
-from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
+from jdxi_editor.midi.data.parameter.analog import AnalogParam
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
@@ -120,12 +120,12 @@ class AnalogLFOSectionNew(QWidget):
         layout.setSpacing(self.SPACING)
 
         controls = [
-            (AddressParameterAnalog.LFO_PITCH_DEPTH, "Pitch Depth"),
-            (AddressParameterAnalog.LFO_PITCH_MODULATION_CONTROL, "Pitch Modulation"),
-            (AddressParameterAnalog.LFO_FILTER_DEPTH, "Filter Depth"),
-            (AddressParameterAnalog.LFO_FILTER_MODULATION_CONTROL, "Filter Modulation"),
-            (AddressParameterAnalog.LFO_AMP_DEPTH, "Amp Depth"),
-            (AddressParameterAnalog.LFO_AMP_MODULATION_CONTROL, "Amp Modulation"),
+            (AnalogParam.LFO_PITCH_DEPTH, "Pitch Depth"),
+            (AnalogParam.LFO_PITCH_MODULATION_CONTROL, "Pitch Modulation"),
+            (AnalogParam.LFO_FILTER_DEPTH, "Filter Depth"),
+            (AnalogParam.LFO_FILTER_MODULATION_CONTROL, "Filter Modulation"),
+            (AnalogParam.LFO_AMP_DEPTH, "Amp Depth"),
+            (AnalogParam.LFO_AMP_MODULATION_CONTROL, "Amp Modulation"),
         ]
 
         for address, label in controls:
@@ -143,9 +143,9 @@ class AnalogLFOSectionNew(QWidget):
         layout.setSpacing(self.SPACING)
 
         controls = [
-            (AddressParameterAnalog.LFO_RATE, "Rate"),
-            (AddressParameterAnalog.LFO_RATE_MODULATION_CONTROL, "Rate Modulation"),
-            (AddressParameterAnalog.LFO_FADE_TIME, "Fade Time"),
+            (AnalogParam.LFO_RATE, "Rate"),
+            (AnalogParam.LFO_RATE_MODULATION_CONTROL, "Rate Modulation"),
+            (AnalogParam.LFO_FADE_TIME, "Fade Time"),
         ]
 
         for address, label in controls:
@@ -163,21 +163,21 @@ class AnalogLFOSectionNew(QWidget):
         layout.setSpacing(self.SPACING)
 
         self.lfo_sync_switch = self._create_parameter_switch(
-            AddressParameterAnalog.LFO_TEMPO_SYNC_SWITCH,
+            AnalogParam.LFO_TEMPO_SYNC_SWITCH,
             "Tempo Sync",
             ["OFF", "ON"],
         )
         layout.addWidget(self.lfo_sync_switch)
 
         self.lfo_sync_note = self._create_parameter_combo_box(
-            AddressParameterAnalog.LFO_TEMPO_SYNC_NOTE,
+            AnalogParam.LFO_TEMPO_SYNC_NOTE,
             "Sync Note",
             options=["1/1", "1/2", "1/4", "1/8", "1/16"],
         )
         layout.addWidget(self.lfo_sync_note)
 
         self.key_trigger_switch = self._create_parameter_switch(
-            AddressParameterAnalog.LFO_KEY_TRIGGER,
+            AnalogParam.LFO_KEY_TRIGGER,
             "Key Trigger",
             ["OFF", "ON"],
         )
@@ -278,22 +278,22 @@ class AnalogLFOSection(QWidget):
     def _create_lfo_depth_controls(self) -> QHBoxLayout:
         depth_controls_row_layout = QHBoxLayout()
         self.lfo_pitch = self._create_parameter_slider(
-            AddressParameterAnalog.LFO_PITCH_DEPTH, "Pitch Depth", vertical=True
+            AnalogParam.LFO_PITCH_DEPTH, "Pitch Depth", vertical=True
         )
         self.lfo_pitch_modulation = self._create_parameter_slider(
-            AddressParameterAnalog.LFO_PITCH_MODULATION_CONTROL, "Pitch Modulation", vertical=True
+            AnalogParam.LFO_PITCH_MODULATION_CONTROL, "Pitch Modulation", vertical=True
         )
         self.lfo_filter = self._create_parameter_slider(
-            AddressParameterAnalog.LFO_FILTER_DEPTH, "Filter Depth", vertical=True
+            AnalogParam.LFO_FILTER_DEPTH, "Filter Depth", vertical=True
         )
         self.lfo_filter_modulation = self._create_parameter_slider(
-            AddressParameterAnalog.LFO_FILTER_MODULATION_CONTROL, "Filter Modulation", vertical=True
+            AnalogParam.LFO_FILTER_MODULATION_CONTROL, "Filter Modulation", vertical=True
         )
         self.lfo_amp = self._create_parameter_slider(
-            AddressParameterAnalog.LFO_AMP_DEPTH, "Amp Depth", vertical=True
+            AnalogParam.LFO_AMP_DEPTH, "Amp Depth", vertical=True
         )
         self.lfo_amp_modulation = self._create_parameter_slider(
-            AddressParameterAnalog.LFO_AMP_MODULATION_CONTROL, "AMP Modulation", vertical=True
+            AnalogParam.LFO_AMP_MODULATION_CONTROL, "AMP Modulation", vertical=True
         )
 
         # depth_controls_row_layout.addStretch()
@@ -309,13 +309,13 @@ class AnalogLFOSection(QWidget):
     def _create_lfo_fade_rate_controls_row_layout(self) -> QHBoxLayout:
         """create lfo fate rate layout"""
         self.lfo_rate = self._create_parameter_slider(
-            AddressParameterAnalog.LFO_RATE, "Rate", vertical=True
+            AnalogParam.LFO_RATE, "Rate", vertical=True
         )
         self.lfo_rate_modulation = self._create_parameter_slider(
-            AddressParameterAnalog.LFO_RATE_MODULATION_CONTROL, "Rate Modulation", vertical=True
+            AnalogParam.LFO_RATE_MODULATION_CONTROL, "Rate Modulation", vertical=True
         )
         self.lfo_fade = self._create_parameter_slider(
-            AddressParameterAnalog.LFO_FADE_TIME, "Fade Time", vertical=True
+            AnalogParam.LFO_FADE_TIME, "Fade Time", vertical=True
         )
 
         fade_rate_controls_row_layout = QHBoxLayout()
@@ -333,18 +333,18 @@ class AnalogLFOSection(QWidget):
         sync_row_layout = QHBoxLayout()
         # sync_row_layout.addStretch()
         self.lfo_sync_switch = self._create_parameter_switch(
-            AddressParameterAnalog.LFO_TEMPO_SYNC_SWITCH, "Tempo Sync", ["OFF", "ON"]
+            AnalogParam.LFO_TEMPO_SYNC_SWITCH, "Tempo Sync", ["OFF", "ON"]
         )
         sync_row_layout.addWidget(self.lfo_sync_switch)
         self.lfo_sync_note = self._create_parameter_combo_box(
-            AddressParameterAnalog.LFO_TEMPO_SYNC_NOTE,
+            AnalogParam.LFO_TEMPO_SYNC_NOTE,
             "Sync Note",
             options=["1/1", "1/2", "1/4", "1/8", "1/16"],
         )
         sync_row_layout.addWidget(self.lfo_sync_note)
         # Key Trigger switch
         self.key_trigger_switch = self._create_parameter_switch(
-            AddressParameterAnalog.LFO_KEY_TRIGGER, "Key Trigger", ["OFF", "ON"]
+            AnalogParam.LFO_KEY_TRIGGER, "Key Trigger", ["OFF", "ON"]
         )
         sync_row_layout.addWidget(self.key_trigger_switch)
         # sync_row_layout.addStretch()

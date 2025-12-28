@@ -2,7 +2,7 @@
 from enum import IntEnum
 from typing import List
 
-from jdxi_editor.midi.data.parameter.digital.common import AddressParameterDigitalCommon
+from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParam
 
 
 class DigitalPartialOffset(IntEnum):
@@ -32,25 +32,25 @@ class DigitalPartial(IntEnum):
     SPLIT_1_3 = 0x07
 
     @property
-    def switch_param(self) -> "AddressParameterDigitalCommon":
+    def switch_param(self) -> "DigitalCommonParam":
         """Get the switch parameter for this partial"""
         if self > 3:  # Structure types are > 3
             raise ValueError("Structure types don't have switch parameters")
         return {
-            self.PARTIAL_1: AddressParameterDigitalCommon.PARTIAL1_SWITCH,
-            self.PARTIAL_2: AddressParameterDigitalCommon.PARTIAL2_SWITCH,
-            self.PARTIAL_3: AddressParameterDigitalCommon.PARTIAL3_SWITCH,
+            self.PARTIAL_1: DigitalCommonParam.PARTIAL1_SWITCH,
+            self.PARTIAL_2: DigitalCommonParam.PARTIAL2_SWITCH,
+            self.PARTIAL_3: DigitalCommonParam.PARTIAL3_SWITCH,
         }[self]
 
     @property
-    def select_param(self) -> "AddressParameterDigitalCommon":
+    def select_param(self) -> "DigitalCommonParam":
         """Get the select parameter for this partial"""
         if self > 3:  # Structure types are > 3
             raise ValueError("Structure types don't have select parameters")
         return {
-            self.PARTIAL_1: AddressParameterDigitalCommon.PARTIAL1_SELECT,
-            self.PARTIAL_2: AddressParameterDigitalCommon.PARTIAL2_SELECT,
-            self.PARTIAL_3: AddressParameterDigitalCommon.PARTIAL3_SELECT,
+            self.PARTIAL_1: DigitalCommonParam.PARTIAL1_SELECT,
+            self.PARTIAL_2: DigitalCommonParam.PARTIAL2_SELECT,
+            self.PARTIAL_3: DigitalCommonParam.PARTIAL3_SELECT,
         }[self]
 
     @property

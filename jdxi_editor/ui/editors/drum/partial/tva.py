@@ -36,7 +36,7 @@ from typing import Callable
 
 from PySide6.QtWidgets import QGroupBox, QFormLayout, QWidget, QVBoxLayout, QScrollArea, QHBoxLayout
 
-from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
+from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 from jdxi_editor.midi.io.helper import MidiIOHelper
 
@@ -46,7 +46,7 @@ class DrumTVASection(QWidget):
 
     def __init__(
         self,
-        controls: dict[AddressParameterDrumPartial, QWidget],
+        controls: dict[DrumPartialParam, QWidget],
         create_parameter_combo_box: Callable,
         create_parameter_slider: Callable,
         midi_helper: MidiIOHelper,
@@ -95,7 +95,7 @@ class DrumTVASection(QWidget):
 
         # Add TVA parameters
         tva_level_velocity_curve_spin = self._create_parameter_combo_box(
-            AddressParameterDrumPartial.TVA_LEVEL_VELOCITY_CURVE,
+            DrumPartialParam.TVA_LEVEL_VELOCITY_CURVE,
             "Level Velocity Curve",
             ["FIXED", "1", "2", "3", "4", "5", "6", "7"],
             [0, 1, 2, 3, 4, 5, 6, 7],
@@ -104,55 +104,55 @@ class DrumTVASection(QWidget):
         tva_layout.addRow(tva_level_velocity_curve_spin)
 
         tva_level_velocity_sens_slider = self._create_parameter_slider(
-            AddressParameterDrumPartial.TVA_LEVEL_VELOCITY_SENS, "Level Velocity Sens"
+            DrumPartialParam.TVA_LEVEL_VELOCITY_SENS, "Level Velocity Sens"
         )
         tva_layout.addRow(tva_level_velocity_sens_slider)
 
         tva_env_time1_velocity_sens_slider = self._create_parameter_slider(
-            AddressParameterDrumPartial.TVA_ENV_TIME_1_VELOCITY_SENS,
+            DrumPartialParam.TVA_ENV_TIME_1_VELOCITY_SENS,
             "Env Time 1 Velocity Sens",
         )
         tva_layout.addRow(tva_env_time1_velocity_sens_slider)
 
         tva_env_time4_velocity_sens_slider = self._create_parameter_slider(
-            AddressParameterDrumPartial.TVA_ENV_TIME_4_VELOCITY_SENS,
+            DrumPartialParam.TVA_ENV_TIME_4_VELOCITY_SENS,
             "Env Time 4 Velocity Sens",
         )
 
         tva_layout.addRow(tva_env_time4_velocity_sens_slider)
 
         tva_env_time1_slider = self._create_parameter_slider(
-            AddressParameterDrumPartial.TVA_ENV_TIME_1, "Env Time 1"
+            DrumPartialParam.TVA_ENV_TIME_1, "Env Time 1"
         )
         tva_layout.addRow(tva_env_time1_slider)
 
         tva_env_time2_slider = self._create_parameter_slider(
-            AddressParameterDrumPartial.TVA_ENV_TIME_2, "Env Time 2"
+            DrumPartialParam.TVA_ENV_TIME_2, "Env Time 2"
         )
         tva_layout.addRow(tva_env_time2_slider)
 
         tva_env_time3_slider = self._create_parameter_slider(
-            AddressParameterDrumPartial.TVA_ENV_TIME_3, "Env Time 3"
+            DrumPartialParam.TVA_ENV_TIME_3, "Env Time 3"
         )
         tva_layout.addRow(tva_env_time3_slider)
 
         tva_env_time4_slider = self._create_parameter_slider(
-            AddressParameterDrumPartial.TVA_ENV_TIME_4, "Env Time 4"
+            DrumPartialParam.TVA_ENV_TIME_4, "Env Time 4"
         )
         tva_layout.addRow(tva_env_time4_slider)
 
         tva_env_level1_slider = self._create_parameter_slider(
-            AddressParameterDrumPartial.TVA_ENV_LEVEL_1, "Env Level 1"
+            DrumPartialParam.TVA_ENV_LEVEL_1, "Env Level 1"
         )
         tva_layout.addRow(tva_env_level1_slider)
 
         tva_env_level2_slider = self._create_parameter_slider(
-            AddressParameterDrumPartial.TVA_ENV_LEVEL_2, "Env Level 2"
+            DrumPartialParam.TVA_ENV_LEVEL_2, "Env Level 2"
         )
         tva_layout.addRow(tva_env_level2_slider)
 
         tva_env_level3_slider = self._create_parameter_slider(
-            AddressParameterDrumPartial.TVA_ENV_LEVEL_3, "Env Level 3"
+            DrumPartialParam.TVA_ENV_LEVEL_3, "Env Level 3"
         )
         tva_layout.addRow(tva_env_level3_slider)
         main_row_hlayout.addStretch()

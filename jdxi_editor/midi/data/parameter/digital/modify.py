@@ -30,7 +30,7 @@ from jdxi_editor.midi.data.address.address import AddressOffsetSuperNATURALLMB
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 
 
-class AddressParameterDigitalModify(AddressParameter):
+class DigitalModifyParam(AddressParameter):
     """Modify parameters for Digital/SuperNATURAL synth tones.
     These parameters are shared across all partials.
     """
@@ -88,7 +88,7 @@ class AddressParameterDigitalModify(AddressParameter):
     def get_by_name(param_name):
         """Get the Parameter by name."""
         # Return the parameter member by name, or None if not found
-        return AddressParameterDigitalModify.__members__.get(param_name, None)
+        return DigitalModifyParam.__members__.get(param_name, None)
 
     def validate_value(self, value: int) -> int:
         """Validate and convert parameter value"""

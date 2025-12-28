@@ -47,12 +47,9 @@ from PySide6.QtWidgets import (
 
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import AddressOffsetSuperNATURALLMB
-from jdxi_editor.midi.data.parameter.digital.partial import (
-    AddressParameterDigitalPartial,
-)
+from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParam
 from jdxi_editor.midi.data.digital.oscillator import DigitalOscWave
 from jdxi_editor.midi.data.digital.partial import DIGITAL_PARTIAL_NAMES
-from jdxi_editor.midi.data.parameter.digital.common import AddressParameterDigitalCommon
 from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.digital.partial.amp import DigitalAmpSection
@@ -93,10 +90,10 @@ class DigitalPartialEditor(PartialEditor):
             3: AddressOffsetSuperNATURALLMB.PARTIAL_3,
         }
         self.bipolar_parameters = [
-            AddressParameterDigitalPartial.OSC_DETUNE,
-            AddressParameterDigitalPartial.OSC_PITCH,
-            AddressParameterDigitalPartial.OSC_PITCH_ENV_DEPTH,
-            AddressParameterDigitalPartial.AMP_PAN,
+            DigitalPartialParam.OSC_DETUNE,
+            DigitalPartialParam.OSC_PITCH,
+            DigitalPartialParam.OSC_PITCH_ENV_DEPTH,
+            DigitalPartialParam.AMP_PAN,
         ]
         self.midi_helper = midi_helper
         self.partial_number = partial_number
@@ -118,7 +115,7 @@ class DigitalPartialEditor(PartialEditor):
             self.part_name = "Unknown"  # Provide a fallback value
         # Store parameter controls for easy access
         self.controls: Dict[
-            Union[AddressParameterDigitalPartial, AddressParameterDigitalCommon],
+            Union[DigitalPartialParam, DigitalCommonParam],
             QWidget,
         ] = {}
 
@@ -207,12 +204,12 @@ class DigitalPartialEditor(PartialEditor):
         """
         enabled = mode != 0  # Enable if not BYPASS
         for param in [
-            AddressParameterDigitalPartial.FILTER_CUTOFF,
-            AddressParameterDigitalPartial.FILTER_RESONANCE,
-            AddressParameterDigitalPartial.FILTER_CUTOFF_KEYFOLLOW,
-            AddressParameterDigitalPartial.FILTER_ENV_VELOCITY_SENSITIVITY,
-            AddressParameterDigitalPartial.FILTER_ENV_DEPTH,
-            AddressParameterDigitalPartial.FILTER_SLOPE,
+            DigitalPartialParam.FILTER_CUTOFF,
+            DigitalPartialParam.FILTER_RESONANCE,
+            DigitalPartialParam.FILTER_CUTOFF_KEYFOLLOW,
+            DigitalPartialParam.FILTER_ENV_VELOCITY_SENSITIVITY,
+            DigitalPartialParam.FILTER_ENV_DEPTH,
+            DigitalPartialParam.FILTER_SLOPE,
         ]:
             if param in self.controls:
                 self.filter_tab.controls[param].setEnabled(enabled)
@@ -237,6 +234,6 @@ class DigitalPartialEditor(PartialEditor):
 
         # Send MIDI message
         if not self.send_midi_parameter(
-            AddressParameterDigitalPartial.OSC_WAVE, waveform.value
+            DigitalPartialParam.OSC_WAVE, waveform.value
         ):
             log.warning(f"Failed to set waveform to {waveform.name}")

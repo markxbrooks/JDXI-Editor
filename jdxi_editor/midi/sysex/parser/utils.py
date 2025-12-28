@@ -25,7 +25,7 @@ from jdxi_editor.jdxi.sysex.offset import JDXiSysExOffset
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB as TemporaryToneUMB, \
     AddressOffsetTemporaryToneUMB
-from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
+from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.map.parameter_address import JDXiMapParameterAddress
 # from jdxi_editor.midi.map import JDXiMapParameterAddress
@@ -98,7 +98,7 @@ def parse_single_parameter(data: bytes, parameter_type: AddressParameter) -> Dic
     :param parameter_type: Type
     :return: Dict[str, int]
     """
-    if isinstance(parameter_type, AddressParameterDrumPartial):
+    if isinstance(parameter_type, DrumPartialParam):
         _, offset = get_drum_tone(data[JDXiSysExOffset.ADDRESS_LMB])
         address = data[JDXiSysExOffset.ADDRESS_LSB]
         index = address_to_index(offset, address)
@@ -224,7 +224,7 @@ def parse_sysex(data: bytes) -> Dict[str, str]:
     log.message(f"temporary_area: {temporary_area}, synth_tone: {synth_tone}", silent=True)
 
     parameter_cls = JDXiMapParameterAddress.MAP.get(
-        (temporary_area, synth_tone), AddressParameterDrumPartial
+        (temporary_area, synth_tone), DrumPartialParam
     )
     if parameter_cls is None:
         log.warning(f"No parameter mapping found for ({temporary_area}, {synth_tone})")

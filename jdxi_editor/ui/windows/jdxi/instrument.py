@@ -59,9 +59,9 @@ from jdxi_editor.midi.data.address.address import (
     AddressOffsetProgramLMB,
 )
 from jdxi_editor.midi.data.control_change.sustain import ControlChangeSustain
-from jdxi_editor.midi.data.parameter.digital.common import AddressParameterDigitalCommon
+from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParam
 from jdxi_editor.midi.channel.channel import MidiChannel
-from jdxi_editor.midi.data.parameter.program.zone import AddressParameterProgramZone
+from jdxi_editor.midi.data.parameter.program.zone import ProgramZoneParam
 
 from jdxi_editor.midi.io.controller import MidiIOController
 from jdxi_editor.midi.io.delay import send_with_delay
@@ -1586,7 +1586,7 @@ class JDXiInstrument(JDXiUi):
                 msb=AddressStartMSB.TEMPORARY_TONE,
                 umb=AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_1,
                 lmb=AddressOffsetProgramLMB.COMMON,
-                lsb=AddressParameterDigitalCommon.OCTAVE_SHIFT.lsb,
+                lsb=DigitalCommonParam.OCTAVE_SHIFT.lsb,
             )
             sysex_message = RolandSysEx(
                 sysex_address=address,
@@ -1673,7 +1673,7 @@ class JDXiInstrument(JDXiUi):
                     )
                     sysex_message = self.sysex_composer.compose_message(
                         address=address,
-                        param=AddressParameterProgramZone.ARPEGGIO_SWITCH,
+                        param=ProgramZoneParam.ARPEGGIO_SWITCH,
                         value=value,
                     )
                     self.midi_helper.send_midi_message(sysex_message)

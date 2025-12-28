@@ -10,7 +10,7 @@ from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.analog.oscillator import AnalogSubOscType, AnalogOscWave
 from jdxi_editor.midi.data.parameter import AddressParameter
-from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
+from jdxi_editor.midi.data.parameter.analog import AnalogParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.digital.partial.pwm import PWMWidget
 from jdxi_editor.ui.image.utils import base64_to_pixmap
@@ -64,12 +64,24 @@ class AnalogOscillatorSection(QWidget):
         layout.setContentsMargins(1, 1, 1, 1)
         self.setLayout(layout)
         self.setStyleSheet(JDXiStyle.ADSR_ANALOG)
-        # Waveform buttons
+
+        # --- Waveform buttons ---
         layout.addLayout(self.create_waveform_buttons())
+
+        # --- Tab widget to add pitch and PW controls to ---
         self.oscillator_tab_widget = QTabWidget()
         layout.addWidget(self.oscillator_tab_widget)
 
-        # Tuning and pitch controls
+        # --- Pitch Envelope ---
+        pitch_widget = self._create_pitch_widget()
+        self.oscillator_tab_widget.addTab(pitch_widget, "Tuning and Pitch")
+        layout.addStretch()
+
+        # --- Pulse Width controls ---
+        self.oscillator_tab_widget.addTab(self.create_pw_group(), "Pulse Width")
+
+    def _create_pitch_widget(self) -> QWidget:
+        """Tuning and pitch controls"""
         pitch_layout = QHBoxLayout()
         pitch_layout.addStretch()
         pitch_layout.addWidget(self.create_tuning_group())
@@ -78,14 +90,7 @@ class AnalogOscillatorSection(QWidget):
         pitch_widget = QWidget()
         pitch_widget.setLayout(pitch_layout)
         pitch_widget.setMinimumHeight(JDXiDimensions.EDITOR_MINIMUM_HEIGHT)
-        # Pitch Envelope
-        self.oscillator_tab_widget.addTab(pitch_widget, "Tuning and Pitch")
-        layout.addStretch()
-        # Pulse Width controls
-        self.oscillator_tab_widget.addTab(self.create_pw_group(), "Pulse Width")
-
-        # Sub Oscillator
-        # layout.addWidget(self.create_sub_osc_group())
+        return pitch_widget
 
     def create_waveform_buttons(self) -> QHBoxLayout:
         """
@@ -117,11 +122,11 @@ class AnalogOscillatorSection(QWidget):
             btn.setFixedSize(60, 30)
             btn.waveform_selected.connect(self._on_waveform_selected)
             self.wave_buttons[waveform] = btn
-            self.controls[AddressParameterAnalog.OSC_WAVEFORM] = btn
+            self.controls[AnalogParam.OSC_WAVEFORM] = btn
             wave_layout.addWidget(btn)
 
         self.sub_oscillator_type_switch = self._create_parameter_switch(
-            AddressParameterAnalog.SUB_OSCILLATOR_TYPE,
+            AnalogParam.SUB_OSCILLATOR_TYPE,
             "Type",
             [
                 AnalogSubOscType.OFF.display_name,
@@ -145,12 +150,12 @@ class AnalogOscillatorSection(QWidget):
         tuning_layout.addStretch()
         tuning_layout.addWidget(
             self._create_parameter_slider(
-                AddressParameterAnalog.OSC_PITCH_COARSE, "Coarse (1/2 tones)", vertical=True
+                AnalogParam.OSC_PITCH_COARSE, "Coarse (1/2 tones)", vertical=True
             )
         )
         tuning_layout.addWidget(
             self._create_parameter_slider(
-                AddressParameterAnalog.OSC_PITCH_FINE, "Fine (cents)", vertical=True
+                AnalogParam.OSC_PITCH_FINE, "Fine (cents)", vertical=True
             )
         )
         tuning_layout.addStretch()
@@ -169,8 +174,8 @@ class AnalogOscillatorSection(QWidget):
         pw_layout.addStretch()
         pw_group.setLayout(pw_layout)
         pw_layout.addStretch()
-        self.pwm_widget = PWMWidget(pulse_width_param=AddressParameterAnalog.OSC_PULSE_WIDTH,
-                                    mod_depth_param=AddressParameterAnalog.OSC_PULSE_WIDTH_MOD_DEPTH,
+        self.pwm_widget = PWMWidget(pulse_width_param=AnalogParam.OSC_PULSE_WIDTH,
+                                    mod_depth_param=AnalogParam.OSC_PULSE_WIDTH_MOD_DEPTH,
                                     midi_helper=self.midi_helper,
                                     address=self.address,
                                     create_parameter_slider=self._create_parameter_slider,
@@ -192,11 +197,11 @@ class AnalogOscillatorSection(QWidget):
         pitch_env_row_layout = QHBoxLayout()
         pitch_env_group.setLayout(pitch_env_row_layout)
         pitch_env_row_layout.addStretch()
-        # Pitch Env Widget
+        # --- Pitch Env Widget ---
         self.pitch_env_widget = PitchEnvelopeWidget(
-            attack_param=AddressParameterAnalog.OSC_PITCH_ENV_ATTACK_TIME,
-            decay_param=AddressParameterAnalog.OSC_PITCH_ENV_DECAY_TIME,
-            depth_param=AddressParameterAnalog.OSC_PITCH_ENV_DEPTH,
+            attack_param=AnalogParam.OSC_PITCH_ENV_ATTACK_TIME,
+            decay_param=AnalogParam.OSC_PITCH_ENV_DECAY_TIME,
+            depth_param=AnalogParam.OSC_PITCH_ENV_DEPTH,
             midi_helper=self.midi_helper,
             create_parameter_slider=self._create_parameter_slider,
             controls=self.controls,
@@ -211,7 +216,7 @@ class AnalogOscillatorSection(QWidget):
         pitch_env_row_layout.addWidget(self.pitch_env_widget)
         pitch_env_row_layout.addWidget(
             self._create_parameter_slider(
-                AddressParameterAnalog.OSC_PITCH_ENV_VELOCITY_SENSITIVITY, "Velocity Sensitivity", vertical=True
+                AnalogParam.OSC_PITCH_ENV_VELOCITY_SENSITIVITY, "Velocity Sensitivity", vertical=True
             )
         )
         pitch_env_row_layout.addStretch()

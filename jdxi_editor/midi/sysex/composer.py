@@ -9,8 +9,8 @@ from jdxi_editor.jdxi.midi.constant import MidiConstant
 from jdxi_editor.jdxi.sysex.offset import JDXiSysExOffset
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.helpers import apply_address_offset
-from jdxi_editor.midi.data.parameter.digital import AddressParameterDigitalCommon, AddressParameterDigitalModify
-from jdxi_editor.midi.data.parameter.drum.common import AddressParameterDrumCommon
+from jdxi_editor.midi.data.parameter.digital import DigitalCommonParam, DigitalModifyParam
+from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParam
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.data.address.address import RolandSysExAddress, JD_XI_HEADER_LIST, AddressOffsetSuperNATURALLMB
 from jdxi_editor.midi.message.roland import RolandSysEx
@@ -22,9 +22,9 @@ def apply_lmb_offset(address: RolandSysExAddress, param: AddressParameter) -> Ro
     """
     Set the LMB (Logical Memory Block) of the address depending on the parameter type.
     """
-    if isinstance(param, (AddressParameterDigitalCommon, AddressParameterDrumCommon)):
+    if isinstance(param, (DigitalCommonParam, DrumCommonParam)):
         address.lmb = AddressOffsetSuperNATURALLMB.COMMON
-    elif isinstance(param, AddressParameterDigitalModify):
+    elif isinstance(param, DigitalModifyParam):
         address.lmb = AddressOffsetSuperNATURALLMB.MODIFY
     return address
 

@@ -18,7 +18,7 @@ from PySide6.QtWidgets import (
 from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.midi.data.address.address import AddressOffsetProgramLMB
 from jdxi_editor.midi.data.parameter.drum.addresses import DRUM_GROUP_MAP
-from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
+from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.drum.partial.output import DrumOutputSection
 from jdxi_editor.ui.editors.drum.partial.pitch import DrumPitchSection
@@ -50,7 +50,7 @@ class DrumPartialEditor(PartialEditor):
         self._init_synth_data(synth_type=JDXiSynth.DRUM_KIT,
                               partial_number=self.partial_number)
         # Store parameter controls for easy access
-        self.controls: Dict[AddressParameterDrumPartial, QWidget] = {}
+        self.controls: Dict[DrumPartialParam, QWidget] = {}
 
         # Main layout
         main_layout = QVBoxLayout()
