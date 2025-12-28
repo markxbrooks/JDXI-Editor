@@ -93,6 +93,7 @@ class DrumWMTSection(QWidget):
 
     def setup_ui(self):
         """setup UI"""
+        self.setMinimumWidth(JDXiDimensions.DRUM_PARTIAL_TAB_MIN_WIDTH)
         layout = QVBoxLayout(self)
 
         scroll_area = QScrollArea()

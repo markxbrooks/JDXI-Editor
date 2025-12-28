@@ -62,7 +62,7 @@ def create_synth_data(synth_type: JDXiSynth, partial_number: int = 0) -> Union[
             partial_parameters=AddressParameterDrumPartial
         )
 
-    elif synth_type in [JDXiSynth.DIGITAL_SYNTH_1, JDXiSynth.DIGITAL_SYNTH_2, JDXiSynth.DIGITAL_SYNTH_3]:
+    elif synth_type in [JDXiSynth.DIGITAL_SYNTH_1, JDXiSynth.DIGITAL_SYNTH_2]:
         address_lmb = AddressOffsetSuperNATURALLMB.digital_partial_offset(partial_number)
 
         if synth_type == JDXiSynth.DIGITAL_SYNTH_1:
@@ -82,11 +82,11 @@ def create_synth_data(synth_type: JDXiSynth, partial_number: int = 0) -> Union[
 
             midi_requests = MidiRequests.DIGITAL2
 
-        elif synth_type == JDXiSynth.DIGITAL_SYNTH_3:
+        """elif synth_type == JDXiSynth.DIGITAL_SYNTH_3:
             synth_number = 3
             digital_partial_address_umb = AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_1  # reuse
             midi_channel = MidiChannel.ANALOG_SYNTH  # Channel 3, cheat mode
-            midi_requests = MidiRequests.DIGITAL1  # reuse digital command set
+            midi_requests = MidiRequests.DIGITAL1  # reuse digital command set"""
 
         return DigitalSynthData(
             midi_requests=midi_requests,

@@ -161,14 +161,6 @@ class JDXiInstrument(JDXiUi):
                 kwargs={"synth_number": 2},
                 icon="mdi.piano"
             ),
-            "digital3": EditorConfig(
-                title="Digital Synth 3",
-                editor_class=DigitalSynth3Editor,
-                synth_type=JDXiSynth.DIGITAL_SYNTH_3,
-                midi_channel=MidiChannel.ANALOG_SYNTH,
-                kwargs={"synth_number": 3},
-                icon="mdi.piano"
-            ),
             "analog": EditorConfig(
                 title="Analog Synth",
                 editor_class=AnalogSynthEditor,
@@ -236,11 +228,6 @@ class JDXiInstrument(JDXiUi):
                 JDXiSynth.DIGITAL_SYNTH_2,
                 JDXiPresetToneList.DIGITAL_ENUMERATED,
                 MidiChannel.DIGITAL_SYNTH_2,
-            ),
-            (
-                JDXiSynth.DIGITAL_SYNTH_3,
-                JDXiPresetToneList.DIGITAL_ENUMERATED,
-                MidiChannel.ANALOG_SYNTH,
             ),
             (
                 JDXiSynth.ANALOG_SYNTH,

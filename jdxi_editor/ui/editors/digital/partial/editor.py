@@ -105,10 +105,10 @@ class DigitalPartialEditor(PartialEditor):
             self._init_synth_data(synth_type=JDXiSynth.DIGITAL_SYNTH_1, partial_number=self.partial_number)
         elif synth_number == 2:
             self._init_synth_data(synth_type=JDXiSynth.DIGITAL_SYNTH_2, partial_number=self.partial_number)
-        elif synth_number == 3:
-            self._init_synth_data(synth_type=JDXiSynth.DIGITAL_SYNTH_3, partial_number=self.partial_number)
+            """elif synth_number == 3:
+                self._init_synth_data(synth_type=JDXiSynth.DIGITAL_SYNTH_3, partial_number=self.partial_number)"""
         else:
-            raise ValueError(f"Invalid synth_number: {synth_number}. Must be 1, 2, or 3.")
+            raise ValueError(f"Invalid synth_number: {synth_number}. Must be 1 or 2.")
         log.parameter("Initializing partial:", self.synth_data.address)
         if 0 <= partial_number < len(DIGITAL_PARTIAL_NAMES):
             self.part_name = DIGITAL_PARTIAL_NAMES[partial_number]

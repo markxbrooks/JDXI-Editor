@@ -98,7 +98,7 @@ class DigitalAmpSection(QWidget):
     def _create_amp_controls_layout(self) -> QVBoxLayout:
         """Create amp controls layout"""
         main_layout = QVBoxLayout()
-        
+
         # Level and velocity controls row
         controls_row_layout = QHBoxLayout()
         controls_row_layout.addStretch()

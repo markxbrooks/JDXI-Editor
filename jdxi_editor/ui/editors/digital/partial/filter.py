@@ -126,12 +126,12 @@ class DigitalFilterSection(QWidget):
         
         self.filter_widget = FilterWidget(
             cutoff_param=AddressParameterDigitalPartial.FILTER_CUTOFF,
-            slope_param=AddressParameterDigitalPartial.FILTER_SLOPE,
-            create_parameter_slider=self._create_parameter_slider,
-            create_parameter_switch=self._create_parameter_switch,
-            midi_helper=self.midi_helper,
-            parent=self,
-            controls=self.controls,
+                                          slope_param=AddressParameterDigitalPartial.FILTER_SLOPE,
+                                          create_parameter_slider=self._create_parameter_slider,
+                                          create_parameter_switch=self._create_parameter_switch,
+                                          midi_helper=self.midi_helper,
+                                          parent=self,
+                                          controls=self.controls,
             address=self.address
         )
         controls_group.setStyleSheet(JDXiStyle.ADSR)

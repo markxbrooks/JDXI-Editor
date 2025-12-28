@@ -2,13 +2,14 @@
 MOD LFO section of the digital partial editor.
 """
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QGroupBox
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QGroupBox, QTabWidget
 from typing import Callable
 
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.midi.data.parameter.digital.partial import (
     AddressParameterDigitalPartial,
 )
+from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
 class DigitalModLFOSection(QWidget):
@@ -58,7 +59,6 @@ class DigitalModLFOSection(QWidget):
             ["OFF", "ON"],
         )
         shape_row_layout.addWidget(self.mod_lfo_sync)
-        mod_lfo_layout.addLayout(shape_row_layout)
 
         self.mod_lfo_note = self._create_parameter_combo_box(
             AddressParameterDigitalPartial.MOD_LFO_TEMPO_SYNC_NOTE,
@@ -66,23 +66,41 @@ class DigitalModLFOSection(QWidget):
             ["1/1", "1/2", "1/4", "1/8", "1/16"],
         )
         shape_row_layout.addWidget(self.mod_lfo_note)
-        shape_row_layout.addWidget(
+        shape_row_layout.addStretch()
+        mod_lfo_layout.addLayout(shape_row_layout)
+
+        # Create tab widget for Rate/Rate Ctrl and Depths
+        mod_lfo_controls_tab_widget = QTabWidget()
+        mod_lfo_layout.addWidget(mod_lfo_controls_tab_widget)
+
+        # --- Rate and Rate Ctrl Controls Tab ---
+        rate_widget = QWidget()
+        rate_layout = QHBoxLayout()
+        rate_layout.addStretch()
+        rate_widget.setLayout(rate_layout)
+        rate_widget.setMinimumHeight(JDXiDimensions.EDITOR_MINIMUM_HEIGHT)
+        
+        # Rate and Rate Ctrl controls
+        rate_layout.addWidget(
             self._create_parameter_slider(
                 AddressParameterDigitalPartial.MOD_LFO_RATE, "Rate", vertical=True
             )
         )
-        shape_row_layout.addWidget(
+        rate_layout.addWidget(
             self._create_parameter_slider(
                 AddressParameterDigitalPartial.MOD_LFO_RATE_CTRL, "Rate Ctrl", vertical=True
             )
         )
-        shape_row_layout.addStretch()
+        rate_layout.addStretch()
 
-        # Modulation depths
-        depths_group = QGroupBox("Depths")
+        mod_lfo_controls_tab_widget.addTab(rate_widget, "Rate and Rate Ctrl")
+
+        # --- Depths Tab ---
+        depths_widget = QWidget()
         depths_layout = QHBoxLayout()
         depths_layout.addStretch()
-        depths_group.setLayout(depths_layout)
+        depths_widget.setLayout(depths_layout)
+        depths_widget.setMinimumHeight(JDXiDimensions.EDITOR_MINIMUM_HEIGHT)
 
         depths_layout.addWidget(
             self._create_parameter_slider(
@@ -106,6 +124,6 @@ class DigitalModLFOSection(QWidget):
         )
         depths_layout.addStretch()
 
-        mod_lfo_layout.addWidget(depths_group)
+        mod_lfo_controls_tab_widget.addTab(depths_widget, "Depths")
 
         mod_lfo_layout.addStretch()

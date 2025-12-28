@@ -413,6 +413,7 @@ class ProgramEditor(BasicEditor):
         search_row = QHBoxLayout()
         search_row.addWidget(QLabel("Search:"))
         self.search_box = QLineEdit()
+        self.search_box.setStyleSheet(JDXiStyle.QLINEEDIT)
         self.search_box.setPlaceholderText("Search presets...")
         self.search_box.textChanged.connect(self._populate_presets)
         search_row.addWidget(self.search_box)
@@ -542,6 +543,7 @@ class ProgramEditor(BasicEditor):
         search_row.addWidget(QLabel("Search:"))
         self.search_box = QLineEdit()
         self.search_box.setPlaceholderText("Search programs...")
+        self.search_box.setStyleSheet(JDXiStyle.QLINEEDIT)
         self.search_box.textChanged.connect(self.populate_programs)  # @@
         search_row.addWidget(self.search_box)
         program_vlayout.addLayout(search_row)
