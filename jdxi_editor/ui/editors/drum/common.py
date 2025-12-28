@@ -19,7 +19,7 @@ from typing import Callable
 from PySide6.QtWidgets import QGroupBox, QFormLayout, QWidget, QVBoxLayout, QScrollArea
 
 from jdxi_editor.midi.data.address.address import AddressOffsetProgramLMB, RolandSysExAddress
-from jdxi_editor.midi.data.parameter.drum.common import AddressParameterDrumCommon
+from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 
 
@@ -70,7 +70,7 @@ class DrumCommonSection(QWidget):
         # Kit Level control
         self.address.lmb = AddressOffsetProgramLMB.COMMON
         kit_level_slider = self._create_parameter_slider(
-            AddressParameterDrumCommon.KIT_LEVEL, "Kit Level"
+            DrumCommonParam.KIT_LEVEL, "Kit Level"
         )
         common_layout.addRow("Kit Level:", kit_level_slider)
 

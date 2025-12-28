@@ -29,7 +29,7 @@ Classes:
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 
 
-class AddressParameterProgramController(AddressParameter):
+class ProgramControllerParam(AddressParameter):
     """Program Controller parameters"""
 
     # Arpeggio parameters
@@ -136,24 +136,24 @@ class AddressParameterProgramController(AddressParameter):
         :param value: int The value
         :return: str The display value
         """
-        if param == AddressParameterProgramController.ARPEGGIO_GRID:  # Grid
-            return AddressParameterProgramController.get_grid_name(value)
-        elif param == AddressParameterProgramController.ARPEGGIO_DURATION:  # Duration
-            return AddressParameterProgramController.get_duration_name(value)
-        elif param == AddressParameterProgramController.ARPEGGIO_SWITCH:  # Switch
+        if param == ProgramControllerParam.ARPEGGIO_GRID:  # Grid
+            return ProgramControllerParam.get_grid_name(value)
+        elif param == ProgramControllerParam.ARPEGGIO_DURATION:  # Duration
+            return ProgramControllerParam.get_duration_name(value)
+        elif param == ProgramControllerParam.ARPEGGIO_SWITCH:  # Switch
             return "ON" if value else "OFF"
-        elif param == AddressParameterProgramController.ARPEGGIO_STYLE:  # Style
+        elif param == ProgramControllerParam.ARPEGGIO_STYLE:  # Style
             return str(value + 1)  # Convert 0-127 to 1-128
-        elif param == AddressParameterProgramController.ARPEGGIO_MOTIF:  # Motif
-            return AddressParameterProgramController.get_motif_name(value)
+        elif param == ProgramControllerParam.ARPEGGIO_MOTIF:  # Motif
+            return ProgramControllerParam.get_motif_name(value)
         elif (
-            param == AddressParameterProgramController.ARPEGGIO_OCTAVE_RANGE
+                param == ProgramControllerParam.ARPEGGIO_OCTAVE_RANGE
         ):  # Octave Range
             return f"{value - 64:+d}"  # Convert 61-67 to -3/+3
         elif (
-            param == AddressParameterProgramController.ARPEGGIO_ACCENT_RATE
+                param == ProgramControllerParam.ARPEGGIO_ACCENT_RATE
         ):  # Accent Rate
             return f"{value}%"
-        elif param == AddressParameterProgramController.ARPEGGIO_VELOCITY:  # Velocity
+        elif param == ProgramControllerParam.ARPEGGIO_VELOCITY:  # Velocity
             return "REAL" if value == 0 else str(value)
         return str(value)

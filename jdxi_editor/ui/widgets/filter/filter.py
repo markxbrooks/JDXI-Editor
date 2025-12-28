@@ -17,7 +17,7 @@ from PySide6.QtCore import Signal
 from jdxi_editor.jdxi.midi.constant import MidiConstant
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.parameter import AddressParameter
-from jdxi_editor.midi.data.parameter.digital import AddressParameterDigitalPartial
+from jdxi_editor.midi.data.parameter.digital import DigitalPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.utils.conversions import midi_value_to_ms, ms_to_midi_value
 from jdxi_editor.ui.widgets.envelope.base import EnvelopeWidgetBase, TOOLTIPS
@@ -94,7 +94,7 @@ class FilterWidget(EnvelopeWidgetBase):
 
         self.cutoff_param_control.setValue(self.envelope["cutoff_param"] * MidiConstant.VALUE_MAX_SEVEN_BIT)
         if self.slope_param:
-            self.slope_param_control = self._create_parameter_switch(AddressParameterDigitalPartial.FILTER_SLOPE,
+            self.slope_param_control = self._create_parameter_switch(DigitalPartialParam.FILTER_SLOPE,
                                                                      label="Slope",
                                                                      values=["-12dB", "-24dB"])
             self.controls_vertical_layout.addWidget(self.slope_param_control)

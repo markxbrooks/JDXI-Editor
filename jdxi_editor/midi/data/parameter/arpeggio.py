@@ -44,7 +44,7 @@ from jdxi_editor.midi.data.address.arpeggio import ARP_GROUP
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 
 
-class AddressParameterArpeggio(AddressParameter):
+class ArpeggioParam(AddressParameter):
     """Arpeggiator parameters with address and range"""
 
     def __init__(

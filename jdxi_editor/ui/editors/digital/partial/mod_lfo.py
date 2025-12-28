@@ -7,7 +7,7 @@ from typing import Callable
 
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.midi.data.parameter.digital.partial import (
-    AddressParameterDigitalPartial,
+    DigitalPartialParam,
 )
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
@@ -47,21 +47,21 @@ class DigitalModLFOSection(QWidget):
         shape_row_layout = QHBoxLayout()
         shape_row_layout.addStretch()
         self.mod_lfo_shape = self._create_parameter_combo_box(
-            AddressParameterDigitalPartial.MOD_LFO_SHAPE,
+            DigitalPartialParam.MOD_LFO_SHAPE,
             "Shape",
             ["TRI", "SIN", "SAW", "SQR", "S&H", "RND"],
         )
         shape_row_layout.addWidget(self.mod_lfo_shape)
 
         self.mod_lfo_sync = self._create_parameter_combo_box(
-            AddressParameterDigitalPartial.MOD_LFO_TEMPO_SYNC_SWITCH,
+            DigitalPartialParam.MOD_LFO_TEMPO_SYNC_SWITCH,
             "Sync",
             ["OFF", "ON"],
         )
         shape_row_layout.addWidget(self.mod_lfo_sync)
 
         self.mod_lfo_note = self._create_parameter_combo_box(
-            AddressParameterDigitalPartial.MOD_LFO_TEMPO_SYNC_NOTE,
+            DigitalPartialParam.MOD_LFO_TEMPO_SYNC_NOTE,
             "Note",
             ["1/1", "1/2", "1/4", "1/8", "1/16"],
         )
@@ -83,12 +83,12 @@ class DigitalModLFOSection(QWidget):
         # Rate and Rate Ctrl controls
         rate_layout.addWidget(
             self._create_parameter_slider(
-                AddressParameterDigitalPartial.MOD_LFO_RATE, "Rate", vertical=True
+                DigitalPartialParam.MOD_LFO_RATE, "Rate", vertical=True
             )
         )
         rate_layout.addWidget(
             self._create_parameter_slider(
-                AddressParameterDigitalPartial.MOD_LFO_RATE_CTRL, "Rate Ctrl", vertical=True
+                DigitalPartialParam.MOD_LFO_RATE_CTRL, "Rate Ctrl", vertical=True
             )
         )
         rate_layout.addStretch()
@@ -104,22 +104,22 @@ class DigitalModLFOSection(QWidget):
 
         depths_layout.addWidget(
             self._create_parameter_slider(
-                AddressParameterDigitalPartial.MOD_LFO_PITCH_DEPTH, "Pitch", vertical=True
+                DigitalPartialParam.MOD_LFO_PITCH_DEPTH, "Pitch", vertical=True
             )
         )
         depths_layout.addWidget(
             self._create_parameter_slider(
-                AddressParameterDigitalPartial.MOD_LFO_FILTER_DEPTH, "Filter", vertical=True
+                DigitalPartialParam.MOD_LFO_FILTER_DEPTH, "Filter", vertical=True
             )
         )
         depths_layout.addWidget(
             self._create_parameter_slider(
-                AddressParameterDigitalPartial.MOD_LFO_AMP_DEPTH, "Amp", vertical=True
+                DigitalPartialParam.MOD_LFO_AMP_DEPTH, "Amp", vertical=True
             )
         )
         depths_layout.addWidget(
             self._create_parameter_slider(
-                AddressParameterDigitalPartial.MOD_LFO_PAN, "Pan", vertical=True
+                DigitalPartialParam.MOD_LFO_PAN, "Pan", vertical=True
             )
         )
         depths_layout.addStretch()

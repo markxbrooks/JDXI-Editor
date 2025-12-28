@@ -11,7 +11,7 @@ import qtawesome as qta
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
-from jdxi_editor.midi.data.parameter.digital.partial import AddressParameterDigitalPartial
+from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
@@ -24,13 +24,13 @@ class DigitalFilterSection(QWidget):
     """Filter section for the digital partial editor."""
 
     def __init__(
-        self,
-        create_parameter_slider: Callable,
-        create_parameter_switch: Callable,
-        partial_number: int,
-        midi_helper: MidiIOHelper,
-        controls: dict,
-        address: RolandSysExAddress,
+            self,
+            create_parameter_slider: Callable,
+            create_parameter_switch: Callable,
+            partial_number: int,
+            midi_helper: MidiIOHelper,
+            controls: dict,
+            address: RolandSysExAddress,
     ):
         super().__init__()
         """
@@ -108,7 +108,7 @@ class DigitalFilterSection(QWidget):
         filter_mode_row = QHBoxLayout()
         filter_mode_row.addStretch()
         self.filter_mode_switch = self._create_parameter_switch(
-            AddressParameterDigitalPartial.FILTER_MODE_SWITCH,
+            DigitalPartialParam.FILTER_MODE_SWITCH,
             "Mode",
             ["BYPASS", "LPF", "HPF", "BPF", "PKG", "LPF2", "LPF3", "LPF4"],
         )
@@ -123,32 +123,32 @@ class DigitalFilterSection(QWidget):
         controls_layout = QHBoxLayout()
         controls_layout.addStretch()
         controls_group.setLayout(controls_layout)
-        
+
         self.filter_widget = FilterWidget(
-            cutoff_param=AddressParameterDigitalPartial.FILTER_CUTOFF,
-                                          slope_param=AddressParameterDigitalPartial.FILTER_SLOPE,
-                                          create_parameter_slider=self._create_parameter_slider,
-                                          create_parameter_switch=self._create_parameter_switch,
-                                          midi_helper=self.midi_helper,
-                                          parent=self,
-                                          controls=self.controls,
+            cutoff_param=DigitalPartialParam.FILTER_CUTOFF,
+            slope_param=DigitalPartialParam.FILTER_SLOPE,
+            create_parameter_slider=self._create_parameter_slider,
+            create_parameter_switch=self._create_parameter_switch,
+            midi_helper=self.midi_helper,
+            parent=self,
+            controls=self.controls,
             address=self.address
         )
         controls_group.setStyleSheet(JDXiStyle.ADSR)
         controls_layout.addWidget(self.filter_widget)
         controls_layout.addWidget(
             self._create_parameter_slider(
-                AddressParameterDigitalPartial.FILTER_RESONANCE, "Resonance", vertical=True
+                DigitalPartialParam.FILTER_RESONANCE, "Resonance", vertical=True
             )
         )
         controls_layout.addWidget(
             self._create_parameter_slider(
-                AddressParameterDigitalPartial.FILTER_CUTOFF_KEYFOLLOW, "KeyFollow", vertical=True
+                DigitalPartialParam.FILTER_CUTOFF_KEYFOLLOW, "KeyFollow", vertical=True
             )
         )
         controls_layout.addWidget(
             self._create_parameter_slider(
-                AddressParameterDigitalPartial.FILTER_ENV_VELOCITY_SENSITIVITY,
+                DigitalPartialParam.FILTER_ENV_VELOCITY_SENSITIVITY,
                 "Velocity", vertical=True
             )
         )
@@ -162,26 +162,28 @@ class DigitalFilterSection(QWidget):
         env_layout = QVBoxLayout()
         env_group.setLayout(env_layout)
 
-        # ADSR Icon
+        # --- ADSR Icon ---
         icon_label = QLabel()
-        icon_pixmap = base64_to_pixmap(generate_waveform_icon("adsr", "#FFFFFF", 2.0))
+        icon_pixmap = base64_to_pixmap(generate_waveform_icon(waveform="adsr",
+                                                              foreground_color="#FFFFFF",
+                                                              icon_scale=2.0))
         icon_label.setPixmap(icon_pixmap)
         icon_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
         env_layout.addWidget(icon_label)
 
-        # ADSR Widget
+        # --- ADSR Widget ---
         (
             group_address,
             _,
-        ) = AddressParameterDigitalPartial.AMP_ENV_ATTACK_TIME.get_address_for_partial(
-            self.partial_number
-        )
+        ) = DigitalPartialParam.AMP_ENV_ATTACK_TIME.get_address_for_partial(partial_number=
+                                                                                       self.partial_number
+                                                                            )
         self.filter_adsr_widget = ADSR(
-            attack_param=AddressParameterDigitalPartial.FILTER_ENV_ATTACK_TIME,
-            decay_param=AddressParameterDigitalPartial.FILTER_ENV_DECAY_TIME,
-            sustain_param=AddressParameterDigitalPartial.FILTER_ENV_SUSTAIN_LEVEL,
-            release_param=AddressParameterDigitalPartial.FILTER_ENV_RELEASE_TIME,
-            peak_param=AddressParameterDigitalPartial.FILTER_ENV_DEPTH,
+            attack_param=DigitalPartialParam.FILTER_ENV_ATTACK_TIME,
+            decay_param=DigitalPartialParam.FILTER_ENV_DECAY_TIME,
+            sustain_param=DigitalPartialParam.FILTER_ENV_SUSTAIN_LEVEL,
+            release_param=DigitalPartialParam.FILTER_ENV_RELEASE_TIME,
+            peak_param=DigitalPartialParam.FILTER_ENV_DEPTH,
             create_parameter_slider=self._create_parameter_slider,
             midi_helper=self.midi_helper,
             controls=self.controls,
@@ -199,12 +201,12 @@ class DigitalFilterSection(QWidget):
         """Update filter controls enabled state based on mode"""
         enabled = mode != 0  # Enable if not BYPASS
         for param in [
-            AddressParameterDigitalPartial.FILTER_CUTOFF,
-            AddressParameterDigitalPartial.FILTER_RESONANCE,
-            AddressParameterDigitalPartial.FILTER_CUTOFF_KEYFOLLOW,
-            AddressParameterDigitalPartial.FILTER_ENV_VELOCITY_SENSITIVITY,
-            AddressParameterDigitalPartial.FILTER_ENV_DEPTH,
-            AddressParameterDigitalPartial.FILTER_SLOPE,
+            DigitalPartialParam.FILTER_CUTOFF,
+            DigitalPartialParam.FILTER_RESONANCE,
+            DigitalPartialParam.FILTER_CUTOFF_KEYFOLLOW,
+            DigitalPartialParam.FILTER_ENV_VELOCITY_SENSITIVITY,
+            DigitalPartialParam.FILTER_ENV_DEPTH,
+            DigitalPartialParam.FILTER_SLOPE,
         ]:
             if param in self.controls:
                 self.controls[param].setEnabled(enabled)

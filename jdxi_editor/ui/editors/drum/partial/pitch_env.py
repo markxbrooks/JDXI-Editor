@@ -41,7 +41,7 @@ from PySide6.QtWidgets import QGroupBox, QFormLayout, QWidget, QVBoxLayout, QScr
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QPainter, QPainterPath, QLinearGradient, QColor, QPen, QFont
 
-from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
+from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.jdxi.style import JDXiStyle
@@ -238,7 +238,7 @@ class DrumPitchEnvSection(QWidget):
 
     def __init__(
         self,
-        controls: dict[AddressParameterDrumPartial, QWidget],
+        controls: dict[DrumPartialParam, QWidget],
         create_parameter_combo_box: Callable,
         create_parameter_slider: Callable,
         midi_helper: MidiIOHelper,
@@ -297,11 +297,12 @@ class DrumPitchEnvSection(QWidget):
         controls_group = QGroupBox("Pitch Envelope Controls")
         controls_layout = QGridLayout()
         controls_group.setLayout(controls_layout)
+        controls_group.setStyleSheet(JDXiStyle.ADSR)
         main_layout.addWidget(controls_group)
 
         # Create sliders and connect them
         row = 0
-        depth_param = AddressParameterDrumPartial.PITCH_ENV_DEPTH
+        depth_param = DrumPartialParam.PITCH_ENV_DEPTH
         self.depth_slider = self._create_parameter_slider(
             depth_param, "Depth", vertical=True
         )
@@ -311,7 +312,7 @@ class DrumPitchEnvSection(QWidget):
             lambda v: self._update_envelope("depth", v, depth_param)
         )
 
-        v_sens_param = AddressParameterDrumPartial.PITCH_ENV_VELOCITY_SENS
+        v_sens_param = DrumPartialParam.PITCH_ENV_VELOCITY_SENS
         self.v_sens_slider = self._create_parameter_slider(
             v_sens_param, "V-Sens", vertical=True
         )
@@ -321,7 +322,7 @@ class DrumPitchEnvSection(QWidget):
             lambda v: self._update_envelope("v_sens", v, v_sens_param)
         )
 
-        t1_v_sens_param = AddressParameterDrumPartial.PITCH_ENV_TIME_1_VELOCITY_SENS
+        t1_v_sens_param = DrumPartialParam.PITCH_ENV_TIME_1_VELOCITY_SENS
         self.t1_v_sens_slider = self._create_parameter_slider(
             t1_v_sens_param, "T1 V-Sens", vertical=True
         )
@@ -331,7 +332,7 @@ class DrumPitchEnvSection(QWidget):
             lambda v: self._update_envelope("t1_v_sens", v, t1_v_sens_param)
         )
 
-        t4_v_sens_param = AddressParameterDrumPartial.PITCH_ENV_TIME_4_VELOCITY_SENS
+        t4_v_sens_param = DrumPartialParam.PITCH_ENV_TIME_4_VELOCITY_SENS
         self.t4_v_sens_slider = self._create_parameter_slider(
             t4_v_sens_param, "T4 V-Sens", vertical=True
         )
@@ -343,7 +344,7 @@ class DrumPitchEnvSection(QWidget):
 
         row += 1
         # Time controls
-        time_1_param = AddressParameterDrumPartial.PITCH_ENV_TIME_1
+        time_1_param = DrumPartialParam.PITCH_ENV_TIME_1
         self.time_1_slider = self._create_parameter_slider(
             time_1_param, "Time 1", vertical=True
         )
@@ -353,7 +354,7 @@ class DrumPitchEnvSection(QWidget):
             lambda v: self._update_envelope("time_1", v, time_1_param)
         )
 
-        time_2_param = AddressParameterDrumPartial.PITCH_ENV_TIME_2
+        time_2_param = DrumPartialParam.PITCH_ENV_TIME_2
         self.time_2_slider = self._create_parameter_slider(
             time_2_param, "Time 2", vertical=True
         )
@@ -363,7 +364,7 @@ class DrumPitchEnvSection(QWidget):
             lambda v: self._update_envelope("time_2", v, time_2_param)
         )
 
-        time_3_param = AddressParameterDrumPartial.PITCH_ENV_TIME_3
+        time_3_param = DrumPartialParam.PITCH_ENV_TIME_3
         self.time_3_slider = self._create_parameter_slider(
             time_3_param, "Time 3", vertical=True
         )
@@ -373,7 +374,7 @@ class DrumPitchEnvSection(QWidget):
             lambda v: self._update_envelope("time_3", v, time_3_param)
         )
 
-        time_4_param = AddressParameterDrumPartial.PITCH_ENV_TIME_4
+        time_4_param = DrumPartialParam.PITCH_ENV_TIME_4
         self.time_4_slider = self._create_parameter_slider(
             time_4_param, "Time 4", vertical=True
         )
@@ -385,7 +386,7 @@ class DrumPitchEnvSection(QWidget):
 
         row += 1
         # Level controls
-        level_0_param = AddressParameterDrumPartial.PITCH_ENV_LEVEL_0
+        level_0_param = DrumPartialParam.PITCH_ENV_LEVEL_0
         self.level_0_slider = self._create_parameter_slider(
             level_0_param, "Level 0", vertical=True
         )
@@ -395,7 +396,7 @@ class DrumPitchEnvSection(QWidget):
             lambda v: self._update_envelope("level_0", v, level_0_param)
         )
 
-        level_1_param = AddressParameterDrumPartial.PITCH_ENV_LEVEL_1
+        level_1_param = DrumPartialParam.PITCH_ENV_LEVEL_1
         self.level_1_slider = self._create_parameter_slider(
             level_1_param, "Level 1", vertical=True
         )
@@ -405,7 +406,7 @@ class DrumPitchEnvSection(QWidget):
             lambda v: self._update_envelope("level_1", v, level_1_param)
         )
 
-        level_2_param = AddressParameterDrumPartial.PITCH_ENV_LEVEL_2
+        level_2_param = DrumPartialParam.PITCH_ENV_LEVEL_2
         self.level_2_slider = self._create_parameter_slider(
             level_2_param, "Level 2", vertical=True
         )
@@ -415,7 +416,7 @@ class DrumPitchEnvSection(QWidget):
             lambda v: self._update_envelope("level_2", v, level_2_param)
         )
 
-        level_3_param = AddressParameterDrumPartial.PITCH_ENV_LEVEL_3
+        level_3_param = DrumPartialParam.PITCH_ENV_LEVEL_3
         self.level_3_slider = self._create_parameter_slider(
             level_3_param, "Level 3", vertical=True
         )
@@ -425,7 +426,7 @@ class DrumPitchEnvSection(QWidget):
             lambda v: self._update_envelope("level_3", v, level_3_param)
         )
 
-        level_4_param = AddressParameterDrumPartial.PITCH_ENV_LEVEL_4
+        level_4_param = DrumPartialParam.PITCH_ENV_LEVEL_4
         self.level_4_slider = self._create_parameter_slider(
             level_4_param, "Level 4", vertical=True
         )
@@ -445,7 +446,7 @@ class DrumPitchEnvSection(QWidget):
         main_layout.addWidget(self.plot)
         main_layout.addStretch()
     
-    def _update_envelope(self, key: str, value: int, param: AddressParameterDrumPartial = None) -> None:
+    def _update_envelope(self, key: str, value: int, param: DrumPartialParam = None) -> None:
         """Update envelope value and refresh plot
         
         :param key: str Envelope parameter key

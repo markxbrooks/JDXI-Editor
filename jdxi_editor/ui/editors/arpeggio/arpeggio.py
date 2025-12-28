@@ -59,8 +59,8 @@ from jdxi_editor.midi.data.arpeggio.data import (
     ARPEGGIO_STYLE,
 )
 from jdxi_editor.midi.data.address.arpeggio import ArpeggioAddress
-from jdxi_editor.midi.data.parameter.arpeggio import AddressParameterArpeggio
-from jdxi_editor.midi.data.parameter.program.zone import AddressParameterProgramZone
+from jdxi_editor.midi.data.parameter.arpeggio import ArpeggioParam
+from jdxi_editor.midi.data.parameter.program.zone import ProgramZoneParam
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
@@ -140,7 +140,7 @@ class ArpeggioEditor(BasicEditor):
         # Add on-off switch
         program_zone_row = QHBoxLayout()
         common_button = self._create_parameter_switch(
-            AddressParameterProgramZone.ARPEGGIO_SWITCH,
+            ProgramZoneParam.ARPEGGIO_SWITCH,
             "Master Arpeggiator",
             [switch_setting.display_name for switch_setting in ArpeggioSwitch],
         )
@@ -151,7 +151,7 @@ class ArpeggioEditor(BasicEditor):
         # Add on-off switch
         switch_row = QHBoxLayout()
         self.switch_button = self._create_parameter_switch(
-            AddressParameterArpeggio.ARPEGGIO_SWITCH,
+            ArpeggioParam.ARPEGGIO_SWITCH,
             "Arpeggiator",
             [switch_setting.display_name for switch_setting in ArpeggioSwitch],
         )
@@ -160,7 +160,7 @@ class ArpeggioEditor(BasicEditor):
 
         # Create address combo box for Arpeggio Style
         self.style_combo = self._create_parameter_combo_box(
-            AddressParameterArpeggio.ARPEGGIO_STYLE, "Style", ARPEGGIO_STYLE
+            ArpeggioParam.ARPEGGIO_STYLE, "Style", ARPEGGIO_STYLE
         )
         style_row = QHBoxLayout()
         style_row.addWidget(self.style_combo)
@@ -170,7 +170,7 @@ class ArpeggioEditor(BasicEditor):
         # Add grid combo box
         grid_row = QHBoxLayout()
         self.grid_combo = self._create_parameter_combo_box(
-            AddressParameterArpeggio.ARPEGGIO_GRID,
+            ArpeggioParam.ARPEGGIO_GRID,
             "Grid:",
             [grid.display_name for grid in ArpeggioGrid],
         )
@@ -181,7 +181,7 @@ class ArpeggioEditor(BasicEditor):
         duration_row = QHBoxLayout()
         # Create address combo box for Arpeggio Duration
         self.duration_combo = self._create_parameter_combo_box(
-            AddressParameterArpeggio.ARPEGGIO_DURATION,
+            ArpeggioParam.ARPEGGIO_DURATION,
             "Duration",
             [duration.display_name for duration in ArpeggioDuration],
         )
@@ -190,19 +190,19 @@ class ArpeggioEditor(BasicEditor):
 
         # Add sliders
         self.velocity_slider = self._create_parameter_slider(
-            AddressParameterArpeggio.ARPEGGIO_VELOCITY, "Velocity", 0, 127
+            ArpeggioParam.ARPEGGIO_VELOCITY, "Velocity", 0, 127
         )
         rows_layout.addWidget(self.velocity_slider)
 
         self.accent_slider = self._create_parameter_slider(
-            AddressParameterArpeggio.ARPEGGIO_ACCENT_RATE, "Accent", 0, 127
+            ArpeggioParam.ARPEGGIO_ACCENT_RATE, "Accent", 0, 127
         )
         rows_layout.addWidget(self.accent_slider)
 
         # Add octave range combo box
         octave_row = QHBoxLayout()
         self.octave_combo = self._create_parameter_combo_box(
-            AddressParameterArpeggio.ARPEGGIO_OCTAVE_RANGE,
+            ArpeggioParam.ARPEGGIO_OCTAVE_RANGE,
             "Octave Range:",
             [octave.display_name for octave in ArpeggioOctaveRange],
             [octave.midi_value for octave in ArpeggioOctaveRange],
@@ -215,7 +215,7 @@ class ArpeggioEditor(BasicEditor):
         # Add motif combo box
         motif_row = QHBoxLayout()
         self.motif_combo = self._create_parameter_combo_box(
-            AddressParameterArpeggio.ARPEGGIO_MOTIF,
+            ArpeggioParam.ARPEGGIO_MOTIF,
             "Motif:",
             [motif.name for motif in ArpeggioMotif],
         )

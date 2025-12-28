@@ -9,7 +9,7 @@ import qtawesome as qta
 
 from jdxi_editor.midi.data.parameter import AddressParameter
 from jdxi_editor.midi.data.parameter.digital.partial import (
-    AddressParameterDigitalPartial,
+    DigitalPartialParam,
 )
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
@@ -105,27 +105,27 @@ class DigitalAmpSection(QWidget):
 
         controls_row_layout.addWidget(
             self._create_parameter_slider(
-                AddressParameterDigitalPartial.AMP_LEVEL, "Level", vertical=True
+                DigitalPartialParam.AMP_LEVEL, "Level", vertical=True
             )
         )
         controls_row_layout.addWidget(
             self._create_parameter_slider(
-                AddressParameterDigitalPartial.AMP_VELOCITY, "Velocity", vertical=True
+                DigitalPartialParam.AMP_VELOCITY, "Velocity", vertical=True
             )
         )
         controls_row_layout.addWidget(
             self._create_parameter_slider(
-                AddressParameterDigitalPartial.AMP_LEVEL_KEYFOLLOW, "KeyFollow", vertical=True
+                DigitalPartialParam.AMP_LEVEL_KEYFOLLOW, "KeyFollow", vertical=True
             )
         )
         controls_row_layout.addWidget(
             self._create_parameter_slider(
-                AddressParameterDigitalPartial.LEVEL_AFTERTOUCH, "After-touch Sensitivity", vertical=True
+                DigitalPartialParam.LEVEL_AFTERTOUCH, "After-touch Sensitivity", vertical=True
             )
         )
         controls_row_layout.addWidget(
             self._create_parameter_slider(
-                AddressParameterDigitalPartial.CUTOFF_AFTERTOUCH, "After-touch Cutoff", vertical=True
+                DigitalPartialParam.CUTOFF_AFTERTOUCH, "After-touch Cutoff", vertical=True
             )
         )
         controls_row_layout.addStretch()
@@ -135,7 +135,7 @@ class DigitalAmpSection(QWidget):
         pan_row_layout = QHBoxLayout()
         pan_row_layout.addStretch()
         pan_slider = self._create_parameter_slider(
-            AddressParameterDigitalPartial.AMP_PAN, "Pan"
+            DigitalPartialParam.AMP_PAN, "Pan"
         )
         pan_slider.setValue(0)
         pan_row_layout.addWidget(pan_slider)
@@ -167,14 +167,14 @@ class DigitalAmpSection(QWidget):
         (
             group_address,
             _,
-        ) = AddressParameterDigitalPartial.AMP_ENV_ATTACK_TIME.get_address_for_partial(
+        ) = DigitalPartialParam.AMP_ENV_ATTACK_TIME.get_address_for_partial(
             self.partial_number
         )
         self.amp_env_adsr_widget = ADSR(
-            attack_param=AddressParameterDigitalPartial.AMP_ENV_ATTACK_TIME,
-            decay_param=AddressParameterDigitalPartial.AMP_ENV_DECAY_TIME,
-            sustain_param=AddressParameterDigitalPartial.AMP_ENV_SUSTAIN_LEVEL,
-            release_param=AddressParameterDigitalPartial.AMP_ENV_RELEASE_TIME,
+            attack_param=DigitalPartialParam.AMP_ENV_ATTACK_TIME,
+            decay_param=DigitalPartialParam.AMP_ENV_DECAY_TIME,
+            sustain_param=DigitalPartialParam.AMP_ENV_SUSTAIN_LEVEL,
+            release_param=DigitalPartialParam.AMP_ENV_RELEASE_TIME,
             midi_helper=self.midi_helper,
             create_parameter_slider=self._create_parameter_slider,
             controls=self.controls,

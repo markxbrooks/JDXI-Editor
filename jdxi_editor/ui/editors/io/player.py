@@ -51,10 +51,10 @@ from jdxi_editor.midi.data.programs.digital import DIGITAL_PRESET_LIST
 from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
 from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
 from jdxi_editor.midi.data.parameter.effects.effects import (
-    AddressParameterEffect1,
-    AddressParameterEffect2,
-    AddressParameterDelay,
-    AddressParameterReverb,
+    Effect1Param,
+    Effect2Param,
+    DelayParam,
+    ReverbParam,
 )
 from jdxi_editor.midi.data.address.address import (
     AddressStartMSB,
@@ -982,12 +982,12 @@ class MidiFileEditor(SynthEditor):
             efx1_address = address.add_offset((0, 2, 0))
             efx1_level_msg = sysex_composer.compose_message(
                 address=efx1_address,
-                param=AddressParameterEffect1.EFX1_LEVEL,
+                param=Effect1Param.EFX1_LEVEL,
                 value=0
             )
             efx1_type_msg = sysex_composer.compose_message(
                 address=efx1_address,
-                param=AddressParameterEffect1.EFX1_TYPE,
+                param=Effect1Param.EFX1_TYPE,
                 value=0  # Thru (no effect)
             )
             
@@ -995,12 +995,12 @@ class MidiFileEditor(SynthEditor):
             efx2_address = address.add_offset((0, 4, 0))
             efx2_level_msg = sysex_composer.compose_message(
                 address=efx2_address,
-                param=AddressParameterEffect2.EFX2_LEVEL,
+                param=Effect2Param.EFX2_LEVEL,
                 value=0
             )
             efx2_type_msg = sysex_composer.compose_message(
                 address=efx2_address,
-                param=AddressParameterEffect2.EFX2_TYPE,
+                param=Effect2Param.EFX2_TYPE,
                 value=0  # OFF
             )
             
@@ -1008,7 +1008,7 @@ class MidiFileEditor(SynthEditor):
             delay_address = address.add_offset((0, 6, 0))
             delay_level_msg = sysex_composer.compose_message(
                 address=delay_address,
-                param=AddressParameterDelay.DELAY_LEVEL,
+                param=DelayParam.DELAY_LEVEL,
                 value=0
             )
             
@@ -1016,7 +1016,7 @@ class MidiFileEditor(SynthEditor):
             reverb_address = address.add_offset((0, 8, 0))
             reverb_level_msg = sysex_composer.compose_message(
                 address=reverb_address,
-                param=AddressParameterReverb.REVERB_LEVEL,
+                param=ReverbParam.REVERB_LEVEL,
                 value=0
             )
             

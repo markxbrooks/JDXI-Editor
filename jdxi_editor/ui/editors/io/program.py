@@ -65,10 +65,10 @@ from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB,
 from jdxi_editor.midi.data.address.program import ProgramCommonAddress
 from jdxi_editor.midi.data.drum.data import DRUM_PARTIAL_MAP
 from jdxi_editor.midi.data.parameter import AddressParameter
-from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
-from jdxi_editor.midi.data.parameter.digital import AddressParameterDigitalCommon
-from jdxi_editor.midi.data.parameter.drum.common import AddressParameterDrumCommon
-from jdxi_editor.midi.data.parameter.program.common import AddressParameterProgramCommon
+from jdxi_editor.midi.data.parameter.analog import AnalogParam
+from jdxi_editor.midi.data.parameter.digital import DigitalCommonParam
+from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParam
+from jdxi_editor.midi.data.parameter.program.common import ProgramCommonParam
 from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
 from jdxi_editor.midi.data.programs.digital import DIGITAL_PRESET_LIST
 from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
@@ -592,7 +592,7 @@ class ProgramEditor(BasicEditor):
         if program_name_dialog.exec():  # If the user clicks Save
             sysex_string = program_name_dialog.get_sysex_string()
             log.message(f"SysEx string: {sysex_string}")
-            self.send_tone_name(AddressParameterProgramCommon, sysex_string)
+            self.send_tone_name(ProgramCommonParam, sysex_string)
             self.data_request()
 
     def on_preset_type_changed(self, index: int) -> None:
@@ -827,33 +827,33 @@ class ProgramEditor(BasicEditor):
         program_common_address = ProgramCommonAddress()
         self.address = program_common_address
         self.master_level_slider = self._create_parameter_slider(
-            param=AddressParameterProgramCommon.PROGRAM_LEVEL,
+            param=ProgramCommonParam.PROGRAM_LEVEL,
             label="Master",
             vertical=True,
             address=program_common_address
         )
-        self.controls[AddressParameterProgramCommon.PROGRAM_LEVEL] = self.master_level_slider
+        self.controls[ProgramCommonParam.PROGRAM_LEVEL] = self.master_level_slider
 
         self._init_synth_data(synth_type=JDXiSynth.DIGITAL_SYNTH_1)
         self.digital1_level_slider = self._create_parameter_slider(
-            AddressParameterDigitalCommon.TONE_LEVEL, "Digital 1", vertical=True
+            DigitalCommonParam.TONE_LEVEL, "Digital 1", vertical=True
         )
-        self.controls[AddressParameterDigitalCommon.TONE_LEVEL] = self.digital1_level_slider
+        self.controls[DigitalCommonParam.TONE_LEVEL] = self.digital1_level_slider
         self._init_synth_data(synth_type=JDXiSynth.DIGITAL_SYNTH_2)
         self.digital2_level_slider = self._create_parameter_slider(
-            AddressParameterDigitalCommon.TONE_LEVEL, "Digital 2", vertical=True
+            DigitalCommonParam.TONE_LEVEL, "Digital 2", vertical=True
         )
-        self.controls[AddressParameterDigitalCommon.TONE_LEVEL] = self.digital2_level_slider
+        self.controls[DigitalCommonParam.TONE_LEVEL] = self.digital2_level_slider
         self._init_synth_data(synth_type=JDXiSynth.DRUM_KIT)
         self.drums_level_slider = self._create_parameter_slider(
-            AddressParameterDrumCommon.KIT_LEVEL, "Drums", vertical=True
+            DrumCommonParam.KIT_LEVEL, "Drums", vertical=True
         )
-        self.controls[AddressParameterDrumCommon.KIT_LEVEL] = self.drums_level_slider
+        self.controls[DrumCommonParam.KIT_LEVEL] = self.drums_level_slider
         self._init_synth_data(synth_type=JDXiSynth.ANALOG_SYNTH)
         self.analog_level_slider = self._create_parameter_slider(
-            AddressParameterAnalog.AMP_LEVEL, "Analog", vertical=True
+            AnalogParam.AMP_LEVEL, "Analog", vertical=True
         )
-        self.controls[AddressParameterAnalog.AMP_LEVEL] = self.analog_level_slider
+        self.controls[AnalogParam.AMP_LEVEL] = self.analog_level_slider
         self.address = program_common_address
         # Mixer layout population
         mixer_layout.setColumnStretch(0, 1)
@@ -2714,19 +2714,19 @@ class ProgramEditor(BasicEditor):
         # Define a mapping between temporary_area and their corresponding handlers
         temporary_area_handlers = {
             AddressStartMSB.TEMPORARY_PROGRAM.name: {
-                "PROGRAM_LEVEL": (AddressParameterProgramCommon.PROGRAM_LEVEL, self.master_level_slider)
+                "PROGRAM_LEVEL": (ProgramCommonParam.PROGRAM_LEVEL, self.master_level_slider)
             },
             AddressOffsetTemporaryToneUMB.ANALOG_SYNTH.name: {
-                "AMP_LEVEL": (AddressParameterAnalog.get_by_name, self.analog_level_slider)
+                "AMP_LEVEL": (AnalogParam.get_by_name, self.analog_level_slider)
             },
             AddressOffsetTemporaryToneUMB.DRUM_KIT.name: {
-                "KIT_LEVEL": (AddressParameterDrumCommon.KIT_LEVEL, self.drums_level_slider)
+                "KIT_LEVEL": (DrumCommonParam.KIT_LEVEL, self.drums_level_slider)
             },
             AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_1.name: {
-                "TONE_LEVEL": (AddressParameterDigitalCommon.get_by_name, self.digital1_level_slider)
+                "TONE_LEVEL": (DigitalCommonParam.get_by_name, self.digital1_level_slider)
             },
             AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_2.name: {
-                "TONE_LEVEL": (AddressParameterDigitalCommon.get_by_name, self.digital2_level_slider)
+                "TONE_LEVEL": (DigitalCommonParam.get_by_name, self.digital2_level_slider)
             }
         }
 
@@ -2777,7 +2777,7 @@ class ProgramEditor(BasicEditor):
         sysex_data.pop("SYNTH_TONE", None)
         for param_name, param_value in sysex_data.items():
             log.parameter(f"{param_name} {param_value}", param_value, silent=True)
-            param = AddressParameterDigitalCommon.get_by_name(param_name)
+            param = DigitalCommonParam.get_by_name(param_name)
             if not param:
                 log.parameter(
                     f"param not found: {param_name} ", param_value, silent=True

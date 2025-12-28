@@ -45,7 +45,7 @@ from typing import Optional, Tuple
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 
 
-class AddressParameterVocalFX(AddressParameter):
+class VocalFXParam(AddressParameter):
     """Vocal FX parameters"""
 
     def __init__(
@@ -106,7 +106,7 @@ class AddressParameterVocalFX(AddressParameter):
         :param address: int The address
         :return: Optional[str] The parameter name
         """
-        for param in AddressParameterVocalFX:
+        for param in VocalFXParam:
             if param.address == address:
                 return param.name
         return None  # Return None if the address is not found
@@ -132,7 +132,7 @@ class AddressParameterVocalFX(AddressParameter):
         :param param_name: str The parameter name
         :return: Optional[int] The address
         """
-        param = AddressParameterVocalFX.get_by_name(param_name)
+        param = VocalFXParam.get_by_name(param_name)
         if param:
             return param.value[0]
         return None
@@ -145,7 +145,7 @@ class AddressParameterVocalFX(AddressParameter):
         :param param_name: str The parameter name
         :return: Tuple[int, int] The value range
         """
-        param = AddressParameterVocalFX.get_by_name(param_name)
+        param = VocalFXParam.get_by_name(param_name)
         if param:
             return param.value[1], param.value[2]
         return None, None
@@ -158,7 +158,7 @@ class AddressParameterVocalFX(AddressParameter):
         :param param_name: str The parameter name
         :return: Tuple[int, int] The display value range
         """
-        param = AddressParameterVocalFX.get_by_name(param_name)
+        param = VocalFXParam.get_by_name(param_name)
         if param:
             return param.display_min, param.display_max
         return None, None
@@ -217,9 +217,9 @@ class AddressParameterVocalFX(AddressParameter):
         :return: int The MIDI value
         """
         # Handle special bipolar cases first
-        if self == AddressParameterVocalFX.PAN:
+        if self == VocalFXParam.PAN:
             return display_value + 64  # -63 to +63 -> 0 to 127
-        elif self == AddressParameterVocalFX.AUTO_PITCH_GENDER:
+        elif self == VocalFXParam.AUTO_PITCH_GENDER:
             return display_value + 10  # -63 to +63 -> 0 to 127
 
         # For parameters with simple linear scaling
@@ -240,9 +240,9 @@ class AddressParameterVocalFX(AddressParameter):
         :return: int The display value
         """
         # Handle special bipolar cases first
-        if self == AddressParameterVocalFX.PAN:
+        if self == VocalFXParam.PAN:
             return midi_value - 64  # 0 to 127 -> -63 to +63
-        elif self == AddressParameterVocalFX.AUTO_PITCH_GENDER:
+        elif self == VocalFXParam.AUTO_PITCH_GENDER:
             return midi_value - 10  # 0 to 127 -> -63 to +63
 
         # For parameters with simple linear scaling
@@ -264,7 +264,7 @@ class AddressParameterVocalFX(AddressParameter):
         :param value: int The value
         :return: int The display value
         """
-        param = AddressParameterVocalFX.get_by_name(param_name)
+        param = VocalFXParam.get_by_name(param_name)
         if param:
             return param.convert_from_midi(value)
         return value
@@ -277,7 +277,7 @@ class AddressParameterVocalFX(AddressParameter):
         :param param_name: str The parameter name
         :return: Tuple[int, int] The MIDI value range
         """
-        param = AddressParameterVocalFX.get_by_name(param_name)
+        param = VocalFXParam.get_by_name(param_name)
         if param:
             return param.min_value, param.max_value
 
@@ -290,7 +290,7 @@ class AddressParameterVocalFX(AddressParameter):
         :param value: int The value
         :return: Optional[int] The MIDI value
         """
-        param = AddressParameterVocalFX.get_by_name(param_name)
+        param = VocalFXParam.get_by_name(param_name)
         if param:
             return param.convert_to_midi(value)
         return None
