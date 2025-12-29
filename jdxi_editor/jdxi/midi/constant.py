@@ -1,12 +1,75 @@
 """
 Midi and JD-Xi Constant definitions
 """
+from enum import Enum
 
 from jdxi_editor.jdxi.sysex.bitmask import BitMask
 
 
 class MidiConstant:
     """Miscellaneous MIDI constants for JD-Xi communication."""
+    
+    class ControlChange:
+        BANK_SELECT_MSB = 85
+        BANK_SELECT_LSB_BANK_E_AND_F = 0
+        BANK_SELECT_LSB_BANK_G_AND_H = 1
+        BANK_SELECT_LSB_BANK_A_AND_B = 64
+        BANK_SELECT_LSB_BANK_C_AND_D = 65
+        NRPN_MSB = 99
+        NRPN_LSB = 98
+
+    class ProgramChange:
+        BANK_A_C_E_G = 0
+        BANK_B_D_F_H = 64
+
+    class Tempo:
+        DEFAULT_120_BPM = 120
+        CONVERT_SEC_TO_USEC = 1_000_000
+        BPM_100_USEC = 600_000
+        BPM_120_USEC = 500_000
+        BPM_150_USEC = 400_000
+        BPM_162_USEC = 370_370
+
+    class SysEx:
+        START_OF_SYSEX = 0xF0
+        END_OF_SYSEX = 0xF7
+        SONG_STOP = 0xFC
+        SONG_START = 0xFA
+
+    class CommonValues:
+        ZERO_BYTE = 0x00
+        VALUE_ON = 0x01
+        VALUE_OFF = 0x00
+        VALUE_MAX_FOUR_BIT = 0x0F
+        VALUE_MAX_SEVEN_BIT = 0x7F
+        VALUE_MAX_EIGHT_BIT = 0xFF
+        VALUE_MAX_FOURTEEN_BIT = 0x3FFF
+        VALUE_MAX_SIGNED_SIXTEEN_BIT = 0x7FFF
+        VALUE_MIN_SIGNED_SIXTEEN_BIT = 0x8000
+        VALUE_MAX_UNSIGNED_SIXTEEN_BIT = 0xFFFF
+        VALUE_MAX_THIRTY_TWO_BIT = 0xFFFFFFFF
+
+    class ChannelMessages:
+        NOTE_OFF = 0x80
+        NOTE_ON = 0x90
+        POLY_AFTERTOUCH = 0xA0
+        CONTROL_CHANGE = 0xB0
+        CONTROL_CHANGE_MAX = 0xBF
+        PROGRAM_CHANGE = 0xC0
+        PROGRAM_CHANGE_MAX = 0xCF
+        CHANNEL_AFTERTOUCH = 0xD0
+        PITCH_BEND = 0xE0
+        BANK_SELECT_MSB = 0x00
+        BANK_SELECT_LSB = 0x20
+
+    class PitchBend:
+        RANGE = 16383  # 14-bit maximum
+        CENTER = 8192  # Center position of the pitch wheel
+
+    # Utility
+    CHANNEL_BINARY_TO_DISPLAY = 1
+    CHANNEL_DISPLAY_TO_BINARY = -1
+    CHANNEL_MASK = BitMask.LOW_4_BITS
 
     # User Banks
     MIDI_CHANNELS_NUMBER = 16
