@@ -45,7 +45,7 @@ from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.sysex.utils import map_range
 
 
-class AddressParameterDigitalPartial(AddressParameter):
+class DigitalPartialParam(AddressParameter):
     """Digital synth parameters with their addresses and value ranges"""
 
     def __init__(
@@ -250,7 +250,7 @@ class AddressParameterDigitalPartial(AddressParameter):
         :return: Optional[AddressParameterDigitalPartial] The parameter
         Return the parameter member by name, or None if not found
         """
-        return AddressParameterDigitalPartial.__members__.get(param_name, None)
+        return DigitalPartialParam.__members__.get(param_name, None)
 
     def convert_value(self, value: int, reverse: bool = False) -> int:
         """

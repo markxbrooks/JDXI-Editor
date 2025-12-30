@@ -7,6 +7,7 @@ import io
 import pstats
 import re
 import time
+from datetime import datetime
 from pathlib import Path
 from typing import Optional
 import pyaudio
@@ -49,6 +50,19 @@ from jdxi_editor.ui.windows.jdxi.utils import show_message_box
 from jdxi_editor.midi.data.programs.digital import DIGITAL_PRESET_LIST
 from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
 from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
+from jdxi_editor.midi.data.parameter.effects.effects import (
+    Effect1Param,
+    Effect2Param,
+    DelayParam,
+    ReverbParam,
+)
+from jdxi_editor.midi.data.address.address import (
+    AddressStartMSB,
+    RolandSysExAddress,
+    AddressOffsetSystemUMB,
+    AddressOffsetProgramLMB,
+)
+from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
 
 # Expose Qt symbols for tests that patch via jdxi_editor.ui.editors.io.player
 # Tests expect these names to exist at module level
@@ -457,9 +471,80 @@ class MidiFileEditor(SynthEditor):
         )
         layout.addWidget(self.ui.usb_file_record_checkbox)
 
-        self.ui.usb_file_output_name = ""  # Set externally
+        # Auto generate filename based on current date and time and Midi file
+        self.ui.usb_file_auto_generate_checkbox = QCheckBox("Auto generate .Wav filename based on date, time and Midi file")
+        self.ui.usb_file_auto_generate_checkbox.setChecked(False)
+        self.ui.usb_file_auto_generate_checkbox.stateChanged.connect(
+            self.on_usb_file_auto_generate_toggled
+        )
+        layout.addWidget(self.ui.usb_file_auto_generate_checkbox)
 
         return layout
+
+    def generate_auto_wav_filename(self) -> Optional[str]:
+        """
+        Generate an automatic WAV filename based on current date/time and MIDI file name.
+        
+        :return: Generated filename path or None if no MIDI file is loaded
+        """
+        if not self.midi_state.file or not hasattr(self.midi_state.file, 'filename') or not self.midi_state.file.filename:
+            return None
+        
+        # Get MIDI file path
+        midi_path = Path(self.midi_state.file.filename)
+        midi_stem = midi_path.stem  # filename without extension
+        
+        # Generate timestamp: YYYYMMDD_HHMMSS
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        
+        # Create WAV filename: YYYYMMDD_HHMMSS_<midi_filename>.wav
+        wav_filename = f"{timestamp}_{midi_stem}.wav"
+        
+        # Use the same directory as the MIDI file, or current directory if no path
+        if midi_path.parent:
+            wav_path = midi_path.parent / wav_filename
+        else:
+            wav_path = Path(wav_filename)
+        
+        return str(wav_path)
+    
+    def update_auto_wav_filename(self) -> None:
+        """
+        Update the WAV filename automatically if auto-generate is enabled.
+        """
+        if self.ui.usb_file_auto_generate_checkbox.isChecked():
+            auto_filename = self.generate_auto_wav_filename()
+            if auto_filename:
+                self.ui.usb_file_output_name = auto_filename
+                self.ui.usb_file_select.setText(Path(auto_filename).name)
+                log.message(f"Auto-generated WAV filename: {auto_filename}")
+            else:
+                log.warning("⚠️ Cannot auto-generate filename: No MIDI file loaded")
+    
+    def on_usb_file_auto_generate_toggled(self, state: Qt.CheckState):
+        """
+        on_usb_file_auto_generate_toggled
+
+        :param state: Qt.CheckState
+        :return:
+        """
+        self.ui.usb_file_auto_generate_checkbox.setChecked(state == JDXiConstant.CHECKED)
+        is_enabled = self.ui.usb_file_auto_generate_checkbox.isChecked()
+        log.message(f"Auto generate filename based on current date and time and Midi file = {is_enabled}")
+        
+        # If enabled, generate filename immediately
+        if is_enabled:
+            self.update_auto_wav_filename()
+
+    def on_usb_file_output_name_changed(self, state: Qt.CheckState):
+        """
+        on_usb_file_output_name_changed
+
+        :param state: Qt.CheckState
+        :return:
+        """
+        self.ui.usb_file_auto_generate_checkbox.setChecked(state == JDXiConstant.CHECKED)
+        log.message(f"Auto generate filename based on current date and time and Midi file = {self.ui.usb_file_auto_generate_checkbox.isChecked()}")
 
     def init_transport_controls(self) -> QGroupBox:
         """
@@ -644,6 +729,10 @@ class MidiFileEditor(SynthEditor):
         Start recording in a separate thread
         """
         try:
+            # If auto-generate is enabled, regenerate filename with fresh timestamp
+            if self.ui.usb_file_auto_generate_checkbox.isChecked():
+                self.update_auto_wav_filename()
+            
             if not self.ui.usb_file_output_name:
                 log.message("No output file selected.")
                 return
@@ -700,11 +789,28 @@ class MidiFileEditor(SynthEditor):
         )
         if not file_path:
             return
-
+        
+        self.midi_load_file_from_path(file_path)
+    
+    def midi_load_file_from_path(self, file_path: str) -> None:
+        """
+        Load a MIDI file from a given path and initialize parameters.
+        
+        :param file_path: Path to the MIDI file
+        """
+        if not file_path:
+            return
+        
         self.midi_state.file = MidiFile(file_path)
+        # Store filename in the MidiFile object for later use
+        self.midi_state.file.filename = file_path
         self.ui.digital_title_file_name.setText(f"Loaded: {Path(file_path).name}")
         self.ui.midi_track_viewer.clear()
         self.ui.midi_track_viewer.set_midi_file(self.midi_state.file)
+        
+        # Auto-generate WAV filename if checkbox is enabled
+        if self.ui.usb_file_auto_generate_checkbox.isChecked():
+            self.update_auto_wav_filename()
 
         # Ensure ticks_per_beat is available early
         self.ticks_per_beat = self.midi_state.file.ticks_per_beat
@@ -722,6 +828,12 @@ class MidiFileEditor(SynthEditor):
         self.calculate_duration()
         self.calculate_tick_duration()
         self.ui_position_slider_reset()
+        
+        # Add to recent files if parent has recent_files_manager
+        if hasattr(self.parent, 'recent_files_manager'):
+            self.parent.recent_files_manager.add_file(file_path)
+            if hasattr(self.parent, '_update_recent_files_menu'):
+                self.parent._update_recent_files_menu()
 
     def calculate_tick_duration(self):
         """
@@ -848,12 +960,95 @@ class MidiFileEditor(SynthEditor):
         )
         log.parameter("tempo_bpm", tempo_bpm)
 
+    def turn_off_effects(self) -> None:
+        """
+        Turn off all effects (Effect 1, Effect 2, Delay, Reverb) when starting playback.
+        This prevents distortion and other effects from being accidentally enabled.
+        """
+        if not self.midi_helper:
+            return
+        
+        try:
+            # Create SysEx composer and address for effects
+            sysex_composer = JDXiSysExComposer()
+            address = RolandSysExAddress(
+                AddressStartMSB.TEMPORARY_PROGRAM,
+                AddressOffsetSystemUMB.COMMON,
+                AddressOffsetProgramLMB.COMMON,
+                MidiConstant.ZERO_BYTE,
+            )
+            
+            # Turn off Effect 1: Set level to 0 and type to Thru (0)
+            efx1_address = address.add_offset((0, 2, 0))
+            efx1_level_msg = sysex_composer.compose_message(
+                address=efx1_address,
+                param=Effect1Param.EFX1_LEVEL,
+                value=0
+            )
+            efx1_type_msg = sysex_composer.compose_message(
+                address=efx1_address,
+                param=Effect1Param.EFX1_TYPE,
+                value=0  # Thru (no effect)
+            )
+            
+            # Turn off Effect 2: Set level to 0 and type to OFF (0)
+            efx2_address = address.add_offset((0, 4, 0))
+            efx2_level_msg = sysex_composer.compose_message(
+                address=efx2_address,
+                param=Effect2Param.EFX2_LEVEL,
+                value=0
+            )
+            efx2_type_msg = sysex_composer.compose_message(
+                address=efx2_address,
+                param=Effect2Param.EFX2_TYPE,
+                value=0  # OFF
+            )
+            
+            # Turn off Delay: Set level to 0
+            delay_address = address.add_offset((0, 6, 0))
+            delay_level_msg = sysex_composer.compose_message(
+                address=delay_address,
+                param=DelayParam.DELAY_LEVEL,
+                value=0
+            )
+            
+            # Turn off Reverb: Set level to 0
+            reverb_address = address.add_offset((0, 8, 0))
+            reverb_level_msg = sysex_composer.compose_message(
+                address=reverb_address,
+                param=ReverbParam.REVERB_LEVEL,
+                value=0
+            )
+            
+            # Send all messages
+            messages = [
+                efx1_level_msg, efx1_type_msg,
+                efx2_level_msg, efx2_type_msg,
+                delay_level_msg,
+                reverb_level_msg
+            ]
+            
+            for msg in messages:
+                self.midi_helper.send_midi_message(msg)
+                time.sleep(0.01)  # Small delay between messages
+            
+            log.message("🎛️ Turned off all effects (Effect 1, Effect 2, Delay, Reverb) at playback start")
+            
+        except Exception as ex:
+            log.error(f"❌ Error turning off effects: {ex}")
+            import traceback
+            log.error(traceback.format_exc())
+
     def midi_playback_start(self):
         """
         Start playback of the MIDI file from the beginning (or resume if paused).
         """
         # Reset position slider to beginning
         self.ui_position_slider_reset()
+        
+        # Turn off all effects when starting playback (prevents accidental distortion)
+        #if not self.midi_state.playback_paused:
+        #    self.turn_off_effects()
 
         if PROFILING:
             self.profiler = cProfile.Profile()

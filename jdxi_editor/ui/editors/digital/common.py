@@ -9,7 +9,7 @@ from PySide6.QtCore import Qt
 import qtawesome as qta
 
 from jdxi_editor.jdxi.style import JDXiStyle
-from jdxi_editor.midi.data.parameter.digital.common import AddressParameterDigitalCommon
+from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParam
 
 
 class DigitalCommonSection(QWidget):
@@ -59,7 +59,7 @@ class DigitalCommonSection(QWidget):
 
         # Mono Switch
         self.octave_shift_switch = self._create_parameter_combo_box(
-            AddressParameterDigitalCommon.OCTAVE_SHIFT,
+            DigitalCommonParam.OCTAVE_SHIFT,
             "Octave shift",
             ["-3", "-2", "-1", "0", "+1", "+2", "+3"],
             [61, 62, 63, 64, 65, 66, 67],
@@ -72,7 +72,7 @@ class DigitalCommonSection(QWidget):
 
         # Mono Switch
         self.mono_switch = self._create_parameter_switch(
-            AddressParameterDigitalCommon.MONO_SWITCH, "Mono", ["OFF", "ON"]
+            DigitalCommonParam.MONO_SWITCH, "Mono", ["OFF", "ON"]
         )
         mono_switch_row = QHBoxLayout()
         mono_switch_row.addStretch()
@@ -84,29 +84,29 @@ class DigitalCommonSection(QWidget):
         self.pitch_bend_row = QHBoxLayout()
         self.pitch_bend_row.addStretch()
         self.pitch_bend_up = self._create_parameter_slider(
-            AddressParameterDigitalCommon.PITCH_BEND_UP, "Pitch Bend Up", vertical=True
+            DigitalCommonParam.PITCH_BEND_UP, "Pitch Bend Up", vertical=True
         )
         self.pitch_bend_down = self._create_parameter_slider(
-            AddressParameterDigitalCommon.PITCH_BEND_DOWN, "Pitch Bend Down", vertical=True
+            DigitalCommonParam.PITCH_BEND_DOWN, "Pitch Bend Down", vertical=True
         )
         self.tone_level = self._create_parameter_slider(
-            AddressParameterDigitalCommon.TONE_LEVEL, "Tone Level", vertical=True
+            DigitalCommonParam.TONE_LEVEL, "Tone Level", vertical=True
         )
 
         self.pitch_bend_row.addWidget(self.pitch_bend_up)
         self.pitch_bend_row.addWidget(self.pitch_bend_down)
         self.pitch_bend_row.addWidget(self.tone_level)
         self.portamento_time = self._create_parameter_slider(
-            AddressParameterDigitalCommon.PORTAMENTO_TIME, "Portamento Time", vertical=True
+            DigitalCommonParam.PORTAMENTO_TIME, "Portamento Time", vertical=True
         )
         self.pitch_bend_row.addWidget(self.portamento_time)
 
         # Analog Feel and Wave Shape
         self.analog_feel = self._create_parameter_slider(
-            AddressParameterDigitalCommon.ANALOG_FEEL, "Analog Feel", vertical=True
+            DigitalCommonParam.ANALOG_FEEL, "Analog Feel", vertical=True
         )
         self.wave_shape = self._create_parameter_slider(
-            AddressParameterDigitalCommon.WAVE_SHAPE, "Wave Shape", vertical=True
+            DigitalCommonParam.WAVE_SHAPE, "Wave Shape", vertical=True
         )
         self.pitch_bend_row.addWidget(self.analog_feel)
         self.pitch_bend_row.addWidget(self.wave_shape)
@@ -114,7 +114,7 @@ class DigitalCommonSection(QWidget):
 
         # Ring Modulator
         self.ring_switch = self._create_parameter_switch(
-            AddressParameterDigitalCommon.RING_SWITCH, "Ring", ["OFF", "---", "ON"]
+            DigitalCommonParam.RING_SWITCH, "Ring", ["OFF", "---", "ON"]
         )
         ring_row = QHBoxLayout()
         ring_row.addStretch()
@@ -124,10 +124,10 @@ class DigitalCommonSection(QWidget):
 
         # Unison Switch and Size
         self.unison_switch = self._create_parameter_switch(
-            AddressParameterDigitalCommon.UNISON_SWITCH, "Unison", ["OFF", "ON"]
+            DigitalCommonParam.UNISON_SWITCH, "Unison", ["OFF", "ON"]
         )
         self.unison_size = self._create_parameter_switch(
-            AddressParameterDigitalCommon.UNISON_SIZE,
+            DigitalCommonParam.UNISON_SIZE,
             "Size",
             ["2 VOICE", "3 VOICE", "4 VOICE", "5 VOICE"],
         )
@@ -140,7 +140,7 @@ class DigitalCommonSection(QWidget):
 
         # Portamento Switch
         self.portamento_switch = self._create_parameter_switch(
-            AddressParameterDigitalCommon.PORTAMENTO_SWITCH, "Portamento", ["OFF", "ON"]
+            DigitalCommonParam.PORTAMENTO_SWITCH, "Portamento", ["OFF", "ON"]
         )
         portamento_row = QHBoxLayout()
         portamento_row.addStretch()
@@ -150,12 +150,12 @@ class DigitalCommonSection(QWidget):
 
         # Portamento Mode and Legato
         self.portamento_mode = self._create_parameter_switch(
-            AddressParameterDigitalCommon.PORTAMENTO_MODE,
+            DigitalCommonParam.PORTAMENTO_MODE,
             "Portamento Mode",
             ["NORMAL", "LEGATO"],
         )
         self.legato_switch = self._create_parameter_switch(
-            AddressParameterDigitalCommon.LEGATO_SWITCH, "Legato", ["OFF", "ON"]
+            DigitalCommonParam.LEGATO_SWITCH, "Legato", ["OFF", "ON"]
         )
 
         portamento_row.addWidget(self.legato_switch)

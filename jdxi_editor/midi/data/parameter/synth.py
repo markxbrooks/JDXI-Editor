@@ -23,11 +23,15 @@ Methods:
     get_by_name(param_name: str): Static method that returns the `SynthParameter` member
                                   corresponding to address given name.
 
-# Example usage
->>> value = 0x123
->>> offset = create_offset(value)
+Example
+-------
 
->>> print(offset)  # Output: (0x00, 0x01, 0x23)
+>>> class TestParameter(AddressParameter):
+...     FREQ = (0x0123, 0, 127)
+
+>>> param = TestParameter.FREQ
+>>> param.get_offset()
+(0, 1, 35)
 """
 
 from enum import Enum

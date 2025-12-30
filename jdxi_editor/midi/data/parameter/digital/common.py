@@ -44,7 +44,7 @@ from jdxi_editor.midi.data.address.address import AddressOffsetProgramLMB
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 
 
-class AddressParameterDigitalCommon(AddressParameter):
+class DigitalCommonParam(AddressParameter):
     """Common parameters for Digital/SuperNATURAL synth tones.
     These parameters are shared across all partials.
     """
@@ -186,7 +186,7 @@ class AddressParameterDigitalCommon(AddressParameter):
     def get_by_name(param_name):
         """Get the Parameter by name."""
         # Return the parameter member by name, or None if not found
-        return AddressParameterDigitalCommon.__members__.get(param_name, None)
+        return DigitalCommonParam.__members__.get(param_name, None)
 
     def get_address_for_partial(self, partial_number: int = 0):
         return AddressOffsetProgramLMB.COMMON, 0x00

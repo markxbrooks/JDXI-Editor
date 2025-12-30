@@ -21,6 +21,7 @@ from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QTextEdit
 
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.theme import ThemeManager
 
 
 class MIDIMessageMonitor(QMainWindow):
@@ -41,7 +42,7 @@ class MIDIMessageMonitor(QMainWindow):
         self.log_view = QTextEdit()
         self.log_view.setReadOnly(True)
         self.log_view.setLineWrapMode(QTextEdit.NoWrap)
-        self.log_view.setStyleSheet(JDXiStyle.MIDI_MESSAGE_MONITOR)
+        ThemeManager.apply_midi_monitor(self.log_view)
         layout.addWidget(self.log_view)
         self.midi_helper = midi_helper
         self.midi_helper.midi_message_incoming.connect(self.process_incoming_message)

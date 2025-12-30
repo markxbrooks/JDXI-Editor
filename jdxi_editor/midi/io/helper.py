@@ -29,12 +29,12 @@ from jdxi_editor.midi.io.output_handler import MidiOutHandler
 from jdxi_editor.ui.windows.jdxi.helpers.port import find_jdxi_port
 from jdxi_editor.midi.data.address.address import RolandSysExAddress, AddressOffsetTemporaryToneUMB
 from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
-from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
-from jdxi_editor.midi.data.parameter.digital.common import AddressParameterDigitalCommon
-from jdxi_editor.midi.data.parameter.digital.partial import AddressParameterDigitalPartial
-from jdxi_editor.midi.data.parameter.drum.common import AddressParameterDrumCommon
-from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
-from jdxi_editor.midi.data.parameter.program.common import AddressParameterProgramCommon
+from jdxi_editor.midi.data.parameter.analog import AnalogParam
+from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParam
+from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParam
+from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParam
+from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
+from jdxi_editor.midi.data.parameter.program.common import ProgramCommonParam
 
 
 class MidiIOHelper(MidiInHandler, MidiOutHandler):
@@ -122,24 +122,24 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
             if temporary_area == "TEMPORARY_PROGRAM":
                 # Program common parameters
                 if synth_tone == "COMMON":
-                    param_class = AddressParameterProgramCommon
+                    param_class = ProgramCommonParam
                 else:
                     log.warning(f"Unsupported synth_tone for TEMPORARY_PROGRAM: {synth_tone}")
                     return
             elif temporary_area == AddressOffsetTemporaryToneUMB.ANALOG_SYNTH.name:
-                param_class = AddressParameterAnalog
+                param_class = AnalogParam
             elif temporary_area == AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_1.name or \
                  temporary_area == AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_2.name:
                 if synth_tone in ["PARTIAL_1", "PARTIAL_2", "PARTIAL_3", "PARTIAL_1.name", "PARTIAL_2.name", "PARTIAL_3.name"]:
-                    param_class = AddressParameterDigitalPartial
+                    param_class = DigitalPartialParam
                 else:
-                    param_class = AddressParameterDigitalCommon
+                    param_class = DigitalCommonParam
             elif temporary_area == AddressOffsetTemporaryToneUMB.DRUM_KIT.name:
                 # Drum common has lmb=0x00, partials have lmb >= 0x2E
                 if address.lmb == 0x00 or synth_tone == "COMMON":
-                    param_class = AddressParameterDrumCommon
+                    param_class = DrumCommonParam
                 else:
-                    param_class = AddressParameterDrumPartial
+                    param_class = DrumPartialParam
             
             if not param_class:
                 log.warning(f"Could not determine parameter class for {temporary_area}/{synth_tone}")

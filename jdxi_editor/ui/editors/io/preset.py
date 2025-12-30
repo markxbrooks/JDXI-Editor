@@ -289,6 +289,7 @@ class PresetEditor(BasicEditor):
         search_row = QHBoxLayout()
         search_row.addWidget(QLabel("Search:"))
         self.search_box = QLineEdit()
+        self.search_box.setStyleSheet(JDXiStyle.QLINEEDIT)
         self.search_box.setPlaceholderText("Search presets...")
         self.search_box.textChanged.connect(self._populate_presets)
         search_row.addWidget(self.search_box)

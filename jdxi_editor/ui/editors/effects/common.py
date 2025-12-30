@@ -64,7 +64,8 @@ from PySide6.QtWidgets import (
     QLabel,
     QTabWidget,
     QFormLayout, QScrollArea, QSlider, QSplitter, QGroupBox, )
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QEvent
+from PySide6.QtGui import QShowEvent
 
 from jdxi_editor.jdxi.midi.constant import MidiConstant
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
@@ -74,8 +75,8 @@ from jdxi_editor.midi.data.address.address import (
     RolandSysExAddress,
     AddressOffsetSystemUMB, AddressOffsetProgramLMB,
 )
-from jdxi_editor.midi.data.parameter.effects.effects import AddressParameterReverb, AddressParameterEffect2, \
-    AddressParameterDelay, AddressParameterEffect1
+from jdxi_editor.midi.data.parameter.effects.effects import ReverbParam, Effect2Param, \
+    DelayParam, Effect1Param
 from jdxi_editor.midi.data.parameter.effects.common import AddressParameterEffectCommon
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
@@ -103,122 +104,122 @@ class EffectsCommonEditor(BasicEditor):
         self.tab_widget = None
         self.midi_helper = midi_helper
         self.preset_helper = preset_helper
-        self.EFX1_PARAMETERS = [AddressParameterEffect1.EFX1_PARAM_1,
-                                AddressParameterEffect1.EFX1_PARAM_2,
-                                AddressParameterEffect1.EFX1_PARAM_3,
-                                AddressParameterEffect1.EFX1_PARAM_4,
-                                AddressParameterEffect1.EFX1_PARAM_5,
-                                AddressParameterEffect1.EFX1_PARAM_6,
-                                AddressParameterEffect1.EFX1_PARAM_7,
-                                AddressParameterEffect1.EFX1_PARAM_8,
-                                AddressParameterEffect1.EFX1_PARAM_9,
-                                AddressParameterEffect1.EFX1_PARAM_10,
-                                AddressParameterEffect1.EFX1_PARAM_11,
-                                AddressParameterEffect1.EFX1_PARAM_12,
-                                AddressParameterEffect1.EFX1_PARAM_13,
-                                AddressParameterEffect1.EFX1_PARAM_14,
-                                AddressParameterEffect1.EFX1_PARAM_15,
-                                AddressParameterEffect1.EFX1_PARAM_16,
-                                AddressParameterEffect1.EFX1_PARAM_1_DISTORTION_LEVEL,
-                                AddressParameterEffect1.EFX1_PARAM_1_FUZZ_LEVEL,
-                                AddressParameterEffect1.EFX1_PARAM_2_DISTORTION_DRIVE,
-                                AddressParameterEffect1.EFX1_PARAM_2_FUZZ_DRIVE,
-                                AddressParameterEffect1.EFX1_PARAM_3_DISTORTION_TYPE,
-                                AddressParameterEffect1.EFX1_PARAM_3_FUZZ_TYPE,
-                                AddressParameterEffect1.EFX1_PARAM_32_DISTORTION_PRESENCE,
-                                AddressParameterEffect1.EFX1_PARAM_32_FUZZ_PRESENCE,
-                                AddressParameterEffect1.EFX1_PARAM_1_COMPRESSOR_THRESHOLD,
-                                AddressParameterEffect1.EFX1_PARAM_2_COMPRESSOR_RATIO,
-                                AddressParameterEffect1.EFX1_PARAM_3_COMPRESSOR_ATTACK,
-                                AddressParameterEffect1.EFX1_PARAM_4_COMPRESSOR_RELEASE,
-                                AddressParameterEffect1.EFX1_PARAM_5_COMPRESSOR_LEVEL,
-                                AddressParameterEffect1.EFX1_PARAM_7_COMPRESSOR_SIDE_LEVEL,
-                                AddressParameterEffect1.EFX1_PARAM_8_COMPRESSOR_SIDE_NOTE,
-                                AddressParameterEffect1.EFX1_PARAM_9_COMPRESSOR_SIDE_TIME,
-                                AddressParameterEffect1.EFX1_PARAM_10_COMPRESSOR_SIDE_RELEASE,
-                                AddressParameterEffect1.EFX1_PARAM_1_BITCRUSHER_LEVEL,
-                                AddressParameterEffect1.EFX1_PARAM_2_BITCRUSHER_RATE,
-                                AddressParameterEffect1.EFX1_PARAM_3_BITCRUSHER_DEPTH,
-                                AddressParameterEffect1.EFX1_PARAM_4_BITCRUSHER_FILTER,
-                                AddressParameterEffect1.EFX1_PARAM_32]
-        self.EFX2_PARAMETERS = [AddressParameterEffect2.EFX2_PARAM_1,
-                                AddressParameterEffect2.EFX2_PARAM_1_FLANGER_RATE_NOTE_SWITCH,
-                                AddressParameterEffect2.EFX2_PARAM_1_PHASER_RATE_NOTE_SWITCH,
-                                AddressParameterEffect2.EFX2_PARAM_2,
-                                AddressParameterEffect2.EFX2_PARAM_2_FLANGER_RATE,
-                                AddressParameterEffect2.EFX2_PARAM_3,
-                                AddressParameterEffect2.EFX2_PARAM_3_FLANGER_NOTE,
-                                AddressParameterEffect2.EFX2_PARAM_4,
-                                AddressParameterEffect2.EFX2_PARAM_4_FLANGER_DEPTH,
-                                AddressParameterEffect2.EFX2_PARAM_5,
-                                AddressParameterEffect2.EFX2_PARAM_6,
-                                AddressParameterEffect2.EFX2_PARAM_7,
-                                AddressParameterEffect2.EFX2_PARAM_8,
-                                AddressParameterEffect2.EFX2_PARAM_8_FLANGER_LEVEL,
-                                AddressParameterEffect2.EFX2_PARAM_9,
-                                AddressParameterEffect2.EFX2_PARAM_10,
-                                AddressParameterEffect2.EFX2_PARAM_11,
-                                AddressParameterEffect2.EFX2_PARAM_12,
-                                AddressParameterEffect2.EFX2_PARAM_13,
-                                AddressParameterEffect2.EFX2_PARAM_14,
-                                AddressParameterEffect2.EFX2_PARAM_15,
-                                AddressParameterEffect2.EFX2_PARAM_16,
-                                AddressParameterEffect2.EFX2_PARAM_32]
+        self.EFX1_PARAMETERS = [Effect1Param.EFX1_PARAM_1,
+                                Effect1Param.EFX1_PARAM_2,
+                                Effect1Param.EFX1_PARAM_3,
+                                Effect1Param.EFX1_PARAM_4,
+                                Effect1Param.EFX1_PARAM_5,
+                                Effect1Param.EFX1_PARAM_6,
+                                Effect1Param.EFX1_PARAM_7,
+                                Effect1Param.EFX1_PARAM_8,
+                                Effect1Param.EFX1_PARAM_9,
+                                Effect1Param.EFX1_PARAM_10,
+                                Effect1Param.EFX1_PARAM_11,
+                                Effect1Param.EFX1_PARAM_12,
+                                Effect1Param.EFX1_PARAM_13,
+                                Effect1Param.EFX1_PARAM_14,
+                                Effect1Param.EFX1_PARAM_15,
+                                Effect1Param.EFX1_PARAM_16,
+                                Effect1Param.EFX1_PARAM_1_DISTORTION_LEVEL,
+                                Effect1Param.EFX1_PARAM_1_FUZZ_LEVEL,
+                                Effect1Param.EFX1_PARAM_2_DISTORTION_DRIVE,
+                                Effect1Param.EFX1_PARAM_2_FUZZ_DRIVE,
+                                Effect1Param.EFX1_PARAM_3_DISTORTION_TYPE,
+                                Effect1Param.EFX1_PARAM_3_FUZZ_TYPE,
+                                Effect1Param.EFX1_PARAM_32_DISTORTION_PRESENCE,
+                                Effect1Param.EFX1_PARAM_32_FUZZ_PRESENCE,
+                                Effect1Param.EFX1_PARAM_1_COMPRESSOR_THRESHOLD,
+                                Effect1Param.EFX1_PARAM_2_COMPRESSOR_RATIO,
+                                Effect1Param.EFX1_PARAM_3_COMPRESSOR_ATTACK,
+                                Effect1Param.EFX1_PARAM_4_COMPRESSOR_RELEASE,
+                                Effect1Param.EFX1_PARAM_5_COMPRESSOR_LEVEL,
+                                Effect1Param.EFX1_PARAM_7_COMPRESSOR_SIDE_LEVEL,
+                                Effect1Param.EFX1_PARAM_8_COMPRESSOR_SIDE_NOTE,
+                                Effect1Param.EFX1_PARAM_9_COMPRESSOR_SIDE_TIME,
+                                Effect1Param.EFX1_PARAM_10_COMPRESSOR_SIDE_RELEASE,
+                                Effect1Param.EFX1_PARAM_1_BITCRUSHER_LEVEL,
+                                Effect1Param.EFX1_PARAM_2_BITCRUSHER_RATE,
+                                Effect1Param.EFX1_PARAM_3_BITCRUSHER_DEPTH,
+                                Effect1Param.EFX1_PARAM_4_BITCRUSHER_FILTER,
+                                Effect1Param.EFX1_PARAM_32]
+        self.EFX2_PARAMETERS = [Effect2Param.EFX2_PARAM_1,
+                                Effect2Param.EFX2_PARAM_1_FLANGER_RATE_NOTE_SWITCH,
+                                Effect2Param.EFX2_PARAM_1_PHASER_RATE_NOTE_SWITCH,
+                                Effect2Param.EFX2_PARAM_2,
+                                Effect2Param.EFX2_PARAM_2_FLANGER_RATE,
+                                Effect2Param.EFX2_PARAM_3,
+                                Effect2Param.EFX2_PARAM_3_FLANGER_NOTE,
+                                Effect2Param.EFX2_PARAM_4,
+                                Effect2Param.EFX2_PARAM_4_FLANGER_DEPTH,
+                                Effect2Param.EFX2_PARAM_5,
+                                Effect2Param.EFX2_PARAM_6,
+                                Effect2Param.EFX2_PARAM_7,
+                                Effect2Param.EFX2_PARAM_8,
+                                Effect2Param.EFX2_PARAM_8_FLANGER_LEVEL,
+                                Effect2Param.EFX2_PARAM_9,
+                                Effect2Param.EFX2_PARAM_10,
+                                Effect2Param.EFX2_PARAM_11,
+                                Effect2Param.EFX2_PARAM_12,
+                                Effect2Param.EFX2_PARAM_13,
+                                Effect2Param.EFX2_PARAM_14,
+                                Effect2Param.EFX2_PARAM_15,
+                                Effect2Param.EFX2_PARAM_16,
+                                Effect2Param.EFX2_PARAM_32]
 
         # Effect 1 parameter labels
         self.efx1_param_labels = {
             0: {},  # Thru – no params
-            1: {AddressParameterEffect1.EFX1_PARAM_1_DISTORTION_LEVEL: "Level",
-                AddressParameterEffect1.EFX1_PARAM_2_DISTORTION_DRIVE: "Drive",
-                AddressParameterEffect1.EFX1_PARAM_3_DISTORTION_TYPE: "Type",
-                AddressParameterEffect1.EFX1_PARAM_32_DISTORTION_PRESENCE: "Presence"},
+            1: {Effect1Param.EFX1_PARAM_1_DISTORTION_LEVEL: "Level",
+                Effect1Param.EFX1_PARAM_2_DISTORTION_DRIVE: "Drive",
+                Effect1Param.EFX1_PARAM_3_DISTORTION_TYPE: "Type",
+                Effect1Param.EFX1_PARAM_32_DISTORTION_PRESENCE: "Presence"},
             # DISTORTION "presence" = Parameter 32/1D
-            2: {AddressParameterEffect1.EFX1_PARAM_1_FUZZ_LEVEL: "Level",
-                AddressParameterEffect1.EFX1_PARAM_2_FUZZ_DRIVE: "Drive",
-                AddressParameterEffect1.EFX1_PARAM_3_FUZZ_TYPE: "Type",
-                AddressParameterEffect1.EFX1_PARAM_32_FUZZ_PRESENCE: "Presence"},  # FUZZ Type = 19/EFX1_PARAM_3
-            3: {AddressParameterEffect1.EFX1_PARAM_1_COMPRESSOR_THRESHOLD: "Threshold",
-                AddressParameterEffect1.EFX1_PARAM_2_COMPRESSOR_RATIO: "Ratio",
-                AddressParameterEffect1.EFX1_PARAM_3_COMPRESSOR_ATTACK: "Attack",
-                AddressParameterEffect1.EFX1_PARAM_4_COMPRESSOR_RELEASE: "Release",
-                AddressParameterEffect1.EFX1_PARAM_5_COMPRESSOR_LEVEL: "Level",
-                AddressParameterEffect1.EFX1_PARAM_7_COMPRESSOR_SIDE_LEVEL: "Side level",
-                AddressParameterEffect1.EFX1_PARAM_8_COMPRESSOR_SIDE_NOTE: "Side note",
-                AddressParameterEffect1.EFX1_PARAM_9_COMPRESSOR_SIDE_TIME: "Side time",
-                AddressParameterEffect1.EFX1_PARAM_10_COMPRESSOR_SIDE_RELEASE: "Side release"},
+            2: {Effect1Param.EFX1_PARAM_1_FUZZ_LEVEL: "Level",
+                Effect1Param.EFX1_PARAM_2_FUZZ_DRIVE: "Drive",
+                Effect1Param.EFX1_PARAM_3_FUZZ_TYPE: "Type",
+                Effect1Param.EFX1_PARAM_32_FUZZ_PRESENCE: "Presence"},  # FUZZ Type = 19/EFX1_PARAM_3
+            3: {Effect1Param.EFX1_PARAM_1_COMPRESSOR_THRESHOLD: "Threshold",
+                Effect1Param.EFX1_PARAM_2_COMPRESSOR_RATIO: "Ratio",
+                Effect1Param.EFX1_PARAM_3_COMPRESSOR_ATTACK: "Attack",
+                Effect1Param.EFX1_PARAM_4_COMPRESSOR_RELEASE: "Release",
+                Effect1Param.EFX1_PARAM_5_COMPRESSOR_LEVEL: "Level",
+                Effect1Param.EFX1_PARAM_7_COMPRESSOR_SIDE_LEVEL: "Side level",
+                Effect1Param.EFX1_PARAM_8_COMPRESSOR_SIDE_NOTE: "Side note",
+                Effect1Param.EFX1_PARAM_9_COMPRESSOR_SIDE_TIME: "Side time",
+                Effect1Param.EFX1_PARAM_10_COMPRESSOR_SIDE_RELEASE: "Side release"},
             # COMP "Side level = 29/EFX1_PARAM_7, "Side Time = 29/EFX1_PARAM_8, "Side Release = 29/EFX1_PARAM_9
-            4: {AddressParameterEffect1.EFX1_PARAM_1_BITCRUSHER_LEVEL: "Output Level",
-                AddressParameterEffect1.EFX1_PARAM_2_BITCRUSHER_RATE: "Sample Rate",
-                AddressParameterEffect1.EFX1_PARAM_3_BITCRUSHER_DEPTH: "Bit Depth",
-                AddressParameterEffect1.EFX1_PARAM_4_BITCRUSHER_FILTER: "Filter"}
+            4: {Effect1Param.EFX1_PARAM_1_BITCRUSHER_LEVEL: "Output Level",
+                Effect1Param.EFX1_PARAM_2_BITCRUSHER_RATE: "Sample Rate",
+                Effect1Param.EFX1_PARAM_3_BITCRUSHER_DEPTH: "Bit Depth",
+                Effect1Param.EFX1_PARAM_4_BITCRUSHER_FILTER: "Filter"}
             # ["Bit Depth", "Sample Rate", "Tone", "Noise", "Mix", "Output Level"],  # BIT CRUSHER
         }
         self.efx2_param_labels = {
             0: {},  # Thru – no params
-            1: {AddressParameterEffect2.EFX2_PARAM_1_FLANGER_RATE_NOTE_SWITCH: "Rate/Note",  # Flanger
-                AddressParameterEffect2.EFX2_PARAM_2_FLANGER_RATE: "Rate",
-                AddressParameterEffect2.EFX2_PARAM_3_FLANGER_NOTE: "Note",
-                AddressParameterEffect2.EFX2_PARAM_4_FLANGER_DEPTH: "Depth",
-                AddressParameterEffect2.EFX2_PARAM_5_FLANGER_FEEDBACK: "Feedback (0=Chorus)",
-                AddressParameterEffect2.EFX2_PARAM_6_FLANGER_MANUAL: "Manual",
-                AddressParameterEffect2.EFX2_PARAM_7: "Balance (Dry/Wet)",
-                AddressParameterEffect2.EFX2_PARAM_8_FLANGER_LEVEL: "Level"},
-            2: {AddressParameterEffect2.EFX2_PARAM_1_PHASER_RATE_NOTE_SWITCH: "Rate/Note",  # Phaser
-                AddressParameterEffect2.EFX2_PARAM_2_PHASER_RATE: "Rate",
-                AddressParameterEffect2.EFX2_PARAM_3_PHASER_NOTE: "Note",
-                AddressParameterEffect2.EFX2_PARAM_4_PHASER_DEPTH: "Depth",
-                AddressParameterEffect2.EFX2_PARAM_5_PHASER_CENTER_FREQ: "Center Freq",
-                AddressParameterEffect2.EFX2_PARAM_32_PHASER_EFFECT_LEVEL: "Effect Level"},  #
-            3: {AddressParameterEffect2.EFX2_PARAM_1: "Frequency",
-                AddressParameterEffect2.EFX2_PARAM_2: "Sensitivity",
-                AddressParameterEffect2.EFX2_PARAM_3: "Balance (Dry/Wet)",
-                AddressParameterEffect2.EFX2_PARAM_4: "Level"},
+            1: {Effect2Param.EFX2_PARAM_1_FLANGER_RATE_NOTE_SWITCH: "Rate/Note",  # Flanger
+                Effect2Param.EFX2_PARAM_2_FLANGER_RATE: "Rate",
+                Effect2Param.EFX2_PARAM_3_FLANGER_NOTE: "Note",
+                Effect2Param.EFX2_PARAM_4_FLANGER_DEPTH: "Depth",
+                Effect2Param.EFX2_PARAM_5_FLANGER_FEEDBACK: "Feedback (0=Chorus)",
+                Effect2Param.EFX2_PARAM_6_FLANGER_MANUAL: "Manual",
+                Effect2Param.EFX2_PARAM_7: "Balance (Dry/Wet)",
+                Effect2Param.EFX2_PARAM_8_FLANGER_LEVEL: "Level"},
+            2: {Effect2Param.EFX2_PARAM_1_PHASER_RATE_NOTE_SWITCH: "Rate/Note",  # Phaser
+                Effect2Param.EFX2_PARAM_2_PHASER_RATE: "Rate",
+                Effect2Param.EFX2_PARAM_3_PHASER_NOTE: "Note",
+                Effect2Param.EFX2_PARAM_4_PHASER_DEPTH: "Depth",
+                Effect2Param.EFX2_PARAM_5_PHASER_CENTER_FREQ: "Center Freq",
+                Effect2Param.EFX2_PARAM_32_PHASER_EFFECT_LEVEL: "Effect Level"},  #
+            3: {Effect2Param.EFX2_PARAM_1: "Frequency",
+                Effect2Param.EFX2_PARAM_2: "Sensitivity",
+                Effect2Param.EFX2_PARAM_3: "Balance (Dry/Wet)",
+                Effect2Param.EFX2_PARAM_4: "Level"},
             # COMP "Side level = 29/EFX1_PARAM_7, "Side Time = 29/EFX1_PARAM_8, "Side Release = 29/EFX1_PARAM_9
-            4: {AddressParameterEffect2.EFX2_PARAM_1: "Timing pattern",
-                AddressParameterEffect2.EFX2_PARAM_2: "Rate [Note]",
-                AddressParameterEffect2.EFX2_PARAM_3: "Attack Time",
-                AddressParameterEffect2.EFX2_PARAM_4: "Trigger Level",
-                AddressParameterEffect2.EFX2_PARAM_5: "Level"}
+            4: {Effect2Param.EFX2_PARAM_1: "Timing pattern",
+                Effect2Param.EFX2_PARAM_2: "Rate [Note]",
+                Effect2Param.EFX2_PARAM_3: "Attack Time",
+                Effect2Param.EFX2_PARAM_4: "Trigger Level",
+                Effect2Param.EFX2_PARAM_5: "Level"}
             # ["Bit Depth", "Sample Rate", "Tone", "Noise", "Mix", "Output Level"],  # BIT CRUSHER
         }
         self.midi_requests = [
@@ -226,9 +227,9 @@ class EffectsCommonEditor(BasicEditor):
 
         self.delay_params = None
         self.efx2_additional_params = [
-            AddressParameterEffect2.EFX2_PARAM_1,
-            AddressParameterEffect2.EFX2_PARAM_2,
-            AddressParameterEffect2.EFX2_PARAM_32,
+            Effect2Param.EFX2_PARAM_1,
+            Effect2Param.EFX2_PARAM_2,
+            Effect2Param.EFX2_PARAM_32,
         ]
         self.default_image = "effects.png"
         self.instrument_icon_folder = "effects"
@@ -263,10 +264,10 @@ class EffectsCommonEditor(BasicEditor):
         main_rows_hlayout.addLayout(rows_layout)
         main_row_hlayout.addStretch()
 
-        self.controls: Dict[Union[AddressParameterReverb,
+        self.controls: Dict[Union[ReverbParam,
         AddressParameterEffectCommon,
-        AddressParameterEffect1,
-        AddressParameterEffect2], QWidget
+        Effect1Param,
+        Effect2Param], QWidget
         ] = {}
 
         # Create address tab widget
@@ -303,16 +304,33 @@ class EffectsCommonEditor(BasicEditor):
         # Connect to MIDI helper signals to receive SysEx data
         if self.midi_helper:
             self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
+            log.message("🎛️ Effects Editor: Connected to midi_sysex_json signal")
+        else:
+            log.warning("🎛️ Effects Editor: midi_helper is None, cannot connect to signals")
         
         # Request current settings from the synthesizer
+        # Note: data_request() will also be called in showEvent when editor is shown
+        self.data_request()
+    
+    def showEvent(self, event: QShowEvent) -> None:
+        """
+        Override showEvent to request current settings from the instrument when the editor is shown.
+        This ensures the sliders pick up the current settings from the instrument, similar to
+        Digital 1, Digital 2, and Analog synth editors.
+        
+        :param event: QShowEvent
+        """
+        super().showEvent(event)
+        if self.midi_helper:
+            log.message("🎛️ Effects Editor shown - requesting current settings from instrument")
         self.data_request()
 
     def update_flanger_rate_note_controls(self) -> None:
         """Update Flanger rate/note controls based on rate note switch."""
         try:
-            switch_param = AddressParameterEffect2.EFX2_PARAM_1_FLANGER_RATE_NOTE_SWITCH
-            rate_param = AddressParameterEffect2.EFX2_PARAM_2_FLANGER_RATE
-            note_param = AddressParameterEffect2.EFX2_PARAM_3_FLANGER_NOTE
+            switch_param = Effect2Param.EFX2_PARAM_1_FLANGER_RATE_NOTE_SWITCH
+            rate_param = Effect2Param.EFX2_PARAM_2_FLANGER_RATE
+            note_param = Effect2Param.EFX2_PARAM_3_FLANGER_NOTE
 
             rate_note_switch = self.controls.get(switch_param)
             rate_slider = self.controls.get(rate_param)
@@ -335,9 +353,9 @@ class EffectsCommonEditor(BasicEditor):
     def update_phaser_rate_note_controls(self) -> None:
         """Update Flanger rate/note controls based on rate note switch."""
         try:
-            switch_param = AddressParameterEffect2.EFX2_PARAM_1_PHASER_RATE_NOTE_SWITCH
-            rate_param = AddressParameterEffect2.EFX2_PARAM_2_PHASER_RATE
-            note_param = AddressParameterEffect2.EFX2_PARAM_3_PHASER_NOTE
+            switch_param = Effect2Param.EFX2_PARAM_1_PHASER_RATE_NOTE_SWITCH
+            rate_param = Effect2Param.EFX2_PARAM_2_PHASER_RATE
+            note_param = Effect2Param.EFX2_PARAM_3_PHASER_NOTE
 
             rate_note_switch = self.controls.get(switch_param)
             rate_slider = self.controls.get(rate_param)
@@ -408,14 +426,14 @@ class EffectsCommonEditor(BasicEditor):
             control = self.controls.get(param)
 
             if control:
-                if param == AddressParameterEffect2.EFX2_PARAM_1_FLANGER_RATE_NOTE_SWITCH:
+                if param == Effect2Param.EFX2_PARAM_1_FLANGER_RATE_NOTE_SWITCH:
                     try:
                         control.valueChanged.disconnect(self.update_flanger_rate_note_controls)
                     except TypeError:
                         pass  # Already disconnected
                     control.valueChanged.connect(self.update_phaser_rate_note_controls)
 
-                elif param == AddressParameterEffect2.EFX2_PARAM_1_PHASER_RATE_NOTE_SWITCH:
+                elif param == Effect2Param.EFX2_PARAM_1_PHASER_RATE_NOTE_SWITCH:
                     try:
                         control.valueChanged.disconnect(self.update_phaser_rate_note_controls)
                     except TypeError:
@@ -446,7 +464,7 @@ class EffectsCommonEditor(BasicEditor):
 
         # Create address combo box for EFX1 preset_type
         self.efx1_type = self._create_parameter_combo_box(
-            AddressParameterEffect1.EFX1_TYPE,
+            Effect1Param.EFX1_TYPE,
             "Effect 1 Type",
             EffectsData.efx1_types,
             EffectsData.efx1_type_values,
@@ -455,24 +473,24 @@ class EffectsCommonEditor(BasicEditor):
 
         # Create sliders for EFX1 parameters
         self.efx1_level = self._create_parameter_slider(
-            AddressParameterEffect1.EFX1_LEVEL, "EFX1 Level (0-127)"
+            Effect1Param.EFX1_LEVEL, "EFX1 Level (0-127)"
         )
         layout.addRow(self.efx1_level)
 
         self.efx1_delay_send_level = self._create_parameter_slider(
-            AddressParameterEffect1.EFX1_DELAY_SEND_LEVEL,
+            Effect1Param.EFX1_DELAY_SEND_LEVEL,
             "EFX1 Delay Send Level (0-127)",
         )
         layout.addRow(self.efx1_delay_send_level)
 
         self.efx1_reverb_send_level = self._create_parameter_slider(
-            AddressParameterEffect1.EFX1_REVERB_SEND_LEVEL,
+            Effect1Param.EFX1_REVERB_SEND_LEVEL,
             "EFX1 Reverb Send Level (0-127)",
         )
         layout.addRow(self.efx1_reverb_send_level)
 
         self.efx1_output_assign = self._create_parameter_switch(
-            AddressParameterEffect1.EFX1_OUTPUT_ASSIGN, "Output Assign", EffectsData.output_assignments
+            Effect1Param.EFX1_OUTPUT_ASSIGN, "Output Assign", EffectsData.output_assignments
         )
         layout.addRow(self.efx1_output_assign)
 
@@ -514,7 +532,7 @@ class EffectsCommonEditor(BasicEditor):
 
         # Create address combo box for EFX2 preset_type
         self.efx2_type = self._create_parameter_combo_box(
-            AddressParameterEffect2.EFX2_TYPE,
+            Effect2Param.EFX2_TYPE,
             "Effect Type",
             EffectsData.efx2_types,
             EffectsData.efx2_type_values,
@@ -523,18 +541,18 @@ class EffectsCommonEditor(BasicEditor):
 
         # Create sliders for EFX2 parameters
         self.efx2_level = self._create_parameter_slider(
-            AddressParameterEffect2.EFX2_LEVEL, "EFX2 Level (0-127)"
+            Effect2Param.EFX2_LEVEL, "EFX2 Level (0-127)"
         )
         layout.addRow(self.efx2_level)
 
         self.efx2_delay_send_level = self._create_parameter_slider(
-            AddressParameterEffect2.EFX2_DELAY_SEND_LEVEL,
+            Effect2Param.EFX2_DELAY_SEND_LEVEL,
             "EFX2 Delay Send Level (0-127)",
         )
         layout.addRow(self.efx2_delay_send_level)
 
         self.efx2_reverb_send_level = self._create_parameter_slider(
-            AddressParameterEffect2.EFX2_REVERB_SEND_LEVEL,
+            Effect2Param.EFX2_REVERB_SEND_LEVEL,
             "EFX2 Reverb Send Level (0-127)",
         )
         layout.addRow(self.efx2_reverb_send_level)
@@ -569,27 +587,27 @@ class EffectsCommonEditor(BasicEditor):
         widget.setLayout(layout)
         # Create address combo box for Delay Type
         delay_level_slider = self._create_parameter_slider(
-            AddressParameterDelay.DELAY_LEVEL, "Delay Level"
+            DelayParam.DELAY_LEVEL, "Delay Level"
         )
         layout.addRow(delay_level_slider)
 
         delay_reverb_send_level_slider = self._create_parameter_slider(
-            AddressParameterDelay.DELAY_REVERB_SEND_LEVEL, "Delay to Reverb Send Level"
+            DelayParam.DELAY_REVERB_SEND_LEVEL, "Delay to Reverb Send Level"
         )
         layout.addRow(delay_reverb_send_level_slider)
 
         delay_parameter1_slider = self._create_parameter_slider(
-            AddressParameterDelay.DELAY_PARAM_1, "Delay Time (ms)"
+            DelayParam.DELAY_PARAM_1, "Delay Time (ms)"
         )
         layout.addRow(delay_parameter1_slider)
 
         delay_parameter2_slider = self._create_parameter_slider(
-            AddressParameterDelay.DELAY_PARAM_2, "Delay Tap Time (ms)"
+            DelayParam.DELAY_PARAM_2, "Delay Tap Time (ms)"
         )
         layout.addRow(delay_parameter2_slider)
 
         delay_parameter24_slider = self._create_parameter_slider(
-            AddressParameterDelay.DELAY_PARAM_24, "Feedback (%)"
+            DelayParam.DELAY_PARAM_24, "Feedback (%)"
         )
         layout.addRow(delay_parameter24_slider)
         return widget
@@ -600,19 +618,19 @@ class EffectsCommonEditor(BasicEditor):
         layout = QFormLayout()
         widget.setLayout(layout)
         reverb_level_slider = self._create_parameter_slider(
-            AddressParameterReverb.REVERB_LEVEL, "Level (0-127)"
+            ReverbParam.REVERB_LEVEL, "Level (0-127)"
         )
         layout.addRow(reverb_level_slider)
         reverb_parameter1_slider = self._create_parameter_slider(
-            AddressParameterReverb.REVERB_PARAM_1, "Parameter 1"
+            ReverbParam.REVERB_PARAM_1, "Parameter 1"
         )
         layout.addRow(reverb_parameter1_slider)
         reverb_parameter2_slider = self._create_parameter_slider(
-            AddressParameterReverb.REVERB_PARAM_2, "Parameter 2"
+            ReverbParam.REVERB_PARAM_2, "Parameter 2"
         )
         layout.addRow(reverb_parameter2_slider)
         reverb_parameter24_slider = self._create_parameter_slider(
-            AddressParameterReverb.REVERB_PARAM_24, "Parameter 24"
+            ReverbParam.REVERB_PARAM_24, "Parameter 24"
         )
         layout.addRow(reverb_parameter24_slider)
         return widget
@@ -636,13 +654,13 @@ class EffectsCommonEditor(BasicEditor):
         """
         offset = None
         try:
-            if isinstance(param, AddressParameterEffect1):
+            if isinstance(param, Effect1Param):
                 offset = (0, 2, 0)
-            elif isinstance(param, AddressParameterEffect2):
+            elif isinstance(param, Effect2Param):
                 offset = (0, 4, 0)
-            elif isinstance(param, AddressParameterDelay):
+            elif isinstance(param, DelayParam):
                 offset = (0, 6, 0)
-            elif isinstance(param, AddressParameterReverb):
+            elif isinstance(param, ReverbParam):
                 offset = (0, 8, 0)
             target_address = self.address.add_offset(offset)
             sysex_message = self.sysex_composer.compose_message(
@@ -663,23 +681,40 @@ class EffectsCommonEditor(BasicEditor):
         :param json_sysex_data: str JSON string containing SysEx data
         :return: None
         """
+        # Log that the method was called
+        log.message("🎛️ Effects Editor _dispatch_sysex_to_area called")
+        
         try:
-            import json
             from jdxi_editor.ui.editors.digital.utils import filter_sysex_keys
             
-            # Parse JSON SysEx data
-            sysex_data = json.loads(json_sysex_data)
+            # Parse JSON SysEx data using the same method as SynthEditor
+            sysex_data = self._parse_sysex_json(json_sysex_data)
             if not sysex_data:
+                log.message("🎛️ Effects Editor: sysex_data is None or empty after parsing")
                 return
             
             # Check if this is effects data (TEMPORARY_AREA should be "TEMPORARY_PROGRAM")
             temporary_area = sysex_data.get("TEMPORARY_AREA", "")
+            synth_tone = sysex_data.get("SYNTH_TONE", "")
+            
+            # Log what we received for debugging
+            log.message(
+                f"🎛️ Effects Editor received SysEx: TEMPORARY_AREA={temporary_area}, SYNTH_TONE={synth_tone}"
+            )
+            
             if temporary_area != "TEMPORARY_PROGRAM":
                 # Not effects data, skip
+                log.message(
+                    f"🎛️ Effects Editor skipping: TEMPORARY_AREA={temporary_area} != TEMPORARY_PROGRAM"
+                )
                 return
             
+            # For TEMPORARY_PROGRAM area, we accept any SYNTH_TONE (COMMON, EFFECT_1, EFFECT_2, DELAY, REVERB, etc.)
+            # The parser may return "COMMON" for effects because JDXiMapSynthTone doesn't include effects tones
+            # We'll process all parameters regardless of SYNTH_TONE value
+            
             log.header_message(
-                f"Updating Effects UI components from SysEx data for {temporary_area}"
+                f"Updating Effects UI components from SysEx data for \t{temporary_area} \t{synth_tone}"
             )
             
             # Filter out metadata keys
@@ -695,10 +730,10 @@ class EffectsCommonEditor(BasicEditor):
                     
                     # Check all parameter types
                     for param_type in [
-                        AddressParameterEffect1,
-                        AddressParameterEffect2,
-                        AddressParameterDelay,
-                        AddressParameterReverb,
+                        Effect1Param,
+                        Effect2Param,
+                        DelayParam,
+                        ReverbParam,
                         AddressParameterEffectCommon
                     ]:
                         if hasattr(param_type, "get_by_name"):
@@ -712,6 +747,41 @@ class EffectsCommonEditor(BasicEditor):
                         # Convert value if needed and update widget
                         value = int(param_value) if not isinstance(param_value, int) else param_value
                         
+                        # Special handling for Effect Type combo boxes
+                        if param_name == "EFX1_TYPE":
+                            # Find index in efx1_type_values that matches the value
+                            try:
+                                index = EffectsData.efx1_type_values.index(value)
+                                if hasattr(self, 'efx1_type') and hasattr(self.efx1_type, 'combo_box'):
+                                    self.efx1_type.combo_box.blockSignals(True)
+                                    self.efx1_type.combo_box.setCurrentIndex(index)
+                                    self.efx1_type.combo_box.blockSignals(False)
+                                    # Trigger label update to show correct parameters
+                                    self._update_efx1_labels(value)
+                                    successes.append(param_name)
+                                    log.message(f"✅ Updated EFX1_TYPE to index {index} (value {value})")
+                                else:
+                                    failures.append(f"{param_name}: efx1_type combo box not found")
+                            except ValueError:
+                                failures.append(f"{param_name}: value {value} not found in efx1_type_values")
+                        elif param_name == "EFX2_TYPE":
+                            # Find index in efx2_type_values that matches the value
+                            try:
+                                index = EffectsData.efx2_type_values.index(value)
+                                if hasattr(self, 'efx2_type') and hasattr(self.efx2_type, 'combo_box'):
+                                    self.efx2_type.combo_box.blockSignals(True)
+                                    self.efx2_type.combo_box.setCurrentIndex(index)
+                                    self.efx2_type.combo_box.blockSignals(False)
+                                    # Trigger label update to show correct parameters
+                                    self._update_efx2_labels(value)
+                                    successes.append(param_name)
+                                    log.message(f"✅ Updated EFX2_TYPE to index {index} (value {value})")
+                                else:
+                                    failures.append(f"{param_name}: efx2_type combo box not found")
+                            except ValueError:
+                                failures.append(f"{param_name}: value {value} not found in efx2_type_values")
+                        #else:
+                        # Regular parameter update (sliders, etc.)
                         # Convert from MIDI to display value if parameter has conversion
                         if hasattr(param, "convert_from_midi"):
                             display_value = param.convert_from_midi(value)
@@ -724,8 +794,23 @@ class EffectsCommonEditor(BasicEditor):
                             widget.setValue(display_value)
                             widget.blockSignals(False)
                             successes.append(param_name)
+                        elif hasattr(widget, "combo_box"):
+                            # Handle combo box widgets (for switches, etc.)
+                            widget.combo_box.blockSignals(True)
+                            # Try to find the index in values
+                            if hasattr(widget, 'values') and widget.values:
+                                try:
+                                    index = widget.values.index(value)
+                                    widget.combo_box.setCurrentIndex(index)
+                                except (ValueError, AttributeError):
+                                    # If value not found, try direct index
+                                    widget.combo_box.setCurrentIndex(value)
+                            else:
+                                widget.combo_box.setCurrentIndex(value)
+                                widget.combo_box.blockSignals(False)
+                                successes.append(param_name)
                         else:
-                            failures.append(f"{param_name}: widget has no setValue method")
+                                failures.append(f"{param_name}: widget has no setValue or combo_box method")
                     else:
                         failures.append(f"{param_name}: parameter or widget not found")
                         
@@ -733,12 +818,16 @@ class EffectsCommonEditor(BasicEditor):
                     failures.append(f"{param_name}: {ex}")
                     log.warning(f"Error updating {param_name}: {ex}")
             
+            # Log summary similar to Analog Synth editor
             if successes:
-                log.message(f"Successfully updated {len(successes)} effects parameters")
+                log.message(f"ℹ️✅  Successes ({len(successes)}): {successes[:10]}{'...' if len(successes) > 10 else ''}")
             if failures:
-                log.warning(f"Failed to update {len(failures)} effects parameters")
+                log.warning(f"ℹ️❌  Failures ({len(failures)}): {failures[:10]}{'...' if len(failures) > 10 else ''}")
+            
+            success_rate = (len(successes) / (len(successes) + len(failures)) * 100) if (successes or failures) else 0
+            log.message(f"ℹ️📊  Success Rate: {success_rate:.1f}%")
                 
-        except json.JSONDecodeError as ex:
-            log.error(f"Invalid JSON in SysEx data: {ex}")
         except Exception as ex:
-            log.error(f"Error dispatching SysEx to effects area: {ex}")
+            import traceback
+            log.error(f"🎛️ Effects Editor error in _dispatch_sysex_to_area: {ex}")
+            log.error(f"🎛️ Traceback: {traceback.format_exc()}")
