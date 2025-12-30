@@ -122,6 +122,12 @@ ipython_config.py
 .pdm.toml
 .pdm-python
 .pdm-build/
+jdxi_manager.egg-info/
+jdxi_manager-030.egg-info/
+jdxi_manager-030.egg-info/
+jdxi_manager-030/
+jdxi_manager-030.egg-info/
+jdxi_manager-030/
 
 # PEP 582; used by e.g. github.com/David-OConnor/pyflow and github.com/pdm-project/pdm
 __pypackages__/

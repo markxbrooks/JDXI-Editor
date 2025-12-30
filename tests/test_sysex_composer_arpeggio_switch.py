@@ -3,7 +3,7 @@ import unittest
 from jdxi_editor.jdxi.midi.constant import MidiConstant
 from jdxi_editor.midi.data.address.address import RolandSysExAddress, AddressStartMSB, AddressOffsetSystemUMB
 from jdxi_editor.midi.data.address.helpers import apply_address_offset
-from jdxi_editor.midi.data.parameter.program.zone import AddressParameterProgramZone
+from jdxi_editor.midi.data.parameter.program.zone import ProgramZoneParam
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
 
@@ -31,7 +31,7 @@ class TestJDXiSysExComposer(unittest.TestCase):
         )
 
         # 2) Parameter and value
-        param = AddressParameterProgramZone.ARPEGGIO_SWITCH
+        param = ProgramZoneParam.ARPEGGIO_SWITCH
         value = 1  # ON
 
         # 3) Compute the expected address AFTER offset

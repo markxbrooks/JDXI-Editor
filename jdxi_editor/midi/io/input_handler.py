@@ -50,25 +50,16 @@ from jdxi_editor.midi.data.address.address import AddressStartMSB as AreaMSB
 def add_or_replace_program_and_save(new_program: JDXiProgram) -> bool:
     """
     Add a new program to the list, replacing any with matching ID or PC.
+    Uses SQLite database for reliable storage.
 
     :param new_program: JDXiProgram to add or replace.
     :return: True if successfully added/replaced and saved, False otherwise.
     """
     try:
-        program_list = load_programs()
-
-        # Remove any existing entries with same ID or PC
-        program_list = [
-            p for p in program_list
-            if p.get("id") != new_program.id and p.get("pc") != new_program.pc
-        ]
-
-        log.message(f"Adding or replacing program: {new_program.id} (PC {new_program.pc})")
-        program_list.append(new_program.to_dict())
-
-        save_programs(program_list)
-        log.message(f"✅ Saved updated program list with {new_program.id}")
-        return True
+        # Use SQLite database instead of JSON
+        from jdxi_editor.midi.data.programs.database import get_database
+        db = get_database()
+        return db.add_or_replace_program(new_program)
     except Exception as e:
         log.error(f"❌ Failed to add or replace program: {e}")
         return False
@@ -422,8 +413,9 @@ class MidiInHandler(MidiIOController):
                 self._emit_tone_name_signal(temporary_area, tone_name)
 
         # All parts received? Then save program!
-
-        if all(k in self._incoming_preset_data.tone_names for k in ("digital_1", "digital_2", "analog", "drum")):
+        # Only auto-add if enabled (disabled during manual database updates)
+        auto_add_enabled = getattr(self, '_auto_add_enabled', True)
+        if auto_add_enabled and all(k in self._incoming_preset_data.tone_names for k in ("digital_1", "digital_2", "analog", "drum")):
             self._auto_add_current_program()
 
     def _auto_add_current_program(self):

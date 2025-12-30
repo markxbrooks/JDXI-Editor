@@ -71,15 +71,21 @@ class MidiOutHandler(MidiIOController):
                     log.message("MIDI output port is not open.")
                     return False
 
-                # Parse SysEx safely
-                try:
-                    parsed_data = self.sysex_parser.parse_bytes(bytes(message))
-                    filtered_data = {
-                        k: v for k, v in parsed_data.items() if k not in OUTBOUND_MESSAGE_IGNORED_KEYS
-                    }
-                except Exception as parse_ex:
-                    log.message(f"SysEx parsing failed: {parse_ex}", level=logging.WARNING)
-                    filtered_data = {}
+                # Parse SysEx safely - only attempt if message is actually SysEx (starts with 0xF0)
+                filtered_data = {}
+                message_list = list(message)
+                if message_list and message_list[0] == MidiConstant.START_OF_SYSEX:
+                    # This is a SysEx message, try to parse it
+                    try:
+                        parsed_data = self.sysex_parser.parse_bytes(bytes(message))
+                        filtered_data = {
+                            k: v for k, v in parsed_data.items() if k not in OUTBOUND_MESSAGE_IGNORED_KEYS
+                        }
+                    except Exception as parse_ex:
+                        # Only log warning for actual SysEx messages that fail to parse
+                        log.message(f"SysEx parsing failed: {parse_ex}", level=logging.WARNING)
+                        filtered_data = {}
+                # For non-SysEx messages, filtered_data remains empty (no warning needed)
 
                 # Log safely
                 log.message(
@@ -87,7 +93,6 @@ class MidiOutHandler(MidiIOController):
                     level=logging.INFO,
                     silent=False
                 )
-
                 # Send the message
                 self.midi_out.send_message(message)
                 self.midi_message_outgoing.emit(message)
@@ -97,47 +102,6 @@ class MidiOutHandler(MidiIOController):
                 # Catch everything to prevent C-level crash from propagating
                 log.error(f"Unexpected error sending MIDI message: {ex}")
                 return False
-
-    def send_raw_message_old(self,
-                         message: Iterable[int]) -> bool:
-        """
-        Send a validated raw MIDI message through the output port.
-        This method logs the message, checks the validity using `validate_midi_message`,
-        and attempts to send it via the MIDI output port.
-        :param message: A MIDI message represented as a list of integers or a bytes object.
-        :type message: Union[bytes, List[int]]
-        :return: True if the message was successfully sent, False otherwise.
-        :rtype: bool
-        """
-
-        if not validate_midi_message(message):
-            log.message("MIDI message validation failed.")
-            return False
-
-        formatted_message = format_midi_message_to_hex_string(message)
-
-        if not self.midi_out.is_port_open():
-            log.message("MIDI output port is not open.")
-            return False
-        try:
-            parsed_data = self.sysex_parser.parse_bytes(bytes(message))
-            filtered_data = {
-                k: v for k, v in parsed_data.items() if k not in OUTBOUND_MESSAGE_IGNORED_KEYS
-            }
-        except Exception:
-            filtered_data = {}
-        try:
-            log.message(
-                f"[MIDI QC passed] — [ Sending message: {formatted_message} ] {filtered_data}",
-                level=logging.INFO,
-                silent=False
-            )
-            self.midi_out.send_message(message)
-            self.midi_message_outgoing.emit(message)
-            return True
-        except (ValueError, TypeError, OSError, IOError) as ex:
-            log.error(f"Error sending message: {ex}")
-            return False
 
     def send_note_on(self,
                      note: int = 60,
@@ -411,7 +375,8 @@ class MidiOutHandler(MidiIOController):
         self, channel: int, bank_msb: int, bank_lsb: int, program: int
     ) -> bool:
         """
-        Sends Bank Select and Program Change messages.
+        Sends Bank Select and Program Change messages with delays between messages
+        to ensure the synthesizer can process them correctly.
 
         :param channel: int MIDI channel (1-16).
         :param bank_msb: int Bank MSB value.
@@ -420,6 +385,9 @@ class MidiOutHandler(MidiIOController):
         :return: bool True if all messages are sent successfully, False otherwise.
         """
         try:
+            import time
+            from jdxi_editor.midi.sleep import MIDI_SLEEP_TIME
+            
             log.message("========send_bank_select_and_program_change=========")
             log.parameter("channel", channel)
             log.parameter("bank_msb", bank_msb)
@@ -429,10 +397,14 @@ class MidiOutHandler(MidiIOController):
                 f"-------#1 send_control_change controller=0, bank_msb={bank_msb}, channel: {channel} --------"
             )
             self.send_control_change(0, bank_msb, channel)
+            time.sleep(MIDI_SLEEP_TIME)  # Small delay between bank select messages
+            
             log.message(
                 f"-------#2 send_control_change controller=32, bank_lsb={bank_lsb}, channel: {channel} --------"
             )
             self.send_control_change(32, bank_lsb, channel)
+            time.sleep(MIDI_SLEEP_TIME)  # Small delay before program change
+            
             log.message(
                 f"-------#3 send_program_change program: {program} channel: {channel} --------"
             )

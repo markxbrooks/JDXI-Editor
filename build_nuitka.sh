@@ -6,4 +6,6 @@ nuitka \
   --include-package=jdxi_editor \
   --include-package=rtmidi \
   --include-data-dir=resources=resources \
+  --python-flag=-S \
+  --nofollow-import-to=site \
   --output-dir=dist run_editor.py

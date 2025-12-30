@@ -9,7 +9,7 @@ from typing import Optional, Union, Any
 
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB, RolandSysExAddress
-from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
+from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.ui.editors import SynthEditor
 from jdxi_editor.ui.windows.midi.debugger import parse_sysex_byte
 from jdxi_editor.project import __package_name__
@@ -121,11 +121,11 @@ class JDXiJSONComposer:
         from jdxi_editor.ui.editors.digital.editor import DigitalSynthEditor
         from jdxi_editor.ui.editors.drum.editor import DrumCommonEditor
         from jdxi_editor.midi.data.parameter.digital import (
-            AddressParameterDigitalCommon,
-            AddressParameterDigitalModify
+            DigitalCommonParam,
+            DigitalModifyParam
         )
         from jdxi_editor.midi.data.parameter.drum.common import (
-            AddressParameterDrumCommon,
+            DrumCommonParam,
 
         )
         from jdxi_editor.midi.data.address.address import (
@@ -148,10 +148,10 @@ class JDXiJSONComposer:
                 value = controls_dict.get(param_name)
                 
                 # Check if this is a Common parameter
-                if isinstance(param, AddressParameterDigitalCommon):
+                if isinstance(param, DigitalCommonParam):
                     common_controls[param_name] = value
                 # Check if this is a Modify parameter
-                elif isinstance(param, AddressParameterDigitalModify):
+                elif isinstance(param, DigitalModifyParam):
                     modify_controls[param_name] = value
                 else:
                     other_controls[param_name] = value
@@ -234,7 +234,7 @@ class JDXiJSONComposer:
                 
                 # Check if this is a Common parameter
                 # Use isinstance to check if param is an instance of the enum class
-                if isinstance(param, AddressParameterDrumCommon):
+                if isinstance(param, DrumCommonParam):
                     # Special check for KIT_LEVEL - warn if it's 0 as it might indicate the slider wasn't updated
                     if param_name == 'KIT_LEVEL' and value == 0:
                         log.warning(f"DrumCommonEditor: KIT_LEVEL is 0 - this might indicate the slider wasn't updated from the synth")
@@ -242,7 +242,7 @@ class JDXiJSONComposer:
                     common_controls[param_name] = value
                     log.message(f"DrumCommonEditor: Added Common parameter {param_name} = {value}")
                 # Check if this is a Partial parameter
-                elif isinstance(param, AddressParameterDrumPartial):
+                elif isinstance(param, DrumPartialParam):
                     partial_controls[param_name] = value
                     log.message(f"DrumCommonEditor: Added Partial parameter {param_name} = {value}")
                 else:
@@ -256,7 +256,7 @@ class JDXiJSONComposer:
                 log.message("DrumCommonEditor: Trying alternative method to identify Common parameters...")
                 
                 # Get all Common parameter names from the enum
-                common_param_names = {param.name for param in AddressParameterDrumCommon}
+                common_param_names = {param.name for param in DrumCommonParam}
                 log.message(f"DrumCommonEditor: Known Common parameter names: {common_param_names}")
                 
                 # Check each control by name

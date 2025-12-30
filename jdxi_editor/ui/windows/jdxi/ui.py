@@ -266,6 +266,12 @@ class JDXiUi(QMainWindow):
         midi_config_action.triggered.connect(self._show_midi_config)
         edit_menu.addAction(midi_config_action)
 
+        edit_menu.addSeparator()
+
+        update_db_action = QAction("Update User Program Database", self)
+        update_db_action.triggered.connect(self._update_user_program_database)
+        edit_menu.addAction(update_db_action)
+
     def _create_parts_menu(self) -> None:
         """Create editors menu"""
         self.parts_menu = self.menuBar().addMenu("Parts")

@@ -95,7 +95,7 @@ from jdxi_editor.midi.data.parameter.effects.common import AddressParameterEffec
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 
 
-class AddressParameterEffect1(AddressParameter):
+class Effect1Param(AddressParameter):
     """Effect parameters with address and value range"""
 
     def __init__(
@@ -199,11 +199,11 @@ class AddressParameterEffect1(AddressParameter):
         :return: int The MIDI value
         """
         # Handle special cases first
-        if self in [AddressParameterEffect1.EFX1_TYPE,
-                    AddressParameterEffect1.EFX1_LEVEL,
-                    AddressParameterEffect1.EFX1_REVERB_SEND_LEVEL,
-                    AddressParameterEffect1.EFX1_DELAY_SEND_LEVEL,
-                    AddressParameterEffect1.EFX1_OUTPUT_ASSIGN]:
+        if self in [Effect1Param.EFX1_TYPE,
+                    Effect1Param.EFX1_LEVEL,
+                    Effect1Param.EFX1_REVERB_SEND_LEVEL,
+                    Effect1Param.EFX1_DELAY_SEND_LEVEL,
+                    Effect1Param.EFX1_OUTPUT_ASSIGN]:
             return display_value  # Already 0–127 or boolean-style
         else:
             return display_value + MidiConstant.VALUE_MIN_SIGNED_SIXTEEN_BIT  # Convert to unsigned 16 bit
@@ -219,7 +219,7 @@ class AddressParameterEffect1(AddressParameter):
         :param value: int The value
         :return: Optional[int] The MIDI value
         """
-        param = AddressParameterEffect1.get_by_name(param_name)
+        param = Effect1Param.get_by_name(param_name)
         if param:
             return param.convert_to_midi(value)
         return None
@@ -254,7 +254,7 @@ class AddressParameterEffect1(AddressParameter):
         return None  # Return None if no match is found
 
 
-class AddressParameterEffect2(AddressParameter):
+class Effect2Param(AddressParameter):
     """Effect parameters with address and value range"""
 
     def __init__(
@@ -358,11 +358,11 @@ class AddressParameterEffect2(AddressParameter):
         :return: int The MIDI value
         """
         # Handle special bipolar cases first
-        if self == AddressParameterEffect2.EFX2_PARAM_1:
+        if self == Effect2Param.EFX2_PARAM_1:
             return display_value + 32768  #
-        elif self == AddressParameterEffect2.EFX2_PARAM_2:
+        elif self == Effect2Param.EFX2_PARAM_2:
             return display_value + 32768  #
-        elif self == AddressParameterEffect2.EFX2_PARAM_32:
+        elif self == Effect2Param.EFX2_PARAM_32:
             return display_value + 32768  #
         else:
             return display_value
@@ -373,10 +373,10 @@ class AddressParameterEffect2(AddressParameter):
         :return: int The MIDI value
         """
         # Handle special bipolar cases first
-        if self in [AddressParameterEffect2.EFX2_TYPE,
-                    AddressParameterEffect2.EFX2_LEVEL,
-                    AddressParameterEffect2.EFX2_REVERB_SEND_LEVEL,
-                    AddressParameterEffect2.EFX2_DELAY_SEND_LEVEL,]:
+        if self in [Effect2Param.EFX2_TYPE,
+                    Effect2Param.EFX2_LEVEL,
+                    Effect2Param.EFX2_REVERB_SEND_LEVEL,
+                    Effect2Param.EFX2_DELAY_SEND_LEVEL, ]:
             return display_value  # Already 0–127 or boolean-style
         else:
             return display_value + MidiConstant.VALUE_MIN_SIGNED_SIXTEEN_BIT  # Convert to unsigned 16 bit
@@ -392,7 +392,7 @@ class AddressParameterEffect2(AddressParameter):
         :param value: int The value
         :return: Optional[int] The MIDI value
         """
-        param = AddressParameterReverb.get_by_name(param_name)
+        param = ReverbParam.get_by_name(param_name)
         if param:
             return param.convert_to_midi(value)
         return None
@@ -425,7 +425,7 @@ class AddressParameterEffect2(AddressParameter):
         return None  # Return None if no match is found
 
 
-class AddressParameterDelay(AddressParameter):
+class DelayParam(AddressParameter):
     """Effect parameters with address and value range"""
 
     def __init__(
@@ -491,11 +491,11 @@ class AddressParameterDelay(AddressParameter):
         :return: int The MIDI value
         """
         # Handle special bipolar cases first
-        if self == AddressParameterDelay.DELAY_PARAM_1:
+        if self == DelayParam.DELAY_PARAM_1:
             return display_value + 32768  #
-        elif self == AddressParameterDelay.DELAY_PARAM_2:
+        elif self == DelayParam.DELAY_PARAM_2:
             return display_value + 32768  #
-        elif self == AddressParameterDelay.DELAY_PARAM_24:
+        elif self == DelayParam.DELAY_PARAM_24:
             return display_value + 32768  #
         else:
             return display_value
@@ -511,7 +511,7 @@ class AddressParameterDelay(AddressParameter):
         :param value: int The value
         :return: Optional[int] The MIDI value
         """
-        param = AddressParameterReverb.get_by_name(param_name)
+        param = ReverbParam.get_by_name(param_name)
         if param:
             return param.convert_to_midi(value)
         return None
@@ -548,7 +548,7 @@ class AddressParameterDelay(AddressParameter):
         return None  # Return None if no match is found
 
 
-class AddressParameterReverb(AddressParameter):
+class ReverbParam(AddressParameter):
     """Effect parameters with address and value range"""
 
     def __init__(
@@ -613,11 +613,11 @@ class AddressParameterReverb(AddressParameter):
         :return: int The MIDI value
         """
         # Handle special bipolar cases first
-        if self == AddressParameterReverb.REVERB_PARAM_1:
+        if self == ReverbParam.REVERB_PARAM_1:
             return display_value + 32768  #
-        elif self == AddressParameterReverb.REVERB_PARAM_2:
+        elif self == ReverbParam.REVERB_PARAM_2:
             return display_value + 32768  #
-        elif self == AddressParameterReverb.REVERB_PARAM_24:
+        elif self == ReverbParam.REVERB_PARAM_24:
             return display_value + 32768  #
         else:
             return display_value
@@ -633,7 +633,7 @@ class AddressParameterReverb(AddressParameter):
         :param value: int The value
         :return: Optional[int] The MIDI value
         """
-        param = AddressParameterReverb.get_by_name(param_name)
+        param = ReverbParam.get_by_name(param_name)
         if param:
             return param.convert_to_midi(value)
         return None

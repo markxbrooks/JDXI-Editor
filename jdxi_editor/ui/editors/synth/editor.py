@@ -192,12 +192,15 @@ class SynthEditor(SynthBase):
         # Image group
         self.instrument_image_group = QGroupBox()
         instrument_group_layout = QVBoxLayout()
+        instrument_group_layout.setContentsMargins(5, 5, 5, 5)  # Reduced margins
+        instrument_group_layout.setSpacing(2)  # Reduced spacing
         self.instrument_image_group.setLayout(instrument_group_layout)
         self.instrument_image_label = QLabel()
         self.instrument_image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         instrument_group_layout.addWidget(self.instrument_image_label)
         self.instrument_image_group.setStyleSheet(JDXiStyle.INSTRUMENT_IMAGE_LABEL)
         self.instrument_image_group.setMinimumWidth(JDXiStyle.INSTRUMENT_IMAGE_WIDTH)
+        self.instrument_image_group.setMaximumHeight(JDXiStyle.INSTRUMENT_IMAGE_HEIGHT)
 
     def _create_instrument_preset_group(self, synth_type: str = "Analog") -> QGroupBox:
         """
@@ -208,6 +211,8 @@ class SynthEditor(SynthBase):
         """
         instrument_preset_group = QGroupBox(f"{synth_type} Synth")
         instrument_title_group_layout = QVBoxLayout(instrument_preset_group)
+        instrument_title_group_layout.setSpacing(3)  # Reduced spacing
+        instrument_title_group_layout.setContentsMargins(5, 5, 5, 5)  # Reduced margins
         self.instrument_title_label = DigitalTitle()
         instrument_title_group_layout.addWidget(self.instrument_title_label)
         # update_tone_name
@@ -467,11 +472,15 @@ class SynthEditor(SynthBase):
                 self.instrument_default_image,
             )
         pixmap = QPixmap(file_to_load)
-        scaled_pixmap = pixmap.scaledToHeight(
-            160, Qt.TransformationMode.SmoothTransformation
-        )  # Resize to 250px height
+        # Scale maintaining aspect ratio, fitting within width and height constraints
+        scaled_pixmap = pixmap.scaled(
+            JDXiStyle.INSTRUMENT_IMAGE_WIDTH,
+            JDXiStyle.INSTRUMENT_IMAGE_HEIGHT,
+            Qt.AspectRatioMode.KeepAspectRatio,
+            Qt.TransformationMode.SmoothTransformation
+        )
         self.instrument_image_label.setPixmap(scaled_pixmap)
-        self.instrument_image_label.setScaledContents(True)
+        self.instrument_image_label.setScaledContents(False)  # Don't stretch, maintain aspect ratio
         self.instrument_image_label.setStyleSheet(JDXiStyle.INSTRUMENT_IMAGE_LABEL)
         return True
 

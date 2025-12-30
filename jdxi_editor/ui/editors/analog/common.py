@@ -9,7 +9,7 @@ from PySide6.QtCore import Qt
 import qtawesome as qta
 
 from jdxi_editor.jdxi.style import JDXiStyle
-from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
+from jdxi_editor.midi.data.parameter.analog import AnalogParam
 
 
 class AnalogCommonSection(QWidget):
@@ -63,7 +63,7 @@ class AnalogCommonSection(QWidget):
 
         # Mono Switch
         self.octave_shift_switch = self._create_parameter_combo_box(
-            AddressParameterAnalog.OCTAVE_SHIFT,
+            AnalogParam.OCTAVE_SHIFT,
             "Octave shift",
             ["-3", "-2", "-1", "0", "+1", "+2", "+3"],
             [61, 62, 63, 64, 65, 66, 67],
@@ -75,7 +75,7 @@ class AnalogCommonSection(QWidget):
         main_rows_vlayout.addLayout(octave_shift_switch_row)
 
         self.legato_switch = self._create_parameter_switch(
-            AddressParameterAnalog.LEGATO_SWITCH, "Legato", ["OFF", "ON"]
+            AnalogParam.LEGATO_SWITCH, "Legato", ["OFF", "ON"]
         )
 
         legato_row = QHBoxLayout()
@@ -86,7 +86,7 @@ class AnalogCommonSection(QWidget):
 
         # Portamento Switch
         self.portamento_switch = self._create_parameter_switch(
-            AddressParameterAnalog.PORTAMENTO_SWITCH, "Portamento", ["OFF", "ON"]
+            AnalogParam.PORTAMENTO_SWITCH, "Portamento", ["OFF", "ON"]
         )
         portamento_switch_row = QHBoxLayout()
         portamento_switch_row.addStretch()
@@ -95,15 +95,15 @@ class AnalogCommonSection(QWidget):
         main_rows_vlayout.addLayout(portamento_switch_row)
 
         self.pitch_bend_up = self._create_parameter_slider(
-            AddressParameterAnalog.PITCH_BEND_UP, "Pitch Bend Up", vertical=True
+            AnalogParam.PITCH_BEND_UP, "Pitch Bend Up", vertical=True
         )
         self.pitch_bend_down = self._create_parameter_slider(
-            AddressParameterAnalog.PITCH_BEND_DOWN, "Pitch Bend Down", vertical=True
+            AnalogParam.PITCH_BEND_DOWN, "Pitch Bend Down", vertical=True
         )
 
         # Portamento Time
         self.portamento_time = self._create_parameter_slider(
-            AddressParameterAnalog.PORTAMENTO_TIME, "Portamento Time", vertical=True
+            AnalogParam.PORTAMENTO_TIME, "Portamento Time", vertical=True
         )
         # Pitch Bend
         self.pitch_bend_row = QHBoxLayout()

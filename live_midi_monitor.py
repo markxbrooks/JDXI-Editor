@@ -12,6 +12,7 @@ import rtmidi
 from typing import List, Optional
 from datetime import datetime
 
+
 class LiveMIDIMonitor:
     def __init__(self):
         self.midi_in = None
@@ -170,11 +171,9 @@ class LiveMIDIMonitor:
         """List all available MIDI input ports"""
         print("=== Available MIDI Input Ports ===")
         
-        midi_in = rtmidi.RtMidiIn()
-        port_count = midi_in.getPortCount()
-        ports = []
-        
-        for i in range(port_count):
+        midi_in = rtmidi.MidiIn()
+        ports = midi_in.get_ports()
+        for i, port_name in enumerate(ports):
             port_name = midi_in.getPortName(i)
             ports.append(port_name)
             print(f"  {i}: {port_name}")
