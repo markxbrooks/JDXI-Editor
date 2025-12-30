@@ -137,7 +137,7 @@ class JDXiStyle:
     FONT_RED = "#d51e35"  # Base red
 
     # Fonts
-    if platform.system() == "Windows":
+    if platform.system() == "Windows" :
         FONT_FAMILY = "Segoe UI"
         FONT_SIZE = "10px"
         FONT_SIZE_SPLASH_SCREEN = "14px"
@@ -147,7 +147,8 @@ class JDXiStyle:
         FONT_SIZE_SPLASH_SCREEN = "14px"
     else:
         FONT_FAMILY = "Arial, sans-serif"
-        FONT_SIZE_SPLASH_SCREEN = "36px"
+        FONT_SIZE_SPLASH_SCREEN = "14px"
+        FONT_SIZE = "10px"
     FONT_SIZE_MAIN_TABS = "14px"
     FONT_WEIGHT_BOLD = "bold"
     FONT_WEIGHT_NORMAL = "normal"
