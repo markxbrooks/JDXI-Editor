@@ -54,10 +54,15 @@ Lady Gaga – *Telephone* performed on the Roland JD-Xi
 
 
 ### MacOS 🖥️
-There is a new build for MacOS Sequoia. See the [releases page:](https://github.com/markxbrooks/JDXI-Editor/releases/tag/v0.0.8)
+There is a new build for MacOS Sequoia. See the [releases page:](https://github.com/markxbrooks/JDXI-Editor/releases/tag/v0.9.0)
 
 ### Windows 📦
-There is a new build for Windows See the [releases page:](https://github.com/markxbrooks/JDXI-Editor/releases/tag/v0.0.8)
+There is a new build for Windows See the [releases page:](https://github.com/markxbrooks/JDXI-Editor/releases/tag/v0.9.0)
+
+### Linux 📦 See the [releases page:](https://github.com/markxbrooks/JDXI-Editor/releases/tag/v0.9.0)
+
+There is a new build for Linux See the releases page:
+
 
 ### Python 🐍
 If you're a Python , you may wish to run the program from a Python environment:
