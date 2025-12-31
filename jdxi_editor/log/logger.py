@@ -25,7 +25,7 @@ def format_midi_message_to_hex_string(message: list) -> str:
 
 class Logger:
     """ Logger class """
-    def __init__(self):
+    def __init__(self) -> None:
         pass
 
     @staticmethod

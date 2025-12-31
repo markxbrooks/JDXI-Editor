@@ -10,7 +10,7 @@ from jdxi_editor.midi.data.address.address import (
     AddressOffsetProgramLMB,
     AddressOffsetSuperNATURALLMB, Address,
 )
-from jdxi_editor.midi.data.parameter.digital import AddressParameterDigitalPartial
+from jdxi_editor.midi.data.parameter.digital import DigitalPartialParam
 
 
 @dataclass
@@ -19,7 +19,7 @@ class DigitalSynthData(JDXISynthData):
 
     synth_number: int = 1
     partial_number: int = 0
-    partial_parameters: AddressParameterDigitalPartial = None
+    partial_parameters: DigitalPartialParam = None
 
     def __post_init__(self) -> None:
         """Post Init"""

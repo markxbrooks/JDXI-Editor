@@ -138,5 +138,5 @@ class JDXIIdentityOffset(IntEnum):
     __len__ = 14  # Total length of the Identity message (including start and end bytes)
 
     @classmethod
-    def expected_length(cls):
+    def expected_length(cls) -> int:
         return 14  # 0 through 14, inclusive

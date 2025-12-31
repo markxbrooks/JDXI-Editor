@@ -12,7 +12,7 @@
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
-AppId={{BCD0DE8E-EA62-4A25-B7A1-46F861D7C4F4}
+AppId={{B248A955-5352-4AEA-8714-C272CF81910F}}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 ;AppVerName={#MyAppName} {#MyAppVersion}
@@ -29,8 +29,8 @@ DisableProgramGroupPage=yes
 PrivilegesRequired=lowest
 ;OutputDir=C:\Users\MBrooks\
 ; OutputDir=C:\Users\MBrooks\
-OutputBaseFilename=jdxi_editor-0.0.5_setup_win_x86-64
-OutputDir=C:\Users\MBrooks\jdxi
+OutputBaseFilename=jdxi_editor-0.8.0_setup_win_x86-64
+OutputDir=C:\Users\markx\jdxi
 ;SetupIconFile=C:\Users\MBrooks\projects\\designer\icons\.ico
 SetupIconFile=resources\jdxi_icon.ico
 Compression=lzma

@@ -57,7 +57,7 @@ To use the `DrumEditor`, instantiate it with an optional `MIDIHelper` instance:
 
 """
 
-from typing import Optional, Dict
+from typing import Optional, Dict, Union
 
 from PySide6.QtGui import QShortcut, QKeySequence
 from PySide6.QtWidgets import (
@@ -66,15 +66,14 @@ from PySide6.QtWidgets import (
     QScrollArea,
     QWidget,
     QTabWidget,
-    QSplitter,
 )
 from PySide6.QtCore import Qt
 
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import AddressOffsetProgramLMB
 from jdxi_editor.midi.data.drum.data import JDXiMapPartialDrum
-from jdxi_editor.midi.data.parameter.drum.common import AddressParameterDrumCommon
-from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
+from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParam
+from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.ui.editors.drum.common import DrumCommonSection
@@ -83,7 +82,6 @@ from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.widgets.dialog.progress import ProgressDialog
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
-from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
 class DrumCommonEditor(SynthEditor):
@@ -111,7 +109,7 @@ class DrumCommonEditor(SynthEditor):
         self.partial_tab_widget = QTabWidget()
         self.instrument_image_label = None
         self.instrument_title_label = None
-        self.controls: Dict[AddressParameterDrumPartial, QWidget] = {}
+        self.controls: Dict[Union[DrumPartialParam, DrumCommonParam], QWidget] = {}
         self.setup_ui()
         self.update_instrument_image()
         # Setup signal handlers
@@ -125,7 +123,8 @@ class DrumCommonEditor(SynthEditor):
         self.data_request()
         # self.show()
 
-    def setup_ui(self):
+    def setup_ui(self) -> None:
+        """Setup the UI components for the drum editor."""
         main_layout = QVBoxLayout(self)
         self.setMinimumSize(1100, 500)
 
@@ -168,6 +167,15 @@ class DrumCommonEditor(SynthEditor):
         self.presets_parts_tab_widget.setStyleSheet(JDXiStyle.TABS_DRUMS)
         self.partial_tab_widget.setStyleSheet(JDXiStyle.TABS_DRUMS)
         self._setup_partial_editors()
+        # Create and add the common section
+        self.common_section = DrumCommonSection(
+            controls=self.controls,
+            create_parameter_combo_box=self._create_parameter_combo_box,
+            create_parameter_slider=self._create_parameter_slider,
+            midi_helper=self.midi_helper,
+            address=self.address
+        )
+        self.partial_tab_widget.addTab(self.common_section, "Common")
 
         self.update_instrument_image()
         self.partial_tab_widget.currentChanged.connect(self.update_partial_number)
@@ -241,7 +249,7 @@ class DrumCommonEditor(SynthEditor):
         """
 
         for param_name, param_value in sysex_data.items():
-            param = AddressParameterDrumPartial.get_by_name(param_name)
+            param = DrumPartialParam.get_by_name(param_name)
             if param:
                 self._update_partial_slider(partial_no, param, param_value, successes, failures)
             else:
@@ -249,7 +257,7 @@ class DrumCommonEditor(SynthEditor):
 
     def _update_common_controls(
         self,
-        partial: int,
+        partial: int,  # pylint: disable=unused-argument
         sysex_data: Dict,
         successes: list = None,
         failures: list = None,
@@ -265,7 +273,7 @@ class DrumCommonEditor(SynthEditor):
         """
         log.header_message("Tone common")
         for param_name, param_value in sysex_data.items():
-            param = AddressParameterDrumCommon.get_by_name(param_name)
+            param = DrumCommonParam.get_by_name(param_name)
             log.message(f"Tone common: param_name: {param} {param_value}")
             try:
                 if param:

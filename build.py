@@ -47,6 +47,8 @@ import subprocess
 from distutils.dir_util import copy_tree
 from jdxi_editor.project import __version__, __package_name__
 
+
+
 def remove_build_dirs():
     for path in [f"dist/{__package_name__}", f"build/{__package_name__}"]:
         if os.path.exists(path):
@@ -54,22 +56,32 @@ def remove_build_dirs():
             shutil.rmtree(path)
 
 def build_with_pyinstaller():
-    cmd = [
-        "pyinstaller.exe",
-        "--exclude-module", "PyQt5",
-        "-w",
-        "-i", os.path.join("designer", "icons", f"{__package_name__}.ico"),
-        "--hidden-import", "numpy",
-        "--additional-hooks-dir=.",
-        "--paths=env/Lib/site-packages",
-        "--noupx",
-        "--noconfirm",
-        "-n", __package_name__,
-        "--clean",
-        os.path.join(__package_name__, "main.py"),
-    ]
-    print("Running PyInstaller...")
-    subprocess.run(cmd, check=True)
+    entry_point = os.path.abspath(os.path.join(__package_name__, "main.py"))
+    icon_file = os.path.abspath(os.path.join("resources", "jdxi_icon.ico"))
+    try:
+        cmd = [
+            "pyinstaller.exe",
+            "--exclude-module", "PyQt5",
+            "-w",
+            "-i", icon_file,
+            "--hidden-import", "numpy",
+            "--additional-hooks-dir=.",
+            "--paths=env/Lib/site-packages",
+            "--noupx",
+            "--noconfirm",
+            "-n", __package_name__,
+            "--clean",
+            entry_point,
+        ]
+        dist_files = [icon_file, entry_point]
+        for dist_file in dist_files:
+            if not os.path.exists(dist_file):
+                print(f"dist_file: {dist_file} not found")
+                return
+        print("Running PyInstaller...")
+        subprocess.run(cmd, check=True)
+    except Exception as e:
+        print(e)
 
 def copy_internal_dirs():
     dest_dir = os.path.join("dist", __package_name__, "_internal")

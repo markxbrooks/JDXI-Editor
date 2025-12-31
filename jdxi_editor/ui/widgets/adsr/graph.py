@@ -6,7 +6,7 @@ from PySide6.QtGui import QPainter, QPen, QColor
 class ADSRGraph(QWidget):
     point_moved = Signal(str, float)  # Signal(name of point, new normalized x)
 
-    def __init__(self, parent=None):
+    def __init__(self, parent: object | None = None) -> None:
         super().__init__(parent)
         """
         Initialize the ADSRGraph
@@ -20,7 +20,7 @@ class ADSRGraph(QWidget):
         self.release_x = 0.7
         self.dragging = None
 
-    def paintEvent(self, event):
+    def paintEvent(self, event: object) -> None:
         """Paint the ADSR graph.
         :param event: QPaintEvent
         """
@@ -49,7 +49,7 @@ class ADSRGraph(QWidget):
         for pt in [p1, p2, p3]:
             painter.drawEllipse(pt, 6, 6)
 
-    def mousePressEvent(self, event):
+    def mousePressEvent(self, event: object) -> None:
         """Handle mouse press event.
         :param event: QMouseEvent
         """
@@ -68,7 +68,7 @@ class ADSRGraph(QWidget):
                 self.dragging = name
                 break
 
-    def mouseMoveEvent(self, event):
+    def mouseMoveEvent(self, event: object) -> None:
         """Handle mouse move event.
         :param event: QMouseEvent
         """
@@ -88,7 +88,7 @@ class ADSRGraph(QWidget):
             self.point_moved.emit(self.dragging, pos.x() / self.width())
             self.update()
 
-    def mouseReleaseEvent(self, event):
+    def mouseReleaseEvent(self, event: object) -> None:
         """Handle mouse release event.
         :param event: QMouseEvent
         """

@@ -1,3 +1,4 @@
+"""Audio recording thread for capturing audio input."""
 import wave
 import pyaudio
 from PySide6.QtCore import QThread, Signal

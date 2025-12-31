@@ -193,28 +193,28 @@ class PatternDisplay(QWidget):
             painter.drawEllipse(point[0] - size // 2, point[1] - size // 2, size, size)
 
     # Pattern generation methods
-    def _generate_up_pattern(self) -> list:
+    def _generate_up_pattern(self) -> list[int]:
         return list(range(13)) * 2
 
-    def _generate_down_pattern(self):
+    def _generate_down_pattern(self) -> list[int]:
         return list(range(12, -1, -1)) * 2
 
-    def _generate_updown_pattern(self):
+    def _generate_updown_pattern(self) -> list[int]:
         return list(range(13)) + list(range(11, -1, -1))
 
-    def _generate_random_pattern(self):
+    def _generate_random_pattern(self) -> list[int]:
         from random import randrange
 
         return [randrange(13) for _ in range(16)]
 
-    def _generate_note_order_pattern(self):
+    def _generate_note_order_pattern(self) -> list[int]:
         return [0, 4, 7, 12] * 4
 
-    def _generate_up2_pattern(self):
+    def _generate_up2_pattern(self) -> list[int]:
         return [i // 2 for i in range(26)]
 
-    def _generate_down2_pattern(self):
+    def _generate_down2_pattern(self) -> list[int]:
         return [i // 2 for i in range(24, -1, -1)]
 
-    def _generate_upanddown_pattern(self):
+    def _generate_upanddown_pattern(self) -> list[int]:
         return list(range(7)) + list(range(7, -1, -1)) * 2

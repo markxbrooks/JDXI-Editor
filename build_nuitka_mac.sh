@@ -6,4 +6,6 @@ nuitka \
   --include-data-dir=resources=resources \
   --macos-create-app-bundle \
   --macos-app-icon=jdxi_icon.icns \
+  --python-flag=-S \
+  --nofollow-import-to=site \
   --output-dir=dist run_editor.py

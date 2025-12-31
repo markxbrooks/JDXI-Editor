@@ -1,25 +1,11 @@
 """
-This module defines the `DrumPartialEditor` class for editing drum kit parameters within a graphical user interface (GUI).
+Drum partial editor for editing drum kit parameters.
 
-The `DrumPartialEditor` class allows users to modify various parameters related to drum sounds, including pitch, output, TVF (Time Variant Filter), pitch envelope, WMT (Wave Modulation Time), and TVA (Time Variant Amplitude) settings. The class provides a comprehensive layout with controls such as sliders, combo boxes, and spin boxes to adjust the parameters.
-
-Key functionalities of the module include:
-- Displaying parameter controls for a specific drum partial.
-- Providing detailed access to different parameter groups such as pitch, output, and TVA.
-- Handling MIDI and tone area settings for drum kit editing.
-- Handling dynamic address assignment for each partial based on its name.
-
-Dependencies:
-- `logging`: For logging initialization and error handling.
-- `PySide6.QtWidgets`: For GUI components such as `QWidget`, `QVBoxLayout`, `QScrollArea`, etc.
-- `jdxi_manager.midi.data.drums`: For drum-related data and operations like retrieving drum waves.
-- `jdxi_manager.midi.data.parameter.drums`: For specific drum parameter definitions and utilities.
-- `jdxi_manager.midi.data.constants.sysex`: For MIDI-related constants like `TEMPORARY_TONE_AREA` and `DRUM_KIT_AREA`.
-- `jdxi_manager.ui.widgets`: For custom UI widgets such as `Slider`, `ComboBox`, and `SpinBox`.
-
-The `DrumPartialEditor` is designed to work within a larger system for managing drum kit tones, providing an intuitive interface for modifying various sound parameters.
-
+The `DrumPartialEditor` class allows users to modify various parameters related to
+drum sounds, including pitch, output, TVF (Time Variant Filter), pitch envelope,
+WMT (Wave Modulation Time), and TVA (Time Variant Amplitude) settings.
 """
+from functools import partial
 from typing import Dict, Optional
 
 from PySide6.QtWidgets import (
@@ -33,15 +19,16 @@ from PySide6.QtWidgets import (
 from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.midi.data.address.address import AddressOffsetProgramLMB
 from jdxi_editor.midi.data.parameter.drum.addresses import DRUM_GROUP_MAP
-from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
+from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.drum.partial.output import DrumOutputSection
-from jdxi_editor.ui.editors.drum.partial.pitch import DrumPitchSection
+from jdxi_editor.ui.editors.drum.partial.partial import DrumPartialSection
 from jdxi_editor.ui.editors.drum.partial.pitch_env import DrumPitchEnvSection
 from jdxi_editor.ui.editors.drum.partial.tva import DrumTVASection
 from jdxi_editor.ui.editors.drum.partial.tvf import DrumTVFSection
 from jdxi_editor.ui.editors.drum.partial.wmt import DrumWMTSection
 from jdxi_editor.ui.editors.synth.partial import PartialEditor
+from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
 class DrumPartialEditor(PartialEditor):
@@ -64,7 +51,7 @@ class DrumPartialEditor(PartialEditor):
         self._init_synth_data(synth_type=JDXiSynth.DRUM_KIT,
                               partial_number=self.partial_number)
         # Store parameter controls for easy access
-        self.controls: Dict[AddressParameterDrumPartial, QWidget] = {}
+        self.controls: Dict[DrumPartialParam, QWidget] = {}
 
         # Main layout
         main_layout = QVBoxLayout()
@@ -82,19 +69,20 @@ class DrumPartialEditor(PartialEditor):
         scroll_layout.addLayout(grid_layout)
 
         tab_widget = QTabWidget()
+        tab_widget.setMinimumWidth(JDXiDimensions.DRUM_PARTIAL_TAB_MIN_WIDTH)
         scroll_layout.addWidget(tab_widget)
 
-        tab_pitch = QWidget()
-        tab_pitch_layout = QVBoxLayout(tab_pitch)
-        tab_widget.addTab(tab_pitch, "Pitch")
+        tab_partial = QWidget()
+        tab_partial_layout = QVBoxLayout(tab_partial)
+        tab_widget.addTab(tab_partial, "Partial")
 
-        pitch_group = DrumPitchSection(
+        partial_group = DrumPartialSection(
             controls=self.controls,
             create_parameter_combo_box=self._create_parameter_combo_box,
             create_parameter_slider=self._create_parameter_slider,
             midi_helper=self.midi_helper,
         )
-        tab_pitch_layout.addWidget(pitch_group)
+        tab_partial_layout.addWidget(partial_group)
 
         tab_wmt = QWidget()
         tab_wmt_layout = QVBoxLayout(tab_wmt)
@@ -159,4 +147,3 @@ class DrumPartialEditor(PartialEditor):
         tab_tva_layout.addWidget(tva_group)
 
         main_layout.addWidget(scroll_area)
-

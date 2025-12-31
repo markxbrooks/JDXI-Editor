@@ -24,7 +24,7 @@ from typing import List
 class ParameterHandler(QObject):
     parameters_updated = Signal(dict)  # Emits when parameters change
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self._parameters = {}
 

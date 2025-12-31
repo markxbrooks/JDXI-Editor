@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import QWidget, QSlider, QComboBox, QSpinBox
 
 
-def set_widget_value_safely(widget: QWidget, value: int):
+def set_widget_value_safely(widget: QWidget, value: int) -> None:
     """
     Block signals for the widget, set its value, then unblock signals.
 

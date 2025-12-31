@@ -6,7 +6,7 @@ from PySide6.QtGui import QFont
 class PatchName(QWidget):
     nameChanged = Signal(str)
 
-    def __init__(self, parent=None):
+    def __init__(self, parent: object | None = None) -> None:
         super().__init__(parent)
         main_layout = QHBoxLayout(self)
         group = QGroupBox("Patch Name")
@@ -61,8 +61,8 @@ class PatchName(QWidget):
         """
         )
 
-    def setText(self, text):
+    def setText(self, text: str) -> None:
         self.editor.setText(text)
 
-    def text(self):
+    def text(self) -> str:
         return self.editor.text()

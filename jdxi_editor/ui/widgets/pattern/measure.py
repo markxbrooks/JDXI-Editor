@@ -17,7 +17,7 @@ class PatternMeasure(QWidget):
         self.buttons = [[] for _ in range(4)]
         self._setup_ui()
 
-    def _setup_ui(self):
+    def _setup_ui(self) -> None:
         layout = QVBoxLayout()
         button_layout = QHBoxLayout()
 

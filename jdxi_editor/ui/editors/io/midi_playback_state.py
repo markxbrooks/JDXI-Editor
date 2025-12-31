@@ -1,3 +1,4 @@
+"""MIDI playback state management."""
 from collections import defaultdict
 from dataclasses import dataclass, field
 from typing import Optional
@@ -11,6 +12,7 @@ from jdxi_editor.midi.channel.channel import MidiChannel
 
 @dataclass
 class MidiPlaybackState:
+    """State container for MIDI file playback."""
     active_notes: dict = field(default_factory=lambda: defaultdict(set))
     buffered_msgs: list = field(default_factory=list)
     buffer_end_time: float = 0.0
@@ -35,9 +37,8 @@ class MidiPlaybackState:
     playback_thread: Optional[QThread] = None
     playback_paused_time: Optional[float] = None
     playback_start_time: Optional[float] = None
-    paused: bool = False
-    
-    def __post_init__(self):
+    playback_paused: bool = False
+    def __post_init__(self) -> None:
         if self.custom_tempo_force:
             self.tempo_at_position = self.custom_tempo  # Use custom tempo if forced
         else:

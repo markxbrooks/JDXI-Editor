@@ -2,7 +2,7 @@ from typing import Dict, Optional
 from PySide6.QtCore import QObject
 
 from jdxi_editor.midi.data.digital.partial import DigitalPartial
-from jdxi_editor.midi.data.parameter.digital.partial import AddressParameterDigitalPartial
+from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParam
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 
@@ -76,7 +76,7 @@ class PartialController(QObject):
         print(f"Partial {partial_number}: {param} set to {value}")
         
     def _on_partial_state_changed(
-        self, partial: DigitalPartial, enabled: bool, selected: bool
+        self, partial: DigitalPartialParam, enabled: bool, selected: bool
     ) -> None:
         """
         Handle the state change of a partial (enabled/disabled and selected/unselected).
@@ -97,7 +97,7 @@ class PartialController(QObject):
             self.partial_tab_widget.setCurrentIndex(partial_num - 1)
 
     def set_partial_state(
-        self, partial: DigitalPartial, enabled: bool = True, selected: bool = True
+        self, partial: DigitalPartialParam, enabled: bool = True, selected: bool = True
     ) -> Optional[bool]:
         """
         Set the state of a partial (enabled/disabled and selected/unselected).
@@ -127,8 +127,8 @@ class PartialController(QObject):
         Initialize partial states with defaults
         Default: Partial 1 enabled and selected, others disabled
         """
-        for partial in DigitalPartial.get_partials():
-            enabled = partial == DigitalPartial.PARTIAL_1
+        for partial in DigitalPartialParam.get_partials():
+            enabled = partial == DigitalPartialParam.PARTIAL_1
             selected = enabled
             self.partials_panel.switches[partial].setState(enabled, selected)
             self.partial_tab_widget.setTabEnabled(partial.value - 1, enabled)
@@ -146,11 +146,11 @@ class PartialController(QObject):
         :param value: int
         :return: None
         """
-        if param == AddressParameterDigitalPartial.OSC_WAVE:
+        if param == DigitalPartialParam.OSC_WAVE:
             self._update_waveform_buttons(partial_no, value)
             log.parameter("Updated waveform buttons for OSC_WAVE", value)
 
-        elif param == AddressParameterDigitalPartial.FILTER_MODE_SWITCH:
+        elif param == DigitalPartialParam.FILTER_MODE_SWITCH:
             self.partial_editors[partial_no].filter_mode_switch.setValue(value)
             self._update_filter_state(partial_no, value)
             log.parameter("Updated filter state for FILTER_MODE_SWITCH", value)
@@ -166,30 +166,30 @@ class PartialController(QObject):
         successes, failures = [], []
 
         for param_name, param_value in sysex_data.items():
-            param = AddressParameterDigitalPartial.get_by_name(param_name)
+            param = DigitalPartialParam.get_by_name(param_name)
             if not param:
                 failures.append(param_name)
                 continue
 
-            if param == AddressParameterDigitalPartial.OSC_WAVE:
+            if param == DigitalPartialParam.OSC_WAVE:
                 self._update_waveform_buttons(partial_no, param_value)
-            elif param == AddressParameterDigitalPartial.FILTER_MODE_SWITCH:
+            elif param == DigitalPartialParam.FILTER_MODE_SWITCH:
                 self._update_filter_state(partial_no, value=param_value)
             elif param in [
-                AddressParameterDigitalPartial.AMP_ENV_ATTACK_TIME,
-                AddressParameterDigitalPartial.AMP_ENV_DECAY_TIME,
-                AddressParameterDigitalPartial.AMP_ENV_SUSTAIN_LEVEL,
-                AddressParameterDigitalPartial.AMP_ENV_RELEASE_TIME,
-                AddressParameterDigitalPartial.FILTER_ENV_ATTACK_TIME,
-                AddressParameterDigitalPartial.FILTER_ENV_DECAY_TIME,
-                AddressParameterDigitalPartial.FILTER_ENV_SUSTAIN_LEVEL,
-                AddressParameterDigitalPartial.FILTER_ENV_RELEASE_TIME,
+                DigitalPartialParam.AMP_ENV_ATTACK_TIME,
+                DigitalPartialParam.AMP_ENV_DECAY_TIME,
+                DigitalPartialParam.AMP_ENV_SUSTAIN_LEVEL,
+                DigitalPartialParam.AMP_ENV_RELEASE_TIME,
+                DigitalPartialParam.FILTER_ENV_ATTACK_TIME,
+                DigitalPartialParam.FILTER_ENV_DECAY_TIME,
+                DigitalPartialParam.FILTER_ENV_SUSTAIN_LEVEL,
+                DigitalPartialParam.FILTER_ENV_RELEASE_TIME,
             ]:
                 self._update_partial_adsr_widgets(partial_no, param, param_value, successes, failures)
             elif param in [
-                AddressParameterDigitalPartial.OSC_PITCH_ENV_ATTACK_TIME,
-                AddressParameterDigitalPartial.OSC_PITCH_ENV_DECAY_TIME,
-                AddressParameterDigitalPartial.OSC_PITCH_ENV_DEPTH,
+                DigitalPartialParam.OSC_PITCH_ENV_ATTACK_TIME,
+                DigitalPartialParam.OSC_PITCH_ENV_DECAY_TIME,
+                DigitalPartialParam.OSC_PITCH_ENV_DEPTH,
             ]:
                 self._update_partial_pitch_env_widgets(partial_no, param, param_value, successes, failures)
             else:

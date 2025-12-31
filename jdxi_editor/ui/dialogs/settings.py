@@ -14,7 +14,7 @@ from jdxi_editor.project import __version__, __program__, __package_name__, __or
 from jdxi_editor.log.logger import Logger as log
 
 
-def log_settings():
+def log_settings() -> None:
     settings = QSettings(__organization_name__, __program__)
     print(f'log_level {settings.value("log_level", logging.DEBUG, type=int)}')
     print(f'logging {settings.value("logging", True, type=bool)}')
@@ -87,21 +87,6 @@ class UiPreferencesDialog(QDialog):
         self.logging_layout.addWidget(self.logging_label)
         self.logging_layout.addWidget(self.logging_checkbox)
 
-
-        self.analog_cheat_mode_layout = QHBoxLayout(self)
-        self.analog_cheat_mode_icon = QLabel()
-        self.analog_cheat_mode_checkbox = QCheckBox("Enable Analog Cheat Mode?")
-        self.analog_cheat_mode_checkbox.setToolTip("Enable Analog Cheat Mode to allow for more flexible sound design."
-                                                   "\nUse the Digital 2 Editor to load Digital sounds into the Analog Synth (!). "
-                                                   "\nRequires restart on changes")
-        self.analog_cheat_mode_checkbox.setLayoutDirection(QtCore.Qt.RightToLeft)
-        self.analog_cheat_mode_checkbox.setChecked(bool(self.settings.value("analog_cheat_mode", type=bool)))
-        self.analog_cheat_mode_icon.setPixmap(qta.icon("msc.report").pixmap(self.icon_size))
-        self.analog_cheat_mode_label = QLabel("Analog Cheat Mode On or Off:")
-        self.analog_cheat_mode_layout.addWidget(self.analog_cheat_mode_icon)
-        self.analog_cheat_mode_layout.addWidget(self.analog_cheat_mode_label)
-        self.analog_cheat_mode_layout.addWidget(self.analog_cheat_mode_checkbox)
-
         self.buttonBox = QtWidgets.QDialogButtonBox(self)
         self.buttonBox.setGeometry(QtCore.QRect(150, 250, 341, 32))
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
@@ -118,7 +103,6 @@ class UiPreferencesDialog(QDialog):
         main_content_layout = QVBoxLayout()
         main_content_layout.addLayout(self.log_level_layout)
         main_content_layout.addLayout(self.logging_layout)
-        main_content_layout.addLayout(self.analog_cheat_mode_layout)
         main_widget.setLayout(main_content_layout)
         main_layout.addWidget(self.buttonBox)
         self.setLayout(main_layout)
@@ -184,7 +168,6 @@ class UiPreferencesDialog(QDialog):
         settings = self.settings
         try:
             settings.setValue("logging", bool(self.logging_checkbox.isChecked()))
-            settings.setValue("analog_cheat_mode", bool(self.analog_cheat_mode_checkbox.isChecked()))
             settings.sync()
             log_settings()
         except Exception as ex:

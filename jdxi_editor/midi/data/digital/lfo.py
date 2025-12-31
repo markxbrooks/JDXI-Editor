@@ -13,12 +13,12 @@ class DigitalLFOShape(IntEnum):
     RANDOM = 5
 
     @property
-    def display_name(self):
+    def display_name(self) -> str:
         names = {0: "TRI", 1: "SIN", 2: "SAW", 3: "SQR", 4: "S&H", 5: "RND"}
         return names.get(self.value, "???")
 
     @property
-    def midi_value(self):
+    def midi_value(self) -> int:
         return self.value
 
 
@@ -47,7 +47,7 @@ class DigitalLFOTempoSyncNote(IntEnum):
     NOTE_1_32 = 19  # 1/32 (thirty-second)
 
     @property
-    def display_name(self):
+    def display_name(self) -> str:
         names = {
             0: "16",
             1: "12",
@@ -73,5 +73,5 @@ class DigitalLFOTempoSyncNote(IntEnum):
         return names.get(self.value, "???")
 
     @property
-    def midi_value(self):
+    def midi_value(self) -> int:
         return self.value

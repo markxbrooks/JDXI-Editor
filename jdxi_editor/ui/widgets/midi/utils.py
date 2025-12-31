@@ -74,7 +74,7 @@ def extract_notes_with_absolute_time(track: mido.MidiTrack,
     return notes
 
 
-def generate_track_colors(n: int):
+def generate_track_colors(n: int) -> list[str]:
     """
     Generate visually distinct colors for up to n tracks.
 

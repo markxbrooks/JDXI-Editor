@@ -31,7 +31,7 @@ arpeggiator settings, ensuring proper configuration.
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import List
+from typing import List, Optional
 
 
 @dataclass
@@ -48,11 +48,11 @@ class ArpeggioPatch:
     key: int = 0
 
     # Pattern data
-    patterns: List[int] = None
-    rhythms: List[int] = None
-    notes: List[int] = None
+    patterns: Optional[List[int]] = None
+    rhythms: Optional[List[int]] = None
+    notes: Optional[List[int]] = None
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         """Initialize pattern data"""
         if self.patterns is None:
             self.patterns = [0] * 4

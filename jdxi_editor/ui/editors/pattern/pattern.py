@@ -114,7 +114,7 @@ class PatternSequenceEditor(SynthEditor):
         )
         self.load_button.clicked.connect(self._load_pattern_dialog)
         self.save_button = QPushButton(
-            qta.icon("fa.save", color=JDXiStyle.FOREGROUND), "Save"
+            qta.icon("fa5.save", color=JDXiStyle.FOREGROUND), "Save"
         )
         self.save_button.clicked.connect(self._save_pattern_dialog)
         # Add the Clear Learned Pattern button

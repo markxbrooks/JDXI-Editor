@@ -3,16 +3,21 @@ import pstats
 import io
 from functools import wraps
 
-def profiling_decorator(sortby='cumtime', top_n=50):
+from typing import TypeVar, Callable, ParamSpec
+
+P = ParamSpec('P')
+R = TypeVar('R')
+
+def profiling_decorator(sortby: str = 'cumtime', top_n: int = 50) -> Callable[[Callable[P, R]], Callable[P, R]]:
     """
     Decorator to profile a function and log its performance.
 
     :param sortby: str - Sorting criteria for profiling results ('cumtime' or 'tottime').
     :param top_n: int - Number of top entries to display in the profiling results.
     """
-    def decorator(func):
+    def decorator(func: Callable[P, R]) -> Callable[P, R]:
         @wraps(func)
-        def wrapper(*args, **kwargs):
+        def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
             profiler = cProfile.Profile()
             profiler.enable()  # Start profiling
             

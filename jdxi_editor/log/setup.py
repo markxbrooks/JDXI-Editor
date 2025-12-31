@@ -5,7 +5,7 @@ from pathlib import Path
 from jdxi_editor.project import __program__, __version__, __package_name__
 
 
-def setup_logging(log_level=logging.DEBUG) -> logging.Logger:
+def setup_logging(log_level: int = logging.DEBUG) -> logging.Logger:
     """Set up logging configuration"""
     try:
         _ = logging.getLogger(__package_name__)

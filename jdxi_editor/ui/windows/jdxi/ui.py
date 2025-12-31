@@ -249,6 +249,12 @@ class JDXiUi(QMainWindow):
 
         file_menu.addSeparator()
 
+        dump_settings_action = QAction("Dump Settings to Synth", self)
+        dump_settings_action.triggered.connect(self._dump_settings_to_synth)
+        file_menu.addAction(dump_settings_action)
+
+        file_menu.addSeparator()
+
         quit_action = QAction("Quit", self)
         quit_action.triggered.connect(self.close)
         file_menu.addAction(quit_action)
@@ -259,6 +265,12 @@ class JDXiUi(QMainWindow):
         midi_config_action = QAction("MIDI Configuration...", self)
         midi_config_action.triggered.connect(self._show_midi_config)
         edit_menu.addAction(midi_config_action)
+
+        edit_menu.addSeparator()
+
+        update_db_action = QAction("Update User Program Database", self)
+        update_db_action.triggered.connect(self._update_user_program_database)
+        edit_menu.addAction(update_db_action)
 
     def _create_parts_menu(self) -> None:
         """Create editors menu"""
@@ -608,6 +620,9 @@ class JDXiUi(QMainWindow):
         raise NotImplementedError("to be implemented in subclass")
 
     def _patch_save(self):
+        raise NotImplementedError("to be implemented in subclass")
+
+    def _dump_settings_to_synth(self):
         raise NotImplementedError("to be implemented in subclass")
 
     def _handle_program_change(self, bank_letter: str, program_number: int):

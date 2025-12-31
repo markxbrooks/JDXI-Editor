@@ -391,12 +391,12 @@ ANALOG_PRESET_LIST = [
 ]
 
 
-def get_preset_by_program_number(program_number: int) -> dict[str]:
+def get_preset_by_program_number(program_number: int) -> dict[str, Any] | None:
     """
     get_preset_by_program_number
 
     :param program_number: int Program number
-    :return: Program details
+    :return: Program details or None if not found
     """
     return next(
         (preset for preset in ANALOG_PRESET_LIST if preset["pc"] == program_number),
@@ -409,7 +409,10 @@ def get_preset_parameters(program_number: int) -> tuple[float, float, float]:
     get_preset_parameters
 
     :param program_number: int
-    :return:
+    :return: tuple of (msb, lsb, pc)
+    :raises: ValueError if preset not found
     """
     preset = get_preset_by_program_number(program_number)
+    if preset is None:
+        raise ValueError(f"Preset with program number {program_number} not found")
     return preset["msb"], preset["lsb"], preset["pc"]

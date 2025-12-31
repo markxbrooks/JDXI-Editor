@@ -1,13 +1,15 @@
 """SysEx Byte"""
 from enum import IntEnum
-from typing import Type, Optional, T
+from typing import Type, Optional, TypeVar
+
+T = TypeVar('T', bound='SysExByte')
 
 
 class SysExByte(IntEnum):
     """Base class for SysEx message byte positions."""
 
     @classmethod
-    def message_position(cls):
+    def message_position(cls) -> int:
         """Return the fixed message position for command bytes."""
         raise NotImplementedError("To be subclassed")
 

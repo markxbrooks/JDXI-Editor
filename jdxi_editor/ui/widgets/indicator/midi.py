@@ -6,7 +6,7 @@ from PySide6.QtGui import QPainter, QColor, QPen
 class MIDIIndicator(QLabel):
     """MIDI activity indicator light"""
 
-    def __init__(self, parent=None):
+    def __init__(self, parent: object | None = None) -> None:
         super().__init__(parent)
         self.setFixedSize(12, 12)  # Small circular indicator
 
@@ -19,7 +19,7 @@ class MIDIIndicator(QLabel):
         self.blink_timer.timeout.connect(self._reset_active)
         self.blink_timer.setInterval(100)  # 100ms blink duration
 
-    def paintEvent(self, event):
+    def paintEvent(self, event: object) -> None:
         """Draw the indicator light"""
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
@@ -37,18 +37,18 @@ class MIDIIndicator(QLabel):
         painter.setBrush(color)
         painter.drawEllipse(1, 1, 10, 10)
 
-    def blink(self):
+    def blink(self) -> None:
         """Trigger activity blink"""
         self.active = True
         self.update()
         self.blink_timer.start()
 
-    def set_connected(self, connected: bool):
+    def set_connected(self, connected: bool) -> None:
         """Set connection state"""
         self.connected = connected
         self.update()
 
-    def _reset_active(self):
+    def _reset_active(self) -> None:
         """Reset active state after blink"""
         self.active = False
         self.update()

@@ -37,7 +37,7 @@ class MidiChannel(IntEnum):
     PROGRAM = 15  # Program list
     VOCAL_FX = 6  # Is this correct?!
 
-    def __str__(self):
+    def __str__(self) -> str:
         return {
             self.DIGITAL_SYNTH_1: "Digital 1 (Ch.1)",
             self.DIGITAL_SYNTH_2: "Digital 2 (Ch.2)",
@@ -52,5 +52,5 @@ class MidiChannel(IntEnum):
         return self.value + 1
 
     @classmethod
-    def from_midi_channel(cls, channel: int):
+    def from_midi_channel(cls, channel: int) -> "MidiChannel | None":
         return next((m for m in cls if m.value == channel), None)
