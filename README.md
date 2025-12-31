@@ -59,9 +59,9 @@ There is a new build for MacOS Sequoia. See the [releases page:](https://github.
 ### Windows 📦
 There is a new build for Windows See the [releases page:](https://github.com/markxbrooks/JDXI-Editor/releases/tag/v0.9.0)
 
-### Linux 📦 See the [releases page:](https://github.com/markxbrooks/JDXI-Editor/releases/tag/v0.9.0)
+### Linux 📦 
 
-There is a new build for Linux See the releases page:
+There is a new build for Linux See the See the [releases page:](https://github.com/markxbrooks/JDXI-Editor/releases/tag/v0.9.0)
 
 
 ### Python 🐍
