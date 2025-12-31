@@ -30,12 +30,12 @@ class WaveformButton(QPushButton):
         # Style
         self.setMinimumWidth(60)
 
-    def _on_clicked(self):
+    def _on_clicked(self) -> None:
         """Handle button click"""
         if self.isChecked():
             self.waveform_selected.emit(self.waveform)
 
-    def setValue(self, value: int):
+    def setValue(self, value: int) -> None:
         """Set the button's checked state based on a MIDI value."""
         try:
             selected_waveform = Waveform.from_midi_value(value)

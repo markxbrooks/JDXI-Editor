@@ -38,7 +38,7 @@ from typing import Tuple, Optional
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 
 
-class AddressParameterProgramZone(AddressParameter):
+class ProgramZoneParam(AddressParameter):
     """Program Common parameters"""
 
     def __init__(
@@ -148,4 +148,4 @@ class AddressParameterProgramZone(AddressParameter):
         :return: Optional[object] The parameter
         Return the parameter member by name, or None if not found
         """
-        return AddressParameterProgramZone.__members__.get(param_name, None)
+        return ProgramZoneParam.__members__.get(param_name, None)

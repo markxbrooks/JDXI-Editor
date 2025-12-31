@@ -1950,7 +1950,7 @@ DIGITAL_PRESET_LIST = [
 RAW_PRESETS_CSV = ""
 
 
-def generate_preset_list():
+def generate_preset_list() -> list[dict[str, str]]:
     """Generate a list of presets from RAW_PRESETS_CSV data."""
     presets = []
     csv_file = StringIO(RAW_PRESETS_CSV)

@@ -16,8 +16,10 @@ Example usage
 
 """
 from mido import MidiFile
+from typing import List
+from mido import Message
 
-def extract_measure(midi_file_path, measure_number):
+def extract_measure(midi_file_path: str, measure_number: int) -> List[Message]:
     """
     Extracts notes from a specific measure of a MIDI file.
     """

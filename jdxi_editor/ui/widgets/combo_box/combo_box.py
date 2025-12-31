@@ -58,12 +58,12 @@ class ComboBox(QWidget):
     def __init__(
         self,
         label: str,
-        options: list,
-        values: list = None,
-        parent=None,
+        options: list[str],
+        values: list[int] | None = None,
+        parent: object | None = None,
         show_label: bool = True,
-        tooltip: str = ""  # Optional tooltip parameter
-    ):
+        tooltip: str = "",  # Optional tooltip parameter
+    ) -> None:
         """
         Initialize the ComboBox widget.
 

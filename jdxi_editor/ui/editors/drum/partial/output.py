@@ -33,10 +33,11 @@ Example:
 """
 
 
-from PySide6.QtWidgets import QGroupBox, QFormLayout, QWidget, QVBoxLayout, QScrollArea, QHBoxLayout
 from typing import Callable
+
+from PySide6.QtWidgets import QGroupBox, QFormLayout, QWidget, QVBoxLayout, QScrollArea, QHBoxLayout
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
+from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
@@ -45,7 +46,7 @@ class DrumOutputSection(QWidget):
 
     def __init__(
         self,
-        controls: dict[AddressParameterDrumPartial, QWidget],
+        controls: dict[DrumPartialParam, QWidget],
         create_parameter_combo_box: Callable,
         create_parameter_slider: Callable,
         midi_helper: MidiIOHelper,
@@ -59,6 +60,7 @@ class DrumOutputSection(QWidget):
 
     def setup_ui(self) -> None:
         """setup UI"""
+        self.setMinimumWidth(JDXiDimensions.DRUM_PARTIAL_TAB_MIN_WIDTH)
         layout = QVBoxLayout(self)
 
         scroll_area = QScrollArea()
@@ -85,22 +87,22 @@ class DrumOutputSection(QWidget):
 
         # Add output parameters
         partial_output_level_slider = self._create_parameter_slider(
-            AddressParameterDrumPartial.PARTIAL_OUTPUT_LEVEL, "Output Level"
+            DrumPartialParam.PARTIAL_OUTPUT_LEVEL, "Output Level"
         )
         output_layout.addRow(partial_output_level_slider)
 
         partial_chorus_send_level_slider = self._create_parameter_slider(
-            AddressParameterDrumPartial.PARTIAL_CHORUS_SEND_LEVEL, "Chorus Send Level"
+            DrumPartialParam.PARTIAL_CHORUS_SEND_LEVEL, "Chorus Send Level"
         )
         output_layout.addRow(partial_chorus_send_level_slider)
 
         partial_reverb_send_level_slider = self._create_parameter_slider(
-            AddressParameterDrumPartial.PARTIAL_REVERB_SEND_LEVEL, "Reverb Send Level"
+            DrumPartialParam.PARTIAL_REVERB_SEND_LEVEL, "Reverb Send Level"
         )
         output_layout.addRow(partial_reverb_send_level_slider)
 
         partial_output_assign_combo = self._create_parameter_combo_box(
-            AddressParameterDrumPartial.PARTIAL_OUTPUT_ASSIGN,
+            DrumPartialParam.PARTIAL_OUTPUT_ASSIGN,
             "Output Assign",
             ["EFX1", "EFX2", "DLY", "REV", "DIR"],
             [0, 1, 2, 3, 4],

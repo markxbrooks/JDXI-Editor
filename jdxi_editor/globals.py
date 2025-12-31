@@ -1,3 +1,4 @@
+"""Global configuration and settings for JD-Xi Editor."""
 import logging
 
 from PySide6.QtCore import QSettings

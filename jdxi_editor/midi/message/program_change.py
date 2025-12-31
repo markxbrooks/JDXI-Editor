@@ -35,6 +35,6 @@ class ProgramChangeMessage(ChannelMessage):
     status: int = MidiConstant.PROGRAM_CHANGE  # Program Change status byte
     program: int = 0
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         self.data1 = self.program  # Only one data byte, no data2
         self.data2 = None  # Program Change messages only have one data byte

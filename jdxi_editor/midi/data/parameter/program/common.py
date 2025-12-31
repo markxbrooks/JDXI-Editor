@@ -36,7 +36,7 @@ from typing import Tuple, Optional
 
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 
-class AddressParameterSystemCommon(AddressParameter):
+class SystemCommonParam(AddressParameter):
     """Program Common parameters"""
 
     def __init__(
@@ -144,10 +144,10 @@ class AddressParameterSystemCommon(AddressParameter):
         Return the parameter member by name, or None if not found
         """
 
-        return AddressParameterProgramCommon.__members__.get(param_name, None)
+        return ProgramCommonParam.__members__.get(param_name, None)
 
 
-class AddressParameterProgramCommon(AddressParameter):
+class ProgramCommonParam(AddressParameter):
     """Program Common parameters"""
 
     def __init__(
@@ -288,4 +288,4 @@ from the JD-Xi.)""")  # Program Tempo (500-30000: 5.00-300.00 BPM)
         Return the parameter member by name, or None if not found
         """
 
-        return AddressParameterProgramCommon.__members__.get(param_name, None)
+        return ProgramCommonParam.__members__.get(param_name, None)

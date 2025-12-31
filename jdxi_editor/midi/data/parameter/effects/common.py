@@ -12,5 +12,5 @@ class AddressParameterEffectCommon(Enum):
     PROGRAM_REVERB = 0x08
 
     @property
-    def address(self):
+    def address(self) -> int:
         return self.value  # Access Enum value correctly

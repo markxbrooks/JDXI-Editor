@@ -1,0 +1,49 @@
+#!/bin/bash
+
+# Get the directory where the app bundle is located
+APP_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
+RESOURCES_DIR="$APP_DIR/Contents/Resources"
+
+# Change to resources directory so Perl can find modules
+cd "$RESOURCES_DIR"
+
+# Find Perl (try system Perl first, then Homebrew)
+PERL=""
+if [ -f "/usr/bin/perl" ]; then
+    PERL="/usr/bin/perl"
+elif [ -f "/opt/homebrew/bin/perl" ]; then
+    PERL="/opt/homebrew/bin/perl"
+elif [ -f "/usr/local/bin/perl" ]; then
+    PERL="/usr/local/bin/perl"
+else
+    PERL=$(which perl)
+fi
+
+if [ -z "$PERL" ]; then
+    osascript -e 'display dialog "Perl is not installed. Please install Perl to run JDXI Manager." buttons {"OK"} default button "OK" with icon stop'
+    exit 1
+fi
+
+# Check if required Perl modules are installed
+MISSING_MODULES=()
+if ! "$PERL" -MTk -e "1" 2>/dev/null; then
+    MISSING_MODULES+=("Tk")
+fi
+if ! "$PERL" -MConfig::Simple -e "1" 2>/dev/null; then
+    MISSING_MODULES+=("Config::Simple")
+fi
+if ! "$PERL" -MTime::HiRes -e "1" 2>/dev/null; then
+    MISSING_MODULES+=("Time::HiRes")
+fi
+if ! "$PERL" -MLWP::UserAgent -e "1" 2>/dev/null; then
+    MISSING_MODULES+=("LWP::UserAgent")
+fi
+
+if [ ${#MISSING_MODULES[@]} -gt 0 ]; then
+    MODULES_LIST=$(IFS=', '; echo "${MISSING_MODULES[*]}")
+    osascript -e "display dialog \"Missing required Perl modules: $MODULES_LIST\n\nPlease install them using:\ncpan install $MODULES_LIST\" buttons {\"OK\"} default button \"OK\" with icon stop"
+    exit 1
+fi
+
+# Run the Perl application
+exec "$PERL" -I"$RESOURCES_DIR" "$RESOURCES_DIR/jdxi_manager.pl"

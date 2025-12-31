@@ -11,9 +11,9 @@ def log_header_message(message: str, level: int = logging.INFO) -> None:
     :param message: The message to log.
     :param level: Logging level (default: logging.INFO).
     """
-    stacklevel = 3
-    full_separator = f"{'=' * 142}"
-    separator = f"{'=' * 100}"
+    stacklevel: int = 3
+    full_separator: str = f"{'=' * 142}"
+    separator: str = f"{'=' * 100}"
 
     log_message(f"\n{full_separator}", level=level, stacklevel=stacklevel)
     log_message(f"{message}", level=level, stacklevel=stacklevel)

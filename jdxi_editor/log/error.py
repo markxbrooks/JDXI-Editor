@@ -10,7 +10,7 @@ def log_error(
     message: str,
     exception: Optional[Exception] = None,
     level: int = logging.ERROR,
-    stacklevel=2,
+    stacklevel: int = 2,
 ) -> None:
     """
     Log an error message with emojis based on severity and content keywords.

@@ -16,6 +16,7 @@ class JDXiDimensions:
     A class to store dimensions for the JD-Xi editor UI.
     """
 
+    EDITOR_MINIMUM_HEIGHT = 250
     HEIGHT = 400
     WIDTH = 1000
 
@@ -31,7 +32,7 @@ class JDXiDimensions:
     DIGITAL_TITLE_WIDTH = 330
     DIGITAL_TITLE_HEIGHT = 70
 
-    EDITOR_DIGITAL_SPLITTER_SIZES = [100, 600]
+    EDITOR_DIGITAL_SPLITTER_SIZES = [250, 450]  # More room for top section (Presets/Partials)
     EDITOR_DRUM_ANALOG_SPLITTER_SIZES = [200, 400]
     EDITOR_ANALOG_MIN_WIDTH = 330
     EDITOR_ANALOG_MIN_HEIGHT = 330
@@ -119,4 +120,5 @@ class JDXiDimensions:
     EFFECTS_WIDTH = 80
     EFFECTS_HEIGHT = 120
 
-    SCROLL_AREA_HEIGHT = 220
+    SCROLL_AREA_HEIGHT = 100
+    DRUM_PARTIAL_TAB_MIN_WIDTH = 400  # Minimum width for drum partial tabs to match WMT width

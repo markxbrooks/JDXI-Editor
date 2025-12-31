@@ -43,7 +43,7 @@ from jdxi_editor.midi.data.parameter.digital.mapping import ENVELOPE_MAPPING
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 
 
-class AddressParameterAnalog(AddressParameter):
+class AnalogParam(AddressParameter):
     """Analog synth parameters with area, address, and value range."""
 
 
@@ -188,7 +188,7 @@ class AddressParameterAnalog(AddressParameter):
         :return: Optional[object] The parameter
         """
         # Return the parameter member by name, or None if not found
-        return AddressParameterAnalog.__members__.get(param_name, None)
+        return AnalogParam.__members__.get(param_name, None)
 
     @staticmethod
     def get_name_by_address(address: int) -> Optional[str]:
@@ -198,7 +198,7 @@ class AddressParameterAnalog(AddressParameter):
         :param address: int The address
         :return: Optional[str] The parameter name
         """
-        for param in AddressParameterAnalog:
+        for param in AnalogParam:
             if param.address == address:
                 return param.name
         return None  # Return None if the address is not found
@@ -216,7 +216,7 @@ class AddressParameterAnalog(AddressParameter):
         :param param_name: str The parameter name
         :return: Optional[int] The address
         """
-        param = AddressParameterAnalog.get_by_name(param_name)
+        param = AnalogParam.get_by_name(param_name)
         if param:
             return param.value[0]
         return None
@@ -229,7 +229,7 @@ class AddressParameterAnalog(AddressParameter):
         :param param_name: str The parameter name
         :return: Tuple[int, int] The value range
         """
-        param = AddressParameterAnalog.get_by_name(param_name)
+        param = AnalogParam.get_by_name(param_name)
         if param:
             return param.value[1], param.value[2]
         return None, None
@@ -242,7 +242,7 @@ class AddressParameterAnalog(AddressParameter):
         :param param_name: str The parameter name
         :return: Tuple[int, int] The display value range
         """
-        param = AddressParameterAnalog.get_by_name(param_name)
+        param = AnalogParam.get_by_name(param_name)
         if param:
             return param.display_min, param.display_max
         return None, None
@@ -265,9 +265,9 @@ class AddressParameterAnalog(AddressParameter):
         :return: int The MIDI value
         """
         # Handle special bipolar cases first
-        if self == AddressParameterAnalog.OSC_PITCH_FINE:
+        if self == AnalogParam.OSC_PITCH_FINE:
             return display_value + 64  # -63 to +63 -> 0 to 127
-        elif self == AddressParameterAnalog.OSC_PITCH_COARSE:
+        elif self == AnalogParam.OSC_PITCH_COARSE:
             return display_value + 64  # -63 to +63 -> 0 to 127
 
         # For parameters with simple linear scaling
@@ -288,9 +288,9 @@ class AddressParameterAnalog(AddressParameter):
         :return: int The display value
         """
         # Handle special bipolar cases first
-        if self == AddressParameterAnalog.OSC_PITCH_FINE:
+        if self == AnalogParam.OSC_PITCH_FINE:
             return midi_value - 64  # 0 to 127 -> -63 to +63
-        elif self == AddressParameterAnalog.OSC_PITCH_COARSE:
+        elif self == AnalogParam.OSC_PITCH_COARSE:
             return midi_value - 64  # 0 to 127 -> -63 to +63
 
         # For parameters with simple linear scaling
@@ -312,7 +312,7 @@ class AddressParameterAnalog(AddressParameter):
         :param value: int The value
         :return: int The display value
         """
-        param = AddressParameterAnalog.get_by_name(param_name)
+        param = AnalogParam.get_by_name(param_name)
         if param:
             return param.convert_from_midi(value)
         return value
@@ -325,7 +325,7 @@ class AddressParameterAnalog(AddressParameter):
         :param param_name: str The parameter name
         :return: Tuple[int, int] The MIDI value range
         """
-        param = AddressParameterAnalog.get_by_name(param_name)
+        param = AnalogParam.get_by_name(param_name)
         if param:
             return param.min_val, param.max_val
 
@@ -338,7 +338,7 @@ class AddressParameterAnalog(AddressParameter):
         :param value: int The value
         :return: Optional[int] The MIDI value
         """
-        param = AddressParameterAnalog.get_by_name(param_name)
+        param = AnalogParam.get_by_name(param_name)
         if param:
             return param.convert_to_midi(value)
         return None

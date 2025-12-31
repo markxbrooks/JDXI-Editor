@@ -187,7 +187,7 @@ class DigitalDisplay(DigitalDisplayBase):
         self.current_octave = current_octave
         self.tone_name = tone_name
         self.tone_number = tone_number
-        self.program_name = program_name
+        self.program_name = program_name or "Untitled Program"
         self.program_number = program_number
         self.program_bank_letter = program_bank_letter
         self.program_id = self.program_bank_letter + str(self.program_number)
@@ -317,7 +317,7 @@ class DigitalDisplay(DigitalDisplayBase):
         self.current_octave = current_octave
         self.tone_number = tone_number
         self.tone_name = tone_name
-        self.program_name = program_name
+        self.program_name = program_name or "Untitled Program"
         self.program_id = get_program_id_by_name(self.program_name)
         self.active_synth = active_synth
         self.update()

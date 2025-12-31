@@ -53,9 +53,9 @@ from jdxi_editor.midi.data.address.address import AddressOffsetSuperNATURALLMB
 from jdxi_editor.midi.data.digital import DigitalOscWave, DigitalPartial
 from jdxi_editor.midi.data.parameter import AddressParameter
 from jdxi_editor.midi.data.parameter.digital import (
-    AddressParameterDigitalCommon,
-    AddressParameterDigitalPartial,
-    AddressParameterDigitalModify
+    DigitalCommonParam,
+    DigitalPartialParam,
+    DigitalModifyParam
 )
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.utils.conversions import midi_value_to_ms, midi_value_to_fraction
@@ -90,10 +90,10 @@ class DigitalSynthEditor(SynthEditor):
         )
         self.main_window = parent
         self.controls: Dict[
-            Union[AddressParameterDigitalPartial, AddressParameterDigitalCommon],
+            Union[DigitalPartialParam, DigitalCommonParam],
             QWidget,
         ] = {}
-        synth_map = {1: JDXiSynth.DIGITAL_SYNTH_1, 2: JDXiSynth.DIGITAL_SYNTH_2, 3: JDXiSynth.DIGITAL_SYNTH_3}
+        synth_map = {1: JDXiSynth.DIGITAL_SYNTH_1, 2: JDXiSynth.DIGITAL_SYNTH_2}
         if synth_number not in synth_map:
             raise ValueError(f"Invalid synth_number: {synth_number}. Must be 1, 2 or 3.")
         self.synth_number = synth_number
@@ -112,22 +112,22 @@ class DigitalSynthEditor(SynthEditor):
         self.data_request()
         # self.show()
         self.adsr_parameters = [
-            AddressParameterDigitalPartial.AMP_ENV_ATTACK_TIME,
-            AddressParameterDigitalPartial.AMP_ENV_DECAY_TIME,
-            AddressParameterDigitalPartial.AMP_ENV_SUSTAIN_LEVEL,
-            AddressParameterDigitalPartial.AMP_ENV_RELEASE_TIME,
-            AddressParameterDigitalPartial.FILTER_ENV_ATTACK_TIME,
-            AddressParameterDigitalPartial.FILTER_ENV_DECAY_TIME,
-            AddressParameterDigitalPartial.FILTER_ENV_SUSTAIN_LEVEL,
-            AddressParameterDigitalPartial.FILTER_ENV_RELEASE_TIME,
+            DigitalPartialParam.AMP_ENV_ATTACK_TIME,
+            DigitalPartialParam.AMP_ENV_DECAY_TIME,
+            DigitalPartialParam.AMP_ENV_SUSTAIN_LEVEL,
+            DigitalPartialParam.AMP_ENV_RELEASE_TIME,
+            DigitalPartialParam.FILTER_ENV_ATTACK_TIME,
+            DigitalPartialParam.FILTER_ENV_DECAY_TIME,
+            DigitalPartialParam.FILTER_ENV_SUSTAIN_LEVEL,
+            DigitalPartialParam.FILTER_ENV_RELEASE_TIME,
         ]
         self.pitch_env_parameters = [
-            AddressParameterDigitalPartial.OSC_PITCH_ENV_ATTACK_TIME,
-            AddressParameterDigitalPartial.OSC_PITCH_ENV_DECAY_TIME,
-            AddressParameterDigitalPartial.OSC_PITCH_ENV_DEPTH,
+            DigitalPartialParam.OSC_PITCH_ENV_ATTACK_TIME,
+            DigitalPartialParam.OSC_PITCH_ENV_DECAY_TIME,
+            DigitalPartialParam.OSC_PITCH_ENV_DEPTH,
         ]
-        self.pwm_parameters = [AddressParameterDigitalPartial.OSC_PULSE_WIDTH,
-                               AddressParameterDigitalPartial.OSC_PULSE_WIDTH_MOD_DEPTH]
+        self.pwm_parameters = [DigitalPartialParam.OSC_PULSE_WIDTH,
+                               DigitalPartialParam.OSC_PULSE_WIDTH_MOD_DEPTH]
 
         def __str__(self):
             return f"{self.__class__.__name__} {self.preset_type}"
@@ -166,9 +166,11 @@ class DigitalSynthEditor(SynthEditor):
 
         container = QWidget()
         container_layout = QVBoxLayout()
+        container_layout.setSpacing(5)  # Reduced spacing
+        container_layout.setContentsMargins(5, 5, 5, 5)  # Reduced margins
         container.setLayout(container_layout)
         instrument_hrow_layout = QHBoxLayout()
-        # instrument_hrow_layout.addStretch()
+        instrument_hrow_layout.setSpacing(10)  # Reduced spacing between elements
         instrument_layout.addLayout(instrument_hrow_layout)
         # top_layout.addWidget(self.partials_panel)
         instrument_preset_group = self._create_instrument_preset_group(
@@ -181,10 +183,12 @@ class DigitalSynthEditor(SynthEditor):
         instrument_hrow_layout.addWidget(self.instrument_image_group)
         instrument_hrow_layout.addStretch()
         instrument_layout.addLayout(instrument_hrow_layout)
-        instrument_layout.addStretch()
+        # Removed addStretch() to bring content higher
+        # Reduced spacing - removed addStretch() to bring content higher
+        instrument_layout.setSpacing(5)  # Minimal spacing
         self.update_instrument_image()
         container_layout.addWidget(self.partials_panel)
-        container_layout.addStretch()
+        container_layout.setSpacing(5)  # Minimal spacing instead of stretch
         self.partial_tab_widget = QTabWidget()
         instrument_widget.setLayout(instrument_layout)
         self.partial_tab_widget.addTab(instrument_widget, "Presets")
@@ -233,7 +237,7 @@ class DigitalSynthEditor(SynthEditor):
         container_layout.addWidget(self.partial_tab_widget)
 
     def _on_partial_state_changed(
-            self, partial: DigitalPartial, enabled: bool, selected: bool
+            self, partial: DigitalPartialParam, enabled: bool, selected: bool
     ) -> None:
         """
         Handle the state change of a partial (enabled/disabled and selected/unselected).
@@ -254,7 +258,7 @@ class DigitalSynthEditor(SynthEditor):
             self.partial_tab_widget.setCurrentIndex(partial_num)
 
     def set_partial_state(
-            self, partial: DigitalPartial, enabled: bool = True, selected: bool = True
+            self, partial: DigitalPartialParam, enabled: bool = True, selected: bool = True
     ) -> Optional[bool]:
         """
         Set the state of a partial (enabled/disabled and selected/unselected).
@@ -302,11 +306,11 @@ class DigitalSynthEditor(SynthEditor):
         :param value: int
         :return: None
         """
-        if param == AddressParameterDigitalPartial.OSC_WAVE:
+        if param == DigitalPartialParam.OSC_WAVE:
             self._update_waveform_buttons(partial_no, value)
             log.parameter("Updated waveform buttons for OSC_WAVE", value)
 
-        elif param == AddressParameterDigitalPartial.FILTER_MODE_SWITCH:
+        elif param == DigitalPartialParam.FILTER_MODE_SWITCH:
             self.partial_editors[partial_no].filter_tab.filter_mode_switch.setValue(
                 value
             )
@@ -326,14 +330,14 @@ class DigitalSynthEditor(SynthEditor):
         :return: None
         """
         for param_name, param_value in sysex_data.items():
-            param = AddressParameterDigitalPartial.get_by_name(param_name)
+            param = DigitalPartialParam.get_by_name(param_name)
             if not param:
                 failures.append(param_name)
                 continue
 
-            if param == AddressParameterDigitalPartial.OSC_WAVE:
+            if param == DigitalPartialParam.OSC_WAVE:
                 self._update_waveform_buttons(partial_no, param_value)
-            elif param == AddressParameterDigitalPartial.FILTER_MODE_SWITCH:
+            elif param == DigitalPartialParam.FILTER_MODE_SWITCH:
                 self._update_filter_state(partial_no, value=param_value)
             elif param in self.adsr_parameters:
                 self._update_partial_adsr_widgets(
@@ -382,11 +386,11 @@ class DigitalSynthEditor(SynthEditor):
         """
         for control in self.controls:
             log.parameter("control", control, silent=True)
-        sysex_data.pop("SYNTH_TONE")
-        sysex_data.pop("TONE_CATEGORY")
+        sysex_data.pop("SYNTH_TONE", None)
+        sysex_data.pop("TONE_CATEGORY", None)
         for param_name, param_value in sysex_data.items():
             log.parameter(f"{param_name} {param_value}", param_value, silent=True)
-            param = AddressParameterDigitalCommon.get_by_name(param_name)
+            param = DigitalCommonParam.get_by_name(param_name)
             if not param:
                 log.parameter(
                     f"param not found: {param_name} ", param_value, silent=True
@@ -436,10 +440,10 @@ class DigitalSynthEditor(SynthEditor):
         """
         for control in self.controls:
             log.parameter("control", control, silent=True)
-        sysex_data.pop("SYNTH_TONE")
+        sysex_data.pop("SYNTH_TONE", None)
         for param_name, param_value in sysex_data.items():
             log.parameter(f"{param_name} {param_value}", param_value, silent=True)
-            param = AddressParameterDigitalModify.get_by_name(param_name)
+            param = DigitalModifyParam.get_by_name(param_name)
             if not param:
                 log.parameter(
                     f"param not found: {param_name} ", param_value, silent=True
@@ -456,7 +460,7 @@ class DigitalSynthEditor(SynthEditor):
     def _update_partial_adsr_widgets(
             self,
             partial_no: int,
-            param: AddressParameterDigitalPartial,
+            param: DigitalPartialParam,
             midi_value: int,
             successes: list = None,
             failures: list = None,
@@ -470,8 +474,8 @@ class DigitalSynthEditor(SynthEditor):
         :return: None
         """
         use_fraction = param in {
-            AddressParameterDigitalPartial.AMP_ENV_SUSTAIN_LEVEL,
-            AddressParameterDigitalPartial.FILTER_ENV_SUSTAIN_LEVEL,
+            DigitalPartialParam.AMP_ENV_SUSTAIN_LEVEL,
+            DigitalPartialParam.FILTER_ENV_SUSTAIN_LEVEL,
         }
         control_value = (
             midi_value_to_fraction(midi_value)
@@ -479,28 +483,28 @@ class DigitalSynthEditor(SynthEditor):
             else midi_value_to_ms(midi_value)
         )
         self.adsr_map = {
-            AddressParameterDigitalPartial.AMP_ENV_ATTACK_TIME: self.partial_editors[
+            DigitalPartialParam.AMP_ENV_ATTACK_TIME: self.partial_editors[
                 partial_no
             ].amp_tab.amp_env_adsr_widget.attack_control,
-            AddressParameterDigitalPartial.AMP_ENV_DECAY_TIME: self.partial_editors[
+            DigitalPartialParam.AMP_ENV_DECAY_TIME: self.partial_editors[
                 partial_no
             ].amp_tab.amp_env_adsr_widget.decay_control,
-            AddressParameterDigitalPartial.AMP_ENV_SUSTAIN_LEVEL: self.partial_editors[
+            DigitalPartialParam.AMP_ENV_SUSTAIN_LEVEL: self.partial_editors[
                 partial_no
             ].amp_tab.amp_env_adsr_widget.sustain_control,
-            AddressParameterDigitalPartial.AMP_ENV_RELEASE_TIME: self.partial_editors[
+            DigitalPartialParam.AMP_ENV_RELEASE_TIME: self.partial_editors[
                 partial_no
             ].amp_tab.amp_env_adsr_widget.release_control,
-            AddressParameterDigitalPartial.FILTER_ENV_ATTACK_TIME: self.partial_editors[
+            DigitalPartialParam.FILTER_ENV_ATTACK_TIME: self.partial_editors[
                 partial_no
             ].filter_tab.filter_adsr_widget.attack_control,
-            AddressParameterDigitalPartial.FILTER_ENV_DECAY_TIME: self.partial_editors[
+            DigitalPartialParam.FILTER_ENV_DECAY_TIME: self.partial_editors[
                 partial_no
             ].filter_tab.filter_adsr_widget.decay_control,
-            AddressParameterDigitalPartial.FILTER_ENV_SUSTAIN_LEVEL: self.partial_editors[
+            DigitalPartialParam.FILTER_ENV_SUSTAIN_LEVEL: self.partial_editors[
                 partial_no
             ].filter_tab.filter_adsr_widget.sustain_control,
-            AddressParameterDigitalPartial.FILTER_ENV_RELEASE_TIME: self.partial_editors[
+            DigitalPartialParam.FILTER_ENV_RELEASE_TIME: self.partial_editors[
                 partial_no
             ].filter_tab.filter_adsr_widget.release_control,
         }
@@ -518,7 +522,7 @@ class DigitalSynthEditor(SynthEditor):
     def _update_partial_pitch_env_widgets(
             self,
             partial_no: int,
-            param: AddressParameterDigitalPartial,
+            param: DigitalPartialParam,
             midi_value: int,
             successes: list = None,
             failures: list = None,
@@ -534,7 +538,7 @@ class DigitalSynthEditor(SynthEditor):
         :return: None
         """
         use_fraction = param in {
-            AddressParameterDigitalPartial.OSC_PITCH_ENV_DEPTH,
+            DigitalPartialParam.OSC_PITCH_ENV_DEPTH,
         }
         new_value = (
             midi_value_to_fraction(midi_value)
@@ -542,13 +546,13 @@ class DigitalSynthEditor(SynthEditor):
             else midi_value_to_ms(midi_value, 10, 5000)
         )
         self.pitch_env_map = {
-            AddressParameterDigitalPartial.OSC_PITCH_ENV_ATTACK_TIME: self.partial_editors[
+            DigitalPartialParam.OSC_PITCH_ENV_ATTACK_TIME: self.partial_editors[
                 partial_no
             ].oscillator_tab.pitch_env_widget.attack_control,
-            AddressParameterDigitalPartial.OSC_PITCH_ENV_DECAY_TIME: self.partial_editors[
+            DigitalPartialParam.OSC_PITCH_ENV_DECAY_TIME: self.partial_editors[
                 partial_no
             ].oscillator_tab.pitch_env_widget.decay_control,
-            AddressParameterDigitalPartial.OSC_PITCH_ENV_DEPTH: self.partial_editors[
+            DigitalPartialParam.OSC_PITCH_ENV_DEPTH: self.partial_editors[
                 partial_no
             ].oscillator_tab.pitch_env_widget.depth_control,
         }
@@ -562,7 +566,7 @@ class DigitalSynthEditor(SynthEditor):
     def _update_pulse_width_widgets(
             self,
             partial_no: int,
-            param: AddressParameterDigitalPartial,
+            param: DigitalPartialParam,
             midi_value: int,
             successes: list = None,
             failures: list = None):
@@ -577,8 +581,8 @@ class DigitalSynthEditor(SynthEditor):
         :return: None
         """
         use_fraction = param in {
-            AddressParameterDigitalPartial.OSC_PULSE_WIDTH,
-            AddressParameterDigitalPartial.OSC_PULSE_WIDTH_MOD_DEPTH,
+            DigitalPartialParam.OSC_PULSE_WIDTH,
+            DigitalPartialParam.OSC_PULSE_WIDTH_MOD_DEPTH,
         }
         new_value = (
             midi_value_to_fraction(midi_value)
@@ -586,10 +590,10 @@ class DigitalSynthEditor(SynthEditor):
             else midi_value_to_ms(midi_value, 10, 5000)
         )
         self.pitch_env_map = {
-            AddressParameterDigitalPartial.OSC_PULSE_WIDTH: self.partial_editors[
+            DigitalPartialParam.OSC_PULSE_WIDTH: self.partial_editors[
                 partial_no
             ].oscillator_tab.pwm_widget.pulse_width_control,
-            AddressParameterDigitalPartial.OSC_PULSE_WIDTH_MOD_DEPTH: self.partial_editors[
+            DigitalPartialParam.OSC_PULSE_WIDTH_MOD_DEPTH: self.partial_editors[
                 partial_no
             ].oscillator_tab.pwm_widget.mod_depth_control,
         }

@@ -16,7 +16,7 @@ class WheelWidget(QWidget):
     """
     valueChanged = Signal(float)
 
-    def __init__(self, parent=None, bidirectional=False, label="Wheel"):
+    def __init__(self, parent: object | None = None, bidirectional: bool = False, label: str = "Wheel") -> None:
         super().__init__(parent)
         self._value = 0.0
         self.label = label
@@ -30,7 +30,7 @@ class WheelWidget(QWidget):
         self.snap_animation.setDuration(300)
         # self.snap_animation.setEasingCurve(Qt.EaseOutCubic)
 
-    def get_value(self):
+    def get_value(self) -> float:
         return self._value
 
     def set_value(self, value: float) -> None:
@@ -98,7 +98,7 @@ class WheelWidget(QWidget):
 
         painter.restore()
 
-    def mousePressEvent(self, event: QMouseEvent):
+    def mousePressEvent(self, event: QMouseEvent) -> None:
         """
         mousePressEvent
 

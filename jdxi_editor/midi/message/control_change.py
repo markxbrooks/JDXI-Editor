@@ -41,7 +41,7 @@ class ControlChangeMessage(MidiMessage):
         init=False, default=MidiConstant.CONTROL_CHANGE
     )  # Prevents status from being a required argument
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if not (0 <= self.controller <= 127):
             raise ValueError(
                 f"Controller number {self.controller} out of range (0-127)."

@@ -6,7 +6,7 @@ from PySide6.QtGui import QPainter, QColor, QBrush, QPen, QLinearGradient
 class LEDIndicator(QWidget):
     """LED-style indicator widget"""
 
-    def __init__(self, parent=None, alignment_state=None):
+    def __init__(self, parent: object | None = None, alignment_state: object | None = None) -> None:
         """Initialize LED indicator
 
         Args:
@@ -32,7 +32,7 @@ class LEDIndicator(QWidget):
         self._off_color = QColor(50, 50, 50)  # Dark gray
         self._blink_color = QColor(255, 165, 0)  # Orange
 
-    def set_active(self, active):
+    def set_active(self, active: bool) -> None:
         self._state = True
         self.update()
 
@@ -40,7 +40,7 @@ class LEDIndicator(QWidget):
         """Get recommended size"""
         return QSize(16, 16)
 
-    def set_state(self, state: bool):
+    def set_state(self, state: bool) -> None:
         """Set LED state
 
         Args:
@@ -50,7 +50,7 @@ class LEDIndicator(QWidget):
         self._blink = False
         self.update()
 
-    def blink(self):
+    def blink(self) -> None:
         """Trigger momentary blink"""
         self._blink = True
         self._blink_state = True
@@ -59,13 +59,13 @@ class LEDIndicator(QWidget):
         # Reset after short delay
         QTimer.singleShot(100, self._reset_blink)
 
-    def _reset_blink(self):
+    def _reset_blink(self) -> None:
         """Reset blink state"""
         self._blink = False
         self._blink_state = False
         self.update()
 
-    def paintEvent(self, event):
+    def paintEvent(self, event: object) -> None:
         """Paint the LED indicator"""
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)

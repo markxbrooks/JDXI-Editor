@@ -7,7 +7,7 @@ from typing import Dict, Optional
 
 from jdxi_editor.jdxi.synth.data import JDXISynthData
 from jdxi_editor.midi.data.address.address import AddressOffsetDrumKitLMB, Address
-from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
+from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 
 
 @dataclass
@@ -15,7 +15,7 @@ class DrumSynthData(JDXISynthData):
     """Drum Synth Data"""
 
     partial_number: int = 0
-    partial_parameters: AddressParameterDrumPartial = None
+    partial_parameters: DrumPartialParam = None
 
     _group_map: Dict[int, AddressOffsetDrumKitLMB] = field(
         default_factory=dict, init=False, repr=False

@@ -39,7 +39,8 @@ OPTIONS = {
                  "Carbon",
                  'PySide2',  # you're using PySide6, exclude PySide2 entirely
                  'PyQt5',  # not used, exclude it too
-                 'PyInstaller'  # the source of the hook-related confusion
+                 'PyInstaller',  # the source of the hook-related confusion
+                 'site'  # exclude site module to avoid sitecustomize circular import issues
                  ],
     "plist": {
         "CFBundleShortVersionString": "0.1.0",

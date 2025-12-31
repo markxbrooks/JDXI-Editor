@@ -11,13 +11,13 @@ class IncomingPresetData:
     lsb: Optional[int] = None
     tone_names: Dict[str, str] = field(default_factory=dict)  # e.g., {"analog": "Saw Lead"}
 
-    def set_tone_name(self, part: str, name: str):
+    def set_tone_name(self, part: str, name: str) -> None:
         self.tone_names[part] = name
 
     def get_tone_name(self, part: str) -> Optional[str]:
         return self.tone_names.get(part)
 
-    def clear(self):
+    def clear(self) -> None:
         self.program_number = None
         self.channel = None
         self.tone_names.clear()
