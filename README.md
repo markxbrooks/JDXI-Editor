@@ -89,7 +89,7 @@ https://markxbrooks.github.io/JDXI-Editor/
 
 ### 🎹 UI Previews
 
-**Program Editor
+**Program Editor**
 <a href="./resources/program_editor.png">
   <img src="./resources/program_editor_600.png" alt="Digital Synths" />
 </a>
