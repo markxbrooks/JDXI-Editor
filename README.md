@@ -95,10 +95,14 @@ https://markxbrooks.github.io/JDXI-Editor/
   <img src="./resources/program_editor_600.png" alt="Program Editor" />
 </a>
 
+&nbsp;
+
 **Analog Synths**  
 <a href="./resources/analog_synth.png">
   <img src="./resources/analog_synth_600.png" alt="Analog Synth" />
 </a>
+
+&nbsp;
 
 **Digital Synth** 
 <a href="./resources/digital_synth.png">
