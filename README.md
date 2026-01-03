@@ -91,12 +91,12 @@ https://markxbrooks.github.io/JDXI-Editor/
 
 **Program Editor**
 <a href="./resources/program_editor.png">
-  <img src="./resources/program_editor_600.png" alt="Digital Synths" />
+  <img src="./resources/program_editor_600.png" alt="Program Editor" />
 </a>
 
-**Digital Synths 1 & 2**  
-<a href="./resources/digital_synth.png">
-  <img src="./resources/digital_synth_600.png" alt="Digital Synth" />
+**Program Editor**  
+<a href="./resources/program_editor.png">
+  <img src="./resources/program_editor_600.png" alt="Program Editor" />
 </a>
 
 **Digital & Analog Synths**  
