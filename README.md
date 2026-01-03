@@ -129,26 +129,6 @@ https://markxbrooks.github.io/JDXI-Editor/
   <img src="./resources/effects_600.png" alt="Effects and Arpeggiator" />
 </a>
 
-&nbsp;
-
-**Vocal Effects**  
-<a href="./resources/vocal_effects.png">
-  <img src="./resources/vocal_effects_600.png" alt="Vocal Effects Window" />
-</a>
-
-&nbsp;
-
-**Log Viewer and MIDI Debugger**  
-<a href="./resources/logs_and_midi.png">
-  <img src="./resources/logs_and_midi_600.png" alt="Logs and MIDI Debugger" />
-</a>
-
-&nbsp;
-
-**MIDI Configuration**  
-<a href="./resources/midi_config.png">
-  <img src="./resources/midi_config_200.png" alt="MIDI Configuration Window" />
-</a>
 
 ---
 
