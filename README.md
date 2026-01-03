@@ -110,6 +110,13 @@ https://markxbrooks.github.io/JDXI-Editor/
 
 &nbsp;
 
+**Drum Editor**  
+<a href="./resources/drum_editor.png">
+  <img src="./resources/drum_editor_600.png" alt="Drum Editor" />
+</a>
+
+&nbsp;
+
 **Midi File Player**  
 <a href="./resources/midi_player.png">
   <img src="./resources/midi_player_600.png" alt="Midi File Player" />
