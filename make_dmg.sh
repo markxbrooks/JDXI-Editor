@@ -1,5 +1,6 @@
 #!/bin/bash
-
+source venv/bin/activate
+python setup.py py2app
 APP_NAME="JD-Xi Editor.app"
 DMG_NAME="JD-Xi_Editor_0.9.0_MacOS_Universal.dmg"
 VOLUME_NAME="JDXI Editor"
