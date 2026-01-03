@@ -97,8 +97,8 @@ https://markxbrooks.github.io/JDXI-Editor/
 &nbsp;
 
 **Analog & Digital Synths**  
-<a href="./resources/analog_synth.png">
-  <img src="./resources/analog_synth_600.png" alt="Analog Synth" />
+<a href="./resources/analog_synth.gif">
+  <img src="./resources/analog_synth_600.gif" alt="Analog Synth" />
 </a>
 
 &nbsp;
