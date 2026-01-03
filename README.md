@@ -117,15 +117,15 @@ https://markxbrooks.github.io/JDXI-Editor/
 &nbsp;
 
 **Midi File Player**  
-<a href="./resources/midi_player.png">
-  <img src="./resources/midi_player_600.png" alt="Midi File Player" />
+<a href="./resources/midi_player.gif">
+  <img src="./resources/midi_player_600.gif" alt="Midi File Player" />
 </a>
 
 &nbsp;
 
 **Pattern Sequencer**  
-<a href="./resources/pattern.png">
-  <img src="./resources/pattern_600.png" alt="Pattern Sequencer" />
+<a href="./resources/pattern.gif">
+  <img src="./resources/pattern_600.gif" alt="Pattern Sequencer" />
 </a>
 
 &nbsp;
