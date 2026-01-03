@@ -111,8 +111,8 @@ https://markxbrooks.github.io/JDXI-Editor/
 &nbsp;
 
 **Drum Editor**  
-<a href="./resources/drum_editor.png">
-  <img src="./resources/drum_editor_600.png" alt="Drum Editor" />
+<a href="./resources/drum_editor.gif">
+  <img src="./resources/drum_editor_600.gif" alt="Drum Editor" />
 </a>
 
 &nbsp;
