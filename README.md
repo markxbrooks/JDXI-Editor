@@ -89,21 +89,18 @@ https://markxbrooks.github.io/JDXI-Editor/
 
 ### 🎹 UI Previews
 
-**Program Editor**
-<a href="./resources/program_editor.png">
-  <img src="./resources/program_editor_600.png" alt="Program Editor" />
-</a>
 
 **Program Editor**  
 <a href="./resources/program_editor.png">
   <img src="./resources/program_editor_600.png" alt="Program Editor" />
 </a>
 
-**Digital & Analog Synths**  
+**Analog Synths**  
 <a href="./resources/analog_synth.png">
   <img src="./resources/analog_synth_600.png" alt="Analog Synth" />
 </a>
 
+**Digital Synth** 
 <a href="./resources/digital_synth.png">
   <img src="./resources/digital_synth_600.png" alt="Digital Synths" />
 </a>
