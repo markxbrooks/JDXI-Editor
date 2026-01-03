@@ -90,8 +90,8 @@ https://markxbrooks.github.io/JDXI-Editor/
 
 
 **Program Editor**  
-<a href="./resources/program_editor.png">
-  <img src="./resources/program_editor_600.png" alt="Program Editor" />
+<a href="./resources/program_editor.gif">
+  <img src="./resources/program_editor_600.gif" alt="Program Editor" />
 </a>
 
 &nbsp;
