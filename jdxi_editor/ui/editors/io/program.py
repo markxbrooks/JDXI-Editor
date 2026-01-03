@@ -1454,6 +1454,13 @@ class ProgramEditor(BasicEditor):
         )
         self.delete_playlist_button.clicked.connect(self._delete_selected_playlist)
         button_layout.addWidget(self.delete_playlist_button)
+
+        self.refresh_playlist_button = QPushButton(
+            qta.icon("ei.refresh", color=JDXiStyle.FOREGROUND),
+            "Refresh Playlist"
+        )
+        self.refresh_playlist_button.clicked.connect(self._refresh_playlists)
+        button_layout.addWidget(self.refresh_playlist_button)
         
         button_layout.addStretch()
         layout.addLayout(button_layout)
@@ -1595,6 +1602,10 @@ class ProgramEditor(BasicEditor):
                 from PySide6.QtWidgets import QMessageBox
                 QMessageBox.warning(self, "Error", f"Failed to create playlist '{name}'. It may already exist.")
     
+    def _refresh_playlists(self) -> None:
+        """populate programs"""
+        self._populate_playlist_table()
+
     def _delete_selected_playlist(self) -> None:
         """Delete the selected playlist."""
         selected_rows = self.playlist_table.selectionModel().selectedRows()
