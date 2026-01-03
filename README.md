@@ -94,6 +94,11 @@ https://markxbrooks.github.io/JDXI-Editor/
   <img src="./resources/program_editor_600.png" alt="Digital Synths" />
 </a>
 
+**Digital Synths 1 & 2**  
+<a href="./resources/digital_synth.png">
+  <img src="./resources/digital_synth_600.png" alt="Digital Synth" />
+</a>
+
 **Digital & Analog Synths**  
 <a href="./resources/analog_synth.png">
   <img src="./resources/analog_synth_600.png" alt="Analog Synth" />
