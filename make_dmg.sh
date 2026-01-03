@@ -1,7 +1,7 @@
 #!/bin/bash
 
 APP_NAME="JD-Xi Editor.app"
-DMG_NAME="JD-Xi_Editor_0.6.0_MacOS_Universal.dmg"
+DMG_NAME="JD-Xi_Editor_0.9.0_MacOS_Universal.dmg"
 VOLUME_NAME="JDXI Editor"
 SRC_DIR="dist/$APP_NAME"
 BUILD_DIR="jdxi_dmg/JDXI-Editor"
