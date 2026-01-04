@@ -38,7 +38,7 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QTabWidget,
     QScrollArea,
-    QSplitter,
+    QSplitter, QGroupBox, QLabel,
 )
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QShortcut, QKeySequence
@@ -78,8 +78,8 @@ class DigitalSynthEditor(SynthEditor):
             parent: QWidget = None,
     ):
         super().__init__(parent)
-        self.instrument_image_group = None
-        self.instrument_title_label = None
+        self.instrument_image_group: QGroupBox | None = None
+        self.instrument_title_label: QLabel | None = None
         self.partial_number = None
         self.current_data = None
         self.midi_helper = midi_helper
@@ -173,12 +173,12 @@ class DigitalSynthEditor(SynthEditor):
         instrument_hrow_layout.setSpacing(10)  # Reduced spacing between elements
         instrument_layout.addLayout(instrument_hrow_layout)
         # top_layout.addWidget(self.partials_panel)
-        instrument_preset_group = self._create_instrument_preset_group(
+        instrument_preset_group = self.create_instrument_preset_group(
             synth_type="Digital"
         )
         instrument_hrow_layout.addStretch()
         instrument_hrow_layout.addWidget(instrument_preset_group)
-        self._create_instrument_image_group()
+        self.instrument_image_group, self.instrument_image_label, self.instrument_group_layout = self.create_instrument_image_group()
         instrument_hrow_layout.addStretch()
         instrument_hrow_layout.addWidget(self.instrument_image_group)
         instrument_hrow_layout.addStretch()

@@ -43,6 +43,7 @@ Example:
 
 import logging
 from typing import Optional, Dict, Union
+from venv import create
 
 from PySide6.QtWidgets import (
     QWidget,
@@ -73,7 +74,7 @@ from jdxi_editor.midi.utils.conversions import (
     midi_value_to_fraction,
 )
 from jdxi_editor.midi.data.analog.oscillator import AnalogOscWave
-from jdxi_editor.ui.editors.analog.amp import AmpSection
+from jdxi_editor.ui.editors.analog.amp import AnalogAmpSection
 from jdxi_editor.ui.editors.analog.common import AnalogCommonSection
 from jdxi_editor.ui.editors.analog.filter import AnalogFilterSection
 from jdxi_editor.ui.editors.analog.lfo import AnalogLFOSection
@@ -92,6 +93,66 @@ from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 from jdxi_editor.ui.widgets.preset.combo_box import PresetComboBox
 
 
+def create_scroll_area() -> QScrollArea:
+    """ setup scroll area """
+    scroll = QScrollArea()
+    scroll.setWidgetResizable(True)
+    scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+    scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+    return scroll
+
+
+def create_scroll_container() -> tuple[QWidget, QVBoxLayout]:
+    container = QWidget()
+    container_layout = QVBoxLayout(container)
+    return container, container_layout
+
+
+class InstrumentPresetWidget(QWidget):
+    """InstrumentPresetWidget"""
+
+    def __init__(
+            self,
+            parent: Optional[QWidget] = None,
+    ):
+        """
+        InstrumentPresetWidget
+
+        :param parent: QWidget
+        """
+        super().__init__(parent)
+        self.group: QGroupBox | None = None
+        self.layout: QVBoxLayout | None = None
+        self.instrument_presets: QWidget | None = None
+        self.widget: QWidget | None = None
+        self.hlayout: QHBoxLayout | None = None
+
+    def set_image_group(self, instrument_image_group):
+        instrument_image_group.setMinimumWidth(JDXiStyle.INSTRUMENT_IMAGE_WIDTH)
+        self.hlayout.addWidget(instrument_image_group)
+
+    def create_widget(self):
+        """ Instrument presets Widget """
+        self.widget = QWidget()
+
+    def add_instrument_image_group(self, instrument_preset_group: QGroupBox):
+        """add groupbox for instruments"""
+        self.hlayout.addWidget(instrument_preset_group)
+
+    def setup_widget(self):
+        self.layout = QVBoxLayout()
+        self.layout.addWidget(self.widget)
+        self.layout.addStretch()
+        self.instrument_presets = QWidget()
+        self.instrument_presets.setLayout(self.layout)
+
+    def instrument_presets_setup_hlayout(self) -> None:
+        """ Top layout with title and image ---"""
+        self.hlayout = QHBoxLayout()
+        self.hlayout.addStretch()
+        self.widget.setLayout(self.hlayout)
+
+
 class AnalogSynthEditor(SynthEditor):
     """Analog Synth Editor UI."""
 
@@ -101,7 +162,6 @@ class AnalogSynthEditor(SynthEditor):
             preset_helper: Optional[JDXiPresetHelper] = None,
             parent: Optional[QWidget] = None,
     ):
-        super().__init__(midi_helper, parent)
         """
         Initialize the AnalogSynthEditor
 
@@ -109,9 +169,17 @@ class AnalogSynthEditor(SynthEditor):
         :param preset_helper: JDXIPresetHelper
         :param parent: QWidget
         """
-
-        self.amp_section = None
-        self.oscillator_section = None
+        super().__init__(midi_helper, parent)
+        self.instrument_image_group: QGroupBox | None = None
+        self.scroll: QScrollArea | None = None
+        self.instrument_preset_group: QGroupBox | None = None
+        self.instrument_preset_layout: QVBoxLayout | None = None
+        self.instrument_preset: QWidget | None = None
+        self.instrument_preset_widget: QWidget | None = None
+        self.instrument_preset_hlayout: QHBoxLayout | None = None
+        self.amp_section: AnalogAmpSection | None = None
+        self.oscillator_section: AnalogOscillatorSection | None = None
+        self.filter_section: AnalogFilterSection | None = None
         self.read_request_button = None
         self.tab_widget = None
         self.lfo_section = None
@@ -173,63 +241,68 @@ class AnalogSynthEditor(SynthEditor):
         self.resize(JDXiDimensions.EDITOR_ANALOG_WIDTH, JDXiDimensions.EDITOR_ANALOG_HEIGHT)
         self.setStyleSheet(JDXiStyle.TABS_ANALOG + JDXiStyle.EDITOR_ANALOG)
 
-        main_layout = QVBoxLayout()
-        self.setLayout(main_layout)
+        self.setup_main_layout()
 
-        # Splitter
-        splitter = QSplitter(Qt.Orientation.Vertical)
-        main_layout.addWidget(splitter)
+        self.instrument_presets_create_widget()
 
-        # === Top half ===
-        upper_widget = QWidget()
+        self.scroll = create_scroll_area()
+        self.main_layout.addWidget(self.scroll)
 
-        scroll = QScrollArea()
-        scroll.setWidgetResizable(True)
-        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
-        scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        container, container_layout = create_scroll_container()
+        self.scroll.setWidget(container)
 
-        container = QWidget()
-        container_layout = QVBoxLayout(container)
-        scroll.setWidget(container)
-        main_layout.addWidget(splitter)
+        self.instrument_presets_setup_hlayout()
+        self.instrument_presets_setup_widget()
 
-        # Top layout with title and image
-        upper_layout = QHBoxLayout()
-        upper_layout.addStretch()
-        upper_widget.setLayout(upper_layout)
-        instrument_layout = QVBoxLayout()
-        instrument_layout.addWidget(upper_widget)
-        instrument_layout.addStretch()
-        instrument_widget = QWidget()
-        instrument_widget.setLayout(instrument_layout)
-
-        instrument_preset_group = self._create_instrument_preset_group()
-        upper_layout.addWidget(instrument_preset_group)
-        upper_layout.addStretch()
-        self._create_instrument_image_group()
-        upper_layout.addWidget(self.instrument_image_group)
-        self.instrument_image_group.setMinimumWidth(JDXiStyle.INSTRUMENT_IMAGE_WIDTH)
-        upper_layout.addStretch()
+        self.instrument_preset_group = self.create_instrument_preset_group()
+        self.instrument_preset_add_instrument_image_group(self.instrument_preset_group)
+        self.instrument_preset_hlayout.addStretch()
+        self.instrument_image_group, self.instrument_image_label, self.instrument_group_layout = self.create_instrument_image_group()
+        self.instrument_preset_set_image_group(self.instrument_image_group)
+        self.instrument_preset_hlayout.addStretch()
         self.update_instrument_image()
 
-        # Tab sections
+        # --- Tab sections
         self.tab_widget = QTabWidget()
         container_layout.addWidget(self.tab_widget)
-        self.tab_widget.addTab(instrument_widget, "Presets")
+        self.tab_widget.addTab(self.instrument_preset, "Presets")
 
-        # Configure sliders
+        # --- Configure sliders
         for slider in self.controls.values():
             if isinstance(slider, QSlider):
                 slider.setTickPosition(QSlider.TickPosition.TicksBothSides)
                 slider.setTickInterval(10)
 
-        scroll.setWidget(container)
+        self.scroll.setWidget(container)
 
-        # splitter.addWidget(upper_widget)
-        splitter.addWidget(scroll)
-        splitter.setSizes(JDXiDimensions.EDITOR_DRUM_ANALOG_SPLITTER_SIZES)  # give more room to bottom
-        # Splitter handle style
-        splitter.setStyleSheet(JDXiStyle.SPLITTER)
+    def instrument_preset_set_image_group(self, instrument_image_group):
+        instrument_image_group.setMinimumWidth(JDXiStyle.INSTRUMENT_IMAGE_WIDTH)
+        self.instrument_preset_hlayout.addWidget(instrument_image_group)
+
+    def setup_main_layout(self):
+        self.main_layout = QVBoxLayout()
+        self.setLayout(self.main_layout)
+
+    def instrument_presets_create_widget(self):
+        """ Instrument presets Widget """
+        self.instrument_preset_widget = QWidget()
+
+    def instrument_preset_add_instrument_image_group(self, instrument_preset_group: QGroupBox):
+        """add groupbox for instruments"""
+        self.instrument_preset_hlayout.addWidget(instrument_preset_group)
+
+    def instrument_presets_setup_widget(self):
+        self.instrument_preset_layout = QVBoxLayout()
+        self.instrument_preset_layout.addWidget(self.instrument_preset_widget)
+        self.instrument_preset_layout.addStretch()
+        self.instrument_preset = QWidget()
+        self.instrument_preset.setLayout(self.instrument_preset_layout)
+
+    def instrument_presets_setup_hlayout(self) -> None:
+        """ Top layout with title and image ---"""
+        self.instrument_preset_hlayout = QHBoxLayout()
+        self.instrument_preset_hlayout.addStretch()
+        self.instrument_preset_widget.setLayout(self.instrument_preset_hlayout)
 
     def _create_sections(self):
         """Create the sections for the Analog Synth Editor."""
@@ -259,7 +332,7 @@ class AnalogSynthEditor(SynthEditor):
         self.tab_widget.addTab(
             self.filter_section, qta.icon("ri.filter-3-fill", color="#666666"), "Filter"
         )
-        self.amp_section = AmpSection(
+        self.amp_section = AnalogAmpSection(
             midi_helper=self.midi_helper,
             address=self.synth_data.address,
             create_parameter_slider=self._create_parameter_slider,
@@ -395,12 +468,12 @@ class AnalogSynthEditor(SynthEditor):
                                                                 param=AnalogParam.LFO_SHAPE,
                                                                 value=value)
             self.midi_helper.send_midi_message(sysex_message)
-            # Reset all buttons to default style
+            # --- Reset all buttons to default style ---
             for btn in self.lfo_shape_buttons.values():
                 btn.setChecked(False)
                 btn.setStyleSheet(JDXiStyle.BUTTON_RECT_ANALOG)
 
-            # Apply active style to the selected button
+            # --- Apply active style to the selected button ---
             selected_btn = self.lfo_shape_buttons.get(value)
             if selected_btn:
                 selected_btn.setChecked(True)
@@ -699,7 +772,7 @@ class AnalogSynthEditor(SynthEditor):
             "" if pw_enabled else "QSlider::groove:vertical { background: #000000; }"
         )
     
-    def _create_instrument_preset_group(self, synth_type: str = "Analog") -> QGroupBox:
+    def create_instrument_preset_group(self, synth_type: str = "Analog") -> QGroupBox:
         """
         Create the instrument preset group box with tabs for normal and cheat presets.
         
@@ -714,9 +787,8 @@ class AnalogSynthEditor(SynthEditor):
         instrument_title_group_layout.addWidget(preset_tabs)
         
         # === Tab 1: Normal Analog Presets ===
-        normal_preset_widget = QWidget()
-        normal_preset_layout = QVBoxLayout(normal_preset_widget)
-        
+        normal_preset_widget, normal_preset_layout = create_scroll_container()
+
         self.instrument_title_label = DigitalTitle()
         normal_preset_layout.addWidget(self.instrument_title_label)
         
@@ -752,9 +824,8 @@ class AnalogSynthEditor(SynthEditor):
         preset_tabs.addTab(normal_preset_widget, "Analog Presets")
         
         # === Tab 2: Cheat Presets (Digital Synth presets on Analog channel) ===
-        cheat_preset_widget = QWidget()
-        cheat_preset_layout = QVBoxLayout(cheat_preset_widget)
-        
+        cheat_preset_widget, cheat_preset_layout = create_scroll_container()
+
         # Search Box
         search_row = QHBoxLayout()
         search_row.addWidget(QLabel("Search Presets:"))

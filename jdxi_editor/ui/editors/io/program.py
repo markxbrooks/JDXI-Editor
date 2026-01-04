@@ -245,7 +245,7 @@ class ProgramEditor(BasicEditor):
         self.preset_type = None
         self.programs = {}
         self.programs = {}  # Maps program names to numbers
-        # Playlist playback tracking
+        # --- Playlist playback tracking ---
         self._current_playlist_row = None
         self._playlist_midi_editor = None
         self.setup_ui()
@@ -263,13 +263,14 @@ class ProgramEditor(BasicEditor):
         self.main_tab_widget = QTabWidget()
         main_vlayout.addWidget(self.main_tab_widget)
         
-        ### Scrolled area for Programs/Presets tab
-        # Scrollable area setup
+        # --- Scrolled area for Programs/Presets tab
+        # --- Scrollable area setup
         scrolled_area = QScrollArea()
         scrolled_area.setWidgetResizable(True)
 
         scrolled_area_container = QWidget()
         scrolled_area_container_layout = QVBoxLayout(scrolled_area_container)
+        scrolled_area_container_layout.addStretch()
 
         scrolled_area.setWidget(scrolled_area_container)
 
@@ -286,6 +287,7 @@ class ProgramEditor(BasicEditor):
         self.title_hlayout.addLayout(self.title_right_vlayout)
 
         scrolled_area_container_layout.addLayout(self.title_vlayout)
+        scrolled_area_container_layout.addStretch()
         
         # Add Programs/Presets tab to main tab widget
         self.main_tab_widget.addTab(scrolled_area, "Programs & Presets")
