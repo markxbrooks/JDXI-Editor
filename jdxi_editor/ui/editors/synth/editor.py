@@ -23,7 +23,7 @@ import json
 import re
 import os
 from typing import Optional, Any
-from PySide6.QtGui import QPixmap, QKeySequence, QShortcut
+from PySide6.QtGui import QPixmap, QKeySequence, QShortcut, QShowEvent
 from PySide6.QtWidgets import QWidget, QGroupBox, QVBoxLayout, QPushButton, QLabel
 from PySide6.QtCore import Qt, Signal
 
@@ -201,6 +201,19 @@ class SynthEditor(SynthBase):
         instrument_image_group.setMinimumWidth(JDXiStyle.INSTRUMENT_IMAGE_WIDTH)
         instrument_image_group.setMaximumHeight(JDXiStyle.INSTRUMENT_IMAGE_HEIGHT)
         return instrument_image_group, instrument_image_label, instrument_group_layout
+
+    def showEvent(self, event: QShowEvent) -> None:
+        """
+        Override showEvent to request current settings from the instrument when the editor is shown.
+        This ensures the sliders pick up the current settings from the instrument, similar to
+        Digital 1, Digital 2, and Analog synth editors.
+
+        :param event: QShowEvent
+        """
+        super().showEvent(event)
+        if self.midi_helper:
+            log.message("🎛️ Effects Editor shown - requesting current settings from instrument")
+        self.data_request()
 
     def create_instrument_preset_group(self, synth_type: str = "Analog") -> QGroupBox:
         """

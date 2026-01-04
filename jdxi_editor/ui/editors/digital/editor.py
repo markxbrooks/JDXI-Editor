@@ -63,6 +63,7 @@ from jdxi_editor.ui.editors.digital import DigitalCommonSection, DigitalToneModi
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.widgets.panel.partial import PartialsPanel
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
+from jdxi_editor.jdxi.preset.widget import InstrumentPresetWidget
 
 
 class DigitalSynthEditor(SynthEditor):
@@ -145,10 +146,6 @@ class DigitalSynthEditor(SynthEditor):
         main_layout = QVBoxLayout()
         self.setLayout(main_layout)
 
-        # Splitter
-        splitter = QSplitter(Qt.Orientation.Vertical)
-        main_layout.addWidget(splitter)
-
         # === Top half ===
         instrument_widget = QWidget()
         instrument_layout = QVBoxLayout()
@@ -169,24 +166,25 @@ class DigitalSynthEditor(SynthEditor):
         container_layout.setSpacing(5)  # Reduced spacing
         container_layout.setContentsMargins(5, 5, 5, 5)  # Reduced margins
         container.setLayout(container_layout)
-        instrument_hrow_layout = QHBoxLayout()
-        instrument_hrow_layout.setSpacing(10)  # Reduced spacing between elements
-        instrument_layout.addLayout(instrument_hrow_layout)
-        # top_layout.addWidget(self.partials_panel)
+        
+        # Use InstrumentPresetWidget for consistent layout
+        self.instrument_preset = InstrumentPresetWidget()
+        self.instrument_preset.setup_header_layout()
+        self.instrument_preset.setup()
+        
         instrument_preset_group = self.create_instrument_preset_group(
             synth_type="Digital"
         )
-        instrument_hrow_layout.addStretch()
-        instrument_hrow_layout.addWidget(instrument_preset_group)
+        self.instrument_preset.add_preset_group(instrument_preset_group)
+        self.instrument_preset.finalize_header()
+        
         self.instrument_image_group, self.instrument_image_label, self.instrument_group_layout = self.create_instrument_image_group()
-        instrument_hrow_layout.addStretch()
-        instrument_hrow_layout.addWidget(self.instrument_image_group)
-        instrument_hrow_layout.addStretch()
-        instrument_layout.addLayout(instrument_hrow_layout)
-        # Removed addStretch() to bring content higher
-        # Reduced spacing - removed addStretch() to bring content higher
-        instrument_layout.setSpacing(5)  # Minimal spacing
+        self.instrument_preset.add_image_group(self.instrument_image_group)
+        self.instrument_preset.finalize_header()
         self.update_instrument_image()
+        
+        instrument_layout.addWidget(self.instrument_preset)
+        instrument_layout.setSpacing(5)  # Minimal spacing
         container_layout.addWidget(self.partials_panel)
         container_layout.setSpacing(5)  # Minimal spacing instead of stretch
         self.partial_tab_widget = QTabWidget()
@@ -194,11 +192,7 @@ class DigitalSynthEditor(SynthEditor):
         self.partial_tab_widget.addTab(instrument_widget, "Presets")
         self._create_partial_tab_widget(container_layout, self.midi_helper)
         scroll.setWidget(container)
-        splitter.addWidget(scroll)
-        splitter.setSizes(JDXiDimensions.EDITOR_DIGITAL_SPLITTER_SIZES)  # give more room to bottom
-
-        splitter.setStyleSheet(JDXiStyle.SPLITTER)
-        # self.show()
+        main_layout.addWidget(scroll)
 
     def _create_partial_tab_widget(
             self, container_layout: QVBoxLayout, midi_helper: MidiIOHelper
