@@ -31,7 +31,8 @@ preset changes and communicate them to the UI and MIDI engine.
 
 import threading
 
-from PySide6.QtCore import Signal, QObject
+from PySide6.QtCore import Signal, QObject, Qt
+from PySide6.QtWidgets import QScrollArea, QWidget, QVBoxLayout
 
 from jdxi_editor.jdxi.preset.button import JDXiPresetButtonData
 from jdxi_editor.log.logger import Logger as log
@@ -156,3 +157,18 @@ class JDXiPresetHelper(QObject):
         # Convert 1-based PC to 0-based
         self.midi_helper.send_bank_select_and_program_change(channel, msb, lsb, pc - 1)
         self.data_request()
+
+
+def create_scroll_area() -> QScrollArea:
+    """ setup scroll area """
+    scroll = QScrollArea()
+    scroll.setWidgetResizable(True)
+    scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+    scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+    return scroll
+
+
+def create_scroll_container() -> tuple[QWidget, QVBoxLayout]:
+    container = QWidget()
+    container_layout = QVBoxLayout(container)
+    return container, container_layout
