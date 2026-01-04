@@ -154,7 +154,9 @@ class JDXiStyle:
         FONT_SIZE_SPLASH_SCREEN = "14px"
     else:
         FONT_FAMILY = "Orbitron"
+
         FONT_SIZE_SPLASH_SCREEN = "36px"
+    FONT_FAMILY_MONOSPACE = "Consolas"
     FONT_SIZE_MAIN_TABS = "14px"
     FONT_WEIGHT_BOLD = "bold"
     FONT_WEIGHT_NORMAL = "normal"
@@ -1290,11 +1292,10 @@ class JDXiStyle:
             """
 
     INSTRUMENT_TITLE_LABEL = f"""
-            font-family: {FONT_FAMILY};
+            font-family: "{FONT_FAMILY_MONOSPACE}";
             color: #FFBB33;
             font-size: 16px;
             font-weight: bold;
-            font-family: "Consolas";
 
             QGroupBox {{
                 height: 60;
@@ -1310,6 +1311,12 @@ class JDXiStyle:
                     stop: 1 #321212
                 );
             }}
+            """
+    INSTRUMENT_SUBTITLE_LABEL = f"""
+            font-family: "{FONT_FAMILY_MONOSPACE}";
+            color: #FFBB33;
+            font-size: 12px;
+            font-weight: bold;
             """
 
     INSTRUMENT_IMAGE_LABEL = f"""        
