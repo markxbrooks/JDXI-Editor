@@ -22,7 +22,7 @@ Dependencies:
 import json
 import re
 import os
-from typing import Optional
+from typing import Optional, Any
 from PySide6.QtGui import QPixmap, QKeySequence, QShortcut
 from PySide6.QtWidgets import QWidget, QGroupBox, QVBoxLayout, QPushButton, QLabel
 from PySide6.QtCore import Qt, Signal
@@ -74,7 +74,7 @@ def log_changes(previous_data, current_data):
             # )
     else:
         pass
-        #log.message("No changes detected.")
+        # --- log.message("No changes detected.")
 
 
 class SynthEditor(SynthBase):
@@ -92,7 +92,6 @@ class SynthEditor(SynthBase):
         self.sysex_current_data = None
         self.preset_list = None
         self.programs = None
-        # self.midi_helper = midi_helper
         self.midi_helper = MidiIOHelper()
         self.midi_helper.midi_program_changed.connect(self._handle_program_change)
         self.midi_helper.midi_control_changed.connect(self._handle_control_change)
@@ -168,7 +167,7 @@ class SynthEditor(SynthBase):
     def __repr__(self):
         return f"{self.__class__.__name__}"
 
-    def _init_synth_data(self, synth_type: JDXiSynth = JDXiSynth.DIGITAL_SYNTH_1,
+    def _init_synth_data(self, synth_type: str = JDXiSynth.DIGITAL_SYNTH_1,
                          partial_number: Optional[int] = 0):
         """Initialize synth-specific data."""
         from jdxi_editor.jdxi.synth.factory import create_synth_data
@@ -188,21 +187,22 @@ class SynthEditor(SynthBase):
         ]:
             setattr(self, attr, getattr(self.synth_data, attr))
 
-    def _create_instrument_image_group(self):
-        # Image group
-        self.instrument_image_group = QGroupBox()
+    def create_instrument_image_group(self) -> tuple[QGroupBox, Any, Any]:
+        """ Image group """
+        instrument_image_group = QGroupBox()
         instrument_group_layout = QVBoxLayout()
         instrument_group_layout.setContentsMargins(5, 5, 5, 5)  # Reduced margins
         instrument_group_layout.setSpacing(2)  # Reduced spacing
-        self.instrument_image_group.setLayout(instrument_group_layout)
-        self.instrument_image_label = QLabel()
-        self.instrument_image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        instrument_group_layout.addWidget(self.instrument_image_label)
-        self.instrument_image_group.setStyleSheet(JDXiStyle.INSTRUMENT_IMAGE_LABEL)
-        self.instrument_image_group.setMinimumWidth(JDXiStyle.INSTRUMENT_IMAGE_WIDTH)
-        self.instrument_image_group.setMaximumHeight(JDXiStyle.INSTRUMENT_IMAGE_HEIGHT)
+        instrument_image_group.setLayout(instrument_group_layout)
+        instrument_image_label = QLabel()
+        instrument_image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        instrument_group_layout.addWidget(instrument_image_label)
+        instrument_image_group.setStyleSheet(JDXiStyle.INSTRUMENT_IMAGE_LABEL)
+        instrument_image_group.setMinimumWidth(JDXiStyle.INSTRUMENT_IMAGE_WIDTH)
+        instrument_image_group.setMaximumHeight(JDXiStyle.INSTRUMENT_IMAGE_HEIGHT)
+        return instrument_image_group, instrument_image_label, instrument_group_layout
 
-    def _create_instrument_preset_group(self, synth_type: str = "Analog") -> QGroupBox:
+    def create_instrument_preset_group(self, synth_type: str = "Analog") -> QGroupBox:
         """
         Create the instrument preset group box.
 
@@ -373,7 +373,6 @@ class SynthEditor(SynthBase):
             if hasattr(self, "instrument_title_label"):
                 self.instrument_title_label.setText(name)
         self.tone_names[synth_type] = name
-        
 
     def update_combo_box_index(self, preset_number):
         """Updates the QComboBox to reflect the loaded preset."""

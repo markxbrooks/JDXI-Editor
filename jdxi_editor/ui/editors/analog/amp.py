@@ -18,7 +18,7 @@ from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 
 
-class AmpSection(QWidget):
+class AnalogAmpSection(QWidget):
     """Amp section of the JD-Xi editor"""
 
     def __init__(

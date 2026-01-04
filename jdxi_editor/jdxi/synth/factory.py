@@ -27,8 +27,7 @@ from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.project import __program__, __organization_name__
 
 
-
-def create_synth_data(synth_type: JDXiSynth, partial_number: int = 0) -> Union[
+def create_synth_data(synth_type: str, partial_number: int = 0) -> Union[
     AnalogSynthData, DrumSynthData, DigitalSynthData, None]:
     """
     Factory function to create synth data based on the synth type and partial number.

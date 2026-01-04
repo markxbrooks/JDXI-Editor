@@ -461,19 +461,20 @@ class JDXiStyle:
 
     PROGRAM_PRESET_GROUP_WIDTH = 300
 
-    PROGRESS_BAR = """
-        QProgressBar {
+    PROGRESS_BAR = f"""
+        QProgressBar {{
             background-color: #333;
             color: white;
+            font-family: '{FONT_FAMILY_MONOSPACE}';
             border: 2px solid #444;
             border-radius: 10px;
             text-align: center;
-        }
-        QProgressBar::chunk {
+        }}
+        QProgressBar::chunk {{
             background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0, 
                              stop:0 #660000, stop:1 #ff1a1a);
             border-radius: 10px;
-        }
+        }}
         """
 
     SLIDER_VERTICAL = f"""
