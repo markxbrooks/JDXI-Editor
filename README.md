@@ -64,7 +64,7 @@ There is a new build for Linux See the See the [releases page:](https://github.c
 
 
 ### Python 🐍
-If you're a Python , you may wish to run the program from a Python environment:
+If you're a Python programmer, you may wish to run the program from a Python environment:
 
 ```bash
 $ git clone https://github.com/markxbrooks/JDXI-Editor.git
