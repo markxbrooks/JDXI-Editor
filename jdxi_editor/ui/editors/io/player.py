@@ -465,6 +465,7 @@ class MidiFileEditor(SynthEditor):
         layout.addWidget(self.ui.usb_file_select)
 
         self.ui.usb_file_record_checkbox = QCheckBox("Save USB recording to file")
+        self.ui.usb_file_record_checkbox.serStyleSheet(JDXiStyle.PARTIAL_SWITCH)
         self.ui.usb_file_record_checkbox.setChecked(
             self.usb_recorder.file_save_recording
         )
@@ -475,6 +476,7 @@ class MidiFileEditor(SynthEditor):
 
         # Auto generate filename based on current date and time and Midi file
         self.ui.usb_file_auto_generate_checkbox = QCheckBox("Auto generate .Wav filename based on date, time and Midi file")
+        self.ui.usb_file_auto_generate_checkbox.serStyleSheet(JDXiStyle.PARTIAL_SWITCH)
         self.ui.usb_file_auto_generate_checkbox.setChecked(False)
         self.ui.usb_file_auto_generate_checkbox.stateChanged.connect(
             self.on_usb_file_auto_generate_toggled
