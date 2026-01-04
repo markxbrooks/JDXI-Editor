@@ -239,6 +239,7 @@ class MidiFileEditor(SynthEditor):
         layout.addWidget(self.ui.midi_suppress_program_changes_checkbox)
 
         self.ui.midi_suppress_control_changes_checkbox = QCheckBox("Control Changes")
+        self.ui.midi_suppress_control_changes_checkbox.serStyleSheet(JDXiStyle.PARTIAL_SWITCH)
         self.ui.midi_suppress_control_changes_checkbox.setChecked(
             self.midi_state.suppress_control_changes
         )
