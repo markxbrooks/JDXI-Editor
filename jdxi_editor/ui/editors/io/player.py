@@ -104,6 +104,7 @@ class MidiFileEditor(SynthEditor):
         self.midi_total_ticks = None
         self.midi_port = self.midi_helper.midi_out
         self.midi_timer_init()
+        self.current_tempo_bpm = None  # Store current tempo BPM for display
         self.midi_preferred_channels = {
             MidiChannel.DIGITAL_SYNTH_1,
             MidiChannel.DIGITAL_SYNTH_2,
@@ -158,7 +159,7 @@ class MidiFileEditor(SynthEditor):
         """
         # Top horizontal layout: file title and right-hand controls
         header_layout = QHBoxLayout()
-        self.ui.digital_title_file_name = DigitalTitle("No file loaded")
+        self.ui.digital_title_file_name = DigitalTitle("No file loaded", show_upper_text=True)
         header_layout.addWidget(self.ui.digital_title_file_name)
 
         right_panel_layout = QVBoxLayout()
@@ -782,7 +783,13 @@ class MidiFileEditor(SynthEditor):
         )
         if file_path:
             self.ui.midi_track_viewer.midi_file.save(file_path)
-            self.ui.digital_title_file_name.setText(f"Saved: {Path(file_path).name}")
+            file_name = f"Saved: {Path(file_path).name}"
+            self.ui.digital_title_file_name.setText(file_name)
+            # Update display to show tempo only (no bar when not playing)
+            if self.current_tempo_bpm is not None:
+                self.ui.digital_title_file_name.set_upper_display_text(
+                    f"Tempo: {round(self.current_tempo_bpm)} BPM"
+                )
 
     def midi_load_file(self) -> None:
         """
@@ -808,7 +815,13 @@ class MidiFileEditor(SynthEditor):
         self.midi_state.file = MidiFile(file_path)
         # Store filename in the MidiFile object for later use
         self.midi_state.file.filename = file_path
-        self.ui.digital_title_file_name.setText(f"Loaded: {Path(file_path).name}")
+        file_name = f"Loaded: {Path(file_path).name}"
+        self.ui.digital_title_file_name.setText(file_name)
+        # Update display to show tempo only (no bar when not playing)
+        if self.current_tempo_bpm is not None:
+            self.ui.digital_title_file_name.set_upper_display_text(
+                f"Tempo: {round(self.current_tempo_bpm)} BPM"
+            )
         self.ui.midi_track_viewer.clear()
         self.ui.midi_track_viewer.set_midi_file(self.midi_state.file)
         
@@ -834,10 +847,20 @@ class MidiFileEditor(SynthEditor):
         self.ui_position_slider_reset()
         
         # Add to recent files if parent has recent_files_manager
-        if hasattr(self.parent, 'recent_files_manager'):
-            self.parent.recent_files_manager.add_file(file_path)
-            if hasattr(self.parent, '_update_recent_files_menu'):
-                self.parent._update_recent_files_menu()
+        if hasattr(self.parent, 'recent_files_manager') and self.parent.recent_files_manager:
+            try:
+                self.parent.recent_files_manager.add_file(file_path)
+                if hasattr(self.parent, '_update_recent_files_menu'):
+                    # Check if menu still exists before updating
+                    if (hasattr(self.parent, 'recent_files_menu') and 
+                        self.parent.recent_files_menu is not None):
+                        try:
+                            self.parent._update_recent_files_menu()
+                        except RuntimeError:
+                            # Menu was deleted, skip update
+                            log.debug("Recent files menu was deleted, skipping update")
+            except Exception as ex:
+                log.debug(f"Error updating recent files menu: {ex}")
 
     def calculate_tick_duration(self):
         """
@@ -959,10 +982,33 @@ class MidiFileEditor(SynthEditor):
         :return: None
         Set the tempo in the UI and log it.
         """
-        self.ui.digital_title_file_name.set_upper_display_text(
-            f"Tempo: {round(tempo_bpm)} BPM"
-        )
+        self.current_tempo_bpm = tempo_bpm
+        self.update_upper_display_with_tempo_and_bar()
         log.parameter("tempo_bpm", tempo_bpm)
+    
+    def update_upper_display_with_tempo_and_bar(self, elapsed_time: Optional[float] = None) -> None:
+        """
+        Update the upper display with tempo and optionally bar number.
+        
+        :param elapsed_time: Optional elapsed time for bar calculation. If None, uses current playback state.
+        """
+        if self.current_tempo_bpm is None:
+            return
+        
+        tempo_text = f"Tempo: {round(self.current_tempo_bpm)} BPM"
+        
+        # Append bar number if playing or paused
+        if (elapsed_time is not None or 
+            (self.midi_state.timer and (self.midi_state.timer.isActive() or self.midi_state.playback_paused))):
+            if elapsed_time is None and self.midi_state.playback_start_time:
+                elapsed_time = time.time() - self.midi_state.playback_start_time
+            
+            if elapsed_time is not None and self.midi_state.file:
+                current_bar = self.calculate_current_bar(elapsed_time)
+                if current_bar is not None:
+                    tempo_text += f" | Bar {int(current_bar)}"
+        
+        self.ui.digital_title_file_name.set_upper_display_text(tempo_text)
 
     def turn_off_effects(self) -> None:
         """
@@ -1433,6 +1479,9 @@ class MidiFileEditor(SynthEditor):
         self.update_playback_start_time(target_time)
         self.stop_all_notes()
         self.prepare_for_playback()
+        
+        # Update display with tempo and bar for scrubbed position
+        self.update_upper_display_with_tempo_and_bar(target_time)
 
     def is_midi_ready(self) -> bool:
         """
@@ -1502,6 +1551,29 @@ class MidiFileEditor(SynthEditor):
         """
         self.midi_state.event_buffer.clear()
         self.setup_playback_worker()
+        
+        # Reconnect worker and UI update signals to timer (needed after scrubbing)
+        try:
+            # Disconnect all existing connections first
+            self.midi_state.timer.timeout.disconnect()
+        except Exception:
+            pass  # Already disconnected or not connected
+        
+        # Connect worker if available
+        if self.midi_playback_worker is not None:
+            try:
+                self.midi_state.timer.timeout.connect(self.midi_playback_worker.do_work)
+                log.message("Success: Reconnected midi_playback_worker.do_work to timeout after scrub")
+            except Exception as ex:
+                log.error(f"Error {ex} reconnecting worker to timeout")
+        
+        # Connect UI update
+        try:
+            self.midi_state.timer.timeout.connect(self.midi_play_next_event)
+            log.message("Success: Reconnected midi_play_next_event to timeout after scrub")
+        except Exception as ex:
+            log.error(f"Error {ex} reconnecting midi_play_next_event to timeout")
+        
         self.start_playback_worker()
 
     def midi_stop_playback(self):
@@ -1533,6 +1605,12 @@ class MidiFileEditor(SynthEditor):
 
         # Stop USB recording if active
         self.usb_recorder.stop_recording()
+
+        # Update display to show tempo only (no bar when stopped)
+        if self.current_tempo_bpm is not None:
+            self.ui.digital_title_file_name.set_upper_display_text(
+                f"Tempo: {round(self.current_tempo_bpm)} BPM"
+            )
 
         # Logging and profiling
         self.log_event_buffer()
@@ -1652,6 +1730,11 @@ class MidiFileEditor(SynthEditor):
             0, int(self.midi_state.file_duration_seconds)
         )
         self.ui_position_label_set_time()
+        # Update display to show tempo only (no bar when resetting)
+        if self.current_tempo_bpm is not None:
+            self.ui.digital_title_file_name.set_upper_display_text(
+                f"Tempo: {round(self.current_tempo_bpm)} BPM"
+            )
 
     def ui_position_label_update_time(
         self, time_seconds: Optional[float] = None
@@ -1667,10 +1750,46 @@ class MidiFileEditor(SynthEditor):
                 f"Playback Position: 0:00 / {format_time(self.midi_state.file_duration_seconds)}"
             )
 
+    def calculate_current_bar(self, elapsed_time: Optional[float] = None) -> Optional[float]:
+        """
+        Calculate the current bar number based on elapsed playback time.
+        
+        :param elapsed_time: Optional elapsed time in seconds. If None, calculates from current playback state.
+        :return: Current bar number (1-based) or None if calculation fails.
+        """
+        try:
+            if not self.midi_state.file or not hasattr(self, 'ticks_per_beat') or self.ticks_per_beat is None:
+                return None
+            
+            if elapsed_time is None:
+                if self.midi_state.playback_start_time is None:
+                    return None
+                elapsed_time = time.time() - self.midi_state.playback_start_time
+            
+            # Cap elapsed time to file duration
+            elapsed_time = min(elapsed_time, self.midi_state.file_duration_seconds)
+            
+            # Convert elapsed time to ticks
+            current_tick = mido.second2tick(
+                second=elapsed_time,
+                ticks_per_beat=self.midi_state.file.ticks_per_beat,
+                tempo=self.midi_state.tempo_at_position,
+            )
+            
+            # Calculate bar number (assuming 4/4 time signature: 4 beats per bar)
+            # Bar number is 1-based
+            current_bar = (current_tick / (4 * self.ticks_per_beat)) + 1
+            
+            return max(1.0, current_bar)  # Ensure at least bar 1
+        except Exception as ex:
+            log.debug(f"Error calculating current bar: {ex}")
+            return None
+
     def ui_position_label_set_time(self, elapsed_time: Optional[float] = None) -> None:
         """
         Update the position label with formatted elapsed time and total duration.
         Caps elapsed_time to total duration to prevent overflow display.
+        Also updates the bar number in the DigitalTitle upper display.
         """
         total = self.midi_state.file_duration_seconds
         if elapsed_time is None:
@@ -1684,6 +1803,14 @@ class MidiFileEditor(SynthEditor):
         if getattr(self, "_last_position_label", "") != label_text:
             self.ui.position_label.setText(label_text)
             self._last_position_label = label_text
+        
+        # Update upper display with tempo and bar number during active playback or when paused
+        if (elapsed_time is not None and 
+            self.midi_state.file and 
+            self.midi_state.timer):
+            # Update display with tempo and bar if timer was active (playing or paused)
+            if self.midi_state.timer.isActive() or self.midi_state.playback_paused:
+                self.update_upper_display_with_tempo_and_bar(elapsed_time)
 
     def midi_playback_pause_toggle(self):
         """

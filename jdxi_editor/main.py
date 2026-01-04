@@ -47,6 +47,7 @@ from jdxi_editor.resources import resource_path
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.ui.windows.jdxi.instrument import JDXiInstrument
 from jdxi_editor.project import __version__, __program__, __organization_name__
+from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 
 os.environ["QT_LOGGING_RULES"] = "qt.qpa.fonts=false"
 
@@ -156,10 +157,9 @@ def setup_splash_screen(app: QApplication) -> None:
     card_layout.setSpacing(18)
 
     # Title
-    title = QLabel(__program__)
-    title.setObjectName("TitleLabel")
-    title.setAlignment(Qt.AlignCenter)
+    title = DigitalTitle(__program__, digital_font_family=JDXiStyle.FONT_FAMILY_MONOSPACE, show_upper_text=False)
     card_layout.addWidget(title)
+    title.setStyleSheet(JDXiStyle.INSTRUMENT_TITLE_LABEL)
 
     # Image
     image_path = resource_path(os.path.join("resources", "jdxi_cartoon_600.png"))
@@ -171,9 +171,8 @@ def setup_splash_screen(app: QApplication) -> None:
 
     # Subtitle
     subtitle = QLabel("An editor & toolkit for the Roland JD-Xi instrument")
-    subtitle.setObjectName("SubtitleLabel")
-    subtitle.setAlignment(Qt.AlignCenter)
     card_layout.addWidget(subtitle)
+    subtitle.setStyleSheet(JDXiStyle.INSTRUMENT_SUBTITLE_LABEL)
 
     # Progress bar
     progress_bar = QProgressBar()
@@ -188,9 +187,8 @@ def setup_splash_screen(app: QApplication) -> None:
     card_layout.addLayout(progress_row)
 
     # Rotating status label
-    status_label = QLabel("Starting...")
-    status_label.setObjectName("StatusLabel")
-    status_label.setAlignment(Qt.AlignCenter)
+    status_label = DigitalTitle("Starting...", digital_font_family=JDXiStyle.FONT_FAMILY_MONOSPACE)
+    status_label.setStyleSheet(JDXiStyle.INSTRUMENT_SUBTITLE_LABEL)
     card_layout.addWidget(status_label)
 
     # Footer credits
@@ -230,154 +228,6 @@ def setup_splash_screen(app: QApplication) -> None:
         app.processEvents()
         time.sleep(0.03)
 
-    splash.close()
-    window = JDXiInstrument()
-    window.show()
-    splash.finish(window)
-
-
-def setup_splash_screen_new(app: QApplication) -> None:
-    """Setup and display the application splash screen."""
-    splash = QSplashScreen()
-    splash.setWindowFlags(
-        Qt.SplashScreen | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint
-    )
-    splash.setFixedSize(700, 500)
-    splash.setStyleSheet("background-color: black;")
-    layout = QVBoxLayout(splash)
-    layout.setContentsMargins(0, 0, 0, 0)
-    layout.setSpacing(10)
-    # Title
-    group_box = QGroupBox(__program__)
-    group_box.setAlignment(Qt.AlignHCenter)
-    group_box.setStyleSheet("color: white; font-size: 24px; font-weight: bold;")
-    preferred_fonts = ["Myriad Pro", "Segoe UI", "Arial"]
-    if platform.system() == "Windows":
-        font_size = 18
-    else:
-        font_size = 20
-    for font_name in preferred_fonts:
-        font = QFont(font_name, font_size)
-        font.setBold(True)
-        if QFontInfo(font).family() == font_name:
-            group_box.setFont(font)
-            break
-    layout.addWidget(group_box)
-    group_layout = QVBoxLayout()
-    group_layout.setAlignment(Qt.AlignCenter)
-    group_box.setLayout(group_layout)
-    # Image
-    image_path = resource_path(os.path.join("resources", "jdxi_cartoon_600.png"))
-    pixmap = QPixmap(image_path).scaled(
-        250, 150, Qt.KeepAspectRatio, Qt.SmoothTransformation
-    )
-    image_label = QLabel()
-    image_label.setPixmap(pixmap)
-    image_label.setAlignment(Qt.AlignCenter)
-    group_layout.addWidget(image_label)
-    # Progress bar
-    progress_bar = QProgressBar()
-    progress_bar.setRange(0, 100)
-    progress_bar.setValue(0)
-    progress_bar.setFixedHeight(30)
-    progress_bar.setFixedWidth(400)
-    progress_bar.setAlignment(Qt.AlignCenter)
-    progress_bar.setStyleSheet(JDXiStyle.PROGRESS_BAR)
-    group_box.setStyleSheet(JDXiStyle.SPLASH_SCREEN)
-    progress_container = QHBoxLayout()
-    progress_container.addStretch()
-    progress_container.addWidget(progress_bar)
-    progress_container.addStretch()
-    group_layout.addLayout(progress_container)
-    from jdxi_editor.ui.widgets.display.digital import DigitalTitle
-    sub_text_label = DigitalTitle(
-        "An editor & toolkit for the Roland JD-Xi instrument", show_upper_text=False
-    )
-    sub_text_label.setMinimumHeight(80)
-    sub_text_label.setFixedSize(475, 80)
-    group_layout.addWidget(sub_text_label)
-    splash.show()
-    splash.raise_()  # Ensure the splash screen is raised
-    splash.activateWindow()  # Activate the splash screen window
-    import time
-    for i in range(101):
-        progress_bar.setValue(i)
-        app.processEvents()
-        time.sleep(0.03)
-    splash.close()
-    window = JDXiInstrument()
-    window.show()
-    splash.finish(window)
-
-
-def setup_splash_screen_old(app: QApplication) -> None:
-    """Setup and display the application splash screen."""
-    splash = QSplashScreen()
-    splash.setWindowFlags(
-        Qt.SplashScreen | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint
-    )
-    splash.setFixedSize(500, 400)
-    splash.setStyleSheet("background-color: black;")
-    layout = QVBoxLayout(splash)
-    layout.setContentsMargins(0, 0, 0, 0)
-    layout.setSpacing(10)
-    # Title
-    group_box = QGroupBox(__program__)
-    group_box.setAlignment(Qt.AlignHCenter)
-    group_box.setStyleSheet("color: white; font-size: 24px; font-weight: bold;")
-    preferred_fonts = ["Myriad Pro", "Segoe UI", "Arial"]
-    if platform.system() == "Windows":
-        font_size = 18
-    else:
-        font_size = 20
-    for font_name in preferred_fonts:
-        font = QFont(font_name, font_size)
-        font.setBold(True)
-        if QFontInfo(font).family() == font_name:
-            group_box.setFont(font)
-            break
-    layout.addWidget(group_box)
-    group_layout = QVBoxLayout()
-    group_layout.setAlignment(Qt.AlignCenter)
-    group_box.setLayout(group_layout)
-    # Image
-    image_path = resource_path(os.path.join("resources", "jdxi_cartoon_600.png"))
-    pixmap = QPixmap(image_path).scaled(
-        250, 150, Qt.KeepAspectRatio, Qt.SmoothTransformation
-    )
-    image_label = QLabel()
-    image_label.setPixmap(pixmap)
-    image_label.setAlignment(Qt.AlignCenter)
-    group_layout.addWidget(image_label)
-    # Progress bar
-    progress_bar = QProgressBar()
-    progress_bar.setRange(0, 100)
-    progress_bar.setValue(0)
-    progress_bar.setFixedHeight(30)
-    progress_bar.setFixedWidth(400)
-    progress_bar.setAlignment(Qt.AlignCenter)
-    progress_bar.setStyleSheet(JDXiStyle.PROGRESS_BAR)
-    group_box.setStyleSheet(JDXiStyle.SPLASH_SCREEN)
-    progress_container = QHBoxLayout()
-    progress_container.addStretch()
-    progress_container.addWidget(progress_bar)
-    progress_container.addStretch()
-    group_layout.addLayout(progress_container)
-    from jdxi_editor.ui.widgets.display.digital import DigitalTitle
-    sub_text_label = DigitalTitle(
-        "An editor & toolkit for the Roland JD-Xi instrument", show_upper_text=False
-    )
-    sub_text_label.setMinimumHeight(80)
-    sub_text_label.setFixedSize(475, 80)
-    group_layout.addWidget(sub_text_label)
-    splash.show()
-    splash.raise_()  # Ensure the splash screen is raised
-    splash.activateWindow()  # Activate the splash screen window
-    import time
-    for i in range(101):
-        progress_bar.setValue(i)
-        app.processEvents()
-        time.sleep(0.03)
     splash.close()
     window = JDXiInstrument()
     window.show()

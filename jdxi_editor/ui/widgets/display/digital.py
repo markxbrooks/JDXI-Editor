@@ -149,7 +149,8 @@ class DigitalTitle(DigitalDisplayBase):
         :param tone_name: str
         """
         if self.show_upper_text:
-            self.update_display(["Currently Editing:", tone_name])
+            # self.update_display(["Currently Editing:", tone_name])
+            self.update_display(["", tone_name])
         else:
             self.update_display([tone_name])
 

@@ -882,8 +882,22 @@ class JDXiInstrument(JDXiUi):
         if not hasattr(self, 'recent_files_manager') or self.recent_files_manager is None:
             return
         
+        # Check if the menu object is still valid (not deleted)
+        try:
+            # Try to access a property to verify the C++ object still exists
+            _ = self.recent_files_menu.title()
+        except RuntimeError:
+            # Menu was deleted, reset reference and return
+            self.recent_files_menu = None
+            return
+        
         # Clear existing actions
-        self.recent_files_menu.clear()
+        try:
+            self.recent_files_menu.clear()
+        except RuntimeError:
+            # Menu was deleted during operation, reset reference and return
+            self.recent_files_menu = None
+            return
         
         recent_files = self.recent_files_manager.get_recent_files()
         
