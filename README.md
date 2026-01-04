@@ -103,8 +103,8 @@ https://markxbrooks.github.io/JDXI-Editor/
 
 &nbsp;
 
-<a href="./resources/digital_synth.gif">
-  <img src="./resources/digital_synth_600.gif" alt="Digital Synth" />
+<a href="./resources/digital_synth.png">
+  <img src="./resources/digital_synth_600.png" alt="Digital Synth" />
 </a>
 
 &nbsp;
