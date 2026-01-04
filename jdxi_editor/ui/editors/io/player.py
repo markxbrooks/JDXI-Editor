@@ -229,6 +229,7 @@ class MidiFileEditor(SynthEditor):
         layout.addWidget(QLabel("Suppress MIDI Events:"))
 
         self.ui.midi_suppress_program_changes_checkbox = QCheckBox("Program Changes")
+        self.ui.midi_suppress_program_changes_checkbox.serStyleSheet(JDXiStyle.PARTIAL_SWITCH)
         self.ui.midi_suppress_program_changes_checkbox.setChecked(
             self.midi_state.suppress_program_changes
         )
