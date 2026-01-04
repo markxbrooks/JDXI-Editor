@@ -103,7 +103,7 @@ class JDXiStyle:
     BUTTON_BACKGROUND = "#222222"
     BUTTON_BACKGROUND_PRESSED = "#333333"
     FOREGROUND = "#FFFFFF"
-    PADDING = 1  # in px
+    PADDING = 10  # in px
     SPACING = 10  # in px
     ICON_PIXMAP_SIZE = 30  # in px
     TRACK_ICON_PIXMAP_SIZE = 50  # in px

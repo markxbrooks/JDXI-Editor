@@ -36,17 +36,25 @@ class InstrumentPresetWidget(QWidget):
         self.hlayout.addWidget(group)
 
     def setup(self):
-        """ set up the widget"""
-        self.layout = QVBoxLayout()
-        self.setLayout(self.layout)
-        self.layout.addStretch()
+        """ set up the widget - creates the main vertical layout"""
+        if self.layout is None:
+            self.layout = QVBoxLayout()
+            self.setLayout(self.layout)
+            # Add stretch at top for vertical centering
+            self.layout.addStretch()
 
     def setup_header_layout(self) -> None:
         """ Top layout with title and image ---"""
+        # Ensure setup() has been called first
+        if self.layout is None:
+            self.setup()
         self.hlayout = QHBoxLayout()
         self.hlayout.addStretch()
-        self.setLayout(self.hlayout)
+        # Add the horizontal layout to the vertical layout
+        self.layout.addLayout(self.hlayout)
 
     def finalize_header(self):
         """Pad both sides by symmetry, supposedly."""
         self.hlayout.addStretch()
+        # Add stretch at bottom for vertical centering
+        self.layout.addStretch()

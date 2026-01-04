@@ -82,6 +82,7 @@ from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.widgets.dialog.progress import ProgressDialog
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
+from jdxi_editor.jdxi.preset.widget import InstrumentPresetWidget
 
 
 class DrumCommonEditor(SynthEditor):
@@ -136,26 +137,26 @@ class DrumCommonEditor(SynthEditor):
 
         instrument_widget = QWidget()
         instrument_vrow_layout = QVBoxLayout(instrument_widget)
-        instrument_vrow_layout.addStretch()
-        instrument_hrow_layout = QHBoxLayout()
-        instrument_hrow_layout.addStretch()
-        instrument_vrow_layout.addLayout(instrument_hrow_layout)  # Placeholder for top row
-        instrument_hrow_layout.addStretch()
-        instrument_hrow_layout.setContentsMargins(0, 0, 0, 0)  # No padding around the layout
-        instrument_vrow_layout.addStretch()
-
+        
+        # Use InstrumentPresetWidget for consistent layout
+        self.instrument_preset = InstrumentPresetWidget()
+        self.instrument_preset.setup_header_layout()
+        self.instrument_preset.setup()
+        
         instrument_preset_group = self.create_instrument_preset_group(
             synth_type="Drums"
         )
-        instrument_hrow_layout.addWidget(instrument_preset_group)
-        instrument_hrow_layout.addStretch()
+        self.instrument_preset.add_preset_group(instrument_preset_group)
+        self.instrument_preset.finalize_header()
+        
         self.instrument_image_group, self.instrument_image_label, self.instrument_group_layout = self.create_instrument_image_group()
         self.address.lmb = AddressOffsetProgramLMB.COMMON
-        instrument_hrow_layout.addWidget(self.instrument_image_group)
         self.instrument_image_group.setMinimumWidth(JDXiStyle.INSTRUMENT_IMAGE_WIDTH)
+        self.instrument_preset.add_image_group(self.instrument_image_group)
+        self.instrument_preset.finalize_header()
         self.update_instrument_image()
-        instrument_hrow_layout.addStretch()
-        instrument_vrow_layout.addStretch()
+        
+        instrument_vrow_layout.addWidget(self.instrument_preset)
 
         self.presets_parts_tab_widget.addTab(instrument_widget, "Drum Kit Presets")
 
