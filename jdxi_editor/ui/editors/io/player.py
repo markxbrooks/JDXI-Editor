@@ -229,7 +229,7 @@ class MidiFileEditor(SynthEditor):
         layout.addWidget(QLabel("Suppress MIDI Events:"))
 
         self.ui.midi_suppress_program_changes_checkbox = QCheckBox("Program Changes")
-        self.ui.midi_suppress_program_changes_checkbox.serStyleSheet(JDXiStyle.PARTIAL_SWITCH)
+        self.ui.midi_suppress_program_changes_checkbox.setStyleSheet(JDXiStyle.PARTIAL_SWITCH)
         self.ui.midi_suppress_program_changes_checkbox.setChecked(
             self.midi_state.suppress_program_changes
         )
@@ -239,7 +239,7 @@ class MidiFileEditor(SynthEditor):
         layout.addWidget(self.ui.midi_suppress_program_changes_checkbox)
 
         self.ui.midi_suppress_control_changes_checkbox = QCheckBox("Control Changes")
-        self.ui.midi_suppress_control_changes_checkbox.serStyleSheet(JDXiStyle.PARTIAL_SWITCH)
+        self.ui.midi_suppress_control_changes_checkbox.setStyleSheet(JDXiStyle.PARTIAL_SWITCH)
         self.ui.midi_suppress_control_changes_checkbox.setChecked(
             self.midi_state.suppress_control_changes
         )
@@ -465,7 +465,7 @@ class MidiFileEditor(SynthEditor):
         layout.addWidget(self.ui.usb_file_select)
 
         self.ui.usb_file_record_checkbox = QCheckBox("Save USB recording to file")
-        self.ui.usb_file_record_checkbox.serStyleSheet(JDXiStyle.PARTIAL_SWITCH)
+        self.ui.usb_file_record_checkbox.setStyleSheet(JDXiStyle.PARTIAL_SWITCH)
         self.ui.usb_file_record_checkbox.setChecked(
             self.usb_recorder.file_save_recording
         )
@@ -476,7 +476,7 @@ class MidiFileEditor(SynthEditor):
 
         # Auto generate filename based on current date and time and Midi file
         self.ui.usb_file_auto_generate_checkbox = QCheckBox("Auto generate .Wav filename based on date, time and Midi file")
-        self.ui.usb_file_auto_generate_checkbox.serStyleSheet(JDXiStyle.PARTIAL_SWITCH)
+        self.ui.usb_file_auto_generate_checkbox.setStyleSheet(JDXiStyle.PARTIAL_SWITCH)
         self.ui.usb_file_auto_generate_checkbox.setChecked(False)
         self.ui.usb_file_auto_generate_checkbox.stateChanged.connect(
             self.on_usb_file_auto_generate_toggled
