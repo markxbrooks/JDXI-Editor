@@ -642,7 +642,21 @@ class JDXiStyle:
         selected_border="#ff6666",
         font_size=FONT_SIZE_MAIN_TABS,
         font_family=FONT_FAMILY
-    )
+    ) + f"""
+        QTabBar[analogTabSelected="true"]::tab:selected {{
+            font-family: {FONT_FAMILY};
+            background: {BUTTON_BACKGROUND};
+            color: white;
+            border: 2px solid {ACCENT_ANALOG};
+            font-size: {FONT_SIZE_MAIN_TABS};
+        }}
+        QTabBar[analogTabSelected="true"]::tab:hover {{
+            background: {BUTTON_BACKGROUND};
+            border: 2px solid {ACCENT_ANALOG_HOVER};
+            font-family: {FONT_FAMILY};
+            font-size: {FONT_SIZE_MAIN_TABS};
+        }}
+        """
 
     SLIDER = f"""
             QSlider::handle:horizontal{{
@@ -1354,6 +1368,44 @@ class JDXiStyle:
                 height: 60;
             }}
             """
+    TAB_TITLE_ANALOG = f"""
+        QTabBar::tab:selected:analog {{
+        font-family: {FONT_FAMILY};
+        font-size: 13px;
+        font-weight: bold;
+        color: {ACCENT_ANALOG};
+    }}
+    QTabBar::tab:hover:analog {{
+    font-family: {FONT_FAMILY};
+        font-size: 13px;
+        font-weight: bold;
+        color: {ACCENT_ANALOG};
+    }}
+    QTabBar::tab:selected {{
+        font-family: {FONT_FAMILY};
+        font-size: 13px;
+        font-weight: bold;
+        color: {ACCENT_ANALOG};
+    }}
+    """
+
+    GROUP_BOX_ANALOG = f"""
+        QGroupBox {{
+            font-family: {FONT_FAMILY};
+            border: none;
+            color: #FFFFFF;
+            border-top: 1px solid {ACCENT_ANALOG};
+            margin: 10px;
+            padding: 10px;
+        }}
+        QGroupBox::title {{
+            font-family: {FONT_FAMILY};
+            subcontrol-origin: margin;
+            subcontrol-position: top center;
+            padding: 10 10px;
+            background-color: black;
+        }}
+        """
 
     PATCH_MANAGER = f"""
             QMainWindow {{

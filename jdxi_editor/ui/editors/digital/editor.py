@@ -168,19 +168,19 @@ class DigitalSynthEditor(SynthEditor):
         container.setLayout(container_layout)
         
         # Use InstrumentPresetWidget for consistent layout
-        self.instrument_preset = InstrumentPresetWidget()
+        self.instrument_preset = InstrumentPresetWidget(parent=self)
         self.instrument_preset.setup_header_layout()
         self.instrument_preset.setup()
         
-        instrument_preset_group = self.create_instrument_preset_group(
+        instrument_preset_group = self.instrument_preset.create_instrument_preset_group(
             synth_type="Digital"
         )
         self.instrument_preset.add_preset_group(instrument_preset_group)
-        self.instrument_preset.finalize_header()
+        self.instrument_preset.add_stretch()
         
-        self.instrument_image_group, self.instrument_image_label, self.instrument_group_layout = self.create_instrument_image_group()
+        self.instrument_image_group, self.instrument_image_label, self.instrument_group_layout = self.instrument_preset.create_instrument_image_group()
         self.instrument_preset.add_image_group(self.instrument_image_group)
-        self.instrument_preset.finalize_header()
+        self.instrument_preset.add_stretch()
         self.update_instrument_image()
         
         instrument_layout.addWidget(self.instrument_preset)

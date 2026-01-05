@@ -139,21 +139,21 @@ class DrumCommonEditor(SynthEditor):
         instrument_vrow_layout = QVBoxLayout(instrument_widget)
         
         # Use InstrumentPresetWidget for consistent layout
-        self.instrument_preset = InstrumentPresetWidget()
+        self.instrument_preset = InstrumentPresetWidget(parent=self)
         self.instrument_preset.setup_header_layout()
         self.instrument_preset.setup()
         
-        instrument_preset_group = self.create_instrument_preset_group(
+        instrument_preset_group = self.instrument_preset.create_instrument_preset_group(
             synth_type="Drums"
         )
         self.instrument_preset.add_preset_group(instrument_preset_group)
-        self.instrument_preset.finalize_header()
+        self.instrument_preset.add_stretch()
         
-        self.instrument_image_group, self.instrument_image_label, self.instrument_group_layout = self.create_instrument_image_group()
+        self.instrument_image_group, self.instrument_image_label, self.instrument_group_layout = self.instrument_preset.create_instrument_image_group()
         self.address.lmb = AddressOffsetProgramLMB.COMMON
         self.instrument_image_group.setMinimumWidth(JDXiStyle.INSTRUMENT_IMAGE_WIDTH)
         self.instrument_preset.add_image_group(self.instrument_image_group)
-        self.instrument_preset.finalize_header()
+        self.instrument_preset.add_stretch()
         self.update_instrument_image()
         
         instrument_vrow_layout.addWidget(self.instrument_preset)
@@ -205,17 +205,46 @@ class DrumCommonEditor(SynthEditor):
         Setup the 36 partial editors
         """
         total = len(self.partial_mapping)
-        progress_dialog = ProgressDialog(
-            "Initializing Editor Window", "Loading drum kit:...", total, self
-        )
-        progress_dialog.show()
+        
+        # Use splash screen if available, otherwise fall back to ProgressDialog
+        splash = None
+        splash_progress = None
+        splash_status = None
+        if self.main_window and hasattr(self.main_window, 'splash') and self.main_window.splash:
+            splash = self.main_window.splash
+            splash_progress = self.main_window.splash_progress_bar
+            splash_status = self.main_window.splash_status_label
+        
+        if splash and splash_progress and splash_status:
+            # Update splash screen
+            splash_status.setText(f"Loading drum kit parts ({total} parts)...")
+            splash_progress.setValue(60)  # Start at 60% for drum kit loading
+            from PySide6.QtWidgets import QApplication
+            QApplication.processEvents()
+        else:
+            # Fall back to ProgressDialog if splash screen not available
+            progress_dialog = ProgressDialog(
+                "Initializing Editor Window", "Loading drum kit:...", total, self
+            )
+            progress_dialog.show()
 
         for count, (partial_name, partial_number) in enumerate(
                 self.partial_mapping.items(), 1
         ):
-            progress_dialog.progress_bar.setFormat(
-                f"Loading {partial_name} ({count} of {total})"
-            )
+            if splash and splash_progress and splash_status:
+                # Update splash screen
+                splash_status.setText(f"Loading {partial_name} ({count} of {total})")
+                # Progress from 60% to 90% for drum kit loading
+                progress_value = 60 + int((count / total) * 30)
+                splash_progress.setValue(progress_value)
+                from PySide6.QtWidgets import QApplication
+                QApplication.processEvents()
+            elif not splash:
+                # Use ProgressDialog
+                progress_dialog.progress_bar.setFormat(
+                    f"Loading {partial_name} ({count} of {total})"
+                )
+            
             editor = DrumPartialEditor(
                 midi_helper=self.midi_helper,
                 partial_number=partial_number,
@@ -225,9 +254,17 @@ class DrumCommonEditor(SynthEditor):
             self.partial_editors[partial_number] = editor
             self.partial_tab_widget.addTab(editor, partial_name)
 
-            progress_dialog.update_progress(count)
+            if not splash:
+                progress_dialog.update_progress(count)
 
-        progress_dialog.close()
+        if not splash:
+            progress_dialog.close()
+        elif splash_progress:
+            # Complete drum kit loading
+            splash_progress.setValue(90)
+            splash_status.setText("Drum kit loaded successfully")
+            from PySide6.QtWidgets import QApplication
+            QApplication.processEvents()
 
     def update_partial_number(self, index: int):
         """

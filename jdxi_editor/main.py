@@ -38,13 +38,14 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QGroupBox, QSplashScreen, QFrame,
 )
-from PySide6.QtGui import QIcon, QPixmap, QColor, Qt, QFont, QFontInfo
+from PySide6.QtGui import QIcon, QPixmap, QColor, Qt, QFont, QFontInfo, QScreen
 
 from jdxi_editor.log.message import log_message
 from jdxi_editor.log.setup import setup_logging
 from jdxi_editor.project import __program__, __version__
 from jdxi_editor.resources import resource_path
 from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 from jdxi_editor.ui.windows.jdxi.instrument import JDXiInstrument
 from jdxi_editor.project import __version__, __program__, __organization_name__
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
@@ -108,7 +109,19 @@ def main() -> None:
                 app.setWindowIcon(icon)
                 log_message("Using fallback icon")
 
-        setup_splash_screen(app)
+        splash, progress_bar, status_label = setup_splash_screen(app)
+        
+        # Update splash screen with initial progress
+        status_label.setText("Initializing MIDI subsystem…")
+        progress_bar.setValue(10)
+        app.processEvents()
+        
+        # Create window and pass splash screen components
+        window = JDXiInstrument(splash=splash, progress_bar=progress_bar, status_label=status_label)
+        
+        # Finalize splash screen
+        splash.finish(window)
+        window.show()
 
         # Start event loop
         return app.exec()
@@ -118,13 +131,25 @@ def main() -> None:
         raise
 
 
-def setup_splash_screen(app: QApplication) -> None:
-    """Setup and display a professional application splash screen with rotating status text."""
+def setup_splash_screen(app: QApplication) -> tuple[QSplashScreen, QProgressBar, QLabel]:
+    """Setup and display a professional application splash screen with rotating status text.
+    
+    Returns:
+        tuple: (splash_screen, progress_bar, status_label) for updating progress
+    """
     splash = QSplashScreen()
+    # Need to use the screen center to display the splash screen
+    # In Qt 6, QApplication.desktop() was removed, use QScreen instead
+    screen = app.primaryScreen()
+    if screen:
+        screen_geometry = screen.availableGeometry()
+        screen_center = screen_geometry.center()
+        splash.move(int(screen_center.x() - JDXiDimensions.SPLASH_WIDTH / 2), 
+                   int(screen_center.y() - JDXiDimensions.SPLASH_HEIGHT / 2))
     splash.setWindowFlags(
         Qt.SplashScreen | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint
     )
-    splash.setFixedSize(720, 480)
+    splash.setFixedSize(JDXiDimensions.SPLASH_WIDTH, JDXiDimensions.SPLASH_HEIGHT)
 
     splash.setStyleSheet("""
         QSplashScreen { background-color: #111111; border: 1px solid #2c2c2c; }
@@ -206,32 +231,8 @@ def setup_splash_screen(app: QApplication) -> None:
     splash.raise_()
     splash.activateWindow()
 
-    # Rotating messages
-    messages = [
-        "Initializing MIDI subsystem…",
-        "Loading instrument presets…",
-        "Connecting to synthesizer…",
-        "Preparing editor interface…",
-        "Finalizing setup…",
-    ]
-    number_range = 101
-    number_messages = len(messages)
-    import time
-    for i in range(number_range + 1):
-        progress_bar.setValue(i)
-
-        # Determine which message to show based on progress
-        segment_length = number_range // number_messages
-        message_no = min(i // segment_length, number_messages - 1)
-        status_label.setText(messages[message_no])
-
-        app.processEvents()
-        time.sleep(0.03)
-
-    splash.close()
-    window = JDXiInstrument()
-    window.show()
-    splash.finish(window)
+    # Return splash screen components for updating progress
+    return splash, progress_bar, status_label
 
 
 if __name__ == "__main__":

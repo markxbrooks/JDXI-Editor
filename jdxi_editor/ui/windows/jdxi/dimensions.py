@@ -16,6 +16,8 @@ class JDXiDimensions:
     A class to store dimensions for the JD-Xi editor UI.
     """
 
+    SPLASH_HEIGHT = 540
+    SPLASH_WIDTH = 850
     CHART_POINT_SIZE = 2
     EDITOR_MINIMUM_HEIGHT = 250
     HEIGHT = 400
