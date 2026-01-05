@@ -416,9 +416,13 @@ class SynthEditor(SynthBase):
 
     def load_preset(self, preset_index):
         """Load a preset by program change."""
-        preset_name = (
-            self.instrument_selection_combo.combo_box.currentText()
-        )  # Get the selected preset name
+        # Get the combo box - it might be in instrument_preset widget or directly on self
+        combo_box = self._get_instrument_selection_combo()
+        if not combo_box:
+            log.error("Instrument selection combo box is not available")
+            return
+        
+        preset_name = combo_box.combo_box.currentText()  # Get the selected preset name
         log.message(f"combo box preset_name : {preset_name}")
         program_number = preset_name[:3]
         log.message(f"combo box program_number : {program_number}")
@@ -433,7 +437,25 @@ class SynthEditor(SynthBase):
                 f"Could not retrieve preset parameters for program {program_number}"
             )
             return
+        
+        # Ensure midi_channel is set - it should be set by _init_synth_data, but check anyway
+        if self.midi_channel is None:
+            # Try to determine channel from preset_type
+            channel_map = {
+                JDXiSynth.DIGITAL_SYNTH_1: MidiChannel.DIGITAL_SYNTH_1,
+                JDXiSynth.DIGITAL_SYNTH_2: MidiChannel.DIGITAL_SYNTH_2,
+                JDXiSynth.ANALOG_SYNTH: MidiChannel.ANALOG_SYNTH,
+                JDXiSynth.DRUM_KIT: MidiChannel.DRUM_KIT,
+            }
+            if self.preset_type in channel_map:
+                self.midi_channel = channel_map[self.preset_type]
+                log.message(f"Set midi_channel to {self.midi_channel} based on preset_type {self.preset_type}")
+            else:
+                log.error(f"midi_channel is None and could not determine from preset_type {self.preset_type}")
+                return
+        
         log.message(f"retrieved msb, lsb, pc : {msb}, {lsb}, {pc}")
+        log.message(f"Using MIDI channel: {self.midi_channel}")
         log_midi_info(msb, lsb, pc)
         # Send bank select and program change
         self.midi_helper.send_bank_select_and_program_change(
