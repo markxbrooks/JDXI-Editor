@@ -81,7 +81,7 @@ from jdxi_editor.ui.editors.synth.editor import SynthEditor, log_changes
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from jdxi_editor.jdxi.style import JDXiStyle
-from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper, create_scroll_area, create_scroll_container
+from jdxi_editor.jdxi.preset.helper import create_scroll_area, create_scroll_container
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 from jdxi_editor.midi.data.programs.digital import DIGITAL_PRESET_LIST
 from jdxi_editor.midi.channel.channel import MidiChannel
@@ -97,7 +97,7 @@ class AnalogSynthEditor(SynthEditor):
     def __init__(
             self,
             midi_helper: Optional[MidiIOHelper] = None,
-            preset_helper: Optional[JDXiPresetHelper] = None,
+            preset_helper: Optional["JDXiPresetHelper"] = None,
             parent: Optional[QWidget] = None,
     ):
         """
@@ -186,18 +186,19 @@ class AnalogSynthEditor(SynthEditor):
         container, container_layout = create_scroll_container()
         self.scroll.setWidget(container)
 
-        self.instrument_preset = InstrumentPresetWidget()
+        self.instrument_preset = InstrumentPresetWidget(parent=self)
         self.instrument_preset.setup_header_layout()
 
         self.instrument_preset.setup()
 
-        self.instrument_preset_group = self.create_instrument_preset_group()
-
+        self.instrument_preset_group = self.instrument_preset.create_instrument_preset_group()
         self.instrument_preset.add_preset_group(self.instrument_preset_group)
-        self.instrument_preset.finalize_header()
-        self.instrument_image_group, self.instrument_image_label, self.instrument_group_layout = self.create_instrument_image_group()
+        self.instrument_preset.add_stretch()
+
+        self.instrument_image_group, self.instrument_image_label, self.instrument_group_layout = self.instrument_preset.create_instrument_image_group()
         self.instrument_preset.add_image_group(self.instrument_image_group)
-        self.instrument_preset.finalize_header()
+        self.instrument_preset.add_stretch()
+
         self.update_instrument_image()
 
         # --- Tab sections

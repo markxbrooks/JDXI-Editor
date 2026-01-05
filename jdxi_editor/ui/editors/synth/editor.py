@@ -187,21 +187,6 @@ class SynthEditor(SynthBase):
         ]:
             setattr(self, attr, getattr(self.synth_data, attr))
 
-    def create_instrument_image_group(self) -> tuple[QGroupBox, Any, Any]:
-        """ Image group """
-        instrument_image_group = QGroupBox()
-        instrument_group_layout = QVBoxLayout()
-        instrument_group_layout.setContentsMargins(5, 5, 5, 5)  # Reduced margins
-        instrument_group_layout.setSpacing(2)  # Reduced spacing
-        instrument_image_group.setLayout(instrument_group_layout)
-        instrument_image_label = QLabel()
-        instrument_image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        instrument_group_layout.addWidget(instrument_image_label)
-        instrument_image_group.setStyleSheet(JDXiStyle.INSTRUMENT_IMAGE_LABEL)
-        instrument_image_group.setMinimumWidth(JDXiStyle.INSTRUMENT_IMAGE_WIDTH)
-        instrument_image_group.setMaximumHeight(JDXiStyle.INSTRUMENT_IMAGE_HEIGHT)
-        return instrument_image_group, instrument_image_label, instrument_group_layout
-
     def showEvent(self, event: QShowEvent) -> None:
         """
         Override showEvent to request current settings from the instrument when the editor is shown.
@@ -228,11 +213,11 @@ class SynthEditor(SynthBase):
         instrument_title_group_layout.setContentsMargins(5, 5, 5, 5)  # Reduced margins
         self.instrument_title_label = DigitalTitle()
         instrument_title_group_layout.addWidget(self.instrument_title_label)
-        # update_tone_name
+        # --- Update_tone_name
         self.edit_tone_name_button = QPushButton("Edit tone name")
         self.edit_tone_name_button.clicked.connect(self.edit_tone_name)
         instrument_title_group_layout.addWidget(self.edit_tone_name_button)
-        # read request button
+        # --- Read request button
         self.read_request_button = QPushButton("Send Read Request to Synth")
         self.read_request_button.clicked.connect(self.data_request)
         instrument_title_group_layout.addWidget(self.read_request_button)
@@ -266,12 +251,12 @@ class SynthEditor(SynthBase):
         try:
             controls_data = {}
             for param, widget in self.controls.items():
-                # Get value from widget - all custom widgets have a value() method
-                # (Slider, ComboBox, SpinBox, Switch all implement value())
+                # ---- Get value from widget - all custom widgets have a value() method
+                # --- (Slider, ComboBox, SpinBox, Switch all implement value())
                 if hasattr(widget, 'value'):
                     controls_data[param.name] = widget.value()
                 else:
-                    # Fallback for unexpected widget types
+                    # --- Fallback for unexpected widget types
                     log.warning(f"Widget for {param.name} has no value() method: {type(widget)}")
                     controls_data[param.name] = 0
             return controls_data
@@ -330,7 +315,7 @@ class SynthEditor(SynthBase):
             self._update_common_controls(partial_number, sysex_data, successes, failures)
         elif synth_tone == AddressOffsetSuperNATURALLMB.MODIFY.name:
             self._update_modify_controls(partial_number, sysex_data, successes, failures)
-        else:  # Drums and Digital 1 & 2 are dealt with via partials
+        else:  # --- Drums and Digital 1 & 2 are dealt with via partials
             if partial_number is None:
                 log.error(f"Unknown partial number for synth_tone: {synth_tone}")
                 return
@@ -383,14 +368,22 @@ class SynthEditor(SynthBase):
         """
 
         if self.preset_type == synth_type:
-            if hasattr(self, "instrument_title_label"):
-                self.instrument_title_label.setText(name)
+            # Get title label from widget or direct attribute
+            title_label = None
+            if hasattr(self, 'instrument_preset') and self.instrument_preset:
+                title_label = getattr(self.instrument_preset, 'instrument_title_label', None)
+            if not title_label:
+                title_label = getattr(self, 'instrument_title_label', None)
+            if title_label:
+                title_label.setText(name)
         self.tone_names[synth_type] = name
 
     def update_combo_box_index(self, preset_number):
         """Updates the QComboBox to reflect the loaded preset."""
         log.message(f"Updating combo to preset {preset_number}")
-        self.instrument_selection_combo.combo_box.setCurrentIndex(preset_number)
+        combo_box = self._get_instrument_selection_combo()
+        if combo_box:
+            combo_box.combo_box.setCurrentIndex(preset_number)
 
     def update_instrument_title(self):
         """
@@ -398,12 +391,19 @@ class SynthEditor(SynthBase):
 
         :return:
         """
-        selected_synth_text = self.instrument_selection_combo.combo_box.currentText()
+        selected_synth_text = self._get_selected_instrument_text()
         log.message(f"selected_synth_text: {selected_synth_text}")
-        self.instrument_title_label.setText(selected_synth_text)
+        # Get title label from widget or direct attribute
+        title_label = None
+        if hasattr(self, 'instrument_preset') and self.instrument_preset:
+            title_label = getattr(self.instrument_preset, 'instrument_title_label', None)
+        if not title_label:
+            title_label = getattr(self, 'instrument_title_label', None)
+        if title_label:
+            title_label.setText(selected_synth_text)
 
     def update_instrument_preset(self, text):
-        selected_synth_text = self.instrument_selection_combo.combo_box.currentText()
+        selected_synth_text = self._get_selected_instrument_text()
         if synth_matches := re.search(
             r"(\d{3}): (\S+).+", selected_synth_text, re.IGNORECASE
         ):
@@ -473,17 +473,40 @@ class SynthEditor(SynthBase):
 
     def load_and_set_image(self, image_path, secondary_image_path=None):
         """Helper function to load and set the image on the label."""
-        if os.path.exists(image_path):
+        if image_path and os.path.exists(image_path):
             file_to_load = image_path
-        elif os.path.exists(secondary_image_path):
+        elif secondary_image_path and os.path.exists(secondary_image_path):
             file_to_load = secondary_image_path
         else:
-            file_to_load = os.path.join(
-                "resources",
-                self.instrument_icon_folder,
-                self.instrument_default_image,
-            )
+            # Fallback to default image using resource_path
+            if hasattr(self, "instrument_icon_folder") and hasattr(self, "instrument_default_image"):
+                file_to_load = resource_path(os.path.join(
+                    "resources",
+                    self.instrument_icon_folder,
+                    self.instrument_default_image,
+                ))
+            else:
+                log.error("Cannot load image: missing instrument_icon_folder or instrument_default_image")
+                image_label = self._get_instrument_image_label()
+                if image_label:
+                    image_label.clear()
+                return False
+        
+        if not os.path.exists(file_to_load):
+            log.warning(f"Image file does not exist: {file_to_load}")
+            image_label = self._get_instrument_image_label()
+            if image_label:
+                image_label.clear()
+            return False
+        
         pixmap = QPixmap(file_to_load)
+        if pixmap.isNull():
+            log.error(f"Failed to load pixmap from: {file_to_load}")
+            image_label = self._get_instrument_image_label()
+            if image_label:
+                image_label.clear()
+            return False
+        
         # Scale maintaining aspect ratio, fitting within width and height constraints
         scaled_pixmap = pixmap.scaled(
             JDXiStyle.INSTRUMENT_IMAGE_WIDTH,
@@ -491,9 +514,15 @@ class SynthEditor(SynthBase):
             Qt.AspectRatioMode.KeepAspectRatio,
             Qt.TransformationMode.SmoothTransformation
         )
-        self.instrument_image_label.setPixmap(scaled_pixmap)
-        self.instrument_image_label.setScaledContents(False)  # Don't stretch, maintain aspect ratio
-        self.instrument_image_label.setStyleSheet(JDXiStyle.INSTRUMENT_IMAGE_LABEL)
+        image_label = self._get_instrument_image_label()
+        if image_label:
+            image_label.setPixmap(scaled_pixmap)
+            image_label.setScaledContents(False)  # Don't stretch, maintain aspect ratio
+            image_label.setStyleSheet(JDXiStyle.INSTRUMENT_IMAGE_LABEL)
+            log.debug(f"Successfully loaded image: {file_to_load}")
+        else:
+            log.error("Instrument image label not found - cannot set image")
+            return False
         return True
 
     def update_instrument_image(self):
@@ -512,10 +541,42 @@ class SynthEditor(SynthBase):
         if not image_loaded:
             self._fallback_to_default_image("Failed to load specific/generic image.")
 
+    def _get_instrument_selection_combo(self):
+        """
+        Get the instrument selection combo box from either the widget or direct attribute.
+        Returns None if not found.
+        """
+        # Try to get from InstrumentPresetWidget first (for Digital/Drum editors)
+        if hasattr(self, 'instrument_preset') and self.instrument_preset:
+            return getattr(self.instrument_preset, 'instrument_selection_combo', None)
+        # Fallback to direct attribute (for Analog editor or legacy code)
+        return getattr(self, 'instrument_selection_combo', None)
+    
+    def _get_instrument_image_label(self):
+        """
+        Get the instrument image label from either the widget or direct attribute.
+        Returns None if not found.
+        """
+        # Try to get from InstrumentPresetWidget first (for Digital/Drum editors)
+        if hasattr(self, 'instrument_preset') and self.instrument_preset:
+            label = getattr(self.instrument_preset, 'instrument_image_label', None)
+            if label:
+                log.debug("Found instrument_image_label in instrument_preset widget")
+                return label
+        # Fallback to direct attribute (for Analog editor or legacy code)
+        label = getattr(self, 'instrument_image_label', None)
+        if label:
+            log.debug("Found instrument_image_label as direct attribute")
+        else:
+            log.warning("Instrument image label not found in widget or direct attribute")
+        return label
+    
     def _get_selected_instrument_text(self) -> str:
-        combo = getattr(self.instrument_selection_combo, "combo_box", None)
-        if combo and hasattr(combo, "currentText"):
-            return combo.currentText()
+        combo_box = self._get_instrument_selection_combo()
+        if combo_box:
+            combo = getattr(combo_box, "combo_box", None)
+            if combo and hasattr(combo, "currentText"):
+                return combo.currentText()
         log.error("Instrument combo box is missing or malformed.")
         return ""
 
@@ -555,10 +616,14 @@ class SynthEditor(SynthBase):
             ))
             if not self.load_and_set_image(default_path):
                 log.error("Default instrument image not found. Clearing label.")
-                self.instrument_image_label.clear()
+                image_label = self._get_instrument_image_label()
+                if image_label:
+                    image_label.clear()
         except Exception as ex:
             log.error(f"Error loading default image: {ex}")
-            self.instrument_image_label.clear()
+            image_label = self._get_instrument_image_label()
+            if image_label:
+                image_label.clear()
 
     def update_instrument_image_new(self):
         """Update the instrument image based on the selected synth."""
@@ -573,12 +638,10 @@ class SynthEditor(SynthBase):
             ))
 
             # Extract selected instrument text
-            combo = getattr(self.instrument_selection_combo, "combo_box", None)
-            if combo is None or not hasattr(combo, "currentText"):
+            selected_instrument_text = self._get_selected_instrument_text()
+            if not selected_instrument_text:
                 log.error("Instrument combo box is missing or malformed.")
                 return
-
-            selected_instrument_text = combo.currentText()
             if not selected_instrument_text:
                 log.warning("No instrument selected.")
                 self.load_and_set_image(default_image_path)
@@ -626,7 +689,9 @@ class SynthEditor(SynthBase):
                 log.info("Falling back to default instrument image.")
                 if not self.load_and_set_image(default_image_path):
                     log.error("Default instrument image not found. Clearing image label.")
-                    self.instrument_image_label.clear()
+                    image_label = self._get_instrument_image_label()
+                    if image_label:
+                        image_label.clear()
 
         except Exception as e:
             log.error(f"Unhandled exception in update_instrument_image: {e}")
@@ -636,9 +701,7 @@ class SynthEditor(SynthBase):
         default_image_path = resource_path(os.path.join(
             "resources", self.instrument_icon_folder, self.instrument_default_image
         ))
-        selected_instrument_text = (
-            self.instrument_selection_combo.combo_box.currentText()
-        )
+        selected_instrument_text = self._get_selected_instrument_text()
         log.parameter("Selected instrument text:", selected_instrument_text)
         # Try to extract synth name from the selected text
         image_loaded = False

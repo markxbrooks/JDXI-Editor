@@ -43,7 +43,7 @@ import qtawesome as qta
 
 from PySide6.QtCore import Qt, QSettings, QTimer, Signal
 from PySide6.QtGui import QShortcut, QKeySequence, QMouseEvent, QCloseEvent, QAction
-from PySide6.QtWidgets import QMenu, QMessageBox, QProgressDialog
+from PySide6.QtWidgets import QMenu, QMessageBox, QProgressDialog, QApplication
 
 from jdxi_editor.jdxi.file.utils import documentation_file_path, os_file_open
 from jdxi_editor.jdxi.preset.button import JDXiPresetButtonData
@@ -112,8 +112,11 @@ class JDXiInstrument(JDXiUi):
     """
     class JDXiInstrument
     """
-    def __init__(self):
+    def __init__(self, splash=None, progress_bar=None, status_label=None):
         super().__init__()
+        self.splash = splash
+        self.splash_progress_bar = progress_bar
+        self.splash_status_label = status_label
         if platform.system() == "Windows":
             self.setStyleSheet(JDXiStyle.TRANSPARENT + JDXiStyle.ADSR_DISABLED)
         # Try to auto-connect to JD-Xi
@@ -662,6 +665,8 @@ class JDXiInstrument(JDXiUi):
                 index = self.main_editor.editor_tab_widget.indexOf(existing_editor)
                 if index != -1:
                     self.main_editor.editor_tab_widget.setCurrentIndex(index)
+                    # Update tab bar property for styling
+                    self._update_tab_bar_property(index)
                     return
 
             preset_helper = (
@@ -674,6 +679,22 @@ class JDXiInstrument(JDXiUi):
                 }
                 else None
             )
+
+            # Update splash screen when creating editors
+            if self.splash_status_label and self.splash_progress_bar:
+                if title == "Analog Synth":
+                    self.splash_status_label.setText("Loading Analog Synth editor...")
+                    self.splash_progress_bar.setValue(30)
+                elif title == "Digital Synth 1":
+                    self.splash_status_label.setText("Loading Digital Synth 1 editor...")
+                    self.splash_progress_bar.setValue(40)
+                elif title == "Digital Synth 2":
+                    self.splash_status_label.setText("Loading Digital Synth 2 editor...")
+                    self.splash_progress_bar.setValue(50)
+                elif title == "Drums":
+                    self.splash_status_label.setText("Preparing Drum Kit editor...")
+                    self.splash_progress_bar.setValue(55)
+                QApplication.processEvents()
 
             editor = (
                 editor_class(
@@ -691,9 +712,20 @@ class JDXiInstrument(JDXiUi):
             )
             editor.setWindowTitle(title)
 
-            self.main_editor.editor_tab_widget.addTab(editor, qta.icon(icon, color="#666666"), title)
-            editor.setProperty("analog", True)
+            tab_index = self.main_editor.editor_tab_widget.addTab(editor, qta.icon(icon, color="#666666"), title)
+            
+            # Store the tab index for Analog Synth to enable styling
+            if title == "Analog Synth":
+                tab_bar = self.main_editor.editor_tab_widget.tabBar()
+                tab_bar.setTabData(tab_index, "analog")
+            
             self.main_editor.editor_tab_widget.setCurrentWidget(editor)
+            
+            # Connect to tab change signal to update QTabBar property for styling
+            if not hasattr(self, '_tab_change_connected'):
+                self.main_editor.editor_tab_widget.currentChanged.connect(self._update_tab_bar_property)
+                self._tab_change_connected = True
+            self._update_tab_bar_property(self.main_editor.editor_tab_widget.currentIndex())
 
             setattr(self, instance_attr, editor)
             self.register_editor(editor)
@@ -709,6 +741,25 @@ class JDXiInstrument(JDXiUi):
             import traceback
             log.error(f"Error showing {title} editor: {ex}", exception=ex)
             log.error(f"Traceback: {traceback.format_exc()}")
+    
+    def _update_tab_bar_property(self, index: int) -> None:
+        """
+        Update QTabBar property based on current tab selection for styling.
+        
+        :param index: int Current tab index
+        """
+        if index < 0:
+            return
+        tab_bar = self.main_editor.editor_tab_widget.tabBar()
+        tab_data = tab_bar.tabData(index)
+        # Set property on QTabBar to enable property-based styling
+        if tab_data == "analog":
+            tab_bar.setProperty("analogTabSelected", True)
+        else:
+            tab_bar.setProperty("analogTabSelected", False)
+        # Force style update
+        tab_bar.style().unpolish(tab_bar)
+        tab_bar.style().polish(tab_bar)
 
     def _show_editor(self, title: str, editor_class, **kwargs) -> None:
         """
