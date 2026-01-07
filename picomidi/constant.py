@@ -7,6 +7,10 @@ from dataclasses import dataclass
 @dataclass
 class BitValue:
     size: int  # The number of bits
+    
+    @property
+    def max(self):
+        return self.max_for_size(self.size)
 
     @staticmethod
     def max_for_size(size: int) -> int:
