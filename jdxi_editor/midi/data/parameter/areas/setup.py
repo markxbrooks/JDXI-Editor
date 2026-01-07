@@ -1,4 +1,5 @@
 """Setup parameters"""
+
 from enum import Enum
 
 

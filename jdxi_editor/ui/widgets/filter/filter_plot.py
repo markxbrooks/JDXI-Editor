@@ -28,18 +28,25 @@ Customization:
 """
 
 import numpy as np
-from PySide6.QtCore import Qt, QPointF
+from PySide6.QtCore import QPointF, Qt
+from PySide6.QtGui import (
+    QBrush,
+    QColor,
+    QFont,
+    QLinearGradient,
+    QPainter,
+    QPainterPath,
+    QPen,
+)
 from PySide6.QtWidgets import QWidget
-from PySide6.QtGui import QPainter, QPainterPath, QLinearGradient, QColor, QPen, QFont, QBrush
 
 from jdxi_editor.jdxi.midi.constant import JDXiConstant
 from jdxi_editor.jdxi.style import JDXiStyle
 
 
-def generate_filter_plot(width: float,
-                         slope: float,
-                         sample_rate: int,
-                         duration: float) -> np.ndarray:
+def generate_filter_plot(
+    width: float, slope: float, sample_rate: int, duration: float
+) -> np.ndarray:
     """Generates a filter envelope with a sustain plateau followed by a slope down to zero."""
     width = max(0.0, min(1.0, width))  # Clip to valid range
     total_samples = int(duration * sample_rate)
@@ -60,7 +67,11 @@ def generate_filter_plot(width: float,
 
     # Now create slope descending to zero
     slope_vals = np.linspace(
-        JDXiConstant.FILTER_PLOT_DEPTH, 0, slope_samples, endpoint=False, dtype=np.float32
+        JDXiConstant.FILTER_PLOT_DEPTH,
+        0,
+        slope_samples,
+        endpoint=False,
+        dtype=np.float32,
     )
 
     # Combine together
@@ -78,11 +89,11 @@ def generate_filter_plot(width: float,
 
 class FilterPlot(QWidget):
     def __init__(
-            self,
-            width: int = JDXiStyle.ADSR_PLOT_WIDTH,
-            height: int = JDXiStyle.ADSR_PLOT_HEIGHT,
-            envelope: dict = None,
-            parent: QWidget = None,
+        self,
+        width: int = JDXiStyle.ADSR_PLOT_WIDTH,
+        height: int = JDXiStyle.ADSR_PLOT_HEIGHT,
+        envelope: dict = None,
+        parent: QWidget = None,
     ):
         super().__init__(parent)
         self.point_moved = None
@@ -187,10 +198,12 @@ class FilterPlot(QWidget):
 
             # === Envelope Parameters ===
             # Pulse width envelope: rise and fall
-            envelope = generate_filter_plot(width=self.envelope["cutoff_param"],
-                                            slope=self.envelope["slope_param"],
-                                            sample_rate=self.sample_rate,
-                                            duration=self.envelope.get("duration", 1.0))
+            envelope = generate_filter_plot(
+                width=self.envelope["cutoff_param"],
+                slope=self.envelope["slope_param"],
+                sample_rate=self.sample_rate,
+                duration=self.envelope.get("duration", 1.0),
+            )
             total_samples = len(envelope)
             total_time = total_samples / self.sample_rate
 
@@ -223,7 +236,9 @@ class FilterPlot(QWidget):
                 painter.drawLine(left_pad - 5, y, left_pad, y)
                 label = f"{y_val:.1f}"
                 label_width = font_metrics.horizontalAdvance(label)
-                painter.drawText(left_pad - 10 - label_width, y + font_metrics.ascent() / 2, label)
+                painter.drawText(
+                    left_pad - 10 - label_width, y + font_metrics.ascent() / 2, label
+                )
 
             # === Title ===
             painter.setPen(QPen(QColor("orange")))
@@ -237,7 +252,9 @@ class FilterPlot(QWidget):
             painter.setFont(QFont("JD LCD Rounded", 10))
             x_label = "Frequency (Hz)"
             x_label_width = font_metrics.horizontalAdvance(x_label)
-            painter.drawText(left_pad + (plot_w - x_label_width) / 2, top_pad + plot_h + 35, x_label)
+            painter.drawText(
+                left_pad + (plot_w - x_label_width) / 2, top_pad + plot_h + 35, x_label
+            )
 
             # === Y-axis Label (rotated) ===
             painter.save()

@@ -74,12 +74,13 @@ Attributes:
         JDXI_PARTS_SELECT: Style for part selection elements.
 
 """
+
 import platform
 
 from jdxi_editor.jdxi.style.factory import (
     generate_button_style,
-    generate_tab_style,
     generate_editor_style,
+    generate_tab_style,
 )
 
 
@@ -98,7 +99,9 @@ class JDXiStyle:
     INSTRUMENT_IMAGE_HEIGHT = 200  # Maximum height to prevent elongation
     TITLE_TEXT = "#FFFFFF"
     BACKGROUND = "#000000"  # 1A1A1A"
-    BACKGROUND_GRADIENT = "qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #000000, stop:1 #1A1A1A)"
+    BACKGROUND_GRADIENT = (
+        "qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #000000, stop:1 #1A1A1A)"
+    )
     BACKGROUND_PRESSED = "#666666"
     BUTTON_BACKGROUND = "#222222"
     BUTTON_BACKGROUND_PRESSED = "#333333"
@@ -306,7 +309,7 @@ class JDXiStyle:
                 letter-spacing: 2px;
                 color: {ACCENT};
             """
-    
+
     ANALOG_SECTION_HEADER = f"""
                 font-family: {FONT_FAMILY}, sans-serif;
                 font-weight: bold;
@@ -314,7 +317,7 @@ class JDXiStyle:
                 color: {ACCENT_ANALOG};
                 letter-spacing: 1px;
             """
-    
+
     DIGITAL_SECTION_HEADER = f"""
                 font-family: {FONT_FAMILY}, sans-serif;
                 font-weight: bold;
@@ -631,18 +634,20 @@ class JDXiStyle:
         selected_border="#ff6666",
     )
 
-    TABS_MAIN_EDITOR = generate_tab_style(
-        bg=BACKGROUND,
-        border=BACKGROUND_PRESSED,
-        radius=TAB_BUTTON_RECT_RADIUS,
-        text_color="white",
-        hover_bg=BUTTON_BACKGROUND,
-        hover_border="#ff9999",
-        selected_bg=BUTTON_BACKGROUND,
-        selected_border="#ff6666",
-        font_size=FONT_SIZE_MAIN_TABS,
-        font_family=FONT_FAMILY
-    ) + f"""
+    TABS_MAIN_EDITOR = (
+        generate_tab_style(
+            bg=BACKGROUND,
+            border=BACKGROUND_PRESSED,
+            radius=TAB_BUTTON_RECT_RADIUS,
+            text_color="white",
+            hover_bg=BUTTON_BACKGROUND,
+            hover_border="#ff9999",
+            selected_bg=BUTTON_BACKGROUND,
+            selected_border="#ff6666",
+            font_size=FONT_SIZE_MAIN_TABS,
+            font_family=FONT_FAMILY,
+        )
+        + f"""
         QTabBar[analogTabSelected="true"]::tab:selected {{
             font-family: {FONT_FAMILY};
             background: {BUTTON_BACKGROUND};
@@ -657,6 +662,7 @@ class JDXiStyle:
             font-size: {FONT_SIZE_MAIN_TABS};
         }}
         """
+    )
 
     SLIDER = f"""
             QSlider::handle:horizontal{{
@@ -837,7 +843,7 @@ class JDXiStyle:
             color: "{FONT_RED}";
         }}
     """
-    
+
     # Status indicator styles with glow effect
     STATUS_INDICATOR_ACTIVE = f"""
         QLabel {{
@@ -849,7 +855,7 @@ class JDXiStyle:
             max-height: 12px;
         }}
     """
-    
+
     STATUS_INDICATOR_INACTIVE = f"""
         QLabel {{
             background-color: #333333;
@@ -861,7 +867,7 @@ class JDXiStyle:
             max-height: 12px;
         }}
     """
-    
+
     STATUS_INDICATOR_ANALOG_ACTIVE = f"""
         QLabel {{
             background-color: {ACCENT_ANALOG};
@@ -872,7 +878,7 @@ class JDXiStyle:
             max-height: 12px;
         }}
     """
-    
+
     # Enhanced button glow style
     BUTTON_GLOW_RED = f"""
         QPushButton {{
@@ -889,7 +895,7 @@ class JDXiStyle:
             background-color: {BUTTON_BACKGROUND_PRESSED};
         }}
     """
-    
+
     BUTTON_GLOW_ANALOG = f"""
         QPushButton {{
             border: 2px solid {ACCENT_ANALOG};

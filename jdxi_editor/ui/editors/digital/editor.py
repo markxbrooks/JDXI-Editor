@@ -32,38 +32,44 @@ Dependencies:
 import logging
 from typing import Dict, Optional, Union
 
-from PySide6.QtWidgets import (
-    QWidget,
-    QVBoxLayout,
-    QHBoxLayout,
-    QTabWidget,
-    QScrollArea,
-    QSplitter, QGroupBox, QLabel,
-)
 from PySide6.QtCore import Qt, Signal
-from PySide6.QtGui import QShortcut, QKeySequence
+from PySide6.QtGui import QKeySequence, QShortcut
+from PySide6.QtWidgets import (
+    QGroupBox,
+    QHBoxLayout,
+    QLabel,
+    QScrollArea,
+    QSplitter,
+    QTabWidget,
+    QVBoxLayout,
+    QWidget,
+)
 
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
+from jdxi_editor.jdxi.preset.widget import InstrumentPresetWidget
+from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.jdxi.synth.factory import create_synth_data
 from jdxi_editor.jdxi.synth.type import JDXiSynth
-from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.log.slider_parameter import log_slider_parameters
 from jdxi_editor.midi.data.address.address import AddressOffsetSuperNATURALLMB
 from jdxi_editor.midi.data.digital import DigitalOscWave, DigitalPartial
-from jdxi_editor.midi.data.parameter import AddressParameter
+from picomidi.sysex.parameter.address import AddressParameter
 from jdxi_editor.midi.data.parameter.digital import (
     DigitalCommonParam,
+    DigitalModifyParam,
     DigitalPartialParam,
-    DigitalModifyParam
 )
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.midi.utils.conversions import midi_value_to_ms, midi_value_to_fraction
-from jdxi_editor.ui.editors.digital import DigitalCommonSection, DigitalToneModifySection, DigitalPartialEditor
+from jdxi_editor.midi.utils.conversions import midi_value_to_fraction, midi_value_to_ms
+from jdxi_editor.ui.editors.digital import (
+    DigitalCommonSection,
+    DigitalPartialEditor,
+    DigitalToneModifySection,
+)
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.widgets.panel.partial import PartialsPanel
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
-from jdxi_editor.jdxi.preset.widget import InstrumentPresetWidget
 
 
 class DigitalSynthEditor(SynthEditor):
@@ -72,11 +78,11 @@ class DigitalSynthEditor(SynthEditor):
     preset_changed = Signal(int, str, int)
 
     def __init__(
-            self,
-            midi_helper: Optional[MidiIOHelper] = None,
-            preset_helper: JDXiPresetHelper = None,
-            synth_number: int = 1,
-            parent: QWidget = None,
+        self,
+        midi_helper: Optional[MidiIOHelper] = None,
+        preset_helper: JDXiPresetHelper = None,
+        synth_number: int = 1,
+        parent: QWidget = None,
     ):
         super().__init__(parent)
         self.instrument_image_group: QGroupBox | None = None
@@ -96,7 +102,9 @@ class DigitalSynthEditor(SynthEditor):
         ] = {}
         synth_map = {1: JDXiSynth.DIGITAL_SYNTH_1, 2: JDXiSynth.DIGITAL_SYNTH_2}
         if synth_number not in synth_map:
-            raise ValueError(f"Invalid synth_number: {synth_number}. Must be 1, 2 or 3.")
+            raise ValueError(
+                f"Invalid synth_number: {synth_number}. Must be 1, 2 or 3."
+            )
         self.synth_number = synth_number
         self._init_synth_data(synth_map[synth_number])
         self.setup_ui()
@@ -127,8 +135,10 @@ class DigitalSynthEditor(SynthEditor):
             DigitalPartialParam.OSC_PITCH_ENV_DECAY_TIME,
             DigitalPartialParam.OSC_PITCH_ENV_DEPTH,
         ]
-        self.pwm_parameters = [DigitalPartialParam.OSC_PULSE_WIDTH,
-                               DigitalPartialParam.OSC_PULSE_WIDTH_MOD_DEPTH]
+        self.pwm_parameters = [
+            DigitalPartialParam.OSC_PULSE_WIDTH,
+            DigitalPartialParam.OSC_PULSE_WIDTH_MOD_DEPTH,
+        ]
 
         def __str__(self):
             return f"{self.__class__.__name__} {self.preset_type}"
@@ -166,23 +176,27 @@ class DigitalSynthEditor(SynthEditor):
         container_layout.setSpacing(5)  # Reduced spacing
         container_layout.setContentsMargins(5, 5, 5, 5)  # Reduced margins
         container.setLayout(container_layout)
-        
+
         # Use InstrumentPresetWidget for consistent layout
         self.instrument_preset = InstrumentPresetWidget(parent=self)
         self.instrument_preset.setup_header_layout()
         self.instrument_preset.setup()
-        
+
         instrument_preset_group = self.instrument_preset.create_instrument_preset_group(
             synth_type="Digital"
         )
         self.instrument_preset.add_preset_group(instrument_preset_group)
         self.instrument_preset.add_stretch()
-        
-        self.instrument_image_group, self.instrument_image_label, self.instrument_group_layout = self.instrument_preset.create_instrument_image_group()
+
+        (
+            self.instrument_image_group,
+            self.instrument_image_label,
+            self.instrument_group_layout,
+        ) = self.instrument_preset.create_instrument_image_group()
         self.instrument_preset.add_image_group(self.instrument_image_group)
         self.instrument_preset.add_stretch()
         self.update_instrument_image()
-        
+
         instrument_layout.addWidget(self.instrument_preset)
         instrument_layout.setSpacing(5)  # Minimal spacing
         container_layout.addWidget(self.partials_panel)
@@ -195,7 +209,7 @@ class DigitalSynthEditor(SynthEditor):
         main_layout.addWidget(scroll)
 
     def _create_partial_tab_widget(
-            self, container_layout: QVBoxLayout, midi_helper: MidiIOHelper
+        self, container_layout: QVBoxLayout, midi_helper: MidiIOHelper
     ) -> None:
         """
         Create the partial tab widget for the digital synth editor.
@@ -210,7 +224,11 @@ class DigitalSynthEditor(SynthEditor):
         # Create editor for each partial
         for i in range(1, 4):
             editor = DigitalPartialEditor(
-                midi_helper, self.synth_number, i, preset_type=self.preset_type, parent=self
+                midi_helper,
+                self.synth_number,
+                i,
+                preset_type=self.preset_type,
+                parent=self,
             )
             self.partial_editors[i] = editor
             self.partial_tab_widget.addTab(editor, f"Partial {i}")
@@ -231,7 +249,7 @@ class DigitalSynthEditor(SynthEditor):
         container_layout.addWidget(self.partial_tab_widget)
 
     def _on_partial_state_changed(
-            self, partial: DigitalPartialParam, enabled: bool, selected: bool
+        self, partial: DigitalPartialParam, enabled: bool, selected: bool
     ) -> None:
         """
         Handle the state change of a partial (enabled/disabled and selected/unselected).
@@ -252,7 +270,7 @@ class DigitalSynthEditor(SynthEditor):
             self.partial_tab_widget.setCurrentIndex(partial_num)
 
     def set_partial_state(
-            self, partial: DigitalPartialParam, enabled: bool = True, selected: bool = True
+        self, partial: DigitalPartialParam, enabled: bool = True, selected: bool = True
     ) -> Optional[bool]:
         """
         Set the state of a partial (enabled/disabled and selected/unselected).
@@ -290,7 +308,7 @@ class DigitalSynthEditor(SynthEditor):
         self.partial_tab_widget.setCurrentIndex(0)
 
     def _handle_special_params(
-            self, partial_no: int, param: AddressParameter, value: int
+        self, partial_no: int, param: AddressParameter, value: int
     ) -> None:
         """
         Handle special parameters that require additional UI updates.
@@ -312,7 +330,7 @@ class DigitalSynthEditor(SynthEditor):
             log.parameter("Updated filter state for FILTER_MODE_SWITCH", value)
 
     def _update_partial_controls(
-            self, partial_no: int, sysex_data: dict, successes: list, failures: list
+        self, partial_no: int, sysex_data: dict, successes: list, failures: list
     ) -> None:
         """
         Apply updates to the UI components based on the received SysEx data.
@@ -363,11 +381,11 @@ class DigitalSynthEditor(SynthEditor):
         self.partial_editors[partial_no].update_filter_controls_state(value)
 
     def _update_common_controls(
-            self,
-            partial_number: int,
-            sysex_data: Dict,
-            successes: list = None,
-            failures: list = None,
+        self,
+        partial_number: int,
+        sysex_data: Dict,
+        successes: list = None,
+        failures: list = None,
     ) -> None:
         """
         Update the UI components for tone common and modify parameters.
@@ -417,11 +435,11 @@ class DigitalSynthEditor(SynthEditor):
                 log.error(f"Error {ex} occurred")
 
     def _update_modify_controls(
-            self,
-            partial_number: int,
-            sysex_data: dict,
-            successes: list = None,
-            failures: list = None,
+        self,
+        partial_number: int,
+        sysex_data: dict,
+        successes: list = None,
+        failures: list = None,
     ) -> None:
         """
         Update the UI components for tone common and modify parameters.
@@ -452,12 +470,12 @@ class DigitalSynthEditor(SynthEditor):
                 self._update_slider(param, param_value, successes, failures)
 
     def _update_partial_adsr_widgets(
-            self,
-            partial_no: int,
-            param: DigitalPartialParam,
-            midi_value: int,
-            successes: list = None,
-            failures: list = None,
+        self,
+        partial_no: int,
+        param: DigitalPartialParam,
+        midi_value: int,
+        successes: list = None,
+        failures: list = None,
     ):
         """
         Update the ADSR widget for a specific partial based on the parameter and value.
@@ -514,12 +532,12 @@ class DigitalSynthEditor(SynthEditor):
             successes.append(param.name)
 
     def _update_partial_pitch_env_widgets(
-            self,
-            partial_no: int,
-            param: DigitalPartialParam,
-            midi_value: int,
-            successes: list = None,
-            failures: list = None,
+        self,
+        partial_no: int,
+        param: DigitalPartialParam,
+        midi_value: int,
+        successes: list = None,
+        failures: list = None,
     ):
         """
         Update the Pitch Env widget for a specific partial based on the parameter and value.
@@ -558,12 +576,13 @@ class DigitalSynthEditor(SynthEditor):
             failures.append(param.name)
 
     def _update_pulse_width_widgets(
-            self,
-            partial_no: int,
-            param: DigitalPartialParam,
-            midi_value: int,
-            successes: list = None,
-            failures: list = None):
+        self,
+        partial_no: int,
+        param: DigitalPartialParam,
+        midi_value: int,
+        successes: list = None,
+        failures: list = None,
+    ):
         """
         Update the Pitch Env widget for a specific partial based on the parameter and value.
 
@@ -599,11 +618,11 @@ class DigitalSynthEditor(SynthEditor):
             failures.append(param.name)
 
     def _update_partial_selection_switch(
-            self,
-            param: AddressParameter,
-            value: int,
-            successes: list,
-            failures: list,
+        self,
+        param: AddressParameter,
+        value: int,
+        successes: list,
+        failures: list,
     ) -> None:
         """
         Update the partial selection switches based on parameter and value.
@@ -634,11 +653,11 @@ class DigitalSynthEditor(SynthEditor):
             failures.append(param.name)
 
     def _update_partial_selected_state(
-            self,
-            param: AddressParameter,
-            value: int,
-            successes: list,
-            failures: list,
+        self,
+        param: AddressParameter,
+        value: int,
+        successes: list,
+        failures: list,
     ) -> None:
         """
         Update the partial selected state based on parameter and value.
@@ -725,11 +744,11 @@ class DigitalSynth2Editor(DigitalSynthEditor):
     preset_changed = Signal(int, str, int)
 
     def __init__(
-            self,
-            midi_helper: Optional[MidiIOHelper] = None,
-            preset_helper: JDXiPresetHelper = None,
-            synth_number: int = 2,
-            parent: QWidget = None,
+        self,
+        midi_helper: Optional[MidiIOHelper] = None,
+        preset_helper: JDXiPresetHelper = None,
+        synth_number: int = 2,
+        parent: QWidget = None,
     ):
         super().__init__(
             midi_helper=midi_helper,
@@ -745,11 +764,11 @@ class DigitalSynth3Editor(DigitalSynthEditor):
     preset_changed = Signal(int, str, int)
 
     def __init__(
-            self,
-            midi_helper: Optional[MidiIOHelper] = None,
-            preset_helper: JDXiPresetHelper = None,
-            synth_number: int = 3,
-            parent: QWidget = None,
+        self,
+        midi_helper: Optional[MidiIOHelper] = None,
+        preset_helper: JDXiPresetHelper = None,
+        synth_number: int = 3,
+        parent: QWidget = None,
     ):
         super().__init__(
             midi_helper=midi_helper,

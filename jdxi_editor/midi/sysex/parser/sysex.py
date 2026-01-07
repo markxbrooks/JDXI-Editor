@@ -16,16 +16,16 @@ import os
 from pathlib import Path
 from typing import Optional
 
-from picomidi.constant import MidiConstant
 from jdxi_editor.jdxi.sysex.offset import JDXiSysExOffset
-from jdxi_editor.midi.sysex.parser.utils import parse_sysex
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.message.jdxi import JD_XI_HEADER_LIST
+from jdxi_editor.midi.sysex.parser.utils import parse_sysex
 from jdxi_editor.project import __package_name__
+from picomidi.constant import MidiConstant
 
 
 class JDXiSysExParser:
-    """ SysExParser """
+    """SysExParser"""
 
     def __init__(self, sysex_data: Optional[bytes] = None):
         if sysex_data:
@@ -63,8 +63,7 @@ class JDXiSysExParser:
 
         self.sysex_dict = parse_sysex(self.sysex_data)
         json_log_file = (
-                self.log_folder
-                / f"jdxi_tone_data_{self.sysex_dict['ADDRESS']}.json"
+            self.log_folder / f"jdxi_tone_data_{self.sysex_dict['ADDRESS']}.json"
         )
         with open(json_log_file, "w", encoding="utf-8") as file_handle:  # type: TextIO
             json.dump(self.sysex_dict, file_handle, ensure_ascii=False, indent=2)
@@ -83,13 +82,13 @@ class JDXiSysExParser:
     def _is_valid_sysex(self) -> bool:
         """Checks if the SysEx message starts and ends with the correct bytes."""
         return (
-                self.sysex_data[JDXiSysExOffset.SYSEX_START] == MidiConstant.START_OF_SYSEX
-                and self.sysex_data[JDXiSysExOffset.SYSEX_END] == MidiConstant.END_OF_SYSEX
+            self.sysex_data[JDXiSysExOffset.SYSEX_START] == MidiConstant.START_OF_SYSEX
+            and self.sysex_data[JDXiSysExOffset.SYSEX_END] == MidiConstant.END_OF_SYSEX
         )
 
     def _verify_header(self) -> bool:
         """Checks if the SysEx header matches the JD-Xi model ID."""
         # Remove the SysEx start (F0) and end (F7) bytes
-        data = self.sysex_data[JDXiSysExOffset.ROLAND_ID:JDXiSysExOffset.SYSEX_END]
-        header_data = data[:len(JD_XI_HEADER_LIST)]
+        data = self.sysex_data[JDXiSysExOffset.ROLAND_ID : JDXiSysExOffset.SYSEX_END]
+        header_data = data[: len(JD_XI_HEADER_LIST)]
         return header_data == bytes(JD_XI_HEADER_LIST)

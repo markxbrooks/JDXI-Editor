@@ -1,9 +1,10 @@
 """
 Modulation Wheel
 """
+
+from jdxi_editor.ui.widgets.wheel.wheel import WheelWidget
 from picomidi.constant import MidiConstant
 from picomidi.core.bitmask import BitMask
-from jdxi_editor.ui.widgets.wheel.wheel import WheelWidget
 
 
 class ModWheel(WheelWidget):

@@ -1,12 +1,12 @@
 from typing import Optional
 
-from PySide6.QtWidgets import QPushButton
 from PySide6.QtCore import QSettings
-from PySide6.QtGui import QPainter, QPen, QColor
+from PySide6.QtGui import QColor, QPainter, QPen
+from PySide6.QtWidgets import QPushButton
 
+from jdxi_editor.jdxi.preset.button import JDXiPresetButtonData
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.jdxi.preset.button import JDXiPresetButtonData
 from jdxi_editor.project import __package_name__
 
 
@@ -81,6 +81,7 @@ class SequencerSquare(QPushButton):
             if self.midi_helper:
                 # Use PresetLoader for consistent preset loading
                 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
+
                 self.preset_loader = JDXiPresetHelper(self.midi_helper)
                 self.preset_loader.load_preset(
                     preset_data,

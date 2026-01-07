@@ -1,12 +1,14 @@
-""" log message """
+"""log message"""
 
 import logging
 
-from jdxi_editor.globals import logger, LOGGING
+from jdxi_editor.globals import LOGGING, logger
 from jdxi_editor.log.decorator import decorate_log_message
 
 
-def log_message(message: str, level: int = logging.INFO, stacklevel: int = 2, silent: bool = False) -> None:
+def log_message(
+    message: str, level: int = logging.INFO, stacklevel: int = 2, silent: bool = False
+) -> None:
     """
     Log a message with emojis based on severity and content keywords.
 

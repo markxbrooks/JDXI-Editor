@@ -1,11 +1,19 @@
 """
- LFO section of the digital partial editor.
+LFO section of the digital partial editor.
 """
+
 from typing import Callable
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QGroupBox, QTabWidget
-from PySide6.QtCore import Qt
 import qtawesome as qta
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import (
+    QGroupBox,
+    QHBoxLayout,
+    QLabel,
+    QTabWidget,
+    QVBoxLayout,
+    QWidget,
+)
 
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.midi.data.parameter.digital.partial import (
@@ -83,7 +91,7 @@ class DigitalLFOSection(QWidget):
             options=["1/1", "1/2", "1/4", "1/8", "1/16"],
         )
         shape_row_layout.addWidget(self.lfo_sync_note)
-        
+
         # Key trigger switch
         self.lfo_trigger = self._create_parameter_switch(
             DigitalPartialParam.LFO_KEY_TRIGGER, "Key Trigger", ["OFF", "ON"]
@@ -102,7 +110,7 @@ class DigitalLFOSection(QWidget):
         rate_fade_layout.addStretch()
         rate_fade_widget.setLayout(rate_fade_layout)
         rate_fade_widget.setMinimumHeight(JDXiDimensions.EDITOR_MINIMUM_HEIGHT)
-        
+
         # Rate and fade controls
         rate_fade_layout.addWidget(
             self._create_parameter_slider(
@@ -115,7 +123,7 @@ class DigitalLFOSection(QWidget):
             )
         )
         rate_fade_layout.addStretch()
-        
+
         lfo_controls_tab_widget.addTab(rate_fade_widget, "Rate and Fade")
 
         # --- Depths Tab ---
@@ -146,7 +154,7 @@ class DigitalLFOSection(QWidget):
             )
         )
         depths_layout.addStretch()
-        
+
         lfo_controls_tab_widget.addTab(depths_widget, "Depths")
 
         layout.addStretch()

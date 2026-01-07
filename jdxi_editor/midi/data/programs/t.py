@@ -1,11 +1,12 @@
-from typing import List, Optional
-from pathlib import Path
 import json
 import logging
+from pathlib import Path
+from typing import List, Optional
 
 from jdxi_editor.jdxi.program.program import JDXiProgram
 
 log = logging.getLogger(__name__)
+
 
 class JDXiProgramManager:
     USER_PROGRAMS_FILE = None
@@ -44,7 +45,9 @@ class JDXiProgramManager:
             json.dump([p.to_dict() for p in cls._load_programs()], f, indent=2)
 
     @classmethod
-    def load_from_file(cls, filepath: Optional[str] = None, append: bool = True) -> None:
+    def load_from_file(
+        cls, filepath: Optional[str] = None, append: bool = True
+    ) -> None:
         filepath = filepath or cls.USER_PROGRAMS_FILE
         with open(filepath, "r") as f:
             data = json.load(f)

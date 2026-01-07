@@ -3,12 +3,12 @@ Progress Dialog
 """
 
 from PySide6.QtWidgets import (
+    QApplication,
     QDialog,
-    QVBoxLayout,
     QLabel,
     QProgressBar,
+    QVBoxLayout,
     QWidget,
-    QApplication,
 )
 
 from jdxi_editor.jdxi.style import JDXiStyle

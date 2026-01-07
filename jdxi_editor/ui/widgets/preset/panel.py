@@ -1,16 +1,17 @@
 """
 Panel for loading/saving presets
 """
-from PySide6.QtWidgets import (
-    QWidget,
-    QHBoxLayout,
-    QComboBox,
-    QPushButton,
-)
-from PySide6.QtCore import Signal
 
-from jdxi_editor.midi.io.helper import MidiIOHelper
+from PySide6.QtCore import Signal
+from PySide6.QtWidgets import (
+    QComboBox,
+    QHBoxLayout,
+    QPushButton,
+    QWidget,
+)
+
 from jdxi_editor.jdxi.synth.type import JDXiSynth
+from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.io.preset import PresetEditor
 
 
@@ -42,8 +43,12 @@ class PresetPanel(QWidget):
 
         # Create preset editors for each preset_type
         self.analog_editor = PresetEditor(midi_helper, self, JDXiSynth.ANALOG_SYNTH)
-        self.digital_1_editor = PresetEditor(midi_helper, self, JDXiSynth.DIGITAL_SYNTH_1)
-        self.digital_2_editor = PresetEditor(midi_helper, self, JDXiSynth.DIGITAL_SYNTH_2)
+        self.digital_1_editor = PresetEditor(
+            midi_helper, self, JDXiSynth.DIGITAL_SYNTH_1
+        )
+        self.digital_2_editor = PresetEditor(
+            midi_helper, self, JDXiSynth.DIGITAL_SYNTH_2
+        )
         self.drums_editor = PresetEditor(midi_helper, self, JDXiSynth.DRUM_KIT)
 
     def _on_load(self):

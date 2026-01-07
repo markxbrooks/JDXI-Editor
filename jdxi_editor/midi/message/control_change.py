@@ -19,15 +19,12 @@ Usage Example:
     [177, 7, 100]  # (0xB1 in hex: CC message for channel 1)
 """
 
-
-from picomidi.constant import MidiConstant
-from picomidi.core.bitmask import BitMask
-
-
 from dataclasses import dataclass, field
 from typing import List
 
 from jdxi_editor.midi.message.midi import MidiMessage
+from picomidi.constant import MidiConstant
+from picomidi.core.bitmask import BitMask
 
 
 @dataclass

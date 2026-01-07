@@ -1,7 +1,7 @@
-from jdxi_editor.log.logger import Logger as log
-from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.jdxi.preset.lists import JDXiPresetToneList
 from jdxi_editor.jdxi.synth.type import JDXiSynth
+from jdxi_editor.log.logger import Logger as log
+from jdxi_editor.midi.channel.channel import MidiChannel
 
 
 class JDXiPresetManager:
@@ -64,7 +64,9 @@ class JDXiPresetManager:
         :param synth: JDXISynth The type of synth
         :return: JDXIPresets The available presets
         """
-        presets = self.preset_synth_map.get(synth, JDXiPresetToneList.DIGITAL_ENUMERATED)
+        presets = self.preset_synth_map.get(
+            synth, JDXiPresetToneList.DIGITAL_ENUMERATED
+        )
         return presets
 
     def get_presets_for_channel(self, channel: MidiChannel) -> JDXiPresetToneList:
@@ -74,7 +76,9 @@ class JDXiPresetManager:
         :param channel: MidiChannel The MIDI channel
         :return: JDXIPresets The available presets
         """
-        presets = self.preset_channel_map.get(channel, JDXiPresetToneList.DIGITAL_ENUMERATED)
+        presets = self.preset_channel_map.get(
+            channel, JDXiPresetToneList.DIGITAL_ENUMERATED
+        )
         return presets
 
     def set_current_preset_name(self, preset_name: str):

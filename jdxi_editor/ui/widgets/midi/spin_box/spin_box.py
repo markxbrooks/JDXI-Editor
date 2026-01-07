@@ -9,6 +9,7 @@ class MidiSpinBox(QSpinBox):
     """
     Custom QSpinBox to display MIDI channels as 1-16,
     """
+
     def __init__(self, parent: object | None = None) -> None:
         super().__init__(parent)
         self.setRange(1, 16)  # Display range is 1–16

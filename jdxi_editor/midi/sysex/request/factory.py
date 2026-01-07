@@ -65,5 +65,3 @@ def create_request(header: str, temp_area: Union[str, JDXISysExHex], part: str) 
     data = f"{temp_area_str} {part}"
     checksum = roland_checksum(data)
     return f"{header} {data} {checksum} {JDXISysExHex.END}"
-
-

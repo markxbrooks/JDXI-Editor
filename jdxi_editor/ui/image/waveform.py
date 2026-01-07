@@ -20,7 +20,8 @@ Functions:
 import base64
 import math
 from io import BytesIO
-from PIL import Image, ImageDraw, ImageColor
+
+from PIL import Image, ImageColor, ImageDraw
 
 
 def generate_waveform_icon(

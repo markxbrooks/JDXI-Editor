@@ -26,6 +26,8 @@ from picomidi.message.channel_voice import (
     ControlChange,
     ProgramChange,
     PitchBend,
+    RPN,
+    NRPN,
 )
 
 # Parser
@@ -33,6 +35,9 @@ from picomidi.parser.parser import Parser
 
 # Utilities
 from picomidi.utils import conversion, validation, formatting, timing
+
+# RPN/NRPN
+from picomidi.rpn import ParameterMap, RPNMap, NRPNMap
 
 __all__ = [
     # Core
@@ -53,6 +58,8 @@ __all__ = [
     "ControlChange",
     "ProgramChange",
     "PitchBend",
+    "RPN",
+    "NRPN",
     # Parser
     "Parser",
     # Utilities
@@ -60,5 +67,9 @@ __all__ = [
     "validation",
     "formatting",
     "timing",
+    # RPN/NRPN
+    "ParameterMap",
+    "RPNMap",
+    "NRPNMap",
 ]
 

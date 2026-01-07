@@ -1,34 +1,39 @@
 """
 Synth Factory
 """
+
 from typing import Union
 
 from PySide6.QtCore import QSettings
 
 from jdxi_editor.jdxi.preset.lists import JDXiPresetToneList
-from jdxi_editor.jdxi.synth.type import JDXiSynth
-from jdxi_editor.midi.channel.channel import MidiChannel
-from jdxi_editor.midi.data.address.address import (
-    AddressStartMSB,
-    AddressOffsetTemporaryToneUMB,
-    AddressOffsetSuperNATURALLMB, AddressOffsetProgramLMB,
-)
 from jdxi_editor.jdxi.synth.analog import AnalogSynthData
 from jdxi_editor.jdxi.synth.digital import DigitalSynthData
 from jdxi_editor.jdxi.synth.drum import DrumSynthData
+from jdxi_editor.jdxi.synth.type import JDXiSynth
+from jdxi_editor.log.logger import Logger as log
+from jdxi_editor.midi.channel.channel import MidiChannel
+from jdxi_editor.midi.data.address.address import (
+    AddressOffsetProgramLMB,
+    AddressOffsetSuperNATURALLMB,
+    AddressOffsetTemporaryToneUMB,
+    AddressStartMSB,
+)
 from jdxi_editor.midi.data.parameter.analog import AnalogParam
-from jdxi_editor.midi.data.parameter.digital import DigitalCommonParam, DigitalPartialParam
+from jdxi_editor.midi.data.parameter.digital import (
+    DigitalCommonParam,
+    DigitalPartialParam,
+)
 from jdxi_editor.midi.data.parameter.drum.addresses import DRUM_GROUP_MAP
 from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParam
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.sysex.request.midi_requests import MidiRequests
-from jdxi_editor.log.logger import Logger as log
-
-from jdxi_editor.project import __program__, __organization_name__
+from jdxi_editor.project import __organization_name__, __program__
 
 
-def create_synth_data(synth_type: str, partial_number: int = 0) -> Union[
-    AnalogSynthData, DrumSynthData, DigitalSynthData, None]:
+def create_synth_data(
+    synth_type: str, partial_number: int = 0
+) -> Union[AnalogSynthData, DrumSynthData, DigitalSynthData, None]:
     """
     Factory function to create synth data based on the synth type and partial number.
 
@@ -57,11 +62,13 @@ def create_synth_data(synth_type: str, partial_number: int = 0) -> Union[
             lmb=address_lmb,
             partial_number=partial_number,
             common_parameters=DrumCommonParam,
-            partial_parameters=DrumPartialParam
+            partial_parameters=DrumPartialParam,
         )
 
     elif synth_type in [JDXiSynth.DIGITAL_SYNTH_1, JDXiSynth.DIGITAL_SYNTH_2]:
-        address_lmb = AddressOffsetSuperNATURALLMB.digital_partial_offset(partial_number)
+        address_lmb = AddressOffsetSuperNATURALLMB.digital_partial_offset(
+            partial_number
+        )
 
         if synth_type == JDXiSynth.DIGITAL_SYNTH_1:
             synth_number = 1

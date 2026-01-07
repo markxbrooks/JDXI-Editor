@@ -1,4 +1,5 @@
 """Drum Utils"""
+
 from typing import Tuple
 
 from jdxi_editor.midi.data.drum.data import DRUM_ADDRESSES

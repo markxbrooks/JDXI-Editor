@@ -14,10 +14,11 @@ Methods:
     Optionally, the direction (input or output) of the message can be specified.
     clear_log(): Clears the message log view.
 """
-from typing import Optional
-from datetime import datetime
 
-from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QTextEdit
+from datetime import datetime
+from typing import Optional
+
+from PySide6.QtWidgets import QMainWindow, QTextEdit, QVBoxLayout, QWidget
 
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.midi.io.helper import MidiIOHelper
@@ -25,7 +26,8 @@ from jdxi_editor.ui.theme import ThemeManager
 
 
 class MIDIMessageMonitor(QMainWindow):
-    """ MIDIMessageMonitor """
+    """MIDIMessageMonitor"""
+
     def __init__(
         self, midi_helper: MidiIOHelper = None, parent: Optional[QWidget] = None
     ):

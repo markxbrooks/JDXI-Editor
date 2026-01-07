@@ -10,6 +10,8 @@ from picomidi.message.channel_voice.note_off import NoteOff
 from picomidi.message.channel_voice.control_change import ControlChange
 from picomidi.message.channel_voice.program_change import ProgramChange
 from picomidi.message.channel_voice.pitch_bend import PitchBend
+from picomidi.message.channel_voice.rpn import RPN
+from picomidi.message.channel_voice.nrpn import NRPN
 
 __all__ = [
     "NoteOn",
@@ -17,5 +19,7 @@ __all__ = [
     "ControlChange",
     "ProgramChange",
     "PitchBend",
+    "RPN",
+    "NRPN",
 ]
 

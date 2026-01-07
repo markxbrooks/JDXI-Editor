@@ -1,13 +1,14 @@
 from __future__ import annotations
 
 from jdxi_editor.midi.message.jdxi import JD_XI_HEADER_LIST
-from jdxi_editor.midi.sysex.utils import bytes_to_hex
+from picomidi.sysex.conversion import bytes_to_hex
 
 
 class JDXISysExHex:
     """
     class to represent bytes as strings
     """
+
     JDXI_HEADER = bytes_to_hex(JD_XI_HEADER_LIST)
     START = "F0"
     END = "F7"

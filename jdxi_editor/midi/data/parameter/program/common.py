@@ -32,9 +32,10 @@ if param:
 switch_text = program_level.get_switch_text(1)  # "ON" or "---"
 """
 
-from typing import Tuple, Optional
+from typing import Optional, Tuple
 
-from jdxi_editor.midi.data.parameter.synth import AddressParameter
+from picomidi.sysex.parameter.address import AddressParameter
+
 
 class SystemCommonParam(AddressParameter):
     """Program Common parameters"""
@@ -54,8 +55,22 @@ class SystemCommonParam(AddressParameter):
         self.tooltip = tooltip if tooltip is not None else ""
 
     MASTER_TUNE = (0x00, 24, 2024, -100, 100, "Master Tune")  # Program Level (0-127)
-    MASTER_KEY_SHIFT = (0x04, 40, 88, -24, 24, "Volume of the program")  # Program Level (0-127)
-    MASTER_LEVEL = (0x05, 0, 127, 0, 127, "Volume of the program")  # Program Level (0-127)
+    MASTER_KEY_SHIFT = (
+        0x04,
+        40,
+        88,
+        -24,
+        24,
+        "Volume of the program",
+    )  # Program Level (0-127)
+    MASTER_LEVEL = (
+        0x05,
+        0,
+        127,
+        0,
+        127,
+        "Volume of the program",
+    )  # Program Level (0-127)
 
     def get_display_value(self) -> Tuple[int, int]:
         """Get the display value range (min, max) for the parameter"""
@@ -178,7 +193,14 @@ class ProgramCommonParam(AddressParameter):
     TONE_NAME_11 = (0x0A, 32, 127)  # ASCII character 11
     TONE_NAME_12 = (0x0B, 32, 127)  # ASCII character 12
 
-    PROGRAM_LEVEL = (0x10, 0, 127, 0, 127, "Volume of the program")  # Program Level (0-127)
+    PROGRAM_LEVEL = (
+        0x10,
+        0,
+        127,
+        0,
+        127,
+        "Volume of the program",
+    )  # Program Level (0-127)
     PROGRAM_TEMPO = (
         0x11,
         500,
@@ -189,7 +211,8 @@ class ProgramCommonParam(AddressParameter):
 The Tempo knob adjusts the setting in a range from 60 to 240.
 If the SYSTEM parameter Sync Mode is set to SLAVE, only “MIDI” can be selected.
 (Since the tempo is synchronized to an external device, it’s not possible to change the tempo
-from the JD-Xi.)""")  # Program Tempo (500-30000: 5.00-300.00 BPM)
+from the JD-Xi.)""",
+    )  # Program Tempo (500-30000: 5.00-300.00 BPM)
     VOCAL_EFFECT = (
         0x16,
         0,

@@ -2,8 +2,9 @@
 MOD LFO section of the digital partial editor.
 """
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QGroupBox, QTabWidget
 from typing import Callable
+
+from PySide6.QtWidgets import QGroupBox, QHBoxLayout, QTabWidget, QVBoxLayout, QWidget
 
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.midi.data.parameter.digital.partial import (
@@ -79,7 +80,7 @@ class DigitalModLFOSection(QWidget):
         rate_layout.addStretch()
         rate_widget.setLayout(rate_layout)
         rate_widget.setMinimumHeight(JDXiDimensions.EDITOR_MINIMUM_HEIGHT)
-        
+
         # Rate and Rate Ctrl controls
         rate_layout.addWidget(
             self._create_parameter_slider(

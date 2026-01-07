@@ -1,6 +1,7 @@
 """
 Analog presets
 """
+
 from typing import Any
 
 ANALOG_PRESET_LIST = [

@@ -1,8 +1,9 @@
 """SysEx Byte"""
-from enum import IntEnum
-from typing import Type, Optional, TypeVar
 
-T = TypeVar('T', bound='SysExByte')
+from enum import IntEnum
+from typing import Optional, Type, TypeVar
+
+T = TypeVar("T", bound="SysExByte")
 
 
 class SysExByte(IntEnum):

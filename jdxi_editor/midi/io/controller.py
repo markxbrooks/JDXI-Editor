@@ -22,10 +22,11 @@ Example Usage:
     print(controller.current_in_port, controller.current_out_port)
 
 """
+
 from __future__ import annotations
 
 import time
-from typing import Optional, List, Tuple
+from typing import List, Optional, Tuple
 
 import rtmidi
 from PySide6.QtCore import QObject

@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 from typing import Dict, Optional
 
 from jdxi_editor.jdxi.synth.data import JDXISynthData
-from jdxi_editor.midi.data.address.address import AddressOffsetDrumKitLMB, Address
+from jdxi_editor.midi.data.address.address import Address, AddressOffsetDrumKitLMB
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 
 

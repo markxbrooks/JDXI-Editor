@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Optional, Dict
+from typing import Dict, Optional
 
 
 @dataclass
@@ -9,7 +9,9 @@ class IncomingPresetData:
     channel: Optional[int] = None
     msb: Optional[int] = None
     lsb: Optional[int] = None
-    tone_names: Dict[str, str] = field(default_factory=dict)  # e.g., {"analog": "Saw Lead"}
+    tone_names: Dict[str, str] = field(
+        default_factory=dict
+    )  # e.g., {"analog": "Saw Lead"}
 
     def set_tone_name(self, part: str, name: str) -> None:
         self.tone_names[part] = name

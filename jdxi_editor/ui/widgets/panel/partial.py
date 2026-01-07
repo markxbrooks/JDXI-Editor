@@ -4,10 +4,10 @@ Partial Panel
 
 import qtawesome as qta
 from PySide6.QtGui import Qt
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QGroupBox, QLabel
+from PySide6.QtWidgets import QGroupBox, QHBoxLayout, QLabel, QVBoxLayout, QWidget
 
-from jdxi_editor.midi.data.digital.partial import DigitalPartial
 from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.midi.data.digital.partial import DigitalPartial
 from jdxi_editor.ui.widgets.switch.partial import PartialSwitch
 
 

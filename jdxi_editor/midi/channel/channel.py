@@ -21,7 +21,6 @@ Usage example:
 
 """
 
-
 from enum import IntEnum
 
 

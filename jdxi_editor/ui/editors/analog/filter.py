@@ -4,31 +4,38 @@ Analog Filter Section
 
 from typing import Callable
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QGroupBox, QTabWidget
-from PySide6.QtCore import Qt
 import qtawesome as qta
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import (
+    QGroupBox,
+    QHBoxLayout,
+    QLabel,
+    QTabWidget,
+    QVBoxLayout,
+    QWidget,
+)
 
-from jdxi_editor.ui.widgets.filter.analog_filter import AnalogFilterWidget
+from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
-from jdxi_editor.midi.data.parameter import AddressParameter
+from picomidi.sysex.parameter.address import AddressParameter
 from jdxi_editor.midi.data.parameter.analog import AnalogParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
+from jdxi_editor.ui.widgets.filter.analog_filter import AnalogFilterWidget
 
 
 class AnalogFilterSection(QWidget):
     """Analog Filter Section"""
 
     def __init__(
-            self,
-            create_parameter_slider: Callable,
-            create_parameter_switch: Callable,
-            on_filter_mode_changed: Callable,
-            send_control_change: Callable,
-            midi_helper: MidiIOHelper,
-            controls: dict[AddressParameter, QWidget],
-            address: RolandSysExAddress,
+        self,
+        create_parameter_slider: Callable,
+        create_parameter_switch: Callable,
+        on_filter_mode_changed: Callable,
+        send_control_change: Callable,
+        midi_helper: MidiIOHelper,
+        controls: dict[AddressParameter, QWidget],
+        address: RolandSysExAddress,
     ):
         super().__init__()
         """
@@ -68,9 +75,13 @@ class AnalogFilterSection(QWidget):
         layout.addLayout(filter_row)
         layout.addWidget(self.analog_filter_tab_widget)
         # --- Filter Controls ---
-        self.analog_filter_tab_widget.addTab(self._create_filter_controls_group(), "Controls")
+        self.analog_filter_tab_widget.addTab(
+            self._create_filter_controls_group(), "Controls"
+        )
         # --- Filter ADSR ---
-        self.analog_filter_tab_widget.addTab(self._create_filter_adsr_env_group(), "ADSR")
+        self.analog_filter_tab_widget.addTab(
+            self._create_filter_adsr_env_group(), "ADSR"
+        )
         layout.addSpacing(JDXiStyle.SPACING)
         layout.addStretch()
 
@@ -100,8 +111,9 @@ class AnalogFilterSection(QWidget):
             "mdi.waveform",
         ]:
             adsr_icon_label = QLabel()
-            icon_pixmap = qta.icon(icon, color="#666666").pixmap(JDXiStyle.ICON_PIXMAP_SIZE,
-                                                                 JDXiStyle.ICON_PIXMAP_SIZE)
+            icon_pixmap = qta.icon(icon, color="#666666").pixmap(
+                JDXiStyle.ICON_PIXMAP_SIZE, JDXiStyle.ICON_PIXMAP_SIZE
+            )
             adsr_icon_label.setPixmap(icon_pixmap)
             adsr_icon_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
             adsr_icon_row_layout.addWidget(adsr_icon_label)
@@ -114,11 +126,13 @@ class AnalogFilterSection(QWidget):
         controls_layout = QHBoxLayout()
         controls_group.setLayout(controls_layout)
         controls_layout.addStretch()
-        self.filter_widget = AnalogFilterWidget(cutoff_param=AnalogParam.FILTER_CUTOFF,
-                                                midi_helper=self.midi_helper,
-                                                create_parameter_slider=self._create_parameter_slider,
-                                                controls=self.controls,
-                                                address=self.address)
+        self.filter_widget = AnalogFilterWidget(
+            cutoff_param=AnalogParam.FILTER_CUTOFF,
+            midi_helper=self.midi_helper,
+            create_parameter_slider=self._create_parameter_slider,
+            controls=self.controls,
+            address=self.address,
+        )
 
         self.filter_resonance = self._create_parameter_slider(
             AnalogParam.FILTER_RESONANCE, "Resonance", vertical=True
@@ -128,7 +142,8 @@ class AnalogFilterSection(QWidget):
         )
         self.filter_env_velocity_sens = self._create_parameter_slider(
             AnalogParam.FILTER_ENV_VELOCITY_SENSITIVITY,
-            "Env. Velocity Sens.", vertical=True
+            "Env. Velocity Sens.",
+            vertical=True,
         )
 
         controls_layout.addWidget(self.filter_resonance)

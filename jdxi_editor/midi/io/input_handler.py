@@ -24,28 +24,27 @@ import json
 import logging
 import os
 from dataclasses import asdict
+from typing import Any, Callable, Dict, List, Optional
 
 import mido
-from typing import Any, Callable, List, Optional, Dict
 from PySide6.QtCore import Signal
 
 from jdxi_editor.jdxi.midi.constant import JDXiConstant
-from picomidi.constant import MidiConstant
+from jdxi_editor.jdxi.preset.button import JDXiPresetButtonData
 from jdxi_editor.jdxi.preset.data import JDXiPresetData
 from jdxi_editor.jdxi.preset.incoming_data import IncomingPresetData
 from jdxi_editor.jdxi.program.program import JDXiProgram
 from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.jdxi.sysex.offset import JDXIIdentityOffset
 from jdxi_editor.log.logger import Logger as log
+from jdxi_editor.midi.data.address.address import AddressStartMSB as AreaMSB
 from jdxi_editor.midi.data.programs import JDXiProgramList
 from jdxi_editor.midi.io.controller import MidiIOController
 from jdxi_editor.midi.io.utils import handle_identity_request
 from jdxi_editor.midi.map.synth_type import JDXiMapSynthType
 from jdxi_editor.midi.sysex.parser.sysex import JDXiSysExParser
 from jdxi_editor.midi.sysex.request.data import IGNORED_KEYS
-from jdxi_editor.jdxi.preset.button import JDXiPresetButtonData
-
-from jdxi_editor.midi.data.address.address import AddressStartMSB as AreaMSB
+from picomidi.constant import MidiConstant
 
 
 def add_or_replace_program_and_save(new_program: JDXiProgram) -> bool:
@@ -59,6 +58,7 @@ def add_or_replace_program_and_save(new_program: JDXiProgram) -> bool:
     try:
         # Use SQLite database instead of JSON
         from jdxi_editor.midi.data.programs.database import get_database
+
         db = get_database()
         return db.add_or_replace_program(new_program)
     except Exception as e:
@@ -83,14 +83,18 @@ def add_or_replace_program_and_save_old(new_program: JDXiProgram) -> bool:
             print(f"Program '{new_program.id}' already exists.")
             return False
 
-        log.message(f"Adding new program {new_program}: {new_program.id} with PC {new_program.pc}")
+        log.message(
+            f"Adding new program {new_program}: {new_program.id} with PC {new_program.pc}"
+        )
 
         program_list.append(new_program.to_dict())
 
         log.message(f"Program list after addition: {program_list}")
 
         save_programs(program_list)
-        log.message(f"Added and saved program: {new_program.id} with PC {new_program.pc}")
+        log.message(
+            f"Added and saved program: {new_program.id} with PC {new_program.pc}"
+        )
         return True
     except Exception as e:
         log.error(f"Failed to add and save program: {e}")
@@ -113,7 +117,9 @@ def save_programs(program_list: List[Dict[str, str]]) -> None:
     """
     try:
         file_path = JDXiProgramList.USER_PROGRAMS_FILE
-        os.makedirs(os.path.dirname(file_path), exist_ok=True)  # ensure directory exists
+        os.makedirs(
+            os.path.dirname(file_path), exist_ok=True
+        )  # ensure directory exists
         with open(file_path, "w", encoding="utf-8") as f:
             json.dump(program_list, f, indent=4, ensure_ascii=False)
     except Exception as e:
@@ -285,14 +291,22 @@ class MidiInHandler(MidiIOController):
         try:
             if not (message.type == "sysex" and len(message.data) > 6):
                 return
-            mido_sub_id_byte_offset = JDXIIdentityOffset.SUB_ID_2_IDENTITY_REPLY - 1  # account for lack of status byte
-            if message.data[mido_sub_id_byte_offset] == JDXiConstant.SUB_ID_2_IDENTITY_REPLY:
+            mido_sub_id_byte_offset = (
+                JDXIIdentityOffset.SUB_ID_2_IDENTITY_REPLY - 1
+            )  # account for lack of status byte
+            if (
+                message.data[mido_sub_id_byte_offset]
+                == JDXiConstant.SUB_ID_2_IDENTITY_REPLY
+            ):
                 handle_identity_request(message)
                 return
 
             hex_string = " ".join(f"{byte:02X}" for byte in message.data)
-            sysex_message_bytes = bytes([MidiConstant.START_OF_SYSEX]) + bytes(message.data) + bytes(
-                [MidiConstant.END_OF_SYSEX])
+            sysex_message_bytes = (
+                bytes([MidiConstant.START_OF_SYSEX])
+                + bytes(message.data)
+                + bytes([MidiConstant.END_OF_SYSEX])
+            )
             try:
                 parsed_data = self.sysex_parser.parse_bytes(sysex_message_bytes)
                 filtered_data = {
@@ -302,8 +316,7 @@ class MidiInHandler(MidiIOController):
                 log.error(f"Error {ex} occurred parsing data")
                 filtered_data = {}
             log.message(
-                f"[MIDI SysEx received]: {hex_string} {filtered_data}",
-                silent=False
+                f"[MIDI SysEx received]: {hex_string} {filtered_data}", silent=False
             )
             try:
                 parsed_data = self.sysex_parser.parse_bytes(sysex_message_bytes)
@@ -317,7 +330,9 @@ class MidiInHandler(MidiIOController):
         except Exception as ex:
             log.error(f"Unexpected error {ex} while handling SysEx message")
 
-    def _handle_control_change(self, message: mido.Message, preset_data: dict) -> None:  # @@
+    def _handle_control_change(
+        self, message: mido.Message, preset_data: dict
+    ) -> None:  # @@
         """
         Handle Control Change (CC) MIDI messages.
 
@@ -330,8 +345,10 @@ class MidiInHandler(MidiIOController):
         log.message(
             f"Control Change - Channel: {channel}, Control: {control}, Value: {value}"
         )
-        if value in [JDXiConstant.CONTROL_CHANGE_BANK_SELECT_LSB_BANK_E_AND_F,
-                     JDXiConstant.CONTROL_CHANGE_BANK_SELECT_LSB_BANK_G_AND_H]:
+        if value in [
+            JDXiConstant.CONTROL_CHANGE_BANK_SELECT_LSB_BANK_E_AND_F,
+            JDXiConstant.CONTROL_CHANGE_BANK_SELECT_LSB_BANK_G_AND_H,
+        ]:
             log.parameter("control", control)  # Bank Select LSB 00 or 01
             log.parameter("value", value)  # Bank Select LSB 00 or 01
             self._incoming_preset_data.lsb = value
@@ -415,8 +432,11 @@ class MidiInHandler(MidiIOController):
 
         # All parts received? Then save program!
         # Only auto-add if enabled (disabled during manual database updates)
-        auto_add_enabled = getattr(self, '_auto_add_enabled', True)
-        if auto_add_enabled and all(k in self._incoming_preset_data.tone_names for k in ("digital_1", "digital_2", "analog", "drum")):
+        auto_add_enabled = getattr(self, "_auto_add_enabled", True)
+        if auto_add_enabled and all(
+            k in self._incoming_preset_data.tone_names
+            for k in ("digital_1", "digital_2", "analog", "drum")
+        ):
             self._auto_add_current_program()
 
     def _auto_add_current_program(self):

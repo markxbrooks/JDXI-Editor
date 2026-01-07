@@ -1,9 +1,10 @@
 """
-    Digital Tone Modify Section
+Digital Tone Modify Section
 """
 
 from typing import Callable
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel
+
+from PySide6.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout, QWidget
 
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.midi.data.lfo.lfo import LFOSyncNote
@@ -46,19 +47,22 @@ class DigitalToneModifySection(QWidget):
 
         attack_time_interval_sens = self._create_parameter_slider(
             DigitalModifyParam.ATTACK_TIME_INTERVAL_SENS,
-            "Attack Time Interval Sens", vertical=True
+            "Attack Time Interval Sens",
+            vertical=True,
         )
         slider_row_layout.addWidget(attack_time_interval_sens)
 
         release_time_interval_sens = self._create_parameter_slider(
             DigitalModifyParam.RELEASE_TIME_INTERVAL_SENS,
-            "Release Time Interval Sens", vertical=True
+            "Release Time Interval Sens",
+            vertical=True,
         )
         slider_row_layout.addWidget(release_time_interval_sens)
 
         portamento_time_interval_sens = self._create_parameter_slider(
             DigitalModifyParam.PORTAMENTO_TIME_INTERVAL_SENS,
-            "Portamento Time Interval Sens", vertical=True
+            "Portamento Time Interval Sens",
+            vertical=True,
         )
         slider_row_layout.addWidget(portamento_time_interval_sens)
         slider_row_layout.addStretch()

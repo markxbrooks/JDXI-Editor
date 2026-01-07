@@ -28,17 +28,16 @@ Customization:
 """
 
 import numpy as np
-from PySide6.QtCore import Qt, QPointF
+from PySide6.QtCore import QPointF, Qt
+from PySide6.QtGui import QColor, QFont, QLinearGradient, QPainter, QPainterPath, QPen
 from PySide6.QtWidgets import QWidget
-from PySide6.QtGui import QPainter, QPainterPath, QLinearGradient, QColor, QPen, QFont
 
 from jdxi_editor.jdxi.style import JDXiStyle
 
 
-def generate_square_wave(width: float,
-                         mod_depth: float,
-                         sample_rate: int,
-                         duration: float) -> np.ndarray:
+def generate_square_wave(
+    width: float, mod_depth: float, sample_rate: int, duration: float
+) -> np.ndarray:
     """Generates a square wave with a given duty cycle (width ∈ [0, 1])."""
     width = max(0.0, min(1.0, width))  # Clip to valid range
     total_samples = int(duration * sample_rate)
@@ -52,10 +51,12 @@ def generate_square_wave(width: float,
     high_samples = max(1, high_samples)
     low_samples = max(1, low_samples)
 
-    cycle = np.concatenate([
-        np.ones(high_samples, dtype=np.float32),
-        np.zeros(low_samples, dtype=np.float32)
-    ])
+    cycle = np.concatenate(
+        [
+            np.ones(high_samples, dtype=np.float32),
+            np.zeros(low_samples, dtype=np.float32),
+        ]
+    )
     num_cycles = total_samples // len(cycle) + 1
     wave = np.tile(cycle, num_cycles)
     return wave[:total_samples] * mod_depth
@@ -63,11 +64,11 @@ def generate_square_wave(width: float,
 
 class PWMPlot(QWidget):
     def __init__(
-            self,
-            width: int = JDXiStyle.ADSR_PLOT_WIDTH,
-            height: int = JDXiStyle.ADSR_PLOT_HEIGHT,
-            envelope: dict = None,
-            parent: QWidget = None,
+        self,
+        width: int = JDXiStyle.ADSR_PLOT_WIDTH,
+        height: int = JDXiStyle.ADSR_PLOT_HEIGHT,
+        envelope: dict = None,
+        parent: QWidget = None,
     ):
         super().__init__(parent)
         self.point_moved = None
@@ -172,10 +173,12 @@ class PWMPlot(QWidget):
 
             # === Envelope Parameters ===
             # Pulse width envelope: rise and fall
-            envelope = generate_square_wave(width=self.envelope["pulse_width"],
-                                            mod_depth=self.envelope["mod_depth"],
-                                            sample_rate=self.sample_rate,
-                                            duration=self.envelope.get("duration", 1.0))
+            envelope = generate_square_wave(
+                width=self.envelope["pulse_width"],
+                mod_depth=self.envelope["mod_depth"],
+                sample_rate=self.sample_rate,
+                duration=self.envelope.get("duration", 1.0),
+            )
             total_samples = len(envelope)
             total_time = total_samples / self.sample_rate
 
@@ -212,7 +215,9 @@ class PWMPlot(QWidget):
                 painter.drawLine(left_pad - 5, y, left_pad, y)
                 label = f"{y_val:.1f}"
                 label_width = font_metrics.horizontalAdvance(label)
-                painter.drawText(left_pad - 10 - label_width, y + font_metrics.ascent() / 2, label)
+                painter.drawText(
+                    left_pad - 10 - label_width, y + font_metrics.ascent() / 2, label
+                )
 
             # === Title ===
             painter.setPen(QPen(QColor("orange")))
@@ -226,7 +231,9 @@ class PWMPlot(QWidget):
             painter.setFont(QFont("JD LCD Rounded", 10))
             x_label = "Time (s)"
             x_label_width = font_metrics.horizontalAdvance(x_label)
-            painter.drawText(left_pad + (plot_w - x_label_width) / 2, top_pad + plot_h + 35, x_label)
+            painter.drawText(
+                left_pad + (plot_w - x_label_width) / 2, top_pad + plot_h + 35, x_label
+            )
 
             # === Y-axis Label (rotated) ===
             painter.save()

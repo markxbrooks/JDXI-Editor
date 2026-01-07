@@ -1,4 +1,4 @@
-""" scan MIDI ports for JD-Xi """
+"""scan MIDI ports for JD-Xi"""
 
 from jdxi_editor.log.logger import Logger as log
 

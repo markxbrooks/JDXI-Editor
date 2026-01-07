@@ -11,6 +11,7 @@ Methods:
     - get_area_code(synth_type): Returns the MIDI area code for a given synth type.
 
 """
+
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB
 

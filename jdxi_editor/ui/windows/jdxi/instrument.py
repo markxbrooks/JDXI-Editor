@@ -38,81 +38,84 @@ Methods:
 import logging
 import platform
 import threading
-from typing import Union, Optional
-import qtawesome as qta
+from typing import Optional, Union
 
-from PySide6.QtCore import Qt, QSettings, QTimer, Signal
-from PySide6.QtGui import QShortcut, QKeySequence, QMouseEvent, QCloseEvent, QAction
-from PySide6.QtWidgets import QMenu, QMessageBox, QProgressDialog, QApplication
+import qtawesome as qta
+from PySide6.QtCore import QSettings, Qt, QTimer, Signal
+from PySide6.QtGui import QAction, QCloseEvent, QKeySequence, QMouseEvent, QShortcut
+from PySide6.QtWidgets import QApplication, QMenu, QMessageBox, QProgressDialog
 
 from jdxi_editor.jdxi.file.utils import documentation_file_path, os_file_open
 from jdxi_editor.jdxi.midi.constant import JDXiConstant
 from jdxi_editor.jdxi.preset.button import JDXiPresetButtonData
-from jdxi_editor.jdxi.synth.type import JDXiSynth
+from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.jdxi.preset.lists import JDXiPresetToneList
-from picomidi.constant import MidiConstant
+from jdxi_editor.jdxi.program.program import JDXiProgram
+from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.jdxi.style.factory import generate_sequencer_button_style
+from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.log.logger import Logger as log
+from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.address.address import (
-    AddressStartMSB,
-    AddressOffsetTemporaryToneUMB,
-    AddressOffsetSystemUMB,
-    RolandSysExAddress,
     AddressOffsetProgramLMB,
+    AddressOffsetSystemUMB,
+    AddressOffsetTemporaryToneUMB,
+    AddressStartMSB,
+    RolandSysExAddress,
 )
 from jdxi_editor.midi.data.control_change.sustain import ControlChangeSustain
 from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParam
-from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.parameter.program.zone import ProgramZoneParam
-
 from jdxi_editor.midi.io.controller import MidiIOController
 from jdxi_editor.midi.io.delay import send_with_delay
+from jdxi_editor.midi.io.input_handler import add_or_replace_program_and_save
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.midi.program.helper import JDXiProgramHelper
 from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
+from jdxi_editor.project import __package_name__
 from jdxi_editor.ui.dialogs.about import UiAboutDialog
 from jdxi_editor.ui.dialogs.settings import UiPreferencesDialog
 from jdxi_editor.ui.editors import (
     AnalogSynthEditor,
+    ArpeggioEditor,
     DigitalSynthEditor,
     DrumCommonEditor,
-    ArpeggioEditor,
     EffectsCommonEditor,
-    VocalFXEditor,
     ProgramEditor,
     SynthEditor,
+    VocalFXEditor,
 )
 from jdxi_editor.ui.editors.config import EditorConfig
-from jdxi_editor.ui.editors.digital.editor import DigitalSynth2Editor, DigitalSynth3Editor
-from jdxi_editor.ui.editors.helpers.program import (
-    get_program_id_by_name,
-    calculate_midi_values,
+from jdxi_editor.ui.editors.digital.editor import (
+    DigitalSynth2Editor,
+    DigitalSynth3Editor,
 )
-from jdxi_editor.midi.io.input_handler import add_or_replace_program_and_save
-from jdxi_editor.jdxi.program.program import JDXiProgram
-from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
-from jdxi_editor.jdxi.style import JDXiStyle
-from jdxi_editor.jdxi.style.factory import generate_sequencer_button_style
+from jdxi_editor.ui.editors.helpers.program import (
+    calculate_midi_values,
+    get_program_id_by_name,
+)
 from jdxi_editor.ui.editors.io.player import MidiFileEditor
+from jdxi_editor.ui.editors.io.preset import PresetEditor
 from jdxi_editor.ui.editors.main import MainEditor
 from jdxi_editor.ui.editors.pattern.pattern import PatternSequenceEditor
-from jdxi_editor.ui.editors.io.preset import PresetEditor
 from jdxi_editor.ui.widgets.button import SequencerSquare
+from jdxi_editor.ui.widgets.button.favorite import FavoriteButton
+from jdxi_editor.ui.widgets.viewer.log import LogViewer
+from jdxi_editor.ui.windows.jdxi.recent_files import RecentFilesManager
+from jdxi_editor.ui.windows.jdxi.ui import JDXiUi
 from jdxi_editor.ui.windows.jdxi.utils import show_message_box
 from jdxi_editor.ui.windows.midi.config_dialog import MIDIConfigDialog
 from jdxi_editor.ui.windows.midi.debugger import MIDIDebugger
 from jdxi_editor.ui.windows.midi.monitor import MIDIMessageMonitor
 from jdxi_editor.ui.windows.patch.manager import PatchManager
-from jdxi_editor.ui.windows.jdxi.ui import JDXiUi
-from jdxi_editor.ui.widgets.viewer.log import LogViewer
-from jdxi_editor.ui.widgets.button.favorite import FavoriteButton
-from jdxi_editor.project import __package_name__
-from jdxi_editor.ui.windows.jdxi.recent_files import RecentFilesManager
+from picomidi.constant import MidiConstant
 
 
 class JDXiInstrument(JDXiUi):
     """
     class JDXiInstrument
     """
+
     def __init__(self, splash=None, progress_bar=None, status_label=None):
         super().__init__()
         self.splash = splash
@@ -148,7 +151,7 @@ class JDXiInstrument(JDXiUi):
                 editor_class=VocalFXEditor,
                 synth_type=JDXiSynth.VOCAL_FX,
                 midi_channel=MidiChannel.VOCAL_FX,
-                icon="mdi.microphone"
+                icon="mdi.microphone",
             ),
             "digital1": EditorConfig(
                 title="Digital Synth 1",
@@ -156,7 +159,7 @@ class JDXiInstrument(JDXiUi):
                 synth_type=JDXiSynth.DIGITAL_SYNTH_1,
                 midi_channel=MidiChannel.DIGITAL_SYNTH_1,
                 kwargs={"synth_number": 1},
-                icon="mdi.piano"
+                icon="mdi.piano",
             ),
             "digital2": EditorConfig(
                 title="Digital Synth 2",
@@ -164,51 +167,45 @@ class JDXiInstrument(JDXiUi):
                 synth_type=JDXiSynth.DIGITAL_SYNTH_2,
                 midi_channel=MidiChannel.DIGITAL_SYNTH_2,
                 kwargs={"synth_number": 2},
-                icon="mdi.piano"
+                icon="mdi.piano",
             ),
             "analog": EditorConfig(
                 title="Analog Synth",
                 editor_class=AnalogSynthEditor,
                 synth_type=JDXiSynth.ANALOG_SYNTH,
                 midi_channel=MidiChannel.ANALOG_SYNTH,
-                icon="mdi.piano"
+                icon="mdi.piano",
             ),
             "drums": EditorConfig(
                 title="Drums",
                 editor_class=DrumCommonEditor,
                 synth_type=JDXiSynth.DRUM_KIT,
                 midi_channel=MidiChannel.DRUM_KIT,
-                icon="fa5s.drum"
+                icon="fa5s.drum",
             ),
             "arpeggio": EditorConfig(
                 title="Arpeggiator",
                 editor_class=ArpeggioEditor,
-                icon="ph.music-notes-simple-bold"
+                icon="ph.music-notes-simple-bold",
             ),
             "effects": EditorConfig(
                 title="Effects",
                 editor_class=EffectsCommonEditor,
-                icon="ri.sound-module-fill"
+                icon="ri.sound-module-fill",
             ),
             "pattern": EditorConfig(
                 title="Pattern",
                 editor_class=PatternSequenceEditor,
-                icon="mdi.view-sequential-outline"
+                icon="mdi.view-sequential-outline",
             ),
             "preset": EditorConfig(
-                title="Preset",
-                editor_class=PresetEditor,
-                icon="mdi6.soundbar"
+                title="Preset", editor_class=PresetEditor, icon="mdi6.soundbar"
             ),
             "program": EditorConfig(
-                title="Program",
-                editor_class=ProgramEditor,
-                icon="ri.speaker-line"
+                title="Program", editor_class=ProgramEditor, icon="ri.speaker-line"
             ),
             "midi_file": EditorConfig(
-                title="MIDI File",
-                editor_class=MidiFileEditor,
-                icon="mdi.midi-port"
+                title="MIDI File", editor_class=MidiFileEditor, icon="mdi.midi-port"
             ),
         }
 
@@ -239,7 +236,11 @@ class JDXiInstrument(JDXiUi):
                 JDXiPresetToneList.ANALOG_ENUMERATED,
                 MidiChannel.ANALOG_SYNTH,
             ),
-            (JDXiSynth.DRUM_KIT, JDXiPresetToneList.DRUM_ENUMERATED, MidiChannel.DRUM_KIT),
+            (
+                JDXiSynth.DRUM_KIT,
+                JDXiPresetToneList.DRUM_ENUMERATED,
+                MidiChannel.DRUM_KIT,
+            ),
         ]
         from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 
@@ -297,7 +298,7 @@ class JDXiInstrument(JDXiUi):
         if event.button() == Qt.MouseButton.LeftButton:
             self.old_pos = event.globalPos()
 
-    def mouseMoveEvent(self, event: QMouseEvent) :
+    def mouseMoveEvent(self, event: QMouseEvent):
         """
         mouseMoveEvent
 
@@ -609,10 +610,7 @@ class JDXiInstrument(JDXiUi):
         merged_kwargs = {**config.kwargs, **kwargs}
 
         self._show_editor_tab(
-            config.title,
-            config.editor_class,
-            config.icon,
-            **merged_kwargs
+            config.title, config.editor_class, config.icon, **merged_kwargs
         )
 
     def on_documentation(self):
@@ -672,11 +670,20 @@ class JDXiInstrument(JDXiUi):
 
             preset_helper = (
                 self.get_preset_helper_for_current_synth()
-                if editor_class in {
-                    ArpeggioEditor, DigitalSynthEditor, DigitalSynth2Editor, DigitalSynth3Editor,
-                    AnalogSynthEditor, DrumCommonEditor, PatternSequenceEditor,
-                    ProgramEditor, PresetEditor, MidiFileEditor,
-                    VocalFXEditor, EffectsCommonEditor,
+                if editor_class
+                in {
+                    ArpeggioEditor,
+                    DigitalSynthEditor,
+                    DigitalSynth2Editor,
+                    DigitalSynth3Editor,
+                    AnalogSynthEditor,
+                    DrumCommonEditor,
+                    PatternSequenceEditor,
+                    ProgramEditor,
+                    PresetEditor,
+                    MidiFileEditor,
+                    VocalFXEditor,
+                    EffectsCommonEditor,
                 }
                 else None
             )
@@ -687,10 +694,14 @@ class JDXiInstrument(JDXiUi):
                     self.splash_status_label.setText("Loading Analog Synth editor...")
                     self.splash_progress_bar.setValue(30)
                 elif title == "Digital Synth 1":
-                    self.splash_status_label.setText("Loading Digital Synth 1 editor...")
+                    self.splash_status_label.setText(
+                        "Loading Digital Synth 1 editor..."
+                    )
                     self.splash_progress_bar.setValue(40)
                 elif title == "Digital Synth 2":
-                    self.splash_status_label.setText("Loading Digital Synth 2 editor...")
+                    self.splash_status_label.setText(
+                        "Loading Digital Synth 2 editor..."
+                    )
                     self.splash_progress_bar.setValue(50)
                 elif title == "Drums":
                     self.splash_status_label.setText("Preparing Drum Kit editor...")
@@ -713,26 +724,34 @@ class JDXiInstrument(JDXiUi):
             )
             editor.setWindowTitle(title)
 
-            tab_index = self.main_editor.editor_tab_widget.addTab(editor, qta.icon(icon, color="#666666"), title)
-            
+            tab_index = self.main_editor.editor_tab_widget.addTab(
+                editor, qta.icon(icon, color="#666666"), title
+            )
+
             # Store the tab index for Analog Synth to enable styling
             if title == "Analog Synth":
                 tab_bar = self.main_editor.editor_tab_widget.tabBar()
                 tab_bar.setTabData(tab_index, "analog")
-            
+
             self.main_editor.editor_tab_widget.setCurrentWidget(editor)
-            
+
             # Connect to tab change signal to update QTabBar property for styling
-            if not hasattr(self, '_tab_change_connected'):
-                self.main_editor.editor_tab_widget.currentChanged.connect(self._update_tab_bar_property)
+            if not hasattr(self, "_tab_change_connected"):
+                self.main_editor.editor_tab_widget.currentChanged.connect(
+                    self._update_tab_bar_property
+                )
                 self._tab_change_connected = True
-            self._update_tab_bar_property(self.main_editor.editor_tab_widget.currentIndex())
+            self._update_tab_bar_property(
+                self.main_editor.editor_tab_widget.currentIndex()
+            )
 
             setattr(self, instance_attr, editor)
             self.register_editor(editor)
 
             if hasattr(editor, "preset_helper"):
-                editor.preset_helper.update_display.connect(self.update_display_callback)
+                editor.preset_helper.update_display.connect(
+                    self.update_display_callback
+                )
 
             if hasattr(editor, "partial_editors"):
                 for partial in editor.partial_editors.values():
@@ -740,13 +759,14 @@ class JDXiInstrument(JDXiUi):
 
         except Exception as ex:
             import traceback
+
             log.error(f"Error showing {title} editor: {ex}", exception=ex)
             log.error(f"Traceback: {traceback.format_exc()}")
-    
+
     def _update_tab_bar_property(self, index: int) -> None:
         """
         Update QTabBar property based on current tab selection for styling.
-        
+
         :param index: int Current tab index
         """
         if index < 0:
@@ -901,39 +921,47 @@ class JDXiInstrument(JDXiUi):
         super()._create_menu_bar()
         # Note: Recent Files menu is added later in _add_recent_files_menu()
         # because recent_files_manager is initialized after super().__init__()
-    
+
     def _add_recent_files_menu(self) -> None:
         """Add Recent Files submenu to File menu."""
-        if not hasattr(self, 'recent_files_manager') or self.recent_files_manager is None:
+        if (
+            not hasattr(self, "recent_files_manager")
+            or self.recent_files_manager is None
+        ):
             return
-        
+
         # Get the File menu by finding the action
         file_menu = None
         for action in self.menuBar().actions():
             if action.text() == "File":
                 file_menu = action.menu()
                 break
-        
+
         if file_menu:
             # Find the position after "Load MIDI file" and "Save MIDI file"
             actions = file_menu.actions()
             insert_pos = 2  # After "Load MIDI file" and "Save MIDI file"
-            
+
             # Add separator before Recent Files
-            file_menu.insertSeparator(actions[insert_pos] if insert_pos < len(actions) else None)
-            
+            file_menu.insertSeparator(
+                actions[insert_pos] if insert_pos < len(actions) else None
+            )
+
             # Create Recent Files submenu
             self.recent_files_menu = file_menu.addMenu("Recent MIDI Files")
             self._update_recent_files_menu()
-    
+
     def _update_recent_files_menu(self) -> None:
         """Update the Recent Files menu with current recent files."""
         if not self.recent_files_menu:
             return
-        
-        if not hasattr(self, 'recent_files_manager') or self.recent_files_manager is None:
+
+        if (
+            not hasattr(self, "recent_files_manager")
+            or self.recent_files_manager is None
+        ):
             return
-        
+
         # Check if the menu object is still valid (not deleted)
         try:
             # Try to access a property to verify the C++ object still exists
@@ -942,7 +970,7 @@ class JDXiInstrument(JDXiUi):
             # Menu was deleted, reset reference and return
             self.recent_files_menu = None
             return
-        
+
         # Clear existing actions
         try:
             self.recent_files_menu.clear()
@@ -950,9 +978,9 @@ class JDXiInstrument(JDXiUi):
             # Menu was deleted during operation, reset reference and return
             self.recent_files_menu = None
             return
-        
+
         recent_files = self.recent_files_manager.get_recent_files()
-        
+
         if not recent_files:
             action = QAction("No recent files", self)
             action.setEnabled(False)
@@ -961,45 +989,47 @@ class JDXiInstrument(JDXiUi):
             for file_path in recent_files:
                 # Create display name (just filename)
                 from pathlib import Path
+
                 display_name = Path(file_path).name
                 action = QAction(display_name, self)
                 action.setData(file_path)  # Store full path
-                action.triggered.connect(lambda checked, path=file_path: self._load_recent_file(path))
+                action.triggered.connect(
+                    lambda checked, path=file_path: self._load_recent_file(path)
+                )
                 self.recent_files_menu.addAction(action)
-            
+
             # Add separator and clear action
             self.recent_files_menu.addSeparator()
             clear_action = QAction("Clear Recent Files", self)
             clear_action.triggered.connect(self._clear_recent_files)
             self.recent_files_menu.addAction(clear_action)
-    
+
     def _load_recent_file(self, file_path: str) -> None:
         """
         Load a recent MIDI file.
-        
+
         :param file_path: Path to the MIDI file
         """
         from pathlib import Path
-        
+
         if not Path(file_path).exists():
             from PySide6.QtWidgets import QMessageBox
+
             QMessageBox.warning(
-                self,
-                "File Not Found",
-                f"The file '{file_path}' no longer exists."
+                self, "File Not Found", f"The file '{file_path}' no longer exists."
             )
             self._update_recent_files_menu()
             return
-        
+
         # Get or create MIDI file editor
         self.midi_file_editor = self.get_existing_editor(MidiFileEditor)
         if not self.midi_file_editor:
             self.show_editor("midi_file")
-        
+
         # Load the file directly
         self.midi_file_editor.midi_load_file_from_path(file_path)
         self.show_editor("midi_file")
-    
+
     def _clear_recent_files(self) -> None:
         """Clear all recent files."""
         self.recent_files_manager.clear_recent_files()
@@ -1073,53 +1103,75 @@ class JDXiInstrument(JDXiUi):
             if not self.midi_helper:
                 log.warning("MIDI helper not initialized. Cannot dump settings.")
                 return
-            
-            if not self.midi_helper.midi_out or not self.midi_helper.midi_out.is_port_open():
+
+            if (
+                not self.midi_helper.midi_out
+                or not self.midi_helper.midi_out.is_port_open()
+            ):
                 log.warning("MIDI output port is not open. Cannot dump settings.")
                 return
-            
+
             log.message("Starting to dump all settings to synthesizer...")
-            
+
             from jdxi_editor.midi.sysex.json_composer import JDXiJSONComposer
+
             json_composer = JDXiJSONComposer()
-            
+
             total_sent = 0
             total_skipped = 0
-            
+
             # Iterate through all registered editors
             for editor in self.editors:
                 # Skip editors that don't have the required attributes
-                if not hasattr(editor, "address") or not hasattr(editor, "get_controls_as_dict"):
+                if not hasattr(editor, "address") or not hasattr(
+                    editor, "get_controls_as_dict"
+                ):
                     continue
-                
+
                 # Skip certain editor types
+                from jdxi_editor.ui.editors import ProgramEditor
                 from jdxi_editor.ui.editors.io.player import MidiFileEditor
                 from jdxi_editor.ui.editors.pattern.pattern import PatternSequenceEditor
-                from jdxi_editor.ui.editors import ProgramEditor
-                
-                if isinstance(editor, (PatternSequenceEditor, ProgramEditor, MidiFileEditor)):
+
+                if isinstance(
+                    editor, (PatternSequenceEditor, ProgramEditor, MidiFileEditor)
+                ):
                     continue
-                
+
                 try:
                     # Compose JSON from current editor state
                     editor_json = json_composer.compose_message(editor)
                     if editor_json:
                         # Convert to JSON string and send to instrument
                         import json
+
                         json_string = json.dumps(editor_json)
                         self.midi_helper.send_json_patch_to_instrument(json_string)
-                        
+
                         # Count parameters sent
-                        metadata_fields = {"JD_XI_HEADER", "ADDRESS", "TEMPORARY_AREA", "SYNTH_TONE"}
-                        param_count = len([k for k in editor_json.keys() if k not in metadata_fields])
+                        metadata_fields = {
+                            "JD_XI_HEADER",
+                            "ADDRESS",
+                            "TEMPORARY_AREA",
+                            "SYNTH_TONE",
+                        }
+                        param_count = len(
+                            [k for k in editor_json.keys() if k not in metadata_fields]
+                        )
                         total_sent += param_count
-                        log.message(f"Sent {param_count} parameters from {editor.__class__.__name__}")
+                        log.message(
+                            f"Sent {param_count} parameters from {editor.__class__.__name__}"
+                        )
                 except Exception as ex:
-                    log.error(f"Error dumping settings from {editor.__class__.__name__}: {ex}")
+                    log.error(
+                        f"Error dumping settings from {editor.__class__.__name__}: {ex}"
+                    )
                     total_skipped += 1
-            
-            log.message(f"Settings dump complete: {total_sent} parameters sent to synthesizer")
-            
+
+            log.message(
+                f"Settings dump complete: {total_sent} parameters sent to synthesizer"
+            )
+
         except Exception as ex:
             log.error(f"Error dumping settings to synth: {ex}")
 
@@ -1127,7 +1179,7 @@ class JDXiInstrument(JDXiUi):
         """
         Update the User Program database by scanning through all user banks (E, F, G, H)
         and reading program names from the synthesizer.
-        
+
         This method:
         1. Iterates through each user bank (E, F, G, H)
         2. For each bank, iterates through programs 1-64
@@ -1140,7 +1192,7 @@ class JDXiInstrument(JDXiUi):
             QMessageBox.warning(
                 self,
                 "MIDI Not Connected",
-                "Please connect to the JD-Xi synthesizer before updating the database."
+                "Please connect to the JD-Xi synthesizer before updating the database.",
             )
             return
 
@@ -1151,9 +1203,9 @@ class JDXiInstrument(JDXiUi):
             "This will scan through all user banks (E, F, G, H) and update the program database.\n"
             "This may take several minutes. Continue?",
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
-            QMessageBox.StandardButton.No
+            QMessageBox.StandardButton.No,
         )
-        
+
         if reply != QMessageBox.StandardButton.Yes:
             return
 
@@ -1163,7 +1215,9 @@ class JDXiInstrument(JDXiUi):
         total_programs = len(user_banks) * programs_per_bank
 
         # Create progress dialog
-        progress = QProgressDialog("Updating User Program Database...", "Cancel", 0, total_programs, self)
+        progress = QProgressDialog(
+            "Updating User Program Database...", "Cancel", 0, total_programs, self
+        )
         progress.setWindowTitle("Updating Database")
         progress.setWindowModality(Qt.WindowModality.WindowModal)
         progress.setMinimumDuration(0)
@@ -1182,8 +1236,10 @@ class JDXiInstrument(JDXiUi):
 
         # Disable auto-add during database update to prevent premature saves
         self._db_update_auto_add_enabled = True
-        if hasattr(self.midi_helper, '_auto_add_enabled'):
-            self._db_update_auto_add_enabled = getattr(self.midi_helper, '_auto_add_enabled', True)
+        if hasattr(self.midi_helper, "_auto_add_enabled"):
+            self._db_update_auto_add_enabled = getattr(
+                self.midi_helper, "_auto_add_enabled", True
+            )
         # Temporarily disable auto-add
         self.midi_helper._auto_add_enabled = False
 
@@ -1194,18 +1250,14 @@ class JDXiInstrument(JDXiUi):
         except:
             pass
         # Connect to program name updates
-        self.midi_helper.update_program_name.connect(
-            self._on_program_name_received
-        )
-        
+        self.midi_helper.update_program_name.connect(self._on_program_name_received)
+
         # Also connect to tone name updates to track when all data is received
         try:
             self.midi_helper.update_tone_name.disconnect()
         except:
             pass
-        self.midi_helper.update_tone_name.connect(
-            self._on_tone_name_received
-        )
+        self.midi_helper.update_tone_name.connect(self._on_tone_name_received)
 
         # Start the update process
         self._process_next_program()
@@ -1219,30 +1271,31 @@ class JDXiInstrument(JDXiUi):
         # Check if we've completed all banks
         if self._db_update_current_bank_index >= len(self._db_update_banks):
             self._cleanup_db_update()
-            
+
             # Reload programs from database to refresh the UI
             from jdxi_editor.midi.data.programs.programs import JDXiProgramList
+
             JDXiProgramList.USER_PROGRAMS = JDXiProgramList._load_user_programs()
-            
+
             # Refresh program editor if it's open
-            if hasattr(self, 'editors'):
+            if hasattr(self, "editors"):
                 for editor in self.editors:
-                    if hasattr(editor, 'populate_programs'):
+                    if hasattr(editor, "populate_programs"):
                         editor.populate_programs()
                     # Also refresh User Programs table if it exists
-                    if hasattr(editor, '_populate_user_programs_table'):
+                    if hasattr(editor, "_populate_user_programs_table"):
                         editor._populate_user_programs_table()
-            
+
             QMessageBox.information(
                 self,
                 "Update Complete",
                 f"Successfully updated {self._db_update_programs_saved} programs in the database.\n\n"
-                f"The program list has been refreshed with the updated names."
+                f"The program list has been refreshed with the updated names.",
             )
             return
 
         current_bank = self._db_update_banks[self._db_update_current_bank_index]
-        
+
         # Check if we've completed all programs in current bank
         if self._db_update_current_program > 64:
             self._db_update_current_bank_index += 1
@@ -1252,8 +1305,9 @@ class JDXiInstrument(JDXiUi):
 
         # Update progress
         current_progress = (
-            self._db_update_current_bank_index * 64 + 
-            self._db_update_current_program - 1
+            self._db_update_current_bank_index * 64
+            + self._db_update_current_program
+            - 1
         )
         self._db_update_progress.setValue(current_progress)
         self._db_update_progress.setLabelText(
@@ -1262,17 +1316,23 @@ class JDXiInstrument(JDXiUi):
 
         # Calculate MIDI values for this program
         try:
-            result = calculate_midi_values(current_bank, self._db_update_current_program)
+            result = calculate_midi_values(
+                current_bank, self._db_update_current_program
+            )
             if result is None:
-                log.error(f"Failed to calculate MIDI values for {current_bank}{self._db_update_current_program:02d}")
+                log.error(
+                    f"Failed to calculate MIDI values for {current_bank}{self._db_update_current_program:02d}"
+                )
                 self._move_to_next_program()
                 return
             msb, lsb, pc = result
         except (ValueError, TypeError) as e:
-            log.error(f"Error calculating MIDI values for {current_bank}{self._db_update_current_program:02d}: {e}")
+            log.error(
+                f"Error calculating MIDI values for {current_bank}{self._db_update_current_program:02d}: {e}"
+            )
             self._move_to_next_program()
             return
-        
+
         # Clear incoming preset data before selecting program
         self.midi_helper._incoming_preset_data.clear()
         self.midi_helper._incoming_preset_data.msb = msb
@@ -1290,19 +1350,20 @@ class JDXiInstrument(JDXiUi):
         else:
             program_num_1based = self._db_update_current_program
         self.midi_helper._incoming_preset_data.program_number = program_num_1based
-        log.message(f"🔍 Requesting program {current_bank}{self._db_update_current_program:02d} (PC={program_num_1based})")
-        
+        log.message(
+            f"🔍 Requesting program {current_bank}{self._db_update_current_program:02d} (PC={program_num_1based})"
+        )
+
         # Reset tracking flags
         self._db_update_program_name_received = False
         self._db_update_tone_names_received = set()
 
         # Select the program on the synthesizer
-        log.message(f"🎹 Selecting program {current_bank}{self._db_update_current_program:02d} (MSB={msb}, LSB={lsb}, PC={pc})")
+        log.message(
+            f"🎹 Selecting program {current_bank}{self._db_update_current_program:02d} (MSB={msb}, LSB={lsb}, PC={pc})"
+        )
         self.midi_helper.send_bank_select_and_program_change(
-            MidiChannel.PROGRAM,
-            msb,
-            lsb,
-            pc
+            MidiChannel.PROGRAM, msb, lsb, pc
         )
 
         # Wait longer for program to load on synthesizer before requesting data
@@ -1318,7 +1379,7 @@ class JDXiInstrument(JDXiUi):
 
     def _request_program_data(self) -> None:
         """Request program data from the synthesizer."""
-        if hasattr(self, 'program_helper'):
+        if hasattr(self, "program_helper"):
             self.program_helper.data_request()
 
     def _on_program_name_received(self, program_name: str) -> None:
@@ -1328,7 +1389,7 @@ class JDXiInstrument(JDXiUi):
 
         self._db_update_program_name_received = True
         log.message(f"📝 Program name received: {program_name}")
-        
+
         # Check if we have all required data, then save
         self._check_and_save_program()
 
@@ -1341,7 +1402,7 @@ class JDXiInstrument(JDXiUi):
         if area in ["digital_1", "digital_2", "analog", "drum"]:
             self._db_update_tone_names_received.add(area)
             log.message(f"🎵 Tone name received: {area} = {tone_name}")
-        
+
         # Check if we have all required data, then save
         self._check_and_save_program()
 
@@ -1355,13 +1416,13 @@ class JDXiInstrument(JDXiUi):
             return
 
         # Check if we already started a save timer
-        if hasattr(self, '_db_update_save_timer_started'):
+        if hasattr(self, "_db_update_save_timer_started"):
             return
-        
+
         # Wait a bit to collect tone names, but don't wait forever
         required_tones = {"digital_1", "digital_2", "analog", "drum"}
         has_all_tones = required_tones.issubset(self._db_update_tone_names_received)
-        
+
         if has_all_tones:
             # We have everything, save immediately after a short delay
             self._db_update_save_timer_started = True
@@ -1382,12 +1443,14 @@ class JDXiInstrument(JDXiUi):
 
             # Create program ID
             program_id = f"{current_bank}{self._db_update_current_program:02d}"
-            
+
             # Use placeholder name if no program name received
             if not data.program_name:
-                log.warning(f"No program name received for {program_id}, using placeholder name")
+                log.warning(
+                    f"No program name received for {program_id}, using placeholder name"
+                )
                 data.program_name = f"User bank {current_bank} program {self._db_update_current_program:02d}"
-            
+
             # Use the program number from data if available, otherwise calculate it
             # The program_number in data should be 1-based (1-128)
             if data.program_number is not None:
@@ -1404,43 +1467,56 @@ class JDXiInstrument(JDXiUi):
                     program_number = self._db_update_current_program + 64  # 65-128
                 else:
                     program_number = self._db_update_current_program
-            
-            log.message(f"💾 Saving program {program_id}: name='{data.program_name}', PC={program_number}")
+
+            log.message(
+                f"💾 Saving program {program_id}: name='{data.program_name}', PC={program_number}"
+            )
 
             # Check if program already exists in database
             from jdxi_editor.ui.editors.helpers.program import get_program_by_id
+
             existing_program = get_program_by_id(program_id)
-            
+
             # Determine genre: preserve existing genre if program data is unchanged
             genre = "Unknown"
             if existing_program:
                 # Compare all fields except genre to see if program data has changed
                 new_msb = data.msb if data.msb is not None else 85
-                new_lsb = data.lsb if data.lsb is not None else (0 if current_bank in ["E", "F"] else 1)
+                new_lsb = (
+                    data.lsb
+                    if data.lsb is not None
+                    else (0 if current_bank in ["E", "F"] else 1)
+                )
                 new_digital_1 = data.tone_names.get("digital_1")
                 new_digital_2 = data.tone_names.get("digital_2")
                 new_analog = data.tone_names.get("analog")
                 new_drums = data.tone_names.get("drum")
-                
+
                 # Check if all program data matches (excluding genre)
                 data_matches = (
-                    existing_program.name == data.program_name and
-                    existing_program.pc == program_number and
-                    existing_program.msb == new_msb and
-                    existing_program.lsb == new_lsb and
-                    existing_program.digital_1 == new_digital_1 and
-                    existing_program.digital_2 == new_digital_2 and
-                    existing_program.analog == new_analog and
-                    existing_program.drums == new_drums
+                    existing_program.name == data.program_name
+                    and existing_program.pc == program_number
+                    and existing_program.msb == new_msb
+                    and existing_program.lsb == new_lsb
+                    and existing_program.digital_1 == new_digital_1
+                    and existing_program.digital_2 == new_digital_2
+                    and existing_program.analog == new_analog
+                    and existing_program.drums == new_drums
                 )
-                
+
                 if data_matches:
                     # Program data is unchanged, preserve existing genre
-                    genre = existing_program.genre if existing_program.genre else "Unknown"
-                    log.message(f"📋 Program {program_id} data unchanged, preserving genre: '{genre}'")
+                    genre = (
+                        existing_program.genre if existing_program.genre else "Unknown"
+                    )
+                    log.message(
+                        f"📋 Program {program_id} data unchanged, preserving genre: '{genre}'"
+                    )
                 else:
                     # Program data has changed, use "Unknown" (user can edit genre manually)
-                    log.message(f"🔄 Program {program_id} data changed, resetting genre to 'Unknown'")
+                    log.message(
+                        f"🔄 Program {program_id} data changed, resetting genre to 'Unknown'"
+                    )
 
             # Create JDXiProgram object
             program = JDXiProgram(
@@ -1449,7 +1525,11 @@ class JDXiInstrument(JDXiUi):
                 genre=genre,
                 pc=program_number,
                 msb=data.msb if data.msb is not None else 85,
-                lsb=data.lsb if data.lsb is not None else (0 if current_bank in ["E", "F"] else 1),
+                lsb=(
+                    data.lsb
+                    if data.lsb is not None
+                    else (0 if current_bank in ["E", "F"] else 1)
+                ),
                 digital_1=data.tone_names.get("digital_1"),
                 digital_2=data.tone_names.get("digital_2"),
                 analog=data.tone_names.get("analog"),
@@ -1459,7 +1539,9 @@ class JDXiInstrument(JDXiUi):
             # Save the program
             if add_or_replace_program_and_save(program):
                 self._db_update_programs_saved += 1
-                log.message(f"✅ Saved program {program_id}: {program.name} (genre: '{genre}')")
+                log.message(
+                    f"✅ Saved program {program_id}: {program.name} (genre: '{genre}')"
+                )
             else:
                 log.warning(f"⚠️ Failed to save program {program_id}")
 
@@ -1484,10 +1566,10 @@ class JDXiInstrument(JDXiUi):
         self._db_update_waiting_for_data = False
         self._db_update_program_name_received = False
         self._db_update_tone_names_received = set()
-        if hasattr(self, '_db_update_save_timer_started'):
-            delattr(self, '_db_update_save_timer_started')
+        if hasattr(self, "_db_update_save_timer_started"):
+            delattr(self, "_db_update_save_timer_started")
         self._db_update_current_program += 1
-        
+
         # Process next program after a short delay
         QTimer.singleShot(500, self._process_next_program)
 
@@ -1496,11 +1578,11 @@ class JDXiInstrument(JDXiUi):
         self._db_update_waiting_for_data = False
         self._db_update_program_name_received = False
         self._db_update_tone_names_received = set()
-        
+
         # Re-enable auto-add if it was enabled before
-        if hasattr(self, '_db_update_auto_add_enabled'):
+        if hasattr(self, "_db_update_auto_add_enabled"):
             self.midi_helper._auto_add_enabled = self._db_update_auto_add_enabled
-        
+
         # Disconnect signals
         try:
             self.midi_helper.update_program_name.disconnect(
@@ -1509,13 +1591,11 @@ class JDXiInstrument(JDXiUi):
         except:
             pass
         try:
-            self.midi_helper.update_tone_name.disconnect(
-                self._on_tone_name_received
-            )
+            self.midi_helper.update_tone_name.disconnect(self._on_tone_name_received)
         except:
             pass
-        
-        if hasattr(self, '_db_update_progress'):
+
+        if hasattr(self, "_db_update_progress"):
             self._db_update_progress.close()
 
     def load_button_preset(self, button: SequencerSquare) -> None:
@@ -1611,6 +1691,7 @@ class JDXiInstrument(JDXiUi):
         """
         try:
             from jdxi_editor.midi.io.helper import MidiIOHelper
+
             self.midi_helper.midi_in = MidiIOHelper.open_input(in_port, self)
             self.midi_helper.midi_out = MidiIOHelper.open_output(out_port, self)
             self.midi_helper.in_port_name = in_port

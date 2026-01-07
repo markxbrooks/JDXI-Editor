@@ -19,33 +19,31 @@ Features:
 import datetime
 import logging
 from typing import Optional
-import qtawesome as qta
 
+import qtawesome as qta
+from mido import Message, MetaMessage, MidiFile, MidiTrack, bpm2tempo, tempo2bpm
+from PySide6.QtCore import Qt, QTimer
 from PySide6.QtWidgets import (
+    QComboBox,
     QFileDialog,
-    QVBoxLayout,
+    QGroupBox,
     QHBoxLayout,
     QLabel,
-    QPushButton,
-    QComboBox,
-    QGroupBox,
-    QSpinBox,
     QMessageBox,
+    QPushButton,
+    QSpinBox,
+    QVBoxLayout,
     QWidget,
 )
+from rtmidi.midiconstants import CONTROL_CHANGE, NOTE_ON
 
-from PySide6.QtCore import Qt, QTimer
-
-from mido import tempo2bpm, MidiFile, MidiTrack, Message, MetaMessage, bpm2tempo
-from rtmidi.midiconstants import NOTE_ON, CONTROL_CHANGE
+from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
+from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.ui.editors.io.data.options import DIGITAL_OPTIONS, DRUM_OPTIONS
-
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
-from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.ui.widgets.pattern.measure import PatternMeasure
 
 

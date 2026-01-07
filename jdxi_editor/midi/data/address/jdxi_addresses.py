@@ -11,7 +11,7 @@ sysex_msg = JDxiSysExBuilder.build_dt1(drum_address, data)
 """
 
 from enum import Enum
-from typing import Tuple, List
+from typing import List, Tuple
 
 
 class JDXiAddress(Enum):

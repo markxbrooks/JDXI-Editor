@@ -5,15 +5,16 @@ The `DrumPartialEditor` class allows users to modify various parameters related 
 drum sounds, including pitch, output, TVF (Time Variant Filter), pitch envelope,
 WMT (Wave Modulation Time), and TVA (Time Variant Amplitude) settings.
 """
+
 from functools import partial
 from typing import Dict, Optional
 
 from PySide6.QtWidgets import (
-    QWidget,
-    QVBoxLayout,
-    QScrollArea,
     QGridLayout,
+    QScrollArea,
     QTabWidget,
+    QVBoxLayout,
+    QWidget,
 )
 
 from jdxi_editor.jdxi.synth.type import JDXiSynth
@@ -48,8 +49,9 @@ class DrumPartialEditor(PartialEditor):
         self.partial_address_default = AddressOffsetProgramLMB.DRUM_DEFAULT_PARTIAL
         self.partial_address_map = DRUM_GROUP_MAP
         self.preset_helper = None
-        self._init_synth_data(synth_type=JDXiSynth.DRUM_KIT,
-                              partial_number=self.partial_number)
+        self._init_synth_data(
+            synth_type=JDXiSynth.DRUM_KIT, partial_number=self.partial_number
+        )
         # Store parameter controls for easy access
         self.controls: Dict[DrumPartialParam, QWidget] = {}
 
@@ -94,7 +96,7 @@ class DrumPartialEditor(PartialEditor):
             create_parameter_slider=self._create_parameter_slider,
             create_parameter_switch=self._create_parameter_switch,
             midi_helper=self.midi_helper,
-            address=self.address
+            address=self.address,
         )
         tab_wmt_layout.addWidget(wmt_group)
 

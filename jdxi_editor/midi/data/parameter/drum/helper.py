@@ -10,7 +10,6 @@ Functions:
         Returns the parameter address for the specified drum partial name.
 """
 
-
 from jdxi_editor.midi.data.parameter.drum.addresses import DRUM_ADDRESS_MAP
 
 

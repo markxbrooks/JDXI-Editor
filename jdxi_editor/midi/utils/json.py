@@ -22,10 +22,12 @@ def log_changes(previous_data: Dict, current_data: Dict) -> None:
                     "parameter": key,
                     "previous": previous_value,
                     "current": current_value,
-                    "difference": current_value - previous_value
-                    if isinstance(current_value, (int, float))
-                    and isinstance(previous_value, (int, float))
-                    else None,
+                    "difference": (
+                        current_value - previous_value
+                        if isinstance(current_value, (int, float))
+                        and isinstance(previous_value, (int, float))
+                        else None
+                    ),
                 }
             )
 

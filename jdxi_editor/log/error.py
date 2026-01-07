@@ -1,8 +1,9 @@
-""" log message """
+"""log message"""
+
 import logging
 from typing import Optional
 
-from jdxi_editor.globals import logger, LOGGING
+from jdxi_editor.globals import LOGGING, logger
 from jdxi_editor.log.decorator import decorate_log_message
 
 

@@ -18,17 +18,17 @@ Usage Example:
 Requires: PySide6.QtWidgets, PySide6.QtCore, PySide6.QtGui
 """
 
-from PySide6.QtWidgets import QPushButton, QLabel, QGraphicsOpacityEffect, QWidget
-from PySide6.QtCore import Qt, QRect, Signal, QPropertyAnimation, QEasingCurve
+from PySide6.QtCore import QEasingCurve, QPropertyAnimation, QRect, Qt, Signal
 from PySide6.QtGui import (
-    QPainter,
     QColor,
-    QPen,
     QLinearGradient,
-    QPaintEvent,
-    QShowEvent,
     QMouseEvent,
+    QPainter,
+    QPaintEvent,
+    QPen,
+    QShowEvent,
 )
+from PySide6.QtWidgets import QGraphicsOpacityEffect, QLabel, QPushButton, QWidget
 
 
 class PianoKey(QPushButton):

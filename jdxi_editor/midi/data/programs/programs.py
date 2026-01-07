@@ -3766,6 +3766,7 @@ class JDXiProgramList:
 
     Convert each dict to a JDXiProgram instance
     """
+
     ROM_PROGRAM_LIST = [
         JDXiProgram(
             id=data["id"],
@@ -3801,6 +3802,7 @@ class JDXiProgramList:
         """
         # Use SQLite database instead of JSON
         from jdxi_editor.midi.data.programs.database import get_database
+
         db = get_database()
         cls.USER_PROGRAMS = db.get_all_programs()
         return cls.ROM_PROGRAM_LIST + cls.USER_PROGRAMS
@@ -3814,6 +3816,7 @@ class JDXiProgramList:
         """
         # Use SQLite database instead of JSON
         from jdxi_editor.midi.data.programs.database import get_database
+
         db = get_database()
         return db.get_all_programs()
 
@@ -3832,7 +3835,9 @@ class JDXiProgramList:
             json.dump([p.to_dict() for p in cls.USER_PROGRAMS], f, indent=2)
 
     @classmethod
-    def reload_from_file(cls, filepath: Optional[str] = None, append: bool = True) -> None:
+    def reload_from_file(
+        cls, filepath: Optional[str] = None, append: bool = True
+    ) -> None:
         """
         reload_from_file
         :return:

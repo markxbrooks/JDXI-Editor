@@ -11,18 +11,16 @@ Methods:
 
 """
 
-
 from PySide6.QtWidgets import QMainWindow, QTabWidget
 
 from jdxi_editor.jdxi.style import JDXiStyle
-from jdxi_editor.project import __version__, __program__
+from jdxi_editor.project import __program__, __version__
 
 
 class MainEditor(QMainWindow):
     """JD-Xi UI setup, with as little as possible functionality, which is to be super-classed"""
 
-    def __init__(self,
-                 parent: QMainWindow = None):
+    def __init__(self, parent: QMainWindow = None):
         """
         Constructor for the MainEditor class. Initializes the main layout and sets up the editor tab widget.
 

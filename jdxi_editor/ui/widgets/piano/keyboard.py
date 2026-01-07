@@ -29,24 +29,23 @@ Usage Example:
 This module requires PySide6 and proper integration with the JD-Xi Manager's signal handling for note events.
 """
 
-
-from PySide6.QtWidgets import (
-    QWidget,
-    QHBoxLayout,
-    QVBoxLayout,
-    QLabel,
-    QGraphicsDropShadowEffect,
-)
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QColor
+from PySide6.QtWidgets import (
+    QGraphicsDropShadowEffect,
+    QHBoxLayout,
+    QLabel,
+    QVBoxLayout,
+    QWidget,
+)
 
+from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.piano.keyboard import (
+    DRUM_LABELS,
     KEYBOARD_BLACK_NOTES,
     KEYBOARD_WHITE_NOTES,
-    DRUM_LABELS,
 )
-from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.ui.widgets.piano.key import PianoKey
 
 

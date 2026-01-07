@@ -26,15 +26,17 @@ Example usage:
 """
 
 from __future__ import annotations
-from enum import unique, IntEnum
-from typing import Optional, Type, Union, Tuple, Any, TypeVar, List
 
-from picomidi.core.bitmask import BitMask
+from enum import IntEnum, unique
+from typing import Any, List, Optional, Tuple, Type, TypeVar, Union
+
 from jdxi_editor.midi.data.address.sysex import ZERO_BYTE
 from jdxi_editor.midi.data.address.sysex_byte import SysExByte
+from picomidi.core.bitmask import BitMask
 
 T = TypeVar("T", bound="Address")
 DIGITAL_PARTIAL_MAP = {i: 0x1F + i for i in range(1, 4)}  # 1: 0x20, 2: 0x21, 3: 0x22
+
 
 @unique
 class RolandID(IntEnum):
@@ -166,7 +168,11 @@ class RolandSysExAddress:
         :return: RolandSysExAddress The RolandSysExAddress object
         """
         if isinstance(offset, int):
-            offset_bytes = [(offset >> 16) & 0x7F, (offset >> 8) & BitMask.LOW_7_BITS, offset & BitMask.LOW_7_BITS]
+            offset_bytes = [
+                (offset >> 16) & 0x7F,
+                (offset >> 8) & BitMask.LOW_7_BITS,
+                offset & BitMask.LOW_7_BITS,
+            ]
         elif isinstance(offset, tuple) and len(offset) == 3:
             offset_bytes = list(offset)
         else:
@@ -217,8 +223,6 @@ class RolandSysExAddress:
 
     def copy(self) -> RolandSysExAddress:
         return RolandSysExAddress(self.msb, self.umb, self.lsb, self.lsb)
-
-
 
 
 # ==========================
@@ -359,6 +363,7 @@ class AddressOffsetAnalogLMB(Address):
     """
     Analog Synth Tone
     """
+
     COMMON = 0x00
 
 
@@ -382,7 +387,9 @@ class AddressOffsetProgramLMB(Address):
     ZONE_ANALOG = 0x32
     ZONE_DRUM = 0x33
     CONTROLLER = 0x40
-    DRUM_DEFAULT_PARTIAL = 0x2E  # BD1 from DRUM_ADDRESS_MAP (lazy import to avoid circular dependency)
+    DRUM_DEFAULT_PARTIAL = (
+        0x2E  # BD1 from DRUM_ADDRESS_MAP (lazy import to avoid circular dependency)
+    )
     DIGITAL_DEFAULT_PARTIAL = DIGITAL_PARTIAL_MAP[1]
     DRUM_KIT_PART_1 = 0x2E
     DRUM_KIT_PART_2 = 0x30
@@ -450,7 +457,9 @@ class AddressOffsetDrumKitLMB(Address):
     """
 
     COMMON = 0x00
-    DRUM_DEFAULT_PARTIAL = 0x2E  # BD1 from DRUM_ADDRESS_MAP (lazy import to avoid circular dependency)
+    DRUM_DEFAULT_PARTIAL = (
+        0x2E  # BD1 from DRUM_ADDRESS_MAP (lazy import to avoid circular dependency)
+    )
     DIGITAL_DEFAULT_PARTIAL = DIGITAL_PARTIAL_MAP[1]
     DRUM_KIT_PART_1 = 0x2E
     DRUM_KIT_PART_2 = 0x30
@@ -510,4 +519,3 @@ class AddressOffsetDrumKitLMB(Address):
         base_address = 0x00
         step = 0x2E
         return base_address + (step * partial_number)
-

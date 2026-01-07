@@ -1,4 +1,5 @@
 """Bank Select Control Change"""
+
 from enum import Enum
 
 

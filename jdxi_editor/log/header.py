@@ -1,4 +1,5 @@
-""" log header message """
+"""log header message"""
+
 import logging
 
 from jdxi_editor.log.message import log_message
@@ -18,4 +19,3 @@ def log_header_message(message: str, level: int = logging.INFO) -> None:
     log_message(f"\n{full_separator}", level=level, stacklevel=stacklevel)
     log_message(f"{message}", level=level, stacklevel=stacklevel)
     log_message(separator, level=level, stacklevel=stacklevel)
-

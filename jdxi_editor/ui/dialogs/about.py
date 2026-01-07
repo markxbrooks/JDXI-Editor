@@ -4,20 +4,21 @@ btk_dialog for about box
 
 import os
 from typing import Optional
+
+from PySide6.QtCore import QRect, QSettings
 from PySide6.QtGui import QPixmap, Qt
 from PySide6.QtWidgets import (
     QDialog,
-    QVBoxLayout,
-    QLabel,
     QDialogButtonBox,
     QGroupBox,
+    QLabel,
+    QVBoxLayout,
     QWidget,
 )
-from PySide6.QtCore import QSettings, QRect
 
-from jdxi_editor.project import __version__, __program__, __package_name__
-from jdxi_editor.resources import resource_path
 from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.project import __package_name__, __program__, __version__
+from jdxi_editor.resources import resource_path
 
 
 class UiAboutDialog(QDialog):
@@ -82,9 +83,7 @@ class UiAboutDialog(QDialog):
             "This app is not affiliated with, endorsed by, or sponsored by Roland Corporation in any way<br>"
             "All product names, trademarks, and logos are the property of their respective owners.<br>"
         )
-        credits_label.setStyleSheet(
-            JDXiStyle.CREDITS_LABEL_STYLE
-        )
+        credits_label.setStyleSheet(JDXiStyle.CREDITS_LABEL_STYLE)
         credits_label.setOpenExternalLinks(True)
         credits_label.setAlignment(Qt.AlignCenter)
         divider = QLabel("<hr>")

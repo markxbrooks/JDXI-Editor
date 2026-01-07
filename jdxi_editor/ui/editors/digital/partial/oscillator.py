@@ -4,23 +4,24 @@ Digital Oscillator Section for the JDXI Editor
 
 import logging
 from typing import Callable
+
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
-    QWidget,
-    QVBoxLayout,
+    QComboBox,
+    QGridLayout,
+    QGroupBox,
     QHBoxLayout,
     QLabel,
-    QGroupBox,
-    QGridLayout,
-    QComboBox,
     QTabWidget,
+    QVBoxLayout,
+    QWidget,
 )
 
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.digital.oscillator import DigitalOscWave
-from jdxi_editor.midi.data.parameter import AddressParameter
+from picomidi.sysex.parameter.address import AddressParameter
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParam
 from jdxi_editor.midi.data.pcm.waves import PCM_WAVES_CATEGORIZED
 from jdxi_editor.midi.io.helper import MidiIOHelper
@@ -29,23 +30,23 @@ from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from jdxi_editor.ui.widgets.button.waveform.waveform import WaveformButton
 from jdxi_editor.ui.widgets.pitch.envelope import PitchEnvelopeWidget
-from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 from jdxi_editor.ui.widgets.slider import Slider
+from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
 class DigitalOscillatorSection(QWidget):
     """Digital Oscillator Section for the JDXI Editor"""
 
     def __init__(
-            self,
-            create_parameter_slider: Callable,
-            create_parameter_switch: Callable,
-            create_parameter_combo_box: Callable,
-            send_midi_parameter: Callable,
-            partial_number: int,
-            midi_helper: MidiIOHelper,
-            controls: dict[AddressParameter, QWidget],
-            address: RolandSysExAddress,
+        self,
+        create_parameter_slider: Callable,
+        create_parameter_switch: Callable,
+        create_parameter_combo_box: Callable,
+        send_midi_parameter: Callable,
+        partial_number: int,
+        midi_helper: MidiIOHelper,
+        controls: dict[AddressParameter, QWidget],
+        address: RolandSysExAddress,
     ):
         super().__init__()
         self.pwm_widget = None
@@ -195,7 +196,8 @@ class DigitalOscillatorSection(QWidget):
 
         self.pw_shift_slider = self._create_parameter_slider(
             DigitalPartialParam.OSC_PULSE_WIDTH_SHIFT,
-            "Shift (range of change)", vertical=True
+            "Shift (range of change)",
+            vertical=True,
         )
         self.pw_shift_slider.setStyleSheet(JDXiStyle.ADSR)
         pwm_widget_layout = QHBoxLayout()
@@ -206,7 +208,7 @@ class DigitalOscillatorSection(QWidget):
             midi_helper=self.midi_helper,
             address=self.address,
             create_parameter_slider=self._create_parameter_slider,
-            controls=self.controls
+            controls=self.controls,
         )
         self.pwm_widget.setStyleSheet(JDXiStyle.ADSR)
         self.pwm_widget.setMaximumHeight(JDXiStyle.PWM_WIDGET_HEIGHT)
@@ -260,9 +262,7 @@ class DigitalOscillatorSection(QWidget):
             selected_btn.setStyleSheet(JDXiStyle.BUTTON_RECT_ACTIVE)
 
         # --- Send MIDI message ---
-        if not self.send_midi_parameter(
-                DigitalPartialParam.OSC_WAVE, waveform.value
-        ):
+        if not self.send_midi_parameter(DigitalPartialParam.OSC_WAVE, waveform.value):
             logging.warning(f"Failed to set waveform to {waveform.name}")
 
         self._update_waveform_controls_enabled_states(waveform)

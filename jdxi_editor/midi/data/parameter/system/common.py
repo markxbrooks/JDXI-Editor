@@ -1,4 +1,4 @@
-from jdxi_editor.midi.data.parameter.synth import AddressParameter
+from picomidi.sysex.parameter.address import AddressParameter
 
 
 class SystemCommonParam(AddressParameter):
@@ -26,13 +26,11 @@ class SystemCommonParam(AddressParameter):
         elif param == SystemCommonParam.MASTER_KEY_SHIFT:  # Master Key Shift
             semitones = value - 64  # Convert 40-88 to -24/+24
             return f"{semitones:+d} st"
-        elif (
-                param == SystemCommonParam.PROGRAM_CTRL_CH
-        ):  # Program Control Channel
+        elif param == SystemCommonParam.PROGRAM_CTRL_CH:  # Program Control Channel
             return "OFF" if value == 0 else str(value)
         elif param in (
-                SystemCommonParam.RX_PROGRAM_CHANGE,
-                SystemCommonParam.RX_BANK_SELECT,
+            SystemCommonParam.RX_PROGRAM_CHANGE,
+            SystemCommonParam.RX_BANK_SELECT,
         ):  # Switches
             return "ON" if value else "OFF"
         return str(value)

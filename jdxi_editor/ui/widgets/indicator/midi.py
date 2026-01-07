@@ -1,6 +1,6 @@
-from PySide6.QtWidgets import QLabel
 from PySide6.QtCore import Qt, QTimer
-from PySide6.QtGui import QPainter, QColor, QPen
+from PySide6.QtGui import QColor, QPainter, QPen
+from PySide6.QtWidgets import QLabel
 
 
 class MIDIIndicator(QLabel):

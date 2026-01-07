@@ -20,6 +20,8 @@ Dependencies:
 - jdxi_editor.ui.style.Style
 
 """
+
+import logging
 import os
 import random
 import zipfile
@@ -28,28 +30,27 @@ from pathlib import Path
 from typing import Optional
 
 from PySide6.QtWidgets import (
-    QMainWindow,
-    QWidget,
-    QVBoxLayout,
-    QHBoxLayout,
-    QPushButton,
     QFileDialog,
+    QHBoxLayout,
     QLineEdit,
+    QMainWindow,
+    QPushButton,
+    QVBoxLayout,
+    QWidget,
 )
-import logging
 
+from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.midi.sysex.json_composer import JDXiJSONComposer
+from jdxi_editor.project import __package_name__
 from jdxi_editor.ui.editors import ProgramEditor
 from jdxi_editor.ui.editors.io.player import MidiFileEditor
 from jdxi_editor.ui.editors.pattern.pattern import PatternSequenceEditor
-from jdxi_editor.project import __package_name__
 
 
 def zip_directory(folder_path, zip_path):
-    with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
+    with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
         for root, dirs, files in os.walk(folder_path):
             for file in files:
                 file_path = os.path.join(root, file)
@@ -142,7 +143,12 @@ class PatchManager(QMainWindow):
             random_int = random.randint(0, 10_000)
             today = datetime.today()
             date_str = today.strftime("%Y-%m-%d")
-            temp_folder = Path.home() / f".{__package_name__}" / "temp" / f"{date_str}_{random_int}/"
+            temp_folder = (
+                Path.home()
+                / f".{__package_name__}"
+                / "temp"
+                / f"{date_str}_{random_int}/"
+            )
             if not temp_folder.exists():
                 temp_folder.mkdir(parents=True, exist_ok=True)
             if self.save_mode:
@@ -155,7 +161,9 @@ class PatchManager(QMainWindow):
                     if isinstance(editor, MidiFileEditor):
                         continue
                     if not hasattr(editor, "address"):
-                        log.warning(f"Skipping invalid editor: {editor}, has no address")
+                        log.warning(
+                            f"Skipping invalid editor: {editor}, has no address"
+                        )
                         continue
                     if not hasattr(editor, "get_controls_as_dict"):
                         log.warning(
@@ -163,32 +171,40 @@ class PatchManager(QMainWindow):
                         )
                         continue
                     self.json_composer.process_editor(editor, temp_folder)
-                
+
                 # Save MIDI file if available
                 midi_file_saved = False
                 if self.parent and hasattr(self.parent, "get_existing_editor"):
                     midi_file_editor = self.parent.get_existing_editor(MidiFileEditor)
                     if midi_file_editor and hasattr(midi_file_editor, "midi_state"):
-                        if (hasattr(midi_file_editor.midi_state, "file") and 
-                            midi_file_editor.midi_state.file is not None):
+                        if (
+                            hasattr(midi_file_editor.midi_state, "file")
+                            and midi_file_editor.midi_state.file is not None
+                        ):
                             try:
                                 midi_file_path = temp_folder / "song.mid"
-                                midi_file_editor.midi_state.file.save(str(midi_file_path))
+                                midi_file_editor.midi_state.file.save(
+                                    str(midi_file_path)
+                                )
                                 midi_file_saved = True
-                                log.message(f"MIDI file saved to bundle: {midi_file_path}")
+                                log.message(
+                                    f"MIDI file saved to bundle: {midi_file_path}"
+                                )
                             except Exception as ex:
                                 log.warning(f"Could not save MIDI file to bundle: {ex}")
-                
+
                 # zip up contents of temp folder
                 temporary_files = list(temp_folder.glob("*"))
                 if len(temporary_files) == 0:
                     log.warning("No temporary files found to zip.")
                     return
-                
+
                 json_files = [f for f in temporary_files if f.suffix == ".json"]
                 midi_files = [f for f in temporary_files if f.suffix == ".mid"]
-                log.message(f"Zipping {len(json_files)} JSON files" + 
-                           (f" and {len(midi_files)} MIDI file(s)" if midi_files else ""))
+                log.message(
+                    f"Zipping {len(json_files)} JSON files"
+                    + (f" and {len(midi_files)} MIDI file(s)" if midi_files else "")
+                )
                 zip_directory(temp_folder, file_path)
 
                 file_type = "Music Bundle" if file_path.endswith(".msz") else "Patch"
@@ -196,39 +212,60 @@ class PatchManager(QMainWindow):
             else:
                 # Load patch (JSON files)
                 self.midi_helper.load_patch(file_path)
-                
+
                 # Load MIDI file from bundle if it's an .msz file
                 if file_path.endswith(".msz"):
                     try:
                         with zipfile.ZipFile(file_path, "r") as zip_ref:
-                            midi_files = [f for f in zip_ref.namelist() if f.endswith(".mid")]
-                            if midi_files and self.parent and hasattr(self.parent, "get_existing_editor"):
+                            midi_files = [
+                                f for f in zip_ref.namelist() if f.endswith(".mid")
+                            ]
+                            if (
+                                midi_files
+                                and self.parent
+                                and hasattr(self.parent, "get_existing_editor")
+                            ):
                                 # Extract MIDI file to temp location
                                 midi_file_name = midi_files[0]  # Use first MIDI file
                                 temp_midi_path = temp_folder / midi_file_name
                                 with zip_ref.open(midi_file_name) as midi_source:
-                                    temp_midi_path.parent.mkdir(parents=True, exist_ok=True)
+                                    temp_midi_path.parent.mkdir(
+                                        parents=True, exist_ok=True
+                                    )
                                     with open(temp_midi_path, "wb") as midi_dest:
                                         midi_dest.write(midi_source.read())
-                                
+
                                 # Load MIDI file into editor
-                                midi_file_editor = self.parent.get_existing_editor(MidiFileEditor)
-                                if not midi_file_editor and hasattr(self.parent, "show_editor"):
+                                midi_file_editor = self.parent.get_existing_editor(
+                                    MidiFileEditor
+                                )
+                                if not midi_file_editor and hasattr(
+                                    self.parent, "show_editor"
+                                ):
                                     # Create editor if it doesn't exist (but don't show it yet)
                                     self.parent.show_editor("midi_file")
-                                    midi_file_editor = self.parent.get_existing_editor(MidiFileEditor)
-                                
+                                    midi_file_editor = self.parent.get_existing_editor(
+                                        MidiFileEditor
+                                    )
+
                                 if midi_file_editor:
-                                    log.message(f"Loading MIDI file into editor: {midi_file_name}")
+                                    log.message(
+                                        f"Loading MIDI file into editor: {midi_file_name}"
+                                    )
                                     # Stop any current playback first
                                     if hasattr(midi_file_editor, "midi_stop_playback"):
                                         midi_file_editor.midi_stop_playback()
-                                    if hasattr(midi_file_editor, "midi_playback_worker_stop"):
+                                    if hasattr(
+                                        midi_file_editor, "midi_playback_worker_stop"
+                                    ):
                                         midi_file_editor.midi_playback_worker_stop()
-                                    
+
                                     from mido import MidiFile
+
                                     # Load MIDI file (this does NOT send it to the instrument)
-                                    midi_file_editor.midi_state.file = MidiFile(str(temp_midi_path))
+                                    midi_file_editor.midi_state.file = MidiFile(
+                                        str(temp_midi_path)
+                                    )
                                     midi_file_editor.ui.digital_title_file_name.setText(
                                         f"Loaded from bundle: {Path(midi_file_name).name}"
                                     )
@@ -236,74 +273,114 @@ class PatchManager(QMainWindow):
                                     midi_file_editor.ui.midi_track_viewer.set_midi_file(
                                         midi_file_editor.midi_state.file
                                     )
-                                    
+
                                     # Initialize MIDI file in editor (similar to midi_load_file)
                                     # Ensure ticks_per_beat is available early
-                                    midi_file_editor.ticks_per_beat = midi_file_editor.midi_state.file.ticks_per_beat
-                                    
+                                    midi_file_editor.ticks_per_beat = (
+                                        midi_file_editor.midi_state.file.ticks_per_beat
+                                    )
+
                                     # Detect initial tempo
-                                    if hasattr(midi_file_editor, "detect_initial_tempo"):
-                                        initial_track_tempos = midi_file_editor.detect_initial_tempo()
-                                    
+                                    if hasattr(
+                                        midi_file_editor, "detect_initial_tempo"
+                                    ):
+                                        initial_track_tempos = (
+                                            midi_file_editor.detect_initial_tempo()
+                                        )
+
                                     # Set tempo display
-                                    if hasattr(midi_file_editor, "ui_display_set_tempo_usecs"):
-                                        midi_file_editor.ui_display_set_tempo_usecs(midi_file_editor.midi_state.tempo_initial)
-                                    
+                                    if hasattr(
+                                        midi_file_editor, "ui_display_set_tempo_usecs"
+                                    ):
+                                        midi_file_editor.ui_display_set_tempo_usecs(
+                                            midi_file_editor.midi_state.tempo_initial
+                                        )
+
                                     # Set tempo at position
                                     midi_file_editor.midi_state.tempo_at_position = (
                                         midi_file_editor.midi_state.tempo_initial
                                     )
-                                    
+
                                     # Channel selection
                                     if hasattr(midi_file_editor, "midi_channel_select"):
                                         midi_file_editor.midi_channel_select()
-                                    
+
                                     # Extract events (this prepares the file for playback but doesn't start it)
                                     if hasattr(midi_file_editor, "midi_extract_events"):
                                         midi_file_editor.midi_extract_events()
-                                    
+
                                     # Setup worker (this prepares playback but doesn't start it)
                                     if hasattr(midi_file_editor, "setup_worker"):
                                         midi_file_editor.setup_worker()
-                                    
+
                                     # Calculate durations
                                     if hasattr(midi_file_editor, "calculate_duration"):
                                         midi_file_editor.calculate_duration()
-                                    if hasattr(midi_file_editor, "calculate_tick_duration"):
+                                    if hasattr(
+                                        midi_file_editor, "calculate_tick_duration"
+                                    ):
                                         midi_file_editor.calculate_tick_duration()
-                                    
+
                                     # Reset position slider
-                                    if hasattr(midi_file_editor, "ui_position_slider_reset"):
+                                    if hasattr(
+                                        midi_file_editor, "ui_position_slider_reset"
+                                    ):
                                         midi_file_editor.ui_position_slider_reset()
-                                    
+
                                     # Ensure playback is NOT started - stop timer and worker
-                                    if hasattr(midi_file_editor.midi_state, "timer") and midi_file_editor.midi_state.timer:
+                                    if (
+                                        hasattr(midi_file_editor.midi_state, "timer")
+                                        and midi_file_editor.midi_state.timer
+                                    ):
                                         if midi_file_editor.midi_state.timer.isActive():
                                             midi_file_editor.midi_state.timer.stop()
                                             log.message("Stopped MIDI playback timer")
-                                    
+
                                     # Ensure worker is stopped
-                                    if hasattr(midi_file_editor, "midi_playback_worker") and midi_file_editor.midi_playback_worker:
-                                        if hasattr(midi_file_editor.midi_playback_worker, "stop"):
+                                    if (
+                                        hasattr(
+                                            midi_file_editor, "midi_playback_worker"
+                                        )
+                                        and midi_file_editor.midi_playback_worker
+                                    ):
+                                        if hasattr(
+                                            midi_file_editor.midi_playback_worker,
+                                            "stop",
+                                        ):
                                             midi_file_editor.midi_playback_worker.stop()
-                                    
+
                                     # Reset playback state
-                                    if hasattr(midi_file_editor.midi_state, "playback_start_time"):
-                                        midi_file_editor.midi_state.playback_start_time = None
-                                    if hasattr(midi_file_editor.midi_state, "event_index"):
+                                    if hasattr(
+                                        midi_file_editor.midi_state,
+                                        "playback_start_time",
+                                    ):
+                                        midi_file_editor.midi_state.playback_start_time = (
+                                            None
+                                        )
+                                    if hasattr(
+                                        midi_file_editor.midi_state, "event_index"
+                                    ):
                                         midi_file_editor.midi_state.event_index = None
-                                    
+
                                     # Verify file is loaded
                                     if midi_file_editor.midi_state.file:
-                                        track_count = len(midi_file_editor.midi_state.file.tracks)
-                                        log.message(f"MIDI file loaded from bundle: {midi_file_name} ({track_count} tracks, ready for playback, NOT playing)")
+                                        track_count = len(
+                                            midi_file_editor.midi_state.file.tracks
+                                        )
+                                        log.message(
+                                            f"MIDI file loaded from bundle: {midi_file_name} ({track_count} tracks, ready for playback, NOT playing)"
+                                        )
                                     else:
-                                        log.warning(f"MIDI file failed to load: {midi_file_name}")
+                                        log.warning(
+                                            f"MIDI file failed to load: {midi_file_name}"
+                                        )
                                 else:
-                                    log.message("MIDI file found in bundle but MidiFileEditor not available")
+                                    log.message(
+                                        "MIDI file found in bundle but MidiFileEditor not available"
+                                    )
                     except Exception as ex:
                         log.warning(f"Could not load MIDI file from bundle: {ex}")
-                
+
                 file_type = "Music Bundle" if file_path.endswith(".msz") else "Patch"
                 log.message(f"{file_type} loaded from {file_path}")
 

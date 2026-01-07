@@ -42,9 +42,8 @@ Methods
 
 """
 
-
-from PySide6.QtWidgets import QWidget, QHBoxLayout, QLabel, QSpinBox
 from PySide6.QtCore import Signal, Slot
+from PySide6.QtWidgets import QHBoxLayout, QLabel, QSpinBox, QWidget
 
 
 class SpinBox(QWidget):
@@ -52,11 +51,14 @@ class SpinBox(QWidget):
 
     valueChanged = Signal(int)  # Define signal to emit selected value
 
-    def __init__(self, label: str,
-                 low: int,
-                 high: int | None = None,
-                 tooltip: str = "",
-                 parent: object | None = None) -> None:
+    def __init__(
+        self,
+        label: str,
+        low: int,
+        high: int | None = None,
+        tooltip: str = "",
+        parent: object | None = None,
+    ) -> None:
         """
         Initialize the SpinBox widget.
 

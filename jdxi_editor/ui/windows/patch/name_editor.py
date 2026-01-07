@@ -27,15 +27,14 @@ Example Usage
 
 """
 
-
 from PySide6.QtWidgets import (
     QDialog,
-    QVBoxLayout,
+    QGroupBox,
     QHBoxLayout,
     QLabel,
     QLineEdit,
     QPushButton,
-    QGroupBox,
+    QVBoxLayout,
 )
 
 from jdxi_editor.jdxi.style import JDXiStyle

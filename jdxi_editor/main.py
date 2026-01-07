@@ -19,36 +19,36 @@ Functions:
 
 """
 
-
+import cProfile
+import io
+import logging
 import os
 import platform
-import sys
-import logging
-from pathlib import Path
-import cProfile
 import pstats
-import io
+import sys
+from pathlib import Path
 
 from PySide6.QtCore import QSettings
+from PySide6.QtGui import QColor, QFont, QFontInfo, QIcon, QPixmap, QScreen, Qt
 from PySide6.QtWidgets import (
     QApplication,
-    QProgressBar,
-    QLabel,
-    QVBoxLayout,
+    QFrame,
+    QGroupBox,
     QHBoxLayout,
-    QGroupBox, QSplashScreen, QFrame,
+    QLabel,
+    QProgressBar,
+    QSplashScreen,
+    QVBoxLayout,
 )
-from PySide6.QtGui import QIcon, QPixmap, QColor, Qt, QFont, QFontInfo, QScreen
 
+from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.log.message import log_message
 from jdxi_editor.log.setup import setup_logging
-from jdxi_editor.project import __program__, __version__
+from jdxi_editor.project import __organization_name__, __program__, __version__
 from jdxi_editor.resources import resource_path
-from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 from jdxi_editor.ui.windows.jdxi.instrument import JDXiInstrument
-from jdxi_editor.project import __version__, __program__, __organization_name__
-from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 
 os.environ["QT_LOGGING_RULES"] = "qt.qpa.fonts=false"
 
@@ -110,15 +110,17 @@ def main() -> None:
                 log_message("Using fallback icon")
 
         splash, progress_bar, status_label = setup_splash_screen(app)
-        
+
         # Update splash screen with initial progress
         status_label.setText("Initializing MIDI subsystem…")
         progress_bar.setValue(10)
         app.processEvents()
-        
+
         # Create window and pass splash screen components
-        window = JDXiInstrument(splash=splash, progress_bar=progress_bar, status_label=status_label)
-        
+        window = JDXiInstrument(
+            splash=splash, progress_bar=progress_bar, status_label=status_label
+        )
+
         # Finalize splash screen
         splash.finish(window)
         window.show()
@@ -131,9 +133,11 @@ def main() -> None:
         raise
 
 
-def setup_splash_screen(app: QApplication) -> tuple[QSplashScreen, QProgressBar, QLabel]:
+def setup_splash_screen(
+    app: QApplication,
+) -> tuple[QSplashScreen, QProgressBar, QLabel]:
     """Setup and display a professional application splash screen with rotating status text.
-    
+
     Returns:
         tuple: (splash_screen, progress_bar, status_label) for updating progress
     """
@@ -144,14 +148,17 @@ def setup_splash_screen(app: QApplication) -> tuple[QSplashScreen, QProgressBar,
     if screen:
         screen_geometry = screen.availableGeometry()
         screen_center = screen_geometry.center()
-        splash.move(int(screen_center.x() - JDXiDimensions.SPLASH_WIDTH / 2), 
-                   int(screen_center.y() - JDXiDimensions.SPLASH_HEIGHT / 2))
+        splash.move(
+            int(screen_center.x() - JDXiDimensions.SPLASH_WIDTH / 2),
+            int(screen_center.y() - JDXiDimensions.SPLASH_HEIGHT / 2),
+        )
     splash.setWindowFlags(
         Qt.SplashScreen | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint
     )
     splash.setFixedSize(JDXiDimensions.SPLASH_WIDTH, JDXiDimensions.SPLASH_HEIGHT)
 
-    splash.setStyleSheet("""
+    splash.setStyleSheet(
+        """
         QSplashScreen { background-color: #111111; border: 1px solid #2c2c2c; }
         QLabel#TitleLabel { color: #f3f3f3; font-size: 28px; font-weight: 600; letter-spacing: 1px; }
         QLabel#SubtitleLabel { color: #bbbbbb; font-size: 14px; }
@@ -168,7 +175,8 @@ def setup_splash_screen(app: QApplication) -> tuple[QSplashScreen, QProgressBar,
             border-radius: 6px;
             background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #7ac1ff, stop:1 #3b8fe8);
         }
-    """)
+    """
+    )
 
     root = QVBoxLayout(splash)
     root.setContentsMargins(28, 28, 28, 28)
@@ -182,13 +190,19 @@ def setup_splash_screen(app: QApplication) -> tuple[QSplashScreen, QProgressBar,
     card_layout.setSpacing(18)
 
     # Title
-    title = DigitalTitle(__program__, digital_font_family=JDXiStyle.FONT_FAMILY_MONOSPACE, show_upper_text=False)
+    title = DigitalTitle(
+        __program__,
+        digital_font_family=JDXiStyle.FONT_FAMILY_MONOSPACE,
+        show_upper_text=False,
+    )
     card_layout.addWidget(title)
     title.setStyleSheet(JDXiStyle.INSTRUMENT_TITLE_LABEL)
 
     # Image
     image_path = resource_path(os.path.join("resources", "jdxi_cartoon_600.png"))
-    pixmap = QPixmap(image_path).scaled(360, 220, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+    pixmap = QPixmap(image_path).scaled(
+        360, 220, Qt.KeepAspectRatio, Qt.SmoothTransformation
+    )
     logo = QLabel()
     logo.setPixmap(pixmap)
     logo.setAlignment(Qt.AlignCenter)
@@ -212,7 +226,9 @@ def setup_splash_screen(app: QApplication) -> tuple[QSplashScreen, QProgressBar,
     card_layout.addLayout(progress_row)
 
     # Rotating status label
-    status_label = DigitalTitle("Starting...", digital_font_family=JDXiStyle.FONT_FAMILY_MONOSPACE)
+    status_label = DigitalTitle(
+        "Starting...", digital_font_family=JDXiStyle.FONT_FAMILY_MONOSPACE
+    )
     status_label.setStyleSheet(JDXiStyle.INSTRUMENT_SUBTITLE_LABEL)
     card_layout.addWidget(status_label)
 
@@ -248,7 +264,7 @@ if __name__ == "__main__":
         if profiling:
             profiler.disable()
             s = io.StringIO()
-            sortby = 'cumtime'  # or 'tottime'
+            sortby = "cumtime"  # or 'tottime'
             ps = pstats.Stats(profiler, stream=s).sort_stats(sortby)
             ps.print_stats(50)  # Top 50 entries
             print(s.getvalue())

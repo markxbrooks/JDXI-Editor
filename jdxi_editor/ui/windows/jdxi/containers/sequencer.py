@@ -1,6 +1,12 @@
-from PySide6.QtCore import Qt, QRect
-from PySide6.QtWidgets import QWidget, QLabel, QPushButton, QVBoxLayout
-from PySide6.QtWidgets import QHBoxLayout, QGridLayout
+from PySide6.QtCore import QRect, Qt
+from PySide6.QtWidgets import (
+    QGridLayout,
+    QHBoxLayout,
+    QLabel,
+    QPushButton,
+    QVBoxLayout,
+    QWidget,
+)
 
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.jdxi.style.factory import (

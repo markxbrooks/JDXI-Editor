@@ -1,4 +1,5 @@
 """MIDI timer management utilities."""
+
 from typing import Callable
 
 from PySide6.QtCore import QObject, QTimer
@@ -6,6 +7,7 @@ from PySide6.QtCore import QObject, QTimer
 
 class MidiTimerManager:
     """Manages MIDI playback timer and callbacks."""
+
     def __init__(self, parent: QObject, timeout_callback: Callable) -> None:
         """Initialize the timer manager."""
         self.timer = QTimer(parent)

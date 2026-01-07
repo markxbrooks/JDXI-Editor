@@ -2,7 +2,6 @@
 Arpeggiator Areas and Parts
 """
 
-
 from jdxi_editor.midi.data.address.address import Address
 
 ARP_GROUP = 0x40

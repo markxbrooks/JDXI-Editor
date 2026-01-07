@@ -26,7 +26,8 @@ Classes:
   raw values to human-readable strings.
 
 """
-from jdxi_editor.midi.data.parameter.synth import AddressParameter
+
+from picomidi.sysex.parameter.address import AddressParameter
 
 
 class ProgramControllerParam(AddressParameter):
@@ -146,13 +147,9 @@ class ProgramControllerParam(AddressParameter):
             return str(value + 1)  # Convert 0-127 to 1-128
         elif param == ProgramControllerParam.ARPEGGIO_MOTIF:  # Motif
             return ProgramControllerParam.get_motif_name(value)
-        elif (
-                param == ProgramControllerParam.ARPEGGIO_OCTAVE_RANGE
-        ):  # Octave Range
+        elif param == ProgramControllerParam.ARPEGGIO_OCTAVE_RANGE:  # Octave Range
             return f"{value - 64:+d}"  # Convert 61-67 to -3/+3
-        elif (
-                param == ProgramControllerParam.ARPEGGIO_ACCENT_RATE
-        ):  # Accent Rate
+        elif param == ProgramControllerParam.ARPEGGIO_ACCENT_RATE:  # Accent Rate
             return f"{value}%"
         elif param == ProgramControllerParam.ARPEGGIO_VELOCITY:  # Velocity
             return "REAL" if value == 0 else str(value)

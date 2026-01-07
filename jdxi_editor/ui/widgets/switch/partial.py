@@ -28,15 +28,15 @@ Usage Example:
 
 """
 
-from PySide6.QtWidgets import (
-    QWidget,
-    QHBoxLayout,
-    QCheckBox,
-)
 from PySide6.QtCore import Signal
+from PySide6.QtWidgets import (
+    QCheckBox,
+    QHBoxLayout,
+    QWidget,
+)
 
-from jdxi_editor.midi.data.digital.partial import DigitalPartial
 from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.midi.data.digital.partial import DigitalPartial
 
 
 class PartialSwitch(QWidget):

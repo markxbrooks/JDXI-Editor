@@ -31,20 +31,20 @@ preset changes and communicate them to the UI and MIDI engine.
 
 import threading
 
-from PySide6.QtCore import Signal, QObject, Qt
-from PySide6.QtWidgets import QScrollArea, QWidget, QVBoxLayout
+from PySide6.QtCore import QObject, Qt, Signal
+from PySide6.QtWidgets import QScrollArea, QVBoxLayout, QWidget
 
 from jdxi_editor.jdxi.preset.button import JDXiPresetButtonData
+from jdxi_editor.jdxi.preset.utils import get_preset_values
+from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.log.logger import Logger as log
+from jdxi_editor.log.midi_info import log_midi_info
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
-from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
 from jdxi_editor.midi.data.programs.digital import DIGITAL_PRESET_LIST
+from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
 from jdxi_editor.midi.io.delay import send_with_delay
-from jdxi_editor.jdxi.synth.type import JDXiSynth
-from jdxi_editor.jdxi.preset.utils import get_preset_values
 from jdxi_editor.midi.sysex.request.midi_requests import MidiRequests
-from jdxi_editor.log.midi_info import log_midi_info
 
 
 class JDXiPresetHelper(QObject):
@@ -160,7 +160,7 @@ class JDXiPresetHelper(QObject):
 
 
 def create_scroll_area() -> QScrollArea:
-    """ setup scroll area """
+    """setup scroll area"""
     scroll = QScrollArea()
     scroll.setWidgetResizable(True)
     scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)

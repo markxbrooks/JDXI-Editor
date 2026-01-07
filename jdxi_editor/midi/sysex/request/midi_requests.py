@@ -1,6 +1,9 @@
 from __future__ import annotations
 
-from jdxi_editor.midi.sysex.request.data import TEMPORARY_PROGRAM_RQ11_HEADER, TEMPORARY_TONE_RQ11_HEADER
+from jdxi_editor.midi.sysex.request.data import (
+    TEMPORARY_PROGRAM_RQ11_HEADER,
+    TEMPORARY_TONE_RQ11_HEADER,
+)
 from jdxi_editor.midi.sysex.request.factory import create_request
 from jdxi_editor.midi.sysex.request.hex import JDXISysExHex
 
@@ -77,45 +80,31 @@ class MidiRequests:
     )
 
     ANALOG = create_request(
-        TEMPORARY_TONE_RQ11_HEADER,
-        JDXISysExHex.ANALOG,
-        "00 00 00 00 00 40"
+        TEMPORARY_TONE_RQ11_HEADER, JDXISysExHex.ANALOG, "00 00 00 00 00 40"
     )
 
     DRUMS = create_request(
-        TEMPORARY_TONE_RQ11_HEADER,
-        JDXISysExHex.DRUMS,
-        "00 00 00 00 00 12"
+        TEMPORARY_TONE_RQ11_HEADER, JDXISysExHex.DRUMS, "00 00 00 00 00 12"
     )
 
     DRUMS_BD1 = create_request(
-        TEMPORARY_TONE_RQ11_HEADER,
-        JDXISysExHex.DRUMS,
-        "2E 00 00 00 01 43"
+        TEMPORARY_TONE_RQ11_HEADER, JDXISysExHex.DRUMS, "2E 00 00 00 01 43"
     )
 
     DRUMS_RIM = create_request(
-        TEMPORARY_TONE_RQ11_HEADER,
-        JDXISysExHex.DRUMS,
-        "30 00 00 00 01 43"
+        TEMPORARY_TONE_RQ11_HEADER, JDXISysExHex.DRUMS, "30 00 00 00 01 43"
     )
 
     DRUMS_BD2 = create_request(
-        TEMPORARY_TONE_RQ11_HEADER,
-        JDXISysExHex.DRUMS,
-        "32 00 00 00 01 43"
+        TEMPORARY_TONE_RQ11_HEADER, JDXISysExHex.DRUMS, "32 00 00 00 01 43"
     )
 
     DRUMS_CLAP = create_request(
-        TEMPORARY_TONE_RQ11_HEADER,
-        JDXISysExHex.DRUMS,
-        "34 00 00 00 01 43"
+        TEMPORARY_TONE_RQ11_HEADER, JDXISysExHex.DRUMS, "34 00 00 00 01 43"
     )
 
     DRUMS_BD3 = create_request(
-        TEMPORARY_TONE_RQ11_HEADER,
-        JDXISysExHex.DRUMS,
-        "36 00 00 00 01 43"
+        TEMPORARY_TONE_RQ11_HEADER, JDXISysExHex.DRUMS, "36 00 00 00 01 43"
     )
 
     DRUMS_BD1_RIM_BD2_CLAP_BD3 = [

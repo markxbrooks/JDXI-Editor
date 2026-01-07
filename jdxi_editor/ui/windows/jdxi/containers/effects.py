@@ -2,7 +2,7 @@
 Effects buttons
 """
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout
+from PySide6.QtWidgets import QVBoxLayout, QWidget
 
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions

@@ -14,8 +14,8 @@ def send_nrpn(self, channel, msb, lsb, value):
 
 import threading
 
-from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.io.delay import send_with_delay
 from jdxi_editor.midi.sysex.request.midi_requests import MidiRequests
 from jdxi_editor.ui.widgets.slider import Slider
@@ -47,7 +47,7 @@ class NRPNSlider(Slider):
             vertical=vertical,
             show_value_label=False,
             draw_tick_marks=False,
-            is_bipolar=is_bipolar
+            is_bipolar=is_bipolar,
         )
         """Initialize the NRPNSlider.
 

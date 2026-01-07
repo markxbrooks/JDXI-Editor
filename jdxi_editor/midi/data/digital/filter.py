@@ -1,4 +1,5 @@
 """Digital Filter"""
+
 from enum import Enum
 
 

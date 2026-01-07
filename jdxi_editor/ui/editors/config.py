@@ -19,7 +19,7 @@ Example usage:
 """
 
 from dataclasses import dataclass, field
-from typing import Optional, Any, Dict
+from typing import Any, Dict, Optional
 
 from jdxi_editor.ui.editors.synth.base import SynthBase
 
@@ -27,6 +27,7 @@ from jdxi_editor.ui.editors.synth.base import SynthBase
 @dataclass
 class EditorConfig:
     """Configuration for a synth editor."""
+
     title: str
     editor_class: SynthBase
     synth_type: Optional[Any] = None

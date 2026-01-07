@@ -32,20 +32,21 @@ Example:
     editor = DrumWMTSection(midi_helper)
     editor.show()
 """
+
 import re
-from typing import Callable, Any
+from typing import Any, Callable
 
 from PySide6.QtWidgets import (
-    QGroupBox,
-    QFormLayout,
-    QWidget,
-    QVBoxLayout,
-    QScrollArea,
-    QTabWidget,
     QComboBox,
+    QFormLayout,
+    QGroupBox,
+    QHBoxLayout,
     QLabel,
     QLineEdit,
-    QHBoxLayout,
+    QScrollArea,
+    QTabWidget,
+    QVBoxLayout,
+    QWidget,
 )
 
 from jdxi_editor.jdxi.style import JDXiStyle
@@ -60,13 +61,13 @@ class DrumWMTSection(QWidget):
     """Drum TVF Section for the JDXI Editor"""
 
     def __init__(
-            self,
-            controls,
-            create_parameter_combo_box,
-            create_parameter_slider,
-            create_parameter_switch,
-            midi_helper,
-            address=None,
+        self,
+        controls,
+        create_parameter_combo_box,
+        create_parameter_slider,
+        create_parameter_switch,
+        midi_helper,
+        address=None,
     ):
         super().__init__()
         """
@@ -118,9 +119,11 @@ class DrumWMTSection(QWidget):
         wmt_velocity_control_combo_row_layout = QHBoxLayout()
         wmt_layout.addLayout(wmt_velocity_control_combo_row_layout)
         wmt_velocity_control_combo_row_layout.addStretch()
-        wmt_velocity_control_combo = self._create_parameter_switch(DrumPartialParam.WMT_VELOCITY_CONTROL,
-                                                                   "Velocity control",
-                                                                   ["OFF", "ON", "RANDOM"])
+        wmt_velocity_control_combo = self._create_parameter_switch(
+            DrumPartialParam.WMT_VELOCITY_CONTROL,
+            "Velocity control",
+            ["OFF", "ON", "RANDOM"],
+        )
         wmt_velocity_control_combo_row_layout.addWidget(wmt_velocity_control_combo)
         wmt_velocity_control_combo_row_layout.addStretch()
 
@@ -165,12 +168,18 @@ class DrumWMTSection(QWidget):
 
         self.wmt_controls_tab_widget = QTabWidget()
         main_row_hlayout.addWidget(self.wmt_controls_tab_widget)
-        self.wmt_controls_tab_widget.addTab(self._create_wmt_controls_group(p), "Controls")
-        self.wmt_controls_tab_widget.addTab(self._create_wave_combo_group(p, wmt_index), "Waves")
+        self.wmt_controls_tab_widget.addTab(
+            self._create_wmt_controls_group(p), "Controls"
+        )
+        self.wmt_controls_tab_widget.addTab(
+            self._create_wave_combo_group(p, wmt_index), "Waves"
+        )
         self.wmt_controls_tab_widget.addTab(self._create_fxm_group(p), "FXM")
         self.wmt_controls_tab_widget.addTab(self._create_tuning_group(p), "Tuning")
         self.wmt_controls_tab_widget.addTab(self._create_wmt_pan_group(p), "Pan")
-        self.wmt_controls_tab_widget.addTab(self._create_adsr_widget(p), "ADSR Envelope")
+        self.wmt_controls_tab_widget.addTab(
+            self._create_adsr_widget(p), "ADSR Envelope"
+        )
         return main_row_hlayout
 
     def _create_wmt_controls_group(self, p: Callable[[Any], Any]):
@@ -417,21 +426,22 @@ class DrumWMTSection(QWidget):
         return wmt_pan_group
 
     def _create_adsr_widget(self, p: Callable[[Any], Any]) -> WMTEnvelopeWidget:
-        adsr_widget = WMTEnvelopeWidget(fade_lower_param=p("VELOCITY_FADE_WIDTH_LOWER"),
-                                        range_lower_param=p("VELOCITY_RANGE_LOWER"),
-                                        range_upper_param=p("VELOCITY_RANGE_UPPER"),
-                                        depth_param=p("WAVE_LEVEL"),
-                                        fade_upper_param=p("VELOCITY_FADE_WIDTH_UPPER"),
-                                        create_parameter_slider=self._create_parameter_slider,
-                                        controls=self.controls,
-                                        midi_helper=self.midi_helper,
-                                        address=self.address,
-                                        )
+        adsr_widget = WMTEnvelopeWidget(
+            fade_lower_param=p("VELOCITY_FADE_WIDTH_LOWER"),
+            range_lower_param=p("VELOCITY_RANGE_LOWER"),
+            range_upper_param=p("VELOCITY_RANGE_UPPER"),
+            depth_param=p("WAVE_LEVEL"),
+            fade_upper_param=p("VELOCITY_FADE_WIDTH_UPPER"),
+            create_parameter_slider=self._create_parameter_slider,
+            controls=self.controls,
+            midi_helper=self.midi_helper,
+            address=self.address,
+        )
         adsr_widget.setStyleSheet(JDXiStyle.ADSR)
         return adsr_widget
 
     def _create_tuning_group(self, p: Callable[[Any], Any]):
-        """ Tuning Group"""
+        """Tuning Group"""
         tuning_group = QGroupBox("Tuning")
         form_layout = QFormLayout()
         tuning_group.setLayout(form_layout)

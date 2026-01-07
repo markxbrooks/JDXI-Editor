@@ -36,22 +36,23 @@ Dependencies:
     - QIcons generated from waveform base64 data
 """
 
-from typing import Dict, Union, Optional
+from typing import Dict, Optional, Union
 
 import qtawesome as qta
 from PySide6.QtWidgets import (
-    QWidget,
-    QVBoxLayout,
     QTabWidget,
+    QVBoxLayout,
+    QWidget,
 )
 
+from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import AddressOffsetSuperNATURALLMB
-from jdxi_editor.midi.data.parameter.digital import DigitalCommonParam
-from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParam
 from jdxi_editor.midi.data.digital.oscillator import DigitalOscWave
 from jdxi_editor.midi.data.digital.partial import DIGITAL_PARTIAL_NAMES
-from jdxi_editor.jdxi.synth.type import JDXiSynth
+from jdxi_editor.midi.data.parameter.digital import DigitalCommonParam
+from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.digital.partial.amp import DigitalAmpSection
 from jdxi_editor.ui.editors.digital.partial.filter import DigitalFilterSection
@@ -59,7 +60,6 @@ from jdxi_editor.ui.editors.digital.partial.lfo import DigitalLFOSection
 from jdxi_editor.ui.editors.digital.partial.mod_lfo import DigitalModLFOSection
 from jdxi_editor.ui.editors.digital.partial.oscillator import DigitalOscillatorSection
 from jdxi_editor.ui.editors.synth.partial import PartialEditor
-from jdxi_editor.jdxi.style import JDXiStyle
 
 
 class DigitalPartialEditor(PartialEditor):
@@ -100,9 +100,13 @@ class DigitalPartialEditor(PartialEditor):
         self.partial_number = partial_number
         self.preset_type = preset_type
         if synth_number == 1:
-            self._init_synth_data(synth_type=JDXiSynth.DIGITAL_SYNTH_1, partial_number=self.partial_number)
+            self._init_synth_data(
+                synth_type=JDXiSynth.DIGITAL_SYNTH_1, partial_number=self.partial_number
+            )
         elif synth_number == 2:
-            self._init_synth_data(synth_type=JDXiSynth.DIGITAL_SYNTH_2, partial_number=self.partial_number)
+            self._init_synth_data(
+                synth_type=JDXiSynth.DIGITAL_SYNTH_2, partial_number=self.partial_number
+            )
             """elif synth_number == 3:
                 self._init_synth_data(synth_type=JDXiSynth.DIGITAL_SYNTH_3, partial_number=self.partial_number)"""
         else:
@@ -171,7 +175,7 @@ class DigitalPartialEditor(PartialEditor):
             self._create_parameter_slider,
             self._create_parameter_switch,
             self._create_parameter_combo_box,
-            self.controls
+            self.controls,
         )
         self.tab_widget.addTab(
             self.lfo_tab, qta.icon("mdi.sine-wave", color="#666666"), "LFO"
@@ -189,7 +193,7 @@ class DigitalPartialEditor(PartialEditor):
         # Add container to scroll area
         main_layout.addWidget(container)
         self.updating_from_spinbox = False
-        log.parameter(f"DigitalPartialEditor initialized for",  self)
+        log.parameter(f"DigitalPartialEditor initialized for", self)
 
     def __str__(self):
         return f"{self.__class__.__name__} {self.preset_type} partial: {self.partial_number}"
@@ -234,7 +238,5 @@ class DigitalPartialEditor(PartialEditor):
             selected_btn.setStyleSheet(JDXiStyle.BUTTON_RECT_ACTIVE)
 
         # Send MIDI message
-        if not self.send_midi_parameter(
-            DigitalPartialParam.OSC_WAVE, waveform.value
-        ):
+        if not self.send_midi_parameter(DigitalPartialParam.OSC_WAVE, waveform.value):
             log.warning(f"Failed to set waveform to {waveform.name}")

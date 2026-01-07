@@ -2,7 +2,7 @@
 Collected SysEx constants
 """
 
-from enum import unique, IntEnum
+from enum import IntEnum, unique
 
 """Miscellaneous"""
 START_OF_SYSEX = 0xF0

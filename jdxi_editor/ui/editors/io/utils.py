@@ -1,6 +1,7 @@
 """
 Editor IO Utils
 """
+
 from mido import MidiFile
 
 from picomidi.constant import MidiConstant
@@ -38,6 +39,6 @@ def get_last_tempo(midi_file: MidiFile) -> int:
     tempo = MidiConstant.TEMPO_120_BPM_USEC  # 500_000 default
     for track in midi_file.tracks:
         for msg in track:
-            if msg.type == 'set_tempo':
+            if msg.type == "set_tempo":
                 tempo = msg.tempo
     return tempo

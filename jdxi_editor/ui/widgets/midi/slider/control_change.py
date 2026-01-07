@@ -13,9 +13,8 @@ def send_nrpn(self, channel, msb, lsb, value):
 
 """
 
-
-from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.ui.widgets.slider import Slider
 
 

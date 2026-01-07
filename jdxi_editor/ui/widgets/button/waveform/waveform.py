@@ -2,8 +2,9 @@
 Waveform Button
 """
 
-from PySide6.QtWidgets import QPushButton, QWidget
 from PySide6.QtCore import Signal
+from PySide6.QtWidgets import QPushButton, QWidget
+
 from jdxi_editor.midi.wave.form import Waveform
 
 

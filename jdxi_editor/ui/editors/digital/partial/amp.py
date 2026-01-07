@@ -1,21 +1,29 @@
 """
- AMP section for the digital partial editor.
+AMP section for the digital partial editor.
 """
 
 from typing import Callable
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QGroupBox, QTabWidget
-from PySide6.QtCore import Qt
-import qtawesome as qta
 
-from jdxi_editor.midi.data.parameter import AddressParameter
+import qtawesome as qta
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import (
+    QGroupBox,
+    QHBoxLayout,
+    QLabel,
+    QTabWidget,
+    QVBoxLayout,
+    QWidget,
+)
+
+from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.midi.data.address.address import RolandSysExAddress
+from picomidi.sysex.parameter.address import AddressParameter
 from jdxi_editor.midi.data.parameter.digital.partial import (
     DigitalPartialParam,
 )
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
-from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
@@ -120,12 +128,16 @@ class DigitalAmpSection(QWidget):
         )
         controls_row_layout.addWidget(
             self._create_parameter_slider(
-                DigitalPartialParam.LEVEL_AFTERTOUCH, "After-touch Sensitivity", vertical=True
+                DigitalPartialParam.LEVEL_AFTERTOUCH,
+                "After-touch Sensitivity",
+                vertical=True,
             )
         )
         controls_row_layout.addWidget(
             self._create_parameter_slider(
-                DigitalPartialParam.CUTOFF_AFTERTOUCH, "After-touch Cutoff", vertical=True
+                DigitalPartialParam.CUTOFF_AFTERTOUCH,
+                "After-touch Cutoff",
+                vertical=True,
             )
         )
         controls_row_layout.addStretch()
@@ -134,14 +146,12 @@ class DigitalAmpSection(QWidget):
         # Pan slider in a separate row
         pan_row_layout = QHBoxLayout()
         pan_row_layout.addStretch()
-        pan_slider = self._create_parameter_slider(
-            DigitalPartialParam.AMP_PAN, "Pan"
-        )
+        pan_slider = self._create_parameter_slider(DigitalPartialParam.AMP_PAN, "Pan")
         pan_slider.setValue(0)
         pan_row_layout.addWidget(pan_slider)
         pan_row_layout.addStretch()
         main_layout.addLayout(pan_row_layout)
-        
+
         main_layout.addStretch()
         return main_layout
 

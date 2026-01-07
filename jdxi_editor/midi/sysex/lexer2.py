@@ -1,8 +1,13 @@
 import re
 
-from jdxi_editor.midi.data.address.address import AddressStartMSB, AddressOffsetSystemUMB, \
-    AddressOffsetSuperNATURALLMB, AddressOffsetProgramLMB, AddressOffsetTemporaryToneUMB, AddressOffsetProgramLMB, \
-    AddressOffsetSystemLMB
+from jdxi_editor.midi.data.address.address import (
+    AddressOffsetProgramLMB,
+    AddressOffsetSuperNATURALLMB,
+    AddressOffsetSystemLMB,
+    AddressOffsetSystemUMB,
+    AddressOffsetTemporaryToneUMB,
+    AddressStartMSB,
+)
 
 # Simplified token matchers
 TOKENS = {
@@ -20,7 +25,7 @@ TEST_PARAMETER_ADDRESS_MAP = {
         "3-byte-offsets": {
             "00 00 00": AddressOffsetSystemUMB.COMMON.name,
             "00 03 00": AddressOffsetSystemLMB.CONTROLLER.name,
-        }
+        },
     },
     "Temporary Tone": {
         "4-byte-addresses": {
@@ -34,7 +39,7 @@ TEST_PARAMETER_ADDRESS_MAP = {
             "01 00 00": AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_1.name,
             "02 00 00": AddressOffsetTemporaryToneUMB.ANALOG_SYNTH.name,
             "10 00 00": AddressOffsetTemporaryToneUMB.DRUM_KIT.name,
-        }
+        },
     },
     "Program": {
         "3-byte-offsets": {
@@ -68,7 +73,7 @@ TEST_PARAMETER_ADDRESS_MAP = {
         "3-byte-offsets": {
             "00 00 00": AddressOffsetProgramLMB.COMMON.name,
         }
-    }
+    },
 }
 
 
@@ -78,21 +83,21 @@ def lex_addresses(input_data: str):
 
     # Match 4-byte addresses
     for match in re.findall(TOKENS["4-byte-addresses"], input_data):
-        normalized = ' '.join(match.split())
+        normalized = " ".join(match.split())
         tokens.append(("4-byte-addresses", normalized))
         used.add(normalized)
 
         # Also extract implied 3-byte offset
         parts = normalized.split()
         if len(parts) == 4:
-            offset = ' '.join(parts[1:])
+            offset = " ".join(parts[1:])
             if offset not in used:
                 tokens.append(("3-byte-offsets", offset))
                 used.add(offset)
 
     # Match any remaining 3-byte offsets
     for match in re.findall(TOKENS["3-byte-offsets"], input_data):
-        normalized = ' '.join(match.split())
+        normalized = " ".join(match.split())
         if normalized not in used:
             tokens.append(("3-byte-offsets", normalized))
             used.add(normalized)
@@ -108,24 +113,30 @@ def map_tokens_all(tokens):
 
         if token_type == "4-byte-addresses":
             token_value.split()[0]
-            offset = ' '.join(token_value.split()[1:])
+            offset = " ".join(token_value.split()[1:])
 
             for area_name, entry in TEST_PARAMETER_ADDRESS_MAP.items():
                 if token_value in entry.get("4-byte-addresses", {}):
-                    mapped[token_value] = f"{entry['4-byte-addresses'][token_value]} [{area_name}]"
+                    mapped[token_value] = (
+                        f"{entry['4-byte-addresses'][token_value]} [{area_name}]"
+                    )
                     matched = True
                     break
 
                 # If no direct match, try 3-byte offset under same area
                 if offset in entry.get("3-byte-offsets", {}):
-                    mapped[token_value] = f"{entry['3-byte-offsets'][offset]} [offset of {area_name}]"
+                    mapped[token_value] = (
+                        f"{entry['3-byte-offsets'][offset]} [offset of {area_name}]"
+                    )
                     matched = True
                     break
 
         elif token_type == "3-byte-offsets":
             for area_name, entry in TEST_PARAMETER_ADDRESS_MAP.items():
                 if token_value in entry.get("3-byte-offsets", {}):
-                    mapped[token_value] = f"{entry['3-byte-offsets'][token_value]} [{area_name}]"
+                    mapped[token_value] = (
+                        f"{entry['3-byte-offsets'][token_value]} [{area_name}]"
+                    )
                     matched = True
                     break
 
