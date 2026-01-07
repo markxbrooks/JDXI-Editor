@@ -39,36 +39,37 @@ Dependencies:
 
 from typing import Optional
 
-from PySide6.QtWidgets import (
-    QVBoxLayout,
-    QComboBox,
-    QPushButton,
-    QWidget,
-    QLabel,
-    QHBoxLayout,
-    QLineEdit, QGroupBox,
-)
-from PySide6.QtCore import Signal, Qt
 import qtawesome as qta
+from PySide6.QtCore import Qt, Signal
+from PySide6.QtWidgets import (
+    QComboBox,
+    QGroupBox,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QPushButton,
+    QVBoxLayout,
+    QWidget,
+)
 
+from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.jdxi.preset.lists import JDXiPresetToneList
+from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.log.logger import Logger as log
-from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
-from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
-from jdxi_editor.midi.data.programs.digital import DIGITAL_PRESET_LIST
-from jdxi_editor.midi.channel.channel import MidiChannel
-from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
-from jdxi_editor.midi.sysex.request.midi_requests import MidiRequests
-from jdxi_editor.ui.editors.helpers.program import (
-    get_program_by_id,
-    calculate_midi_values,
-)
-from jdxi_editor.ui.editors.helpers.preset import get_preset_parameter_value
 from jdxi_editor.log.midi_info import log_midi_info
+from jdxi_editor.midi.channel.channel import MidiChannel
+from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
+from jdxi_editor.midi.data.programs.digital import DIGITAL_PRESET_LIST
+from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
+from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.midi.sysex.request.midi_requests import MidiRequests
+from jdxi_editor.ui.editors.helpers.preset import get_preset_parameter_value
+from jdxi_editor.ui.editors.helpers.program import (
+    calculate_midi_values,
+    get_program_by_id,
+)
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
-from jdxi_editor.jdxi.style import JDXiStyle
 
 
 class PresetEditor(BasicEditor):
@@ -263,7 +264,9 @@ class PresetEditor(BasicEditor):
         )
         self._populate_presets()
         self.midi_helper.update_tone_name.connect(
-             lambda tone_name, synth_type: self.update_tone_name_for_synth(tone_name, synth_type)
+            lambda tone_name, synth_type: self.update_tone_name_for_synth(
+                tone_name, synth_type
+            )
         )
 
     def _create_preset_selection_group(self) -> QGroupBox:
@@ -319,7 +322,9 @@ class PresetEditor(BasicEditor):
         preset_vlayout.addWidget(self.load_button)
         return preset_group
 
-    def on_preset_type_changed(self, index: int) -> None:  # pylint: disable=unused-argument
+    def on_preset_type_changed(
+        self, index: int
+    ) -> None:  # pylint: disable=unused-argument
         """Handle preset type selection change."""
         preset_type = self.digital_preset_type_combo.currentText()
         log.message(f"preset_type: {preset_type}")
@@ -351,9 +356,13 @@ class PresetEditor(BasicEditor):
         if label:
             label.setText(tone_name)
         else:
-            log.warning(f"synth type: {synth_type} not found in mapping. Cannot update tone name.")
+            log.warning(
+                f"synth type: {synth_type} not found in mapping. Cannot update tone name."
+            )
 
-    def load_preset_by_program_change(self, preset_index: int) -> None:  # pylint: disable=unused-argument
+    def load_preset_by_program_change(
+        self, preset_index: int
+    ) -> None:  # pylint: disable=unused-argument
         """
         Load a preset by program change.
 

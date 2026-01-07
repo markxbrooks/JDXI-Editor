@@ -7,7 +7,7 @@ example, ABH in hexadecimal notation will be divided to 0AH and
 0BH, and is sent/received in this order.
 **“<*>” marked address
 
-For reference: 
+For reference:
 JD-Xi (ModelID = 00H 00H 00H 0EH)
 +------------------------------------------------------------------------------+
 | Start       |                                                                |
@@ -92,9 +92,14 @@ JD-Xi (ModelID = 00H 00H 00H 0EH)
 +------------------------------------------------------------------------------+
 """
 
-from jdxi_editor.midi.data.address.address import AddressStartMSB, \
-    AddressOffsetSuperNATURALLMB, AddressOffsetProgramLMB, AddressOffsetTemporaryToneUMB, \
-    AddressOffsetProgramLMB, AddressOffsetSystemLMB, AddressOffsetDrumKitLMB
+from jdxi_editor.midi.data.address.address import (
+    AddressOffsetDrumKitLMB,
+    AddressOffsetProgramLMB,
+    AddressOffsetSuperNATURALLMB,
+    AddressOffsetSystemLMB,
+    AddressOffsetTemporaryToneUMB,
+    AddressStartMSB,
+)
 
 PARAMETER_ADDRESS_MAP = {
     "System": {
@@ -105,7 +110,7 @@ PARAMETER_ADDRESS_MAP = {
         "3-byte-offsets": {
             "00 00 00": AddressOffsetSystemLMB.COMMON.name,  # "System Common",
             "00 03 00": AddressOffsetSystemLMB.CONTROLLER.name,  # "System Controller"
-        }
+        },
     },
     "Temporary Tone": {
         "4-byte-addresses": {
@@ -119,7 +124,7 @@ PARAMETER_ADDRESS_MAP = {
             "01 00 00": AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_1.name,  # "Temporary SuperNATURAL Synth Tone",
             "02 00 00": AddressOffsetTemporaryToneUMB.ANALOG_SYNTH.name,  #  "Temporary Analog Synth T one",
             "10 00 00": AddressOffsetTemporaryToneUMB.DRUM_KIT.name,  #  "Temporary Drum Kit"
-        }
+        },
     },
     "Program": {
         "3-byte-offsets": {
@@ -127,8 +132,8 @@ PARAMETER_ADDRESS_MAP = {
             "00 01 00": AddressOffsetProgramLMB.VOCAL_EFFECT.name,  # "Program Vocal Effect",
             "00 02 00": AddressOffsetProgramLMB.EFFECT_1.name,  # "Program Effect 1",
             "00 04 00": AddressOffsetProgramLMB.EFFECT_2.name,  # "Program Effect 2",
-            "00 06 00": AddressOffsetProgramLMB.DELAY.name, # "Program Delay",
-            "00 08 00": AddressOffsetProgramLMB.REVERB.name, # "Program Reverb",
+            "00 06 00": AddressOffsetProgramLMB.DELAY.name,  # "Program Delay",
+            "00 08 00": AddressOffsetProgramLMB.REVERB.name,  # "Program Reverb",
             "00 20 00": AddressOffsetProgramLMB.PART_DIGITAL_SYNTH_1.name,  # "Program Part (Digital Synth Part 1)",
             "00 21 00": AddressOffsetProgramLMB.PART_DIGITAL_SYNTH_2.name,  # "Program Part (Digital Synth Part 2)",
             "00 22 00": AddressOffsetProgramLMB.PART_ANALOG.name,  # "Program Part (Analog Synth Part)",
@@ -136,7 +141,7 @@ PARAMETER_ADDRESS_MAP = {
             "00 30 00": AddressOffsetProgramLMB.ZONE_DIGITAL_SYNTH_1.name,  # "Program Zone (Digital Synth Part 1)",
             "00 31 00": AddressOffsetProgramLMB.ZONE_DIGITAL_SYNTH_2.name,  # "Program Zone (Digital Synth Part 2)",
             "00 32 00": AddressOffsetProgramLMB.ZONE_ANALOG.name,  # "Program Zone (Analog Synth Part)",
-            "00 33 00": AddressOffsetProgramLMB.ZONE_DRUM.name , # "Program Zone (Drums Part)",
+            "00 33 00": AddressOffsetProgramLMB.ZONE_DRUM.name,  # "Program Zone (Drums Part)",
             "00 40 00": AddressOffsetProgramLMB.CONTROLLER.name,
         }
     },
@@ -146,7 +151,7 @@ PARAMETER_ADDRESS_MAP = {
             "00 20 00": AddressOffsetSuperNATURALLMB.PARTIAL_1.name,  # "SuperNATURAL Synth Tone Partial (1)",
             "00 21 00": AddressOffsetSuperNATURALLMB.PARTIAL_2.name,  # "SuperNATURAL Synth Tone Partial (2)",
             "00 22 00": AddressOffsetSuperNATURALLMB.PARTIAL_3.name,  # "SuperNATURAL Synth Tone Partial (3)",
-            "00 50 00": AddressOffsetSuperNATURALLMB.MODIFY.name  # "SuperNATURAL Synth Tone Modify"
+            "00 50 00": AddressOffsetSuperNATURALLMB.MODIFY.name,  # "SuperNATURAL Synth Tone Modify"
         }
     },
     "Analog Synth Tone": {
@@ -193,7 +198,7 @@ PARAMETER_ADDRESS_MAP = {
             "00 70 00": AddressOffsetDrumKitLMB.DRUM_KIT_PART_34.name,  # "Drum Kit Partial (Key # 69)",
             "00 72 00": AddressOffsetDrumKitLMB.DRUM_KIT_PART_35.name,  # "Drum Kit Partial (Key # 70)",
             "00 74 00": AddressOffsetDrumKitLMB.DRUM_KIT_PART_36.name,  # "Drum Kit Partial (Key # 71)",
-            "00 76 00": AddressOffsetDrumKitLMB.DRUM_KIT_PART_37.name  # "Drum Kit Partial (Key # 72)"
+            "00 76 00": AddressOffsetDrumKitLMB.DRUM_KIT_PART_37.name,  # "Drum Kit Partial (Key # 72)"
         }
-    }
+    },
 }

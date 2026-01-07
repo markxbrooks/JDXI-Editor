@@ -9,19 +9,19 @@ to filter and select them easily.
 #                 selected_text.split(":")[0].strip()
 """
 
+from PySide6.QtCore import Signal
 from PySide6.QtWidgets import (
-    QWidget,
-    QVBoxLayout,
-    QHBoxLayout,
     QComboBox,
+    QHBoxLayout,
     QLabel,
     QLineEdit,
     QPushButton,
+    QVBoxLayout,
+    QWidget,
 )
-from PySide6.QtCore import Signal
 
-from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.log.logger import Logger as log
 
 
 class PresetComboBox(QWidget):

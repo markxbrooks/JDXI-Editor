@@ -3,7 +3,7 @@ Program container for instrument UI
 """
 
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton
+from PySide6.QtWidgets import QHBoxLayout, QLabel, QPushButton, QVBoxLayout, QWidget
 
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions

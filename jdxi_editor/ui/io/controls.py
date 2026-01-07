@@ -7,7 +7,6 @@ as input, and it combines the controls into a single JSON object before saving i
 
 import json
 
-
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB
 from jdxi_editor.ui.windows.midi.debugger import parse_sysex_byte
@@ -29,12 +28,14 @@ def save_all_controls_to_single_file(editors: list, file_path: str) -> None:
                 log.warning(f"Skipping invalid editor: {editor}, has no address")
                 continue
             if not hasattr(editor, "get_controls_as_dict"):
-                log.warning(f"Skipping invalid editor: {editor}, "
-                            "has no get_controls_as_dict method")
+                log.warning(
+                    f"Skipping invalid editor: {editor}, "
+                    "has no get_controls_as_dict method"
+                )
                 continue
 
             # Convert address to hex string without spaces
-            address_hex = ''.join([f"{x:02x}" for x in editor.address.to_bytes()])
+            address_hex = "".join([f"{x:02x}" for x in editor.address.to_bytes()])
 
             synth_tone_byte = address_hex[4:6]
             combined_data["ADDRESS"] = address_hex
@@ -47,7 +48,9 @@ def save_all_controls_to_single_file(editors: list, file_path: str) -> None:
                 "21": "PARTIAL_2",
                 "22": "PARTIAL_3",
             }
-            combined_data["SYNTH_TONE"] = synth_tone_map.get(synth_tone_byte, "UNKNOWN_SYNTH_TONE")
+            combined_data["SYNTH_TONE"] = synth_tone_map.get(
+                synth_tone_byte, "UNKNOWN_SYNTH_TONE"
+            )
             # Get the raw control values instead of the full control data
             other_data = editor.get_controls_as_dict()
             for key, value in other_data.items():

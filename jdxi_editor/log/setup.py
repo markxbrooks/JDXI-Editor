@@ -2,7 +2,8 @@ import logging
 import sys
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
-from jdxi_editor.project import __program__, __version__, __package_name__
+
+from jdxi_editor.project import __package_name__, __program__, __version__
 
 
 def setup_logging(log_level: int = logging.DEBUG) -> logging.Logger:
@@ -52,4 +53,3 @@ def setup_logging(log_level: int = logging.DEBUG) -> logging.Logger:
     except Exception as ex:
         print(f"Error setting up logging: {str(ex)}")
         raise
-

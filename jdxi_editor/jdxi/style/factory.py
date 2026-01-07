@@ -35,6 +35,7 @@ These functions help ensure a cohesive and visually distinct UI experience, part
 other interactive applications.
 
 """
+
 import platform
 
 from PySide6.QtWidgets import QPushButton
@@ -48,7 +49,7 @@ else:
 
 
 def generate_polyend_sequencer_button_style(
-        self, is_checked: bool, is_current: bool = False
+    self, is_checked: bool, is_current: bool = False
 ) -> str:
     """
     Generate button style based on state and current step
@@ -107,17 +108,17 @@ def generate_sequencer_button_style(active: bool) -> str:
 
 
 def generate_button_style(
-        bg: str,
-        border: str,
-        radius: int,
-        text_color: str,
-        hover: str,
-        border_pressed: str,
-        background_pressed: str = "#666666",
-        button_border_width: int = 4,
-        font_family: str = FONT_FAMILY,
-        font_size: str = "12px",
-        button_padding: int = 4,
+    bg: str,
+    border: str,
+    radius: int,
+    text_color: str,
+    hover: str,
+    border_pressed: str,
+    background_pressed: str = "#666666",
+    button_border_width: int = 4,
+    font_family: str = FONT_FAMILY,
+    font_size: str = "12px",
+    button_padding: int = 4,
 ) -> str:
     """
     Generate address button style dynamically.
@@ -161,19 +162,19 @@ def generate_button_style(
 
 
 def generate_tab_style(
-        bg: str,
-        border: str,
-        radius: int,
-        text_color: str,
-        hover_bg: str,
-        hover_border: str,
-        selected_bg: str,
-        selected_border: str,
-        font_family: str = FONT_FAMILY,
-        font_size: str = "12px",
-        padding: str = "1px 1px",
-        margin: str = "1px",
-        accent: str = "#FF2200"
+    bg: str,
+    border: str,
+    radius: int,
+    text_color: str,
+    hover_bg: str,
+    hover_border: str,
+    selected_bg: str,
+    selected_border: str,
+    font_family: str = FONT_FAMILY,
+    font_size: str = "12px",
+    padding: str = "1px 1px",
+    margin: str = "1px",
+    accent: str = "#FF2200",
 ):
     """
     Generate address tab style dynamically.
@@ -238,21 +239,22 @@ def generate_tab_style(
 
 
 def generate_editor_style(
-        accent: str,
-        accent_hover: str,
-        background: str,
-        foreground: str,
-        font_family: str,
-        font_size: str,
-        padding: int,
-        button_padding: int,
-        slider_handle: str,
-        slider_handle_border: str,
-        slider_groove: str,
-        slider_neon: str,
-        slider_neon_gradient_stop: str,
-        font_weight: str = "normal",
-        box_width: str = "100px") -> str:
+    accent: str,
+    accent_hover: str,
+    background: str,
+    foreground: str,
+    font_family: str,
+    font_size: str,
+    padding: int,
+    button_padding: int,
+    slider_handle: str,
+    slider_handle_border: str,
+    slider_groove: str,
+    slider_neon: str,
+    slider_neon_gradient_stop: str,
+    font_weight: str = "normal",
+    box_width: str = "100px",
+) -> str:
     """
     Generate editor style dynamically.
 
@@ -551,8 +553,8 @@ def get_button_styles(active: bool) -> str:
     """
     if active:
         return (
-                base_style
-                + """
+            base_style
+            + """
             QPushButton {
                 background-color: #333333;
                 border-color: #ff6666;
@@ -561,8 +563,8 @@ def get_button_styles(active: bool) -> str:
         )
     else:
         return (
-                base_style
-                + """
+            base_style
+            + """
             QPushButton {
                 background-color: #222222;
                 border-color: #666666;

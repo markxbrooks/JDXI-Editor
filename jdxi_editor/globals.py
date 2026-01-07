@@ -1,9 +1,16 @@
 """Global configuration and settings for JD-Xi Editor."""
+
 import logging
 
 from PySide6.QtCore import QSettings
 
-from jdxi_editor.project import __version__, __program__, __package_name__, __organization_name__, __project__
+from jdxi_editor.project import (
+    __organization_name__,
+    __package_name__,
+    __program__,
+    __project__,
+    __version__,
+)
 
 settings = QSettings(__organization_name__, __program__)
 

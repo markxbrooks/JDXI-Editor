@@ -1,6 +1,6 @@
-from PySide6.QtWidgets import QWidget, QLineEdit, QLabel, QHBoxLayout, QGroupBox
 from PySide6.QtCore import Signal
 from PySide6.QtGui import QFont
+from PySide6.QtWidgets import QGroupBox, QHBoxLayout, QLabel, QLineEdit, QWidget
 
 
 class PatchName(QWidget):

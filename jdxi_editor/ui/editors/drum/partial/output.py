@@ -10,7 +10,7 @@ parameter adjustments and preset management.
 Key Features:
 -------------
 - Provides a graphical editor for modifying drum output parameters, including
-  from PySide6.QtWidgets import QGroupBox, QFormLayout, QWidget, QVBoxLayout, QScrollArea   
+  from PySide6.QtWidgets import QGroupBox, QFormLayout, QWidget, QVBoxLayout, QScrollArea
   partial output level, partial chorus send level, partial reverb send level, and partial output assign.
 
 Dependencies:
@@ -32,12 +32,19 @@ Example:
     editor.show()
 """
 
-
 from typing import Callable
 
-from PySide6.QtWidgets import QGroupBox, QFormLayout, QWidget, QVBoxLayout, QScrollArea, QHBoxLayout
-from jdxi_editor.midi.io.helper import MidiIOHelper
+from PySide6.QtWidgets import (
+    QFormLayout,
+    QGroupBox,
+    QHBoxLayout,
+    QScrollArea,
+    QVBoxLayout,
+    QWidget,
+)
+
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
+from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 

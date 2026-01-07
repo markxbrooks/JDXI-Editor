@@ -29,12 +29,12 @@ Customization:
 
 import numpy as np
 from PySide6.QtCore import Qt
+from PySide6.QtGui import QColor, QFont, QLinearGradient, QPainter, QPainterPath, QPen
 from PySide6.QtWidgets import QWidget
-from PySide6.QtGui import QPainter, QPainterPath, QLinearGradient, QColor, QPen, QFont
 
+from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.log.logger import Logger as log
 from picomidi.constant import MidiConstant
-from jdxi_editor.jdxi.style import JDXiStyle
 
 
 def midi_value_to_float(value: int) -> float:
@@ -53,6 +53,7 @@ class WMTEnvPlot(QWidget):
     supporting both a modern velocity-style plot and
     a vintage LCD-style pitch envelope plot.
     """
+
     def __init__(
         self,
         width: int = JDXiStyle.ADSR_PLOT_WIDTH,
@@ -122,7 +123,9 @@ class WMTEnvPlot(QWidget):
             painter.setFont(QFont("JD LCD Rounded", 10))
 
             # Envelope parameters
-            fade_lower = max(self.envelope["fade_lower"] / 1000.0, 1.0)  # Fade lower in seconds
+            fade_lower = max(
+                self.envelope["fade_lower"] / 1000.0, 1.0
+            )  # Fade lower in seconds
             range_lower = max(self.envelope["range_lower"] / 1000.0, 1.0)
             depth = self.envelope["depth"] / 2.0  # Depth in range [0.0, 0.5]
 
@@ -134,14 +137,18 @@ class WMTEnvPlot(QWidget):
             fade_upper_period = fade_upper - range_upper
 
             fade_lower_samples = max(int(fade_lower * self.sample_rate), 1)
-            fade_lower_period_samples = max(int(fade_lower_period * self.sample_rate), 1)
+            fade_lower_period_samples = max(
+                int(fade_lower_period * self.sample_rate), 1
+            )
             fade_upper_samples = max(int(fade_upper * self.sample_rate), 1)
             initial_level = 0.0
 
             upper_fade = np.linspace(
                 depth, initial_level, fade_upper_samples, endpoint=False
             )
-            sustain_samples = int(self.sample_rate * (sustain + range_upper))  # Sustain for 2 seconds
+            sustain_samples = int(
+                self.sample_rate * (sustain + range_upper)
+            )  # Sustain for 2 seconds
             sustain = np.full(sustain_samples, depth)
             baseline = np.full(fade_lower_samples, initial_level)
             lower_fade = np.linspace(
@@ -252,7 +259,7 @@ class WMTEnvPlot(QWidget):
                     painter.drawPath(path)
 
                 # Draw debug points
-                #if self.debug:
+                # if self.debug:
                 #    painter.setPen(QPen(QColor(255, 0, 0), 4))
                 #    for x, y in screen_points:
                 #        painter.drawEllipse(int(x) - 2, int(y) - 2, 4, 4)

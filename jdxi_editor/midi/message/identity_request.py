@@ -26,6 +26,7 @@ Usage Example:
 
 from dataclasses import dataclass
 from typing import List
+
 from jdxi_editor.jdxi.midi.constant import JDXiConstant
 from jdxi_editor.midi.message.midi import MidiMessage
 from picomidi.constant import MidiConstant
@@ -43,9 +44,11 @@ class IdentityRequestMessage(MidiMessage):
 
         :return: list
         """
-        return [MidiConstant.START_OF_SYSEX,
-                JDXiConstant.ID_NUMBER,
-                JDXiConstant.DEVICE_ID,
-                JDXiConstant.SUB_ID_1_GENERAL_INFORMATION,
-                JDXiConstant.SUB_ID_2_IDENTITY_REQUEST,
-                MidiConstant.END_OF_SYSEX]
+        return [
+            MidiConstant.START_OF_SYSEX,
+            JDXiConstant.ID_NUMBER,
+            JDXiConstant.DEVICE_ID,
+            JDXiConstant.SUB_ID_1_GENERAL_INFORMATION,
+            JDXiConstant.SUB_ID_2_IDENTITY_REQUEST,
+            MidiConstant.END_OF_SYSEX,
+        ]

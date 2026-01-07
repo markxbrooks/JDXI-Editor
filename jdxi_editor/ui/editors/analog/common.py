@@ -4,9 +4,9 @@ Common Section
 
 from typing import Callable
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel
-from PySide6.QtCore import Qt
 import qtawesome as qta
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout, QWidget
 
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.midi.data.parameter.analog import AnalogParam
@@ -14,6 +14,7 @@ from jdxi_editor.midi.data.parameter.analog import AnalogParam
 
 class AnalogCommonSection(QWidget):
     """Common section for analog synth parameters."""
+
     def __init__(
         self,
         create_parameter_slider: Callable,

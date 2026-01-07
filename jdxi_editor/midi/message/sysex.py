@@ -30,18 +30,19 @@ print(sysex_bytes)  # Outputs a valid SysEx message as a byte sequence
 
 """
 
+from dataclasses import dataclass
 from enum import Enum
 from typing import List
-from dataclasses import dataclass
 
-from picomidi.constant import MidiConstant
 from jdxi_editor.jdxi.sysex.offset import JDXiSysExOffset
 from jdxi_editor.midi.data.address.address import (
+    AddressOffsetProgramLMB,
     CommandID,
-    AddressOffsetProgramLMB, RolandID,
+    RolandID,
 )
 from jdxi_editor.midi.message.jdxi import JD_XI_HEADER_LIST
 from jdxi_editor.midi.message.midi import MidiMessage
+from picomidi.constant import MidiConstant
 
 # MIDI Constants
 JD_XI_HEADER_BYTES = bytes(JD_XI_HEADER_LIST)
@@ -83,7 +84,9 @@ class SysExMessage(MidiMessage):
     """Base class for MIDI System Exclusive (SysEx) messages."""
 
     start_of_sysex: int = MidiConstant.START_OF_SYSEX  # Start of SysEx
-    manufacturer_id: int = RolandID.ROLAND_ID  # Manufacturer ID (e.g., [0x41] for Roland)
+    manufacturer_id: int = (
+        RolandID.ROLAND_ID
+    )  # Manufacturer ID (e.g., [0x41] for Roland)
     device_id: int = RolandID.DEVICE_ID  # Default device ID
     model_id: list[int] | None = None  # Model ID (4 bytes)
     command: int = CommandID.DT1  # SysEx command (DT1, RQ1, etc.)
@@ -128,7 +131,10 @@ class SysExMessage(MidiMessage):
         """Parse a received SysEx message into an instance."""
         if len(data) < 12:
             raise ValueError(f"Invalid SysEx message: too short ({len(data)} bytes)")
-        if data[JDXiSysExOffset.SYSEX_START] != MidiConstant.START_OF_SYSEX or data[JDXiSysExOffset.SYSEX_END] != MidiConstant.END_OF_SYSEX:
+        if (
+            data[JDXiSysExOffset.SYSEX_START] != MidiConstant.START_OF_SYSEX
+            or data[JDXiSysExOffset.SYSEX_END] != MidiConstant.END_OF_SYSEX
+        ):
             raise ValueError("Invalid SysEx message: missing start or end bytes")
 
         [data[1]]

@@ -24,7 +24,6 @@ Usage Example:
 
 from enum import Enum, auto
 
-
 OSC_WAVE_SAW = 0x00  # Sawtooth
 OSC_WAVE_SQUARE = 0x01  # Square
 OSC_WAVE_TRIANGLE = 0x02  # Triangle

@@ -1,8 +1,8 @@
 """filter slider to modify nrpn parameters"""
 
-from jdxi_editor.ui.widgets.midi.slider.nrpn import NRPNSlider
 from jdxi_editor.midi.data.control_change.digital import DigitalControlChange
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.widgets.midi.slider.nrpn import NRPNSlider
 
 
 class AmpEnvelopeSlider(NRPNSlider):

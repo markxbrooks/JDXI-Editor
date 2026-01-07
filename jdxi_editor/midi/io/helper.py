@@ -18,23 +18,27 @@ Dependencies:
 
 """
 
-import mido
+import json
 import logging
 import zipfile
-import json
+
+import mido
 
 from jdxi_editor.log.logger import Logger as log
-from jdxi_editor.midi.io.input_handler import MidiInHandler
-from jdxi_editor.midi.io.output_handler import MidiOutHandler
-from jdxi_editor.ui.windows.jdxi.helpers.port import find_jdxi_port
-from jdxi_editor.midi.data.address.address import RolandSysExAddress, AddressOffsetTemporaryToneUMB
-from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
+from jdxi_editor.midi.data.address.address import (
+    AddressOffsetTemporaryToneUMB,
+    RolandSysExAddress,
+)
 from jdxi_editor.midi.data.parameter.analog import AnalogParam
 from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParam
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParam
 from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParam
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.data.parameter.program.common import ProgramCommonParam
+from jdxi_editor.midi.io.input_handler import MidiInHandler
+from jdxi_editor.midi.io.output_handler import MidiOutHandler
+from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
+from jdxi_editor.ui.windows.jdxi.helpers.port import find_jdxi_port
 
 
 class MidiIOHelper(MidiInHandler, MidiOutHandler):
@@ -43,6 +47,7 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
 
     Class to handle midi input/output
     """
+
     _instance = None
 
     def __new__(cls, *args, **kwargs):
@@ -51,7 +56,7 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
         return cls._instance
 
     def __init__(self, parent=None):
-        """ constructor """
+        """constructor"""
         self._current_out_port = None
         self._current_in_port = None
         self.in_port_name = ""  # Store input port name
@@ -77,46 +82,54 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
     def send_json_patch_to_instrument(self, json_string: str) -> None:
         """
         Send all parameters from a JSON patch to the instrument as SysEx messages.
-        
+
         :param json_string: str JSON string containing patch data
         :return: None
         """
         try:
             # Use the JSON parser for consistency
             from jdxi_editor.midi.sysex.parser.json import JDXiJsonSysexParser
+
             parser = JDXiJsonSysexParser(json_string)
             patch_data = parser.parse()
-            
+
             if not patch_data:
                 log.error("Failed to parse JSON patch data")
                 return
-            
+
             # Skip metadata fields
-            metadata_fields = {"JD_XI_HEADER", "ADDRESS", "TEMPORARY_AREA", "SYNTH_TONE"}
-            
+            metadata_fields = {
+                "JD_XI_HEADER",
+                "ADDRESS",
+                "TEMPORARY_AREA",
+                "SYNTH_TONE",
+            }
+
             # Parse address from hex string
             address_hex = patch_data.get("ADDRESS", "")
             if not address_hex or len(address_hex) < 8:
                 log.warning(f"Invalid ADDRESS in patch data: {address_hex}")
                 return
-            
+
             # Convert hex address to bytes and create RolandSysExAddress
-            address_bytes = bytes(int(address_hex[i:i+2], 16) for i in range(0, len(address_hex), 2))
+            address_bytes = bytes(
+                int(address_hex[i : i + 2], 16) for i in range(0, len(address_hex), 2)
+            )
             if len(address_bytes) < 4:
                 log.warning(f"Address too short: {address_bytes}")
                 return
-            
+
             address = RolandSysExAddress(
                 msb=address_bytes[0],
                 umb=address_bytes[1],
                 lmb=address_bytes[2],
-                lsb=address_bytes[3]
+                lsb=address_bytes[3],
             )
-            
+
             # Determine parameter class based on TEMPORARY_AREA and SYNTH_TONE
             temporary_area = patch_data.get("TEMPORARY_AREA", "")
             synth_tone = patch_data.get("SYNTH_TONE", "")
-            
+
             # Map to parameter class
             param_class = None
             if temporary_area == "TEMPORARY_PROGRAM":
@@ -124,13 +137,24 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
                 if synth_tone == "COMMON":
                     param_class = ProgramCommonParam
                 else:
-                    log.warning(f"Unsupported synth_tone for TEMPORARY_PROGRAM: {synth_tone}")
+                    log.warning(
+                        f"Unsupported synth_tone for TEMPORARY_PROGRAM: {synth_tone}"
+                    )
                     return
             elif temporary_area == AddressOffsetTemporaryToneUMB.ANALOG_SYNTH.name:
                 param_class = AnalogParam
-            elif temporary_area == AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_1.name or \
-                 temporary_area == AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_2.name:
-                if synth_tone in ["PARTIAL_1", "PARTIAL_2", "PARTIAL_3", "PARTIAL_1.name", "PARTIAL_2.name", "PARTIAL_3.name"]:
+            elif (
+                temporary_area == AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_1.name
+                or temporary_area == AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_2.name
+            ):
+                if synth_tone in [
+                    "PARTIAL_1",
+                    "PARTIAL_2",
+                    "PARTIAL_3",
+                    "PARTIAL_1.name",
+                    "PARTIAL_2.name",
+                    "PARTIAL_3.name",
+                ]:
                     param_class = DigitalPartialParam
                 else:
                     param_class = DigitalCommonParam
@@ -140,58 +164,75 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
                     param_class = DrumCommonParam
                 else:
                     param_class = DrumPartialParam
-            
+
             if not param_class:
-                log.warning(f"Could not determine parameter class for {temporary_area}/{synth_tone}")
+                log.warning(
+                    f"Could not determine parameter class for {temporary_area}/{synth_tone}"
+                )
                 return
-            
+
             # Create composer
             composer = JDXiSysExComposer()
-            
+
             # Send each parameter
             sent_count = 0
             skipped_count = 0
             for param_name, param_value in patch_data.items():
                 if param_name in metadata_fields:
                     continue
-                
+
                 # Get parameter enum
-                param = param_class.get_by_name(param_name) if hasattr(param_class, "get_by_name") else None
+                param = (
+                    param_class.get_by_name(param_name)
+                    if hasattr(param_class, "get_by_name")
+                    else None
+                )
                 if not param:
                     skipped_count += 1
                     continue
-                
+
                 # Convert value to int if needed
                 try:
-                    raw_value = int(param_value) if not isinstance(param_value, int) else param_value
+                    raw_value = (
+                        int(param_value)
+                        if not isinstance(param_value, int)
+                        else param_value
+                    )
                 except (ValueError, TypeError):
                     log.warning(f"Invalid value type for {param_name}: {param_value}")
                     skipped_count += 1
                     continue
-                
+
                 # Check if this is a raw MIDI value (> 127) that needs conversion to display value
                 # Parsed SysEx JSON contains raw MIDI values (0-255), but compose_message expects display values
                 value = raw_value
-                
+
                 # Get parameter max value (for 1-byte parameters, this should be <= 127)
                 param_max = getattr(param, "max_val", None)
                 if param_max is None:
                     # If max_val is not set, try to infer from the parameter definition
                     # Most parameters have max_val, but if not, assume 127 for safety
                     param_max = 127
-                
+
                 # If value is > 127, it's likely a raw MIDI byte that needs handling
                 if raw_value > 127:
                     # Try to convert from MIDI to display value if the parameter supports it
                     if hasattr(param, "convert_from_midi"):
                         try:
                             value = param.convert_from_midi(raw_value)
-                            log.message(f"Converted {param_name} from MIDI value {raw_value} to display value {value}", silent=True)
+                            log.message(
+                                f"Converted {param_name} from MIDI value {raw_value} to display value {value}",
+                                silent=True,
+                            )
                         except Exception as conv_ex:
-                            log.warning(f"Failed to convert {param_name} from MIDI {raw_value}: {conv_ex}")
+                            log.warning(
+                                f"Failed to convert {param_name} from MIDI {raw_value}: {conv_ex}"
+                            )
                             # If conversion fails and value is still out of range, skip it
                             if param_max <= 127:
-                                log.warning(f"Skipping {param_name}: MIDI value {raw_value} out of range (max: {param_max})")
+                                log.warning(
+                                    f"Skipping {param_name}: MIDI value {raw_value} out of range (max: {param_max})"
+                                )
                                 skipped_count += 1
                                 continue
                             # If param_max > 127, it might be a 4-nibble parameter, so use value as-is
@@ -199,34 +240,42 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
                     elif param_max <= 127:
                         # Parameter doesn't support conversion and max is <= 127, so value > 127 is invalid
                         # In Roland SysEx, 0x80 (128) often means "no change" - skip these
-                        log.warning(f"Skipping {param_name}: MIDI value {raw_value} out of range for 1-byte parameter (max: {param_max})", silent=True)
+                        log.warning(
+                            f"Skipping {param_name}: MIDI value {raw_value} out of range for 1-byte parameter (max: {param_max})",
+                            silent=True,
+                        )
                         skipped_count += 1
                         continue
                     # If param_max > 127, it's likely a 4-nibble parameter, so value > 127 might be valid
                     # But still check - if it's way too large, skip it
                     if raw_value > 65535:
-                        log.warning(f"Skipping {param_name}: MIDI value {raw_value} exceeds 16-bit range")
+                        log.warning(
+                            f"Skipping {param_name}: MIDI value {raw_value} exceeds 16-bit range"
+                        )
                         skipped_count += 1
                         continue
                     # Use value as-is and let compose_message handle it
-                
+
                 # Note: compose_message expects display values and will convert them to MIDI internally
                 # We've now ensured value is a display value (either it was already one, or we converted it)
-                
+
                 # Final validation: if value is still > 127 and param is 1-byte, skip it
                 # This catches cases where conversion didn't work or wasn't available
                 param_size = getattr(param, "get_nibbled_size", lambda: 1)()
                 if param_size == 1 and value > 127:
-                    log.warning(f"Skipping {param_name}: final value {value} still out of range for 1-byte parameter", silent=True)
+                    log.warning(
+                        f"Skipping {param_name}: final value {value} still out of range for 1-byte parameter",
+                        silent=True,
+                    )
                     skipped_count += 1
                     continue
-                
+
                 # Compose and send SysEx message
                 try:
                     sysex_message = composer.compose_message(
                         address=address,
                         param=param,
-                        value=value  # Pass display value as-is
+                        value=value,  # Pass display value as-is
                     )
                     if sysex_message:
                         result = self.send_midi_message(sysex_message)
@@ -239,7 +288,11 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
                         skipped_count += 1
                 except ValueError as ve:
                     # Catch validation errors from compose_message
-                    if "range" in str(ve).lower() or "256" in str(ve) or "out of range" in str(ve).lower():
+                    if (
+                        "range" in str(ve).lower()
+                        or "256" in str(ve)
+                        or "out of range" in str(ve).lower()
+                    ):
                         # Silently skip out-of-range values - these are expected for invalid parsed data
                         log.warning(f"Skipping {param_name}: {ve}", silent=True)
                     else:
@@ -248,9 +301,11 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
                 except Exception as ex:
                     log.warning(f"Error sending {param_name}: {ex}")
                     skipped_count += 1
-            
-            log.message(f"Sent {sent_count} parameters to instrument (skipped {skipped_count})")
-            
+
+            log.message(
+                f"Sent {sent_count} parameters to instrument (skipped {skipped_count})"
+            )
+
         except json.JSONDecodeError as ex:
             log.error(f"Invalid JSON in patch: {ex}")
         except Exception as ex:
@@ -266,7 +321,9 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
         :return: None
         """
         if file_path.endswith((".jsz", ".msz")):
-            log.message(f"Loading {'MSZ' if file_path.endswith('.msz') else 'JSZ'} file")
+            log.message(
+                f"Loading {'MSZ' if file_path.endswith('.msz') else 'JSZ'} file"
+            )
             try:
                 with zipfile.ZipFile(file_path, "r") as zip_ref:
                     # Extract and load MIDI files first (if any)
@@ -276,7 +333,7 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
                         # Emit signal for MIDI file loading (will be handled by PatchManager)
                         for midi_file in midi_files:
                             log.message(f"MIDI file in bundle: {midi_file}")
-                    
+
                     # Load JSON files and send to instrument
                     for json_file in zip_ref.namelist():
                         log.message(f"File in zip: {json_file}")
@@ -324,7 +381,7 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
             with open(file_path, "rb") as file:
                 sysex_data = file.read()
 
-            if not sysex_data.startswith(b"\xF0") or not sysex_data.endswith(b"\xF7"):
+            if not sysex_data.startswith(b"\xf0") or not sysex_data.endswith(b"\xf7"):
                 log.message("Invalid SysEx file format")
                 return
         except Exception as ex:

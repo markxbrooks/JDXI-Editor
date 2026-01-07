@@ -12,23 +12,24 @@ The widget supports both analog and digital synth parameters and provides visual
 through an animated envelope curve.
 """
 
-from PySide6.QtCore import Signal
-from PySide6.QtWidgets import QWidget, QGridLayout, QSlider
-from typing import Optional, Callable
+from typing import Callable, Optional
 
-from picomidi.constant import MidiConstant
+from PySide6.QtCore import Signal
+from PySide6.QtWidgets import QGridLayout, QSlider, QWidget
+
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
-from jdxi_editor.midi.data.parameter.synth import AddressParameter
+from picomidi.sysex.parameter.address import AddressParameter
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.ui.widgets.envelope.base import EnvelopeWidgetBase
-from jdxi_editor.ui.widgets.pitch.envelope_plot import PitchEnvPlot
-from jdxi_editor.ui.widgets.pitch.slider_spinbox import PitchEnvSliderSpinbox
 from jdxi_editor.midi.utils.conversions import (
     midi_value_to_ms,
     ms_to_midi_value,
 )
+from jdxi_editor.ui.widgets.envelope.base import EnvelopeWidgetBase
+from jdxi_editor.ui.widgets.pitch.envelope_plot import PitchEnvPlot
+from jdxi_editor.ui.widgets.pitch.slider_spinbox import PitchEnvSliderSpinbox
+from picomidi.constant import MidiConstant
 
 
 class PitchEnvelopeWidget(EnvelopeWidgetBase):
@@ -49,13 +50,15 @@ class PitchEnvelopeWidget(EnvelopeWidgetBase):
         address: Optional[RolandSysExAddress] = None,
         parent: Optional[QWidget] = None,
     ):
-        super().__init__(envelope_keys=["attack_time", "decay_time", "peak_level"],
-                         create_parameter_slider=create_parameter_slider,
-                         parameters=[attack_param, decay_param, depth_param],
-                         midi_helper=midi_helper,
-                         address=address,
-                         controls=controls,
-                         parent=parent)
+        super().__init__(
+            envelope_keys=["attack_time", "decay_time", "peak_level"],
+            create_parameter_slider=create_parameter_slider,
+            parameters=[attack_param, decay_param, depth_param],
+            midi_helper=midi_helper,
+            address=address,
+            controls=controls,
+            parent=parent,
+        )
 
         self.address = address
         self.midi_helper = midi_helper
@@ -122,7 +125,7 @@ class PitchEnvelopeWidget(EnvelopeWidgetBase):
             width=JDXiStyle.ADSR_PLOT_WIDTH,
             height=JDXiStyle.ADSR_PLOT_HEIGHT,
             envelope=self.envelope,
-            parent=self
+            parent=self,
         )
 
         self.layout = QGridLayout()

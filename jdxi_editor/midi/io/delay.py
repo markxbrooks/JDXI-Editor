@@ -3,12 +3,12 @@ jdxi_editor.midi.io.delay
 send midi messages with a delay so that the JD-Xi can process them correctly.
 """
 
+import logging as log
 import time
 
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sleep import MIDI_SLEEP_TIME
-import logging as log
 
 
 def send_with_delay(midi_helper: MidiIOHelper, midi_requests: list) -> None:

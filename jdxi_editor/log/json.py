@@ -1,5 +1,6 @@
 import json
 from typing import Dict
+
 from jdxi_editor.log.logger import Logger as log
 
 

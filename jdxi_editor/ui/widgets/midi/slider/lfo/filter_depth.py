@@ -18,5 +18,5 @@ class LFOFilterDepthSlider(NRPNSlider):
             label=label,
             nrpn_map=nrpn_map,
             nrpn_msb=0,  # JD-Xi NRPN MSB
-            is_bipolar=is_bipolar
+            is_bipolar=is_bipolar,
         )

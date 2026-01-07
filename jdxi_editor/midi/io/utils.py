@@ -1,23 +1,26 @@
 """
-utility functions 
+utility functions
 
 """
 
-from typing import List, Optional, Union, Iterable
+from typing import Iterable, List, Optional, Union
 
 import mido
 
-from picomidi.constant import MidiConstant
-from jdxi_editor.jdxi.sysex.offset import JDXiSysExOffset, JDXIProgramChangeOffset, JDXIControlChangeOffset
-
+from jdxi_editor.jdxi.sysex.offset import (
+    JDXIControlChangeOffset,
+    JDXIProgramChangeOffset,
+    JDXiSysExOffset,
+)
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import ModelID
 from jdxi_editor.midi.data.address.sysex import RolandID
-from picomidi.core.bitmask import BitMask
 from jdxi_editor.midi.sysex.device import DeviceInfo
+from picomidi.constant import MidiConstant
+from picomidi.core.bitmask import BitMask
 
 
-def format_midi_message_to_hex_string(message:  Iterable[int]) -> str:
+def format_midi_message_to_hex_string(message: Iterable[int]) -> str:
     """
     Convert a list of MIDI byte values to a space-separated hex string.
 
@@ -92,8 +95,15 @@ def convert_to_mido_message(
     status_byte = message_content[JDXIProgramChangeOffset.STATUS_BYTE]
     # SysEx
     try:
-        if status_byte == MidiConstant.START_OF_SYSEX and message_content[JDXiSysExOffset.SYSEX_END] == MidiConstant.END_OF_SYSEX:
-            sysex_data = nibble_data(message_content[JDXIProgramChangeOffset.PROGRAM_NUMBER:JDXIProgramChangeOffset.END])
+        if (
+            status_byte == MidiConstant.START_OF_SYSEX
+            and message_content[JDXiSysExOffset.SYSEX_END] == MidiConstant.END_OF_SYSEX
+        ):
+            sysex_data = nibble_data(
+                message_content[
+                    JDXIProgramChangeOffset.PROGRAM_NUMBER : JDXIProgramChangeOffset.END
+                ]
+            )
             if len(sysex_data) > 128:
                 nibbles = [sysex_data[i : i + 4] for i in range(0, len(sysex_data), 4)]
                 return [mido.Message("sysex", data=nibble) for nibble in nibbles]
@@ -102,7 +112,12 @@ def convert_to_mido_message(
         log.error(f"Error {ex} occurred")
     # Program Change
     try:
-        if MidiConstant.PROGRAM_CHANGE <= status_byte <= MidiConstant.PROGRAM_CHANGE_MAX and len(message_content) >= 2:
+        if (
+            MidiConstant.PROGRAM_CHANGE
+            <= status_byte
+            <= MidiConstant.PROGRAM_CHANGE_MAX
+            and len(message_content) >= 2
+        ):
             channel = status_byte & BitMask.LOW_4_BITS
             program = message_content[JDXIProgramChangeOffset.PROGRAM_NUMBER]
             return mido.Message("program_change", channel=channel, program=program)
@@ -110,7 +125,12 @@ def convert_to_mido_message(
         log.error(f"Error {ex} occurred")
     # Control Change
     try:
-        if MidiConstant.CONTROL_CHANGE <= status_byte <= MidiConstant.CONTROL_CHANGE_MAX and len(message_content) >= 3:
+        if (
+            MidiConstant.CONTROL_CHANGE
+            <= status_byte
+            <= MidiConstant.CONTROL_CHANGE_MAX
+            and len(message_content) >= 3
+        ):
             channel = status_byte & BitMask.LOW_4_BITS
             control = message_content[JDXIControlChangeOffset.CONTROL]
             value = message_content[JDXIControlChangeOffset.VALUE]
@@ -134,7 +154,9 @@ def mido_message_data_to_byte_list(message: mido.Message) -> bytes:
     hex_string = " ".join(f"{byte:02X}" for byte in message.data)
 
     message_byte_list = bytes(
-        [MidiConstant.START_OF_SYSEX] + [int(byte, 16) for byte in hex_string.split()] + [MidiConstant.END_OF_SYSEX]
+        [MidiConstant.START_OF_SYSEX]
+        + [int(byte, 16) for byte in hex_string.split()]
+        + [MidiConstant.END_OF_SYSEX]
     )
     return message_byte_list
 
@@ -152,7 +174,9 @@ def handle_identity_request(message: mido.Message) -> dict:
         log.message(device_info.to_string)
     device_id = device_info.device_id
     manufacturer_id = device_info.manufacturer
-    version = message.data[JDXiSysExOffset.ADDRESS_UMB:JDXiSysExOffset.TONE_NAME_START]  #  Extract firmware version bytes
+    version = message.data[
+        JDXiSysExOffset.ADDRESS_UMB : JDXiSysExOffset.TONE_NAME_START
+    ]  #  Extract firmware version bytes
 
     version_str = ".".join(str(byte) for byte in version)
     if device_id == ModelID.DEVICE_ID:

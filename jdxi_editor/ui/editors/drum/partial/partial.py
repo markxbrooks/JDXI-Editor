@@ -31,12 +31,22 @@ Example:
     editor = DrumPartialSection(midi_helper)
     editor.show()
 """
+
 from typing import Callable
 
-from PySide6.QtWidgets import QGroupBox, QFormLayout, QWidget, QVBoxLayout, QScrollArea, QHBoxLayout, QTabWidget
+from PySide6.QtWidgets import (
+    QFormLayout,
+    QGroupBox,
+    QHBoxLayout,
+    QScrollArea,
+    QTabWidget,
+    QVBoxLayout,
+    QWidget,
+)
+
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
-from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
 class DrumPartialSection(QWidget):
@@ -76,20 +86,26 @@ class DrumPartialSection(QWidget):
         self.partial_controls_tab_widget = QTabWidget()
         main_rows_vlayout.addWidget(self.partial_controls_tab_widget)
 
-        self.partial_controls_tab_widget.addTab(self._create_pitch_controls_group(), "Controls")
+        self.partial_controls_tab_widget.addTab(
+            self._create_pitch_controls_group(), "Controls"
+        )
 
         self.partial_controls_tab_widget.addTab(self._create_partial_pan_group(), "Pan")
 
-        self.partial_controls_tab_widget.addTab(self._create_partial_misc_group(), "Misc")
+        self.partial_controls_tab_widget.addTab(
+            self._create_partial_misc_group(), "Misc"
+        )
 
-        self.partial_controls_tab_widget.addTab(self._create_partial_modes_group(), "Modes")
+        self.partial_controls_tab_widget.addTab(
+            self._create_partial_modes_group(), "Modes"
+        )
 
         # pitch_group.setLayout(scrolled_layout)
         # scrolled_layout.addWidget(pitch_group)
         main_row_hlayout.addStretch()
 
     def _create_partial_misc_group(self) -> QGroupBox:
-        """ create partial misc group """
+        """create partial misc group"""
         partial_misc_group = QGroupBox()
         form_layout = QFormLayout()
         partial_misc_group.setLayout(form_layout)

@@ -2,7 +2,7 @@
 Wave selector test class
 """
 
-from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QComboBox
+from PySide6.QtWidgets import QApplication, QComboBox, QVBoxLayout, QWidget
 
 from jdxi_editor.log.logger import Logger as log
 

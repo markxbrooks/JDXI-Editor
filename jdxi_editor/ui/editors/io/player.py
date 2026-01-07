@@ -10,33 +10,48 @@ import time
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
-import pyaudio
-import mido
-from mido import MidiFile, bpm2tempo
 
-from PySide6.QtCore import Qt, QTimer, QThread
+import mido
+import pyaudio
+import qtawesome as qta
+from mido import MidiFile, bpm2tempo
+from PySide6.QtCore import Qt, QThread, QTimer
 from PySide6.QtWidgets import (
-    QVBoxLayout,
-    QPushButton,
+    QCheckBox,
     QComboBox,
     QFileDialog,
-    QLabel,
-    QSlider,
     QGroupBox,
     QHBoxLayout,
+    QLabel,
+    QPushButton,
+    QSlider,
+    QVBoxLayout,
     QWidget,
-    QCheckBox,
 )
-import qtawesome as qta
 
 from jdxi_editor.globals import PROFILING
 from jdxi_editor.jdxi.midi.constant import JDXiConstant
-from picomidi.constant import MidiConstant
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.channel.channel import MidiChannel
+from jdxi_editor.midi.data.address.address import (
+    AddressOffsetProgramLMB,
+    AddressOffsetSystemUMB,
+    AddressStartMSB,
+    RolandSysExAddress,
+)
+from jdxi_editor.midi.data.parameter.effects.effects import (
+    DelayParam,
+    Effect1Param,
+    Effect2Param,
+    ReverbParam,
+)
+from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
+from jdxi_editor.midi.data.programs.digital import DIGITAL_PRESET_LIST
+from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
 from jdxi_editor.midi.utils.helpers import start_recording
 from jdxi_editor.midi.utils.usb_recorder import USBRecorder
 from jdxi_editor.ui.editors import SynthEditor
@@ -48,22 +63,7 @@ from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 from jdxi_editor.ui.widgets.midi.track_viewer import MidiTrackViewer
 from jdxi_editor.ui.widgets.midi.utils import get_total_duration_in_seconds
 from jdxi_editor.ui.windows.jdxi.utils import show_message_box
-from jdxi_editor.midi.data.programs.digital import DIGITAL_PRESET_LIST
-from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
-from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
-from jdxi_editor.midi.data.parameter.effects.effects import (
-    Effect1Param,
-    Effect2Param,
-    DelayParam,
-    ReverbParam,
-)
-from jdxi_editor.midi.data.address.address import (
-    AddressStartMSB,
-    RolandSysExAddress,
-    AddressOffsetSystemUMB,
-    AddressOffsetProgramLMB,
-)
-from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
+from picomidi.constant import MidiConstant
 
 # Expose Qt symbols for tests that patch via jdxi_editor.ui.editors.io.player
 # Tests expect these names to exist at module level
@@ -160,7 +160,9 @@ class MidiFileEditor(SynthEditor):
         """
         # Top horizontal layout: file title and right-hand controls
         header_layout = QHBoxLayout()
-        self.ui.digital_title_file_name = DigitalTitle("No file loaded", show_upper_text=True)
+        self.ui.digital_title_file_name = DigitalTitle(
+            "No file loaded", show_upper_text=True
+        )
         header_layout.addWidget(self.ui.digital_title_file_name)
 
         right_panel_layout = QVBoxLayout()
@@ -231,7 +233,9 @@ class MidiFileEditor(SynthEditor):
         layout.addWidget(QLabel("Suppress MIDI Events:"))
 
         self.ui.midi_suppress_program_changes_checkbox = QCheckBox("Program Changes")
-        self.ui.midi_suppress_program_changes_checkbox.setStyleSheet(JDXiStyle.PARTIAL_SWITCH)
+        self.ui.midi_suppress_program_changes_checkbox.setStyleSheet(
+            JDXiStyle.PARTIAL_SWITCH
+        )
         self.ui.midi_suppress_program_changes_checkbox.setChecked(
             self.midi_state.suppress_program_changes
         )
@@ -241,7 +245,9 @@ class MidiFileEditor(SynthEditor):
         layout.addWidget(self.ui.midi_suppress_program_changes_checkbox)
 
         self.ui.midi_suppress_control_changes_checkbox = QCheckBox("Control Changes")
-        self.ui.midi_suppress_control_changes_checkbox.setStyleSheet(JDXiStyle.PARTIAL_SWITCH)
+        self.ui.midi_suppress_control_changes_checkbox.setStyleSheet(
+            JDXiStyle.PARTIAL_SWITCH
+        )
         self.ui.midi_suppress_control_changes_checkbox.setChecked(
             self.midi_state.suppress_control_changes
         )
@@ -269,7 +275,9 @@ class MidiFileEditor(SynthEditor):
         # Source list selector
         self.ui.automation_type_combo = QComboBox()
         self.ui.automation_type_combo.addItems(["Digital", "Analog", "Drums"])
-        self.ui.automation_type_combo.currentIndexChanged.connect(self.on_automation_type_changed)
+        self.ui.automation_type_combo.currentIndexChanged.connect(
+            self.on_automation_type_changed
+        )
         layout.addWidget(self.ui.automation_type_combo)
 
         # Program selector (populated based on type)
@@ -278,9 +286,12 @@ class MidiFileEditor(SynthEditor):
 
         # Insert button
         self.ui.automation_insert_button = QPushButton(
-            qta.icon("mdi.plus", color=JDXiStyle.FOREGROUND), "Insert Program Change Here"
+            qta.icon("mdi.plus", color=JDXiStyle.FOREGROUND),
+            "Insert Program Change Here",
         )
-        self.ui.automation_insert_button.clicked.connect(self.insert_program_change_current_position)
+        self.ui.automation_insert_button.clicked.connect(
+            self.insert_program_change_current_position
+        )
         layout.addWidget(self.ui.automation_insert_button)
 
         # Populate initial list
@@ -343,8 +354,14 @@ class MidiFileEditor(SynthEditor):
 
         # Convert seconds to absolute ticks (approx using current tempo at position)
         try:
-            tempo_usecs = self.midi_state.tempo_at_position or MidiConstant.TEMPO_120_BPM_USEC
-            abs_ticks = int(mido.second2tick(current_seconds, self.midi_state.file.ticks_per_beat, tempo_usecs))
+            tempo_usecs = (
+                self.midi_state.tempo_at_position or MidiConstant.TEMPO_120_BPM_USEC
+            )
+            abs_ticks = int(
+                mido.second2tick(
+                    current_seconds, self.midi_state.file.ticks_per_beat, tempo_usecs
+                )
+            )
         except Exception:
             abs_ticks = int(current_seconds / max(self.tick_duration, 1e-9))
 
@@ -354,9 +371,15 @@ class MidiFileEditor(SynthEditor):
 
         # Build messages: CC#0, CC#32, Program Change (PC is 0-based in MIDI spec)
         msgs = [
-            mido.Message("control_change", control=0, value=int(msb), channel=channel, time=0),
-            mido.Message("control_change", control=32, value=int(lsb), channel=channel, time=0),
-            mido.Message("program_change", program=max(0, int(pc) - 1), channel=channel, time=0),
+            mido.Message(
+                "control_change", control=0, value=int(msb), channel=channel, time=0
+            ),
+            mido.Message(
+                "control_change", control=32, value=int(lsb), channel=channel, time=0
+            ),
+            mido.Message(
+                "program_change", program=max(0, int(pc) - 1), channel=channel, time=0
+            ),
         ]
 
         self._insert_messages_at_abs_tick(target_track, abs_ticks, msgs)
@@ -370,8 +393,12 @@ class MidiFileEditor(SynthEditor):
         # Add a visual marker to the time ruler
         try:
             preset_label = self.ui.automation_program_combo.currentText()
-            short_label = preset_label.split("  ")[1] if "  " in preset_label else preset_label
-            self.ui.midi_track_viewer.ruler.add_marker(current_seconds, label=short_label)
+            short_label = (
+                preset_label.split("  ")[1] if "  " in preset_label else preset_label
+            )
+            self.ui.midi_track_viewer.ruler.add_marker(
+                current_seconds, label=short_label
+            )
         except Exception:
             # Fail-safe: add without label
             self.ui.midi_track_viewer.ruler.add_marker(current_seconds)
@@ -402,7 +429,9 @@ class MidiFileEditor(SynthEditor):
                 insert_delta = max(0, abs_tick_target - abs_tick)
                 # First, push any time before insertion
                 if insert_delta > 0:
-                    rebuilt.append(mido.Message("note_on", note=0, velocity=0, time=insert_delta))
+                    rebuilt.append(
+                        mido.Message("note_on", note=0, velocity=0, time=insert_delta)
+                    )
                     # Replace the placeholder with zero-time; we will discard it below
                     rebuilt.pop()
                 # Append new messages with proper delta times
@@ -423,7 +452,9 @@ class MidiFileEditor(SynthEditor):
             # Append at end; ensure the first inserted msg gets appropriate delta
             first = True
             for nm in new_msgs:
-                nm_copy = nm.copy(time=0 if not first else max(0, abs_tick_target - abs_tick))
+                nm_copy = nm.copy(
+                    time=0 if not first else max(0, abs_tick_target - abs_tick)
+                )
                 rebuilt.append(nm_copy)
                 first = False
 
@@ -477,7 +508,9 @@ class MidiFileEditor(SynthEditor):
         layout.addWidget(self.ui.usb_file_record_checkbox)
 
         # Auto generate filename based on current date and time and Midi file
-        self.ui.usb_file_auto_generate_checkbox = QCheckBox("Auto generate .Wav filename based on date, time and Midi file")
+        self.ui.usb_file_auto_generate_checkbox = QCheckBox(
+            "Auto generate .Wav filename based on date, time and Midi file"
+        )
         self.ui.usb_file_auto_generate_checkbox.setStyleSheet(JDXiStyle.PARTIAL_SWITCH)
         self.ui.usb_file_auto_generate_checkbox.setChecked(False)
         self.ui.usb_file_auto_generate_checkbox.stateChanged.connect(
@@ -490,30 +523,34 @@ class MidiFileEditor(SynthEditor):
     def generate_auto_wav_filename(self) -> Optional[str]:
         """
         Generate an automatic WAV filename based on current date/time and MIDI file name.
-        
+
         :return: Generated filename path or None if no MIDI file is loaded
         """
-        if not self.midi_state.file or not hasattr(self.midi_state.file, 'filename') or not self.midi_state.file.filename:
+        if (
+            not self.midi_state.file
+            or not hasattr(self.midi_state.file, "filename")
+            or not self.midi_state.file.filename
+        ):
             return None
-        
+
         # Get MIDI file path
         midi_path = Path(self.midi_state.file.filename)
         midi_stem = midi_path.stem  # filename without extension
-        
+
         # Generate timestamp: YYYYMMDD_HHMMSS
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        
+
         # Create WAV filename: YYYYMMDD_HHMMSS_<midi_filename>.wav
         wav_filename = f"{timestamp}_{midi_stem}.wav"
-        
+
         # Use the same directory as the MIDI file, or current directory if no path
         if midi_path.parent:
             wav_path = midi_path.parent / wav_filename
         else:
             wav_path = Path(wav_filename)
-        
+
         return str(wav_path)
-    
+
     def update_auto_wav_filename(self) -> None:
         """
         Update the WAV filename automatically if auto-generate is enabled.
@@ -526,7 +563,7 @@ class MidiFileEditor(SynthEditor):
                 log.message(f"Auto-generated WAV filename: {auto_filename}")
             else:
                 log.warning("⚠️ Cannot auto-generate filename: No MIDI file loaded")
-    
+
     def on_usb_file_auto_generate_toggled(self, state: Qt.CheckState):
         """
         on_usb_file_auto_generate_toggled
@@ -534,10 +571,14 @@ class MidiFileEditor(SynthEditor):
         :param state: Qt.CheckState
         :return:
         """
-        self.ui.usb_file_auto_generate_checkbox.setChecked(state == JDXiConstant.CHECKED)
+        self.ui.usb_file_auto_generate_checkbox.setChecked(
+            state == JDXiConstant.CHECKED
+        )
         is_enabled = self.ui.usb_file_auto_generate_checkbox.isChecked()
-        log.message(f"Auto generate filename based on current date and time and Midi file = {is_enabled}")
-        
+        log.message(
+            f"Auto generate filename based on current date and time and Midi file = {is_enabled}"
+        )
+
         # If enabled, generate filename immediately
         if is_enabled:
             self.update_auto_wav_filename()
@@ -549,8 +590,12 @@ class MidiFileEditor(SynthEditor):
         :param state: Qt.CheckState
         :return:
         """
-        self.ui.usb_file_auto_generate_checkbox.setChecked(state == JDXiConstant.CHECKED)
-        log.message(f"Auto generate filename based on current date and time and Midi file = {self.ui.usb_file_auto_generate_checkbox.isChecked()}")
+        self.ui.usb_file_auto_generate_checkbox.setChecked(
+            state == JDXiConstant.CHECKED
+        )
+        log.message(
+            f"Auto generate filename based on current date and time and Midi file = {self.ui.usb_file_auto_generate_checkbox.isChecked()}"
+        )
 
     def init_transport_controls(self) -> QGroupBox:
         """
@@ -621,7 +666,9 @@ class MidiFileEditor(SynthEditor):
             self.midi_playback_worker = None
 
         # Create worker with correct initial tempo if available
-        initial_tempo = getattr(self.midi_state, 'tempo_at_position', MidiConstant.TEMPO_120_BPM_USEC)
+        initial_tempo = getattr(
+            self.midi_state, "tempo_at_position", MidiConstant.TEMPO_120_BPM_USEC
+        )
         self.midi_playback_worker = MidiPlaybackWorker(parent=self)
         self.midi_playback_worker.set_tempo.connect(self.update_tempo_us_from_worker)
         self.midi_playback_worker.position_tempo = initial_tempo
@@ -738,7 +785,7 @@ class MidiFileEditor(SynthEditor):
             # If auto-generate is enabled, regenerate filename with fresh timestamp
             if self.ui.usb_file_auto_generate_checkbox.isChecked():
                 self.update_auto_wav_filename()
-            
+
             if not self.ui.usb_file_output_name:
                 log.message("No output file selected.")
                 return
@@ -801,18 +848,18 @@ class MidiFileEditor(SynthEditor):
         )
         if not file_path:
             return
-        
+
         self.midi_load_file_from_path(file_path)
-    
+
     def midi_load_file_from_path(self, file_path: str) -> None:
         """
         Load a MIDI file from a given path and initialize parameters.
-        
+
         :param file_path: Path to the MIDI file
         """
         if not file_path:
             return
-        
+
         self.midi_state.file = MidiFile(file_path)
         # Store filename in the MidiFile object for later use
         self.midi_state.file.filename = file_path
@@ -825,7 +872,7 @@ class MidiFileEditor(SynthEditor):
             )
         self.ui.midi_track_viewer.clear()
         self.ui.midi_track_viewer.set_midi_file(self.midi_state.file)
-        
+
         # Auto-generate WAV filename if checkbox is enabled
         if self.ui.usb_file_auto_generate_checkbox.isChecked():
             self.update_auto_wav_filename()
@@ -846,15 +893,20 @@ class MidiFileEditor(SynthEditor):
         self.calculate_duration()
         self.calculate_tick_duration()
         self.ui_position_slider_reset()
-        
+
         # Add to recent files if parent has recent_files_manager
-        if hasattr(self.parent, 'recent_files_manager') and self.parent.recent_files_manager:
+        if (
+            hasattr(self.parent, "recent_files_manager")
+            and self.parent.recent_files_manager
+        ):
             try:
                 self.parent.recent_files_manager.add_file(file_path)
-                if hasattr(self.parent, '_update_recent_files_menu'):
+                if hasattr(self.parent, "_update_recent_files_menu"):
                     # Check if menu still exists before updating
-                    if (hasattr(self.parent, 'recent_files_menu') and 
-                        self.parent.recent_files_menu is not None):
+                    if (
+                        hasattr(self.parent, "recent_files_menu")
+                        and self.parent.recent_files_menu is not None
+                    ):
                         try:
                             self.parent._update_recent_files_menu()
                         except RuntimeError:
@@ -871,10 +923,12 @@ class MidiFileEditor(SynthEditor):
         Calculate the duration of a single MIDI tick in seconds.
         """
         # Guard: ensure ticks_per_beat is set
-        if not hasattr(self, 'ticks_per_beat') or self.ticks_per_beat is None:
+        if not hasattr(self, "ticks_per_beat") or self.ticks_per_beat is None:
             # Fallback to current file's ticks_per_beat if available
             if self.midi_state.file is not None:
-                self.ticks_per_beat = getattr(self.midi_state.file, 'ticks_per_beat', 480)
+                self.ticks_per_beat = getattr(
+                    self.midi_state.file, "ticks_per_beat", 480
+                )
             else:
                 self.ticks_per_beat = 480
         self.tick_duration = (
@@ -891,7 +945,7 @@ class MidiFileEditor(SynthEditor):
         Accurate Total Duration Calculation
         """
         # Handle empty events list gracefully
-        if not getattr(self.midi_state, 'events', None):
+        if not getattr(self.midi_state, "events", None):
             self.midi_total_ticks = 0
         else:
             self.midi_total_ticks = max(t for t, _, _ in self.midi_state.events)
@@ -910,7 +964,10 @@ class MidiFileEditor(SynthEditor):
         selected_channel = None
         for track in self.midi_state.file.tracks:
             for msg in track:
-                if hasattr(msg, "channel") and msg.channel in self.midi_preferred_channels:
+                if (
+                    hasattr(msg, "channel")
+                    and msg.channel in self.midi_preferred_channels
+                ):
                     selected_channel = msg.channel
                     break
             if selected_channel is not None:
@@ -934,8 +991,8 @@ class MidiFileEditor(SynthEditor):
                 abs_time += msg.time
                 events.append((abs_time, msg, track_index))
         # Ensure ticks_per_beat is set before calculations
-        if not hasattr(self, 'ticks_per_beat') or self.ticks_per_beat is None:
-            self.ticks_per_beat = getattr(self.midi_state.file, 'ticks_per_beat', 480)
+        if not hasattr(self, "ticks_per_beat") or self.ticks_per_beat is None:
+            self.ticks_per_beat = getattr(self.midi_state.file, "ticks_per_beat", 480)
         self.calculate_tick_duration()
         self.midi_state.events = sorted(events, key=lambda x: x[0])
 
@@ -986,29 +1043,33 @@ class MidiFileEditor(SynthEditor):
         self.current_tempo_bpm = tempo_bpm
         self.update_upper_display_with_tempo_and_bar()
         log.parameter("tempo_bpm", tempo_bpm)
-    
-    def update_upper_display_with_tempo_and_bar(self, elapsed_time: Optional[float] = None) -> None:
+
+    def update_upper_display_with_tempo_and_bar(
+        self, elapsed_time: Optional[float] = None
+    ) -> None:
         """
         Update the upper display with tempo and optionally bar number.
-        
+
         :param elapsed_time: Optional elapsed time for bar calculation. If None, uses current playback state.
         """
         if self.current_tempo_bpm is None:
             return
-        
+
         tempo_text = f"Tempo: {round(self.current_tempo_bpm)} BPM"
-        
+
         # Append bar number if playing or paused
-        if (elapsed_time is not None or 
-            (self.midi_state.timer and (self.midi_state.timer.isActive() or self.midi_state.playback_paused))):
+        if elapsed_time is not None or (
+            self.midi_state.timer
+            and (self.midi_state.timer.isActive() or self.midi_state.playback_paused)
+        ):
             if elapsed_time is None and self.midi_state.playback_start_time:
                 elapsed_time = time.time() - self.midi_state.playback_start_time
-            
+
             if elapsed_time is not None and self.midi_state.file:
                 current_bar = self.calculate_current_bar(elapsed_time)
                 if current_bar is not None:
                     tempo_text += f" | Bar {int(current_bar)}"
-        
+
         self.ui.digital_title_file_name.set_upper_display_text(tempo_text)
 
     def turn_off_effects(self) -> None:
@@ -1018,7 +1079,7 @@ class MidiFileEditor(SynthEditor):
         """
         if not self.midi_helper:
             return
-        
+
         try:
             # Create SysEx composer and address for effects
             sysex_composer = JDXiSysExComposer()
@@ -1028,66 +1089,61 @@ class MidiFileEditor(SynthEditor):
                 AddressOffsetProgramLMB.COMMON,
                 MidiConstant.ZERO_BYTE,
             )
-            
+
             # Turn off Effect 1: Set level to 0 and type to Thru (0)
             efx1_address = address.add_offset((0, 2, 0))
             efx1_level_msg = sysex_composer.compose_message(
-                address=efx1_address,
-                param=Effect1Param.EFX1_LEVEL,
-                value=0
+                address=efx1_address, param=Effect1Param.EFX1_LEVEL, value=0
             )
             efx1_type_msg = sysex_composer.compose_message(
                 address=efx1_address,
                 param=Effect1Param.EFX1_TYPE,
-                value=0  # Thru (no effect)
+                value=0,  # Thru (no effect)
             )
-            
+
             # Turn off Effect 2: Set level to 0 and type to OFF (0)
             efx2_address = address.add_offset((0, 4, 0))
             efx2_level_msg = sysex_composer.compose_message(
-                address=efx2_address,
-                param=Effect2Param.EFX2_LEVEL,
-                value=0
+                address=efx2_address, param=Effect2Param.EFX2_LEVEL, value=0
             )
             efx2_type_msg = sysex_composer.compose_message(
-                address=efx2_address,
-                param=Effect2Param.EFX2_TYPE,
-                value=0  # OFF
+                address=efx2_address, param=Effect2Param.EFX2_TYPE, value=0  # OFF
             )
-            
+
             # Turn off Delay: Set level to 0
             delay_address = address.add_offset((0, 6, 0))
             delay_level_msg = sysex_composer.compose_message(
-                address=delay_address,
-                param=DelayParam.DELAY_LEVEL,
-                value=0
+                address=delay_address, param=DelayParam.DELAY_LEVEL, value=0
             )
-            
+
             # Turn off Reverb: Set level to 0
             reverb_address = address.add_offset((0, 8, 0))
             reverb_level_msg = sysex_composer.compose_message(
-                address=reverb_address,
-                param=ReverbParam.REVERB_LEVEL,
-                value=0
+                address=reverb_address, param=ReverbParam.REVERB_LEVEL, value=0
             )
-            
+
             # Send all messages
             messages = [
-                efx1_level_msg, efx1_type_msg,
-                efx2_level_msg, efx2_type_msg,
+                efx1_level_msg,
+                efx1_type_msg,
+                efx2_level_msg,
+                efx2_type_msg,
                 delay_level_msg,
-                reverb_level_msg
+                reverb_level_msg,
             ]
-            
+
             for msg in messages:
                 self.midi_helper.send_midi_message(msg)
                 time.sleep(0.01)  # Small delay between messages
-            
-            log.message("🎛️ Turned off all effects (Effect 1, Effect 2, Delay, Reverb) at playback start")
-            
+
+            log.message(
+                "🎛️ Turned off all effects (Effect 1, Effect 2, Delay, Reverb) at playback start"
+            )
+
         except Exception as ex:
             log.error(f"❌ Error turning off effects: {ex}")
             import traceback
+
             log.error(traceback.format_exc())
 
     def midi_playback_start(self):
@@ -1096,9 +1152,9 @@ class MidiFileEditor(SynthEditor):
         """
         # Reset position slider to beginning
         self.ui_position_slider_reset()
-        
+
         # Turn off all effects when starting playback (prevents accidental distortion)
-        #if not self.midi_state.playback_paused:
+        # if not self.midi_state.playback_paused:
         #    self.turn_off_effects()
 
         if PROFILING:
@@ -1131,7 +1187,9 @@ class MidiFileEditor(SynthEditor):
         try:
             if self.midi_playback_worker is not None:
                 self.midi_state.timer.timeout.connect(self.midi_playback_worker.do_work)
-                log.message("Success: Connected midi_playback_worker.do_work to timeout")
+                log.message(
+                    "Success: Connected midi_playback_worker.do_work to timeout"
+                )
             else:
                 log.warning("⚠️ midi_playback_worker is None, skipping connection")
         except Exception as ex:
@@ -1295,16 +1353,16 @@ class MidiFileEditor(SynthEditor):
             (absolute_time_ticks, msg.bytes(), self.midi_state.tempo_at_position)
         )
 
-    def buffer_message_with_tempo(self, absolute_time_ticks: int, msg: mido.Message, tempo: int) -> None:
+    def buffer_message_with_tempo(
+        self, absolute_time_ticks: int, msg: mido.Message, tempo: int
+    ) -> None:
         """
         Add a MIDI message to the buffer with a specific tempo.
         :param absolute_time_ticks: Absolute tick of the message.
         :param msg: The MIDI message to buffer.
         :param tempo: The tempo that was active when this message was created.
         """
-        self.midi_state.buffered_msgs.append(
-            (absolute_time_ticks, msg.bytes(), tempo)
-        )
+        self.midi_state.buffered_msgs.append((absolute_time_ticks, msg.bytes(), tempo))
 
     def midi_message_buffer_refill(self) -> None:
         """
@@ -1334,7 +1392,9 @@ class MidiFileEditor(SynthEditor):
         self._print_segment_statistics()
 
         # Debug logging
-        log.message(f"🎵 Buffered {len(self.midi_state.buffered_msgs)} messages for playback")
+        log.message(
+            f"🎵 Buffered {len(self.midi_state.buffered_msgs)} messages for playback"
+        )
         if len(self.midi_state.buffered_msgs) > 0:
             log.message(f"🎵 First few messages: {self.midi_state.buffered_msgs[:3]}")
 
@@ -1345,7 +1405,9 @@ class MidiFileEditor(SynthEditor):
         :param start_tick: int
         :return:
         """
-        log.message(f"🎵 Processing {len(self.midi_state.file.tracks)} tracks, start_tick: {start_tick}")
+        log.message(
+            f"🎵 Processing {len(self.midi_state.file.tracks)} tracks, start_tick: {start_tick}"
+        )
         for i, track in enumerate(self.midi_state.file.tracks):
             if self.is_track_muted(i):
                 log.message(
@@ -1379,7 +1441,9 @@ class MidiFileEditor(SynthEditor):
 
             if msg.type == "set_tempo":
                 self.handle_set_tempo(msg, absolute_time_ticks)
-                current_tempo = self.midi_state.tempo_at_position  # Update current tempo
+                current_tempo = (
+                    self.midi_state.tempo_at_position
+                )  # Update current tempo
                 messages_buffered += 1
             elif not msg.is_meta:
                 if hasattr(msg, "channel") and self.is_channel_muted(msg.channel):
@@ -1387,7 +1451,9 @@ class MidiFileEditor(SynthEditor):
                 self.buffer_message_with_tempo(absolute_time_ticks, msg, current_tempo)
                 messages_buffered += 1
 
-        log.message(f"🎵 Track processed: {messages_processed} messages, {messages_buffered} buffered")
+        log.message(
+            f"🎵 Track processed: {messages_processed} messages, {messages_buffered} buffered"
+        )
 
     def get_muted_tracks(self):
         """
@@ -1480,7 +1546,7 @@ class MidiFileEditor(SynthEditor):
         self.update_playback_start_time(target_time)
         self.stop_all_notes()
         self.prepare_for_playback()
-        
+
         # Update display with tempo and bar for scrubbed position
         self.update_upper_display_with_tempo_and_bar(target_time)
 
@@ -1519,7 +1585,9 @@ class MidiFileEditor(SynthEditor):
                 return
         self.midi_state.event_index = 0  # Default to the start if no match
 
-    def update_playback_start_time(self, target_time: float) -> None:  # pylint: disable=unused-argument
+    def update_playback_start_time(
+        self, target_time: float
+    ) -> None:  # pylint: disable=unused-argument
         """
         Adjusts the playback start time based on the scrub position.
         """
@@ -1552,29 +1620,33 @@ class MidiFileEditor(SynthEditor):
         """
         self.midi_state.event_buffer.clear()
         self.setup_playback_worker()
-        
+
         # Reconnect worker and UI update signals to timer (needed after scrubbing)
         try:
             # Disconnect all existing connections first
             self.midi_state.timer.timeout.disconnect()
         except Exception:
             pass  # Already disconnected or not connected
-        
+
         # Connect worker if available
         if self.midi_playback_worker is not None:
             try:
                 self.midi_state.timer.timeout.connect(self.midi_playback_worker.do_work)
-                log.message("Success: Reconnected midi_playback_worker.do_work to timeout after scrub")
+                log.message(
+                    "Success: Reconnected midi_playback_worker.do_work to timeout after scrub"
+                )
             except Exception as ex:
                 log.error(f"Error {ex} reconnecting worker to timeout")
-        
+
         # Connect UI update
         try:
             self.midi_state.timer.timeout.connect(self.midi_play_next_event)
-            log.message("Success: Reconnected midi_play_next_event to timeout after scrub")
+            log.message(
+                "Success: Reconnected midi_play_next_event to timeout after scrub"
+            )
         except Exception as ex:
             log.error(f"Error {ex} reconnecting midi_play_next_event to timeout")
-        
+
         self.start_playback_worker()
 
     def midi_stop_playback(self):
@@ -1633,7 +1705,9 @@ class MidiFileEditor(SynthEditor):
         """
         self.midi_state.playback_paused = False
         self.midi_state.event_index = 0
-        self.midi_state.playback_start_time = None  # Reset start time so playback starts from beginning
+        self.midi_state.playback_start_time = (
+            None  # Reset start time so playback starts from beginning
+        )
         self.midi_state.playback_paused_time = None  # Clear paused time
 
     def reset_tempo(self):
@@ -1683,14 +1757,16 @@ class MidiFileEditor(SynthEditor):
         Disconnect the midi_play_next_event from the timer's timeout signal.
         """
         # Check if timer is initialized
-        if not hasattr(self.midi_state, 'timer') or self.midi_state.timer is None:
+        if not hasattr(self.midi_state, "timer") or self.midi_state.timer is None:
             log.debug("Timer not initialized, skipping disconnect")
             return
 
         # Disconnect midi_play_next_event safely
         try:
             self.midi_state.timer.timeout.disconnect(self.midi_play_next_event)
-            log.debug("Successfully disconnected midi_play_next_event from timeout signal")
+            log.debug(
+                "Successfully disconnected midi_play_next_event from timeout signal"
+            )
         except TypeError:
             # Signal was not connected
             log.debug("midi_play_next_event was not connected to timeout signal")
@@ -1751,36 +1827,42 @@ class MidiFileEditor(SynthEditor):
                 f"Playback Position: 0:00 / {format_time(self.midi_state.file_duration_seconds)}"
             )
 
-    def calculate_current_bar(self, elapsed_time: Optional[float] = None) -> Optional[float]:
+    def calculate_current_bar(
+        self, elapsed_time: Optional[float] = None
+    ) -> Optional[float]:
         """
         Calculate the current bar number based on elapsed playback time.
-        
+
         :param elapsed_time: Optional elapsed time in seconds. If None, calculates from current playback state.
         :return: Current bar number (1-based) or None if calculation fails.
         """
         try:
-            if not self.midi_state.file or not hasattr(self, 'ticks_per_beat') or self.ticks_per_beat is None:
+            if (
+                not self.midi_state.file
+                or not hasattr(self, "ticks_per_beat")
+                or self.ticks_per_beat is None
+            ):
                 return None
-            
+
             if elapsed_time is None:
                 if self.midi_state.playback_start_time is None:
                     return None
                 elapsed_time = time.time() - self.midi_state.playback_start_time
-            
+
             # Cap elapsed time to file duration
             elapsed_time = min(elapsed_time, self.midi_state.file_duration_seconds)
-            
+
             # Convert elapsed time to ticks
             current_tick = mido.second2tick(
                 second=elapsed_time,
                 ticks_per_beat=self.midi_state.file.ticks_per_beat,
                 tempo=self.midi_state.tempo_at_position,
             )
-            
+
             # Calculate bar number (assuming 4/4 time signature: 4 beats per bar)
             # Bar number is 1-based
             current_bar = (current_tick / (4 * self.ticks_per_beat)) + 1
-            
+
             return max(1.0, current_bar)  # Ensure at least bar 1
         except Exception as ex:
             log.debug(f"Error calculating current bar: {ex}")
@@ -1804,11 +1886,9 @@ class MidiFileEditor(SynthEditor):
         if getattr(self, "_last_position_label", "") != label_text:
             self.ui.position_label.setText(label_text)
             self._last_position_label = label_text
-        
+
         # Update upper display with tempo and bar number during active playback or when paused
-        if (elapsed_time is not None and 
-            self.midi_state.file and 
-            self.midi_state.timer):
+        if elapsed_time is not None and self.midi_state.file and self.midi_state.timer:
             # Update display with tempo and bar if timer was active (playing or paused)
             if self.midi_state.timer.isActive() or self.midi_state.playback_paused:
                 self.update_upper_display_with_tempo_and_bar(elapsed_time)
@@ -1881,7 +1961,9 @@ class MidiFileEditor(SynthEditor):
 
         for i, (tick, tempo) in enumerate(tempo_changes):
             # Calculate duration of this segment
-            segment_duration = mido.tick2second(tick - current_tick, self.ticks_per_beat, current_tempo)
+            segment_duration = mido.tick2second(
+                tick - current_tick, self.ticks_per_beat, current_tempo
+            )
             total_duration += segment_duration
 
             bar_start = current_tick / (4 * self.ticks_per_beat)
@@ -1912,7 +1994,9 @@ class MidiFileEditor(SynthEditor):
                 f"at {bpm:.1f} BPM = {final_segment_duration:.2f}s"
             )
 
-        log.message(f"Total duration by segments: {total_duration:.2f}s ({total_duration/60:.2f} minutes)")
+        log.message(
+            f"Total duration by segments: {total_duration:.2f}s ({total_duration/60:.2f} minutes)"
+        )
 
         # Also print tempo changes summary
         log.message(f"Found {len(tempo_changes)} tempo changes:")
@@ -1920,7 +2004,9 @@ class MidiFileEditor(SynthEditor):
             bpm = 60000000 / tempo
             time_sec = mido.tick2second(tick, self.ticks_per_beat, tempo)
             bar = tick / (4 * self.ticks_per_beat)
-            log.message(f"  {i+1}: Tick {tick}, Bar {bar:.1f}, Tempo {tempo} ({bpm:.1f} BPM), Time {time_sec:.2f}s")
+            log.message(
+                f"  {i+1}: Tick {tick}, Bar {bar:.1f}, Tempo {tempo} ({bpm:.1f} BPM), Time {time_sec:.2f}s"
+            )
 
     def _fix_buffer_tempo_assignments(self):
         """Fix tempo assignments in the buffer - each message should use the tempo that was active at its tick."""

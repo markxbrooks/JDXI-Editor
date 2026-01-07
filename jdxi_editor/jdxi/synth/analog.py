@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from typing import Dict
 
 from jdxi_editor.jdxi.synth.data import JDXISynthData
-from jdxi_editor.midi.data.address.address import AddressOffsetAnalogLMB, Address
+from jdxi_editor.midi.data.address.address import Address, AddressOffsetAnalogLMB
 
 
 @dataclass

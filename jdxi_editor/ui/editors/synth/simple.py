@@ -72,7 +72,9 @@ class BasicEditor(SynthEditor):
         image_loaded = False
 
         # Define paths
-        default_image_path = resource_path(os.path.join("resources", self.instrument_icon_folder, self.default_image))
+        default_image_path = resource_path(
+            os.path.join("resources", self.instrument_icon_folder, self.default_image)
+        )
         if not image_loaded:
             if not self.load_and_set_image(default_image_path):
                 self.image_label.clear()  # Clear label if default image is also missing

@@ -20,9 +20,8 @@ Usage Example:
     [145, 60, 127]  # (0x91 in hex: Note On for channel 1)
 """
 
-
 from dataclasses import dataclass
-from typing import Optional, List
+from typing import List, Optional
 
 from jdxi_editor.midi.message.midi import MidiMessage
 

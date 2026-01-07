@@ -15,7 +15,7 @@ message_bytes = message.to_bytes()
 print("Generated SysEx Message (bytes):", message_bytes)
 
 # Parsing a SysEx message from bytes
-received_bytes = b'\xF0\x41\x10\x12\x00\x01\x02\x03\x04\x05\xF7'  # Example received SysEx message
+received_bytes = b'\xf0\x41\x10\x12\x00\x01\x02\x03\x04\x05\xf7'  # Example received SysEx message
 parsed_message = RolandSysEx.from_bytes(received_bytes)
 print("Parsed Command:", parsed_message.command)
 print("Parsed Address:", parsed_message.address)
@@ -24,27 +24,27 @@ print("Parsed Value:", parsed_message.value)
 """
 
 from dataclasses import dataclass, field
-from typing import List, Union, Optional
+from typing import List, Optional, Union
 
 from jdxi_editor.jdxi.midi.constant import JDXiConstant
-from picomidi.constant import MidiConstant
-from picomidi.core.bitmask import BitMask
 from jdxi_editor.jdxi.sysex.offset import JDXiSysExOffset
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import (
-    ModelID,
-    CommandID,
     AddressStartMSB,
+    CommandID,
+    ModelID,
     RolandSysExAddress,
 )
 from jdxi_editor.midi.data.address.sysex import (
-    START_OF_SYSEX,
     END_OF_SYSEX,
+    START_OF_SYSEX,
     ZERO_BYTE,
-    RolandID
+    RolandID,
 )
 from jdxi_editor.midi.message.sysex import SysExMessage
 from jdxi_editor.midi.utils.byte import split_16bit_value_to_nibbles
+from picomidi.constant import MidiConstant
+from picomidi.core.bitmask import BitMask
 
 
 @dataclass
@@ -92,14 +92,14 @@ class RolandSysExMessage(SysExMessage):
         :return: list
         """
         msg = (
-                [MidiConstant.START_OF_SYSEX, self.manufacturer_id, self.device_id]
-                + list(self.model_id)
-                + [self.command]
-                + [self.sysex_address.msb]
-                + [self.sysex_address.umb]
-                + [self.sysex_address.lmb]
-                + [self.sysex_address.lsb]
-                + self.data
+            [MidiConstant.START_OF_SYSEX, self.manufacturer_id, self.device_id]
+            + list(self.model_id)
+            + [self.command]
+            + [self.sysex_address.msb]
+            + [self.sysex_address.umb]
+            + [self.sysex_address.lmb]
+            + [self.sysex_address.lsb]
+            + self.data
         )
         msg.append(self.calculate_checksum())
         msg.append(self.end_of_sysex)
@@ -181,7 +181,7 @@ class RolandSysEx(SysExMessage):
         self,
         address: RolandSysExAddress,
         *data_bytes: Union[List[int], int],
-        request: bool = False
+        request: bool = False,
     ) -> List[int]:
         """
         Construct a SysEx message based on the provided address and data bytes.
@@ -282,10 +282,12 @@ class JDXiSysEx(RolandSysEx):
         # Validate model ID
         if len(self.model_id) != 4:
             raise ValueError("Model ID must be 4 bytes")
-        if self.model_id != [ModelID.MODEL_ID_1,
-                             ModelID.MODEL_ID_2,
-                             ModelID.MODEL_ID_3,
-                             ModelID.MODEL_ID_4]:
+        if self.model_id != [
+            ModelID.MODEL_ID_1,
+            ModelID.MODEL_ID_2,
+            ModelID.MODEL_ID_3,
+            ModelID.MODEL_ID_4,
+        ]:
             raise ValueError(f"Invalid model ID: {[f'{x:02X}' for x in self.model_id]}")
 
         # Validate address
@@ -321,22 +323,30 @@ class JDXiSysEx(RolandSysEx):
     def from_bytes(cls, data: bytes):
         """Create message from received bytes"""
         if (
-                len(data)
-                < JDXiConstant.SYSEX_LENGTH_ONE_BYTE_DATA  # Minimum length: F0 + ID + dev + model(4) + cmd + addr(4) + sum + F7
-                or data[JDXiSysExOffset.SYSEX_START] != START_OF_SYSEX
-                or data[JDXiSysExOffset.ROLAND_ID] != ModelID.ROLAND_ID  # Roland ID
-                or data[JDXiSysExOffset.MODEL_ID_1:JDXiSysExOffset.COMMAND_ID] != bytes([ModelID.MODEL_ID_1,
-                                                                                         ModelID.MODEL_ID_2,
-                                                                                         ModelID.MODEL_ID_3,
-                                                                                         ModelID.MODEL_ID_4])
+            len(data)
+            < JDXiConstant.SYSEX_LENGTH_ONE_BYTE_DATA  # Minimum length: F0 + ID + dev + model(4) + cmd + addr(4) + sum + F7
+            or data[JDXiSysExOffset.SYSEX_START] != START_OF_SYSEX
+            or data[JDXiSysExOffset.ROLAND_ID] != ModelID.ROLAND_ID  # Roland ID
+            or data[JDXiSysExOffset.MODEL_ID_1 : JDXiSysExOffset.COMMAND_ID]
+            != bytes(
+                [
+                    ModelID.MODEL_ID_1,
+                    ModelID.MODEL_ID_2,
+                    ModelID.MODEL_ID_3,
+                    ModelID.MODEL_ID_4,
+                ]
+            )
         ):  # JD-Xi model ID
             raise ValueError("Invalid JD-Xi SysEx message")
 
         device_id = data[JDXiSysExOffset.DEVICE_ID]
         command = data[JDXiSysExOffset.COMMAND_ID]
-        address = list(data[JDXiSysExOffset.ADDRESS_MSB:JDXiSysExOffset.TONE_NAME_START])
+        address = list(
+            data[JDXiSysExOffset.ADDRESS_MSB : JDXiSysExOffset.TONE_NAME_START]
+        )
         message_data = list(
-            data[JDXiSysExOffset.TONE_NAME_START:JDXiSysExOffset.CHECKSUM])  # Everything between address and checksum
+            data[JDXiSysExOffset.TONE_NAME_START : JDXiSysExOffset.CHECKSUM]
+        )  # Everything between address and checksum
         received_checksum = data[JDXiSysExOffset.CHECKSUM]
 
         # Create message and verify checksum
@@ -797,7 +807,7 @@ class DrumKitPartialMessage(ParameterMessage):
 
 
 def create_sysex_message(
-        msb: int, umb: int, lmb: int, lsb: int, value: int
+    msb: int, umb: int, lmb: int, lsb: int, value: int
 ) -> JDXiSysEx:
     """Create address JD-Xi SysEx message with the given parameters"""
     return JDXiSysEx(
@@ -811,7 +821,7 @@ def create_sysex_message(
 
 
 def create_patch_load_message(
-        bank_msb: int, bank_lsb: int, program: int
+    bank_msb: int, bank_lsb: int, program: int
 ) -> List[JDXiSysEx]:
     """Create messages to load address patch (bank select + program change)"""
     return [

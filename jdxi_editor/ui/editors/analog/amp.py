@@ -6,16 +6,23 @@ This section contains the controls for the amp section of the JD-Xi editor.
 
 from typing import Callable
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QGroupBox, QTabWidget
-from PySide6.QtCore import Qt
 import qtawesome as qta
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import (
+    QGroupBox,
+    QHBoxLayout,
+    QLabel,
+    QTabWidget,
+    QVBoxLayout,
+    QWidget,
+)
 
-from jdxi_editor.midi.data.parameter import AddressParameter
-from jdxi_editor.midi.data.parameter.analog import AnalogParam
 from jdxi_editor.jdxi.style import JDXiStyle
-from jdxi_editor.ui.widgets.adsr.adsr import ADSR
-from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
+from picomidi.sysex.parameter.address import AddressParameter
+from jdxi_editor.midi.data.parameter.analog import AnalogParam
+from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 
 
 class AnalogAmpSection(QWidget):
@@ -49,7 +56,7 @@ class AnalogAmpSection(QWidget):
         self.init_ui()
 
     def init_ui(self):
-        """ Initialize UI """
+        """Initialize UI"""
         main_rows_vlayout = QVBoxLayout()
         main_rows_vlayout.setSpacing(5)
         main_rows_vlayout.setContentsMargins(5, 15, 5, 5)
@@ -89,7 +96,8 @@ class AnalogAmpSection(QWidget):
         )
         self.amp_level_velocity_sensitivity = self._create_parameter_slider(
             AnalogParam.AMP_LEVEL_VELOCITY_SENSITIVITY,
-            "Velocity Sensitivity", vertical=True
+            "Velocity Sensitivity",
+            vertical=True,
         )
 
         level_controls_row_layout.addStretch()
@@ -142,7 +150,7 @@ class AnalogAmpSection(QWidget):
             midi_helper=self.midi_helper,
             create_parameter_slider=self._create_parameter_slider,
             address=self.address,
-            controls=self.controls
+            controls=self.controls,
         )
         self.amp_env_adsr_widget.setStyleSheet(JDXiStyle.ADSR_ANALOG)
         amp_env_adsr_vlayout.addWidget(self.amp_env_adsr_widget)

@@ -33,25 +33,27 @@ Dependencies:
 import platform
 
 from PySide6.QtCore import QRect
-from PySide6.QtWidgets import QWidget, QSizePolicy
-from PySide6.QtGui import QPainter, QLinearGradient, QColor, QPen, QFont, QPaintEvent
+from PySide6.QtGui import QColor, QFont, QLinearGradient, QPainter, QPaintEvent, QPen
+from PySide6.QtWidgets import QSizePolicy, QWidget
 
+from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
-from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
 from jdxi_editor.midi.data.programs.digital import DIGITAL_PRESET_LIST
-from jdxi_editor.jdxi.synth.type import JDXiSynth
+from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
+from jdxi_editor.ui.editors.helpers.preset import get_preset_list_number_by_name
 from jdxi_editor.ui.editors.helpers.program import (
     get_program_id_by_name,
 )
-from jdxi_editor.ui.editors.helpers.preset import get_preset_list_number_by_name
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
 class DigitalDisplayBase(QWidget):
     """Base class for JD-Xi style digital displays."""
 
-    def __init__(self, digital_font_family: str = "JD LCD Rounded", parent: QWidget = None):
+    def __init__(
+        self, digital_font_family: str = "JD LCD Rounded", parent: QWidget = None
+    ):
         super().__init__(parent)
         """Initialize the DigitalDisplayBase
 
@@ -153,7 +155,6 @@ class DigitalTitle(DigitalDisplayBase):
             self.update_display(["", tone_name])
         else:
             self.update_display([tone_name])
-
 
     @property
     def text(self) -> str:

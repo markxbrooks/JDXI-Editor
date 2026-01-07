@@ -2,18 +2,24 @@
 Analog LFO Section
 """
 
-from typing import Dict
-from PySide6.QtWidgets import (QGridLayout,
-                               QSizePolicy, QButtonGroup, QTabWidget
-                               )
+from typing import Callable, Dict
 
-from typing import Callable
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton
-from PySide6.QtCore import QSize
 import qtawesome as qta
+from PySide6.QtCore import QSize
+from PySide6.QtWidgets import (
+    QButtonGroup,
+    QGridLayout,
+    QHBoxLayout,
+    QLabel,
+    QPushButton,
+    QSizePolicy,
+    QTabWidget,
+    QVBoxLayout,
+    QWidget,
+)
 
-from jdxi_editor.midi.data.parameter.analog import AnalogParam
 from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.midi.data.parameter.analog import AnalogParam
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
@@ -26,12 +32,12 @@ class AnalogLFOSectionNew(QWidget):
     MIN_CONTROL_HEIGHT = 28
 
     def __init__(
-            self,
-            create_parameter_slider: Callable,
-            create_parameter_switch: Callable,
-            create_parameter_combo_box: Callable,
-            on_lfo_shape_changed: Callable,
-            lfo_shape_buttons: Dict[int, QPushButton],
+        self,
+        create_parameter_slider: Callable,
+        create_parameter_switch: Callable,
+        create_parameter_combo_box: Callable,
+        on_lfo_shape_changed: Callable,
+        lfo_shape_buttons: Dict[int, QPushButton],
     ):
         super().__init__()
 
@@ -98,9 +104,7 @@ class AnalogLFOSectionNew(QWidget):
             btn.setIcon(qta.icon(icon_name, color="#FFFFFF", scale_factor=0.9))
             btn.setStyleSheet(JDXiStyle.BUTTON_RECT_ANALOG)
 
-            btn.setMinimumSize(
-                QSize(self.MIN_CONTROL_WIDTH, self.MIN_CONTROL_HEIGHT)
-            )
+            btn.setMinimumSize(QSize(self.MIN_CONTROL_WIDTH, self.MIN_CONTROL_HEIGHT))
             btn.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
 
             btn.clicked.connect(lambda _, v=value: self._on_lfo_shape_changed(v))
@@ -191,12 +195,12 @@ class AnalogLFOSection(QWidget):
     """Analog LFO Section"""
 
     def __init__(
-            self,
-            create_parameter_slider: Callable,
-            create_parameter_switch: Callable,
-            create_parameter_combo_box: Callable,
-            on_lfo_shape_changed: Callable,
-            lfo_shape_buttons: dict,
+        self,
+        create_parameter_slider: Callable,
+        create_parameter_switch: Callable,
+        create_parameter_combo_box: Callable,
+        on_lfo_shape_changed: Callable,
+        lfo_shape_buttons: dict,
     ):
         super().__init__()
         """
@@ -262,10 +266,14 @@ class AnalogLFOSection(QWidget):
         # ---LFO Rate and Fade Time ---
         fade_rate_controls_row_layout = self._create_lfo_fade_rate_controls_row_layout()
         fade_rate_controls_row_widget = QWidget()
-        fade_rate_controls_row_widget.setMinimumHeight(JDXiDimensions.EDITOR_MINIMUM_HEIGHT)
+        fade_rate_controls_row_widget.setMinimumHeight(
+            JDXiDimensions.EDITOR_MINIMUM_HEIGHT
+        )
         fade_rate_controls_row_widget.setLayout(fade_rate_controls_row_layout)
 
-        self.lfo_controls_tab_widget.addTab(fade_rate_controls_row_widget, "Fade and Rate Controls")
+        self.lfo_controls_tab_widget.addTab(
+            fade_rate_controls_row_widget, "Fade and Rate Controls"
+        )
 
         # --- Depth controls ---
         depth_controls_row_layout = self._create_lfo_depth_controls()
@@ -287,7 +295,9 @@ class AnalogLFOSection(QWidget):
             AnalogParam.LFO_FILTER_DEPTH, "Filter Depth", vertical=True
         )
         self.lfo_filter_modulation = self._create_parameter_slider(
-            AnalogParam.LFO_FILTER_MODULATION_CONTROL, "Filter Modulation", vertical=True
+            AnalogParam.LFO_FILTER_MODULATION_CONTROL,
+            "Filter Modulation",
+            vertical=True,
         )
         self.lfo_amp = self._create_parameter_slider(
             AnalogParam.LFO_AMP_DEPTH, "Amp Depth", vertical=True

@@ -2,8 +2,8 @@
 byte data processing
 """
 
-from picomidi.core.bitmask import BitMask
 from picomidi.constant import MidiConstant
+from picomidi.core.bitmask import BitMask
 
 
 def split_16bit_value_to_bytes(value: int) -> list[int]:
@@ -38,7 +38,7 @@ def encode_roland_7bit(value: int) -> list[int]:
         (value >> 21) & BitMask.LOW_7_BITS,
         (value >> 14) & BitMask.LOW_7_BITS,
         (value >> 7) & BitMask.LOW_7_BITS,
-        value & BitMask.LOW_7_BITS
+        value & BitMask.LOW_7_BITS,
     ]
 
 
@@ -52,14 +52,14 @@ def decode_roland_4byte(data_bytes: list[int]) -> int:
     """
     assert len(data_bytes) == 4
     value = (
-        (data_bytes[0] & BitMask.LOW_7_BITS) << 21 |
-        (data_bytes[1] & BitMask.LOW_7_BITS) << 14 |
-        (data_bytes[2] & BitMask.LOW_7_BITS) << 7  |
-        (data_bytes[3] & BitMask.LOW_7_BITS)
+        (data_bytes[0] & BitMask.LOW_7_BITS) << 21
+        | (data_bytes[1] & BitMask.LOW_7_BITS) << 14
+        | (data_bytes[2] & BitMask.LOW_7_BITS) << 7
+        | (data_bytes[3] & BitMask.LOW_7_BITS)
     )
     # Convert from unsigned to signed if needed
     if value >= (1 << 27):
-        value -= (1 << 28)
+        value -= 1 << 28
     return value
 
 
@@ -74,12 +74,12 @@ def encode_roland_4byte(value: int) -> list[int]:
     >>> encode_roland_4byte(1048576)  # [0x08, 0x00, 0x00, 0x00]
     """
     if value < 0:
-        value += (1 << 28)
+        value += 1 << 28
     return [
         (value >> 21) & BitMask.LOW_7_BITS,
         (value >> 14) & BitMask.LOW_7_BITS,
         (value >> 7) & BitMask.LOW_7_BITS,
-        value & BitMask.LOW_7_BITS
+        value & BitMask.LOW_7_BITS,
     ]
 
 
@@ -95,7 +95,9 @@ def split_16bit_value_to_nibbles(value: int) -> list[int]:
 
     nibbles = []
     for i in range(4):
-        nibbles.append((value >> (4 * (3 - i))) & BitMask.LOW_4_BITS)  # Extract 4 bits per iteration
+        nibbles.append(
+            (value >> (4 * (3 - i))) & BitMask.LOW_4_BITS
+        )  # Extract 4 bits per iteration
 
     return nibbles  # Always returns a 4-element list
 
@@ -107,10 +109,12 @@ def split_32bit_value_to_nibbles(value: int) -> list[int]:
     :param value: int
     :return: list[int]
     """
-    if value < 0 or value > MidiConstant.VALUE_MAX_THIRTY_TWO_BIT: # 0xFFFFFFFF:
+    if value < 0 or value > MidiConstant.VALUE_MAX_THIRTY_TWO_BIT:  # 0xFFFFFFFF:
         raise ValueError("Value must be a 32-bit unsigned integer (0–4294967295).")
 
-    return [(value >> (4 * (7 - i))) & BitMask.LOW_4_BITS for i in range(8)]  # 8 nibbles, MSB first
+    return [
+        (value >> (4 * (7 - i))) & BitMask.LOW_4_BITS for i in range(8)
+    ]  # 8 nibbles, MSB first
 
 
 def join_nibbles_to_32bit(nibbles: list[int]) -> int:
@@ -155,18 +159,18 @@ def join_nibbles_to_16bit(nibbles: list[int]) -> int:
 
 def encode_14bit_to_7bit_midi_bytes(value: int) -> list[int]:
     """
-    Encodes a 14-bit integer into two 7-bit MIDI-safe bytes.
-    MIDI SysEx requires all data bytes to be in the range 0x00–0x7F.
-    # Example usage:
->>>     value = 0x1234  # 4660 in decimal
->>>     data_bytes = encode_14bit_to_7bit_midi_bytes(value)
->>>     print(data_bytes)  # Output: [0x24, 0x34] → [36, 52]
+        Encodes a 14-bit integer into two 7-bit MIDI-safe bytes.
+        MIDI SysEx requires all data bytes to be in the range 0x00–0x7F.
+        # Example usage:
+    >>>     value = 0x1234  # 4660 in decimal
+    >>>     data_bytes = encode_14bit_to_7bit_midi_bytes(value)
+    >>>     print(data_bytes)  # Output: [0x24, 0x34] → [36, 52]
 
     """
-    if not (0 <= value <= MidiConstant.VALUE_MAX_FOURTEEN_BIT): # 0x3FFF):
+    if not (0 <= value <= MidiConstant.VALUE_MAX_FOURTEEN_BIT):  # 0x3FFF):
         raise ValueError("Value must be a 14-bit integer (0–16383)")
 
-    lsb = value & BitMask.LOW_7_BITS           # Lower 7 bits
-    msb = (value >> 7) & BitMask.LOW_7_BITS    # Upper 7 bits
+    lsb = value & BitMask.LOW_7_BITS  # Lower 7 bits
+    msb = (value >> 7) & BitMask.LOW_7_BITS  # Upper 7 bits
 
     return [msb, lsb]

@@ -18,65 +18,64 @@ Methods:
 
 """
 
-import os
 import logging
+import os
 import re
 from typing import Union
 
-from PySide6.QtWidgets import (
-    QMainWindow,
-    QWidget,
-    QVBoxLayout,
-    QHBoxLayout,
-    QMessageBox,
-    QLabel,
-    QLayout,
-)
-from PySide6.QtCore import Qt, QSettings
+import qtawesome as qta
+from PySide6.QtCore import QSettings, Qt
 from PySide6.QtGui import (
     QAction,
     QFontDatabase,
 )
-import qtawesome as qta
+from PySide6.QtWidgets import (
+    QHBoxLayout,
+    QLabel,
+    QLayout,
+    QMainWindow,
+    QMessageBox,
+    QVBoxLayout,
+    QWidget,
+)
 
-from jdxi_editor.project import __program__
+from jdxi_editor.jdxi.preset.manager import JDXiPresetManager
+from jdxi_editor.jdxi.style.jdxi import JDXiStyle
+from jdxi_editor.jdxi.synth.factory import create_synth_data
+from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.channel.channel import MidiChannel
-from jdxi_editor.jdxi.synth.factory import create_synth_data
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.jdxi.preset.manager import JDXiPresetManager
-from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.midi.sysex.request.midi_requests import MidiRequests
+from jdxi_editor.project import __package_name__, __program__
 from jdxi_editor.resources import resource_path
+from jdxi_editor.ui.editors.helpers.preset import get_preset_list_number_by_name
 from jdxi_editor.ui.editors.helpers.program import (
     get_program_name_by_id,
 )
-from jdxi_editor.ui.editors.helpers.preset import get_preset_list_number_by_name
 from jdxi_editor.ui.image.instrument import draw_instrument_pixmap
-from jdxi_editor.jdxi.style.jdxi import JDXiStyle
-from jdxi_editor.ui.widgets.button.sequencer import SequencerSquare
 from jdxi_editor.ui.widgets.button.favorite import FavoriteButton
-from jdxi_editor.ui.widgets.piano.keyboard import PianoKeyboard
+from jdxi_editor.ui.widgets.button.sequencer import SequencerSquare
 from jdxi_editor.ui.widgets.indicator.led import LEDIndicator
+from jdxi_editor.ui.widgets.piano.keyboard import PianoKeyboard
 from jdxi_editor.ui.windows.jdxi.containers import (
     add_arpeggiator_buttons,
-    add_slider_container,
     add_digital_display,
     add_effects_container,
+    add_favorite_button_container,
     add_octave_buttons,
     add_program_container,
     add_sequencer_container,
-    add_favorite_button_container,
+    add_slider_container,
     add_title_container,
     add_tone_container,
-    build_wheel_row,
     build_wheel_label_row,
-    create_tone_buttons_row,
-    create_program_buttons_row,
+    build_wheel_row,
     create_parts_container,
+    create_program_buttons_row,
+    create_tone_buttons_row,
 )
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
-from jdxi_editor.project import __program__, __package_name__
 
 
 class JDXiUi(QMainWindow):
@@ -377,7 +376,9 @@ class JDXiUi(QMainWindow):
         preferences_action.triggered.connect(self.on_preferences)
         self.help_menu.addAction(preferences_action)
 
-        documentation_action = QAction(qta.icon("mdi6.help-rhombus-outline"),"Documentation", self)
+        documentation_action = QAction(
+            qta.icon("mdi6.help-rhombus-outline"), "Documentation", self
+        )
         documentation_action.setStatusTip(f"Show {__program__} documentation")
         documentation_action.triggered.connect(self.on_documentation)
 
@@ -430,16 +431,16 @@ class JDXiUi(QMainWindow):
             self.current_synth_type = JDXiSynth.DIGITAL_SYNTH_1
         try:
             synth_data = create_synth_data(self.current_synth_type)
-            log.message(
-                f"Creating synth data for type: {self.current_synth_type}"
-            )
+            log.message(f"Creating synth data for type: {self.current_synth_type}")
             if not synth_data:
                 synth_data = create_synth_data(JDXiSynth.DIGITAL_SYNTH_1)
 
             self.preset_manager.current_preset_name = (
                 self.preset_manager.get_preset_name_by_type(self.current_synth_type)
             )
-            log.message(f"Current preset name: {self.preset_manager.current_preset_name}")
+            log.message(
+                f"Current preset name: {self.preset_manager.current_preset_name}"
+            )
             # Update preset number
             self.preset_manager.current_preset_number = get_preset_list_number_by_name(
                 self.preset_manager.current_preset_name, synth_data.preset_list

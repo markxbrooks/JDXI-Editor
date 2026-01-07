@@ -13,14 +13,14 @@ Sysex parser
 
 import json
 from pathlib import Path
-from typing import Optional, Any, Dict
+from typing import Any, Dict, Optional
 
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.project import __package_name__
 
 
 class JDXiJsonSysexParser:
-    """ JDXiJsonSysexParser """
+    """JDXiJsonSysexParser"""
 
     def __init__(self, json_sysex_data: Optional[str] = None):
         """

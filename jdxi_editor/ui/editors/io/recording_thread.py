@@ -1,5 +1,7 @@
 """Audio recording thread for capturing audio input."""
+
 import wave
+
 import pyaudio
 from PySide6.QtCore import QThread, Signal
 from PySide6.QtWidgets import QWidget
@@ -12,15 +14,18 @@ class WavRecordingThread(QThread):
     """
     WavRecordingThread
     """
+
     recording_finished = Signal(str)
     recording_error = Signal(str)
 
-    def __init__(self,
-                 recorder: USBRecorder,
-                 duration: float = None,
-                 output_file: str = None,
-                 recording_rate=pyaudio.paInt16,
-                 parent: QWidget = None):
+    def __init__(
+        self,
+        recorder: USBRecorder,
+        duration: float = None,
+        output_file: str = None,
+        recording_rate=pyaudio.paInt16,
+        parent: QWidget = None,
+    ):
         super().__init__(parent)
         self.recorder = recorder
         self.recording_rate = recording_rate
@@ -50,9 +55,11 @@ class WavRecordingThread(QThread):
             log.message(f"Default sample rate = {info['defaultSampleRate']}")
 
             # Ideally match these:
-            self.recorder.channels = min(self.recorder.channels, info['maxInputChannels'])
+            self.recorder.channels = min(
+                self.recorder.channels, info["maxInputChannels"]
+            )
 
-            self.recorder.rate = int(info['defaultSampleRate'])
+            self.recorder.rate = int(info["defaultSampleRate"])
             try:
                 stream = self.recorder.p.open(
                     format=pyaudio.paInt16,
@@ -60,7 +67,7 @@ class WavRecordingThread(QThread):
                     rate=self.recorder.rate,
                     input=True,
                     input_device_index=self.recorder.input_device_index,
-                    frames_per_buffer=self.recorder.frames_per_buffer
+                    frames_per_buffer=self.recorder.frames_per_buffer,
                 )
             except Exception as ex:
                 log.error(f"⚠️ Stream open failed: {ex}")
@@ -74,7 +81,12 @@ class WavRecordingThread(QThread):
         frames = []
 
         try:
-            for _ in range(0, int(self.recorder.rate / self.recorder.frames_per_buffer * self.duration)):
+            for _ in range(
+                0,
+                int(
+                    self.recorder.rate / self.recorder.frames_per_buffer * self.duration
+                ),
+            ):
                 if not self.running:
                     log.message("Recording interrupted.")
                     break
@@ -97,7 +109,7 @@ class WavRecordingThread(QThread):
                 f.setnchannels(self.recorder.channels)
                 f.setsampwidth(self.recorder.p.get_sample_size(pyaudio.paInt16))
                 f.setframerate(self.recorder.rate)
-                f.writeframes(b''.join(frames))
+                f.writeframes(b"".join(frames))
         except Exception as ex:
             self.recording_error.emit(str(ex))
             return
@@ -111,12 +123,14 @@ class WavRecordingThread(QThread):
         """
         log.message("Recording...")
         try:
-            stream = self.recorder.p.open(format=pyaudio.paInt16,
-                                          channels=self.recorder.channels,
-                                          rate=self.recorder.rate,
-                                          input=True,
-                                          input_device_index=self.recorder.input_device_index,
-                                          frames_per_buffer=self.recorder.frames_per_buffer)
+            stream = self.recorder.p.open(
+                format=pyaudio.paInt16,
+                channels=self.recorder.channels,
+                rate=self.recorder.rate,
+                input=True,
+                input_device_index=self.recorder.input_device_index,
+                frames_per_buffer=self.recorder.frames_per_buffer,
+            )
         except Exception as ex:
             self.recording_error.emit(str(ex))
             return
@@ -124,7 +138,12 @@ class WavRecordingThread(QThread):
         frames = []
 
         try:
-            for _ in range(0, int(self.recorder.rate / self.recorder.frames_per_buffer * self.duration)):
+            for _ in range(
+                0,
+                int(
+                    self.recorder.rate / self.recorder.frames_per_buffer * self.duration
+                ),
+            ):
                 if not self.running:
                     log.message("Recording interrupted.")
                     break
@@ -147,7 +166,7 @@ class WavRecordingThread(QThread):
                 f.setnchannels(self.recorder.channels)
                 f.setsampwidth(self.recorder.p.get_sample_size(pyaudio.paInt16))
                 f.setframerate(self.recorder.rate)
-                f.writeframes(b''.join(frames))
+                f.writeframes(b"".join(frames))
         except Exception as ex:
             self.recording_error.emit(str(ex))
             return

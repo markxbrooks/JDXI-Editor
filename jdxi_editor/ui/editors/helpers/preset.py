@@ -1,5 +1,5 @@
 import re
-from typing import List, Dict, Optional, Union, Any
+from typing import Any, Dict, List, Optional, Union
 
 from jdxi_editor.midi.data.programs.digital import DIGITAL_PRESET_LIST
 
@@ -26,9 +26,7 @@ def get_preset_list_number_by_name(
 
 
 def get_preset_parameter_value(
-    parameter: str,
-    id: Union[str, int],
-    preset_list: List[dict] = DIGITAL_PRESET_LIST
+    parameter: str, id: Union[str, int], preset_list: List[dict] = DIGITAL_PRESET_LIST
 ) -> Union[Optional[int], Any]:
     """
     Retrieve a specific parameter value from a preset by its ID.

@@ -19,32 +19,41 @@ Dependencies:
 - `jdxi_manager.ui.style` for applying UI styles.
 
 """
-import json
-import re
-import os
-from typing import Optional, Any
-from PySide6.QtGui import QPixmap, QKeySequence, QShortcut, QShowEvent
-from PySide6.QtWidgets import QWidget, QGroupBox, QVBoxLayout, QPushButton, QLabel
-from PySide6.QtCore import Qt, Signal
 
+import json
+import os
+import re
+from typing import Any, Optional
+
+from PySide6.QtCore import Qt, Signal
+from PySide6.QtGui import QKeySequence, QPixmap, QShortcut, QShowEvent
+from PySide6.QtWidgets import QGroupBox, QLabel, QPushButton, QVBoxLayout, QWidget
+
+from jdxi_editor.jdxi.preset.lists import JDXiPresetToneList
+from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.log.logger import Logger as log
-from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB, \
-    AddressOffsetSuperNATURALLMB
+from jdxi_editor.log.midi_info import log_midi_info
+from jdxi_editor.midi.channel.channel import MidiChannel
+from jdxi_editor.midi.data.address.address import (
+    AddressOffsetSuperNATURALLMB,
+    AddressOffsetTemporaryToneUMB,
+)
 from jdxi_editor.midi.data.control_change.base import ControlChange
 from jdxi_editor.midi.data.drum.data import DRUM_PARTIAL_MAP
-from jdxi_editor.jdxi.preset.lists import JDXiPresetToneList
-from jdxi_editor.jdxi.synth.type import JDXiSynth
-from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.io.helper import MidiIOHelper
+
 # from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.parser.json import JDXiJsonSysexParser
-from jdxi_editor.resources import resource_path
-from jdxi_editor.ui.editors.digital.utils import get_area, filter_sysex_keys, get_partial_number
 from jdxi_editor.midi.sysex.request.data import SYNTH_PARTIAL_MAP
+from jdxi_editor.resources import resource_path
+from jdxi_editor.ui.editors.digital.utils import (
+    filter_sysex_keys,
+    get_area,
+    get_partial_number,
+)
 from jdxi_editor.ui.editors.helpers.preset import get_preset_parameter_value
-from jdxi_editor.log.midi_info import log_midi_info
 from jdxi_editor.ui.editors.synth.base import SynthBase
-from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 from jdxi_editor.ui.widgets.preset.combo_box import PresetComboBox
 
@@ -87,7 +96,7 @@ class SynthEditor(SynthBase):
         midi_helper: Optional[object] = None,
         parent: Optional[QWidget] = None,
     ):
-        super().__init__(midi_helper, parent) # Dict of JDXiSynth Types
+        super().__init__(midi_helper, parent)  # Dict of JDXiSynth Types
         self.partial_map = SYNTH_PARTIAL_MAP
         self.sysex_current_data = None
         self.preset_list = None
@@ -113,7 +122,10 @@ class SynthEditor(SynthBase):
         self.preset_type = None
         if hasattr(self, "instrument_title_label"):
             self.midi_helper.update_tone_name.connect(
-                lambda title, synth_type: self.set_instrument_title_label(title, synth_type))
+                lambda title, synth_type: self.set_instrument_title_label(
+                    title, synth_type
+                )
+            )
         self.midi_helper.midi_program_changed.connect(self.data_request)
         log.parameter("Initialized:", self.__class__.__name__)
         log.parameter("---> Using MIDI helper:", midi_helper)
@@ -142,13 +154,32 @@ class SynthEditor(SynthBase):
             self.midi_helper.midi_control_changed.connect(self._handle_control_change)
             # self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
             from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
-            self.preset_loader = JDXiPresetHelper(self.midi_helper, JDXiPresetToneList.DIGITAL_ENUMERATED)
+
+            self.preset_loader = JDXiPresetHelper(
+                self.midi_helper, JDXiPresetToneList.DIGITAL_ENUMERATED
+            )
             # Initialize preset handlers dynamically
             preset_configs = [
-                (JDXiSynth.DIGITAL_SYNTH_1, JDXiPresetToneList.DIGITAL_ENUMERATED, MidiChannel.DIGITAL_SYNTH_1),
-                (JDXiSynth.DIGITAL_SYNTH_2, JDXiPresetToneList.DIGITAL_ENUMERATED, MidiChannel.DIGITAL_SYNTH_2),
-                (JDXiSynth.ANALOG_SYNTH, JDXiPresetToneList.ANALOG_ENUMERATED, MidiChannel.ANALOG_SYNTH),
-                (JDXiSynth.DRUM_KIT, JDXiPresetToneList.DRUM_ENUMERATED, MidiChannel.DRUM_KIT),
+                (
+                    JDXiSynth.DIGITAL_SYNTH_1,
+                    JDXiPresetToneList.DIGITAL_ENUMERATED,
+                    MidiChannel.DIGITAL_SYNTH_1,
+                ),
+                (
+                    JDXiSynth.DIGITAL_SYNTH_2,
+                    JDXiPresetToneList.DIGITAL_ENUMERATED,
+                    MidiChannel.DIGITAL_SYNTH_2,
+                ),
+                (
+                    JDXiSynth.ANALOG_SYNTH,
+                    JDXiPresetToneList.ANALOG_ENUMERATED,
+                    MidiChannel.ANALOG_SYNTH,
+                ),
+                (
+                    JDXiSynth.DRUM_KIT,
+                    JDXiPresetToneList.DRUM_ENUMERATED,
+                    MidiChannel.DRUM_KIT,
+                ),
             ]
             self.preset_helpers = {
                 synth_type: JDXiPresetHelper(
@@ -167,12 +198,15 @@ class SynthEditor(SynthBase):
     def __repr__(self):
         return f"{self.__class__.__name__}"
 
-    def _init_synth_data(self, synth_type: str = JDXiSynth.DIGITAL_SYNTH_1,
-                         partial_number: Optional[int] = 0):
+    def _init_synth_data(
+        self,
+        synth_type: str = JDXiSynth.DIGITAL_SYNTH_1,
+        partial_number: Optional[int] = 0,
+    ):
         """Initialize synth-specific data."""
         from jdxi_editor.jdxi.synth.factory import create_synth_data
-        self.synth_data = create_synth_data(synth_type,
-                                            partial_number=partial_number)
+
+        self.synth_data = create_synth_data(synth_type, partial_number=partial_number)
 
         # Dynamically assign attributes
         for attr in [
@@ -197,7 +231,9 @@ class SynthEditor(SynthBase):
         """
         super().showEvent(event)
         if self.midi_helper:
-            log.message("🎛️ Effects Editor shown - requesting current settings from instrument")
+            log.message(
+                "🎛️ Effects Editor shown - requesting current settings from instrument"
+            )
         self.data_request()
 
     def create_instrument_preset_group(self, synth_type: str = "Analog") -> QGroupBox:
@@ -253,11 +289,13 @@ class SynthEditor(SynthBase):
             for param, widget in self.controls.items():
                 # ---- Get value from widget - all custom widgets have a value() method
                 # --- (Slider, ComboBox, SpinBox, Switch all implement value())
-                if hasattr(widget, 'value'):
+                if hasattr(widget, "value"):
                     controls_data[param.name] = widget.value()
                 else:
                     # --- Fallback for unexpected widget types
-                    log.warning(f"Widget for {param.name} has no value() method: {type(widget)}")
+                    log.warning(
+                        f"Widget for {param.name} has no value() method: {type(widget)}"
+                    )
                     controls_data[param.name] = 0
             return controls_data
         except Exception as ex:
@@ -310,25 +348,31 @@ class SynthEditor(SynthBase):
 
         partial_number = get_partial_number(synth_tone, partial_map=partial_map)
         if temporary_area == AddressOffsetTemporaryToneUMB.ANALOG_SYNTH.name:
-            self._update_partial_controls(partial_number, sysex_data, successes, failures)
+            self._update_partial_controls(
+                partial_number, sysex_data, successes, failures
+            )
         if synth_tone == AddressOffsetSuperNATURALLMB.COMMON.name:
-            self._update_common_controls(partial_number, sysex_data, successes, failures)
+            self._update_common_controls(
+                partial_number, sysex_data, successes, failures
+            )
         elif synth_tone == AddressOffsetSuperNATURALLMB.MODIFY.name:
-            self._update_modify_controls(partial_number, sysex_data, successes, failures)
+            self._update_modify_controls(
+                partial_number, sysex_data, successes, failures
+            )
         else:  # --- Drums and Digital 1 & 2 are dealt with via partials
             if partial_number is None:
                 log.error(f"Unknown partial number for synth_tone: {synth_tone}")
                 return
             log.parameter("partial_number", partial_number)
-            self._update_partial_controls(partial_number, sysex_data, successes, failures)
+            self._update_partial_controls(
+                partial_number, sysex_data, successes, failures
+            )
 
         log.debug_info(successes, failures)
 
-    def _update_partial_controls(self,
-                                 partial_no: int,
-                                 sysex_data: dict,
-                                 successes: list,
-                                 failures: list) -> None:
+    def _update_partial_controls(
+        self, partial_no: int, sysex_data: dict, successes: list, failures: list
+    ) -> None:
         """
         Apply updates to the UI components based on the received SysEx data.
 
@@ -339,7 +383,9 @@ class SynthEditor(SynthBase):
         :return: None
         By default has no partials, so subclass to implement partial updates
         """
-        raise NotImplementedError("should be over-ridden in a sub class with implementation")
+        raise NotImplementedError(
+            "should be over-ridden in a sub class with implementation"
+        )
 
     def _parse_sysex_json(self, json_sysex_data: str) -> Optional[dict]:
         """
@@ -370,10 +416,12 @@ class SynthEditor(SynthBase):
         if self.preset_type == synth_type:
             # Get title label from widget or direct attribute
             title_label = None
-            if hasattr(self, 'instrument_preset') and self.instrument_preset:
-                title_label = getattr(self.instrument_preset, 'instrument_title_label', None)
+            if hasattr(self, "instrument_preset") and self.instrument_preset:
+                title_label = getattr(
+                    self.instrument_preset, "instrument_title_label", None
+                )
             if not title_label:
-                title_label = getattr(self, 'instrument_title_label', None)
+                title_label = getattr(self, "instrument_title_label", None)
             if title_label:
                 title_label.setText(name)
         self.tone_names[synth_type] = name
@@ -395,10 +443,12 @@ class SynthEditor(SynthBase):
         log.message(f"selected_synth_text: {selected_synth_text}")
         # Get title label from widget or direct attribute
         title_label = None
-        if hasattr(self, 'instrument_preset') and self.instrument_preset:
-            title_label = getattr(self.instrument_preset, 'instrument_title_label', None)
+        if hasattr(self, "instrument_preset") and self.instrument_preset:
+            title_label = getattr(
+                self.instrument_preset, "instrument_title_label", None
+            )
         if not title_label:
-            title_label = getattr(self, 'instrument_title_label', None)
+            title_label = getattr(self, "instrument_title_label", None)
         if title_label:
             title_label.setText(selected_synth_text)
 
@@ -421,7 +471,7 @@ class SynthEditor(SynthBase):
         if not combo_box:
             log.error("Instrument selection combo box is not available")
             return
-        
+
         preset_name = combo_box.combo_box.currentText()  # Get the selected preset name
         log.message(f"combo box preset_name : {preset_name}")
         program_number = preset_name[:3]
@@ -437,7 +487,7 @@ class SynthEditor(SynthBase):
                 f"Could not retrieve preset parameters for program {program_number}"
             )
             return
-        
+
         # Ensure midi_channel is set - it should be set by _init_synth_data, but check anyway
         if self.midi_channel is None:
             # Try to determine channel from preset_type
@@ -449,11 +499,15 @@ class SynthEditor(SynthBase):
             }
             if self.preset_type in channel_map:
                 self.midi_channel = channel_map[self.preset_type]
-                log.message(f"Set midi_channel to {self.midi_channel} based on preset_type {self.preset_type}")
+                log.message(
+                    f"Set midi_channel to {self.midi_channel} based on preset_type {self.preset_type}"
+                )
             else:
-                log.error(f"midi_channel is None and could not determine from preset_type {self.preset_type}")
+                log.error(
+                    f"midi_channel is None and could not determine from preset_type {self.preset_type}"
+                )
                 return
-        
+
         log.message(f"retrieved msb, lsb, pc : {msb}, {lsb}, {pc}")
         log.message(f"Using MIDI channel: {self.midi_channel}")
         log_midi_info(msb, lsb, pc)
@@ -501,26 +555,32 @@ class SynthEditor(SynthBase):
             file_to_load = secondary_image_path
         else:
             # Fallback to default image using resource_path
-            if hasattr(self, "instrument_icon_folder") and hasattr(self, "instrument_default_image"):
-                file_to_load = resource_path(os.path.join(
-                    "resources",
-                    self.instrument_icon_folder,
-                    self.instrument_default_image,
-                ))
+            if hasattr(self, "instrument_icon_folder") and hasattr(
+                self, "instrument_default_image"
+            ):
+                file_to_load = resource_path(
+                    os.path.join(
+                        "resources",
+                        self.instrument_icon_folder,
+                        self.instrument_default_image,
+                    )
+                )
             else:
-                log.error("Cannot load image: missing instrument_icon_folder or instrument_default_image")
+                log.error(
+                    "Cannot load image: missing instrument_icon_folder or instrument_default_image"
+                )
                 image_label = self._get_instrument_image_label()
                 if image_label:
                     image_label.clear()
                 return False
-        
+
         if not os.path.exists(file_to_load):
             log.warning(f"Image file does not exist: {file_to_load}")
             image_label = self._get_instrument_image_label()
             if image_label:
                 image_label.clear()
             return False
-        
+
         pixmap = QPixmap(file_to_load)
         if pixmap.isNull():
             log.error(f"Failed to load pixmap from: {file_to_load}")
@@ -528,13 +588,13 @@ class SynthEditor(SynthBase):
             if image_label:
                 image_label.clear()
             return False
-        
+
         # Scale maintaining aspect ratio, fitting within width and height constraints
         scaled_pixmap = pixmap.scaled(
             JDXiStyle.INSTRUMENT_IMAGE_WIDTH,
             JDXiStyle.INSTRUMENT_IMAGE_HEIGHT,
             Qt.AspectRatioMode.KeepAspectRatio,
-            Qt.TransformationMode.SmoothTransformation
+            Qt.TransformationMode.SmoothTransformation,
         )
         image_label = self._get_instrument_image_label()
         if image_label:
@@ -569,30 +629,32 @@ class SynthEditor(SynthBase):
         Returns None if not found.
         """
         # Try to get from InstrumentPresetWidget first (for Digital/Drum editors)
-        if hasattr(self, 'instrument_preset') and self.instrument_preset:
-            return getattr(self.instrument_preset, 'instrument_selection_combo', None)
+        if hasattr(self, "instrument_preset") and self.instrument_preset:
+            return getattr(self.instrument_preset, "instrument_selection_combo", None)
         # Fallback to direct attribute (for Analog editor or legacy code)
-        return getattr(self, 'instrument_selection_combo', None)
-    
+        return getattr(self, "instrument_selection_combo", None)
+
     def _get_instrument_image_label(self):
         """
         Get the instrument image label from either the widget or direct attribute.
         Returns None if not found.
         """
         # Try to get from InstrumentPresetWidget first (for Digital/Drum editors)
-        if hasattr(self, 'instrument_preset') and self.instrument_preset:
-            label = getattr(self.instrument_preset, 'instrument_image_label', None)
+        if hasattr(self, "instrument_preset") and self.instrument_preset:
+            label = getattr(self.instrument_preset, "instrument_image_label", None)
             if label:
                 log.debug("Found instrument_image_label in instrument_preset widget")
                 return label
         # Fallback to direct attribute (for Analog editor or legacy code)
-        label = getattr(self, 'instrument_image_label', None)
+        label = getattr(self, "instrument_image_label", None)
         if label:
             log.debug("Found instrument_image_label as direct attribute")
         else:
-            log.warning("Instrument image label not found in widget or direct attribute")
+            log.warning(
+                "Instrument image label not found in widget or direct attribute"
+            )
         return label
-    
+
     def _get_selected_instrument_text(self) -> str:
         combo_box = self._get_instrument_selection_combo()
         if combo_box:
@@ -619,12 +681,12 @@ class SynthEditor(SynthBase):
 
     def _try_load_specific_or_generic_image(self, name: str, type_: str) -> bool:
         try:
-            specific_path = resource_path(os.path.join(
-                "resources", self.instrument_icon_folder, f"{name}.png"
-            ))
-            generic_path = resource_path(os.path.join(
-                "resources", self.instrument_icon_folder, f"{type_}.png"
-            ))
+            specific_path = resource_path(
+                os.path.join("resources", self.instrument_icon_folder, f"{name}.png")
+            )
+            generic_path = resource_path(
+                os.path.join("resources", self.instrument_icon_folder, f"{type_}.png")
+            )
             return self.load_and_set_image(specific_path, generic_path)
         except Exception as ex:
             log.error(f"Error loading specific/generic images: {ex}")
@@ -633,9 +695,13 @@ class SynthEditor(SynthBase):
     def _fallback_to_default_image(self, reason: str):
         log.info(f"{reason} Falling back to default image.")
         try:
-            default_path = resource_path(os.path.join(
-                "resources", self.instrument_icon_folder, self.instrument_default_image
-            ))
+            default_path = resource_path(
+                os.path.join(
+                    "resources",
+                    self.instrument_icon_folder,
+                    self.instrument_default_image,
+                )
+            )
             if not self.load_and_set_image(default_path):
                 log.error("Default instrument image not found. Clearing label.")
                 image_label = self._get_instrument_image_label()
@@ -651,13 +717,21 @@ class SynthEditor(SynthBase):
         """Update the instrument image based on the selected synth."""
         try:
             # Prepare default image path
-            if not hasattr(self, "instrument_icon_folder") or not hasattr(self, "instrument_default_image"):
-                log.error("Missing attributes: 'instrument_icon_folder' or 'instrument_default_image'")
+            if not hasattr(self, "instrument_icon_folder") or not hasattr(
+                self, "instrument_default_image"
+            ):
+                log.error(
+                    "Missing attributes: 'instrument_icon_folder' or 'instrument_default_image'"
+                )
                 return
 
-            default_image_path = resource_path(os.path.join(
-                "resources", self.instrument_icon_folder, self.instrument_default_image
-            ))
+            default_image_path = resource_path(
+                os.path.join(
+                    "resources",
+                    self.instrument_icon_folder,
+                    self.instrument_default_image,
+                )
+            )
 
             # Extract selected instrument text
             selected_instrument_text = self._get_selected_instrument_text()
@@ -679,26 +753,38 @@ class SynthEditor(SynthBase):
             if instrument_matches:
                 try:
                     selected_instrument_name = (
-                        instrument_matches.group(2).lower().replace("&", "_").split("_")[0]
+                        instrument_matches.group(2)
+                        .lower()
+                        .replace("&", "_")
+                        .split("_")[0]
                     )
                     selected_instrument_type = (
-                        instrument_matches.group(3).lower().replace("&", "_").split("_")[0]
+                        instrument_matches.group(3)
+                        .lower()
+                        .replace("&", "_")
+                        .split("_")[0]
                     )
                     log.parameter("Selected instrument name:", selected_instrument_name)
                     log.parameter("Selected instrument type:", selected_instrument_type)
 
-                    specific_image_path = resource_path(os.path.join(
-                        "resources",
-                        self.instrument_icon_folder,
-                        f"{selected_instrument_name}.png",
-                    ))
-                    generic_image_path = resource_path(os.path.join(
-                        "resources",
-                        self.instrument_icon_folder,
-                        f"{selected_instrument_type}.png",
-                    ))
+                    specific_image_path = resource_path(
+                        os.path.join(
+                            "resources",
+                            self.instrument_icon_folder,
+                            f"{selected_instrument_name}.png",
+                        )
+                    )
+                    generic_image_path = resource_path(
+                        os.path.join(
+                            "resources",
+                            self.instrument_icon_folder,
+                            f"{selected_instrument_type}.png",
+                        )
+                    )
 
-                    image_loaded = self.load_and_set_image(specific_image_path, generic_image_path)
+                    image_loaded = self.load_and_set_image(
+                        specific_image_path, generic_image_path
+                    )
                 except Exception as ex:
                     log.error(f"Error parsing instrument name/type: {ex}")
                     image_loaded = False
@@ -710,7 +796,9 @@ class SynthEditor(SynthBase):
             if not image_loaded:
                 log.info("Falling back to default instrument image.")
                 if not self.load_and_set_image(default_image_path):
-                    log.error("Default instrument image not found. Clearing image label.")
+                    log.error(
+                        "Default instrument image not found. Clearing image label."
+                    )
                     image_label = self._get_instrument_image_label()
                     if image_label:
                         image_label.clear()
@@ -720,9 +808,11 @@ class SynthEditor(SynthBase):
 
     def update_instrument_image_old(self):
         """Update the instrument image based on the selected synth."""
-        default_image_path = resource_path(os.path.join(
-            "resources", self.instrument_icon_folder, self.instrument_default_image
-        ))
+        default_image_path = resource_path(
+            os.path.join(
+                "resources", self.instrument_icon_folder, self.instrument_default_image
+            )
+        )
         selected_instrument_text = self._get_selected_instrument_text()
         log.parameter("Selected instrument text:", selected_instrument_text)
         # Try to extract synth name from the selected text
@@ -738,25 +828,35 @@ class SynthEditor(SynthBase):
                 instrument_matches.group(3).lower().replace("&", "_").split("_")[0]
             )
             log.parameter("Selected instrument type:", selected_instrument_type)
-            specific_image_path = resource_path(os.path.join(
-                "resources",
-                self.instrument_icon_folder,
-                f"{selected_instrument_name}.png",
-            ))
-            generic_image_path = resource_path(os.path.join(
-                "resources",
-                self.instrument_icon_folder,
-                f"{selected_instrument_type}.png",
-            ))
-            image_loaded = self.load_and_set_image(specific_image_path, generic_image_path)
+            specific_image_path = resource_path(
+                os.path.join(
+                    "resources",
+                    self.instrument_icon_folder,
+                    f"{selected_instrument_name}.png",
+                )
+            )
+            generic_image_path = resource_path(
+                os.path.join(
+                    "resources",
+                    self.instrument_icon_folder,
+                    f"{selected_instrument_type}.png",
+                )
+            )
+            image_loaded = self.load_and_set_image(
+                specific_image_path, generic_image_path
+            )
 
         # Fallback to default image if no specific image is found
         if not image_loaded:
             if not self.load_and_set_image(default_image_path):
                 self.instrument_image_label.clear()  # Clear label if default image is also missing
 
-    def _update_common_controls(self, partial_number: int, filtered_data, successes, failures):
+    def _update_common_controls(
+        self, partial_number: int, filtered_data, successes, failures
+    ):
         pass
 
-    def _update_modify_controls(self, partial_number: int, filtered_data, successes, failures):
+    def _update_modify_controls(
+        self, partial_number: int, filtered_data, successes, failures
+    ):
         pass

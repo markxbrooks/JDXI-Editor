@@ -17,9 +17,9 @@ loaded = JDXiProgram.from_json("my_fat_patch.json")
 print(loaded.name, loaded.tempo)
 """
 
-from dataclasses import dataclass, asdict
-from typing import Optional
 import json
+from dataclasses import asdict, dataclass
+from typing import Optional
 
 from jdxi_editor.jdxi.preset.data import JDXiPresetData
 
@@ -42,10 +42,12 @@ class JDXiProgram:
 
     def __getitem__(self, key):
         import traceback
+
         print(f"[ERROR] Subscripted JDXiProgram with key: {key}")
         traceback.print_stack(limit=5)  # Show recent calls
         raise TypeError(
-            f"'JDXiProgram' object is not subscriptable. Tried to access key '{key}'. Use dot notation like program.{key} instead.")
+            f"'JDXiProgram' object is not subscriptable. Tried to access key '{key}'. Use dot notation like program.{key} instead."
+        )
 
     def __str__(self):
         return f"JDXiProgram(id={self.id}, name={self.name}, genre={self.genre}, tempo={self.tempo}), pc={self.pc}), msb={self.msb}), lsb={self.lsb}), measure_length={self.measure_length}), scale={self.scale}), analog={self.analog}), digital_1={self.digital_1}), digital_2={self.digital_2}), drums={self.drums})"
@@ -193,9 +195,20 @@ class JDXiProgramOld:
             msb=data.get("msb"),
             lsb=data.get("lsb"),
             pc=data.get("pc"),
-            analog=JDXiPresetData.from_dict(data["analog"]) if data.get("analog") else None,
-            digital_1=JDXiPresetData.from_dict(data["digital_1"]) if data.get("digital_1") else None,
-            digital_2=JDXiPresetData.from_dict(data["digital_2"]) if data.get("digital_2") else None,
-            drums=JDXiPresetData.from_dict(data["drums"]) if data.get("drums") else None,
+            analog=(
+                JDXiPresetData.from_dict(data["analog"]) if data.get("analog") else None
+            ),
+            digital_1=(
+                JDXiPresetData.from_dict(data["digital_1"])
+                if data.get("digital_1")
+                else None
+            ),
+            digital_2=(
+                JDXiPresetData.from_dict(data["digital_2"])
+                if data.get("digital_2")
+                else None
+            ),
+            drums=(
+                JDXiPresetData.from_dict(data["drums"]) if data.get("drums") else None
+            ),
         )
-

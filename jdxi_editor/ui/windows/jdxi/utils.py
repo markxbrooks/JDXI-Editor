@@ -3,13 +3,14 @@
 These functions are used to display messages, handle MIDI communication
 and manage MIDI input/output ports."""
 
-
 from PySide6.QtWidgets import QMessageBox
 
 from jdxi_editor.log.logger import Logger as log
 
 
-def show_message_box(title: str, text: str, icon: object = QMessageBox.Critical) -> None:
+def show_message_box(
+    title: str, text: str, icon: object = QMessageBox.Critical
+) -> None:
     """Helper method to display a QMessageBox."""
     log.message(text)
     msg_box = QMessageBox()

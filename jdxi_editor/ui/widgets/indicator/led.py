@@ -1,12 +1,14 @@
+from PySide6.QtCore import QPointF, QSize, Qt, QTimer
+from PySide6.QtGui import QBrush, QColor, QLinearGradient, QPainter, QPen
 from PySide6.QtWidgets import QWidget
-from PySide6.QtCore import Qt, QSize, QTimer, QPointF
-from PySide6.QtGui import QPainter, QColor, QBrush, QPen, QLinearGradient
 
 
 class LEDIndicator(QWidget):
     """LED-style indicator widget"""
 
-    def __init__(self, parent: object | None = None, alignment_state: object | None = None) -> None:
+    def __init__(
+        self, parent: object | None = None, alignment_state: object | None = None
+    ) -> None:
         """Initialize LED indicator
 
         Args:

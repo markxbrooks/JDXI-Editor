@@ -1,6 +1,7 @@
 """
 Digital preset list
 """
+
 import csv
 from io import StringIO
 from typing import Optional, Tuple

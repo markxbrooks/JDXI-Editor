@@ -1,15 +1,20 @@
-""" log message """
+"""log message"""
 
 import json
 import logging
-from typing import Optional, Any
+from typing import Any, Optional
+
 from PySide6.QtCore import QSettings
 
-from jdxi_editor.project import __version__, __program__, __package_name__, __organization_name__, __project__
-
-from jdxi_editor.project import __package_name__
 from jdxi_editor.globals import LOG_PADDING_WIDTH, LOGGING
 from jdxi_editor.log.decorator import decorate_log_message
+from jdxi_editor.project import (
+    __organization_name__,
+    __package_name__,
+    __program__,
+    __project__,
+    __version__,
+)
 
 
 def format_midi_message_to_hex_string(message: list) -> str:
@@ -24,7 +29,8 @@ def format_midi_message_to_hex_string(message: list) -> str:
 
 
 class Logger:
-    """ Logger class """
+    """Logger class"""
+
     def __init__(self) -> None:
         pass
 
@@ -34,7 +40,7 @@ class Logger:
         exception: Optional[Exception] = None,
         level: int = logging.ERROR,
         stacklevel: int = 4,
-        silent: bool = False
+        silent: bool = False,
     ) -> None:
         """
         Log an error message, optionally with an exception.
@@ -51,7 +57,7 @@ class Logger:
         exception: Optional[Exception] = None,
         level: int = logging.WARNING,
         stacklevel: int = 4,
-        silent: bool = False
+        silent: bool = False,
     ) -> None:
         """
         Log an error message, optionally with an exception.
@@ -61,9 +67,7 @@ class Logger:
         Logger.message(message, stacklevel=stacklevel, silent=silent, level=level)
 
     @staticmethod
-    def json(data: Any,
-             stacklevel: int = 3,
-             silent: bool = False) -> None:
+    def json(data: Any, stacklevel: int = 3, silent: bool = False) -> None:
         """
         Log a JSON object or JSON string as a single compact line.
         """
@@ -71,9 +75,11 @@ class Logger:
             try:
                 data = json.loads(data)
             except json.JSONDecodeError:
-                Logger.message("Invalid JSON string provided.",
-                               level=logging.WARNING,
-                               stacklevel=stacklevel)
+                Logger.message(
+                    "Invalid JSON string provided.",
+                    level=logging.WARNING,
+                    stacklevel=stacklevel,
+                )
                 return
 
         try:
@@ -90,7 +96,7 @@ class Logger:
         message: str,
         level: int = logging.INFO,
         stacklevel: int = 3,
-        silent: bool = False
+        silent: bool = False,
     ) -> None:
         """
         Log a plain message with optional formatting.
@@ -114,7 +120,7 @@ class Logger:
         max_length: int = 300,
         level: int = logging.INFO,
         stacklevel: int = 4,
-        silent: bool = False
+        silent: bool = False,
     ) -> None:
         """
         Log a structured message including the type and value of a parameter.
@@ -148,7 +154,12 @@ class Logger:
         Logger.message(final_message, silent=silent, stacklevel=stacklevel, level=level)
 
     @staticmethod
-    def header_message(message: str, level: int = logging.INFO, silent: bool = False, stacklevel: int = 4) -> None:
+    def header_message(
+        message: str,
+        level: int = logging.INFO,
+        silent: bool = False,
+        stacklevel: int = 4,
+    ) -> None:
         """
         Logs a visually distinct header message with separator lines and emojis.
 
@@ -160,14 +171,14 @@ class Logger:
         full_separator = f"{'=' * 142}"
         separator = f"{'=' * 100}"
 
-        Logger.message(f"\n{full_separator}", level=level, stacklevel=stacklevel, silent=silent)
+        Logger.message(
+            f"\n{full_separator}", level=level, stacklevel=stacklevel, silent=silent
+        )
         Logger.message(f"{message}", level=level, stacklevel=stacklevel, silent=silent)
         Logger.message(separator, level=level, stacklevel=stacklevel, silent=silent)
 
     @staticmethod
-    def debug_info(successes: list,
-                   failures: list,
-                   stacklevel: int = 4) -> None:
+    def debug_info(successes: list, failures: list, stacklevel: int = 4) -> None:
         """
         Logs debug information about the parsed SysEx data.
 
@@ -184,7 +195,9 @@ class Logger:
         total = len(successes) + len(failures)
         success_rate = (len(successes) / total * 100) if total else 0.0
 
-        Logger.message(f"Successes ({len(successes)}): {successes}", stacklevel=stacklevel)
+        Logger.message(
+            f"Successes ({len(successes)}): {successes}", stacklevel=stacklevel
+        )
         Logger.message(f"Failures ({len(failures)}): {failures}", stacklevel=stacklevel)
         Logger.message(f"Success Rate: {success_rate:.1f}%", stacklevel=stacklevel)
         Logger.message("=" * 100, stacklevel=4)

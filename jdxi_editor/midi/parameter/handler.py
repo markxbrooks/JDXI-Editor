@@ -17,8 +17,9 @@ Methods:
 
 """
 
-from PySide6.QtCore import QObject, Signal
 from typing import List
+
+from PySide6.QtCore import QObject, Signal
 
 
 class ParameterHandler(QObject):

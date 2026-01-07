@@ -3,7 +3,6 @@
 Playback Worker to play Midi files in a new thread
 """
 
-
 import threading
 import time
 
@@ -14,12 +13,15 @@ from picomidi.core.bitmask import BitMask
 
 
 class MidiPlaybackWorker(QObject):
-    """ MidiPlaybackWorker """
+    """MidiPlaybackWorker"""
+
     set_tempo = Signal(int)  # Tempo in microseconds
     result_ready = Signal(str)  # optional
     finished = Signal()
 
-    def __init__(self, parent: QObject | None = None) -> None:  # pylint: disable=unsupported-binary-operation
+    def __init__(
+        self, parent: QObject | None = None
+    ) -> None:  # pylint: disable=unsupported-binary-operation
         super().__init__()
         self.parent = parent
         self.position_tempo = MidiConstant.TEMPO_120_BPM_USEC
@@ -49,7 +51,7 @@ class MidiPlaybackWorker(QObject):
         ticks_per_beat: int = 480,
         play_program_changes: bool = True,
         start_time: float | None = None,  # pylint: disable=unsupported-binary-operation
-        initial_tempo: int = MidiConstant.TEMPO_120_BPM_USEC
+        initial_tempo: int = MidiConstant.TEMPO_120_BPM_USEC,
     ) -> None:
         """Setup the playback worker with buffered messages and configuration."""
         self.buffered_msgs = buffered_msgs
@@ -99,7 +101,7 @@ class MidiPlaybackWorker(QObject):
         with self.lock:
             self.position_tempo = new_tempo
         if self.parent is not None:
-            if hasattr(self.parent, 'set_display_tempo_usecs'):
+            if hasattr(self.parent, "set_display_tempo_usecs"):
                 # Assuming parent has a method to update display tempo
                 print(f"Updating display tempo to {new_tempo}")
                 self.parent.set_display_tempo_usecs(new_tempo)
@@ -118,9 +120,11 @@ class MidiPlaybackWorker(QObject):
             return
 
         # Print format header on first run
-        if not hasattr(self, '_header_printed'):
+        if not hasattr(self, "_header_printed"):
             print("🎵 Real-time Playback Tracking:")
-            print("Format: [Elapsed] Bar X.X | BPM XXX.X | Expected: X.XXs | Real: X.XXs | Diff: ±X.XXs | Index: XXXX")
+            print(
+                "Format: [Elapsed] Bar X.X | BPM XXX.X | Expected: X.XXs | Real: X.XXs | Diff: ±X.XXs | Index: XXXX"
+            )
             print("=" * 100)
             self._header_printed = True
 
@@ -159,14 +163,19 @@ class MidiPlaybackWorker(QObject):
                     continue
                 current_bar = abs_ticks / (4 * self.ticks_per_beat)
                 new_bpm = 60000000 / msg_tempo
-                print(f"🎵 TEMPO CHANGE at Bar {current_bar:.1f} ({elapsed:.2f}s): {msg_tempo} ({new_bpm:.1f} BPM)")
+                print(
+                    f"🎵 TEMPO CHANGE at Bar {current_bar:.1f} ({elapsed:.2f}s): {msg_tempo} ({new_bpm:.1f} BPM)"
+                )
                 self.update_tempo(msg_tempo)
             else:
                 # Send the MIDI message
                 status_byte = raw_bytes[0]
                 message_type = status_byte & BitMask.HIGH_4_BITS
 
-                if message_type == MidiConstant.PROGRAM_CHANGE and not self.play_program_changes:
+                if (
+                    message_type == MidiConstant.PROGRAM_CHANGE
+                    and not self.play_program_changes
+                ):
                     # 0xC0 = program_change
                     pass  # Skip
                 else:
@@ -182,7 +191,7 @@ class MidiPlaybackWorker(QObject):
         Calculate the time for a message at target_ticks using incremental tempo calculation.
         This correctly handles tempo changes by processing events in chronological order.
         """
-        if not hasattr(self, '_cached_times'):
+        if not hasattr(self, "_cached_times"):
             self._cached_times = {}
 
         # Return cached time if available
@@ -201,7 +210,9 @@ class MidiPlaybackWorker(QObject):
 
             # Calculate time for this segment using the tempo that was active
             delta_ticks = abs_ticks - last_tick
-            time_seconds += (current_tempo / 1_000_000.0) * (delta_ticks / self.ticks_per_beat)
+            time_seconds += (current_tempo / 1_000_000.0) * (
+                delta_ticks / self.ticks_per_beat
+            )
             last_tick = abs_ticks
 
             # Update tempo if this is a tempo change message

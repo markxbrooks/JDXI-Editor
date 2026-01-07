@@ -17,7 +17,7 @@ Key Features:
 
 Dependencies:
 -------------
-- PySide6 (for UI components and event handling)    
+- PySide6 (for UI components and event handling)
 - MIDIHelper (for handling MIDI communication)
 - PresetHandler (for managing synth presets)
 - Various custom enums and helper classes (AnalogParameter, AnalogCommonParameter, etc.)
@@ -34,19 +34,27 @@ Example:
     editor.show()
 """
 
-import numpy as np
 from typing import Callable
 
-from PySide6.QtWidgets import QGroupBox, QFormLayout, QWidget, QVBoxLayout, QScrollArea, QHBoxLayout, QGridLayout
+import numpy as np
 from PySide6.QtCore import Qt, Signal
-from PySide6.QtGui import QPainter, QPainterPath, QLinearGradient, QColor, QPen, QFont
+from PySide6.QtGui import QColor, QFont, QLinearGradient, QPainter, QPainterPath, QPen
+from PySide6.QtWidgets import (
+    QFormLayout,
+    QGridLayout,
+    QGroupBox,
+    QHBoxLayout,
+    QScrollArea,
+    QVBoxLayout,
+    QWidget,
+)
 
-from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
-from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
-from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.jdxi.style import JDXiStyle
-from picomidi.constant import MidiConstant
 from jdxi_editor.log.logger import Logger as log
+from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
+from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
+from picomidi.constant import MidiConstant
 
 
 def midi_to_pitch_level(midi_value: int) -> float:
@@ -61,9 +69,14 @@ def midi_to_time_normalized(midi_value: int, max_time: float = 10.0) -> float:
 
 class DrumPitchEnvPlot(QWidget):
     """Plot widget for drum pitch envelope visualization."""
-    
-    def __init__(self, width: int = JDXiStyle.ADSR_PLOT_WIDTH, height: int = JDXiStyle.ADSR_PLOT_HEIGHT,
-                 envelope: dict = None, parent: QWidget = None):
+
+    def __init__(
+        self,
+        width: int = JDXiStyle.ADSR_PLOT_WIDTH,
+        height: int = JDXiStyle.ADSR_PLOT_HEIGHT,
+        envelope: dict = None,
+        parent: QWidget = None,
+    ):
         super().__init__(parent)
         self.enabled = True
         self.envelope = envelope or {}
@@ -73,16 +86,16 @@ class DrumPitchEnvPlot(QWidget):
         self.setStyleSheet(JDXiStyle.ADSR_PLOT)
         self.sample_rate = 256
         self.setMinimumHeight(150)
-    
+
     def setEnabled(self, enabled):
         super().setEnabled(enabled)
         self.enabled = enabled
-    
+
     def set_values(self, envelope: dict) -> None:
         """Update envelope values and refresh plot."""
         self.envelope.update(envelope)
         self.update()
-    
+
     def paintEvent(self, event):
         """Paint the pitch envelope plot"""
         painter = QPainter(self)
@@ -97,89 +110,97 @@ class DrumPitchEnvPlot(QWidget):
             painter.setBrush(gradient)
             painter.setPen(QPen(QColor("#000000"), 0))
             painter.drawRect(0, 0, self.width(), self.height())
-            
+
             envelope_pen = QPen(QColor("orange"), 2)
             axis_pen = QPen(QColor("white"), 1)
             grid_pen = QPen(Qt.GlobalColor.darkGray, 1)
             grid_pen.setStyle(Qt.PenStyle.DashLine)
             point_pen = QPen(QColor("orange"), JDXiDimensions.CHART_POINT_SIZE)
             painter.setFont(QFont("JD LCD Rounded", 10))
-            
+
             depth = self.envelope.get("depth", 64) - 64
             level_0 = midi_to_pitch_level(self.envelope.get("level_0", 64))
             level_1 = midi_to_pitch_level(self.envelope.get("level_1", 64))
             level_2 = midi_to_pitch_level(self.envelope.get("level_2", 64))
             level_3 = midi_to_pitch_level(self.envelope.get("level_3", 64))
             level_4 = midi_to_pitch_level(self.envelope.get("level_4", 64))
-            
-            level_0 *= (1.0 + depth / 12.0)
-            level_1 *= (1.0 + depth / 12.0)
-            level_2 *= (1.0 + depth / 12.0)
-            level_3 *= (1.0 + depth / 12.0)
-            level_4 *= (1.0 + depth / 12.0)
-            
+
+            level_0 *= 1.0 + depth / 12.0
+            level_1 *= 1.0 + depth / 12.0
+            level_2 *= 1.0 + depth / 12.0
+            level_3 *= 1.0 + depth / 12.0
+            level_4 *= 1.0 + depth / 12.0
+
             time_1 = midi_to_time_normalized(self.envelope.get("time_1", 64))
             time_2 = midi_to_time_normalized(self.envelope.get("time_2", 64))
             time_3 = midi_to_time_normalized(self.envelope.get("time_3", 64))
             time_4 = midi_to_time_normalized(self.envelope.get("time_4", 64))
-            
+
             total_time = time_1 + time_2 + time_3 + time_4
             if total_time == 0:
                 total_time = 10.0
-            
+
             sample_rate = self.sample_rate
             t1_samples = max(int(time_1 * sample_rate), 1)
             t2_samples = max(int(time_2 * sample_rate), 1)
             t3_samples = max(int(time_3 * sample_rate), 1)
             t4_samples = max(int(time_4 * sample_rate), 1)
-            
+
             segment_1 = np.linspace(level_0, level_1, t1_samples, endpoint=False)
             segment_2 = np.linspace(level_1, level_2, t2_samples, endpoint=False)
             segment_3 = np.linspace(level_2, level_3, t3_samples, endpoint=False)
             segment_4 = np.linspace(level_3, level_4, t4_samples, endpoint=True)
-            
-            envelope_curve = np.concatenate([segment_1, segment_2, segment_3, segment_4])
+
+            envelope_curve = np.concatenate(
+                [segment_1, segment_2, segment_3, segment_4]
+            )
             total_samples = len(envelope_curve)
-            
+
             w, h = self.width(), self.height()
             top_padding, bottom_padding = 50, 80
             left_padding, right_padding = 80, 50
             plot_w = w - left_padding - right_padding
             plot_h = h - top_padding - bottom_padding
-            
+
             y_max, y_min = 80.0, -80.0
-            
+
             painter.setPen(axis_pen)
-            painter.drawLine(left_padding, top_padding, left_padding, top_padding + plot_h)
+            painter.drawLine(
+                left_padding, top_padding, left_padding, top_padding + plot_h
+            )
             zero_y = top_padding + ((y_max / (y_max - y_min)) * plot_h)
             painter.drawLine(left_padding, zero_y, left_padding + plot_w, zero_y)
-            
+
             num_ticks = 6
             for i in range(num_ticks + 1):
                 x = left_padding + i * plot_w / num_ticks
                 painter.drawLine(x, zero_y - 5, x, zero_y + 5)
                 time_val = (i / num_ticks) * total_time
                 painter.drawText(x - 15, zero_y + 20, f"{time_val:.1f}")
-            
+
             for i in range(-4, 5):
                 y_val = i * 20
                 y = top_padding + ((y_max - y_val) / (y_max - y_min)) * plot_h
                 painter.drawLine(left_padding - 5, y, left_padding, y)
                 painter.drawText(left_padding - 45, y + 5, f"{y_val:+d}")
-            
+
             painter.setPen(QPen(QColor("orange")))
             painter.setFont(QFont("JD LCD Rounded", 16))
-            painter.drawText(left_padding + plot_w / 2 - 60, top_padding / 2, "Drum Pitch Envelope")
-            
+            painter.drawText(
+                left_padding + plot_w / 2 - 60, top_padding / 2, "Drum Pitch Envelope"
+            )
+
             painter.setPen(QPen(QColor("white")))
-            painter.drawText(left_padding + plot_w / 2 - 10, top_padding + plot_h + 35, "Time (s)")
-            
+            painter.drawText(
+                left_padding + plot_w / 2 - 10, top_padding + plot_h + 35, "Time (s)"
+            )
+
             painter.save()
             painter.translate(left_padding - 50, top_padding + plot_h / 2 + 25)
             painter.rotate(-90)
             painter.drawText(0, 0, "Pitch")
             painter.restore()
-            
+
             painter.setPen(grid_pen)
             for i in range(1, num_ticks):
                 x = left_padding + i * plot_w / num_ticks
@@ -190,7 +211,7 @@ class DrumPitchEnvPlot(QWidget):
                 y_val = i * 20
                 y = top_padding + ((y_max - y_val) / (y_max - y_min)) * plot_h
                 painter.drawLine(left_padding, y, left_padding + plot_w, y)
-            
+
             if self.enabled and total_samples > 0:
                 painter.setPen(envelope_pen)
                 points = []
@@ -199,7 +220,7 @@ class DrumPitchEnvPlot(QWidget):
                 for i in indices:
                     if i >= len(envelope_curve):
                         continue
-                    t = (i / sample_rate)
+                    t = i / sample_rate
                     x = left_padding + (t / total_time) * plot_w
                     y_val = envelope_curve[i]
                     y = top_padding + ((y_max - y_val) / (y_max - y_min)) * plot_h
@@ -210,11 +231,13 @@ class DrumPitchEnvPlot(QWidget):
                     for pt in points[1:]:
                         path.lineTo(*pt)
                     painter.drawPath(path)
-                
+
                 painter.setPen(point_pen)
                 level_points = [
-                    (0, level_0, "L0"), (time_1, level_1, "L1"),
-                    (time_1 + time_2, level_2, "L2"), (time_1 + time_2 + time_3, level_3, "L3"),
+                    (0, level_0, "L0"),
+                    (time_1, level_1, "L1"),
+                    (time_1 + time_2, level_2, "L2"),
+                    (time_1 + time_2 + time_3, level_3, "L3"),
                     (time_1 + time_2 + time_3 + time_4, level_4, "L4"),
                 ]
                 for t, level, label in level_points:
@@ -233,7 +256,7 @@ class DrumPitchEnvPlot(QWidget):
 
 class DrumPitchEnvSection(QWidget):
     """Drum Pitch Env Section for the JDXI Editor"""
-    
+
     envelope_changed = Signal(dict)
 
     def __init__(
@@ -441,25 +464,27 @@ class DrumPitchEnvSection(QWidget):
             width=JDXiStyle.ADSR_PLOT_WIDTH,
             height=JDXiStyle.ADSR_PLOT_HEIGHT,
             envelope=self.envelope,
-            parent=self
+            parent=self,
         )
         main_layout.addWidget(self.plot)
         main_layout.addStretch()
-    
-    def _update_envelope(self, key: str, value: int, param: DrumPartialParam = None) -> None:
+
+    def _update_envelope(
+        self, key: str, value: int, param: DrumPartialParam = None
+    ) -> None:
         """Update envelope value and refresh plot
-        
+
         :param key: str Envelope parameter key
         :param value: int Display value from slider
         :param param: AddressParameterDrumPartial Parameter object for conversion
         """
         # Convert display value to MIDI value if parameter is provided
-        if param and hasattr(param, 'convert_from_display'):
+        if param and hasattr(param, "convert_from_display"):
             midi_value = param.convert_from_display(value)
         else:
             # For parameters without special conversion, assume value is already MIDI
             midi_value = value
-        
+
         self.envelope[key] = midi_value
         self.plot.set_values(self.envelope)
         self.envelope_changed.emit(self.envelope)

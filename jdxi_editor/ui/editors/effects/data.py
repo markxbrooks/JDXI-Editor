@@ -1,5 +1,5 @@
 class EffectsData:
-    """ Collection of ui lists for Effects """
+    """Collection of ui lists for Effects"""
 
     rate_note_states = ["RATE", "NOTE"]
 

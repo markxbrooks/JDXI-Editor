@@ -18,24 +18,25 @@ Example usage:
 """
 
 import logging
-from typing import Optional, Iterable
+from typing import Iterable, Optional
 
 from PySide6.QtCore import Signal
 
-from picomidi.constant import MidiConstant
-from picomidi.core.bitmask import BitMask
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.parsers.util import OUTBOUND_MESSAGE_IGNORED_KEYS
 from jdxi_editor.midi.io.controller import MidiIOController
 from jdxi_editor.midi.io.utils import format_midi_message_to_hex_string
 from jdxi_editor.midi.message import (
+    ChannelMessage,
+    ControlChangeMessage,
     IdentityRequestMessage,
     MidiMessage,
     ProgramChangeMessage,
-    ControlChangeMessage,
-    ChannelMessage)
+)
 from jdxi_editor.midi.sysex.parser.sysex import JDXiSysExParser
 from jdxi_editor.midi.sysex.validation import validate_midi_message
+from picomidi.constant import MidiConstant
+from picomidi.core.bitmask import BitMask
 
 
 class MidiOutHandler(MidiIOController):
@@ -79,11 +80,15 @@ class MidiOutHandler(MidiIOController):
                     try:
                         parsed_data = self.sysex_parser.parse_bytes(bytes(message))
                         filtered_data = {
-                            k: v for k, v in parsed_data.items() if k not in OUTBOUND_MESSAGE_IGNORED_KEYS
+                            k: v
+                            for k, v in parsed_data.items()
+                            if k not in OUTBOUND_MESSAGE_IGNORED_KEYS
                         }
                     except Exception as parse_ex:
                         # Only log warning for actual SysEx messages that fail to parse
-                        log.message(f"SysEx parsing failed: {parse_ex}", level=logging.WARNING)
+                        log.message(
+                            f"SysEx parsing failed: {parse_ex}", level=logging.WARNING
+                        )
                         filtered_data = {}
                 # For non-SysEx messages, filtered_data remains empty (no warning needed)
 
@@ -91,7 +96,7 @@ class MidiOutHandler(MidiIOController):
                 log.message(
                     f"[MIDI QC passed] — [ Sending message: {formatted_message} ] {filtered_data}",
                     level=logging.INFO,
-                    silent=False
+                    silent=False,
                 )
                 # Send the message
                 self.midi_out.send_message(message)
@@ -103,10 +108,9 @@ class MidiOutHandler(MidiIOController):
                 log.error(f"Unexpected error sending MIDI message: {ex}")
                 return False
 
-    def send_note_on(self,
-                     note: int = 60,
-                     velocity: int = 127,
-                     channel: int = 1) -> None:
+    def send_note_on(
+        self, note: int = 60, velocity: int = 127, channel: int = 1
+    ) -> None:
         """
         Send 'Note On' message to the specified MIDI channel.
 
@@ -116,10 +120,9 @@ class MidiOutHandler(MidiIOController):
         """
         self.send_channel_message(MidiConstant.NOTE_ON, note, velocity, channel)
 
-    def send_note_off(self,
-                      note: int = 60,
-                      velocity: int = 0,
-                      channel: int = 1) -> None:
+    def send_note_off(
+        self, note: int = 60, velocity: int = 0, channel: int = 1
+    ) -> None:
         """
         Send address 'Note Off' message
 
@@ -129,11 +132,13 @@ class MidiOutHandler(MidiIOController):
         """
         self.send_channel_message(MidiConstant.NOTE_OFF, note, velocity, channel)
 
-    def send_channel_message(self,
-                             status: int,
-                             data1: Optional[int] = None,
-                             data2: Optional[int] = None,
-                             channel: int = 1) -> None:
+    def send_channel_message(
+        self,
+        status: int,
+        data1: Optional[int] = None,
+        data2: Optional[int] = None,
+        channel: int = 1,
+    ) -> None:
         """
         Send a MIDI Channel Message.
 
@@ -151,10 +156,7 @@ class MidiOutHandler(MidiIOController):
         message_bytes_list = channel_message.to_message_list()
         self.send_raw_message(message_bytes_list)
 
-    def send_bank_select(self,
-                         msb: int,
-                         lsb: int,
-                         channel: int = 0) -> bool:
+    def send_bank_select(self, msb: int, lsb: int, channel: int = 0) -> bool:
         """
         Send address bank select message.
 
@@ -198,8 +200,7 @@ class MidiOutHandler(MidiIOController):
             log.error(f"Error sending identity request: {ex}")
             return False
 
-    def send_midi_message(self,
-                          sysex_message: MidiMessage) -> bool:
+    def send_midi_message(self, sysex_message: MidiMessage) -> bool:
         """
         Send SysEx parameter change message using a MidiMessage.
 
@@ -214,8 +215,7 @@ class MidiOutHandler(MidiIOController):
             log.error(f"Error sending message: {ex}")
             return False
 
-    def send_program_change(self, program: int,
-                            channel: int = 0) -> bool:
+    def send_program_change(self, program: int, channel: int = 0) -> bool:
         """
         Send address program change message.
 
@@ -236,10 +236,9 @@ class MidiOutHandler(MidiIOController):
             log.error(f"Error sending program change: {ex}")
             return False
 
-    def send_control_change(self,
-                            controller: int,
-                            value: int,
-                            channel: int = 0) -> bool:
+    def send_control_change(
+        self, controller: int, value: int, channel: int = 0
+    ) -> bool:
         """
         Send control change message.
 
@@ -269,10 +268,7 @@ class MidiOutHandler(MidiIOController):
             log.message(f"send_control_change: Error sending control change: {ex}")
             return False
 
-    def send_rpn(self,
-                 parameter: int,
-                 value: int,
-                 channel: int = 0) -> bool:
+    def send_rpn(self, parameter: int, value: int, channel: int = 0) -> bool:
         """
         Send a Registered Parameter Number (RPN) message via MIDI Control Change.
 
@@ -314,11 +310,9 @@ class MidiOutHandler(MidiIOController):
 
         return success
 
-    def send_nrpn(self,
-                  parameter: int,
-                  value: int,
-                  channel: int = 0,
-                  use_14bit: bool = False) -> bool:
+    def send_nrpn(
+        self, parameter: int, value: int, channel: int = 0, use_14bit: bool = False
+    ) -> bool:
         """
         Send a Non-Registered Parameter Number (NRPN) message via MIDI Control Change.
 
@@ -386,8 +380,9 @@ class MidiOutHandler(MidiIOController):
         """
         try:
             import time
+
             from jdxi_editor.midi.sleep import MIDI_SLEEP_TIME
-            
+
             log.message("========send_bank_select_and_program_change=========")
             log.parameter("channel", channel)
             log.parameter("bank_msb", bank_msb)
@@ -398,13 +393,13 @@ class MidiOutHandler(MidiIOController):
             )
             self.send_control_change(0, bank_msb, channel)
             time.sleep(MIDI_SLEEP_TIME)  # Small delay between bank select messages
-            
+
             log.message(
                 f"-------#2 send_control_change controller=32, bank_lsb={bank_lsb}, channel: {channel} --------"
             )
             self.send_control_change(32, bank_lsb, channel)
             time.sleep(MIDI_SLEEP_TIME)  # Small delay before program change
-            
+
             log.message(
                 f"-------#3 send_program_change program: {program} channel: {channel} --------"
             )

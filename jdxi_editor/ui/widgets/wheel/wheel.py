@@ -5,18 +5,24 @@ WheelWidget
 
 """
 
+from PySide6.QtCore import Property, QPropertyAnimation, QRectF, Signal
+from PySide6.QtGui import QColor, QLinearGradient, QMouseEvent, QPainter, QPen
 from PySide6.QtWidgets import QWidget
-from PySide6.QtGui import QPainter, QColor, QPen, QMouseEvent, QLinearGradient
-from PySide6.QtCore import QRectF, Signal, Property, QPropertyAnimation
 
 
 class WheelWidget(QWidget):
     """
     Wheel Widget for Pitch and Mod Wheels
     """
+
     valueChanged = Signal(float)
 
-    def __init__(self, parent: object | None = None, bidirectional: bool = False, label: str = "Wheel") -> None:
+    def __init__(
+        self,
+        parent: object | None = None,
+        bidirectional: bool = False,
+        label: str = "Wheel",
+    ) -> None:
         super().__init__(parent)
         self._value = 0.0
         self.label = label

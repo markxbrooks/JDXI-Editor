@@ -38,33 +38,34 @@ Dependencies:
 
 from typing import Dict, Optional
 
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
-    QVBoxLayout,
+    QGroupBox,
     QHBoxLayout,
     QLabel,
-    QWidget, QGroupBox,
+    QVBoxLayout,
+    QWidget,
 )
-from PySide6.QtCore import Qt
 
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
-from jdxi_editor.midi.data.address.address import RolandSysExAddress, ZERO_BYTE
-from jdxi_editor.midi.data.arpeggio.arpeggio import ArpeggioSwitch
+from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.midi.data.address.address import ZERO_BYTE, RolandSysExAddress
+from jdxi_editor.midi.data.address.arpeggio import ArpeggioAddress
 from jdxi_editor.midi.data.arpeggio.arpeggio import (
+    ArpeggioDuration,
+    ArpeggioGrid,
     ArpeggioMotif,
     ArpeggioOctaveRange,
-    ArpeggioGrid,
-    ArpeggioDuration,
+    ArpeggioSwitch,
 )
 from jdxi_editor.midi.data.arpeggio.data import (
     ARPEGGIO_STYLE,
 )
-from jdxi_editor.midi.data.address.arpeggio import ArpeggioAddress
 from jdxi_editor.midi.data.parameter.arpeggio import ArpeggioParam
 from jdxi_editor.midi.data.parameter.program.zone import ProgramZoneParam
-from jdxi_editor.midi.data.parameter.synth import AddressParameter
+from picomidi.sysex.parameter.address import AddressParameter
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
-from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 
 

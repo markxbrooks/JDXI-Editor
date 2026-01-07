@@ -16,9 +16,13 @@ Key Features:
 """
 
 from typing import Callable
-from PySide6.QtWidgets import QGroupBox, QFormLayout, QWidget, QVBoxLayout, QScrollArea
 
-from jdxi_editor.midi.data.address.address import AddressOffsetProgramLMB, RolandSysExAddress
+from PySide6.QtWidgets import QFormLayout, QGroupBox, QScrollArea, QVBoxLayout, QWidget
+
+from jdxi_editor.midi.data.address.address import (
+    AddressOffsetProgramLMB,
+    RolandSysExAddress,
+)
 from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 
@@ -32,7 +36,7 @@ class DrumCommonSection(QWidget):
         create_parameter_combo_box: Callable,
         create_parameter_slider: Callable,
         midi_helper: MidiIOHelper,
-        address: RolandSysExAddress
+        address: RolandSysExAddress,
     ):
         super().__init__()
         """

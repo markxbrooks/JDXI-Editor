@@ -1,4 +1,4 @@
-""" log footer message """
+"""log footer message"""
 
 import logging
 

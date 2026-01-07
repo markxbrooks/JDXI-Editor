@@ -1,9 +1,10 @@
 from PySide6.QtGui import QFont
-from PySide6.QtWidgets import QWidget, QHBoxLayout, QLabel
+from PySide6.QtWidgets import QHBoxLayout, QLabel, QWidget
 
 from jdxi_editor.jdxi.style import JDXiStyle
-from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 from jdxi_editor.project import __program__
+from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
+
 
 def add_title_container(central_widget):
     """add container for main title"""

@@ -1,5 +1,6 @@
 """Analog Filter"""
-from enum import IntEnum, Enum
+
+from enum import Enum, IntEnum
 
 ANALOG_FILTER_GROUP = 0x01  # Filter parameters
 

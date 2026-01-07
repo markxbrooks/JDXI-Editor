@@ -3,20 +3,21 @@ Analog Oscillator Section
 """
 
 from typing import Callable
+
 from PySide6.QtGui import QIcon
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QGroupBox, QTabWidget
+from PySide6.QtWidgets import QGroupBox, QHBoxLayout, QTabWidget, QVBoxLayout, QWidget
 
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
-from jdxi_editor.midi.data.analog.oscillator import AnalogSubOscType, AnalogOscWave
-from jdxi_editor.midi.data.parameter import AddressParameter
+from jdxi_editor.midi.data.analog.oscillator import AnalogOscWave, AnalogSubOscType
+from picomidi.sysex.parameter.address import AddressParameter
 from jdxi_editor.midi.data.parameter.analog import AnalogParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.digital.partial.pwm import PWMWidget
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
-from jdxi_editor.ui.widgets.pitch.envelope import PitchEnvelopeWidget
 from jdxi_editor.ui.widgets.button.waveform.analog import AnalogWaveformButton
+from jdxi_editor.ui.widgets.pitch.envelope import PitchEnvelopeWidget
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
@@ -113,9 +114,7 @@ class AnalogOscillatorSection(QWidget):
             icon_name = (
                 "upsaw"
                 if waveform == AnalogOscWave.SAW
-                else "triangle"
-                if waveform == AnalogOscWave.TRIANGLE
-                else "pwsqu"
+                else "triangle" if waveform == AnalogOscWave.TRIANGLE else "pwsqu"
             )
             icon_base64 = generate_waveform_icon(icon_name, "#FFFFFF", 0.7)
             btn.setIcon(QIcon(base64_to_pixmap(icon_base64)))
@@ -174,12 +173,14 @@ class AnalogOscillatorSection(QWidget):
         pw_layout.addStretch()
         pw_group.setLayout(pw_layout)
         pw_layout.addStretch()
-        self.pwm_widget = PWMWidget(pulse_width_param=AnalogParam.OSC_PULSE_WIDTH,
-                                    mod_depth_param=AnalogParam.OSC_PULSE_WIDTH_MOD_DEPTH,
-                                    midi_helper=self.midi_helper,
-                                    address=self.address,
-                                    create_parameter_slider=self._create_parameter_slider,
-                                    controls=self.controls)
+        self.pwm_widget = PWMWidget(
+            pulse_width_param=AnalogParam.OSC_PULSE_WIDTH,
+            mod_depth_param=AnalogParam.OSC_PULSE_WIDTH_MOD_DEPTH,
+            midi_helper=self.midi_helper,
+            address=self.address,
+            create_parameter_slider=self._create_parameter_slider,
+            controls=self.controls,
+        )
         self.pwm_widget.setStyleSheet(JDXiStyle.ADSR_ANALOG)
         self.pwm_widget.setMaximumHeight(JDXiStyle.PWM_WIDGET_HEIGHT)
         pw_layout.addWidget(self.pwm_widget)
@@ -216,7 +217,9 @@ class AnalogOscillatorSection(QWidget):
         pitch_env_row_layout.addWidget(self.pitch_env_widget)
         pitch_env_row_layout.addWidget(
             self._create_parameter_slider(
-                AnalogParam.OSC_PITCH_ENV_VELOCITY_SENSITIVITY, "Velocity Sensitivity", vertical=True
+                AnalogParam.OSC_PITCH_ENV_VELOCITY_SENSITIVITY,
+                "Velocity Sensitivity",
+                vertical=True,
             )
         )
         pitch_env_row_layout.addStretch()

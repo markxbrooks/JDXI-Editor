@@ -7,8 +7,9 @@ from typing import Dict
 
 from jdxi_editor.jdxi.synth.data import JDXISynthData
 from jdxi_editor.midi.data.address.address import (
+    Address,
     AddressOffsetProgramLMB,
-    AddressOffsetSuperNATURALLMB, Address,
+    AddressOffsetSuperNATURALLMB,
 )
 from jdxi_editor.midi.data.parameter.digital import DigitalPartialParam
 

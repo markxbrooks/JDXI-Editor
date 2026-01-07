@@ -1,9 +1,9 @@
-""" parameter.py"""
+"""parameter.py"""
 
 import logging
 from typing import Any
 
-from jdxi_editor.globals import LOG_PADDING_WIDTH, logger, LOGGING
+from jdxi_editor.globals import LOG_PADDING_WIDTH, LOGGING, logger
 from jdxi_editor.log.decorator import decorate_log_message
 from jdxi_editor.midi.io.utils import format_midi_message_to_hex_string
 
@@ -14,7 +14,7 @@ def log_parameter(
     float_precision: int = 2,
     max_length: int = 300,
     level: int = logging.INFO,
-    silent: bool = False
+    silent: bool = False,
 ):
     """
     Log a structured representation of a parameter with type, formatted value, and optional emoji context.
@@ -54,9 +54,7 @@ def log_parameter(
     padded_type = f"{type_name:<12}"
 
     # Compose final log message
-    formatted_message = (
-        f"{padded_message} {padded_type} {formatted_value}".rstrip()
-    )
+    formatted_message = f"{padded_message} {padded_type} {formatted_value}".rstrip()
     final_message = decorate_log_message(formatted_message, level)
     if LOGGING and not silent:
         # Dispatch to appropriate logging level

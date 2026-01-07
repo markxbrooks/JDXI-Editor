@@ -21,42 +21,43 @@ Dependencies:
 
 """
 
-from typing import Optional, Dict
+from typing import Dict, Optional
+
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
-    QWidget,
-    QVBoxLayout,
-    QHBoxLayout,
     QGroupBox,
+    QHBoxLayout,
     QLabel,
     QScrollArea,
     QTabWidget,
+    QVBoxLayout,
+    QWidget,
 )
-from PySide6.QtCore import Qt
 
+from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
+from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.midi.data.address.address import (
-    RolandSysExAddress,
     ZERO_BYTE,
-    AddressStartMSB,
-    AddressOffsetTemporaryToneUMB,
     AddressOffsetProgramLMB,
+    AddressOffsetTemporaryToneUMB,
+    AddressStartMSB,
+    RolandSysExAddress,
 )
 from jdxi_editor.midi.data.parameter.program.common import ProgramCommonParam
-from jdxi_editor.midi.data.parameter.synth import AddressParameter
-from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
-from jdxi_editor.ui.editors.synth.simple import BasicEditor
-from jdxi_editor.jdxi.style import JDXiStyle
+from picomidi.sysex.parameter.address import AddressParameter
+from jdxi_editor.midi.data.parameter.vocal_fx import VocalFXParam
 from jdxi_editor.midi.data.vocal_effects.vocal import (
-    VocalAutoPitchType,
-    VocalOutputAssign,
     VocalAutoPitchKey,
     VocalAutoPitchNote,
+    VocalAutoPitchType,
+    VocalFxSwitch,
+    VocalOctaveRange,
+    VocalOutputAssign,
     VocoderEnvelope,
     VocoderHPF,
-    VocalOctaveRange,
-    VocalFxSwitch,
 )
-from jdxi_editor.midi.data.parameter.vocal_fx import VocalFXParam
+from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.editors.synth.simple import BasicEditor
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 
 
@@ -293,9 +294,7 @@ class VocalFXEditor(BasicEditor):
             VocalFXParam.LEVEL,
             "Level",
         )
-        self.pan = self._create_parameter_slider(
-            VocalFXParam.PAN, "Pan"
-        )  # Center at 0
+        self.pan = self._create_parameter_slider(VocalFXParam.PAN, "Pan")  # Center at 0
 
         # Send Levels
         self.delay_send_level_slider = self._create_parameter_slider(

@@ -4,9 +4,9 @@ Common Section
 
 from typing import Callable
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel
-from PySide6.QtCore import Qt
 import qtawesome as qta
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout, QWidget
 
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParam
@@ -146,7 +146,6 @@ class DigitalCommonSection(QWidget):
         portamento_row.addStretch()
         portamento_row.addWidget(self.portamento_switch)
         layout.addLayout(portamento_row)
-
 
         # Portamento Mode and Legato
         self.portamento_mode = self._create_parameter_switch(

@@ -1,7 +1,8 @@
 """
 create digital display container
 """
-from PySide6.QtWidgets import QVBoxLayout, QWidget, QHBoxLayout
+
+from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget
 
 from jdxi_editor.ui.widgets.display.digital import DigitalDisplay
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions

@@ -1,26 +1,28 @@
 """
-    helpers.py
-    Helper functions for SysEx address manipulation and parsing.
-    This module provides utilities to apply address offsets, convert addresses to hex strings,
-    and parse SysEx addresses into a JSON-like structure.
-    It also includes functions to find matching symbols in provided base classes.
-    Functions:
-    - apply_address_offset: Applies an offset to a base SysEx address.
-    - address_to_hex_string: Converts a SysEx address to a hex string.
-    - parse_sysex_address_json: Parses a SysEx address into a JSON-like structure.
-    - find_matching_symbol: Finds a matching symbol in provided base classes.
+helpers.py
+Helper functions for SysEx address manipulation and parsing.
+This module provides utilities to apply address offsets, convert addresses to hex strings,
+and parse SysEx addresses into a JSON-like structure.
+It also includes functions to find matching symbols in provided base classes.
+Functions:
+- apply_address_offset: Applies an offset to a base SysEx address.
+- address_to_hex_string: Converts a SysEx address to a hex string.
+- parse_sysex_address_json: Parses a SysEx address into a JSON-like structure.
+- find_matching_symbol: Finds a matching symbol in provided base classes.
 
 """
+
 import inspect
 from enum import IntEnum
-from typing import Tuple, Type, Any, Dict, Union
+from typing import Any, Dict, Tuple, Type, Union
 
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
-from jdxi_editor.midi.data.parameter.synth import AddressParameter
+from picomidi.sysex.parameter.address import AddressParameter
 
 
-def apply_address_offset(base_address: RolandSysExAddress,
-                         param: AddressParameter) -> RolandSysExAddress:
+def apply_address_offset(
+    base_address: RolandSysExAddress, param: AddressParameter
+) -> RolandSysExAddress:
     """
     Applies the offset of a parameter to a base address.
 
@@ -45,8 +47,9 @@ def address_to_hex_string(address: Tuple[int, int, int, int]) -> str:
     return " ".join(f"{b:02X}" for b in address)
 
 
-def parse_sysex_address_json(address: Tuple[int, int, int, int],
-                             base_classes: Tuple[Type[Any], ...]) -> Dict[str, Any]:
+def parse_sysex_address_json(
+    address: Tuple[int, int, int, int], base_classes: Tuple[Type[Any], ...]
+) -> Dict[str, Any]:
     """
     Parses a SysEx address into a JSON-like structure.
 

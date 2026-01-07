@@ -42,20 +42,20 @@ Usage example:
 
 from typing import Optional, Tuple
 
-from jdxi_editor.midi.data.parameter.synth import AddressParameter
+from picomidi.sysex.parameter.address import AddressParameter
 
 
 class VocalFXParam(AddressParameter):
     """Vocal FX parameters"""
 
     def __init__(
-            self,
-            address: int,
-            min_val: int,
-            max_val: int,
-            display_min: Optional[int] = None,
-            display_max: Optional[int] = None,
-            tooltip: Optional[str] = None,
+        self,
+        address: int,
+        min_val: int,
+        max_val: int,
+        display_min: Optional[int] = None,
+        display_max: Optional[int] = None,
+        tooltip: Optional[str] = None,
     ):
         super().__init__(address, min_val, max_val)
         self.display_min = display_min if display_min is not None else min_val
@@ -63,30 +63,158 @@ class VocalFXParam(AddressParameter):
         self.tooltip = tooltip
 
     LEVEL = (0x00, 0, 127, 0, 127, "Sets the level of the vocal FX.")  # Level (0-127)
-    PAN = (0x01, -64, 63, -64, 63, "Sets the pan of the vocal FX.")  # Pan (-64 to +63, centered at 64)
-    DELAY_SEND_LEVEL = (0x02, 0, 127, 0, 127, "Sets the level of the delay send.")  # Delay send level (0-127)
-    REVERB_SEND_LEVEL = (0x03, 0, 127, 0, 127, "Sets the level of the reverb send.")  # Reverb send level (0-127)
-    OUTPUT_ASSIGN = (0x04, 0, 4, 0, 4, "Sets the output assignment.")  # Output assignment (0-4)
-    AUTO_PITCH_SWITCH = (0x05, 0, 1, 0, 1, "Sets the auto note on/off.")  # Auto Note on/off (0-1)
-    AUTO_PITCH_TYPE = (0x06, 0, 3, 0, 3, "Sets the auto pitch preset_type.")  # Auto Pitch preset_type (0-3)
-    AUTO_PITCH_SCALE = (0x07, 0, 1, 0, 1, "Sets the auto pitch scale.")  # Scale CHROMATIC, Maj(Min)
+    PAN = (
+        0x01,
+        -64,
+        63,
+        -64,
+        63,
+        "Sets the pan of the vocal FX.",
+    )  # Pan (-64 to +63, centered at 64)
+    DELAY_SEND_LEVEL = (
+        0x02,
+        0,
+        127,
+        0,
+        127,
+        "Sets the level of the delay send.",
+    )  # Delay send level (0-127)
+    REVERB_SEND_LEVEL = (
+        0x03,
+        0,
+        127,
+        0,
+        127,
+        "Sets the level of the reverb send.",
+    )  # Reverb send level (0-127)
+    OUTPUT_ASSIGN = (
+        0x04,
+        0,
+        4,
+        0,
+        4,
+        "Sets the output assignment.",
+    )  # Output assignment (0-4)
+    AUTO_PITCH_SWITCH = (
+        0x05,
+        0,
+        1,
+        0,
+        1,
+        "Sets the auto note on/off.",
+    )  # Auto Note on/off (0-1)
+    AUTO_PITCH_TYPE = (
+        0x06,
+        0,
+        3,
+        0,
+        3,
+        "Sets the auto pitch preset_type.",
+    )  # Auto Pitch preset_type (0-3)
+    AUTO_PITCH_SCALE = (
+        0x07,
+        0,
+        1,
+        0,
+        1,
+        "Sets the auto pitch scale.",
+    )  # Scale CHROMATIC, Maj(Min)
     AUTO_PITCH_KEY = (
         0x08,
         0,
-        23, 0, 23,
-        "Sets the auto pitch key.")  # Auto Pitch key (0-23) C, Db, D, Eb, E, F, F#, G, Ab, A, Bb, B, Cm, C#m, Dm, D#m, Em, Fm, F#m, Gm, G#m, Am, Bbm, Bm
-    AUTO_PITCH_NOTE = (0x09, 0, 11, 0, 11, "Sets the auto pitch note.")  # Auto Pitch note (0-11)
-    AUTO_PITCH_GENDER = (0x0A, -10, 10, -10, 10, "Sets the auto pitch gender.")  # Gender (-10 to +10, centered at 0)
-    AUTO_PITCH_OCTAVE = (0x0B, -1, 1, -1, 1, "Sets the auto pitch octave.")  # Octave (-1 to +1: 0-2)
-    AUTO_PITCH_BALANCE = (0x0C, 0, 100, 0, 100, "Sets the auto pitch balance.")  # Dry/Wet Balance (0-100)
-    VOCODER_SWITCH = (0x0D, 0, 1, 0, 1, "Sets the vocoder on/off.")  # Vocoder on/off (0-1)
+        23,
+        0,
+        23,
+        "Sets the auto pitch key.",
+    )  # Auto Pitch key (0-23) C, Db, D, Eb, E, F, F#, G, Ab, A, Bb, B, Cm, C#m, Dm, D#m, Em, Fm, F#m, Gm, G#m, Am, Bbm, Bm
+    AUTO_PITCH_NOTE = (
+        0x09,
+        0,
+        11,
+        0,
+        11,
+        "Sets the auto pitch note.",
+    )  # Auto Pitch note (0-11)
+    AUTO_PITCH_GENDER = (
+        0x0A,
+        -10,
+        10,
+        -10,
+        10,
+        "Sets the auto pitch gender.",
+    )  # Gender (-10 to +10, centered at 0)
+    AUTO_PITCH_OCTAVE = (
+        0x0B,
+        -1,
+        1,
+        -1,
+        1,
+        "Sets the auto pitch octave.",
+    )  # Octave (-1 to +1: 0-2)
+    AUTO_PITCH_BALANCE = (
+        0x0C,
+        0,
+        100,
+        0,
+        100,
+        "Sets the auto pitch balance.",
+    )  # Dry/Wet Balance (0-100)
+    VOCODER_SWITCH = (
+        0x0D,
+        0,
+        1,
+        0,
+        1,
+        "Sets the vocoder on/off.",
+    )  # Vocoder on/off (0-1)
     VOCODER_ENVELOPE = (
-    0x0E, 0, 2, 0, 2, "Sets the vocoder envelope preset_type.")  # Vocoder envelope preset_type (0-2)
-    VOCODER_LEVEL = (0x0F, 0, 127, 0, 127, "Sets the vocoder level.")  # Vocoder level (0-127)
-    VOCODER_MIC_SENS = (0x10, 0, 127, 0, 127, "Sets the vocoder mic sensitivity.")  # Vocoder mic sensitivity (0-127)
-    VOCODER_SYNTH_LEVEL = (0x11, 0, 127, 0, 127, "Sets the vocoder synth level.")  # Vocoder synth level (0-127)
-    VOCODER_MIC_MIX = (0x12, 0, 127, 0, 127, "Sets the vocoder mic mix level.")  # Vocoder mic mix level (0-127)
-    VOCODER_MIC_HPF = (0x13, 0, 13, 0, 13, "Sets the vocoder mic HPF freq.")  # Vocoder mic HPF freq (0-13)
+        0x0E,
+        0,
+        2,
+        0,
+        2,
+        "Sets the vocoder envelope preset_type.",
+    )  # Vocoder envelope preset_type (0-2)
+    VOCODER_LEVEL = (
+        0x0F,
+        0,
+        127,
+        0,
+        127,
+        "Sets the vocoder level.",
+    )  # Vocoder level (0-127)
+    VOCODER_MIC_SENS = (
+        0x10,
+        0,
+        127,
+        0,
+        127,
+        "Sets the vocoder mic sensitivity.",
+    )  # Vocoder mic sensitivity (0-127)
+    VOCODER_SYNTH_LEVEL = (
+        0x11,
+        0,
+        127,
+        0,
+        127,
+        "Sets the vocoder synth level.",
+    )  # Vocoder synth level (0-127)
+    VOCODER_MIC_MIX = (
+        0x12,
+        0,
+        127,
+        0,
+        127,
+        "Sets the vocoder mic mix level.",
+    )  # Vocoder mic mix level (0-127)
+    VOCODER_MIC_HPF = (
+        0x13,
+        0,
+        13,
+        0,
+        13,
+        "Sets the vocoder mic HPF freq.",
+    )  # Vocoder mic HPF freq (0-13)
 
     def validate_value(self, value: int) -> int:
         """Validate and convert parameter value to MIDI range (0-127)"""
@@ -192,7 +320,7 @@ class VocalFXParam(AddressParameter):
 
     @staticmethod
     def convert_to_display(
-            value: int, min_val: int, max_val: int, display_min: int, display_max: int
+        value: int, min_val: int, max_val: int, display_min: int, display_max: int
     ) -> int:
         """
         Convert address value to address display value within address range.

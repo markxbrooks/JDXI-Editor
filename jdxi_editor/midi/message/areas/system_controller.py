@@ -27,9 +27,9 @@ from dataclasses import dataclass
 
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetSystemLMB,
-    CommandID,
-    AddressStartMSB,
     AddressOffsetTemporaryToneUMB,
+    AddressStartMSB,
+    CommandID,
 )
 from jdxi_editor.midi.data.address.sysex import ZERO_BYTE
 from jdxi_editor.midi.message.roland import RolandSysEx

@@ -4,9 +4,16 @@ Digital Filter Section for the JDXI Editor
 
 from typing import Callable
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QGroupBox, QTabWidget
-from PySide6.QtCore import Qt
 import qtawesome as qta
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import (
+    QGroupBox,
+    QHBoxLayout,
+    QLabel,
+    QTabWidget,
+    QVBoxLayout,
+    QWidget,
+)
 
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.log.logger import Logger as log
@@ -24,13 +31,13 @@ class DigitalFilterSection(QWidget):
     """Filter section for the digital partial editor."""
 
     def __init__(
-            self,
-            create_parameter_slider: Callable,
-            create_parameter_switch: Callable,
-            partial_number: int,
-            midi_helper: MidiIOHelper,
-            controls: dict,
-            address: RolandSysExAddress,
+        self,
+        create_parameter_slider: Callable,
+        create_parameter_switch: Callable,
+        partial_number: int,
+        midi_helper: MidiIOHelper,
+        controls: dict,
+        address: RolandSysExAddress,
     ):
         super().__init__()
         """
@@ -132,7 +139,7 @@ class DigitalFilterSection(QWidget):
             midi_helper=self.midi_helper,
             parent=self,
             controls=self.controls,
-            address=self.address
+            address=self.address,
         )
         controls_group.setStyleSheet(JDXiStyle.ADSR)
         controls_layout.addWidget(self.filter_widget)
@@ -149,7 +156,8 @@ class DigitalFilterSection(QWidget):
         controls_layout.addWidget(
             self._create_parameter_slider(
                 DigitalPartialParam.FILTER_ENV_VELOCITY_SENSITIVITY,
-                "Velocity", vertical=True
+                "Velocity",
+                vertical=True,
             )
         )
         controls_layout.addStretch()
@@ -164,9 +172,11 @@ class DigitalFilterSection(QWidget):
 
         # --- ADSR Icon ---
         icon_label = QLabel()
-        icon_pixmap = base64_to_pixmap(generate_waveform_icon(waveform="adsr",
-                                                              foreground_color="#FFFFFF",
-                                                              icon_scale=2.0))
+        icon_pixmap = base64_to_pixmap(
+            generate_waveform_icon(
+                waveform="adsr", foreground_color="#FFFFFF", icon_scale=2.0
+            )
+        )
         icon_label.setPixmap(icon_pixmap)
         icon_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
         env_layout.addWidget(icon_label)
@@ -175,9 +185,9 @@ class DigitalFilterSection(QWidget):
         (
             group_address,
             _,
-        ) = DigitalPartialParam.AMP_ENV_ATTACK_TIME.get_address_for_partial(partial_number=
-                                                                                       self.partial_number
-                                                                            )
+        ) = DigitalPartialParam.AMP_ENV_ATTACK_TIME.get_address_for_partial(
+            partial_number=self.partial_number
+        )
         self.filter_adsr_widget = ADSR(
             attack_param=DigitalPartialParam.FILTER_ENV_ATTACK_TIME,
             decay_param=DigitalPartialParam.FILTER_ENV_DECAY_TIME,

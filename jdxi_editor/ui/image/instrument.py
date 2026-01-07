@@ -23,18 +23,20 @@ Usage
 These functions generate and display a graphical representation of the JD-Xi’s controls,
 which can be integrated into a larger PySide6-based UI.
 """
+
 import platform
 
 from PySide6.QtCore import Qt
 from PySide6.QtGui import (
+    QColor,
     QImage,
+    QLinearGradient,
     QPainter,
     QPen,
+    QPixmap,
 )
 
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
-
-from PySide6.QtGui import QPixmap, QLinearGradient, QColor
 
 
 def draw_instrument_pixmap() -> QPixmap:
@@ -47,12 +49,12 @@ def draw_instrument_pixmap() -> QPixmap:
     # Create address black background image with correct aspect ratio
     jdxi_width = JDXiDimensions.WIDTH
     jdxi_height = JDXiDimensions.HEIGHT
-    jdxi_image = QImage(jdxi_width, jdxi_height, QImage.Format_RGB32) # type: ignore[attr-defined]
-    jdxi_image.fill(Qt.black) # type: ignore[attr-defined]
+    jdxi_image = QImage(jdxi_width, jdxi_height, QImage.Format_RGB32)  # type: ignore[attr-defined]
+    jdxi_image.fill(Qt.black)  # type: ignore[attr-defined]
 
     pixmap = QPixmap.fromImage(jdxi_image)
     painter = QPainter(pixmap)
-    painter.setRenderHint(QPainter.Antialiasing) # type: ignore[attr-defined]
+    painter.setRenderHint(QPainter.Antialiasing)  # type: ignore[attr-defined]
 
     # draw the background
     gradient = QLinearGradient(0, 0, 0, jdxi_height)
@@ -62,9 +64,9 @@ def draw_instrument_pixmap() -> QPixmap:
     painter.fillRect(0, 0, jdxi_width, jdxi_height, gradient)
 
     # Draw a black rectangle 1 px wide at the margin for style, with no fill
-    pen = QPen(Qt.black, 1) # type: ignore[attr-defined]
+    pen = QPen(Qt.black, 1)  # type: ignore[attr-defined]
     painter.setPen(pen)
-    painter.setBrush(Qt.NoBrush) # type: ignore[attr-defined]
+    painter.setBrush(Qt.NoBrush)  # type: ignore[attr-defined]
     painter.drawRect(10, 50, jdxi_width - 20, jdxi_height - 100)
     draw_sequencer(painter)
     painter.end()

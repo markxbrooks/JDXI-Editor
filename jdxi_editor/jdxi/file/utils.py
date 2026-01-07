@@ -27,11 +27,11 @@ def os_file_open(file_name: str) -> None:
     if not os.path.exists(file_name):
         return
     try:
-        if platform.system() == 'Darwin':  # macOS
-            subprocess.call(['open', file_name])
-        elif platform.system() == 'Windows':  # Windows
+        if platform.system() == "Darwin":  # macOS
+            subprocess.call(["open", file_name])
+        elif platform.system() == "Windows":  # Windows
             os.startfile(file_name)
         else:  # linux variants
-            subprocess.call(['xdg-open', file_name])
+            subprocess.call(["xdg-open", file_name])
     except OSError as error:
         log.error(f"Error opening file: {error}")
