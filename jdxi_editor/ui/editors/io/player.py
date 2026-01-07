@@ -54,7 +54,7 @@ from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
 from jdxi_editor.midi.utils.helpers import start_recording
 from jdxi_editor.midi.utils.usb_recorder import USBRecorder
-from jdxi_editor.ui.editors import SynthEditor
+from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.editors.io.midi_playback_state import MidiPlaybackState
 from jdxi_editor.ui.editors.io.playback_worker import MidiPlaybackWorker
 from jdxi_editor.ui.editors.io.ui_midi_player import UiMidi

@@ -43,7 +43,7 @@ from PySide6.QtGui import QPixmap
 
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.resources import resource_path
-from jdxi_editor.ui.editors import SynthEditor
+from jdxi_editor.ui.editors.synth.editor import SynthEditor
 
 
 class BasicEditor(SynthEditor):

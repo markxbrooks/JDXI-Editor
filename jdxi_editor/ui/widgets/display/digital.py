@@ -41,10 +41,6 @@ from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
 from jdxi_editor.midi.data.programs.digital import DIGITAL_PRESET_LIST
 from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
-from jdxi_editor.ui.editors.helpers.preset import get_preset_list_number_by_name
-from jdxi_editor.ui.editors.helpers.program import (
-    get_program_id_by_name,
-)
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
@@ -316,6 +312,9 @@ class DigitalDisplay(DigitalDisplayBase):
         program_name: str,
         active_synth: str = "D1",
     ) -> None:
+        # Lazy import to avoid circular dependency
+        from jdxi_editor.ui.editors.helpers.program import get_program_id_by_name
+        
         self.current_octave = current_octave
         self.tone_number = tone_number
         self.tone_name = tone_name
@@ -345,6 +344,9 @@ class DigitalDisplay(DigitalDisplayBase):
         :param drums_tone_name: str
         :param analog_tone_name: str
         """
+        # Lazy import to avoid circular dependency
+        from jdxi_editor.ui.editors.helpers.preset import get_preset_list_number_by_name
+        
         if synth_type == JDXiSynth.DIGITAL_SYNTH_1:
             tone_name = digital1_tone_name
             tone_number = get_preset_list_number_by_name(tone_name, DIGITAL_PRESET_LIST)
