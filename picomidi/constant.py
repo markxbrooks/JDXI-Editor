@@ -45,14 +45,30 @@ class MidiConstant:
     # ============================================================================
     class ControlChange:
         """Standard MIDI Control Change controller numbers."""
-        BANK_SELECT_MSB = 0x00  # CC#0: Bank Select MSB (standard MIDI)
-        BANK_SELECT_LSB = 0x20  # CC#32: Bank Select LSB (standard MIDI)
-        RPN_MSB = 101  # CC#101: Registered Parameter Number MSB
-        RPN_LSB = 100  # CC#100: Registered Parameter Number LSB
-        NRPN_MSB = 99  # CC#99: Non-Registered Parameter Number MSB
-        NRPN_LSB = 98  # CC#98: Non-Registered Parameter Number LSB
-        DATA_ENTRY_MSB = 6  # CC#6: Data Entry MSB
-        DATA_ENTRY_LSB = 38  # CC#38: Data Entry LSB
+        
+        class BankSelect:
+            MSB = 0x00  # CC#0: Bank Select MSB (standard MIDI)
+            LSB = 0x20  # CC#32: Bank Select LSB (standard MIDI)
+
+        class RegisteredParameterNumber:
+            MSB = 101  # CC#101: Registered Parameter Number MSB
+            LSB = 100  # CC#100: Registered Parameter Number LSB
+    
+        class NonRegisteredParameterNumber:
+            MSB = 99  # CC#99: Non-Registered Parameter Number MSB
+            LSB = 98  # CC#98: Non-Registered Parameter Number LSB
+    
+        class DataEntry:
+            MSB = 6  # CC#6: Data Entry MSB
+            LSB = 38  # CC#38: Data Entry LSB
+            BANK_SELECT_MSB = 0x00  # CC#0: Bank Select MSB (standard MIDI)
+            BANK_SELECT_LSB = 0x20  # CC#32: Bank Select LSB (standard MIDI)
+            RPN_MSB = 101  # CC#101: Registered Parameter Number MSB
+            RPN_LSB = 100  # CC#100: Registered Parameter Number LSB
+            NRPN_MSB = 99  # CC#99: Non-Registered Parameter Number MSB
+            NRPN_LSB = 98  # CC#98: Non-Registered Parameter Number LSB
+            DATA_ENTRY_MSB = 6  # CC#6: Data Entry MSB
+            DATA_ENTRY_LSB = 38  # CC#38: Data Entry LSB
 
     # ============================================================================
     # SysEx Framing
