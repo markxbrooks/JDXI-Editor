@@ -14,7 +14,7 @@ from typing import Optional, Callable
 from PySide6.QtWidgets import QWidget, QSlider, QGridLayout
 from PySide6.QtCore import Signal
 
-from jdxi_editor.jdxi.midi.constant import MidiConstant
+from picomidi.constant import MidiConstant
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.parameter import AddressParameter
 from jdxi_editor.midi.io.helper import MidiIOHelper

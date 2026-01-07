@@ -3,7 +3,7 @@ Editor IO Utils
 """
 from mido import MidiFile
 
-from jdxi_editor.jdxi.midi.constant import MidiConstant
+from picomidi.constant import MidiConstant
 
 
 def format_time(seconds: float) -> str:

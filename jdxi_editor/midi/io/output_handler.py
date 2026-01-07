@@ -22,8 +22,8 @@ from typing import Optional, Iterable
 
 from PySide6.QtCore import Signal
 
-from jdxi_editor.jdxi.midi.constant import MidiConstant
-from jdxi_editor.jdxi.sysex.bitmask import BitMask
+from picomidi.constant import MidiConstant
+from picomidi.core.bitmask import BitMask
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.parsers.util import OUTBOUND_MESSAGE_IGNORED_KEYS
 from jdxi_editor.midi.io.controller import MidiIOController

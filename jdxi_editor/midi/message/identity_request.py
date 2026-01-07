@@ -26,8 +26,9 @@ Usage Example:
 
 from dataclasses import dataclass
 from typing import List
-from jdxi_editor.jdxi.midi.constant import JDXiConstant, MidiConstant
+from jdxi_editor.jdxi.midi.constant import JDXiConstant
 from jdxi_editor.midi.message.midi import MidiMessage
+from picomidi.constant import MidiConstant
 
 
 @dataclass

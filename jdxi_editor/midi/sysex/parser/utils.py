@@ -20,7 +20,7 @@ from __future__ import annotations
 
 from typing import Dict, Iterable
 
-from jdxi_editor.jdxi.midi.constant import JDXiConstant, MidiConstant
+from jdxi_editor.jdxi.midi.constant import JDXiConstant
 from jdxi_editor.jdxi.sysex.offset import JDXiSysExOffset
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB as TemporaryToneUMB, \
@@ -30,6 +30,7 @@ from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.map.parameter_address import JDXiMapParameterAddress
 # from jdxi_editor.midi.map import JDXiMapParameterAddress
 from jdxi_editor.midi.sysex.parser.tone_mapper import get_temporary_area, get_drum_tone, get_synth_tone
+from picomidi.constant import MidiConstant
 
 UNKNOWN = "Unknown"
 UNKNOWN_AREA = "Unknown area"

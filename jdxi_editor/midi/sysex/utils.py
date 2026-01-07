@@ -14,7 +14,7 @@ Functions:
 """
 from typing import Optional
 
-from jdxi_editor.jdxi.sysex.bitmask import BitMask
+from picomidi.core.bitmask import BitMask
 from jdxi_editor.log.logger import Logger as log
 
 

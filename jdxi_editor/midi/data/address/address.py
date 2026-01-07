@@ -29,7 +29,7 @@ from __future__ import annotations
 from enum import unique, IntEnum
 from typing import Optional, Type, Union, Tuple, Any, TypeVar, List
 
-from jdxi_editor.jdxi.sysex.bitmask import BitMask
+from picomidi.core.bitmask import BitMask
 from jdxi_editor.midi.data.address.sysex import ZERO_BYTE
 from jdxi_editor.midi.data.address.sysex_byte import SysExByte
 

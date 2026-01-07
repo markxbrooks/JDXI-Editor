@@ -3,6 +3,8 @@ from pathlib import Path
 import json
 import logging
 
+from jdxi_editor.jdxi.program.program import JDXiProgram
+
 log = logging.getLogger(__name__)
 
 class JDXiProgramManager:

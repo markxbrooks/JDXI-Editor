@@ -14,7 +14,7 @@ from mido import MidiFile
 sys.path.insert(0, os.path.abspath('.'))
 
 from jdxi_editor.ui.editors.io.playback_worker import MidiPlaybackWorker
-from jdxi_editor.jdxi.midi.constant import MidiConstant
+from picomidi.constant import MidiConstant
 
 
 def test_track_duration():

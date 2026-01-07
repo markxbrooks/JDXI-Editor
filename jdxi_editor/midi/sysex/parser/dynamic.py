@@ -5,6 +5,11 @@ Dynamic Parameter Map resolver
 from typing import Dict
 
 from jdxi_editor.jdxi.midi.constant import JDXiConstant
+from jdxi_editor.jdxi.sysex.offset import JDXiSysExOffset
+from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB as TemporaryToneUMB
+from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
+from jdxi_editor.midi.map.parameter_address import PARAMETER_ADDRESS_NAME_MAP
+from jdxi_editor.midi.sysex.parser.tone_mapper import get_temporary_area, get_drum_tone, get_synth_tone
 from jdxi_editor.midi.sysex.parser.utils import update_short_data_with_parsed_parameters, \
     update_data_with_parsed_parameters, _return_minimal_metadata, initialize_parameters
 from jdxi_editor.log.logger import Logger as log
@@ -29,9 +34,9 @@ def dynamic_map_resolver(data: bytes) -> Dict[str, str]:
             synth_tone, offset = get_synth_tone(data[JDXiSysExOffset.ADDRESS_LMB])
 
         # Resolve parameter class dynamically
-        parameter_cls = PARAMETER_PART_MAP.get(
+        parameter_cls = PARAMETER_ADDRESS_NAME_MAP.get(
             (temporary_area, synth_tone),
-            AddressParameterDrumPartial  # Default fallback
+            DrumPartialParam  # Default fallback
         )
 
         # Log the mappings for debugging

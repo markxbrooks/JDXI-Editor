@@ -5,8 +5,8 @@ Effects
 from dataclasses import dataclass
 from enum import Enum
 
-from jdxi_editor.jdxi.midi.constant import MidiConstant
-from jdxi_editor.jdxi.sysex.bitmask import BitMask
+from picomidi.constant import MidiConstant
+from picomidi.core.bitmask import BitMask
 from jdxi_editor.midi.data.address.address import (
     CommandID,
     AddressStartMSB,

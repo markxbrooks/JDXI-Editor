@@ -33,7 +33,7 @@ from PySide6.QtWidgets import QWidget
 from PySide6.QtGui import QPainter, QPainterPath, QLinearGradient, QColor, QPen, QFont
 
 from jdxi_editor.log.logger import Logger as log
-from jdxi_editor.jdxi.midi.constant import MidiConstant
+from picomidi.constant import MidiConstant
 from jdxi_editor.jdxi.style import JDXiStyle
 
 

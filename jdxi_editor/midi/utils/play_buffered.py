@@ -6,7 +6,7 @@ import rtmidi
 import mido
 
 from jdxi_editor.log.logger import Logger as log
-from jdxi_editor.jdxi.midi.constant import MidiConstant
+from picomidi.constant import MidiConstant
 from jdxi_editor.ui.widgets.midi.utils import ticks_to_seconds
 
 

@@ -29,7 +29,8 @@ import mido
 from typing import Any, Callable, List, Optional, Dict
 from PySide6.QtCore import Signal
 
-from jdxi_editor.jdxi.midi.constant import JDXiConstant, MidiConstant
+from jdxi_editor.jdxi.midi.constant import JDXiConstant
+from picomidi.constant import MidiConstant
 from jdxi_editor.jdxi.preset.data import JDXiPresetData
 from jdxi_editor.jdxi.preset.incoming_data import IncomingPresetData
 from jdxi_editor.jdxi.program.program import JDXiProgram
@@ -329,8 +330,8 @@ class MidiInHandler(MidiIOController):
         log.message(
             f"Control Change - Channel: {channel}, Control: {control}, Value: {value}"
         )
-        if value in [MidiConstant.CONTROL_CHANGE_BANK_SELECT_LSB_BANK_E_AND_F,
-                     MidiConstant.CONTROL_CHANGE_BANK_SELECT_LSB_BANK_G_AND_H]:
+        if value in [JDXiConstant.CONTROL_CHANGE_BANK_SELECT_LSB_BANK_E_AND_F,
+                     JDXiConstant.CONTROL_CHANGE_BANK_SELECT_LSB_BANK_G_AND_H]:
             log.parameter("control", control)  # Bank Select LSB 00 or 01
             log.parameter("value", value)  # Bank Select LSB 00 or 01
             self._incoming_preset_data.lsb = value

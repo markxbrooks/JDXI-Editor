@@ -13,7 +13,7 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 from jdxi_editor.ui.editors.io.playback_worker import MidiPlaybackWorker
-from jdxi_editor.jdxi.midi.constant import MidiConstant
+from picomidi.constant import MidiConstant
 
 
 class TestWorkerTempoInitialization(unittest.TestCase):

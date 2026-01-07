@@ -1,6 +1,6 @@
 import unittest
 
-from jdxi_editor.jdxi.midi.constant import MidiConstant
+from picomidi.constant import MidiConstant
 from jdxi_editor.midi.data.address.address import RolandSysExAddress, AddressStartMSB, AddressOffsetSystemUMB
 from jdxi_editor.midi.data.address.helpers import apply_address_offset
 from jdxi_editor.midi.data.parameter.program.zone import ProgramZoneParam

@@ -46,10 +46,11 @@ from PySide6.QtGui import QShortcut, QKeySequence, QMouseEvent, QCloseEvent, QAc
 from PySide6.QtWidgets import QMenu, QMessageBox, QProgressDialog, QApplication
 
 from jdxi_editor.jdxi.file.utils import documentation_file_path, os_file_open
+from jdxi_editor.jdxi.midi.constant import JDXiConstant
 from jdxi_editor.jdxi.preset.button import JDXiPresetButtonData
 from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.jdxi.preset.lists import JDXiPresetToneList
-from jdxi_editor.jdxi.midi.constant import MidiConstant, JDXiConstant
+from picomidi.constant import MidiConstant
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import (
     AddressStartMSB,

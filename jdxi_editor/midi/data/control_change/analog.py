@@ -6,7 +6,7 @@ from typing import Tuple, Any
 
 from shiboken6.Shiboken import Object
 
-from jdxi_editor.jdxi.midi.constant import MidiConstant
+from picomidi.constant import MidiConstant
 from jdxi_editor.midi.data.control_change.base import ControlChange
 
 

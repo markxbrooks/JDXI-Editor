@@ -9,8 +9,8 @@ import time
 
 from PySide6.QtCore import QObject, Signal, Slot
 
-from jdxi_editor.jdxi.midi.constant import MidiConstant
-from jdxi_editor.jdxi.sysex.bitmask import BitMask
+from picomidi.constant import MidiConstant
+from picomidi.core.bitmask import BitMask
 
 
 class MidiPlaybackWorker(QObject):
