@@ -38,7 +38,7 @@ from PySide6.QtWidgets import (
     QLineEdit,
     QFileDialog,
 )
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QTimer
 import os
 import qtawesome as qta
 
@@ -80,6 +80,16 @@ class MIDIConfigDialog(QDialog):
         self._populate_sf2_combo()
         if self.sf2_edit.text().strip():
             self._select_sf2_in_combo(self.sf2_edit.text().strip())
+        self.setWindowFlag(Qt.WindowStaysOnTopHint, True)
+
+    def showEvent(self, event):
+        super().showEvent(event)
+        QTimer.singleShot(0, self._bring_to_front)
+
+    def _bring_to_front(self):
+        self.raise_()
+        self.activateWindow()
+        self.setFocus()
 
     def _create_ui(self):
         """Create the dialog UI"""

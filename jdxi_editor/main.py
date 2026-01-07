@@ -58,7 +58,7 @@ def main() -> None:
     try:
         # Set up logging first
         settings = QSettings(__organization_name__, __program__)
-        log_level = settings.value("log_level", logging.DEBUG)
+        log_level = int(str(settings.value("log_level", logging.DEBUG)))
         logger = setup_logging(log_level=log_level)
 
         # Create application
