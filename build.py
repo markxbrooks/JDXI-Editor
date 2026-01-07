@@ -16,13 +16,13 @@ os.system(rm_cmd)
 ## With console = pyinstaller_cmd + --console
 pyinstaller_cmd = rf"pyinstaller.exe --exclude-module PyQt5 -w -i  designer\icons\{__package_name__}.ico --hidden-import numpy --additional-hooks-dir=. --paths=env\Lib\site-packages --noupx --noconfirm -n {__package_name__} --clean main.py"
 
-os.system(pyinstaller_cmd)
+os.system(pyinstaller_cmd)                                                                                                                                                                                                                  
 
 dest_dir = f"dist/{__package_name__}/_internal"
 dir_list = [__package_name__, "resources"]
 for directory in dir_list:
     copy_tree(directory, dest_dir + r"/" + directory)
-inno_input_file = os.path.join(os.getcwd(), f"{__package_name__}.iss")
+inno_input_file = os.path.join(os.getcwd(), f"{__package_name__}.iss")                                                                                                                                                                                                      
 ## With console
 # pyinstaller_cmd = r"pyinstaller.exe -w -i  resources\jdxi_icon.ico --console --additional-hooks-dir=. --paths=env\Lib\site-packages --noupx --noconfirm -n jdxi_editor --clean main.py"
 ## Without console
