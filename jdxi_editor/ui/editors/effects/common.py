@@ -67,7 +67,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt, QEvent
 from PySide6.QtGui import QShowEvent
 
-from jdxi_editor.jdxi.midi.constant import MidiConstant
+from picomidi.constant import MidiConstant
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import (

@@ -585,8 +585,19 @@ def get_database() -> ProgramDatabase:
     if _db_instance is None:
         from jdxi_editor.project import __package_name__
         _db_instance = ProgramDatabase()
-        # Migrate from JSON on first run if JSON file exists
+        # Migrate from JSON only if:
+        # 1. JSON file exists AND
+        # 2. Database is empty (hasn't been migrated yet)
         json_file = Path.home() / f".{__package_name__}" / "user_programs.json"
         if json_file.exists():
-            _db_instance.migrate_from_json(json_file)
+            # Check if database already has programs
+            existing_programs = _db_instance.get_all_programs()
+            if len(existing_programs) == 0:
+                # Database is empty, safe to migrate
+                migrated_count = _db_instance.migrate_from_json(json_file)
+                if migrated_count > 0:
+                    log.message(f"✅ Migrated {migrated_count} programs from JSON to database on first run")
+            else:
+                # Database already has programs, skip migration to avoid overwriting
+                log.message(f"⚠️  Database already contains {len(existing_programs)} programs. Skipping JSON migration to prevent data loss.")
     return _db_instance

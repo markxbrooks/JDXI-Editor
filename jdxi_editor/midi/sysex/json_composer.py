@@ -134,7 +134,7 @@ class JDXiJSONComposer:
             RolandSysExAddress,
             AddressStartMSB
         )
-        from jdxi_editor.jdxi.midi.constant import MidiConstant
+        from picomidi.constant import MidiConstant
         
         if isinstance(editor, DigitalSynthEditor):
             # Separate Common and Modify controls
@@ -161,7 +161,7 @@ class JDXiJSONComposer:
                 # For Common, we need: MSB=0x19, UMB=editor.address.umb, LMB=0x00 (COMMON), LSB=0x00
                 # The editor.address.umb is already correct (0x01 for DS1, 0x21 for DS2)
                 # We just need to ensure LMB is set to COMMON (0x00)
-                from jdxi_editor.jdxi.midi.constant import MidiConstant
+                from picomidi.constant import MidiConstant
                 common_address = RolandSysExAddress(
                     msb=editor.address.msb,  # 0x19 (TEMPORARY_TONE)
                     umb=editor.address.umb,  # 0x01 for DS1, 0x21 for DS2 (includes SuperNATURAL offset)

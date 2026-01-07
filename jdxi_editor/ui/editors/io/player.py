@@ -30,7 +30,8 @@ from PySide6.QtWidgets import (
 import qtawesome as qta
 
 from jdxi_editor.globals import PROFILING
-from jdxi_editor.jdxi.midi.constant import JDXiConstant, MidiConstant
+from jdxi_editor.jdxi.midi.constant import JDXiConstant
+from picomidi.constant import MidiConstant
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.log.logger import Logger as log

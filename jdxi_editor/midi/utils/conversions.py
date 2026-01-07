@@ -6,9 +6,9 @@ and various numerical representations such as milliseconds and fractional values
 
 These functions are useful for mapping MIDI messages to meaningful time or intensity values
 in a synthesizer or effect unit.
-from jdxi_editor.jdxi.midi.constant import MidiConstant
+from picomidi.constant import MidiConstant
 """
-from jdxi_editor.jdxi.midi.constant import MidiConstant
+from picomidi.constant import MidiConstant
 
 
 def midi_value_to_ms(midi_value: int,

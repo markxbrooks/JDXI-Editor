@@ -26,9 +26,9 @@ print("Parsed Value:", parsed_message.value)
 from dataclasses import dataclass, field
 from typing import List, Union, Optional
 
-
-from jdxi_editor.jdxi.midi.constant import MidiConstant, JDXiConstant
-from jdxi_editor.jdxi.sysex.bitmask import BitMask
+from jdxi_editor.jdxi.midi.constant import JDXiConstant
+from picomidi.constant import MidiConstant
+from picomidi.core.bitmask import BitMask
 from jdxi_editor.jdxi.sysex.offset import JDXiSysExOffset
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import (

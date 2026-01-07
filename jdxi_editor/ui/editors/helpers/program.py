@@ -44,7 +44,7 @@ import json
 import logging
 from typing import Optional, Dict, List
 
-from jdxi_editor.jdxi.midi.constant import MidiConstant
+from picomidi.constant import MidiConstant
 from jdxi_editor.jdxi.program.program import JDXiProgram
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.programs.programs import JDXiProgramList

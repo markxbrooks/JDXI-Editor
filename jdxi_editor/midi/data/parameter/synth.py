@@ -37,8 +37,8 @@ Example
 from enum import Enum
 from typing import Optional, Tuple, Type, T, Dict
 
-from jdxi_editor.jdxi.midi.constant import MidiConstant
-from jdxi_editor.jdxi.sysex.bitmask import BitMask
+from picomidi.constant import MidiConstant
+from picomidi.core.bitmask import BitMask
 from jdxi_editor.midi.sysex.utils import map_range
 
 

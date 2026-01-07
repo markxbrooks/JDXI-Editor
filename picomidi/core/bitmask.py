@@ -1,3 +1,8 @@
+"""
+BitMask values
+"""
+
+
 class BitMask:
     """Bit masks for various purposes"""
     LOW_1_BIT = 0x01  # Mask for only the lowest (1st) bit

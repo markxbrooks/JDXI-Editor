@@ -34,7 +34,7 @@ from enum import Enum
 from typing import List
 from dataclasses import dataclass
 
-from jdxi_editor.jdxi.midi.constant import MidiConstant
+from picomidi.constant import MidiConstant
 from jdxi_editor.jdxi.sysex.offset import JDXiSysExOffset
 from jdxi_editor.midi.data.address.address import (
     CommandID,

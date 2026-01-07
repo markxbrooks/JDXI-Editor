@@ -16,7 +16,7 @@ import os
 from pathlib import Path
 from typing import Optional
 
-from jdxi_editor.jdxi.midi.constant import MidiConstant
+from picomidi.constant import MidiConstant
 from jdxi_editor.jdxi.sysex.offset import JDXiSysExOffset
 from jdxi_editor.midi.sysex.parser.utils import parse_sysex
 from jdxi_editor.log.logger import Logger as log

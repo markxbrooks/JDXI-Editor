@@ -45,7 +45,8 @@ Dependencies:
 from dataclasses import dataclass
 from typing import List, Optional
 
-from jdxi_editor.jdxi.midi.constant import MidiConstant, JDXiConstant
+from jdxi_editor.jdxi.midi.constant import JDXiConstant
+from picomidi.constant import MidiConstant
 from jdxi_editor.jdxi.sysex.offset import JDXIIdentityOffset
 
 

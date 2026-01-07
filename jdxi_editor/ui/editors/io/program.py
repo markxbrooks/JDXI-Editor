@@ -54,7 +54,7 @@ from PySide6.QtCore import Signal, Qt, QRect, QSize, QTimer
 from PySide6.QtGui import QPainter
 import qtawesome as qta
 
-from jdxi_editor.jdxi.midi.constant import MidiConstant
+from picomidi.constant import MidiConstant
 from jdxi_editor.jdxi.preset.lists import JDXiPresetToneList
 from jdxi_editor.jdxi.program.program import JDXiProgram
 from jdxi_editor.jdxi.synth.type import JDXiSynth

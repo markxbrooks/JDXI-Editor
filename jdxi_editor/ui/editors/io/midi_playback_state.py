@@ -6,7 +6,7 @@ from typing import Optional
 from PySide6.QtCore import QTimer, QThread
 from mido import MidiFile
 
-from jdxi_editor.jdxi.midi.constant import MidiConstant
+from picomidi.constant import MidiConstant
 from jdxi_editor.midi.channel.channel import MidiChannel
 
 
