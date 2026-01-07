@@ -219,7 +219,7 @@ def setup_splash_screen(app: QApplication) -> tuple[QSplashScreen, QProgressBar,
     # Footer credits
     credits = QLabel(
         f"{__program__}  •  Version {__version__}\n"
-        "Developed by Mark Brooks — Inspired by modern instrument editors"
+        "Developed by mabsoft.com — Inspired by modern instrument editors"
     )
     credits.setObjectName("CreditLabel")
     credits.setAlignment(Qt.AlignCenter)
