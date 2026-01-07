@@ -1,6 +1,6 @@
 """Preset Widget to be used by All Editors"""
 
-from typing import Any, Optional
+from typing import TYPE_CHECKING, Any, Optional
 
 import qtawesome as qta
 from PySide6.QtCore import Qt
@@ -18,9 +18,11 @@ from PySide6.QtWidgets import (
 
 from jdxi_editor.jdxi.preset.helper import create_scroll_container
 from jdxi_editor.jdxi.style import JDXiStyle
-from jdxi_editor.ui.editors import SynthEditor
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 from jdxi_editor.ui.widgets.preset.combo_box import PresetComboBox
+
+if TYPE_CHECKING:
+    from jdxi_editor.ui.editors.synth.editor import SynthEditor
 
 
 class InstrumentPresetWidget(QWidget):
@@ -28,7 +30,7 @@ class InstrumentPresetWidget(QWidget):
 
     def __init__(
         self,
-        parent: SynthEditor,  # parent is not optional
+        parent: "SynthEditor",  # parent is not optional
     ):
         """
         InstrumentPresetWidget
