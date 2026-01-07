@@ -2,6 +2,7 @@
 __pycache__/
 appinage
 tests/sheep.mid
+appimagetool*
 spleeter-env
 *.py[cod]
 *$py.class
