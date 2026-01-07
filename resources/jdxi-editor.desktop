@@ -1,0 +1,14 @@
+[Desktop Entry]
+Name=JD-Xi Editor
+GenericName=MIDI Synthesizer Editor
+Comment=MIDI Editor and Toolkit for Roland JD-Xi Synthesizer
+Exec=jdxi-editor %F
+Icon=jdxi-editor
+Terminal=false
+Type=Application
+Categories=AudioVideo;Audio;Midi;Music;Qt;
+Keywords=MIDI;Synthesizer;Roland;JD-Xi;Editor;Music;Patch;
+StartupWMClass=jdxi-editor
+StartupNotify=true
+MimeType=audio/midi;
+
