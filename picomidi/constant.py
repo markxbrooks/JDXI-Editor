@@ -6,60 +6,6 @@ from picomidi.core.bitmask import BitMask
 
 class MidiConstant:
     """Standard MIDI protocol constants."""
-    
-    # ------------------------------------------------------------------------
-    # Single-Byte Values
-    # ------------------------------------------------------------------------
-    class SingleByte:
-        """Single-byte MIDI constants."""
-        ZERO = 0x00  # Zero byte
-        ON = 0x01  # Value representing ON
-        OFF = 0x00  # Value representing OFF
-
-    # ------------------------------------------------------------------------
-    # Maximum Values for Unsigned Integer Ranges
-    # ------------------------------------------------------------------------
-    class MaxValues:
-        """Maximum unsigned constants for various bit-widths."""
-        FOUR_BIT = 0x0F  # 15, 4-bit max (unsigned)
-        SEVEN_BIT = 0x7F  # 127, 7-bit max (standard MIDI data byte)
-        EIGHT_BIT = 0xFF  # 255, 8-bit max (unsigned)
-        FOURTEEN_BIT = 0x3FFF  # 16383, 14-bit max (used in MIDI pitch bend)
-        SIXTEEN_BIT = 0xFFFF  # 65535, unsigned 16-bit full range
-        THIRTY_TWO_BIT = 0xFFFFFFFF  # 4294967295, max unsigned 32-bit
-
-    # ------------------------------------------------------------------------
-    # Signed Values
-    # ------------------------------------------------------------------------
-    class SignedSixteenBit:
-        """Signed 16-bit integer constants."""
-        MAX = 0x7FFF  # 32767, max positive signed 16-bit
-        MIN = -0x8000  # -32768, two's complement min signed
-
-    # ------------------------------------------------------------------------
-    # Utility Methods
-    # ------------------------------------------------------------------------
-    @staticmethod
-    def is_within_seven_bit_range(value):
-        """
-        Check if the given value falls within the range of a 7-bit unsigned integer.
-        :param value: The value to validate.
-        :return: True if the value is within range, False otherwise.
-        """
-        return 0 <= value <= CommonValues.MaxValues.SEVEN_BIT
-
-    @staticmethod
-    def is_within_sixteen_bit_range(value, signed=False):
-        """
-        Check if the given value falls within the range of a 16-bit integer.
-        :param value: The value to validate.
-        :param signed: If True, treat as signed range, otherwise unsigned.
-        :return: True if the value is within range, False otherwise.
-        """
-        if signed:
-            return CommonValues.SignedSixteenBit.MIN <= value <= CommonValues.SignedSixteenBit.MAX
-        return 0 <= value <= CommonValues.MaxValues.SIXTEEN_BIT
-
     # ============================================================================
     # Channel Voice Messages (Status Bytes)
     # ============================================================================
@@ -139,6 +85,60 @@ class MidiConstant:
     # ============================================================================
     class CommonValues:
         """Common MIDI value constants."""
+        
+        # ------------------------------------------------------------------------
+        # Single-Byte Values
+        # ------------------------------------------------------------------------
+        class SingleByte:
+            """Single-byte MIDI constants."""
+            ZERO = 0x00  # Zero byte
+            ON = 0x01  # Value representing ON
+            OFF = 0x00  # Value representing OFF
+    
+        # ------------------------------------------------------------------------
+        # Maximum Values for Unsigned Integer Ranges
+        # ------------------------------------------------------------------------
+        class MaxValues:
+            """Maximum unsigned constants for various bit-widths."""
+            FOUR_BIT = 0x0F  # 15, 4-bit max (unsigned)
+            SEVEN_BIT = 0x7F  # 127, 7-bit max (standard MIDI data byte)
+            EIGHT_BIT = 0xFF  # 255, 8-bit max (unsigned)
+            FOURTEEN_BIT = 0x3FFF  # 16383, 14-bit max (used in MIDI pitch bend)
+            SIXTEEN_BIT = 0xFFFF  # 65535, unsigned 16-bit full range
+            THIRTY_TWO_BIT = 0xFFFFFFFF  # 4294967295, max unsigned 32-bit
+    
+        # ------------------------------------------------------------------------
+        # Signed Values
+        # ------------------------------------------------------------------------
+        class SignedSixteenBit:
+            """Signed 16-bit integer constants."""
+            MAX = 0x7FFF  # 32767, max positive signed 16-bit
+            MIN = -0x8000  # -32768, two's complement min signed
+    
+        # ------------------------------------------------------------------------
+        # Utility Methods
+        # ------------------------------------------------------------------------
+        @staticmethod
+        def is_within_seven_bit_range(value):
+            """
+            Check if the given value falls within the range of a 7-bit unsigned integer.
+            :param value: The value to validate.
+            :return: True if the value is within range, False otherwise.
+            """
+            return 0 <= value <= CommonValues.MaxValues.SEVEN_BIT
+        
+        @staticmethod
+        def is_within_sixteen_bit_range(value, signed=False):
+            """
+            Check if the given value falls within the range of a 16-bit integer.
+            :param value: The value to validate.
+            :param signed: If True, treat as signed range, otherwise unsigned.
+            :return: True if the value is within range, False otherwise.
+            """
+            if signed:
+                return CommonValues.SignedSixteenBit.MIN <= value <= CommonValues.SignedSixteenBit.MAX
+            return 0 <= value <= CommonValues.MaxValues.SIXTEEN_BIT
+            
         ZERO_BYTE = 0x00
         VALUE_ON = 0x01
         VALUE_OFF = 0x00
@@ -150,7 +150,7 @@ class MidiConstant:
         VALUE_MIN_SIGNED_SIXTEEN_BIT = 0x8000  # -32768, two's complement min signed
         VALUE_MAX_UNSIGNED_SIXTEEN_BIT = 0xFFFF  # 65535, full unsigned 16-bit range
         VALUE_MAX_THIRTY_TWO_BIT = 0xFFFFFFFF  # 4294967295, max unsigned 32-bit
-
+    
     # ============================================================================
     # Pitch Bend Constants
     # ============================================================================
