@@ -1,3 +1,7 @@
+"""
+Midi values classes
+"""
+
 class MinValues:
     """Minimum values"""
 

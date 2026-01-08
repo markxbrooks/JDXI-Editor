@@ -1,3 +1,8 @@
+"""
+MIDI tempo and timing constants.
+"""
+
+
 class MidiTempo:
     """Tempo and timing constants."""
 

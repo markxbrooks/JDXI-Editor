@@ -1,3 +1,7 @@
+"""
+MIDI value constants and validation utilities.
+"""
+
 from picomidi.values import MaxValues, MinValues
 
 

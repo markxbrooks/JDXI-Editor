@@ -1,5 +1,10 @@
+"""
+Song MIDI message constants.
+"""
+
+
 class Song:
-    """Song"""
+    """Song MIDI message constants."""
 
     START = 0xFA
     CONTINUE = 0xFB

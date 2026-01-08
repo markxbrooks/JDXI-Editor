@@ -11,7 +11,8 @@ import warnings
 def __getattr__(name):
     if name == "ControlChange":
         warnings.warn(
-            "picomidi.cc.control_change is deprecated; use picomidi.messages.control_change instead.",
+            "picomidi.cc.control_change is deprecated; "
+            "use picomidi.messages.control_change instead.",
             DeprecationWarning,
             stacklevel=2,
         )
@@ -21,4 +22,6 @@ def __getattr__(name):
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
+# ControlChange is available via __getattr__, but pylint needs this for __all__
+# pylint: disable=undefined-all-variable
 __all__ = ["ControlChange"]
