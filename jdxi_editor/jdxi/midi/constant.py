@@ -60,15 +60,24 @@ class JDXiControlChange:
     # Note: JD-Xi uses CC#85 for Bank Select MSB instead of standard CC#0
     BANK_SELECT = JDXiCCBankSelect
     
-    
+
 class JDXiCCBankSelect:
-    # JD-Xi Bank Select LSB values
-    # Note: JD-Xi uses CC#85 for Bank Select MSB instead of standard CC#0
-    MSB = 85  # CC#85: JD-Xi Bank Select MSB (non-standard)
-    LSB_BANK_E_AND_F = 0
-    LSB_BANK_G_AND_H = 1
-    LSB_BANK_A_AND_B = 64  # ROM banks
-    LSB_BANK_C_AND_D = 65  # ROM banks
+    """
+    Represents the Bank Select values for the Roland JD-Xi synthesizer.
+
+    - MSB (Most Significant Byte): CC#85 (non-standard)
+    - LSB (Least Significant Byte): Specific values for bank selection.
+    """
+
+    # MIDI Control Change number for JD-Xi Bank Select MSB
+    MSB = 85
+
+    class LSB:
+        """LSB values for Bank selection."""
+        BANK_E_AND_F = 0
+        BANK_G_AND_H = 1
+        BANK_A_AND_B = 64  # ROM banks
+        BANK_C_AND_D = 65  # ROM banks
     
     
 class JDXiConstant:
