@@ -44,7 +44,6 @@ from jdxi_editor.midi.data.address.address import (
     RolandSysExAddress,
 )
 from jdxi_editor.midi.data.parameter.program.common import ProgramCommonParam
-from picomidi.sysex.parameter.address import AddressParameter
 from jdxi_editor.midi.data.parameter.vocal_fx import VocalFXParam
 from jdxi_editor.midi.data.vocal_effects.vocal import (
     VocalAutoPitchKey,
@@ -59,6 +58,7 @@ from jdxi_editor.midi.data.vocal_effects.vocal import (
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
+from picomidi.sysex.parameter.address import AddressParameter
 
 
 class VocalFXEditor(BasicEditor):

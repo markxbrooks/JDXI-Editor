@@ -44,7 +44,7 @@ from jdxi_editor.midi.io.utils import handle_identity_request
 from jdxi_editor.midi.map.synth_type import JDXiMapSynthType
 from jdxi_editor.midi.sysex.parser.sysex import JDXiSysExParser
 from jdxi_editor.midi.sysex.request.data import IGNORED_KEYS
-from picomidi.constant import MidiConstant
+from picomidi.constant import Midi
 
 
 def add_or_replace_program_and_save(new_program: JDXiProgram) -> bool:
@@ -303,9 +303,9 @@ class MidiInHandler(MidiIOController):
 
             hex_string = " ".join(f"{byte:02X}" for byte in message.data)
             sysex_message_bytes = (
-                bytes([MidiConstant.START_OF_SYSEX])
+                bytes([Midi.SYSEX.START])
                 + bytes(message.data)
-                + bytes([MidiConstant.END_OF_SYSEX])
+                + bytes([Midi.SYSEX.START])
             )
             try:
                 parsed_data = self.sysex_parser.parse_bytes(sysex_message_bytes)
@@ -354,9 +354,9 @@ class MidiInHandler(MidiIOController):
             self._incoming_preset_data.lsb = value
 
         self.midi_control_changed.emit(channel, control, value)
-        if control == MidiConstant.CONTROL_CHANGE_NRPN_MSB:  # NRPN MSB
+        if control == Midi.CC.NRPN.MSB:  # NRPN MSB
             self.nrpn_msb = value
-        elif control == MidiConstant.CONTROL_CHANGE_NRPN_LSB:  # NRPN LSB
+        elif control == Midi.CC.NRPN.LSB:  # NRPN LSB
             self.nrpn_lsb = value
         elif control == 6 and self.nrpn_msb is not None and self.nrpn_lsb is not None:
             # We have both MSB and LSB; reconstruct NRPN address

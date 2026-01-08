@@ -80,7 +80,6 @@ from jdxi_editor.midi.data.address.address import (
 )
 from jdxi_editor.midi.data.address.program import ProgramCommonAddress
 from jdxi_editor.midi.data.drum.data import DRUM_PARTIAL_MAP
-from picomidi.sysex.parameter.address import AddressParameter
 from jdxi_editor.midi.data.parameter.analog import AnalogParam
 from jdxi_editor.midi.data.parameter.digital import DigitalCommonParam
 from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParam
@@ -101,7 +100,8 @@ from jdxi_editor.ui.editors.helpers.program import (
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 from jdxi_editor.ui.windows.patch.name_editor import PatchNameEditor
-from picomidi.constant import MidiConstant
+from picomidi.constant import Midi
+from picomidi.sysex.parameter.address import AddressParameter
 
 
 class MidiFileDelegate(QStyledItemDelegate):
@@ -978,11 +978,11 @@ class ProgramEditor(BasicEditor):
 
     def start_playback(self):
         """Start playback of the MIDI file."""
-        self.midi_helper.send_raw_message([MidiConstant.SONG_START])
+        self.midi_helper.send_raw_message([Midi.SONG.START])
 
     def stop_playback(self):
         """Stop playback of the MIDI file."""
-        self.midi_helper.send_raw_message([MidiConstant.SONG_STOP])
+        self.midi_helper.send_raw_message([Midi.SONG.STOP])
 
     def populate_programs(self, search_text: str = ""):
         """Populate the program list with available presets.

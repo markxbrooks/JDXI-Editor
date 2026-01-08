@@ -17,7 +17,6 @@ from PySide6.QtWidgets import (
 
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
-from picomidi.sysex.parameter.address import AddressParameter
 from jdxi_editor.midi.data.parameter.digital.partial import (
     DigitalPartialParam,
 )
@@ -26,6 +25,7 @@ from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
+from picomidi.sysex.parameter.address import AddressParameter
 
 
 class DigitalAmpSection(QWidget):

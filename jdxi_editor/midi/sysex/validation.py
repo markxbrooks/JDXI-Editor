@@ -4,7 +4,7 @@ from jdxi_editor.jdxi.midi.constant import JDXiConstant
 from jdxi_editor.jdxi.sysex.offset import JDXiSysExOffset
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import JD_XI_HEADER_LIST, CommandID
-from picomidi.constant import MidiConstant
+from picomidi.constant import Midi
 from picomidi.core.bitmask import BitMask
 
 
@@ -22,7 +22,7 @@ def validate_raw_sysex_message(message: List[int]) -> bool:
         # Check header
         if (
             message[: JDXiSysExOffset.COMMAND_ID]
-            != [MidiConstant.START_OF_SYSEX] + JD_XI_HEADER_LIST
+            != [Midi.SYSEX.START] + JD_XI_HEADER_LIST
         ):
             log.message("Invalid SysEx header")
             return False
@@ -33,7 +33,7 @@ def validate_raw_sysex_message(message: List[int]) -> bool:
             return False
 
         # Check end marker
-        if message[JDXiSysExOffset.SYSEX_END] != MidiConstant.END_OF_SYSEX:
+        if message[JDXiSysExOffset.SYSEX_END] != Midi.SYSEX.START:
             log.message("Invalid SysEx end marker")
             return False
 
@@ -73,9 +73,7 @@ def validate_raw_midi_message(message: Iterable[int]) -> bool:
         return False
 
     for byte in message:
-        if not isinstance(byte, int) or not (
-            0 <= byte <= MidiConstant.VALUE_MAX_EIGHT_BIT
-        ):
+        if not isinstance(byte, int) or not (0 <= byte <= Midi.VALUE.MAX.EIGHT_BIT):
             log.parameter("Invalid MIDI value detected:", message)
             return False
 

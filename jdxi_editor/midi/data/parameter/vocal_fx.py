@@ -262,7 +262,7 @@ class VocalFXParam(AddressParameter):
         """
         param = VocalFXParam.get_by_name(param_name)
         if param:
-            return param.value[0]
+            return param.STATUS[0]
         return None
 
     @staticmethod
@@ -275,7 +275,7 @@ class VocalFXParam(AddressParameter):
         """
         param = VocalFXParam.get_by_name(param_name)
         if param:
-            return param.value[1], param.value[2]
+            return param.STATUS[1], param.STATUS[2]
         return None, None
 
     @staticmethod

@@ -4,10 +4,10 @@ DelayMessage
 
 # Example usage:
 # Set delay level
->>> msg = DelayMessage(param=Delay.LEVEL.value, value=100)  # Level 100
+>>> msg = DelayMessage(param=Delay.LEVEL.STATUS, value=100)  # Level 100
 
 # Set reverb send level
->>> msg = DelayMessage(param=Delay.REVERB_SEND.value, value=64)  # Send to reverb
+>>> msg = DelayMessage(param=Delay.REVERB_SEND.STATUS, value=64)  # Send to reverb
 
 # Set delay parameter 1 to +5000
 >>> msg = DelayMessage(

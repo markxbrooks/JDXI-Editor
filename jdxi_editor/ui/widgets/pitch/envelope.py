@@ -20,7 +20,6 @@ from PySide6.QtWidgets import QGridLayout, QSlider, QWidget
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
-from picomidi.sysex.parameter.address import AddressParameter
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.utils.conversions import (
     midi_value_to_ms,
@@ -29,7 +28,8 @@ from jdxi_editor.midi.utils.conversions import (
 from jdxi_editor.ui.widgets.envelope.base import EnvelopeWidgetBase
 from jdxi_editor.ui.widgets.pitch.envelope_plot import PitchEnvPlot
 from jdxi_editor.ui.widgets.pitch.slider_spinbox import PitchEnvSliderSpinbox
-from picomidi.constant import MidiConstant
+from picomidi.constant import Midi
+from picomidi.sysex.parameter.address import AddressParameter
 
 
 class PitchEnvelopeWidget(EnvelopeWidgetBase):
@@ -99,7 +99,7 @@ class PitchEnvelopeWidget(EnvelopeWidgetBase):
         self.depth_control = PitchEnvSliderSpinbox(
             depth_param,
             min_value=1,
-            max_value=MidiConstant.VALUE_MAX_SEVEN_BIT,
+            max_value=Midi.VALUE.MAX.SEVEN_BIT,
             units="",
             label="Depth",
             value=self.envelope["peak_level"],
@@ -197,13 +197,13 @@ class PitchEnvelopeWidget(EnvelopeWidgetBase):
                 envelope_param_type = param.get_envelope_param_type()
                 log.message(f"envelope_param_type = {envelope_param_type}")
                 if envelope_param_type == "sustain_level":
-                    self.envelope["sustain_level"] = slider.value() / 127
+                    self.envelope["sustain_level"] = slider.STATUS() / 127
                 elif envelope_param_type == "peak_level":
                     pass
                     # self.envelope["peak_level"] = (slider.value() / 127)
                 else:
                     self.envelope[envelope_param_type] = midi_value_to_ms(
-                        slider.value()
+                        slider.STATUS()
                     )
             log.message(f"{self.envelope}")
         except Exception as ex:

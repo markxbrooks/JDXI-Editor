@@ -378,7 +378,7 @@ class AnalogSynthEditor(SynthEditor):
             # Check which waveform button is currently checked
             for waveform, btn in self.wave_buttons.items():
                 if btn.isChecked():
-                    controls_data[AnalogParam.OSC_WAVEFORM.name] = waveform.value
+                    controls_data[AnalogParam.OSC_WAVEFORM.name] = waveform.STATUS
                     break
             # If no button is checked, use default (SAW = 0)
             if AnalogParam.OSC_WAVEFORM.name not in controls_data:

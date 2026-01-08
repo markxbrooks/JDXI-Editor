@@ -8,9 +8,9 @@ from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QDoubleSpinBox, QSpinBox, QVBoxLayout, QWidget
 
 from jdxi_editor.log.logger import Logger as log
-from picomidi.sysex.parameter.address import AddressParameter
 from jdxi_editor.midi.utils.conversions import midi_value_to_ms, ms_to_midi_value
-from picomidi.constant import MidiConstant
+from picomidi.constant import Midi
+from picomidi.sysex.parameter.address import AddressParameter
 
 
 def create_spinbox(min_value: int, max_value: int, suffix: str, value: int) -> QSpinBox:
@@ -82,7 +82,7 @@ class AdsrSliderSpinbox(QWidget):
         super().__init__(parent)
 
         self.param = param
-        self.factor = MidiConstant.VALUE_MAX_SEVEN_BIT
+        self.factor = Midi.VALUE.MAX.SEVEN_BIT
         if max_value > 1:
             self.factor = max_value
         self.create_parameter_slider = create_parameter_slider

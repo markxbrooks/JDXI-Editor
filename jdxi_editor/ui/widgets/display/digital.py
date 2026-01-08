@@ -314,7 +314,7 @@ class DigitalDisplay(DigitalDisplayBase):
     ) -> None:
         # Lazy import to avoid circular dependency
         from jdxi_editor.ui.editors.helpers.program import get_program_id_by_name
-        
+
         self.current_octave = current_octave
         self.tone_number = tone_number
         self.tone_name = tone_name
@@ -346,7 +346,7 @@ class DigitalDisplay(DigitalDisplayBase):
         """
         # Lazy import to avoid circular dependency
         from jdxi_editor.ui.editors.helpers.preset import get_preset_list_number_by_name
-        
+
         if synth_type == JDXiSynth.DIGITAL_SYNTH_1:
             tone_name = digital1_tone_name
             tone_number = get_preset_list_number_by_name(tone_name, DIGITAL_PRESET_LIST)

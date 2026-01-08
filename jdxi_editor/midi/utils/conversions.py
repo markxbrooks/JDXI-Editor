@@ -9,7 +9,7 @@ in a synthesizer or effect unit.
 from picomidi.constant import MidiConstant
 """
 
-from picomidi.constant import MidiConstant
+from picomidi.constant import Midi
 
 
 def midi_value_to_ms(
@@ -27,10 +27,10 @@ def midi_value_to_ms(
         raise ValueError("min_time must be less than max_time")
 
     midi_value = max(
-        0, min(MidiConstant.VALUE_MAX_SEVEN_BIT, midi_value)
+        0, min(Midi.VALUE.MAX.SEVEN_BIT, midi_value)
     )  # Clamp to valid MIDI range
     time_range = max_time - min_time
-    ms_time = min_time + (midi_value / MidiConstant.VALUE_MAX_SEVEN_BIT) * time_range
+    ms_time = min_time + (midi_value / Midi.VALUE.MAX.SEVEN_BIT) * time_range
     return ms_time
 
 
@@ -44,7 +44,7 @@ def ms_to_midi_value(ms_time: float, min_time: int = 10, max_time: int = 1000) -
     :return: int Corresponding MIDI value (1-127)
     """
     time_range = max_time - min_time
-    midi_byte_range = MidiConstant.VALUE_MAX_SEVEN_BIT  # 127
+    midi_byte_range = Midi.VALUE.MAX.SEVEN_BIT  # 127
     conversion_factor = time_range / midi_byte_range
     midi_value = int((ms_time / conversion_factor) - min_time)
     if not midi_value or midi_value is None:
@@ -64,7 +64,7 @@ def fraction_to_midi_value(
     :returns: int: Corresponding MIDI value.
     """
     value_range = maximum - minimum
-    midi_byte_range = MidiConstant.VALUE_MAX_SEVEN_BIT  # 127
+    midi_byte_range = Midi.VALUE.MAX.SEVEN_BIT  # 127
     conversion_factor = value_range / midi_byte_range
     midi_value = int((fractional_value / conversion_factor) - minimum)
     return midi_value
@@ -82,6 +82,6 @@ def midi_value_to_fraction(
     :returns: float Corresponding fractional value.
     """
     value_range = maximum - minimum
-    midi_byte_range = MidiConstant.VALUE_MAX_SEVEN_BIT  # 127
+    midi_byte_range = Midi.VALUE.MAX.SEVEN_BIT  # 127
     conversion_factor = value_range / midi_byte_range
     return float((midi_value * conversion_factor) + minimum)

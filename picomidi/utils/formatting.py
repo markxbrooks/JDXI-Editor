@@ -6,14 +6,15 @@ for display, logging, and debugging.
 """
 
 from typing import List
-from picomidi.message.base import Message
+
 from picomidi.core.status import Status
+from picomidi.message.base import Message
 
 
 def format_message(message: Message, include_bytes: bool = True) -> str:
     """
     Format a MIDI message for display.
-    
+
     :param message: MIDI message to format
     :param include_bytes: Whether to include hex bytes
     :return: Formatted string
@@ -27,7 +28,7 @@ def format_message(message: Message, include_bytes: bool = True) -> str:
 def format_bytes(data: bytes, separator: str = " ", prefix: str = "") -> str:
     """
     Format raw bytes as hexadecimal string.
-    
+
     :param data: Bytes to format
     :param separator: String to separate hex bytes
     :param prefix: Optional prefix (e.g., "0x")
@@ -40,7 +41,7 @@ def format_bytes(data: bytes, separator: str = " ", prefix: str = "") -> str:
 def format_message_list(messages: List[Message], separator: str = "\n") -> str:
     """
     Format a list of MIDI messages.
-    
+
     :param messages: List of messages to format
     :param separator: String to separate messages
     :return: Formatted string
@@ -51,7 +52,7 @@ def format_message_list(messages: List[Message], separator: str = "\n") -> str:
 def get_message_type_name(status: int) -> str:
     """
     Get human-readable name for MIDI message type.
-    
+
     :param status: Status byte value
     :return: Message type name
     """
@@ -67,7 +68,7 @@ def get_message_type_name(status: int) -> str:
             Status.PITCH_BEND: "Pitch Bend",
         }
         return type_names.get(msg_type, f"Unknown Channel Voice (0x{msg_type:02X})")
-    
+
     if Status.is_system_common(status):
         type_names = {
             Status.SYSTEM_EXCLUSIVE: "System Exclusive",
@@ -78,7 +79,7 @@ def get_message_type_name(status: int) -> str:
             Status.END_OF_EXCLUSIVE: "End of Exclusive",
         }
         return type_names.get(status, f"Unknown System Common (0x{status:02X})")
-    
+
     if Status.is_system_realtime(status):
         type_names = {
             Status.TIMING_CLOCK: "Timing Clock",
@@ -89,6 +90,5 @@ def get_message_type_name(status: int) -> str:
             Status.SYSTEM_RESET: "System Reset",
         }
         return type_names.get(status, f"Unknown System Realtime (0x{status:02X})")
-    
-    return f"Unknown (0x{status:02X})"
 
+    return f"Unknown (0x{status:02X})"

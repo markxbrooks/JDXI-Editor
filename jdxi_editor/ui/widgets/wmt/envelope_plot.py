@@ -34,7 +34,7 @@ from PySide6.QtWidgets import QWidget
 
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.log.logger import Logger as log
-from picomidi.constant import MidiConstant
+from picomidi.constant import Midi
 
 
 def midi_value_to_float(value: int) -> float:
@@ -44,7 +44,7 @@ def midi_value_to_float(value: int) -> float:
     :param value: int
     :return: float in range [0.0, 1.0]
     """
-    return max(0.0, min(1.0, value / MidiConstant.VALUE_MAX_SEVEN_BIT))
+    return max(0.0, min(1.0, value / Midi.VALUE.MAX.SEVEN_BIT))
 
 
 class WMTEnvPlot(QWidget):

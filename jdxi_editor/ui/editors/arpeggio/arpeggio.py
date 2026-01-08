@@ -63,10 +63,10 @@ from jdxi_editor.midi.data.arpeggio.data import (
 )
 from jdxi_editor.midi.data.parameter.arpeggio import ArpeggioParam
 from jdxi_editor.midi.data.parameter.program.zone import ProgramZoneParam
-from picomidi.sysex.parameter.address import AddressParameter
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
+from picomidi.sysex.parameter.address import AddressParameter
 
 
 class ArpeggioEditor(BasicEditor):

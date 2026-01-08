@@ -6,4 +6,3 @@ into message objects.
 """
 
 __all__ = []
-

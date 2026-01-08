@@ -8,7 +8,7 @@ import time
 
 from PySide6.QtCore import QObject, Signal, Slot
 
-from picomidi.constant import MidiConstant
+from picomidi.constant import Midi
 from picomidi.core.bitmask import BitMask
 
 
@@ -24,8 +24,8 @@ class MidiPlaybackWorker(QObject):
     ) -> None:  # pylint: disable=unsupported-binary-operation
         super().__init__()
         self.parent = parent
-        self.position_tempo = MidiConstant.TEMPO_120_BPM_USEC
-        self.initial_tempo = MidiConstant.TEMPO_120_BPM_USEC
+        self.position_tempo = Midi.TEMPO.BPM_120_USEC
+        self.initial_tempo = Midi.TEMPO.BPM_120_USEC
         self.should_stop = False
         self.buffered_msgs = []
         self.midi_out_port = None
@@ -51,7 +51,7 @@ class MidiPlaybackWorker(QObject):
         ticks_per_beat: int = 480,
         play_program_changes: bool = True,
         start_time: float | None = None,  # pylint: disable=unsupported-binary-operation
-        initial_tempo: int = MidiConstant.TEMPO_120_BPM_USEC,
+        initial_tempo: int = Midi.TEMPO.BPM_120_USEC,
     ) -> None:
         """Setup the playback worker with buffered messages and configuration."""
         self.buffered_msgs = buffered_msgs
@@ -72,8 +72,8 @@ class MidiPlaybackWorker(QObject):
             self.position_tempo = initial_tempo
         else:
             # Use default tempo if none provided
-            self.initial_tempo = MidiConstant.TEMPO_120_BPM_USEC
-            self.position_tempo = MidiConstant.TEMPO_120_BPM_USEC
+            self.initial_tempo = Midi.TEMPO.BPM_120_USEC
+            self.position_tempo = Midi.TEMPO.BPM_120_USEC
 
         # Debug logging
         print(f"🎵 Worker setup: received {len(buffered_msgs)} buffered messages")
@@ -172,10 +172,7 @@ class MidiPlaybackWorker(QObject):
                 status_byte = raw_bytes[0]
                 message_type = status_byte & BitMask.HIGH_4_BITS
 
-                if (
-                    message_type == MidiConstant.PROGRAM_CHANGE
-                    and not self.play_program_changes
-                ):
+                if message_type == Midi.PC.STATUS and not self.play_program_changes:
                     # 0xC0 = program_change
                     pass  # Skip
                 else:

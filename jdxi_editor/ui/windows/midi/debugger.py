@@ -59,10 +59,10 @@ from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.jdxi.sysex.offset import JDXiSysExOffset
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import CommandID
-from picomidi.sysex.parameter.address import AddressParameter
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.parser.sysex import JDXiSysExParser
 from jdxi_editor.ui.windows.midi.helpers.debugger import validate_checksum
+from picomidi.sysex.parameter.address import AddressParameter
 
 T = TypeVar("T", bound="EnumWithAddress")
 

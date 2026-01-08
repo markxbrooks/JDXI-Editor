@@ -91,8 +91,8 @@ Param 3	00 19	(possibly unused or Level)
 from typing import Optional, Tuple
 
 from jdxi_editor.midi.data.parameter.effects.common import AddressParameterEffectCommon
+from picomidi.constant import Midi
 from picomidi.sysex.parameter.address import AddressParameter
-from picomidi.constant import MidiConstant
 
 
 class Effect1Param(AddressParameter):
@@ -355,7 +355,7 @@ class Effect1Param(AddressParameter):
             return display_value  # Already 0–127 or boolean-style
         else:
             return (
-                display_value + MidiConstant.VALUE_MIN_SIGNED_SIXTEEN_BIT
+                display_value + Midi.VALUE.MIN.SIGNED_SIXTEEN_BIT
             )  # Convert to unsigned 16 bit
 
     convert_from_display = convert_to_midi
@@ -575,7 +575,7 @@ class Effect2Param(AddressParameter):
             return display_value  # Already 0–127 or boolean-style
         else:
             return (
-                display_value + MidiConstant.VALUE_MIN_SIGNED_SIXTEEN_BIT
+                display_value + Midi.VALUE.MIN.SIGNED_SIXTEEN_BIT
             )  # Convert to unsigned 16 bit
 
     convert_from_display = convert_to_midi

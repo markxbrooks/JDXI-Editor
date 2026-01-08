@@ -19,10 +19,10 @@ from PySide6.QtWidgets import (
 
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
-from picomidi.sysex.parameter.address import AddressParameter
 from jdxi_editor.midi.data.parameter.analog import AnalogParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
+from picomidi.sysex.parameter.address import AddressParameter
 
 
 class AnalogAmpSection(QWidget):

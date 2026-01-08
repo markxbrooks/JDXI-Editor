@@ -19,12 +19,12 @@ from PySide6.QtWidgets import QGridLayout, QWidget
 
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
-from picomidi.sysex.parameter.address import AddressParameter
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
 from jdxi_editor.ui.widgets.adsr.plot import ADSRPlot
 from jdxi_editor.ui.widgets.envelope.base import TOOLTIPS, EnvelopeWidgetBase
 from jdxi_editor.ui.widgets.slider_spinbox.slider_spinbox import AdsrSliderSpinbox
+from picomidi.sysex.parameter.address import AddressParameter
 
 
 class ADSR(EnvelopeWidgetBase):

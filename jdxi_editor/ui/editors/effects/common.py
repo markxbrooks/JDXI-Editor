@@ -88,15 +88,15 @@ from jdxi_editor.midi.data.parameter.effects.effects import (
     Effect2Param,
     ReverbParam,
 )
-from picomidi.sysex.parameter.address import AddressParameter
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
-from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.editors.effects.data import EffectsData
+from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
-from picomidi.constant import MidiConstant
+from picomidi.constant import Midi
+from picomidi.sysex.parameter.address import AddressParameter
 
 
 class EffectsCommonEditor(BasicEditor):
@@ -317,7 +317,7 @@ class EffectsCommonEditor(BasicEditor):
             AddressStartMSB.TEMPORARY_PROGRAM,
             AddressOffsetSystemUMB.COMMON,
             AddressOffsetProgramLMB.COMMON,
-            MidiConstant.ZERO_BYTE,
+            Midi.VALUE.ZERO,
         )
         self.sysex_composer = JDXiSysExComposer()
         for param in self.EFX1_PARAMETERS:

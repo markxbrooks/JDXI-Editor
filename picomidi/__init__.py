@@ -12,32 +12,39 @@ __version__ = "0.1.0"
 
 # Core modules
 from picomidi.core.bitmask import BitMask
+from picomidi.core.channel import Channel
+
 # MidiConstant can be added when constant.py is created
 # from picomidi.core.constant import MidiConstant
 from picomidi.core.status import Status
-from picomidi.core.channel import Channel
-from picomidi.core.types import Note, Velocity, ControlValue, ProgramNumber, PitchBendValue
+from picomidi.core.types import (
+    ControlValue,
+    Note,
+    PitchBendValue,
+    ProgramNumber,
+    Velocity,
+)
 
 # Message classes
 from picomidi.message.base import Message
 from picomidi.message.channel_voice import (
-    NoteOn,
-    NoteOff,
-    ControlChange,
-    ProgramChange,
-    PitchBend,
-    RPN,
     NRPN,
+    RPN,
+    ControlChange,
+    NoteOff,
+    NoteOn,
+    PitchBend,
+    ProgramChange,
 )
 
 # Parser
 from picomidi.parser.parser import Parser
 
-# Utilities
-from picomidi.utils import conversion, validation, formatting, timing
-
 # RPN/NRPN
-from picomidi.rpn import ParameterMap, RPNMap, NRPNMap
+from picomidi.rpn import NRPNMap, ParameterMap, RPNMap
+
+# Utilities
+from picomidi.utils import conversion, formatting, timing, validation
 
 __all__ = [
     # Core
@@ -72,4 +79,3 @@ __all__ = [
     "RPNMap",
     "NRPNMap",
 ]
-

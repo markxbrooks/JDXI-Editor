@@ -20,7 +20,6 @@ from PySide6.QtWidgets import QGridLayout, QSlider, QWidget
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
-from picomidi.sysex.parameter.address import AddressParameter
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.utils.conversions import (
     midi_value_to_ms,
@@ -29,7 +28,8 @@ from jdxi_editor.midi.utils.conversions import (
 from jdxi_editor.ui.widgets.envelope.base import EnvelopeWidgetBase
 from jdxi_editor.ui.widgets.pitch.slider_spinbox import PitchEnvSliderSpinbox
 from jdxi_editor.ui.widgets.wmt.envelope_plot import WMTEnvPlot
-from picomidi.constant import MidiConstant
+from picomidi.constant import Midi
+from picomidi.sysex.parameter.address import AddressParameter
 
 
 class WMTEnvelopeWidget(EnvelopeWidgetBase):
@@ -116,7 +116,7 @@ class WMTEnvelopeWidget(EnvelopeWidgetBase):
         self.range_upper_control = PitchEnvSliderSpinbox(
             range_upper_param,
             min_value=1,
-            max_value=MidiConstant.VALUE_MAX_SEVEN_BIT,
+            max_value=Midi.VALUE.MAX.SEVEN_BIT,
             units="",
             label="Range Upper",
             value=self.envelope["range_upper"],
@@ -126,7 +126,7 @@ class WMTEnvelopeWidget(EnvelopeWidgetBase):
         self.fade_upper_control = PitchEnvSliderSpinbox(
             fade_upper_param,
             min_value=1,
-            max_value=MidiConstant.VALUE_MAX_SEVEN_BIT,
+            max_value=Midi.VALUE.MAX.SEVEN_BIT,
             units="",
             label="Fade Upper",
             value=self.envelope["fade_upper"],
@@ -225,9 +225,7 @@ class WMTEnvelopeWidget(EnvelopeWidgetBase):
             if ctrl is slider:
                 envelope_param_type = param.get_envelope_param_type()
                 if envelope_param_type == "depth":
-                    self.envelope["depth"] = (
-                        slider.value() / MidiConstant.VALUE_MAX_SEVEN_BIT
-                    )
+                    self.envelope["depth"] = slider.value() / Midi.VALUE.MAX.SEVEN_BIT
                 elif envelope_param_type in [
                     "range_upper",
                     "fade_upper",
@@ -235,7 +233,7 @@ class WMTEnvelopeWidget(EnvelopeWidgetBase):
                     "range_lower",
                 ]:
                     self.envelope[envelope_param_type] = (
-                        slider.value() / MidiConstant.VALUE_MAX_SEVEN_BIT
+                        slider.value() / Midi.VALUE.MAX.SEVEN_BIT
                     )
                 else:
                     self.envelope[envelope_param_type] = midi_value_to_ms(
@@ -250,9 +248,7 @@ class WMTEnvelopeWidget(EnvelopeWidgetBase):
                 envelope_param_type = param.get_envelope_param_type()
                 log.message(f"envelope_param_type = {envelope_param_type}")
                 if envelope_param_type == "depth":
-                    self.envelope["depth"] = (
-                        slider.value() / MidiConstant.VALUE_MAX_SEVEN_BIT
-                    )
+                    self.envelope["depth"] = slider.STATUS() / Midi.VALUE.MAX.SEVEN_BIT
                     """elif envelope_param_type in ["range_upper",
                                                  "fade_upper",
                                                  "fade_lower",
@@ -260,7 +256,7 @@ class WMTEnvelopeWidget(EnvelopeWidgetBase):
                         self.envelope["envelope_param_type"] = (slider.value() / MidiConstant.VALUE_MAX_SEVEN_BIT)"""
                 else:
                     self.envelope[envelope_param_type] = midi_value_to_ms(
-                        slider.value()
+                        slider.STATUS()
                     )
             log.message(f"{self.envelope}")
         except Exception as ex:
@@ -274,7 +270,7 @@ class WMTEnvelopeWidget(EnvelopeWidgetBase):
                 envelope_param_type = param.get_envelope_param_type()
                 if envelope_param_type == "depth":
                     slider.setValue(
-                        int(self.envelope["depth"] * MidiConstant.VALUE_MAX_SEVEN_BIT)
+                        int(self.envelope["depth"] * Midi.VALUE.MAX.SEVEN_BIT)
                     )
                 elif envelope_param_type == "range_upper":
                     pass
@@ -294,7 +290,7 @@ class WMTEnvelopeWidget(EnvelopeWidgetBase):
                 envelope_param_type = param.get_envelope_param_type()
                 if envelope_param_type == "depth":
                     slider.setValue(
-                        int(self.envelope["depth"] * MidiConstant.VALUE_MAX_SEVEN_BIT)
+                        int(self.envelope["depth"] * Midi.VALUE.MAX.SEVEN_BIT)
                     )
                 elif envelope_param_type in ["range_upper", "fade_upper"]:
                     slider.setValue(int(self.envelope[envelope_param_type]))

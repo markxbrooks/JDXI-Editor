@@ -284,16 +284,16 @@ class PatternSequenceEditor(SynthEditor):
     def _update_combo_boxes(self, message):
         """Update the combo box index to match the note for each channel."""
         if message.type == "note_on" and message.velocity > 0:
-            log.message(f"message note: {message.note} channel: {message.channel}")
+            log.message(f"message note: {message.NOTE} channel: {message.channel}")
             if message.type == "note_on":
                 if message.channel == MidiChannel.DIGITAL_SYNTH_1:
-                    self.digital1_selector.setCurrentIndex(message.note - 36)
+                    self.digital1_selector.setCurrentIndex(message.NOTE - 36)
                 elif message.channel == MidiChannel.DIGITAL_SYNTH_2:
-                    self.digital2_selector.setCurrentIndex(message.note - 36)
+                    self.digital2_selector.setCurrentIndex(message.NOTE - 36)
                 elif message.channel == MidiChannel.ANALOG_SYNTH:
-                    self.analog_selector.setCurrentIndex(message.note - 36)
+                    self.analog_selector.setCurrentIndex(message.NOTE - 36)
                 elif message.channel == MidiChannel.DRUM_KIT:
-                    self.drum_selector.setCurrentIndex(message.note - 36)
+                    self.drum_selector.setCurrentIndex(message.NOTE - 36)
 
     def _midi_note_to_combo_index(self, row, midi_note):
         """Convert a MIDI note number to the corresponding combo box index."""
@@ -340,7 +340,7 @@ class PatternSequenceEditor(SynthEditor):
         for row in range(4):
             for button in self.buttons[row]:
                 button.setChecked(False)
-                button.note = None
+                button.NOTE = None
                 button.setStyleSheet(self.generate_sequencer_button_style(False))
 
         log.message("Cleared learned pattern.")
@@ -374,18 +374,18 @@ class PatternSequenceEditor(SynthEditor):
             # Store the currently selected note when button is activated
             if button.row == 0:  # Digital Synth 1
                 note_name = self.digital1_selector.currentText()
-                button.note = self._note_name_to_midi(note_name)
+                button.NOTE = self._note_name_to_midi(note_name)
             elif button.row == 1:  # Digital Synth 2
                 note_name = self.digital2_selector.currentText()
-                button.note = self._note_name_to_midi(note_name)
+                button.NOTE = self._note_name_to_midi(note_name)
             elif button.row == 2:  # Analog Synth
                 note_name = self.analog_selector.currentText()
-                button.note = self._note_name_to_midi(note_name)
+                button.NOTE = self._note_name_to_midi(note_name)
             else:  # Drums
-                button.note = 36 + self.drum_selector.currentIndex()
-            note_name = self._midi_to_note_name(button.note)
+                button.NOTE = 36 + self.drum_selector.currentIndex()
+            note_name = self._midi_to_note_name(button.NOTE)
             if button.row == 3:
-                drums_note_name = self._midi_to_note_name(button.note, drums=True)
+                drums_note_name = self._midi_to_note_name(button.NOTE, drums=True)
                 button.setToolTip(f"Note: {drums_note_name}")
             else:
                 button.setToolTip(f"Note: {note_name}")
@@ -524,14 +524,14 @@ class PatternSequenceEditor(SynthEditor):
             for measure_index, measure in enumerate(self.measures):
                 for step in range(16):
                     button = measure.buttons[row][step]
-                    if button.isChecked() and button.note is not None:
+                    if button.isChecked() and button.NOTE is not None:
                         time = int(
                             (measure_index * 16 + step) * 120
                         )  # Convert to ticks
                         track.append(
                             Message(
                                 "note_on",
-                                note=button.note,
+                                note=button.NOTE,
                                 velocity=100,
                                 time=time,
                                 channel=channel,
@@ -540,7 +540,7 @@ class PatternSequenceEditor(SynthEditor):
                         track.append(
                             Message(
                                 "note_off",
-                                note=button.note,
+                                note=button.NOTE,
                                 velocity=100,
                                 time=time + 120,
                                 channel=channel,
@@ -548,9 +548,9 @@ class PatternSequenceEditor(SynthEditor):
                         )
 
                         note_name = (
-                            self._midi_to_note_name(button.note, drums=True)
+                            self._midi_to_note_name(button.NOTE, drums=True)
                             if row == 3
-                            else self._midi_to_note_name(button.note)
+                            else self._midi_to_note_name(button.NOTE)
                         )
                         button.setToolTip(f"Note: {note_name}")
 
@@ -569,16 +569,16 @@ class PatternSequenceEditor(SynthEditor):
             # Add notes to the track
             for step in range(self.total_steps):
                 button = self.buttons[row][step]
-                if button.isChecked() and button.note is not None:
+                if button.isChecked() and button.NOTE is not None:
                     # Calculate the time for the note_on event
                     time = step * 480  # Assuming 480 ticks per beat
                     track.append(
-                        Message("note_on", note=button.note, velocity=100, time=time)
+                        Message("note_on", note=button.NOTE, velocity=100, time=time)
                     )
                     # Add a note_off event after a short duration
                     track.append(
                         Message(
-                            "note_off", note=button.note, velocity=0, time=time + 120
+                            "note_off", note=button.NOTE, velocity=0, time=time + 120
                         )
                     )
 
@@ -591,12 +591,12 @@ class PatternSequenceEditor(SynthEditor):
         for row in range(4):
             for step in range(self.total_steps):
                 self.buttons[row][step].setChecked(False)
-                self.buttons[row][step].note = None
+                self.buttons[row][step].NOTE = None
                 self.buttons[row][step].setStyleSheet(
                     self.generate_sequencer_button_style(False)
                 )
                 self.buttons[row][step].setToolTip(
-                    f"Note: {self.buttons[row][step].note}"
+                    f"Note: {self.buttons[row][step].NOTE}"
                 )
 
     def load_pattern(self, filename: str):
@@ -624,14 +624,14 @@ class PatternSequenceEditor(SynthEditor):
 
                         button = self.buttons[track_num][step]
                         button.setChecked(True)
-                        button.note = msg.note
+                        button.NOTE = msg.NOTE
                         if track_num == 3:
                             drums_note_name = self._midi_to_note_name(
-                                button.note, drums=True
+                                button.NOTE, drums=True
                             )
                             button.setToolTip(f"Note: {drums_note_name}")
                         else:
-                            note_name = self._midi_to_note_name(button.note)
+                            note_name = self._midi_to_note_name(button.NOTE)
                             button.setToolTip(f"Note: {note_name}")
 
             for event in midi_file.tracks[0]:
@@ -756,7 +756,7 @@ class PatternSequenceEditor(SynthEditor):
             if (
                 button.isChecked()
                 and hasattr(button, "note")
-                and button.note is not None
+                and button.NOTE is not None
             ):
                 # Determine channel based on row
                 channel = (
@@ -767,15 +767,15 @@ class PatternSequenceEditor(SynthEditor):
                 if self.midi_helper:
                     if channel not in self.muted_channels:
                         log.message(
-                            f"Row {row} active at step {step}, sending note {button.note} on channel {channel}"
+                            f"Row {row} active at step {step}, sending note {button.NOTE} on channel {channel}"
                         )
                         self.midi_helper.send_raw_message(
-                            [NOTE_ON | channel, button.note, 100]
+                            [NOTE_ON | channel, button.NOTE, 100]
                         )  # velocity 100
                         # Note Off message after a short delay
                         QTimer.singleShot(
                             100,
-                            lambda ch=channel, n=button.note: self.midi_helper.send_raw_message(
+                            lambda ch=channel, n=button.NOTE: self.midi_helper.send_raw_message(
                                 [NOTE_ON | ch, n, 0]
                             ),
                         )
@@ -821,7 +821,7 @@ class PatternSequenceEditor(SynthEditor):
     def _learn_pattern(self, message):
         """Learn the pattern of incoming MIDI notes, preserving rests."""
         if message.type == "note_on" and message.velocity > 0:
-            note = message.note
+            note = message.NOTE
 
             # Determine the correct row for the note
             for row in range(4):
@@ -839,7 +839,7 @@ class PatternSequenceEditor(SynthEditor):
                     break  # Stop checking once the note is assigned
 
         elif message.type == "note_off":
-            note = message.note
+            note = message.NOTE
             if note in self.active_notes:
                 # Advance step only if the note was previously turned on
                 log.message(f"Note off: {note} at step {self.current_step}")
@@ -857,13 +857,13 @@ class PatternSequenceEditor(SynthEditor):
             # Clear current button states for the row
             for button in self.buttons[row]:
                 button.setChecked(False)
-                button.note = None
+                button.NOTE = None
                 button.setStyleSheet(self.generate_sequencer_button_style(False))
                 if row == 3:
-                    drums_note_name = self._midi_to_note_name(button.note, drums=True)
+                    drums_note_name = self._midi_to_note_name(button.NOTE, drums=True)
                     button.setToolTip(f"Note: {drums_note_name}")
                 else:
-                    note_name = self._midi_to_note_name(button.note)
+                    note_name = self._midi_to_note_name(button.NOTE)
                     button.setToolTip(f"Note: {note_name}")
 
             # Apply the learned pattern
@@ -872,15 +872,15 @@ class PatternSequenceEditor(SynthEditor):
                 if note is not None and 0 <= time < len(self.buttons[row]):
                     button = self.buttons[row][time]
                     button.setChecked(True)
-                    button.note = note
+                    button.NOTE = note
                     button.setStyleSheet(self.generate_sequencer_button_style(True))
                     if row == 3:
                         drums_note_name = self._midi_to_note_name(
-                            button.note, drums=True
+                            button.NOTE, drums=True
                         )
                         button.setToolTip(f"Note: {drums_note_name}")
                     else:
-                        note_name = self._midi_to_note_name(button.note)
+                        note_name = self._midi_to_note_name(button.NOTE)
                         button.setToolTip(f"Note: {note_name}")
 
     def _get_note_range_for_row(self, row):

@@ -35,7 +35,7 @@ from jdxi_editor.midi.message import (
 )
 from jdxi_editor.midi.sysex.parser.sysex import JDXiSysExParser
 from jdxi_editor.midi.sysex.validation import validate_midi_message
-from picomidi.constant import MidiConstant
+from picomidi.constant import Midi
 from picomidi.core.bitmask import BitMask
 
 
@@ -75,7 +75,7 @@ class MidiOutHandler(MidiIOController):
                 # Parse SysEx safely - only attempt if message is actually SysEx (starts with 0xF0)
                 filtered_data = {}
                 message_list = list(message)
-                if message_list and message_list[0] == MidiConstant.START_OF_SYSEX:
+                if message_list and message_list[0] == Midi.SYSEX.START:
                     # This is a SysEx message, try to parse it
                     try:
                         parsed_data = self.sysex_parser.parse_bytes(bytes(message))
@@ -118,7 +118,7 @@ class MidiOutHandler(MidiIOController):
         :param velocity: int Note velocity (0–127), default is 127.
         :param channel: int MIDI channel (1–16), default is 1.
         """
-        self.send_channel_message(MidiConstant.NOTE_ON, note, velocity, channel)
+        self.send_channel_message(Midi.NOTE.ON, note, velocity, channel)
 
     def send_note_off(
         self, note: int = 60, velocity: int = 0, channel: int = 1
@@ -130,7 +130,7 @@ class MidiOutHandler(MidiIOController):
         :param velocity: int Note velocity (0–127), default is 127.
         :param channel: int MIDI channel (1–16), default is 1.
         """
-        self.send_channel_message(MidiConstant.NOTE_OFF, note, velocity, channel)
+        self.send_channel_message(Midi.NOTE.OFF, note, velocity, channel)
 
     def send_channel_message(
         self,
@@ -171,10 +171,10 @@ class MidiOutHandler(MidiIOController):
         log.parameter("channel", channel)
         try:
             # Bank Select MSB (CC#0)
-            status = MidiConstant.CONTROL_CHANGE | (channel & BitMask.LOW_4_BITS)
-            self.send_raw_message([status, MidiConstant.BANK_SELECT_MSB, msb])
+            status = Midi.CC.STATUS | (channel & BitMask.LOW_4_BITS)
+            self.send_raw_message([status, Midi.CC.BANK.MSB, msb])
             # Bank Select LSB (CC#32)
-            self.send_raw_message([status, MidiConstant.BANK_SELECT_LSB, lsb])
+            self.send_raw_message([status, Midi.CC.BANK.LSB, lsb])
             return True
         except (ValueError, TypeError, OSError, IOError) as ex:
             log.error(f"Error sending bank select: {ex}")

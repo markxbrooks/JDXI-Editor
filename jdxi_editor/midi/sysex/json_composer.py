@@ -140,7 +140,7 @@ class JDXiJSONComposer:
         )
         from jdxi_editor.ui.editors.digital.editor import DigitalSynthEditor
         from jdxi_editor.ui.editors.drum.editor import DrumCommonEditor
-        from picomidi.constant import MidiConstant
+        from picomidi.constant import Midi
 
         if isinstance(editor, DigitalSynthEditor):
             # Separate Common and Modify controls
@@ -167,13 +167,13 @@ class JDXiJSONComposer:
                 # For Common, we need: MSB=0x19, UMB=editor.address.umb, LMB=0x00 (COMMON), LSB=0x00
                 # The editor.address.umb is already correct (0x01 for DS1, 0x21 for DS2)
                 # We just need to ensure LMB is set to COMMON (0x00)
-                from picomidi.constant import MidiConstant
+                from picomidi.constant import Midi
 
                 common_address = RolandSysExAddress(
                     msb=editor.address.msb,  # 0x19 (TEMPORARY_TONE)
                     umb=editor.address.umb,  # 0x01 for DS1, 0x21 for DS2 (includes SuperNATURAL offset)
-                    lmb=AddressOffsetSuperNATURALLMB.COMMON.value,  # 0x00 (COMMON)
-                    lsb=MidiConstant.ZERO_BYTE,  # 0x00
+                    lmb=AddressOffsetSuperNATURALLMB.COMMON.STATUS,  # 0x00 (COMMON)
+                    lsb=Midi.VALUE.ZERO,  # 0x00
                 )
                 self._save_editor_section(
                     editor, common_controls, common_address, temp_folder, "COMMON"
@@ -233,7 +233,7 @@ class JDXiJSONComposer:
                         widget_value = widget.value()
                     elif hasattr(widget, "slider"):
                         # Direct QSlider access (fallback)
-                        widget_value = widget.slider.value()
+                        widget_value = widget.slider.STATUS()
                     else:
                         # Fallback to controls_dict
                         widget_value = controls_dict.get(param_name)
@@ -339,7 +339,7 @@ class JDXiJSONComposer:
                     msb=editor.address.msb,  # 0x19 (TEMPORARY_TONE)
                     umb=editor.address.umb,  # 0x70 (DRUM_KIT)
                     lmb=AddressOffsetProgramLMB.COMMON.value,  # 0x00 (COMMON)
-                    lsb=MidiConstant.ZERO_BYTE,  # 0x00
+                    lsb=Midi.VALUE.ZERO,  # 0x00
                 )
 
                 # Ensure KIT_LEVEL is included if it exists

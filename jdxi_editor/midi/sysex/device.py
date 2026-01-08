@@ -47,7 +47,7 @@ from typing import List, Optional
 
 from jdxi_editor.jdxi.midi.constant import JDXiConstant
 from jdxi_editor.jdxi.sysex.offset import JDXIIdentityOffset
-from picomidi.constant import MidiConstant
+from picomidi.constant import Midi
 
 
 @dataclass
@@ -98,7 +98,7 @@ class DeviceInfo:
             if (
                 len(data) < JDXIIdentityOffset.expected_length()  # Minimum length check
                 or data[JDXIIdentityOffset.SYSEX_START]
-                != MidiConstant.START_OF_SYSEX  # SysEx Start
+                != Midi.SYSEX.START  # SysEx Start
                 or data[JDXIIdentityOffset.ID_NUMBER]
                 != JDXiConstant.ID_NUMBER  # 0x7E  # Universal Non-Realtime
                 or data[JDXIIdentityOffset.SUB_ID_1_GENERAL_INFORMATION]

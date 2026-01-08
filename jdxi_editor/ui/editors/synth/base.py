@@ -29,7 +29,6 @@ from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.log.slider_parameter import log_slider_parameters
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
-from picomidi.sysex.parameter.address import AddressParameter
 from jdxi_editor.midi.io.delay import send_with_delay
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
@@ -38,6 +37,7 @@ from jdxi_editor.ui.widgets.slider import Slider
 from jdxi_editor.ui.widgets.spin_box.spin_box import SpinBox
 from jdxi_editor.ui.widgets.switch.switch import Switch
 from jdxi_editor.ui.windows.patch.name_editor import PatchNameEditor
+from picomidi.sysex.parameter.address import AddressParameter
 
 
 class SynthBase(QWidget):
@@ -201,7 +201,7 @@ class SynthBase(QWidget):
                     # Handle waveform buttons (AnalogWaveformButton, etc.)
                     # Check if this button is checked, and if so, use its waveform value
                     if widget.isChecked():
-                        controls_data[param.name] = widget.waveform.value
+                        controls_data[param.name] = widget.waveform.STATUS
                     # If not checked, don't add it - the checked button will be found by the editor's override
                 elif hasattr(widget, "isChecked"):
                     # QPushButton or other checkable widgets

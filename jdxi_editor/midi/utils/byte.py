@@ -2,7 +2,8 @@
 byte data processing
 """
 
-from picomidi.constant import MidiConstant
+from picomidi.bit.value import BitValue
+from picomidi.constant import Midi
 from picomidi.core.bitmask import BitMask
 
 
@@ -109,7 +110,7 @@ def split_32bit_value_to_nibbles(value: int) -> list[int]:
     :param value: int
     :return: list[int]
     """
-    if value < 0 or value > MidiConstant.VALUE_MAX_THIRTY_TWO_BIT:  # 0xFFFFFFFF:
+    if value < 0 or value > BitValue(size=32).max:  # 0xFFFFFFFF:
         raise ValueError("Value must be a 32-bit unsigned integer (0–4294967295).")
 
     return [
@@ -167,7 +168,7 @@ def encode_14bit_to_7bit_midi_bytes(value: int) -> list[int]:
     >>>     print(data_bytes)  # Output: [0x24, 0x34] → [36, 52]
 
     """
-    if not (0 <= value <= MidiConstant.VALUE_MAX_FOURTEEN_BIT):  # 0x3FFF):
+    if not (0 <= value <= Midi.VALUE.MAX.FOURTEEN_BIT):  # 0x3FFF):
         raise ValueError("Value must be a 14-bit integer (0–16383)")
 
     lsb = value & BitMask.LOW_7_BITS  # Lower 7 bits

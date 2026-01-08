@@ -23,7 +23,7 @@ from dataclasses import dataclass, field
 from typing import List
 
 from jdxi_editor.midi.message.midi import MidiMessage
-from picomidi.constant import MidiConstant
+from picomidi.constant import Midi
 from picomidi.core.bitmask import BitMask
 
 
@@ -35,7 +35,7 @@ class ControlChangeMessage(MidiMessage):
     controller: int
     value: int
     status: int = field(
-        init=False, default=MidiConstant.CONTROL_CHANGE
+        init=False, default=Midi.CC.STATUS
     )  # Prevents status from being a required argument
 
     def __post_init__(self) -> None:

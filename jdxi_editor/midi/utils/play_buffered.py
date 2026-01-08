@@ -7,12 +7,10 @@ import rtmidi
 
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.ui.widgets.midi.utils import ticks_to_seconds
-from picomidi.constant import MidiConstant
+from picomidi.constant import Midi
 
 # Constants
-default_tempo = MidiConstant.TEMPO_120_BPM_USEC  # microseconds per beat (120 BPM)
-# default_tempo = MidiConstant.TEMPO_100_BPM_USEC  # microseconds per beat (100 BPM)
-# default_tempo = MidiConstant.TEMPO_150_BPM_USEC  # microseconds per beat (120 BPM)
+default_tempo = Midi.TEMPO.BPM_120_USEC  # microseconds per beat (120 BPM)
 
 
 def buffer_midi_tracks(
@@ -28,12 +26,12 @@ def buffer_midi_tracks(
         muted_channels = set()
 
     buffered_messages_list = []
-    default_tempo = MidiConstant.TEMPO_120_BPM_USEC  # 120 BPM in microseconds per beat
+    default_tempo = Midi.TEMPO.BPM_120_USEC  # 120 BPM in microseconds per beat
 
     for i, track in enumerate(midi_file.tracks):
-        if i + MidiConstant.CHANNEL_DISPLAY_TO_BINARY in muted_tracks:
+        if i + Midi.CHANNEL.DISPLAY_TO_BINARY in muted_tracks:
             log.message(
-                f"🚫 Skipping muted track {i + MidiConstant.CHANNEL_DISPLAY_TO_BINARY} ({track.name})"
+                f"🚫 Skipping muted track {i + Midi.CHANNEL.DISPLAY_TO_BINARY} ({track.name})"
             )
             continue
         absolute_time_ticks = 0
@@ -50,12 +48,9 @@ def buffer_midi_tracks(
             elif not msg.is_meta:
                 if hasattr(msg, "channel"):
                     log.message(
-                        f"🔍 Checking msg.channel={msg.channel + MidiConstant.CHANNEL_BINARY_TO_DISPLAY} in muted_channels={muted_channels}"
+                        f"🔍 Checking msg.channel={msg.channel + Midi.CHANNEL.BINARY_TO_DISPLAY} in muted_channels={muted_channels}"
                     )
-                    if (
-                        msg.channel + MidiConstant.CHANNEL_BINARY_TO_DISPLAY
-                        in muted_channels
-                    ):
+                    if msg.channel + Midi.CHANNEL.BINARY_TO_DISPLAY in muted_channels:
                         log.message(f"🚫 Skipping muted channel {msg.channel}")
                         continue
                 log.message(f"🎵 Adding midi msg to buffer: {msg}")

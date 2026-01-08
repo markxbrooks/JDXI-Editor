@@ -12,7 +12,7 @@ def get_preset_values(preset_index, preset_list=DIGITAL_PRESET_LIST):
     """
     # Lazy import to avoid circular dependency
     from jdxi_editor.ui.editors.helpers.preset import get_preset_parameter_value
-    
+
     msb = get_preset_parameter_value("msb", preset_index, preset_list)
     lsb = get_preset_parameter_value("lsb", preset_index, preset_list)
     pc = get_preset_parameter_value("pc", preset_index, preset_list)

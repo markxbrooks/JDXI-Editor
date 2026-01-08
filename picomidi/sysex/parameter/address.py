@@ -34,13 +34,12 @@ Example
 (0, 1, 35)
 """
 
-
 from enum import Enum
-from typing import Dict, Type, Optional, Tuple, T
+from typing import Dict, Optional, T, Tuple, Type
 
-from picomidi.sysex.parameter.map import map_range
 from picomidi import BitMask
-from picomidi.constant import MidiConstant
+from picomidi.constant import Midi
+from picomidi.sysex.parameter.map import map_range
 
 
 class AddressParameter(Enum):
@@ -169,7 +168,7 @@ class AddressParameter(Enum):
         :param partial_number: int
         :return: int default area to be subclassed
         """
-        return MidiConstant.ZERO_BYTE, MidiConstant.ZERO_BYTE
+        return Midi.VALUE.ZERO, Midi.VALUE.ZERO
 
     def convert_value(self, value: int, reverse: bool = False) -> int:
         """
@@ -243,7 +242,7 @@ class AddressParameter(Enum):
         :return: tuple[int, int, int] A 3-byte offset.
         """
         value = self.address
-        umb = MidiConstant.ZERO_BYTE  # Default Upper Middle Byte
+        umb = Midi.VALUE.ZERO  # Default Upper Middle Byte
         lmb = (value >> 8) & BitMask.FULL_BYTE  # Extract LMB
         lsb = value & BitMask.FULL_BYTE  # Extract LSB
         return umb, lmb, lsb

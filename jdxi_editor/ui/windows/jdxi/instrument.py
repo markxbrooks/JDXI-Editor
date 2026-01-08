@@ -108,7 +108,7 @@ from jdxi_editor.ui.windows.midi.config_dialog import MIDIConfigDialog
 from jdxi_editor.ui.windows.midi.debugger import MIDIDebugger
 from jdxi_editor.ui.windows.midi.monitor import MIDIMessageMonitor
 from jdxi_editor.ui.windows.patch.manager import PatchManager
-from picomidi.constant import MidiConstant
+from picomidi.constant import Midi
 
 
 class JDXiInstrument(JDXiUi):
@@ -1800,9 +1800,7 @@ class JDXiInstrument(JDXiUi):
         """
         try:
             if self.midi_helper:
-                value = (
-                    MidiConstant.VALUE_ON if state else MidiConstant.VALUE_OFF
-                )  # 1 = ON, 0 = OFF
+                value = Midi.VALUE.ON if state else Midi.VALUE.OFF  # 1 = ON, 0 = OFF
                 log.message(f"Sent arpeggiator on/off: {'ON' if state else 'OFF'}")
                 # send arp on to all zones
                 for zone in [
@@ -1816,7 +1814,7 @@ class JDXiInstrument(JDXiUi):
                         msb=AddressStartMSB.TEMPORARY_PROGRAM,
                         umb=AddressOffsetSystemUMB.COMMON,
                         lmb=zone,
-                        lsb=MidiConstant.ZERO_BYTE,
+                        lsb=Midi.VALUE.ZERO,
                     )
                     sysex_message = self.sysex_composer.compose_message(
                         address=address,
@@ -1836,7 +1834,7 @@ class JDXiInstrument(JDXiUi):
         """
         if self.midi_helper:
             # self.channel is 0-indexed, so add 1 to match MIDI channel in log file
-            msg = [MidiConstant.NOTE_ON + self.channel, note_num, 100]
+            msg = [Midi.NOTE.ON + self.channel, note_num, 100]
             self.midi_helper.send_raw_message(msg)
             log.message(f"Sent Note On: {note_num} on channel {self.channel + 1}")
 
@@ -1851,7 +1849,7 @@ class JDXiInstrument(JDXiUi):
             # Calculate the correct status byte for note_off:
             # 0x80 is the base for note_off messages. Subtract 1 if self.channel is 1-indexed.
             if not self.midi_key_hold_latched:
-                status = MidiConstant.NOTE_OFF + self.channel
+                status = Midi.NOTE.OFF + self.channel
                 msg = [status, note_num, 0]
                 self.midi_helper.send_raw_message(msg)
                 log.message(f"Sent Note Off: {note_num} on channel {self.channel + 1}")
