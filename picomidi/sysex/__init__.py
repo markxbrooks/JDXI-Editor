@@ -15,4 +15,3 @@ warnings.warn(
 from picomidi.messages.sysex import SysExByte
 
 __all__ = ["SysExByte"]
-

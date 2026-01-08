@@ -15,4 +15,3 @@ warnings.warn(
 from picomidi.messages.program_change import ProgramChange
 
 __all__ = ["ProgramChange"]
-

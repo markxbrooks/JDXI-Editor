@@ -15,4 +15,3 @@ warnings.warn(
 from picomidi.messages.note import MidiNote
 
 __all__ = ["MidiNote"]
-

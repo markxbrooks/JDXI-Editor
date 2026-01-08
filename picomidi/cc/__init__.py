@@ -6,6 +6,7 @@ This module is deprecated. Use picomidi.messages.control_change instead.
 
 import warnings
 
+
 # Lazy import to avoid circular dependency
 def __getattr__(name):
     if name == "ControlChange":
@@ -15,8 +16,9 @@ def __getattr__(name):
             stacklevel=2,
         )
         from picomidi.messages.control_change import ControlChange
+
         return ControlChange
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
-__all__ = ["ControlChange"]
 
+__all__ = ["ControlChange"]

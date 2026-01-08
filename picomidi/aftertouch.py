@@ -15,4 +15,3 @@ warnings.warn(
 from picomidi.messages.aftertouch import Aftertouch
 
 __all__ = ["Aftertouch"]
-
