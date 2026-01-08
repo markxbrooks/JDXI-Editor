@@ -54,16 +54,16 @@ from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
 from jdxi_editor.midi.utils.helpers import start_recording
 from jdxi_editor.midi.utils.usb_recorder import USBRecorder
-from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.editors.io.midi_playback_state import MidiPlaybackState
 from jdxi_editor.ui.editors.io.playback_worker import MidiPlaybackWorker
 from jdxi_editor.ui.editors.io.ui_midi_player import UiMidi
 from jdxi_editor.ui.editors.io.utils import format_time, tempo2bpm
+from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 from jdxi_editor.ui.widgets.midi.track_viewer import MidiTrackViewer
 from jdxi_editor.ui.widgets.midi.utils import get_total_duration_in_seconds
 from jdxi_editor.ui.windows.jdxi.utils import show_message_box
-from picomidi.constant import MidiConstant
+from picomidi.constant import Midi
 
 # Expose Qt symbols for tests that patch via jdxi_editor.ui.editors.io.player
 # Tests expect these names to exist at module level
@@ -341,7 +341,7 @@ class MidiFileEditor(SynthEditor):
             return
 
         # Time in seconds from slider
-        current_seconds = float(self.ui.midi_file_position_slider.value())
+        current_seconds = float(self.ui.midi_file_position_slider.STATUS())
         # Channel (display is 1-16, convert to 0-based)
         display_channel = int(self.ui.automation_channel_combo.currentData())
         channel = display_channel - 1
@@ -354,9 +354,7 @@ class MidiFileEditor(SynthEditor):
 
         # Convert seconds to absolute ticks (approx using current tempo at position)
         try:
-            tempo_usecs = (
-                self.midi_state.tempo_at_position or MidiConstant.TEMPO_120_BPM_USEC
-            )
+            tempo_usecs = self.midi_state.tempo_at_position or Midi.TEMPO.BPM_120_USEC
             abs_ticks = int(
                 mido.second2tick(
                     current_seconds, self.midi_state.file.ticks_per_beat, tempo_usecs
@@ -667,7 +665,7 @@ class MidiFileEditor(SynthEditor):
 
         # Create worker with correct initial tempo if available
         initial_tempo = getattr(
-            self.midi_state, "tempo_at_position", MidiConstant.TEMPO_120_BPM_USEC
+            self.midi_state, "tempo_at_position", Midi.TEMPO.BPM_120_USEC
         )
         self.midi_playback_worker = MidiPlaybackWorker(parent=self)
         self.midi_playback_worker.set_tempo.connect(self.update_tempo_us_from_worker)
@@ -933,7 +931,7 @@ class MidiFileEditor(SynthEditor):
                 self.ticks_per_beat = 480
         self.tick_duration = (
             self.midi_state.tempo_at_position
-            / MidiConstant.TEMPO_CONVERT_SEC_TO_USEC
+            / Midi.TEMPO.CONVERT_SEC_TO_USEC
             / self.ticks_per_beat
         )
 
@@ -1003,7 +1001,7 @@ class MidiFileEditor(SynthEditor):
         :return: dict[int, int]
         Detect Initial Tempo from the UI
         """
-        self.midi_state.tempo_initial = MidiConstant.TEMPO_120_BPM_USEC
+        self.midi_state.tempo_initial = Midi.TEMPO.BPM_120_USEC
         initial_track_tempos = {}
         for track_number, track in enumerate(self.midi_state.file.tracks):
             for msg in track:
@@ -1087,7 +1085,7 @@ class MidiFileEditor(SynthEditor):
                 AddressStartMSB.TEMPORARY_PROGRAM,
                 AddressOffsetSystemUMB.COMMON,
                 AddressOffsetProgramLMB.COMMON,
-                MidiConstant.ZERO_BYTE,
+                Midi.VALUE.ZERO,
             )
 
             # Turn off Effect 1: Set level to 0 and type to Thru (0)
@@ -1318,7 +1316,7 @@ class MidiFileEditor(SynthEditor):
         Check if the channel is muted.
         """
         return (
-            channel_index + MidiConstant.CHANNEL_BINARY_TO_DISPLAY
+            channel_index + Midi.CHANNEL.BINARY_TO_DISPLAY
             in self.midi_state.muted_channels
         )
 
@@ -1411,7 +1409,7 @@ class MidiFileEditor(SynthEditor):
         for i, track in enumerate(self.midi_state.file.tracks):
             if self.is_track_muted(i):
                 log.message(
-                    f"🚫 Skipping muted track {i + MidiConstant.CHANNEL_DISPLAY_TO_BINARY} ({track.name})"
+                    f"🚫 Skipping muted track {i + Midi.CHANNEL.DISPLAY_TO_BINARY} ({track.name})"
                 )
                 continue
             log.message(f"🎵 Processing track {i} with {len(track)} messages")
@@ -1524,7 +1522,7 @@ class MidiFileEditor(SynthEditor):
             return  # Don't update while user is dragging
 
         new_value = int(elapsed_time)
-        current_value = self.ui.midi_file_position_slider.value()
+        current_value = self.ui.midi_file_position_slider.STATUS()
 
         if abs(new_value - current_value) >= 1:  # Only update if full second has passed
             self.ui.midi_file_position_slider.setValue(new_value)
@@ -1568,7 +1566,7 @@ class MidiFileEditor(SynthEditor):
         """
         Retrieves the target time from the slider and logs it.
         """
-        target_time = self.ui.midi_file_position_slider.value()
+        target_time = self.ui.midi_file_position_slider.STATUS()
         log.parameter("target_time", target_time)
         return target_time
 

@@ -28,7 +28,6 @@ from jdxi_editor.midi.data.address.address import (
     AddressOffsetTemporaryToneUMB as TemporaryToneUMB,
 )
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
-from picomidi.sysex.parameter.address import AddressParameter
 from jdxi_editor.midi.map.parameter_address import JDXiMapParameterAddress
 
 # from jdxi_editor.midi.map import JDXiMapParameterAddress
@@ -37,7 +36,8 @@ from jdxi_editor.midi.sysex.parser.tone_mapper import (
     get_synth_tone,
     get_temporary_area,
 )
-from picomidi.constant import MidiConstant
+from picomidi.constant import Midi
+from picomidi.sysex.parameter.address import AddressParameter
 
 UNKNOWN = "Unknown"
 UNKNOWN_AREA = "Unknown area"
@@ -147,8 +147,7 @@ def address_to_index(msb: int, lsb: int) -> int:
     :return: int address index
     """
     if not (
-        0 <= msb <= MidiConstant.VALUE_MAX_EIGHT_BIT
-        and 0 <= lsb <= MidiConstant.VALUE_MAX_EIGHT_BIT
+        0 <= msb <= Midi.VALUE.MAX.EIGHT_BIT and 0 <= lsb <= Midi.VALUE.MAX.EIGHT_BIT
     ):
         raise ValueError("MSB and LSB must be in the range 0x00 to 0xFF.")
     return (msb << 8) | lsb

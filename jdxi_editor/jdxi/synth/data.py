@@ -8,11 +8,11 @@ from jdxi_editor.midi.data.address.address import (
     AddressOffsetProgramLMB,
     RolandSysExAddress,
 )
-from picomidi.sysex.parameter.address import AddressParameter
 from jdxi_editor.midi.data.parameter.analog import AnalogParam
 from jdxi_editor.midi.data.parameter.digital import DigitalCommonParam
 from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParam
-from picomidi.constant import MidiConstant
+from picomidi.constant import Midi
+from picomidi.sysex.parameter.address import AddressParameter
 
 
 @dataclass
@@ -30,7 +30,7 @@ class JDXISynthData(MidiSynthConfig, InstrumentDisplayConfig):
     def __post_init__(self) -> None:
         """Post Init"""
         self.address = RolandSysExAddress(
-            msb=self.msb, umb=self.umb, lmb=self.lmb, lsb=MidiConstant.ZERO_BYTE
+            msb=self.msb, umb=self.umb, lmb=self.lmb, lsb=Midi.VALUE.ZERO
         )
 
     @property

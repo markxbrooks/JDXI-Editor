@@ -28,19 +28,19 @@ def listen_to_controller(port_name, duration=10):
                     
                     if msg.type == 'control_change':
                         print(f"[{elapsed:.3f}s] CC#{message_count:03d} | Channel: {msg.channel+1} | "
-                              f"Controller: {msg.control} | Value: {msg.value}")
+                              f"Controller: {msg.control} | Value: {msg.STATUS}")
                         
                         # Highlight the specific messages from your controller
                         if msg.control == 10:
-                            print(f"    → PAN FINE detected! Value: {msg.value}")
+                            print(f"    → PAN FINE detected! Value: {msg.STATUS}")
                         elif msg.control == 41:
-                            print(f"    → CC41 detected! Value: {msg.value}")
+                            print(f"    → CC41 detected! Value: {msg.STATUS}")
                     elif msg.type == 'note_on':
                         print(f"[{elapsed:.3f}s] Note On #{message_count:03d} | Channel: {msg.channel+1} | "
-                              f"Note: {msg.note} | Velocity: {msg.velocity}")
+                              f"Note: {msg.NOTE} | Velocity: {msg.velocity}")
                     elif msg.type == 'note_off':
                         print(f"[{elapsed:.3f}s] Note Off #{message_count:03d} | Channel: {msg.channel+1} | "
-                              f"Note: {msg.note} | Velocity: {msg.velocity}")
+                              f"Note: {msg.NOTE} | Velocity: {msg.velocity}")
                     elif msg.type == 'program_change':
                         print(f"[{elapsed:.3f}s] Program Change #{message_count:03d} | Channel: {msg.channel+1} | "
                               f"Program: {msg.program}")

@@ -23,5 +23,5 @@ class SysExByte(IntEnum):
         :return: Optional[T] The parameter
         """
         return next(
-            (parameter for parameter in cls if parameter.value == address), None
+            (parameter for parameter in cls if parameter.STATUS == address), None
         )

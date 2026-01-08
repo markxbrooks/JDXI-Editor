@@ -67,13 +67,13 @@ def midi_to_events(in_port, sink_send, use_sw, fs=None):
             if use_sw:
                 # Translate to FluidSynth
                 if msg.type == "note_on" and msg.velocity > 0:
-                    fs.noteon(0, msg.note, msg.velocity)
+                    fs.noteon(0, msg.NOTE, msg.velocity)
                 elif (msg.type == "note_off") or (
                     msg.type == "note_on" and msg.velocity == 0
                 ):
-                    fs.noteoff(0, msg.note)
+                    fs.noteoff(0, msg.NOTE)
                 elif msg.type == "control_change":
-                    fs.cc(0, msg.control, msg.value)
+                    fs.CC(0, msg.control, msg.STATUS)
                 elif msg.type == "program_change":
                     fs.program_change(0, msg.program)
                 # You can extend with aftertouch, pitchwheel, etc.
@@ -169,15 +169,15 @@ def play_midi_with_tempo_handling(mid, fs, use_sw):
                 print(f"[INFO] Tempo change to {bpm:.1f} BPM at {msg_time_sec:.2f}s")
 
             elif msg.type == "note_on" and msg.velocity > 0:
-                fs.noteon(0, msg.note, msg.velocity)
+                fs.noteon(0, msg.NOTE, msg.velocity)
 
             elif (msg.type == "note_off") or (
                 msg.type == "note_on" and msg.velocity == 0
             ):
-                fs.noteoff(0, msg.note)
+                fs.noteoff(0, msg.NOTE)
 
             elif msg.type == "control_change":
-                fs.cc(0, msg.control, msg.value)
+                fs.CC(0, msg.control, msg.STATUS)
 
             elif msg.type == "program_change":
                 fs.program_change(0, msg.program)

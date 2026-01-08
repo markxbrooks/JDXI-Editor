@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import List, Optional
 
 from jdxi_editor.jdxi.program.program import JDXiProgram
+from jdxi_editor.project import __package_name__
 
 log = logging.getLogger(__name__)
 

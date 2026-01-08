@@ -19,7 +19,7 @@ sys.path.insert(0, os.path.abspath('.'))
 from jdxi_editor.ui.editors.io.player import MidiFileEditor
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
-from picomidi.constant import MidiConstant
+from picomidi.constant import Midi
 
 
 class TestSheepIntegration(unittest.TestCase):

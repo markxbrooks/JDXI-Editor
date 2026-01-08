@@ -58,7 +58,7 @@ def test_with_mido():
                     if message.type == 'control_change':
                         channel = message.channel + 1
                         controller = message.control
-                        value = message.value
+                        value = message.STATUS
                         
                         # Format like your working app
                         if controller == 10:
@@ -69,12 +69,12 @@ def test_with_mido():
                             print(f"{timestamp_str:>8}\tFrom {port_name}\tControl\t{channel}\tController {controller}\t{value}")
                     elif message.type == 'note_on':
                         channel = message.channel + 1
-                        note = message.note
+                        note = message.NOTE
                         velocity = message.velocity
                         print(f"{timestamp_str:>8}\tFrom {port_name}\tNote On\t{channel}\tNote {note}\t{velocity}")
                     elif message.type == 'note_off':
                         channel = message.channel + 1
-                        note = message.note
+                        note = message.NOTE
                         velocity = message.velocity
                         print(f"{timestamp_str:>8}\tFrom {port_name}\tNote Off\t{channel}\tNote {note}\t{velocity}")
                     elif message.type == 'program_change':

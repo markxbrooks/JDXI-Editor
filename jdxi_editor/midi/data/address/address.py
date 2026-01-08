@@ -22,7 +22,7 @@ SysExByte
 Example usage:
 --------------
 >>> command = CommandID.DT1
-... print(f"Command: {command}, Value: {command.value}, Message Position: {command.message_position}")
+... print(f"Command: {command}, Value: {command.STATUS}, Message Position: {command.message_position}")
 """
 
 from __future__ import annotations

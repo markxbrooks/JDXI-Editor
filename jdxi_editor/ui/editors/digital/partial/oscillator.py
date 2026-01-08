@@ -21,7 +21,6 @@ from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.digital.oscillator import DigitalOscWave
-from picomidi.sysex.parameter.address import AddressParameter
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParam
 from jdxi_editor.midi.data.pcm.waves import PCM_WAVES_CATEGORIZED
 from jdxi_editor.midi.io.helper import MidiIOHelper
@@ -32,6 +31,7 @@ from jdxi_editor.ui.widgets.button.waveform.waveform import WaveformButton
 from jdxi_editor.ui.widgets.pitch.envelope import PitchEnvelopeWidget
 from jdxi_editor.ui.widgets.slider import Slider
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
+from picomidi.sysex.parameter.address import AddressParameter
 
 
 class DigitalOscillatorSection(QWidget):

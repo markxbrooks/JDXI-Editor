@@ -48,7 +48,7 @@ from typing import Dict, List, Optional
 from jdxi_editor.jdxi.program.program import JDXiProgram
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.programs.programs import JDXiProgramList
-from picomidi.constant import MidiConstant
+from picomidi.constant import Midi
 
 
 def get_program_index_by_id(program_id: str) -> Optional[int]:
@@ -271,7 +271,7 @@ def calculate_midi_values(bank: str, program_number: int) -> tuple[int, int, int
         pc_midi = pc - 1
 
         # Ensure PC is within range (0-127 for MIDI)
-        if pc_midi is None or not 0 <= pc_midi <= MidiConstant.VALUE_MAX_SEVEN_BIT:
+        if pc_midi is None or not 0 <= pc_midi <= Midi.VALUE.MAX.SEVEN_BIT:
             log.message(
                 f"Invalid Program Change value: {pc_midi} (calculated from program_number={program_number}, bank={bank}, pc={pc})"
             )

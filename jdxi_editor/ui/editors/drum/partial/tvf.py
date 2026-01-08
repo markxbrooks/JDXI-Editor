@@ -55,7 +55,7 @@ from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
-from picomidi.constant import MidiConstant
+from picomidi.constant import Midi
 
 
 def midi_to_cutoff_level(midi_value: int) -> float:
@@ -65,7 +65,7 @@ def midi_to_cutoff_level(midi_value: int) -> float:
 
 def midi_to_time_normalized(midi_value: int, max_time: float = 10.0) -> float:
     """Convert MIDI value (0-127) to normalized time (0.0 to max_time seconds)."""
-    return (midi_value / MidiConstant.VALUE_MAX_SEVEN_BIT) * max_time
+    return (midi_value / Midi.VALUE.MAX.SEVEN_BIT) * max_time
 
 
 class DrumTVFEnvPlot(QWidget):

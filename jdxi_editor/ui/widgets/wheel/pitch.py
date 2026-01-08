@@ -3,7 +3,7 @@ Pitch Wheel Widget
 """
 
 from jdxi_editor.ui.widgets.wheel.wheel import WheelWidget
-from picomidi.constant import MidiConstant
+from picomidi.constant import Midi
 from picomidi.core.bitmask import BitMask
 
 
@@ -34,18 +34,16 @@ class PitchWheel(WheelWidget):
         """
         self.value = max(-1.0, min(1.0, value))  # Clamp to [-1.0, 1.0]
         bend_value = int(
-            (self.value + 1.0) * MidiConstant.PITCH_BEND_CENTER
+            (self.value + 1.0) * Midi.PITCH_BEND.CENTER
         )  # Convert to 0–16383
         bend_value = max(
-            0, min(MidiConstant.PITCH_BEND_RANGE, bend_value)
+            0, min(Midi.PITCH_BEND.RANGE, bend_value)
         )  # Clamp to [0, 16383]
 
         lsb = bend_value & BitMask.LOW_7_BITS
         msb = (bend_value >> 7) & BitMask.LOW_7_BITS
         for channel in [0, 1, 2]:
-            status = MidiConstant.PITCH_BEND | (
-                channel & MidiConstant.MIDI_CHANNEL_MASK
-            )
+            status = Midi.PITCH_BEND.STATUS | (channel & Midi.CHANNEL.MASK)
 
             if self.midi_helper.midi_out:
                 self.midi_helper.midi_out.send_message([status, lsb, msb])

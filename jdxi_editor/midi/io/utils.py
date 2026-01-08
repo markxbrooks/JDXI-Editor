@@ -16,7 +16,7 @@ from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import ModelID
 from jdxi_editor.midi.data.address.sysex import RolandID
 from jdxi_editor.midi.sysex.device import DeviceInfo
-from picomidi.constant import MidiConstant
+from picomidi.constant import Midi
 from picomidi.core.bitmask import BitMask
 
 
@@ -38,7 +38,7 @@ def increment_if_lsb_exceeds_7bit(msb: int, lsb: int) -> int:
     :param lsb: Least significant byte (int)
     :return: Adjusted MSB (int)
     """
-    if not (0 <= msb <= MidiConstant.VALUE_MAX_EIGHT_BIT):  # 255
+    if not (0 <= msb <= Midi.VALUE.MAX.EIGHT_BIT):  # 255
         raise ValueError("MSB must be an 8-bit value (0–255).")
 
     if lsb > BitMask.LOW_7_BITS:  # 127
@@ -56,7 +56,7 @@ def nibble_data(data: list[int]) -> list[int]:
     """
     nibbled_data = []
     for byte in data:
-        if byte > MidiConstant.VALUE_MAX_SEVEN_BIT:  # 127
+        if byte > Midi.VALUE.MAX.SEVEN_BIT:  # 127
             high_nibble = (byte >> 4) & BitMask.LOW_4_BITS
             low_nibble = byte & BitMask.LOW_4_BITS
             # Combine nibbles into valid data bytes (0-127)
@@ -96,8 +96,8 @@ def convert_to_mido_message(
     # SysEx
     try:
         if (
-            status_byte == MidiConstant.START_OF_SYSEX
-            and message_content[JDXiSysExOffset.SYSEX_END] == MidiConstant.END_OF_SYSEX
+            status_byte == Midi.SYSEX.START
+            and message_content[JDXiSysExOffset.SYSEX_END] == Midi.SYSEX.END
         ):
             sysex_data = nibble_data(
                 message_content[
@@ -113,9 +113,7 @@ def convert_to_mido_message(
     # Program Change
     try:
         if (
-            MidiConstant.PROGRAM_CHANGE
-            <= status_byte
-            <= MidiConstant.PROGRAM_CHANGE_MAX
+            Midi.PC.STATUS <= status_byte <= Midi.PC.MAX_STATUS
             and len(message_content) >= 2
         ):
             channel = status_byte & BitMask.LOW_4_BITS
@@ -126,9 +124,7 @@ def convert_to_mido_message(
     # Control Change
     try:
         if (
-            MidiConstant.CONTROL_CHANGE
-            <= status_byte
-            <= MidiConstant.CONTROL_CHANGE_MAX
+            Midi.CC.STATUS <= status_byte <= Midi.CC.MAX_STATUS
             and len(message_content) >= 3
         ):
             channel = status_byte & BitMask.LOW_4_BITS
@@ -154,9 +150,9 @@ def mido_message_data_to_byte_list(message: mido.Message) -> bytes:
     hex_string = " ".join(f"{byte:02X}" for byte in message.data)
 
     message_byte_list = bytes(
-        [MidiConstant.START_OF_SYSEX]
+        [Midi.SYSEX.START]
         + [int(byte, 16) for byte in hex_string.split()]
-        + [MidiConstant.END_OF_SYSEX]
+        + [Midi.SYSEX.END]
     )
     return message_byte_list
 

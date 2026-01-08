@@ -2,7 +2,7 @@
 MIDI Utility Functions
 """
 
-from picomidi.utils import conversion, validation, formatting, timing
+from picomidi.utils import conversion, formatting, timing, validation
 
 __all__ = [
     "conversion",
@@ -10,4 +10,3 @@ __all__ = [
     "formatting",
     "timing",
 ]
-

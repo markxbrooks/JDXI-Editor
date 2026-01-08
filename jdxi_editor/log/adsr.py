@@ -10,8 +10,8 @@ from jdxi_editor.midi.data.address.address import (
     AddressOffsetSuperNATURALLMB,
     AddressOffsetTemporaryToneUMB,
 )
-from picomidi.sysex.parameter.address import AddressParameter
 from jdxi_editor.ui.windows.midi.debugger import parse_sysex_byte
+from picomidi.sysex.parameter.address import AddressParameter
 
 
 def log_adsr_parameter(

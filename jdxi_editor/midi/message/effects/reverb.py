@@ -5,7 +5,7 @@ ReverbMessage
     Examples
     --------
 # Set reverb level
->>> msg = ReverbMessage(param=Reverb.LEVEL.value, value=100)  # Level 100
+>>> msg = ReverbMessage(param=Reverb.LEVEL.STATUS, value=100)  # Level 100
 
 # Set reverb parameter 1 to +5000
 >>> msg = ReverbMessage(

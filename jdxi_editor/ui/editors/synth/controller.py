@@ -146,7 +146,7 @@ class PartialController(QObject):
             enabled = partial == DigitalPartialParam.PARTIAL_1
             selected = enabled
             self.partials_panel.switches[partial].setState(enabled, selected)
-            self.partial_tab_widget.setTabEnabled(partial.value - 1, enabled)
+            self.partial_tab_widget.setTabEnabled(partial.STATUS - 1, enabled)
         self.partial_tab_widget.setCurrentIndex(0)
 
     def _handle_special_params(

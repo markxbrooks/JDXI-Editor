@@ -16,7 +16,6 @@ from PySide6.QtWidgets import QGridLayout, QHBoxLayout, QSlider, QVBoxLayout, QW
 
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
-from picomidi.sysex.parameter.address import AddressParameter
 from jdxi_editor.midi.data.parameter.digital import DigitalPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.utils.conversions import midi_value_to_ms, ms_to_midi_value
@@ -24,7 +23,8 @@ from jdxi_editor.ui.widgets.envelope.base import TOOLTIPS, EnvelopeWidgetBase
 from jdxi_editor.ui.widgets.filter.filter_plot import FilterPlot
 from jdxi_editor.ui.widgets.pulse_width.slider_spinbox import PWMSliderSpinbox
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
-from picomidi.constant import MidiConstant
+from picomidi.constant import Midi
+from picomidi.sysex.parameter.address import AddressParameter
 
 
 class FilterWidget(EnvelopeWidgetBase):
@@ -70,11 +70,11 @@ class FilterWidget(EnvelopeWidgetBase):
         self.cutoff_param_control = PWMSliderSpinbox(
             cutoff_param,
             min_value=0,
-            max_value=MidiConstant.VALUE_MAX_SEVEN_BIT,
+            max_value=Midi.VALUE.MAX.SEVEN_BIT,
             units=" Hz/10",
             label="Cutoff (Hz /10)",
             value=self.envelope["cutoff_param"]
-            * MidiConstant.VALUE_MAX_SEVEN_BIT,  # Convert from 0.0–1.0 to 0–100
+            * Midi.VALUE.MAX.SEVEN_BIT,  # Convert from 0.0–1.0 to 0–100
             create_parameter_slider=self._create_parameter_slider,
             parent=self,
         )
@@ -100,7 +100,7 @@ class FilterWidget(EnvelopeWidgetBase):
         )
 
         self.cutoff_param_control.setValue(
-            self.envelope["cutoff_param"] * MidiConstant.VALUE_MAX_SEVEN_BIT
+            self.envelope["cutoff_param"] * Midi.VALUE.MAX.SEVEN_BIT
         )
         if self.slope_param:
             self.slope_param_control = self._create_parameter_switch(
@@ -133,7 +133,7 @@ class FilterWidget(EnvelopeWidgetBase):
         :return: None
         """
         self.envelope["cutoff_param"] = (
-            val / MidiConstant.VALUE_MAX_SEVEN_BIT
+            val / Midi.VALUE.MAX.SEVEN_BIT
         )  # Convert from 0–100 to 0.0–1.0
         self.update()  # Trigger repaint if needed
 
@@ -154,7 +154,7 @@ class FilterWidget(EnvelopeWidgetBase):
                 envelope_param_type = param.get_envelope_param_type()
                 if envelope_param_type == "cutoff_param":
                     self.envelope["cutoff_param"] = (
-                        slider.value() / MidiConstant.VALUE_MAX_SEVEN_BIT
+                        slider.value() / Midi.VALUE.MAX.SEVEN_BIT
                     )
                 else:
                     pass
@@ -167,13 +167,13 @@ class FilterWidget(EnvelopeWidgetBase):
                 envelope_param_type = param.get_envelope_param_type()
                 log.message(f"envelope_param_type = {envelope_param_type}")
                 if envelope_param_type == "slope_param":
-                    self.envelope["slope_param"] = ctrl.value()  # Keep as 1 or 0
+                    self.envelope["slope_param"] = ctrl.STATUS()  # Keep as 1 or 0
                 if envelope_param_type == "cutoff_param":
                     self.envelope["cutoff_param"] = (
-                        ctrl.value() / MidiConstant.VALUE_MAX_SEVEN_BIT
+                        ctrl.STATUS() / Midi.VALUE.MAX.SEVEN_BIT
                     )
                 else:
-                    self.envelope[envelope_param_type] = midi_value_to_ms(ctrl.value())
+                    self.envelope[envelope_param_type] = midi_value_to_ms(ctrl.STATUS())
             log.message(f"{self.envelope}")
         except Exception as ex:
             log.error(f"Error updating envelope from controls: {ex}")
@@ -188,10 +188,7 @@ class FilterWidget(EnvelopeWidgetBase):
                     ctrl.setValue(int(self.envelope["slope_param"]))
                 if envelope_param_type == "cutoff_param":
                     ctrl.setValue(
-                        int(
-                            self.envelope["cutoff_param"]
-                            * MidiConstant.VALUE_MAX_SEVEN_BIT
-                        )
+                        int(self.envelope["cutoff_param"] * Midi.VALUE.MAX.SEVEN_BIT)
                     )
                 else:
                     ctrl.setValue(

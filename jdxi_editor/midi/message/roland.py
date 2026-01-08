@@ -43,7 +43,7 @@ from jdxi_editor.midi.data.address.sysex import (
 )
 from jdxi_editor.midi.message.sysex import SysExMessage
 from jdxi_editor.midi.utils.byte import split_16bit_value_to_nibbles
-from picomidi.constant import MidiConstant
+from picomidi.constant import Midi
 from picomidi.core.bitmask import BitMask
 
 
@@ -64,7 +64,7 @@ class RolandSysExMessage(SysExMessage):
     command: int = CommandID.DT1
 
     sysex_address: RolandSysExAddress = field(default_factory=RolandSysExAddress)
-    value: Union[int, List[int]] = MidiConstant.ZERO_BYTE
+    value: Union[int, List[int]] = Midi.VALUE.ZERO
     size: int = 1
 
     # These attributes should not be set in `__init__`
@@ -92,7 +92,7 @@ class RolandSysExMessage(SysExMessage):
         :return: list
         """
         msg = (
-            [MidiConstant.START_OF_SYSEX, self.manufacturer_id, self.device_id]
+            [Midi.SYSEX.START, self.manufacturer_id, self.device_id]
             + list(self.model_id)
             + [self.command]
             + [self.sysex_address.msb]
@@ -122,11 +122,11 @@ class RolandSysEx(SysExMessage):
     )
     command: int = CommandID.DT1
     sysex_address: Optional[RolandSysExAddress] = None
-    msb: int = MidiConstant.ZERO_BYTE
-    umb: int = MidiConstant.ZERO_BYTE
-    lmb: int = MidiConstant.ZERO_BYTE
-    lsb: int = MidiConstant.ZERO_BYTE
-    value: Union[int, List[int]] = MidiConstant.ZERO_BYTE
+    msb: int = Midi.VALUE.ZERO
+    umb: int = Midi.VALUE.ZERO
+    lmb: int = Midi.VALUE.ZERO
+    lsb: int = Midi.VALUE.ZERO
+    value: Union[int, List[int]] = Midi.VALUE.ZERO
     size: int = 1
 
     synth_type: Optional[int] = field(init=False, default=None)
@@ -167,7 +167,7 @@ class RolandSysEx(SysExMessage):
         :return: List[int]
         """
         msg = (
-            [MidiConstant.START_OF_SYSEX, self.manufacturer_id, self.device_id]
+            [Midi.SYSEX.START, self.manufacturer_id, self.device_id]
             + list(self.model_id)
             + [self.command]
             + self.address

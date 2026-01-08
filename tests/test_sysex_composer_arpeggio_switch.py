@@ -1,6 +1,6 @@
 import unittest
 
-from picomidi.constant import MidiConstant
+from picomidi.constant import Midi
 from jdxi_editor.midi.data.address.address import RolandSysExAddress, AddressStartMSB, AddressOffsetSystemUMB
 from jdxi_editor.midi.data.address.helpers import apply_address_offset
 from jdxi_editor.midi.data.parameter.program.zone import ProgramZoneParam
@@ -27,7 +27,7 @@ class TestJDXiSysExComposer(unittest.TestCase):
             msb=AddressStartMSB.TEMPORARY_PROGRAM,
             umb=AddressOffsetSystemUMB.COMMON,
             lmb=0x00,
-            lsb=MidiConstant.ZERO_BYTE,
+            lsb=Midi.VALUE.ZERO,
         )
 
         # 2) Parameter and value

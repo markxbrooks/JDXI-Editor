@@ -54,7 +54,6 @@ from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.log.slider_parameter import log_slider_parameters
 from jdxi_editor.midi.data.address.address import AddressOffsetSuperNATURALLMB
 from jdxi_editor.midi.data.digital import DigitalOscWave, DigitalPartial
-from picomidi.sysex.parameter.address import AddressParameter
 from jdxi_editor.midi.data.parameter.digital import (
     DigitalCommonParam,
     DigitalModifyParam,
@@ -70,6 +69,7 @@ from jdxi_editor.ui.editors.digital import (
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.widgets.panel.partial import PartialsPanel
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
+from picomidi.sysex.parameter.address import AddressParameter
 
 
 class DigitalSynthEditor(SynthEditor):

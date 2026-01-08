@@ -5,7 +5,7 @@ DigitalToneMessage
 # Set common parameter
 >>> msg = DigitalToneMessage(
 >>>     tone_type=TEMP_DIGITAL_TONE,  # Digital 1
->>>     section=DigitalToneSection.COMMON.value,
+>>>     section=DigitalToneSection.COMMON.STATUS,
 >>>     param=0x00,  # Common parameter
 >>>     value=64,
 >>> )
@@ -13,7 +13,7 @@ DigitalToneMessage
 # Set partial parameter
 >>> msg = DigitalToneMessage(
 >>>     tone_type=TEMP_DIGITAL_TONE,  # Digital 1
->>>     section=DigitalToneSection.PARTIAL_1.value,
+>>>     section=DigitalToneSection.PARTIAL_1.STATUS,
 >>>     param=0x00,  # Partial parameter
 >>>     value=64,
 >>> )

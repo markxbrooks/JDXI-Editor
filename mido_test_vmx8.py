@@ -19,7 +19,7 @@ def listen_to_controller(port_name):
             for msg in inport:
                 if msg.type == 'control_change':
                     print(f"Time: {msg.time:.3f} | Channel: {msg.channel+1} | "
-                          f"Controller: {msg.control} | Value: {msg.value}")
+                          f"Controller: {msg.control} | Value: {msg.STATUS}")
         except KeyboardInterrupt:
             print("\nStopped listening.")
 

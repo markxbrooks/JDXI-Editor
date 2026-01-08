@@ -11,7 +11,7 @@ from jdxi_editor.midi.data.address.address import (
     CommandID,
 )
 from jdxi_editor.midi.message.roland import RolandSysEx
-from picomidi.constant import MidiConstant
+from picomidi.constant import Midi
 from picomidi.core.bitmask import BitMask
 
 
@@ -329,7 +329,7 @@ class Effect2(Enum):
     @staticmethod
     def get_display_value(param: int, value: int) -> str:
         """Convert raw value to display value"""
-        if param == MidiConstant.ZERO_BYTE:  # Effect preset_type
+        if param == Midi.VALUE.ZERO:  # Effect preset_type
             if value == 0:
                 return "OFF"
             types = ["OFF", "PHASER", "FLANGER", "DELAY", "CHORUS"]
