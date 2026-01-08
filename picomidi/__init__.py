@@ -13,10 +13,10 @@ __version__ = "0.1.0"
 # Core modules
 from picomidi.core.bitmask import BitMask
 from picomidi.core.channel import Channel
-
-# MidiConstant can be added when constant.py is created
-# from picomidi.core.constant import MidiConstant
+from picomidi.core.channel_legacy import MidiChannel
 from picomidi.core.status import Status
+from picomidi.core.tempo import MidiTempo
+from picomidi.core.value import MidiValue
 from picomidi.core.types import (
     ControlValue,
     Note,
@@ -25,7 +25,7 @@ from picomidi.core.types import (
     Velocity,
 )
 
-# Message classes
+# Message classes (new structured messages)
 from picomidi.message.base import Message
 from picomidi.message.channel_voice import (
     NRPN,
@@ -36,6 +36,18 @@ from picomidi.message.channel_voice import (
     PitchBend,
     ProgramChange,
 )
+
+# Message classes (legacy constants)
+from picomidi.messages.aftertouch import Aftertouch
+from picomidi.messages.control_change import ControlChange as ControlChangeStatus
+from picomidi.messages.note import MidiNote
+from picomidi.messages.pitch_bend import PitchBend as PitchBendStatus
+from picomidi.messages.program_change import ProgramChange as ProgramChangeStatus
+from picomidi.messages.song import Song
+from picomidi.messages.sysex import SysExByte
+
+# Constants
+from picomidi.constant import Midi
 
 # Parser
 from picomidi.parser.parser import Parser
@@ -49,16 +61,18 @@ from picomidi.utils import conversion, formatting, timing, validation
 __all__ = [
     # Core
     "BitMask",
-    # "MidiConstant",  # Can be added when constant.py is created
     "Status",
     "Channel",
+    "MidiChannel",
+    "MidiTempo",
+    "MidiValue",
     # Types
     "Note",
     "Velocity",
     "ControlValue",
     "ProgramNumber",
     "PitchBendValue",
-    # Messages
+    # Messages (new structured)
     "Message",
     "NoteOn",
     "NoteOff",
@@ -67,6 +81,16 @@ __all__ = [
     "PitchBend",
     "RPN",
     "NRPN",
+    # Messages (legacy constants)
+    "Aftertouch",
+    "ControlChangeStatus",
+    "MidiNote",
+    "PitchBendStatus",
+    "ProgramChangeStatus",
+    "Song",
+    "SysExByte",
+    # Constants
+    "Midi",
     # Parser
     "Parser",
     # Utilities

@@ -1,10 +1,18 @@
-from picomidi import BitMask
+"""
+Backward compatibility shim for picomidi.channel
 
+This module is deprecated. Use picomidi.core.channel_legacy instead.
+"""
 
-class MidiChannel:
-    """Utility Constants"""
+import warnings
 
-    BINARY_TO_DISPLAY = 1  # Convert 0-based to 1-based channel
-    DISPLAY_TO_BINARY = -1  # Convert 1-based to 0-based channel
-    MASK = BitMask.LOW_4_BITS  # Mask for extracting channel from status byte
-    NUMBER = 16  # Standard MIDI has 16 channels (0-15 or 1-16)
+warnings.warn(
+    "picomidi.channel is deprecated; use picomidi.core.channel_legacy instead.",
+    DeprecationWarning,
+    stacklevel=2,
+)
+
+from picomidi.core.channel_legacy import MidiChannel
+
+__all__ = ["MidiChannel"]
+

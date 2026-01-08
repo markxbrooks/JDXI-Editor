@@ -1,8 +1,18 @@
-class Song:
-    """Song"""
+"""
+Backward compatibility shim for picomidi.song
 
-    START = 0xFA
-    CONTINUE = 0xFB
-    STOP = 0xFC
-    POSITION_POINTER = 0xF2
-    SELECT = 0xF3
+This module is deprecated. Use picomidi.messages.song instead.
+"""
+
+import warnings
+
+warnings.warn(
+    "picomidi.song is deprecated; use picomidi.messages.song instead.",
+    DeprecationWarning,
+    stacklevel=2,
+)
+
+from picomidi.messages.song import Song
+
+__all__ = ["Song"]
+
