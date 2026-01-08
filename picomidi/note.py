@@ -1,5 +1,18 @@
-class MidiNote:
-    """Midi Note"""
+"""
+Backward compatibility shim for picomidi.note
 
-    OFF = 0x80
-    ON = 0x90
+This module is deprecated. Use picomidi.messages.note instead.
+"""
+
+import warnings
+
+warnings.warn(
+    "picomidi.note is deprecated; use picomidi.messages.note instead.",
+    DeprecationWarning,
+    stacklevel=2,
+)
+
+from picomidi.messages.note import MidiNote
+
+__all__ = ["MidiNote"]
+

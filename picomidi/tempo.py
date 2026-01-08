@@ -1,9 +1,18 @@
-class MidiTempo:
-    """Tempo and timing constants."""
+"""
+Backward compatibility shim for picomidi.tempo
 
-    DEFAULT_120_BPM = 120
-    CONVERT_SEC_TO_USEC = 1_000_000
-    BPM_100_USEC = 600_000
-    BPM_120_USEC = 500_000
-    BPM_150_USEC = 400_000
-    BPM_162_USEC = 370_370
+This module is deprecated. Use picomidi.core.tempo instead.
+"""
+
+import warnings
+
+warnings.warn(
+    "picomidi.tempo is deprecated; use picomidi.core.tempo instead.",
+    DeprecationWarning,
+    stacklevel=2,
+)
+
+from picomidi.core.tempo import MidiTempo
+
+__all__ = ["MidiTempo"]
+
