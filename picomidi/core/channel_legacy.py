@@ -5,7 +5,7 @@ This module is kept for backward compatibility.
 New code should use picomidi.core.channel.Channel instead.
 """
 
-from picomidi import BitMask
+from picomidi.core.bitmask import BitMask
 
 
 class MidiChannel:
