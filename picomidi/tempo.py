@@ -15,4 +15,3 @@ warnings.warn(
 from picomidi.core.tempo import MidiTempo
 
 __all__ = ["MidiTempo"]
-

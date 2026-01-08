@@ -15,4 +15,3 @@ warnings.warn(
 from picomidi.core.value import MidiValue
 
 __all__ = ["MidiValue"]
-

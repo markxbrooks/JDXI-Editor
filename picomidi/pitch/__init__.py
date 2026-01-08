@@ -15,4 +15,3 @@ warnings.warn(
 from picomidi.messages.pitch_bend import PitchBend
 
 __all__ = ["PitchBend"]
-

@@ -15,4 +15,3 @@ warnings.warn(
 from picomidi.core.channel_legacy import MidiChannel
 
 __all__ = ["MidiChannel"]
-

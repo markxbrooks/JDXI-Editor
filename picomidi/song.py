@@ -15,4 +15,3 @@ warnings.warn(
 from picomidi.messages.song import Song
 
 __all__ = ["Song"]
-
