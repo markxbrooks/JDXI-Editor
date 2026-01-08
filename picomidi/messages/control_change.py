@@ -1,3 +1,7 @@
+"""
+Control Change MIDI message constants.
+"""
+
 from picomidi.cc.bank import BankSelect
 from picomidi.cc.nrpn import NonRegisteredParameterNumber
 from picomidi.cc.rpn import RegisteredParameterNumber

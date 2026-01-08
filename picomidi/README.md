@@ -1,8 +1,8 @@
-# PicMidi
+# PicoMidi
 
 A lightweight, focused MIDI library for Python.
 
-PicMidi provides core MIDI protocol functionality with a clean, type-safe API.
+PicoMidi provides core MIDI protocol functionality with a clean, type-safe API.
 
 ## Features
 
@@ -140,5 +140,5 @@ picomidi/
 
 ## License
 
-[Your License Here]
+[MIT License]
 
