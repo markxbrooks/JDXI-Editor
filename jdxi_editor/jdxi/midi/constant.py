@@ -9,6 +9,14 @@ This module provides:
 from picomidi import BitMask
 
 
+class JDXiControlChange:
+    # JD-Xi Bank Select LSB values
+    BANK_SELECT_LSB_BANK_E_AND_F = 0
+    BANK_SELECT_LSB_BANK_G_AND_H = 1
+    BANK_SELECT_LSB_BANK_A_AND_B = 64  # ROM banks
+    BANK_SELECT_LSB_BANK_C_AND_D = 65  # ROM banks
+    
+
 class JDXiConstant:
     """JD-Xi-specific MIDI and SysEx constants."""
 
