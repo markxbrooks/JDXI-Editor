@@ -21,7 +21,7 @@ from picomidi.constant import Midi
 
 from jdxi_editor.jdxi.midi.constant import JDXiMidi
 from jdxi_editor.jdxi.midi.message.sysex.offset import JDXiParameterSysExLayout
-import logging as log
+from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.message.jdxi import JD_XI_HEADER_LIST
 from jdxi_editor.midi.sysex.parser.utils import parse_sysex
 from jdxi_editor.project import __package_name__
