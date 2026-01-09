@@ -4,6 +4,7 @@ Analog Oscillator Section
 
 from typing import Callable
 
+from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QGroupBox, QHBoxLayout, QTabWidget, QVBoxLayout, QWidget
 
@@ -18,7 +19,6 @@ from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from jdxi_editor.ui.widgets.button.waveform.analog import AnalogWaveformButton
 from jdxi_editor.ui.widgets.pitch.envelope import PitchEnvelopeWidget
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
-from picomidi.sysex.parameter.address import AddressParameter
 
 
 class AnalogOscillatorSection(QWidget):

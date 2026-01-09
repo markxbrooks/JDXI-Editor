@@ -1,11 +1,11 @@
 from typing import Callable
 
+from picomidi.constant import Midi
+from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QDoubleSpinBox, QSpinBox, QVBoxLayout, QWidget
 
 from jdxi_editor.log.logger import Logger as log
-from picomidi.constant import Midi
-from picomidi.sysex.parameter.address import AddressParameter
 
 
 def create_spinbox(min_value: int, max_value: int, suffix: str, value: int) -> QSpinBox:

@@ -16,13 +16,14 @@ import os
 from pathlib import Path
 from typing import Optional
 
+from picomidi.constant import Midi
+
 from jdxi_editor.jdxi.midi.constant import JDXiMidi
 from jdxi_editor.jdxi.midi.message.sysex.offset import JDXiSysExOffset
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.message.jdxi import JD_XI_HEADER_LIST
 from jdxi_editor.midi.sysex.parser.utils import parse_sysex
 from jdxi_editor.project import __package_name__
-from picomidi.constant import Midi
 
 
 class JDXiSysExParser:
@@ -83,8 +84,8 @@ class JDXiSysExParser:
     def _is_valid_sysex(self) -> bool:
         """Checks if the SysEx message starts and ends with the correct bytes."""
         return (
-                self.sysex_data[JDXiSysExOffset.START] == Midi.SYSEX.START
-                and self.sysex_data[JDXiSysExOffset.END] == Midi.SYSEX.END
+            self.sysex_data[JDXiSysExOffset.START] == Midi.SYSEX.START
+            and self.sysex_data[JDXiSysExOffset.END] == Midi.SYSEX.END
         )
 
     def _verify_header(self) -> bool:

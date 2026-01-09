@@ -11,10 +11,12 @@ class JDXiCCBankSelect:
     - MSB (Most Significant Byte): CC#85 (non-standard)
     - LSB (Least Significant Byte): Specific values for bank selection.
     """
+
     MSB = 85
 
     class LSB:
         """LSB values for Bank selection."""
+
         BANK_E_AND_F = 0  # User Banks
         BANK_G_AND_H = 1  # User Banks
         BANK_A_AND_B = 64  # ROM banks

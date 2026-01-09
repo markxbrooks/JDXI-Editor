@@ -27,8 +27,9 @@ if param:
 
 """
 
-from jdxi_editor.midi.data.address.address import AddressOffsetSuperNATURALLMB
 from picomidi.sysex.parameter.address import AddressParameter
+
+from jdxi_editor.midi.data.address.address import AddressOffsetSuperNATURALLMB
 
 
 class DigitalModifyParam(AddressParameter):

@@ -40,6 +40,8 @@ Dependencies:
 from typing import Dict, Optional
 
 import qtawesome as qta
+from picomidi.constant import Midi
+from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import QRect, QSize, Qt, QTimer, Signal
 from PySide6.QtGui import QPainter
 from PySide6.QtWidgets import (
@@ -100,8 +102,6 @@ from jdxi_editor.ui.editors.helpers.program import (
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 from jdxi_editor.ui.windows.patch.name_editor import PatchNameEditor
-from picomidi.constant import Midi
-from picomidi.sysex.parameter.address import AddressParameter
 
 
 class MidiFileDelegate(QStyledItemDelegate):

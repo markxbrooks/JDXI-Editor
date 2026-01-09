@@ -41,6 +41,7 @@ import threading
 from typing import Optional, Union
 
 import qtawesome as qta
+from picomidi.constant import Midi
 from PySide6.QtCore import QSettings, Qt, QTimer, Signal
 from PySide6.QtGui import QAction, QCloseEvent, QKeySequence, QMouseEvent, QShortcut
 from PySide6.QtWidgets import QApplication, QMenu, QMessageBox, QProgressDialog
@@ -108,7 +109,6 @@ from jdxi_editor.ui.windows.midi.config_dialog import MIDIConfigDialog
 from jdxi_editor.ui.windows.midi.debugger import MIDIDebugger
 from jdxi_editor.ui.windows.midi.monitor import MIDIMessageMonitor
 from jdxi_editor.ui.windows.patch.manager import PatchManager
-from picomidi.constant import Midi
 
 
 class JDXiInstrument(JDXiUi):

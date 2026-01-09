@@ -3,7 +3,6 @@ Editor IO Utils
 """
 
 from mido import MidiFile
-
 from picomidi.constant import Midi
 
 

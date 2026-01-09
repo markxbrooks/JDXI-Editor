@@ -37,6 +37,7 @@ Example:
 from typing import Callable
 
 import numpy as np
+from picomidi.constant import Midi
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QColor, QFont, QLinearGradient, QPainter, QPainterPath, QPen
 from PySide6.QtWidgets import (
@@ -54,7 +55,6 @@ from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
-from picomidi.constant import Midi
 
 
 def midi_to_pitch_level(midi_value: int) -> float:

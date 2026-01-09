@@ -1,5 +1,6 @@
 from typing import Callable, Optional
 
+from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QWidget
 
@@ -8,7 +9,6 @@ from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.utils.conversions import midi_value_to_ms, ms_to_midi_value
 from jdxi_editor.ui.widgets.slider import Slider
-from picomidi.sysex.parameter.address import AddressParameter
 
 TOOLTIPS = {
     "attack_time": "Time taken for the pitch to reach peak after note-on.",

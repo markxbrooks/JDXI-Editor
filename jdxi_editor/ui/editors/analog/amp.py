@@ -7,6 +7,7 @@ This section contains the controls for the amp section of the JD-Xi editor.
 from typing import Callable
 
 import qtawesome as qta
+from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QGroupBox,
@@ -22,7 +23,6 @@ from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.parameter.analog import AnalogParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
-from picomidi.sysex.parameter.address import AddressParameter
 
 
 class AnalogAmpSection(QWidget):

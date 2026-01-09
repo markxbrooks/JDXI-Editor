@@ -1,11 +1,11 @@
 from typing import Dict, Optional
 
+from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import QObject
 
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.digital.partial import DigitalPartial
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParam
-from picomidi.sysex.parameter.address import AddressParameter
 
 
 class PartialController(QObject):

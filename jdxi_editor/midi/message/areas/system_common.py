@@ -25,13 +25,14 @@ SystemCommonMessage
 
 from dataclasses import dataclass
 
+from picomidi.constant import Midi
+
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetProgramLMB,
     AddressStartMSB,
     CommandID,
 )
 from jdxi_editor.midi.message.roland import RolandSysEx
-from picomidi.constant import Midi
 
 
 @dataclass

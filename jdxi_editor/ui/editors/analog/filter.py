@@ -5,6 +5,7 @@ Analog Filter Section
 from typing import Callable
 
 import qtawesome as qta
+from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QGroupBox,
@@ -21,7 +22,6 @@ from jdxi_editor.midi.data.parameter.analog import AnalogParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 from jdxi_editor.ui.widgets.filter.analog_filter import AnalogFilterWidget
-from picomidi.sysex.parameter.address import AddressParameter
 
 
 class AnalogFilterSection(QWidget):

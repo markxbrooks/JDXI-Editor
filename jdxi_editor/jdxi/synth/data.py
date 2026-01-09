@@ -1,6 +1,9 @@
 from dataclasses import dataclass, field
 from typing import Dict, Optional, Union
 
+from picomidi.constant import Midi
+from picomidi.sysex.parameter.address import AddressParameter
+
 from jdxi_editor.jdxi.synth.instrument_display import InstrumentDisplayConfig
 from jdxi_editor.jdxi.synth.midi_config import MidiSynthConfig
 from jdxi_editor.midi.data.address.address import (
@@ -11,8 +14,6 @@ from jdxi_editor.midi.data.address.address import (
 from jdxi_editor.midi.data.parameter.analog import AnalogParam
 from jdxi_editor.midi.data.parameter.digital import DigitalCommonParam
 from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParam
-from picomidi.constant import Midi
-from picomidi.sysex.parameter.address import AddressParameter
 
 
 @dataclass
