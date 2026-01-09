@@ -97,7 +97,7 @@ def convert_to_mido_message(
     try:
         if (
             status_byte == Midi.SYSEX.START
-            and message_content[JDXiSysExOffset.SYSEX_END] == Midi.SYSEX.END
+            and message_content[JDXiSysExOffset.END] == Midi.SYSEX.END
         ):
             sysex_data = nibble_data(
                 message_content[
@@ -171,7 +171,7 @@ def handle_identity_request(message: mido.Message) -> dict:
     device_id = device_info.device_id
     manufacturer_id = device_info.manufacturer
     version = message.data[
-        JDXiSysExOffset.ADDRESS_UMB : JDXiSysExOffset.TONE_NAME_START
+        JDXiSysExOffset.ADDRESS.UMB : JDXiSysExOffset.TONE_NAME.START
     ]  #  Extract firmware version bytes
 
     version_str = ".".join(str(byte) for byte in version)

@@ -79,11 +79,11 @@ def extract_tone_name(data: bytes) -> str:
     :param data: bytes SysEx message data
     :return: str tone name, cleaned up
     """
-    if len(data) < JDXiSysExOffset.TONE_NAME_END:  # Ensure sufficient length
+    if len(data) < JDXiSysExOffset.TONE_NAME.END:  # Ensure sufficient length
         return UNKNOWN
 
     raw_name = (
-        bytes(data[JDXiSysExOffset.TONE_NAME_START : JDXiSysExOffset.TONE_NAME_END])
+        bytes(data[JDXiSysExOffset.TONE_NAME.START : JDXiSysExOffset.TONE_NAME.END])
         .decode(errors="ignore")
         .strip("\x00\r ")
     )  # Start at index 12
@@ -115,11 +115,11 @@ def parse_single_parameter(
     :return: Dict[str, int]
     """
     if isinstance(parameter_type, DrumPartialParam):
-        _, offset = get_drum_tone(data[JDXiSysExOffset.ADDRESS_LMB])
-        address = data[JDXiSysExOffset.ADDRESS_LSB]
+        _, offset = get_drum_tone(data[JDXiSysExOffset.ADDRESS.LMB])
+        address = data[JDXiSysExOffset.ADDRESS.LSB]
         index = address_to_index(offset, address)
     else:
-        index = data[JDXiSysExOffset.ADDRESS_LSB]
+        index = data[JDXiSysExOffset.ADDRESS.LSB]
     param = parameter_type.get_parameter_by_address(index)
     if param:
         return {"PARAM": param.name}
@@ -160,7 +160,7 @@ def initialize_parameters(data: bytes) -> Dict[str, str]:
     :param data: bytes SysEx message data
     :return: Dict[str, str]
     """
-    if len(data) <= JDXiSysExOffset.ADDRESS_LMB:
+    if len(data) <= JDXiSysExOffset.ADDRESS.LMB:
         return {
             "JD_XI_HEADER": UNKNOWN,
             "ADDRESS": UNKNOWN,
@@ -174,23 +174,23 @@ def initialize_parameters(data: bytes) -> Dict[str, str]:
     tone_handler = tone_handlers.get(temporary_area, get_synth_tone)
 
     # Try extracting synth tone safely
-    synth_tone_info = tone_handler(data[JDXiSysExOffset.ADDRESS_LMB])
+    synth_tone_info = tone_handler(data[JDXiSysExOffset.ADDRESS.LMB])
     synth_tone = (
         synth_tone_info[0] if isinstance(synth_tone_info, (list, tuple)) else UNKNOWN
     )
 
     return {
         "JD_XI_HEADER": safe_extract(
-            data, JDXiSysExOffset.SYSEX_START, JDXiSysExOffset.COMMAND_ID
+            data, JDXiSysExOffset.START, JDXiSysExOffset.COMMAND_ID
         ),
         "ADDRESS": safe_extract(
-            data, JDXiSysExOffset.COMMAND_ID, JDXiSysExOffset.ADDRESS_LSB
+            data, JDXiSysExOffset.COMMAND_ID, JDXiSysExOffset.ADDRESS.LSB
         ),
         "TEMPORARY_AREA": temporary_area,
         "SYNTH_TONE": synth_tone,
         "TONE_NAME": (
             extract_tone_name(data)
-            if len(data) >= JDXiSysExOffset.TONE_NAME_END
+            if len(data) >= JDXiSysExOffset.TONE_NAME.END
             else UNKNOWN
         ),
     }
@@ -205,13 +205,13 @@ def _return_minimal_metadata(data: bytes) -> Dict[str, str]:
     """
     return {
         "JD_XI_HEADER": (
-            extract_hex(data, JDXiSysExOffset.SYSEX_START, JDXiSysExOffset.COMMAND_ID)
+            extract_hex(data, JDXiSysExOffset.START, JDXiSysExOffset.COMMAND_ID)
             if len(data) >= JDXiSysExOffset.COMMAND_ID
             else UNKNOWN
         ),
         "ADDRESS": (
-            extract_hex(data, JDXiSysExOffset.COMMAND_ID, JDXiSysExOffset.ADDRESS_LSB)
-            if len(data) >= JDXiSysExOffset.ADDRESS_LSB
+            extract_hex(data, JDXiSysExOffset.COMMAND_ID, JDXiSysExOffset.ADDRESS.LSB)
+            if len(data) >= JDXiSysExOffset.ADDRESS.LSB
             else UNKNOWN
         ),
         "TEMPORARY_AREA": UNKNOWN,
@@ -228,10 +228,10 @@ def _get_tone_from_data(data: bytes, temporary_area: str) -> tuple[str, int]:
     :return: tuple[str, int] tone type and byte offset
     """
 
-    if len(data) <= JDXiSysExOffset.ADDRESS_LMB:
+    if len(data) <= JDXiSysExOffset.ADDRESS.LMB:
         return UNKNOWN, 0
 
-    byte_value = data[JDXiSysExOffset.ADDRESS_LMB]
+    byte_value = data[JDXiSysExOffset.ADDRESS.LMB]
     if temporary_area == TemporaryToneUMB.DRUM_KIT.name:
         return get_drum_tone(byte_value)
     return get_synth_tone(byte_value)

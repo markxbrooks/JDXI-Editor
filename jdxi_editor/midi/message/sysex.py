@@ -132,8 +132,8 @@ class SysExMessage(MidiMessage):
         if len(data) < 12:
             raise ValueError(f"Invalid SysEx message: too short ({len(data)} bytes)")
         if (
-            data[JDXiSysExOffset.SYSEX_START] != Midi.SYSEX.START
-            or data[JDXiSysExOffset.SYSEX_END] != Midi.SYSEX.END
+            data[JDXiSysExOffset.START] != Midi.SYSEX.START
+            or data[JDXiSysExOffset.END] != Midi.SYSEX.END
         ):
             raise ValueError("Invalid SysEx message: missing start or end bytes")
 

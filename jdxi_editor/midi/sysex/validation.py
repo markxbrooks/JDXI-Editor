@@ -33,13 +33,13 @@ def validate_raw_sysex_message(message: List[int]) -> bool:
             return False
 
         # Check end marker
-        if message[JDXiSysExOffset.SYSEX_END] != Midi.SYSEX.START:
+        if message[JDXiSysExOffset.END] != Midi.SYSEX.START:
             log.message("Invalid SysEx end marker")
             return False
 
         # Verify checksum
         data_sum = (
-            sum(message[JDXiSysExOffset.ADDRESS_MSB : JDXiSysExOffset.CHECKSUM])
+            sum(message[JDXiSysExOffset.ADDRESS.MSB : JDXiSysExOffset.CHECKSUM])
             & BitMask.LOW_7_BITS
         )  # Sum from area to value
         checksum = (128 - data_sum) & BitMask.LOW_7_BITS
