@@ -4,7 +4,7 @@ JDXiSysExComposer
 
 from typing import Optional
 
-from jdxi_editor.jdxi.sysex.offset import JDXiSysExOffset
+from jdxi_editor.jdxi.midi.message.sysex.offset import JDXiSysExOffset
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import (
     JD_XI_HEADER_LIST,
@@ -22,7 +22,7 @@ from jdxi_editor.midi.sysex.validation import (
     validate_raw_midi_message,
     validate_raw_sysex_message,
 )
-from jdxi_editor.midi.utils.byte import encode_roland_7bit, split_16bit_value_to_nibbles
+from jdxi_editor.midi.utils.byte import split_16bit_value_to_nibbles
 from picomidi.constant import Midi
 from picomidi.sysex.parameter.address import AddressParameter
 

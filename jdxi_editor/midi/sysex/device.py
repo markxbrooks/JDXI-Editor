@@ -46,7 +46,7 @@ from dataclasses import dataclass
 from typing import List, Optional
 
 from jdxi_editor.jdxi.midi.constant import JDXiMidi
-from jdxi_editor.jdxi.sysex.offset import JDXIIdentityOffset
+from jdxi_editor.jdxi.midi.message.sysex.offset import JDXIIdentityOffset
 from picomidi.constant import Midi
 
 

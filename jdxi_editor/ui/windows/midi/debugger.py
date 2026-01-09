@@ -56,7 +56,7 @@ from PySide6.QtWidgets import (
 )
 
 from jdxi_editor.jdxi.style import JDXiStyle
-from jdxi_editor.jdxi.sysex.offset import JDXiSysExOffset
+from jdxi_editor.jdxi.midi.message.sysex.offset import JDXiSysExOffset
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import CommandID
 from jdxi_editor.midi.io.helper import MidiIOHelper
