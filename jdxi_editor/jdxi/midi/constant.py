@@ -6,11 +6,9 @@ This module provides:
 - JDXiConstant: JD-Xi-specific constants (SysEx addresses, bank mappings, etc.)
 """
 
-from jdxi_editor.jdxi.midi.device.constant import JDXiDevice
 from jdxi_editor.jdxi.midi.message.control import JDXiControlChange
-from jdxi_editor.jdxi.midi.message.octave import JDXiOctave
 from jdxi_editor.jdxi.midi.message.program import JDXiProgramChange
-from jdxi_editor.jdxi.midi.message.sysex.constant import JDXiSysEx
+from jdxi_editor.jdxi.midi.message.sysex.constant import JDXiSysExSpec
 
 
 class JDXiMidi:
@@ -18,6 +16,4 @@ class JDXiMidi:
 
     CC = JDXiControlChange
     PC = JDXiProgramChange
-    SYSEX = JDXiSysEx
-    DEVICE = JDXiDevice
-    OCTAVE = JDXiOctave
+    SYSEX = JDXiSysExSpec

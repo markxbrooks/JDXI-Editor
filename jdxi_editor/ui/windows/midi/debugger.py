@@ -56,7 +56,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from jdxi_editor.jdxi.midi.message.sysex.offset import JDXiSysExOffset
+from jdxi_editor.jdxi.midi.message.sysex.offset import JDXiParameterSysExLayout
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import CommandID
@@ -251,13 +251,13 @@ class MIDIDebugger(QMainWindow):
             synth_tone = sysex_dict.get("SYNTH_TONE", "Unknown")
             param_name = sysex_dict.get("PARAM", "Unknown")
 
-            address_msb = message[JDXiSysExOffset.ADDRESS.MSB]
-            address_umb = message[JDXiSysExOffset.ADDRESS.UMB]
-            address_lsb = message[JDXiSysExOffset.ADDRESS.LSB]
-            value = message[JDXiSysExOffset.VALUE]
-            checksum = message[JDXiSysExOffset.CHECKSUM]
+            address_msb = message[JDXiParameterSysExLayout.ADDRESS.MSB]
+            address_umb = message[JDXiParameterSysExLayout.ADDRESS.UMB]
+            address_lsb = message[JDXiParameterSysExLayout.ADDRESS.LSB]
+            value = message[JDXiParameterSysExLayout.VALUE]
+            checksum = message[JDXiParameterSysExLayout.CHECKSUM]
             checksum_valid = validate_checksum(
-                message[JDXiSysExOffset.ADDRESS.MSB : JDXiSysExOffset.CHECKSUM],
+                message[JDXiParameterSysExLayout.ADDRESS.MSB: JDXiParameterSysExLayout.CHECKSUM],
                 checksum,
             )
 
@@ -265,21 +265,21 @@ class MIDIDebugger(QMainWindow):
                 f"|{'-' * 7}|{'-' * 30}|{'-' * 19}|{'-' * 32}|\n",
                 fmt_row("Byte", "Description", "Value", "Notes"),
                 f"|{'-' * 7}|{'-' * 30}|{'-' * 19}|{'-' * 32}|\n",
-                fmt_row(0, "Start of SysEx", hex(message[JDXiSysExOffset.START])),
+                fmt_row(0, "Start of SysEx", hex(message[JDXiParameterSysExLayout.START])),
                 fmt_row(
                     1,
                     "Manufacturer ID",
-                    hex(message[JDXiSysExOffset.ROLAND_ID]),
+                    hex(message[JDXiParameterSysExLayout.ROLAND_ID]),
                     "Roland",
                 ),
-                fmt_row(2, "Device ID", hex(message[JDXiSysExOffset.DEVICE_ID])),
+                fmt_row(2, "Device ID", hex(message[JDXiParameterSysExLayout.DEVICE_ID])),
                 fmt_row(
                     "3-6",
                     "Model ID",
                     " ".join(
                         hex(x)
                         for x in message[
-                            JDXiSysExOffset.MODEL_ID.POS1 : JDXiSysExOffset.COMMAND_ID
+                            JDXiParameterSysExLayout.MODEL_ID.POS1: JDXiParameterSysExLayout.COMMAND_ID
                         ]
                     ),
                 ),
@@ -294,7 +294,7 @@ class MIDIDebugger(QMainWindow):
                     hex(checksum),
                     "Valid" if checksum_valid else "Invalid",
                 ),
-                fmt_row(14, "End of SysEx", hex(message[JDXiSysExOffset.END])),
+                fmt_row(14, "End of SysEx", hex(message[JDXiParameterSysExLayout.END])),
                 f"|{'-' * 7}|{'-' * 30}|{'-' * 19}|{'-' * 32}|\n",
             ]
 

@@ -8,15 +8,14 @@ from a MIDI Identity Reply message.
 
 Usage Example:
 --------------
->>> from device_info import DeviceInfo
->>> identity_data = bytes([0xF0, 0x7E, 0x10, 0x06, 0x02, 0x41, 0x00, 0x00, 0x00, 0x0E, 0x00, 0x00, 0x01, 0x00, 0x00, 0xF7])
+>>> identity_data = bytes([0xF0, 0x7E, 0x10, 0x06, 0x02, 0x41, 0x0E, 0x03, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0xF7])
 >>> device = DeviceInfo.from_identity_reply(identity_data)
->>> if device:
->>>     print(f"Device: JD-Xi, Version: {device.version_string}")
-
-Expected Output:
-----------------
-Device: JD-Xi, Version: v1.00
+>>> device is not None
+True
+>>> device.version_string
+'v0.03'
+>>> device.is_jdxi
+True
 
 Classes:
 --------
@@ -48,7 +47,6 @@ from typing import List, Optional
 from picomidi.constant import Midi
 
 from jdxi_editor.jdxi.midi.constant import JDXiMidi
-from jdxi_editor.jdxi.midi.message.sysex.offset import JDXIIdentityOffset
 
 
 @dataclass
@@ -97,36 +95,36 @@ class DeviceInfo:
         """
         try:
             if (
-                len(data) < JDXIIdentityOffset.expected_length()  # Minimum length check
-                or data[JDXIIdentityOffset.SYSEX_START]
+                len(data) < JDXiMidi.SYSEX.IDENTITY_LAYOUT.expected_length()  # Minimum length check
+                or data[JDXiMidi.SYSEX.IDENTITY_LAYOUT.START]
                 != Midi.SYSEX.START  # SysEx Start
-                or data[JDXIIdentityOffset.ID_NUMBER]
-                != JDXiMidi.DEVICE.ID_NUMBER  # 0x7E  # Universal Non-Realtime
-                or data[JDXIIdentityOffset.SUB_ID_1_GENERAL_INFORMATION]
-                != JDXiMidi.DEVICE.SUB_ID_1_GENERAL_INFORMATION  # 0x06 General Info
-                or data[JDXIIdentityOffset.SUB_ID_2_IDENTITY_REPLY]
-                != JDXiMidi.DEVICE.SUB_ID_2_IDENTITY_REPLY  # 0x02 Identity Reply
+                or data[JDXiMidi.SYSEX.IDENTITY_LAYOUT.ID.NUMBER]
+                != JDXiMidi.SYSEX.IDENTITY_CONST.NUMBER  # 0x7E  # Universal Non-Realtime
+                or data[JDXiMidi.SYSEX.IDENTITY_LAYOUT.ID.SUB1]
+                != JDXiMidi.SYSEX.IDENTITY_CONST.SUB1_GENERAL_INFORMATION  # 0x06 General Info
+                or data[JDXiMidi.SYSEX.IDENTITY_LAYOUT.ID.SUB2]
+                != JDXiMidi.SYSEX.IDENTITY_CONST.SUB2_IDENTITY_REPLY  # 0x02 Identity Reply
             ):
                 return None  # Invalid Identity Reply
 
             return cls(
-                device_id=data[JDXIIdentityOffset.DEVICE_ID],
+                device_id=data[JDXiMidi.SYSEX.IDENTITY_LAYOUT.ID.DEVICE],
                 manufacturer=[
-                    data[JDXIIdentityOffset.ROLAND_ID]
+                    data[JDXiMidi.SYSEX.IDENTITY_LAYOUT.ID.ROLAND]
                 ],  # Manufacturer ID (Roland = 0x41)
                 family=[
-                    data[JDXIIdentityOffset.DEVICE_FAMILY_CODE_1],
-                    data[JDXIIdentityOffset.DEVICE_FAMILY_CODE_2],
+                    data[JDXiMidi.SYSEX.IDENTITY_LAYOUT.DEVICE.FAMILY_CODE_1],
+                    data[JDXiMidi.SYSEX.IDENTITY_LAYOUT.DEVICE.FAMILY_CODE_2],
                 ],  # Family Code (JD-Xi = [0x0E, 0x03])
                 model=[
-                    data[JDXIIdentityOffset.DEVICE_FAMILY_NUMBER_CODE_1],
-                    data[JDXIIdentityOffset.DEVICE_FAMILY_NUMBER_CODE_2],
+                    data[JDXiMidi.SYSEX.IDENTITY_LAYOUT.DEVICE.FAMILY_NUMBER_CODE_1],
+                    data[JDXiMidi.SYSEX.IDENTITY_LAYOUT.DEVICE.FAMILY_NUMBER_CODE_2],
                 ],  # Model Number
                 version=[
-                    data[JDXIIdentityOffset.SOFTWARE_REVISION_1],
-                    data[JDXIIdentityOffset.SOFTWARE_REVISION_2],
-                    data[JDXIIdentityOffset.SOFTWARE_REVISION_3],
-                    data[JDXIIdentityOffset.SOFTWARE_REVISION_4],
+                    data[JDXiMidi.SYSEX.IDENTITY_LAYOUT.SOFTWARE.REVISION_1],
+                    data[JDXiMidi.SYSEX.IDENTITY_LAYOUT.SOFTWARE.REVISION_2],
+                    data[JDXiMidi.SYSEX.IDENTITY_LAYOUT.SOFTWARE.REVISION_3],
+                    data[JDXiMidi.SYSEX.IDENTITY_LAYOUT.SOFTWARE.REVISION_4],
                 ],  # Firmware Version
             )
         except Exception:

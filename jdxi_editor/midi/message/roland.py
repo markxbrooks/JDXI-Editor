@@ -30,7 +30,7 @@ from picomidi.constant import Midi
 from picomidi.core.bitmask import BitMask
 
 from jdxi_editor.jdxi.midi.constant import JDXiMidi
-from jdxi_editor.jdxi.midi.message.sysex.offset import JDXiSysExOffset
+from jdxi_editor.jdxi.midi.message.sysex.offset import JDXiParameterSysExLayout
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import (
     AddressStartMSB,
@@ -325,10 +325,10 @@ class JDXiSysEx(RolandSysEx):
         """Create message from received bytes"""
         if (
             len(data)
-            < JDXiMidi.SYSEX.LENGTH.ONE_BYTE  # Minimum length: F0 + ID + dev + model(4) + cmd + addr(4) + sum + F7
-            or data[JDXiSysExOffset.START] != START_OF_SYSEX
-            or data[JDXiSysExOffset.ROLAND_ID] != ModelID.ROLAND_ID  # Roland ID
-            or data[JDXiSysExOffset.MODEL_ID.POS1 : JDXiSysExOffset.COMMAND_ID]
+            < JDXiMidi.SYSEX.PARAMETER_LENGTH.ONE_BYTE  # Minimum length: F0 + ID + dev + model(4) + cmd + addr(4) + sum + F7
+            or data[JDXiParameterSysExLayout.START] != START_OF_SYSEX
+            or data[JDXiParameterSysExLayout.ROLAND_ID] != ModelID.ROLAND_ID  # Roland ID
+            or data[JDXiParameterSysExLayout.MODEL_ID.POS1 : JDXiParameterSysExLayout.COMMAND_ID]
             != bytes(
                 [
                     ModelID.MODEL_ID_1,
@@ -340,15 +340,15 @@ class JDXiSysEx(RolandSysEx):
         ):  # JD-Xi model ID
             raise ValueError("Invalid JD-Xi SysEx message")
 
-        device_id = data[JDXiSysExOffset.DEVICE_ID]
-        command = data[JDXiSysExOffset.COMMAND_ID]
+        device_id = data[JDXiParameterSysExLayout.DEVICE_ID]
+        command = data[JDXiParameterSysExLayout.COMMAND_ID]
         address = list(
-            data[JDXiSysExOffset.ADDRESS.MSB : JDXiSysExOffset.TONE_NAME.START]
+            data[JDXiParameterSysExLayout.ADDRESS.MSB: JDXiParameterSysExLayout.TONE_NAME.START]
         )
         message_data = list(
-            data[JDXiSysExOffset.TONE_NAME.START : JDXiSysExOffset.CHECKSUM]
+            data[JDXiParameterSysExLayout.TONE_NAME.START: JDXiParameterSysExLayout.CHECKSUM]
         )  # Everything between address and checksum
-        received_checksum = data[JDXiSysExOffset.CHECKSUM]
+        received_checksum = data[JDXiParameterSysExLayout.CHECKSUM]
 
         # Create message and verify checksum
         message = cls(
