@@ -36,7 +36,7 @@ from typing import List
 
 from picomidi.constant import Midi
 
-from jdxi_editor.jdxi.midi.message.sysex.offset import JDXiSysExOffset
+from jdxi_editor.jdxi.midi.message.sysex.offset import JDXiParameterSysExLayout
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetProgramLMB,
     CommandID,
@@ -133,8 +133,8 @@ class SysExMessage(MidiMessage):
         if len(data) < 12:
             raise ValueError(f"Invalid SysEx message: too short ({len(data)} bytes)")
         if (
-            data[JDXiSysExOffset.START] != Midi.SYSEX.START
-            or data[JDXiSysExOffset.END] != Midi.SYSEX.END
+            data[JDXiParameterSysExLayout.START] != Midi.SYSEX.START
+            or data[JDXiParameterSysExLayout.END] != Midi.SYSEX.END
         ):
             raise ValueError("Invalid SysEx message: missing start or end bytes")
 

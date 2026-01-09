@@ -29,7 +29,7 @@ from picomidi.constant import Midi
 from PySide6.QtCore import Signal
 
 from jdxi_editor.jdxi.midi.constant import JDXiMidi
-from jdxi_editor.jdxi.midi.message.sysex.offset import JDXIIdentityOffset
+from jdxi_editor.jdxi.midi.message.sysex.offset import JDXiIdentitySysExLayout
 from jdxi_editor.jdxi.preset.button import JDXiPresetButtonData
 from jdxi_editor.jdxi.preset.incoming_data import IncomingPresetData
 from jdxi_editor.jdxi.program.program import JDXiProgram
@@ -288,11 +288,11 @@ class MidiInHandler(MidiIOController):
             if not (message.type == "sysex" and len(message.data) > 6):
                 return
             mido_sub_id_byte_offset = (
-                JDXIIdentityOffset.SUB_ID_2_IDENTITY_REPLY - 1
+                    JDXiIdentitySysExLayout.ID.SUB2 - 1
             )  # account for lack of status byte
             if (
                 message.data[mido_sub_id_byte_offset]
-                == JDXiMidi.DEVICE.SUB_ID_2_IDENTITY_REPLY
+                == JDXiMidi.SYSEX.IDENTITY_CONST.SUB2_IDENTITY_REPLY
             ):
                 handle_identity_request(message)
                 return

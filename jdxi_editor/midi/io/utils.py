@@ -12,7 +12,7 @@ from picomidi.core.bitmask import BitMask
 from jdxi_editor.jdxi.midi.message.sysex.offset import (
     JDXIControlChangeOffset,
     JDXIProgramChangeOffset,
-    JDXiSysExOffset,
+    JDXiParameterSysExLayout,
 )
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import ModelID
@@ -97,7 +97,7 @@ def convert_to_mido_message(
     try:
         if (
             status_byte == Midi.SYSEX.START
-            and message_content[JDXiSysExOffset.END] == Midi.SYSEX.END
+            and message_content[JDXiParameterSysExLayout.END] == Midi.SYSEX.END
         ):
             sysex_data = nibble_data(
                 message_content[
@@ -171,7 +171,7 @@ def handle_identity_request(message: mido.Message) -> dict:
     device_id = device_info.device_id
     manufacturer_id = device_info.manufacturer
     version = message.data[
-        JDXiSysExOffset.ADDRESS.UMB : JDXiSysExOffset.TONE_NAME.START
+        JDXiParameterSysExLayout.ADDRESS.UMB: JDXiParameterSysExLayout.TONE_NAME.START
     ]  #  Extract firmware version bytes
 
     version_str = ".".join(str(byte) for byte in version)

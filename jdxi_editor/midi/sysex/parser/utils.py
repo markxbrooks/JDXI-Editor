@@ -24,7 +24,7 @@ from picomidi.constant import Midi
 from picomidi.sysex.parameter.address import AddressParameter
 
 from jdxi_editor.jdxi.midi.constant import JDXiMidi
-from jdxi_editor.jdxi.midi.message.sysex.offset import JDXiSysExOffset
+from jdxi_editor.jdxi.midi.message.sysex.offset import JDXiParameterSysExLayout
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB
 from jdxi_editor.midi.data.address.address import (
@@ -80,11 +80,11 @@ def extract_tone_name(data: bytes) -> str:
     :param data: bytes SysEx message data
     :return: str tone name, cleaned up
     """
-    if len(data) < JDXiSysExOffset.TONE_NAME.END:  # Ensure sufficient length
+    if len(data) < JDXiParameterSysExLayout.TONE_NAME.END:  # Ensure sufficient length
         return UNKNOWN
 
     raw_name = (
-        bytes(data[JDXiSysExOffset.TONE_NAME.START : JDXiSysExOffset.TONE_NAME.END])
+        bytes(data[JDXiParameterSysExLayout.TONE_NAME.START: JDXiParameterSysExLayout.TONE_NAME.END])
         .decode(errors="ignore")
         .strip("\x00\r ")
     )  # Start at index 12
@@ -116,11 +116,11 @@ def parse_single_parameter(
     :return: Dict[str, int]
     """
     if isinstance(parameter_type, DrumPartialParam):
-        _, offset = get_drum_tone(data[JDXiSysExOffset.ADDRESS.LMB])
-        address = data[JDXiSysExOffset.ADDRESS.LSB]
+        _, offset = get_drum_tone(data[JDXiParameterSysExLayout.ADDRESS.LMB])
+        address = data[JDXiParameterSysExLayout.ADDRESS.LSB]
         index = address_to_index(offset, address)
     else:
-        index = data[JDXiSysExOffset.ADDRESS.LSB]
+        index = data[JDXiParameterSysExLayout.ADDRESS.LSB]
     param = parameter_type.get_parameter_by_address(index)
     if param:
         return {"PARAM": param.name}
@@ -161,7 +161,7 @@ def initialize_parameters(data: bytes) -> Dict[str, str]:
     :param data: bytes SysEx message data
     :return: Dict[str, str]
     """
-    if len(data) <= JDXiSysExOffset.ADDRESS.LMB:
+    if len(data) <= JDXiParameterSysExLayout.ADDRESS.LMB:
         return {
             "JD_XI_HEADER": UNKNOWN,
             "ADDRESS": UNKNOWN,
@@ -175,23 +175,23 @@ def initialize_parameters(data: bytes) -> Dict[str, str]:
     tone_handler = tone_handlers.get(temporary_area, get_synth_tone)
 
     # Try extracting synth tone safely
-    synth_tone_info = tone_handler(data[JDXiSysExOffset.ADDRESS.LMB])
+    synth_tone_info = tone_handler(data[JDXiParameterSysExLayout.ADDRESS.LMB])
     synth_tone = (
         synth_tone_info[0] if isinstance(synth_tone_info, (list, tuple)) else UNKNOWN
     )
 
     return {
         "JD_XI_HEADER": safe_extract(
-            data, JDXiSysExOffset.START, JDXiSysExOffset.COMMAND_ID
+            data, JDXiParameterSysExLayout.START, JDXiParameterSysExLayout.COMMAND_ID
         ),
         "ADDRESS": safe_extract(
-            data, JDXiSysExOffset.COMMAND_ID, JDXiSysExOffset.ADDRESS.LSB
+            data, JDXiParameterSysExLayout.COMMAND_ID, JDXiParameterSysExLayout.ADDRESS.LSB
         ),
         "TEMPORARY_AREA": temporary_area,
         "SYNTH_TONE": synth_tone,
         "TONE_NAME": (
             extract_tone_name(data)
-            if len(data) >= JDXiSysExOffset.TONE_NAME.END
+            if len(data) >= JDXiParameterSysExLayout.TONE_NAME.END
             else UNKNOWN
         ),
     }
@@ -206,13 +206,13 @@ def _return_minimal_metadata(data: bytes) -> Dict[str, str]:
     """
     return {
         "JD_XI_HEADER": (
-            extract_hex(data, JDXiSysExOffset.START, JDXiSysExOffset.COMMAND_ID)
-            if len(data) >= JDXiSysExOffset.COMMAND_ID
+            extract_hex(data, JDXiParameterSysExLayout.START, JDXiParameterSysExLayout.COMMAND_ID)
+            if len(data) >= JDXiParameterSysExLayout.COMMAND_ID
             else UNKNOWN
         ),
         "ADDRESS": (
-            extract_hex(data, JDXiSysExOffset.COMMAND_ID, JDXiSysExOffset.ADDRESS.LSB)
-            if len(data) >= JDXiSysExOffset.ADDRESS.LSB
+            extract_hex(data, JDXiParameterSysExLayout.COMMAND_ID, JDXiParameterSysExLayout.ADDRESS.LSB)
+            if len(data) >= JDXiParameterSysExLayout.ADDRESS.LSB
             else UNKNOWN
         ),
         "TEMPORARY_AREA": UNKNOWN,
@@ -229,10 +229,10 @@ def _get_tone_from_data(data: bytes, temporary_area: str) -> tuple[str, int]:
     :return: tuple[str, int] tone type and byte offset
     """
 
-    if len(data) <= JDXiSysExOffset.ADDRESS.LMB:
+    if len(data) <= JDXiParameterSysExLayout.ADDRESS.LMB:
         return UNKNOWN, 0
 
-    byte_value = data[JDXiSysExOffset.ADDRESS.LMB]
+    byte_value = data[JDXiParameterSysExLayout.ADDRESS.LMB]
     if temporary_area == TemporaryToneUMB.DRUM_KIT.name:
         return get_drum_tone(byte_value)
     return get_synth_tone(byte_value)
@@ -245,7 +245,7 @@ def parse_sysex(data: bytes) -> Dict[str, str]:
     :param data: bytes SysEx message bytes
     :return: Dict[str, str] Dictionary with parsed tone parameters
     """
-    if len(data) < JDXiMidi.SYSEX.LENGTH.ONE_BYTE:
+    if len(data) < JDXiMidi.SYSEX.PARAMETER_LENGTH.ONE_BYTE:
         return _return_minimal_metadata(data)
 
     temporary_area = get_temporary_area(data) or UNKNOWN_AREA
@@ -263,7 +263,7 @@ def parse_sysex(data: bytes) -> Dict[str, str]:
         return _return_minimal_metadata(data)
 
     parsed_data = initialize_parameters(data)
-    if len(data) < JDXiMidi.SYSEX.LENGTH.FOUR_BYTE:
+    if len(data) < JDXiMidi.SYSEX.PARAMETER_LENGTH.FOUR_BYTE:
         update_short_data_with_parsed_parameters(data, parameter_cls, parsed_data)
     else:
         update_data_with_parsed_parameters(data, parameter_cls, parsed_data)

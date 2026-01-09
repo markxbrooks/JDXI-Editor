@@ -2,8 +2,7 @@
 
 Sysex parser
 # Example usage:
->>> sysex_data = [0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, 0x7E, 0x7F, 0x06, 0x01, 0x19, 0x01, 0x00,
->>>               0xF7]  # Example SysEx data
+>>> sysex_data = [0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, 0x7E, 0x7F, 0x06, 0x01, 0x19, 0x01, 0x00, 0xF7]  # Example SysEx data
 
 >>> parser = JDXiSysExParser(sysex_data)
 >>> parsed_data = parser.parse()
@@ -14,12 +13,12 @@ Sysex parser
 import json
 import os
 from pathlib import Path
-from typing import Optional
+from typing import Optional, TextIO
 
 from picomidi.constant import Midi
 
 from jdxi_editor.jdxi.midi.constant import JDXiMidi
-from jdxi_editor.jdxi.midi.message.sysex.offset import JDXiSysExOffset
+from jdxi_editor.jdxi.midi.message.sysex.offset import JDXiParameterSysExLayout
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.message.jdxi import JD_XI_HEADER_LIST
 from jdxi_editor.midi.sysex.parser.utils import parse_sysex
@@ -52,10 +51,16 @@ class JDXiSysExParser:
 
         :return: dict sysex dictionary {"JD_XI_HEADER": "f041100000000e", "ADDRESS": "12190150", ...}
         """
+        if not self.sysex_data:
+            raise ValueError("No SysEx data provided")
+
+        if not self._is_sysex_frame():
+            raise ValueError("Invalid SysEx framing")
+
         if not self._is_valid_sysex():
             raise ValueError("Invalid SysEx message")
 
-        if len(self.sysex_data) <= JDXiMidi.SYSEX.OFFSET.ADDRESS.LSB:
+        if len(self.sysex_data) <= JDXiMidi.SYSEX.PARAMETER_LAYOUT.ADDRESS.LSB:
             raise ValueError("Invalid SysEx message: too short")
 
         if not self._verify_header():
@@ -81,16 +86,33 @@ class JDXiSysExParser:
         self.sysex_data = sysex_data
         return self.parse()
 
+    def _is_identity_sysex(self) -> bool:
+        data = self.sysex_data
+        return (
+                len(data) >= JDXiMidi.SYSEX.SysEx.IdentityOffset.expected_length()
+                and data[JDXiSysExIdentityOffset.START] == SysExByte.START
+                and data[JDXiSysExIdentityOffset.ID.NUMBER] in (0x7E, 0x7F)
+                and data[JDXiSysExIdentityOffset.ID.SUB1_GENERAL_INFORMATION] == 0x06
+                and data[JDXiMidi.SYSEX.ID.SUB2_IDENTITY_REPLY] in (0x01, 0x02)
+                and data[JDXiSysExIdentityOffset.END] == SysExByte.END
+        )
+
     def _is_valid_sysex(self) -> bool:
         """Checks if the SysEx message starts and ends with the correct bytes."""
         return (
-            self.sysex_data[JDXiSysExOffset.START] == Midi.SYSEX.START
-            and self.sysex_data[JDXiSysExOffset.END] == Midi.SYSEX.END
+                self.sysex_data[JDXiParameterSysExLayout.START] == Midi.SYSEX.START
+                and self.sysex_data[JDXiParameterSysExLayout.END] == Midi.SYSEX.END
+        )
+
+    def _is_sysex_frame(self) -> bool:
+        return (
+                self.sysex_data[0] == SysExByte.START
+                and self.sysex_data[-1] == SysExByte.END
         )
 
     def _verify_header(self) -> bool:
         """Checks if the SysEx header matches the JD-Xi model ID."""
         # Remove the SysEx start (F0) and end (F7) bytes
-        data = self.sysex_data[JDXiSysExOffset.ROLAND_ID : JDXiSysExOffset.END]
+        data = self.sysex_data[JDXiParameterSysExLayout.ROLAND_ID: JDXiParameterSysExLayout.END]
         header_data = data[: len(JD_XI_HEADER_LIST)]
         return header_data == bytes(JD_XI_HEADER_LIST)
