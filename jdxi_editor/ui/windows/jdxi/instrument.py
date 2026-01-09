@@ -46,7 +46,7 @@ from PySide6.QtGui import QAction, QCloseEvent, QKeySequence, QMouseEvent, QShor
 from PySide6.QtWidgets import QApplication, QMenu, QMessageBox, QProgressDialog
 
 from jdxi_editor.jdxi.file.utils import documentation_file_path, os_file_open
-from jdxi_editor.jdxi.midi.constant import JDXiConstant
+from jdxi_editor.jdxi.midi.constant import JDXiMidi
 from jdxi_editor.jdxi.preset.button import JDXiPresetButtonData
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.jdxi.preset.lists import JDXiPresetToneList
@@ -1524,7 +1524,7 @@ class JDXiInstrument(JDXiUi):
                 name=data.program_name,
                 genre=genre,
                 pc=program_number,
-                msb=data.msb if data.msb is not None else 85,
+                msb=data.msb if data.msb is not None else JDXiMidi.CC.BANK_SELECT.MSB,
                 lsb=(
                     data.lsb
                     if data.lsb is not None
@@ -1676,7 +1676,7 @@ class JDXiInstrument(JDXiUi):
         self.octave_up.setChecked(self.current_octave > 0)
         self._update_display()
         log.message(
-            f"Updated octave to: {self.current_octave} (value: {hex(JDXiConstant.CENTER_OCTAVE_VALUE + self.current_octave)})"
+            f"Updated octave to: {self.current_octave} (value: {hex(JDXiMidi.OCTAVE_CENTER_VALUE + self.current_octave)})"
         )
 
     def _midi_init_ports(

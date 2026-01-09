@@ -40,7 +40,7 @@ from PySide6.QtGui import (
 )
 from PySide6.QtWidgets import QWidget
 
-from jdxi_editor.jdxi.midi.constant import JDXiConstant
+from jdxi_editor.jdxi.midi.constant import JDXiMidi, JDXiUI
 from jdxi_editor.jdxi.style import JDXiStyle
 
 
@@ -63,11 +63,11 @@ def generate_filter_plot(
     slope_samples = max(1, slope_samples)
 
     # Create the sustain plateau first
-    sustain = np.full(sustain_samples, JDXiConstant.FILTER_PLOT_DEPTH, dtype=np.float32)
+    sustain = np.full(sustain_samples, JDXiUI.FILTER_PLOT_DEPTH, dtype=np.float32)
 
     # Now create slope descending to zero
     slope_vals = np.linspace(
-        JDXiConstant.FILTER_PLOT_DEPTH,
+        JDXiUI.FILTER_PLOT_DEPTH,
         0,
         slope_samples,
         endpoint=False,

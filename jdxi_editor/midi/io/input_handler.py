@@ -29,7 +29,7 @@ from typing import Any, Callable, Dict, List, Optional
 import mido
 from PySide6.QtCore import Signal
 
-from jdxi_editor.jdxi.midi.constant import JDXiConstant
+from jdxi_editor.jdxi.midi.constant import JDXiMidi
 from jdxi_editor.jdxi.preset.button import JDXiPresetButtonData
 from jdxi_editor.jdxi.preset.data import JDXiPresetData
 from jdxi_editor.jdxi.preset.incoming_data import IncomingPresetData
@@ -296,7 +296,7 @@ class MidiInHandler(MidiIOController):
             )  # account for lack of status byte
             if (
                 message.data[mido_sub_id_byte_offset]
-                == JDXiConstant.SUB_ID_2_IDENTITY_REPLY
+                == JDXiMidi.DEVICE.SUB_ID_2_IDENTITY_REPLY
             ):
                 handle_identity_request(message)
                 return
@@ -346,8 +346,8 @@ class MidiInHandler(MidiIOController):
             f"Control Change - Channel: {channel}, Control: {control}, Value: {value}"
         )
         if value in [
-            JDXiConstant.CONTROL_CHANGE_BANK_SELECT_LSB_BANK_E_AND_F,
-            JDXiConstant.CONTROL_CHANGE_BANK_SELECT_LSB_BANK_G_AND_H,
+            JDXiMidi.CC.BANK_SELECT.LSB.BANK_E_AND_F,
+            JDXiMidi.CC.BANK_SELECT.LSB.BANK_G_AND_H,
         ]:
             log.parameter("control", control)  # Bank Select LSB 00 or 01
             log.parameter("value", value)  # Bank Select LSB 00 or 01

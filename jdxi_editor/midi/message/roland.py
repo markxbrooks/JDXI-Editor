@@ -26,7 +26,7 @@ print("Parsed Value:", parsed_message.value)
 from dataclasses import dataclass, field
 from typing import List, Optional, Union
 
-from jdxi_editor.jdxi.midi.constant import JDXiConstant
+from jdxi_editor.jdxi.midi.constant import JDXiMidi
 from jdxi_editor.jdxi.sysex.offset import JDXiSysExOffset
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import (
@@ -324,7 +324,7 @@ class JDXiSysEx(RolandSysEx):
         """Create message from received bytes"""
         if (
             len(data)
-            < JDXiConstant.SYSEX_LENGTH_ONE_BYTE_DATA  # Minimum length: F0 + ID + dev + model(4) + cmd + addr(4) + sum + F7
+            < JDXiMidi.SYSEX.LENGTH.ONE_BYTE  # Minimum length: F0 + ID + dev + model(4) + cmd + addr(4) + sum + F7
             or data[JDXiSysExOffset.SYSEX_START] != START_OF_SYSEX
             or data[JDXiSysExOffset.ROLAND_ID] != ModelID.ROLAND_ID  # Roland ID
             or data[JDXiSysExOffset.MODEL_ID_1 : JDXiSysExOffset.COMMAND_ID]
