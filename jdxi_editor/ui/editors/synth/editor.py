@@ -44,7 +44,7 @@ from jdxi_editor.midi.data.drum.data import DRUM_PARTIAL_MAP
 from jdxi_editor.midi.io.helper import MidiIOHelper
 
 # from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.midi.sysex.parser.json import JDXiJsonSysexParser
+from jdxi_editor.midi.sysex.parser.json_parser import JDXiJsonSysexParser
 from jdxi_editor.midi.sysex.request.data import SYNTH_PARTIAL_MAP
 from jdxi_editor.resources import resource_path
 from jdxi_editor.ui.editors.digital.utils import (

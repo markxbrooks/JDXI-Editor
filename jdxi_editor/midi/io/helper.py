@@ -88,7 +88,7 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
         """
         try:
             # Use the JSON parser for consistency
-            from jdxi_editor.midi.sysex.parser.json import JDXiJsonSysexParser
+            from jdxi_editor.midi.sysex.parser.json_parser import JDXiJsonSysexParser
 
             parser = JDXiJsonSysexParser(json_string)
             patch_data = parser.parse()

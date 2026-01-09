@@ -15,7 +15,7 @@ import json
 from pathlib import Path
 from typing import Optional, Dict, Any
 
-from jdxi_editor.midi.sysex.parser.json import JDXiJsonSysexParser
+from jdxi_editor.midi.sysex.parser.json_parser import JDXiJsonSysexParser
 from jdxi_editor.log.logger import Logger as log
 
 # Also print directly for visibility

@@ -16,6 +16,7 @@ from typing import Optional, TextIO
 
 import json
 
+from jdxi_editor.jdxi.midi.device.constant import JDXiSysExIdentity
 from picomidi import SysExByte
 from picomidi.constant import Midi
 
@@ -96,9 +97,10 @@ class JDXiSysExParser:
         return (
                 len(data) >= JDXiMidi.SYSEX.IDENTITY.LAYOUT.expected_length()
                 and data[JDXiMidi.SYSEX.IDENTITY.LAYOUT.START] == SysExByte.START
-                and data[JDXiMidi.SYSEX.IDENTITY.LAYOUT.ID.NUMBER] in (0x7E, 0x7F)
-                and data[JDXiMidi.SYSEX.IDENTITY.LAYOUT.ID.SUB1] == 0x06
-                and data[JDXiMidi.SYSEX.IDENTITY.CONST.SUB2_IDENTITY_REPLY] in (0x01, 0x02)
+                and data[JDXiMidi.SYSEX.IDENTITY.LAYOUT.ID.NUMBER] in (JDXiSysExIdentity.NUMBER, JDXiSysExIdentity.DEVICE)
+                and data[JDXiMidi.SYSEX.IDENTITY.LAYOUT.ID.SUB1] == JDXiSysExIdentity.SUB1_GENERAL_INFORMATION
+                and data[JDXiMidi.SYSEX.IDENTITY.LAYOUT.ID.SUB2] in (JDXiSysExIdentity.SUB2_IDENTITY_REQUEST,
+                                                                     JDXiSysExIdentity.SUB2_IDENTITY_REPLY)
                 and data[JDXiMidi.SYSEX.IDENTITY.LAYOUT.END] == SysExByte.END
         )
 
@@ -117,7 +119,7 @@ class JDXiSysExParser:
 
     def _verify_header(self) -> bool:
         """Checks if the SysEx header matches the JD-Xi model ID."""
-        # Remove the SysEx start (F0) and end (F7) bytes
+        # --- Remove the SysEx start (F0) and end (F7) bytes
         data = self.sysex_data[JDXiParameterSysExLayout.ROLAND_ID: JDXiParameterSysExLayout.END]
         header_data = data[: len(JD_XI_HEADER_LIST)]
         return header_data == bytes(JD_XI_HEADER_LIST)

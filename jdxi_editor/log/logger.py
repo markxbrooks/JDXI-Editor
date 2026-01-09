@@ -3,7 +3,7 @@
 import logging
 from typing import Any, Optional
 
-# Import standard library json explicitly to avoid shadowing from local json.py files
+# Import standard library json explicitly to avoid shadowing from local json_parser.py files
 # Use importlib to load the standard library json module directly from its file path
 import sys
 import os
