@@ -30,7 +30,7 @@ from PySide6.QtWidgets import (
 )
 
 from jdxi_editor.globals import PROFILING
-from jdxi_editor.jdxi.midi.constant import JDXiConstant
+from jdxi_editor.jdxi.midi.constant import JDXiMidi, JDXiUI
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.log.logger import Logger as log
@@ -570,7 +570,7 @@ class MidiFileEditor(SynthEditor):
         :return:
         """
         self.ui.usb_file_auto_generate_checkbox.setChecked(
-            state == JDXiConstant.CHECKED
+            state == JDXiUI.CHECKED
         )
         is_enabled = self.ui.usb_file_auto_generate_checkbox.isChecked()
         log.message(
@@ -589,7 +589,7 @@ class MidiFileEditor(SynthEditor):
         :return:
         """
         self.ui.usb_file_auto_generate_checkbox.setChecked(
-            state == JDXiConstant.CHECKED
+            state == JDXiUI.CHECKED
         )
         log.message(
             f"Auto generate filename based on current date and time and Midi file = {self.ui.usb_file_auto_generate_checkbox.isChecked()}"
@@ -682,7 +682,7 @@ class MidiFileEditor(SynthEditor):
 
         # QTimer lives in the main thread, but calls worker.do_work()
         self.midi_state.timer = QTimer(self)
-        self.midi_state.timer.setInterval(JDXiConstant.TIMER_INTERVAL)
+        self.midi_state.timer.setInterval(JDXiUI.TIMER_INTERVAL)
         # Note: Worker connection is handled in midi_playback_start() to avoid conflicts
 
         self.midi_state.playback_thread.start()
@@ -713,7 +713,7 @@ class MidiFileEditor(SynthEditor):
         :param state: Qt.CheckState
         :return:    None
         """
-        self.midi_state.suppress_program_changes = state == JDXiConstant.CHECKED
+        self.midi_state.suppress_program_changes = state == JDXiUI.CHECKED
         log.message(
             f"Suppress MIDI Program Changes = {self.midi_state.suppress_program_changes}"
         )
@@ -725,7 +725,7 @@ class MidiFileEditor(SynthEditor):
         :param state: Qt.CheckState
         :return:
         """
-        self.midi_state.suppress_control_changes = state == JDXiConstant.CHECKED
+        self.midi_state.suppress_control_changes = state == JDXiUI.CHECKED
         log.message(
             f"Suppress MIDI Control Changes = {self.midi_state.suppress_control_changes}"
         )
@@ -737,7 +737,7 @@ class MidiFileEditor(SynthEditor):
         :param state: Qt.CheckState
         :return:
         """
-        self.usb_recorder.file_save_recording = state == JDXiConstant.CHECKED
+        self.usb_recorder.file_save_recording = state == JDXiUI.CHECKED
         log.message(f"save USB recording = {self.usb_recorder.file_save_recording}")
 
     def usb_populate_devices(self) -> list:

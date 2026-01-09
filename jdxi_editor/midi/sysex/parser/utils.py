@@ -20,7 +20,7 @@ from __future__ import annotations
 
 from typing import Dict, Iterable
 
-from jdxi_editor.jdxi.midi.constant import JDXiConstant
+from jdxi_editor.jdxi.midi.constant import JDXiMidi
 from jdxi_editor.jdxi.sysex.offset import JDXiSysExOffset
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB
@@ -244,7 +244,7 @@ def parse_sysex(data: bytes) -> Dict[str, str]:
     :param data: bytes SysEx message bytes
     :return: Dict[str, str] Dictionary with parsed tone parameters
     """
-    if len(data) < JDXiConstant.SYSEX_LENGTH_ONE_BYTE_DATA:
+    if len(data) < JDXiMidi.SYSEX.LENGTH.ONE_BYTE:
         return _return_minimal_metadata(data)
 
     temporary_area = get_temporary_area(data) or UNKNOWN_AREA
@@ -262,7 +262,7 @@ def parse_sysex(data: bytes) -> Dict[str, str]:
         return _return_minimal_metadata(data)
 
     parsed_data = initialize_parameters(data)
-    if len(data) < JDXiConstant.SYSEX_LENGTH_FOUR_BYTE_DATA:
+    if len(data) < JDXiMidi.SYSEX.LENGTH.FOUR_BYTE:
         update_short_data_with_parsed_parameters(data, parameter_cls, parsed_data)
     else:
         update_data_with_parsed_parameters(data, parameter_cls, parsed_data)

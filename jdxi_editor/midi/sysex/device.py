@@ -45,7 +45,7 @@ Dependencies:
 from dataclasses import dataclass
 from typing import List, Optional
 
-from jdxi_editor.jdxi.midi.constant import JDXiConstant
+from jdxi_editor.jdxi.midi.constant import JDXiMidi
 from jdxi_editor.jdxi.sysex.offset import JDXIIdentityOffset
 from picomidi.constant import Midi
 
@@ -100,11 +100,11 @@ class DeviceInfo:
                 or data[JDXIIdentityOffset.SYSEX_START]
                 != Midi.SYSEX.START  # SysEx Start
                 or data[JDXIIdentityOffset.ID_NUMBER]
-                != JDXiConstant.ID_NUMBER  # 0x7E  # Universal Non-Realtime
+                != JDXiMidi.DEVICE.ID_NUMBER  # 0x7E  # Universal Non-Realtime
                 or data[JDXIIdentityOffset.SUB_ID_1_GENERAL_INFORMATION]
-                != JDXiConstant.SUB_ID_1_GENERAL_INFORMATION  # 0x06 General Info
+                != JDXiMidi.DEVICE.SUB_ID_1_GENERAL_INFORMATION  # 0x06 General Info
                 or data[JDXIIdentityOffset.SUB_ID_2_IDENTITY_REPLY]
-                != JDXiConstant.SUB_ID_2_IDENTITY_REPLY  # 0x02 Identity Reply
+                != JDXiMidi.DEVICE.SUB_ID_2_IDENTITY_REPLY  # 0x02 Identity Reply
             ):
                 return None  # Invalid Identity Reply
 
