@@ -292,7 +292,7 @@ class MidiInHandler(MidiIOController):
             )  # account for lack of status byte
             if (
                 message.data[mido_sub_id_byte_offset]
-                == JDXiMidi.SYSEX.IDENTITY_CONST.SUB2_IDENTITY_REPLY
+                == JDXiMidi.SYSEX.IDENTITY.CONST.SUB2_IDENTITY_REPLY
             ):
                 handle_identity_request(message)
                 return

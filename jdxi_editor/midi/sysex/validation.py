@@ -14,8 +14,8 @@ def validate_raw_sysex_message(message: List[int]) -> bool:
     try:
         # Check length
         if len(message) not in [
-            JDXiMidi.SYSEX.PARAMETER_LENGTH.ONE_BYTE,
-            JDXiMidi.SYSEX.PARAMETER_LENGTH.FOUR_BYTE,
+            JDXiMidi.SYSEX.PARAMETER.LENGTH.ONE_BYTE,
+            JDXiMidi.SYSEX.PARAMETER.LENGTH.FOUR_BYTE,
         ]:
             log.message(f"Invalid SysEx length: {len(message)}")
             return False

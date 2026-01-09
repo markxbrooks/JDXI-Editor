@@ -47,9 +47,9 @@ class IdentityRequestMessage(MidiMessage):
         """
         return [
             Midi.SYSEX.START,
-            JDXiMidi.SYSEX.IDENTITY_CONST.NUMBER,
-            JDXiMidi.SYSEX.IDENTITY_CONST.DEVICE,
-            JDXiMidi.SYSEX.IDENTITY_CONST.SUB1_GENERAL_INFORMATION,
-            JDXiMidi.SYSEX.IDENTITY_CONST.SUB2_IDENTITY_REQUEST,
+            JDXiMidi.SYSEX.IDENTITY.CONST.NUMBER,
+            JDXiMidi.SYSEX.IDENTITY.CONST.DEVICE,
+            JDXiMidi.SYSEX.IDENTITY.CONST.SUB1_GENERAL_INFORMATION,
+            JDXiMidi.SYSEX.IDENTITY.CONST.SUB2_IDENTITY_REQUEST,
             Midi.SYSEX.END,
         ]

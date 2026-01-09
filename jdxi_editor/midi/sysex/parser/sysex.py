@@ -15,6 +15,7 @@ import os
 from pathlib import Path
 from typing import Optional, TextIO
 
+from picomidi import SysExByte
 from picomidi.constant import Midi
 
 from jdxi_editor.jdxi.midi.constant import JDXiMidi
@@ -60,7 +61,7 @@ class JDXiSysExParser:
         if not self._is_valid_sysex():
             raise ValueError("Invalid SysEx message")
 
-        if len(self.sysex_data) <= JDXiMidi.SYSEX.PARAMETER_LAYOUT.ADDRESS.LSB:
+        if len(self.sysex_data) <= JDXiMidi.SYSEX.PARAMETER.LAYOUT.ADDRESS.LSB:
             raise ValueError("Invalid SysEx message: too short")
 
         if not self._verify_header():
@@ -89,12 +90,12 @@ class JDXiSysExParser:
     def _is_identity_sysex(self) -> bool:
         data = self.sysex_data
         return (
-                len(data) >= JDXiMidi.SYSEX.SysEx.IdentityOffset.expected_length()
-                and data[JDXiSysExIdentityOffset.START] == SysExByte.START
-                and data[JDXiSysExIdentityOffset.ID.NUMBER] in (0x7E, 0x7F)
-                and data[JDXiSysExIdentityOffset.ID.SUB1_GENERAL_INFORMATION] == 0x06
-                and data[JDXiMidi.SYSEX.ID.SUB2_IDENTITY_REPLY] in (0x01, 0x02)
-                and data[JDXiSysExIdentityOffset.END] == SysExByte.END
+                len(data) >= JDXiMidi.SYSEX.IDENTITY.LAYOUT.expected_length()
+                and data[JDXiMidi.SYSEX.IDENTITY.LAYOUT.START] == SysExByte.START
+                and data[JDXiMidi.SYSEX.IDENTITY.LAYOUT.ID.NUMBER] in (0x7E, 0x7F)
+                and data[JDXiMidi.SYSEX.IDENTITY.LAYOUT.ID.SUB1] == 0x06
+                and data[JDXiMidi.SYSEX.IDENTITY.CONST.SUB2_IDENTITY_REPLY] in (0x01, 0x02)
+                and data[JDXiMidi.SYSEX.IDENTITY.LAYOUT.END] == SysExByte.END
         )
 
     def _is_valid_sysex(self) -> bool:
