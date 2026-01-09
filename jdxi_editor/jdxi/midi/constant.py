@@ -5,24 +5,19 @@ This module provides:
 - MidiConstant: Standard MIDI protocol constants (status bytes, channels, values, etc.)
 - JDXiConstant: JD-Xi-specific constants (SysEx addresses, bank mappings, etc.)
 """
-
-from picomidi import BitMask
+from jdxi_editor.jdxi.sysex.offset import JDXiSysExOffset
 
 
 class JDXiUI:
     """JDXi UI related constants"""
-    # ============================================================================
-    # JD-Xi UI Constants
-    # ============================================================================
     TIMER_INTERVAL = 10
     FILTER_PLOT_DEPTH = 1.0
     CHECKED = 2
 
 
 class JDXiDevice:
-    # ============================================================================
-    # Roland SysEx Header
-    # ============================================================================
+    """Roland SysEx Header"""
+
     ROLAND_ID = [
         0x41,
         0x10,
@@ -46,6 +41,7 @@ class JDXiSysExLength:
 
 class JDXiSysEx:
     """ Sysex related constants"""
+    OFFSET = JDXiSysExOffset
     LENGTH = JDXiSysExLength
     LENGTH_FOUR_BYTE_DATA = 18
 
@@ -68,8 +64,8 @@ class JDXiCCBankSelect:
 
     class LSB:
         """LSB values for Bank selection."""
-        BANK_E_AND_F = 0
-        BANK_G_AND_H = 1
+        BANK_E_AND_F = 0  # User Banks
+        BANK_G_AND_H = 1  # User Banks
         BANK_A_AND_B = 64  # ROM banks
         BANK_C_AND_D = 65  # ROM banks
 

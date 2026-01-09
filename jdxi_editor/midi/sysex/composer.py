@@ -131,14 +131,14 @@ class JDXiSysExComposer:
         if not validate_raw_sysex_message(raw_message):
             raise ValueError("Invalid JD-Xi SysEx message detected")
         return (
-            raw_message[JDXiSysExOffset.SYSEX_START] == Midi.SYSEX.START
-            and raw_message[JDXiSysExOffset.SYSEX_END] == Midi.SYSEX.END
+                raw_message[JDXiSysExOffset.START] == Midi.SYSEX.START
+                and raw_message[JDXiSysExOffset.END] == Midi.SYSEX.END
         )
 
     def _verify_header(self) -> bool:
         """Checks if the SysEx header matches the JD-Xi model ID."""
         message = self.sysex_message.to_bytes()
         # Remove the SysEx start (F0) and end (F7) bytes
-        data = message[JDXiSysExOffset.ROLAND_ID : JDXiSysExOffset.SYSEX_END]
+        data = message[JDXiSysExOffset.ROLAND_ID : JDXiSysExOffset.END]
         header_data = data[: len(JD_XI_HEADER_LIST)]
         return header_data == bytes(JD_XI_HEADER_LIST)

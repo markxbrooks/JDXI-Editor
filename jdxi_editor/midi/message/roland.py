@@ -325,9 +325,9 @@ class JDXiSysEx(RolandSysEx):
         if (
             len(data)
             < JDXiMidi.SYSEX.LENGTH.ONE_BYTE  # Minimum length: F0 + ID + dev + model(4) + cmd + addr(4) + sum + F7
-            or data[JDXiSysExOffset.SYSEX_START] != START_OF_SYSEX
+            or data[JDXiSysExOffset.START] != START_OF_SYSEX
             or data[JDXiSysExOffset.ROLAND_ID] != ModelID.ROLAND_ID  # Roland ID
-            or data[JDXiSysExOffset.MODEL_ID_1 : JDXiSysExOffset.COMMAND_ID]
+            or data[JDXiSysExOffset.MODEL_ID.POS1 : JDXiSysExOffset.COMMAND_ID]
             != bytes(
                 [
                     ModelID.MODEL_ID_1,
@@ -342,10 +342,10 @@ class JDXiSysEx(RolandSysEx):
         device_id = data[JDXiSysExOffset.DEVICE_ID]
         command = data[JDXiSysExOffset.COMMAND_ID]
         address = list(
-            data[JDXiSysExOffset.ADDRESS_MSB : JDXiSysExOffset.TONE_NAME_START]
+            data[JDXiSysExOffset.ADDRESS.MSB : JDXiSysExOffset.TONE_NAME.START]
         )
         message_data = list(
-            data[JDXiSysExOffset.TONE_NAME_START : JDXiSysExOffset.CHECKSUM]
+            data[JDXiSysExOffset.TONE_NAME.START : JDXiSysExOffset.CHECKSUM]
         )  # Everything between address and checksum
         received_checksum = data[JDXiSysExOffset.CHECKSUM]
 

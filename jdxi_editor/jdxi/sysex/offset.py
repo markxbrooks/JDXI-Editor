@@ -61,7 +61,29 @@ class JDXIPitchBendOffset(IntEnum):
     END = -1  # End of message, no more data bytes expected
 
 
-class JDXiSysExOffset(IntEnum):
+class JDXiSysExModelIDOffset(IntEnum):
+    """Model ID Offsets"""
+    POS1 = 3
+    POS2 = 4
+    POS3 = 5
+    POS4 = 6
+
+
+class JDXiSysExToneNameOffset(IntEnum):
+    """Tone Name offsets"""
+    START = 12
+    END = 24
+
+
+class JDXiSysExAddressOffset(IntEnum):
+    """Sysex Offsets"""
+    MSB = 8
+    UMB = 9
+    LMB = 10
+    LSB = 11
+
+
+class JDXiSysExOffset:
     """
     JDXiSysExOffset
 
@@ -88,23 +110,16 @@ class JDXiSysExOffset(IntEnum):
 
     """
 
-    SYSEX_START = 0
+    START = 0
     ROLAND_ID = 1
     DEVICE_ID = 2
-    MODEL_ID_1 = 3
-    MODEL_ID_2 = 4
-    MODEL_ID_3 = 5
-    MODEL_ID_4 = 6
+    MODEL_ID = JDXiSysExModelIDOffset  # 3-6
     COMMAND_ID = 7
-    ADDRESS_MSB = 8
-    ADDRESS_UMB = 9
-    ADDRESS_LMB = 10
-    ADDRESS_LSB = 11
-    TONE_NAME_START = 12
-    TONE_NAME_END = 24
+    ADDRESS = JDXiSysExAddressOffset  # 8-11
+    TONE_NAME = JDXiSysExToneNameOffset  # 12-24
     VALUE = -3
     CHECKSUM = -2
-    SYSEX_END = -1
+    END = -1
 
 
 class JDXIIdentityOffset(IntEnum):

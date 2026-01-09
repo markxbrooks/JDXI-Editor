@@ -38,10 +38,10 @@ def dynamic_map_resolver(data: bytes) -> Dict[str, str]:
 
         # Handle drum tones dynamically
         if temporary_area == TemporaryToneUMB.DRUM_KIT.name:
-            address_lmb = data[JDXiSysExOffset.ADDRESS_LMB]
+            address_lmb = data[JDXiSysExOffset.ADDRESS.LMB]
             synth_tone, offset = get_drum_tone(address_lmb)
         else:
-            synth_tone, offset = get_synth_tone(data[JDXiSysExOffset.ADDRESS_LMB])
+            synth_tone, offset = get_synth_tone(data[JDXiSysExOffset.ADDRESS.LMB])
 
         # Resolve parameter class dynamically
         parameter_cls = PARAMETER_ADDRESS_NAME_MAP.get(

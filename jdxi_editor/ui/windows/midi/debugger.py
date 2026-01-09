@@ -251,13 +251,13 @@ class MIDIDebugger(QMainWindow):
             synth_tone = sysex_dict.get("SYNTH_TONE", "Unknown")
             param_name = sysex_dict.get("PARAM", "Unknown")
 
-            address_msb = message[JDXiSysExOffset.ADDRESS_MSB]
-            address_umb = message[JDXiSysExOffset.ADDRESS_UMB]
-            address_lsb = message[JDXiSysExOffset.ADDRESS_LSB]
+            address_msb = message[JDXiSysExOffset.ADDRESS.MSB]
+            address_umb = message[JDXiSysExOffset.ADDRESS.UMB]
+            address_lsb = message[JDXiSysExOffset.ADDRESS.LSB]
             value = message[JDXiSysExOffset.VALUE]
             checksum = message[JDXiSysExOffset.CHECKSUM]
             checksum_valid = validate_checksum(
-                message[JDXiSysExOffset.ADDRESS_MSB : JDXiSysExOffset.CHECKSUM],
+                message[JDXiSysExOffset.ADDRESS.MSB : JDXiSysExOffset.CHECKSUM],
                 checksum,
             )
 
@@ -265,7 +265,7 @@ class MIDIDebugger(QMainWindow):
                 f"|{'-' * 7}|{'-' * 30}|{'-' * 19}|{'-' * 32}|\n",
                 fmt_row("Byte", "Description", "Value", "Notes"),
                 f"|{'-' * 7}|{'-' * 30}|{'-' * 19}|{'-' * 32}|\n",
-                fmt_row(0, "Start of SysEx", hex(message[JDXiSysExOffset.SYSEX_START])),
+                fmt_row(0, "Start of SysEx", hex(message[JDXiSysExOffset.START])),
                 fmt_row(
                     1,
                     "Manufacturer ID",
@@ -279,7 +279,7 @@ class MIDIDebugger(QMainWindow):
                     " ".join(
                         hex(x)
                         for x in message[
-                            JDXiSysExOffset.MODEL_ID_1 : JDXiSysExOffset.COMMAND_ID
+                            JDXiSysExOffset.MODEL_ID.POS1 : JDXiSysExOffset.COMMAND_ID
                         ]
                     ),
                 ),
@@ -294,7 +294,7 @@ class MIDIDebugger(QMainWindow):
                     hex(checksum),
                     "Valid" if checksum_valid else "Invalid",
                 ),
-                fmt_row(14, "End of SysEx", hex(message[JDXiSysExOffset.SYSEX_END])),
+                fmt_row(14, "End of SysEx", hex(message[JDXiSysExOffset.END])),
                 f"|{'-' * 7}|{'-' * 30}|{'-' * 19}|{'-' * 32}|\n",
             ]
 

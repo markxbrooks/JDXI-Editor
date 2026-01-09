@@ -17,10 +17,10 @@ def get_temporary_area(data: bytes) -> str:
     :param data: bytes SysEx message data
     :return: str Temporary Area: TEMPORARY_PROGRAM, ANALOG_SYNTH, DIGITAL_SYNTH_1 ...
     """
-    temp_area_bytes = data[JDXiSysExOffset.ADDRESS_MSB : JDXiSysExOffset.ADDRESS_LMB]
+    temp_area_bytes = data[JDXiSysExOffset.ADDRESS.MSB : JDXiSysExOffset.ADDRESS.LMB]
     return (
         JDXiMapTemporaryArea.MAP.get(tuple(temp_area_bytes), "Unknown")
-        if len(data) >= JDXiSysExOffset.ADDRESS_LSB
+        if len(data) >= JDXiSysExOffset.ADDRESS.LSB
         else "Unknown"
     )
 
