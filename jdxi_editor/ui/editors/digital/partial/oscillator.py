@@ -5,6 +5,7 @@ Digital Oscillator Section for the JDXI Editor
 import logging
 from typing import Callable
 
+from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
     QComboBox,
@@ -31,7 +32,6 @@ from jdxi_editor.ui.widgets.button.waveform.waveform import WaveformButton
 from jdxi_editor.ui.widgets.pitch.envelope import PitchEnvelopeWidget
 from jdxi_editor.ui.widgets.slider import Slider
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
-from picomidi.sysex.parameter.address import AddressParameter
 
 
 class DigitalOscillatorSection(QWidget):

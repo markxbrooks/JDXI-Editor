@@ -11,6 +11,8 @@ and can communicate with MIDI devices.
 
 from typing import Callable, Optional
 
+from picomidi.constant import Midi
+from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QGridLayout, QSlider, QWidget
 
@@ -22,8 +24,6 @@ from jdxi_editor.ui.widgets.envelope.base import TOOLTIPS, EnvelopeWidgetBase
 from jdxi_editor.ui.widgets.pitch.pwm_plot import PWMPlot
 from jdxi_editor.ui.widgets.pulse_width.slider_spinbox import PWMSliderSpinbox
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
-from picomidi.constant import Midi
-from picomidi.sysex.parameter.address import AddressParameter
 
 
 class PWMWidget(EnvelopeWidgetBase):

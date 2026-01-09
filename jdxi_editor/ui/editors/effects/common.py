@@ -57,6 +57,8 @@ Features:
 
 from typing import Dict, Union
 
+from picomidi.constant import Midi
+from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import QEvent, Qt
 from PySide6.QtGui import QShowEvent
 from PySide6.QtWidgets import (
@@ -95,8 +97,6 @@ from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
-from picomidi.constant import Midi
-from picomidi.sysex.parameter.address import AddressParameter
 
 
 class EffectsCommonEditor(BasicEditor):

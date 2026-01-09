@@ -28,13 +28,13 @@ Customization:
 """
 
 import numpy as np
+from picomidi.constant import Midi
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QColor, QFont, QLinearGradient, QPainter, QPainterPath, QPen
 from PySide6.QtWidgets import QWidget
 
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.log.logger import Logger as log
-from picomidi.constant import Midi
 
 
 def midi_value_to_float(value: int) -> float:

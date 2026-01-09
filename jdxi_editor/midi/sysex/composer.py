@@ -4,6 +4,9 @@ JDXiSysExComposer
 
 from typing import Optional
 
+from picomidi.constant import Midi
+from picomidi.sysex.parameter.address import AddressParameter
+
 from jdxi_editor.jdxi.midi.message.sysex.offset import JDXiSysExOffset
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import (
@@ -23,8 +26,6 @@ from jdxi_editor.midi.sysex.validation import (
     validate_raw_sysex_message,
 )
 from jdxi_editor.midi.utils.byte import split_16bit_value_to_nibbles
-from picomidi.constant import Midi
-from picomidi.sysex.parameter.address import AddressParameter
 
 
 def apply_lmb_offset(
@@ -131,8 +132,8 @@ class JDXiSysExComposer:
         if not validate_raw_sysex_message(raw_message):
             raise ValueError("Invalid JD-Xi SysEx message detected")
         return (
-                raw_message[JDXiSysExOffset.START] == Midi.SYSEX.START
-                and raw_message[JDXiSysExOffset.END] == Midi.SYSEX.END
+            raw_message[JDXiSysExOffset.START] == Midi.SYSEX.START
+            and raw_message[JDXiSysExOffset.END] == Midi.SYSEX.END
         )
 
     def _verify_header(self) -> bool:

@@ -23,6 +23,7 @@ Dependencies:
 
 from typing import Dict, Optional
 
+from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QGroupBox,
@@ -58,7 +59,6 @@ from jdxi_editor.midi.data.vocal_effects.vocal import (
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
-from picomidi.sysex.parameter.address import AddressParameter
 
 
 class VocalFXEditor(BasicEditor):

@@ -39,8 +39,9 @@ Usage example:
 
 from typing import Optional
 
-from jdxi_editor.midi.data.address.address import AddressOffsetProgramLMB
 from picomidi.sysex.parameter.address import AddressParameter
+
+from jdxi_editor.midi.data.address.address import AddressOffsetProgramLMB
 
 
 class DigitalCommonParam(AddressParameter):

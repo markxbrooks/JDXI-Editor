@@ -63,6 +63,7 @@ class JDXIPitchBendOffset(IntEnum):
 
 class JDXiSysExModelIDOffset(IntEnum):
     """Model ID Offsets"""
+
     POS1 = 3
     POS2 = 4
     POS3 = 5
@@ -71,12 +72,14 @@ class JDXiSysExModelIDOffset(IntEnum):
 
 class JDXiSysExToneNameOffset(IntEnum):
     """Tone Name offsets"""
+
     START = 12
     END = 24
 
 
 class JDXiSysExAddressOffset(IntEnum):
     """Sysex Offsets"""
+
     MSB = 8
     UMB = 9
     LMB = 10

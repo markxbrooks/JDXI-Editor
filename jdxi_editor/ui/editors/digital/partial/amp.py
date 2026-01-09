@@ -5,6 +5,7 @@ AMP section for the digital partial editor.
 from typing import Callable
 
 import qtawesome as qta
+from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QGroupBox,
@@ -25,7 +26,6 @@ from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
-from picomidi.sysex.parameter.address import AddressParameter
 
 
 class DigitalAmpSection(QWidget):

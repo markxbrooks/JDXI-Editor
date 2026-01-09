@@ -25,13 +25,14 @@ import os
 from typing import Any, Callable, Dict, List, Optional
 
 import mido
+from picomidi.constant import Midi
 from PySide6.QtCore import Signal
 
 from jdxi_editor.jdxi.midi.constant import JDXiMidi
+from jdxi_editor.jdxi.midi.message.sysex.offset import JDXIIdentityOffset
 from jdxi_editor.jdxi.preset.button import JDXiPresetButtonData
 from jdxi_editor.jdxi.preset.incoming_data import IncomingPresetData
 from jdxi_editor.jdxi.program.program import JDXiProgram
-from jdxi_editor.jdxi.midi.message.sysex.offset import JDXIIdentityOffset
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import AddressStartMSB as AreaMSB
 from jdxi_editor.midi.data.programs import JDXiProgramList
@@ -40,7 +41,6 @@ from jdxi_editor.midi.io.utils import handle_identity_request
 from jdxi_editor.midi.map.synth_type import JDXiMapSynthType
 from jdxi_editor.midi.sysex.parser.sysex import JDXiSysExParser
 from jdxi_editor.midi.sysex.request.data import IGNORED_KEYS
-from picomidi.constant import Midi
 
 
 def add_or_replace_program_and_save(new_program: JDXiProgram) -> bool:

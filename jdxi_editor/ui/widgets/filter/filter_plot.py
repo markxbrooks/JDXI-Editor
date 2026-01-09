@@ -41,8 +41,8 @@ from PySide6.QtGui import (
 from PySide6.QtWidgets import QWidget
 
 from jdxi_editor.jdxi.midi.constant import JDXiMidi
-from jdxi_editor.ui.constant import JDXiUI
 from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.ui.constant import JDXiUI
 
 
 def generate_filter_plot(

@@ -5,14 +5,15 @@ Effects
 from dataclasses import dataclass
 from enum import Enum
 
+from picomidi.constant import Midi
+from picomidi.core.bitmask import BitMask
+
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetProgramLMB,
     AddressStartMSB,
     CommandID,
 )
 from jdxi_editor.midi.message.roland import RolandSysEx
-from picomidi.constant import Midi
-from picomidi.core.bitmask import BitMask
 
 
 class EffectType(Enum):

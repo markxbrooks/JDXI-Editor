@@ -20,6 +20,9 @@ from __future__ import annotations
 
 from typing import Dict, Iterable
 
+from picomidi.constant import Midi
+from picomidi.sysex.parameter.address import AddressParameter
+
 from jdxi_editor.jdxi.midi.constant import JDXiMidi
 from jdxi_editor.jdxi.midi.message.sysex.offset import JDXiSysExOffset
 from jdxi_editor.log.logger import Logger as log
@@ -36,8 +39,6 @@ from jdxi_editor.midi.sysex.parser.tone_mapper import (
     get_synth_tone,
     get_temporary_area,
 )
-from picomidi.constant import Midi
-from picomidi.sysex.parameter.address import AddressParameter
 
 UNKNOWN = "Unknown"
 UNKNOWN_AREA = "Unknown area"

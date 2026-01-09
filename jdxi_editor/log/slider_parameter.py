@@ -5,6 +5,8 @@ Log Slider Parameters
 import logging
 from typing import Union
 
+from picomidi.sysex.parameter.address import AddressParameter
+
 from jdxi_editor.globals import LOGGING, logger
 from jdxi_editor.log.decorator import decorate_log_message
 from jdxi_editor.midi.data.address.address import (
@@ -16,7 +18,6 @@ from jdxi_editor.midi.data.address.address import (
 )
 from jdxi_editor.midi.data.address.sysex import ZERO_BYTE
 from jdxi_editor.ui.windows.midi.debugger import parse_sysex_byte
-from picomidi.sysex.parameter.address import AddressParameter
 
 
 def log_slider_parameters(

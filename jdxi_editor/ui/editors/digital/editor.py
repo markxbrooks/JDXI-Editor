@@ -32,6 +32,7 @@ Dependencies:
 import logging
 from typing import Dict, Optional, Union
 
+from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QKeySequence, QShortcut
 from PySide6.QtWidgets import (
@@ -69,7 +70,6 @@ from jdxi_editor.ui.editors.digital import (
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.widgets.panel.partial import PartialsPanel
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
-from picomidi.sysex.parameter.address import AddressParameter
 
 
 class DigitalSynthEditor(SynthEditor):

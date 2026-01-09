@@ -5,10 +5,10 @@ from dataclasses import dataclass, field
 from typing import Optional
 
 from mido import MidiFile
+from picomidi.constant import Midi
 from PySide6.QtCore import QThread, QTimer
 
 from jdxi_editor.midi.channel.channel import MidiChannel
-from picomidi.constant import Midi
 
 
 @dataclass

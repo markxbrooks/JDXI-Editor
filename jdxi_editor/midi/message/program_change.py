@@ -24,8 +24,9 @@ Usage Example:
 
 from dataclasses import dataclass
 
-from jdxi_editor.midi.message.channel import ChannelMessage
 from picomidi.constant import Midi
+
+from jdxi_editor.midi.message.channel import ChannelMessage
 
 
 @dataclass

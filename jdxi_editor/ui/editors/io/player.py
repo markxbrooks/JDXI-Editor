@@ -15,6 +15,7 @@ import mido
 import pyaudio
 import qtawesome as qta
 from mido import MidiFile, bpm2tempo
+from picomidi.constant import Midi
 from PySide6.QtCore import Qt, QThread, QTimer
 from PySide6.QtWidgets import (
     QCheckBox,
@@ -31,7 +32,6 @@ from PySide6.QtWidgets import (
 
 from jdxi_editor.globals import PROFILING
 from jdxi_editor.jdxi.midi.constant import JDXiMidi
-from jdxi_editor.ui.constant import JDXiUI
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.log.logger import Logger as log
@@ -55,6 +55,7 @@ from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
 from jdxi_editor.midi.utils.helpers import start_recording
 from jdxi_editor.midi.utils.usb_recorder import USBRecorder
+from jdxi_editor.ui.constant import JDXiUI
 from jdxi_editor.ui.editors.io.midi_playback_state import MidiPlaybackState
 from jdxi_editor.ui.editors.io.playback_worker import MidiPlaybackWorker
 from jdxi_editor.ui.editors.io.ui_midi_player import UiMidi
@@ -64,7 +65,6 @@ from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 from jdxi_editor.ui.widgets.midi.track_viewer import MidiTrackViewer
 from jdxi_editor.ui.widgets.midi.utils import get_total_duration_in_seconds
 from jdxi_editor.ui.windows.jdxi.utils import show_message_box
-from picomidi.constant import Midi
 
 # Expose Qt symbols for tests that patch via jdxi_editor.ui.editors.io.player
 # Tests expect these names to exist at module level
@@ -570,9 +570,7 @@ class MidiFileEditor(SynthEditor):
         :param state: Qt.CheckState
         :return:
         """
-        self.ui.usb_file_auto_generate_checkbox.setChecked(
-            state == JDXiUI.CHECKED
-        )
+        self.ui.usb_file_auto_generate_checkbox.setChecked(state == JDXiUI.CHECKED)
         is_enabled = self.ui.usb_file_auto_generate_checkbox.isChecked()
         log.message(
             f"Auto generate filename based on current date and time and Midi file = {is_enabled}"
@@ -589,9 +587,7 @@ class MidiFileEditor(SynthEditor):
         :param state: Qt.CheckState
         :return:
         """
-        self.ui.usb_file_auto_generate_checkbox.setChecked(
-            state == JDXiUI.CHECKED
-        )
+        self.ui.usb_file_auto_generate_checkbox.setChecked(state == JDXiUI.CHECKED)
         log.message(
             f"Auto generate filename based on current date and time and Midi file = {self.ui.usb_file_auto_generate_checkbox.isChecked()}"
         )

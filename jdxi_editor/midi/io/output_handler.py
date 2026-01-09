@@ -20,6 +20,8 @@ Example usage:
 import logging
 from typing import Iterable, Optional
 
+from picomidi.constant import Midi
+from picomidi.core.bitmask import BitMask
 from PySide6.QtCore import Signal
 
 from jdxi_editor.log.logger import Logger as log
@@ -35,8 +37,6 @@ from jdxi_editor.midi.message import (
 )
 from jdxi_editor.midi.sysex.parser.sysex import JDXiSysExParser
 from jdxi_editor.midi.sysex.validation import validate_midi_message
-from picomidi.constant import Midi
-from picomidi.core.bitmask import BitMask
 
 
 class MidiOutHandler(MidiIOController):

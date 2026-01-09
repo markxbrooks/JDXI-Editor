@@ -34,6 +34,8 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import List
 
+from picomidi.constant import Midi
+
 from jdxi_editor.jdxi.midi.message.sysex.offset import JDXiSysExOffset
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetProgramLMB,
@@ -42,7 +44,6 @@ from jdxi_editor.midi.data.address.address import (
 )
 from jdxi_editor.midi.message.jdxi import JD_XI_HEADER_LIST
 from jdxi_editor.midi.message.midi import MidiMessage
-from picomidi.constant import Midi
 
 # MIDI Constants
 JD_XI_HEADER_BYTES = bytes(JD_XI_HEADER_LIST)
