@@ -2,25 +2,26 @@
 
 Sysex parser
 # Example usage:
->>> sysex_data = [0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, 0x7E, 0x7F, 0x06, 0x01, 0x19, 0x01, 0x00, 0xF7]  # Example SysEx data
-
+>>> sysex_data = bytes([0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, 0x12, 0x19, 0x01, 0x00, 0x00, 0x10, 0x7F, 0x57, 0xF7])
 >>> parser = JDXiSysExParser(sysex_data)
->>> parsed_data = parser.parse()
->>> log.message(f"Parsed Data: {parsed_data}")
+>>> result = parser.parse()
+>>> isinstance(result, dict)
+True
 
 """
 
-import json
 import os
 from pathlib import Path
 from typing import Optional, TextIO
+
+import json
 
 from picomidi import SysExByte
 from picomidi.constant import Midi
 
 from jdxi_editor.jdxi.midi.constant import JDXiMidi
 from jdxi_editor.jdxi.midi.message.sysex.offset import JDXiParameterSysExLayout
-from jdxi_editor.log.logger import Logger as log
+import logging as log
 from jdxi_editor.midi.message.jdxi import JD_XI_HEADER_LIST
 from jdxi_editor.midi.sysex.parser.utils import parse_sysex
 from jdxi_editor.project import __package_name__
@@ -61,13 +62,16 @@ class JDXiSysExParser:
         if not self._is_valid_sysex():
             raise ValueError("Invalid SysEx message")
 
+        if self._is_identity_sysex():
+            return self._parse_identity_sysex()
+
         if len(self.sysex_data) <= JDXiMidi.SYSEX.PARAMETER.LAYOUT.ADDRESS.LSB:
             raise ValueError("Invalid SysEx message: too short")
 
         if not self._verify_header():
             raise ValueError("Invalid JD-Xi header")
         else:
-            log.message("Correct JD-Xi header found", silent=True)
+            log.info("Correct JD-Xi header found")
 
         self.sysex_dict = parse_sysex(self.sysex_data)
         json_log_file = (
@@ -117,3 +121,23 @@ class JDXiSysExParser:
         data = self.sysex_data[JDXiParameterSysExLayout.ROLAND_ID: JDXiParameterSysExLayout.END]
         header_data = data[: len(JD_XI_HEADER_LIST)]
         return header_data == bytes(JD_XI_HEADER_LIST)
+
+    def _parse_identity_sysex(self) -> dict:
+        data = self.sysex_data
+
+        parsed = {
+            "type": "identity",
+            "manufacturer_id": data[JDXiMidi.SYSEX.IDENTITY.LAYOUT.ID.ROLAND],
+            "device_family": tuple(
+                data[JDXiMidi.SYSEX.IDENTITY.LAYOUT.DEVICE.FAMILY_CODE_1:
+                     JDXiMidi.SYSEX.IDENTITY.LAYOUT.DEVICE.FAMILY_NUMBER_CODE_2 + 1]
+            ),
+            "software_revision": tuple(
+                data[JDXiMidi.SYSEX.IDENTITY.LAYOUT.SOFTWARE.REVISION_1:
+                     JDXiMidi.SYSEX.IDENTITY.LAYOUT.SOFTWARE.REVISION_4 + 1]
+            ),
+        }
+
+        self.sysex_dict = parsed
+        return parsed
+
