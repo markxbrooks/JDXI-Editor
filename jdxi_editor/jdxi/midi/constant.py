@@ -43,7 +43,6 @@ class JDXiSysEx:
     """ Sysex related constants"""
     OFFSET = JDXiSysExOffset
     LENGTH = JDXiSysExLength
-    LENGTH_FOUR_BYTE_DATA = 18
 
 
 class JDXiProgramChange:
