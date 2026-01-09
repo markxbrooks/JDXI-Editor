@@ -34,7 +34,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import List
 
-from jdxi_editor.jdxi.sysex.offset import JDXiSysExOffset
+from jdxi_editor.jdxi.midi.message.sysex.offset import JDXiSysExOffset
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetProgramLMB,
     CommandID,

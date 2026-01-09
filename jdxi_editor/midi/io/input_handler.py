@@ -21,9 +21,7 @@ Dependencies:
 """
 
 import json
-import logging
 import os
-from dataclasses import asdict
 from typing import Any, Callable, Dict, List, Optional
 
 import mido
@@ -31,11 +29,9 @@ from PySide6.QtCore import Signal
 
 from jdxi_editor.jdxi.midi.constant import JDXiMidi
 from jdxi_editor.jdxi.preset.button import JDXiPresetButtonData
-from jdxi_editor.jdxi.preset.data import JDXiPresetData
 from jdxi_editor.jdxi.preset.incoming_data import IncomingPresetData
 from jdxi_editor.jdxi.program.program import JDXiProgram
-from jdxi_editor.jdxi.synth.type import JDXiSynth
-from jdxi_editor.jdxi.sysex.offset import JDXIIdentityOffset
+from jdxi_editor.jdxi.midi.message.sysex.offset import JDXIIdentityOffset
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import AddressStartMSB as AreaMSB
 from jdxi_editor.midi.data.programs import JDXiProgramList

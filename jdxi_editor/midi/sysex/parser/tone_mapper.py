@@ -4,7 +4,7 @@ tone mapper functions
 
 from __future__ import annotations
 
-from jdxi_editor.jdxi.sysex.offset import JDXiSysExOffset
+from jdxi_editor.jdxi.midi.message.sysex.offset import JDXiSysExOffset
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.map import JDXiMapSynthTone, JDXiMapTemporaryArea
 from jdxi_editor.midi.map.drum_tone import JDXiMapDrumTone

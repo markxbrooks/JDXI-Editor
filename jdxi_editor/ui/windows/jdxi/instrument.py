@@ -1676,7 +1676,7 @@ class JDXiInstrument(JDXiUi):
         self.octave_up.setChecked(self.current_octave > 0)
         self._update_display()
         log.message(
-            f"Updated octave to: {self.current_octave} (value: {hex(JDXiMidi.OCTAVE_CENTER_VALUE + self.current_octave)})"
+            f"Updated octave to: {self.current_octave} (value: {hex(JDXiMidi.OCTAVE.CENTER_VALUE + self.current_octave)})"
         )
 
     def _midi_init_ports(

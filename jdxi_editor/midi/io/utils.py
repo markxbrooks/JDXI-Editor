@@ -7,7 +7,7 @@ from typing import Iterable, List, Optional, Union
 
 import mido
 
-from jdxi_editor.jdxi.sysex.offset import (
+from jdxi_editor.jdxi.midi.message.sysex.offset import (
     JDXIControlChangeOffset,
     JDXIProgramChangeOffset,
     JDXiSysExOffset,
