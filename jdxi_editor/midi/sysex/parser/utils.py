@@ -245,7 +245,7 @@ def parse_sysex(data: bytes) -> Dict[str, str]:
     :param data: bytes SysEx message bytes
     :return: Dict[str, str] Dictionary with parsed tone parameters
     """
-    if len(data) < JDXiMidi.SYSEX.PARAMETER_LENGTH.ONE_BYTE:
+    if len(data) < JDXiMidi.SYSEX.PARAMETER.LENGTH.ONE_BYTE:
         return _return_minimal_metadata(data)
 
     temporary_area = get_temporary_area(data) or UNKNOWN_AREA
@@ -263,7 +263,7 @@ def parse_sysex(data: bytes) -> Dict[str, str]:
         return _return_minimal_metadata(data)
 
     parsed_data = initialize_parameters(data)
-    if len(data) < JDXiMidi.SYSEX.PARAMETER_LENGTH.FOUR_BYTE:
+    if len(data) < JDXiMidi.SYSEX.PARAMETER.LENGTH.FOUR_BYTE:
         update_short_data_with_parsed_parameters(data, parameter_cls, parsed_data)
     else:
         update_data_with_parsed_parameters(data, parameter_cls, parsed_data)

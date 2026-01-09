@@ -79,7 +79,7 @@ def parse_sysex_with_dynamic_mapping(data: bytes) -> Dict[str, str]:
     # Log the raw data
     log.parameter("data", data, silent=True)
 
-    if len(data) < JDXiMidi.SYSEX.PARAMETER_LENGTH.ONE_BYTE:
+    if len(data) < JDXiMidi.SYSEX.PARAMETER.LENGTH.ONE_BYTE:
         log.warning("Insufficient data length for parsing.")
         return _return_minimal_metadata(data)
 
@@ -95,7 +95,7 @@ def parse_sysex_with_dynamic_mapping(data: bytes) -> Dict[str, str]:
 
     # Update parsed data with parameters
     if parameter_cls:
-        if len(data) < JDXiMidi.SYSEX.PARAMETER_LENGTH.FOUR_BYTE:
+        if len(data) < JDXiMidi.SYSEX.PARAMETER.LENGTH.FOUR_BYTE:
             update_short_data_with_parsed_parameters(data, parameter_cls, parsed_data)
         else:
             update_data_with_parsed_parameters(data, parameter_cls, parsed_data)

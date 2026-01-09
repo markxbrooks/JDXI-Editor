@@ -325,7 +325,7 @@ class JDXiSysEx(RolandSysEx):
         """Create message from received bytes"""
         if (
             len(data)
-            < JDXiMidi.SYSEX.PARAMETER_LENGTH.ONE_BYTE  # Minimum length: F0 + ID + dev + model(4) + cmd + addr(4) + sum + F7
+            < JDXiMidi.SYSEX.PARAMETER.LENGTH.ONE_BYTE  # Minimum length: F0 + ID + dev + model(4) + cmd + addr(4) + sum + F7
             or data[JDXiParameterSysExLayout.START] != START_OF_SYSEX
             or data[JDXiParameterSysExLayout.ROLAND_ID] != ModelID.ROLAND_ID  # Roland ID
             or data[JDXiParameterSysExLayout.MODEL_ID.POS1 : JDXiParameterSysExLayout.COMMAND_ID]
