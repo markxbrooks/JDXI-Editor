@@ -47,15 +47,20 @@ DIGITAL_PARTIAL_MAP = {i: 0x1F + i for i in range(1, 4)}  # 1: 0x20, 2: 0x21, 3:
 @unique
 class RolandID(IntEnum):
     """Roland IDs"""
-
     ROLAND_ID = 0x41
     DEVICE_ID = 0x10
+
+    @classmethod
+    def to_list(cls) -> list[int]:
+        """
+        Convert the header to a list of integers
+        """
+        return [cls.ROLAND_ID, cls.DEVICE_ID]
 
 
 @unique
 class ResponseID(IntEnum):
     """Midi responses"""
-
     ACK = 0x4F  # Acknowledge
     ERR = 0x4E  # Error
 
@@ -253,14 +258,19 @@ class ModelID(Address):
     """
     Model ID
     """
-
-    ROLAND_ID = 0x41
-    DEVICE_ID = 0x10
     # Model ID bytes
     MODEL_ID_1 = ZERO_BYTE  # Manufacturer ID extension
     MODEL_ID_2 = ZERO_BYTE  # Device family code MSB
     MODEL_ID_3 = ZERO_BYTE  # Device family code LSB
     MODEL_ID_4 = 0x0E  # JD-XI Product code
+
+    @classmethod
+    def to_list(cls) -> list[int]:
+        """
+        Convert the header to a list of integers
+        """
+        return [cls.MODEL_ID_1, cls.MODEL_ID_2, cls.MODEL_ID_3,
+                cls.MODEL_ID_4]
 
 
 JD_XI_MODEL_ID = [
