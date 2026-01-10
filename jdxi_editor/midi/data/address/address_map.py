@@ -117,6 +117,7 @@ class ByteGroup:
             raise ValueError("ByteGroup length must be 3 or 4.")
         if self.address and not (0 <= self.address < (1 << (self.length * 8))):
             raise ValueError("Address out of range for given length.")
+            
     
 @dataclass
 class SystemAddress(ByteGroup): 
@@ -142,6 +143,16 @@ BYTE_GROUPS_3 = "3-byte-offsets"
 
 ADDRESS_SYSTEM_SETUP = "01 00 00 00"
 ADDRESS_SYSTEM_COMMON = "00 00 00"
+
+class ParameterAreas(Enum):
+    """Parameter areas"""
+    "System" = auto()
+    "Temporary Tone" = auto()
+    "Program" = auto()
+    "SuperNATURAL Synth Tone" = auto()
+    "Analog Synth Tone" = auto()
+    "Drum Kit" = auto()
+
 
 PARAMETER_ADDRESS_MAP = {
     "System": {
