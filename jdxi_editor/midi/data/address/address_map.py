@@ -3,7 +3,8 @@
 ========================
 
 Example usage:
->>> system_common = ParameterAddress.from_str("01 00 00 00")
+>>> from picomidi.core.parameter.factory import AddressFactory
+>>> system_common = AddressFactory.from_str("01 00 00 00")
 
 >>> print(PARAMETER_ADDRESS_MAP[ParameterAreas.SYSTEM][BYTE_GROUPS_4][system_common])
 SETUP
@@ -111,7 +112,6 @@ from jdxi_editor.midi.data.parameter.address.table import parameter_address_tabl
 from jdxi_editor.midi.data.parameter.areas.name import ParameterAreas
 from jdxi_editor.midi.data.parameter.offset.name import ParameterOffsetName
 from jdxi_editor.midi.data.parameter.offset.table import parameter_offset_table, PARAMETER_OFFSET_TABLE
-from picomidi.core.parameter.address import ParameterAddress
 from picomidi.core.parameter.factory import AddressFactory
 
 BYTE_GROUPS_4 = "4-byte-addresses"
