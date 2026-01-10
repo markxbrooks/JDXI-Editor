@@ -101,6 +101,9 @@ from jdxi_editor.midi.data.address.address import (
     AddressStartMSB,
 )
 
+ADDRESS_SYSTEM_SETUP = "01 00 00 00"
+ADDRESS_SYSTEM_COMMON = "00 00 00"
+
 PARAMETER_ADDRESS_MAP = {
     "System": {
         "4-byte-addresses": {
