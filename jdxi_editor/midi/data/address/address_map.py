@@ -131,7 +131,8 @@ class ThreeByteOffset(ByteGroup):
     mb: str = "00"
     lsb: str = "00"
     
-  
+address = SystemAddress(msb="7F", umb="00", lmb="12", lsb="34")
+print(address.full_address())  # Output: "7F001234"
 
 BYTE_GROUPS_4 = "4-byte-addresses"
 BYTE_GROUPS_3 = "3-byte-offsets"
