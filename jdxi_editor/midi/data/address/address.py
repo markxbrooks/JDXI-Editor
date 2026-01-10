@@ -7,22 +7,27 @@ Example Usage:
 >>> class AddressMemoryAreaMSB(Address):
 ...    PROGRAM = 0x18
 ...    TEMPORARY_TONE = 0x19
-... # Add an offset to a base address
-... addr_bytes = AddressMemoryAreaMSB.PROGRAM.add_offset((0x00, 0x20, 0x00))
-... print(addr_bytes)  # (0x18, 0x00, 0x20, 0x00)
-... # Get SysEx-ready address
-... sysex_address = AddressMemoryAreaMSB.PROGRAM.to_sysex_address((0x00, 0x20, 0x00))
-... print(sysex_address)  # b'\x18\x00\x20\x00'
-... # Lookup
-... found = AddressMemoryAreaMSB.get_parameter_by_address(0x19)
-... print(found)  # ProgramAddress.TEMPORARY_TONE
+>>> # Add an offset to a base address
+>>> addr_bytes = AddressMemoryAreaMSB.PROGRAM.add_offset((0x00, 0x20, 0x00))
+>>> print(addr_bytes)  # (0x18, 0x00, 0x20, 0x00)
+(24, 0, 32, 0)
+>>> # Get SysEx-ready address
+>>> sysex_address = AddressMemoryAreaMSB.PROGRAM.to_sysex_address((0x00, 0x20, 0x00))
+>>> print(sysex_address.hex())  # '18002000'
+18002000
+>>> # Lookup
+>>> found = AddressMemoryAreaMSB.get_parameter_by_address(0x19)
+>>> print(found)  # ProgramAddress.TEMPORARY_TONE
+AddressMemoryAreaMSB.TEMPORARY_TONE: 0x19
+
 
 SysExByte
 
 Example usage:
 --------------
 >>> command = CommandID.DT1
-... print(f"Command: {command}, Value: {command.STATUS}, Message Position: {command.message_position}")
+>>> print(f"Command: {command}, Value: {command.DT1}, Message Position: {command.message_position}")
+Command: 18, Value: 18, Message Position: <bound method CommandID.message_position of <enum 'CommandID'>>
 """
 
 from __future__ import annotations
@@ -95,6 +100,19 @@ class Address(SysExByte):
         :return: bytes The full 4-byte address
         """
         return bytes(self.add_offset(address_offset))
+
+    @classmethod
+    def get_parameter_by_address(cls: Type[T], address: int) -> Optional[T]:
+        """
+        Get parameter by address value.
+        Overrides the base class method to use 'value' instead of 'STATUS'.
+
+        :param address: int The address value
+        :return: Optional[T] The parameter
+        """
+        return next(
+            (parameter for parameter in cls if parameter.value == address), None
+        )
 
     @classmethod
     def from_sysex_bytes(cls: Type[T], address: bytes) -> Optional[T]:
