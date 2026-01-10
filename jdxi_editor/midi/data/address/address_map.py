@@ -104,9 +104,10 @@ from jdxi_editor.midi.data.address.address import (
 class ByteGroup:
     lenght: int
     address: int | None = None 
+    name: str = None
     
     
-class SystemAddress: 
+class SystemAddress(ByteGroup): 
     lenght: int = 4
     address: int | None = None
     
@@ -114,6 +115,7 @@ class SystemAddress:
 class ThreeByteOffset(ByteGroup):
     length: int = 4
     address: int | None = None
+    
     
 
 BYTE_GROUPS_4 = "4-byte-addresses"
