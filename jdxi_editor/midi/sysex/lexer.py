@@ -1,79 +1,12 @@
 import re
+from jdxi_editor.midi.data.address.address_map import PARAMETER_ADDRESS_MAP
+from picomidi.core.parameter.factory import AddressFactory
+from picomidi.core.parameter.kind import ByteGroupKind
 
-from jdxi_editor.midi.data.address.address import (
-    AddressOffsetProgramLMB,
-    AddressOffsetSuperNATURALLMB,
-    AddressOffsetSystemLMB,
-    AddressOffsetTemporaryToneUMB,
-    AddressStartMSB,
-)
-
-# Define token patterns
+# Simplified token matchers
 TOKENS = {
-    "4-byte-addresses": r"(?:[0-9A-F]{2} ){3}[0-9A-F]{2}",  # 4-byte
-    "3-byte-offsets": r"(?:[0-9A-F]{2} ){2}[0-9A-F]{2}",  # 3-byte
-}
-
-
-# Define the mapping (could be loaded dynamically)
-TEST_PARAMETER_ADDRESS_MAP = {
-    "System": {
-        "4-byte-addresses": {
-            "01 00 00 00": AddressStartMSB.SETUP.name,  # "Setup",
-            "02 00 00 00": AddressStartMSB.SYSTEM.name,  # "System"
-        },
-        "3-byte-offsets": {
-            "00 00 00": AddressOffsetSystemLMB.COMMON.name,  # "System Common",
-            "00 03 00": AddressOffsetSystemLMB.CONTROLLER.name,  # "System Controller"
-        },
-    },
-    "Temporary Tone": {
-        "4-byte-addresses": {
-            "18 00 00 00": AddressStartMSB.TEMPORARY_PROGRAM.name,  # Temporary Program
-            "19 00 00 00": AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_1.name,  # "Temporary Tone (Digital Synth Part 1)",
-            "19 20 00 00": AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_2.name,  # "Temporary Tone (Digital Synth Part 2)",
-            "19 40 00 00": AddressOffsetTemporaryToneUMB.ANALOG_SYNTH.name,  # "Temporary Tone (Analog Synth Part)",
-            "19 60 00 00": AddressOffsetTemporaryToneUMB.DRUM_KIT.name,  # "Temporary Tone (Drums Part)"
-        },
-        "3-byte-offsets": {
-            "01 00 00": AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_1.name,  # "Temporary SuperNATURAL Synth Tone",
-            "02 00 00": AddressOffsetTemporaryToneUMB.ANALOG_SYNTH.name,  #  "Temporary Analog Synth T one",
-            "10 00 00": AddressOffsetTemporaryToneUMB.DRUM_KIT.name,  #  "Temporary Drum Kit"
-        },
-    },
-    "Program": {
-        "3-byte-offsets": {
-            "00 00 00": AddressOffsetProgramLMB.COMMON.name,  # "Program Common",
-            "00 01 00": AddressOffsetProgramLMB.VOCAL_EFFECT.name,  # "Program Vocal Effect",
-            "00 02 00": AddressOffsetProgramLMB.EFFECT_1.name,  # "Program Effect 1",
-            "00 04 00": AddressOffsetProgramLMB.EFFECT_2.name,  # "Program Effect 2",
-            "00 06 00": AddressOffsetProgramLMB.DELAY.name,  # "Program Delay",
-            "00 08 00": AddressOffsetProgramLMB.REVERB.name,  # "Program Reverb",
-            "00 20 00": AddressOffsetProgramLMB.PART_DIGITAL_SYNTH_1.name,  # "Program Part (Digital Synth Part 1)",
-            "00 21 00": AddressOffsetProgramLMB.PART_DIGITAL_SYNTH_2.name,  # "Program Part (Digital Synth Part 2)",
-            "00 22 00": AddressOffsetProgramLMB.PART_ANALOG.name,  # "Program Part (Analog Synth Part)",
-            "00 23 00": AddressOffsetProgramLMB.PART_DRUM.name,  # "Program Part (Drums Part)",
-            "00 30 00": AddressOffsetProgramLMB.ZONE_DIGITAL_SYNTH_1.name,  # "Program Zone (Digital Synth Part 1)",
-            "00 31 00": AddressOffsetProgramLMB.ZONE_DIGITAL_SYNTH_2.name,  # "Program Zone (Digital Synth Part 2)",
-            "00 32 00": AddressOffsetProgramLMB.ZONE_ANALOG.name,  # "Program Zone (Analog Synth Part)",
-            "00 33 00": AddressOffsetProgramLMB.ZONE_DRUM.name,  # "Program Zone (Drums Part)",
-            "00 40 00": AddressOffsetProgramLMB.CONTROLLER.name,
-        }
-    },
-    "SuperNATURAL Synth Tone": {
-        "3-byte-offsets": {
-            "00 00 00": AddressOffsetSuperNATURALLMB.COMMON.name,  # "SuperNATURAL Synth Tone Common",
-            "00 20 00": AddressOffsetSuperNATURALLMB.PARTIAL_1.name,  # "SuperNATURAL Synth Tone Partial (1)",
-            "00 21 00": AddressOffsetSuperNATURALLMB.PARTIAL_2.name,  # "SuperNATURAL Synth Tone Partial (2)",
-            "00 22 00": AddressOffsetSuperNATURALLMB.PARTIAL_3.name,  # "SuperNATURAL Synth Tone Partial (3)",
-            "00 50 00": AddressOffsetSuperNATURALLMB.MODIFY.name,  # "SuperNATURAL Synth Tone Modify"
-        }
-    },
-    "Analog Synth Tone": {
-        "3-byte-offsets": {
-            "00 00 00": AddressOffsetProgramLMB.COMMON.name  # "Analog Synth Tone"
-        }
-    },
+    ByteGroupKind.ADDRESS_4: r"(?:[0-9A-F]{2} ){3}[0-9A-F]{2}",
+    ByteGroupKind.OFFSET_3: r"(?:[0-9A-F]{2} ){2}[0-9A-F]{2}",
 }
 
 
@@ -81,63 +14,159 @@ def lex_addresses(input_data: str):
     tokens = []
     used = set()
 
-    # First extract 4-byte addresses
-    pattern_4 = TOKENS["4-byte-addresses"]
-    for match in re.findall(pattern_4, input_data):
+    # Known address MSBs that indicate 4-byte addresses
+    known_msbs = {"01", "02", "18", "19"}
+
+    # Match 4-byte addresses
+    for match in re.findall(TOKENS[ByteGroupKind.ADDRESS_4], input_data):
         normalized = " ".join(match.split())
-        tokens.append(("4-byte-addresses", normalized))
+        tokens.append((ByteGroupKind.ADDRESS_4, normalized))
         used.add(normalized)
 
-        # Extract possible trailing 3-byte offset
+        # Also extract implied 3-byte offset
         parts = normalized.split()
-        offset_candidate = " ".join(parts[1:])  # last 3 bytes
-        if offset_candidate not in used:
-            tokens.append(("3-byte-offsets", offset_candidate))
-            used.add(offset_candidate)
+        if len(parts) == 4:
+            offset = " ".join(parts[1:])
+            if offset not in used:
+                tokens.append((ByteGroupKind.OFFSET_3, offset))
+                used.add(offset)
 
-    # Then extract 3-byte offsets not already used
-    pattern_3 = TOKENS["3-byte-offsets"]
-    for match in re.findall(pattern_3, input_data):
+    # Match any remaining 3-byte offsets, but check if they might be incomplete 4-byte addresses
+    for match in re.findall(TOKENS[ByteGroupKind.OFFSET_3], input_data):
         normalized = " ".join(match.split())
         if normalized not in used:
-            tokens.append(("3-byte-offsets", normalized))
-            used.add(normalized)
+            # Check if this looks like an incomplete 4-byte address (starts with known MSB)
+            parts = normalized.split()
+            if len(parts) == 3 and parts[0] in known_msbs:
+                # Treat as incomplete 4-byte address - pad with 00
+                incomplete_address = f"{normalized} 00"
+                if incomplete_address not in used:
+                    tokens.append((ByteGroupKind.ADDRESS_4, incomplete_address))
+                    used.add(incomplete_address)
+                    used.add(normalized)  # Mark original as used to avoid duplicate
+            else:
+                # Valid standalone 3-byte offset
+                tokens.append((ByteGroupKind.OFFSET_3, normalized))
+                used.add(normalized)
 
     return tokens
 
 
-# Map tokens dynamically
 def map_tokens_all(tokens):
-    mapped_results = {}
+    mapped = {}
+    matched_offsets = set()  # Track offsets that were matched as part of 4-byte addresses
+
     for token_type, token_value in tokens:
-        found = False
-        for temporary_area, types in TEST_PARAMETER_ADDRESS_MAP.items():
-            token_map = types.get(token_type, {})
-            if token_value in token_map:
-                mapped_results[token_value] = (
-                    f"{token_map[token_value]} [{temporary_area}]"
-                )
-                found = True
-                break
-        if not found:
-            mapped_results[token_value] = "Unknown"
-    return mapped_results
+        matched = False
+
+        if token_type == ByteGroupKind.ADDRESS_4:
+            # Convert string to ParameterAddress object for lookup
+            try:
+                address_obj = AddressFactory.from_str(token_value)
+            except (ValueError, AttributeError):
+                mapped[token_value] = "Unknown"
+                continue
+
+            offset_str = " ".join(token_value.split()[1:])
+            offset_obj = None
+            if offset_str:
+                try:
+                    offset_obj = AddressFactory.from_str(offset_str)
+                except (ValueError, AttributeError):
+                    pass
+
+            # First try direct address match
+            for area_name, entry in PARAMETER_ADDRESS_MAP.items():
+                address_map = entry.get(ByteGroupKind.ADDRESS_4, {})
+                if address_obj in address_map:
+                    enum_value = entry[ByteGroupKind.ADDRESS_4][address_obj]
+                    mapped[token_value] = (
+                        f"{enum_value.name} [{area_name.name}]"
+                    )
+                    matched = True
+                    break
+
+            # If no direct match, try to match by MSB (base address) + offset
+            if not matched and offset_obj:
+                parts = token_value.split()
+                if len(parts) == 4:
+                    msb = parts[0]
+                    # Try to find a base address that matches this MSB
+                    base_address_str = f"{msb} 00 00 00"
+                    try:
+                        base_address_obj = AddressFactory.from_str(base_address_str)
+                        # Find which area this base address belongs to
+                        base_area = None
+                        base_enum = None
+                        for area_name, entry in PARAMETER_ADDRESS_MAP.items():
+                            address_map = entry.get(ByteGroupKind.ADDRESS_4, {})
+                            if base_address_obj in address_map:
+                                base_area = area_name
+                                base_enum = entry[ByteGroupKind.ADDRESS_4][base_address_obj]
+                                break
+
+                        # Now search all areas for the offset (not just base_area)
+                        for area_name, entry in PARAMETER_ADDRESS_MAP.items():
+                            offset_map = entry.get(ByteGroupKind.OFFSET_3, {})
+                            if offset_obj in offset_map:
+                                enum_value = entry[ByteGroupKind.OFFSET_3][offset_obj]
+                                mapped[token_value] = (
+                                    f"{enum_value.name} [{area_name.name}]"
+                                )
+                                matched = True
+                                # Mark this offset as matched so we don't match it separately
+                                matched_offsets.add(offset_str)
+                                break
+
+                        # If offset not found but we have a base area, show base info
+                        if not matched and base_area and base_enum:
+                            mapped[token_value] = (
+                                f"{base_enum.name} [{base_area.name}] + offset {offset_str} (unknown)"
+                            )
+                            matched = True
+                            # Mark this offset as matched so we don't match it separately
+                            matched_offsets.add(offset_str)
+                    except (ValueError, AttributeError):
+                        pass
+
+        elif token_type == ByteGroupKind.OFFSET_3:
+            # Skip if this offset was already matched as part of a 4-byte address
+            if token_value in matched_offsets:
+                continue
+
+            # Convert string to ParameterOffset object for lookup
+            try:
+                offset_obj = AddressFactory.from_str(token_value)
+            except (ValueError, AttributeError):
+                mapped[token_value] = "Unknown"
+                continue
+
+            for area_name, entry in PARAMETER_ADDRESS_MAP.items():
+                offset_map = entry.get(ByteGroupKind.OFFSET_3, {})
+                if offset_obj in offset_map:
+                    enum_value = entry[ByteGroupKind.OFFSET_3][offset_obj]
+                    mapped[token_value] = (
+                        f"{enum_value.name} [{area_name.name}]"
+                    )
+                    matched = True
+                    break
+
+        if not matched:
+            mapped[token_value] = "Unknown"
+
+    return mapped
 
 
 if __name__ == "__main__":
-    """
-    Expected output:
-    19 20 00 00 -> DIGITAL_SYNTH_2 [Temporary Tone] PARTIAL_1 [synth tone]
-    """
-
-    # Example input data
     input_data = """
     19 01 20 00
+    19 01 20 00
+    19 00 22 00
+    18 00 03 00
     """
 
-    # Lexing and mapping
     tokens = lex_addresses(input_data)
     mapped = map_tokens_all(tokens)
 
-    for address, temporary_area in mapped.items():
-        print(f"{address} -> {temporary_area}")
+    for addr, label in mapped.items():
+        print(f"{addr} -> {label}")
