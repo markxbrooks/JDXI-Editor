@@ -95,6 +95,12 @@ def log_metadata(metadata: dict, temporary_area: str, synth_tone: str):
     log.message(
         f"Parsed metadata: {metadata}, Area: {temporary_area}, Tone: {synth_tone}", silent=True
     )
+    
+    
+def determine_tone_mapping(data: bytes) -> Tuple[str, Any]:
+    temporary_area = get_temporary_area(data) or UNKNOWN_AREA
+    synth_tone, _ = _get_tone_from_data(data, temporary_area)
+    return temporary_area, synth_tone
 
 
 def parse_parameters(data: bytes, parameter_type: Iterable) -> Dict[str, int]:
