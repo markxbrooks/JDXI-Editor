@@ -19,13 +19,3 @@ class JDXiSysExIdentity:
     SUB1_GENERAL_INFORMATION = 0x06
     SUB2_IDENTITY_REQUEST = 0x01
     SUB2_IDENTITY_REPLY = 0x02
-    
-    """
-    JD_XI_MODEL_ID = [
-        ModelID.MODEL_ID_1,
-        ModelID.MODEL_ID_2,
-        ModelID.MODEL_ID_3,
-        ModelID.MODEL_ID_4,
-    ]
-    JD_XI_HEADER_LIST = [RolandID.ROLAND_ID, RolandID.DEVICE_ID, *JD_XI_MODEL_ID]
-    """
