@@ -110,7 +110,7 @@ class ByteGroup:
     name: str = None
     
     def __repr__(self):
-    return f"{self.__class__.__name__}(address='{self.full_address()}')"
+        return f"{self.__class__.__name__}(address='{self.full_address()}')"
 
     def __post_init__(self):
         if self.length not in [3, 4]:
