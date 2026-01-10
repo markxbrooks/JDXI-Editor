@@ -47,8 +47,7 @@ MINIMAL_METADATA = {"error": "Minimal metadata provided", "raw_data": None}
 
 def _return_minimal_metadata(data: bytes) -> dict:
     return MINIMAL_METADATA.copy()
-
-
+    
 
 class ParameterLength(Enum):
     ONE_BYTE = 1
@@ -259,6 +258,38 @@ def _get_tone_from_data(data: bytes, temporary_area: str) -> tuple[str, int]:
     if temporary_area == TemporaryToneUMB.DRUM_KIT.name:
         return get_drum_tone(byte_value)
     return get_synth_tone(byte_value)
+    
+    
+def parse_sysex_new(data: bytes) -> Dict[str, str]:
+    """
+    Parses JD-Xi tone data from SysEx messages.
+
+    :param data: bytes SysEx message bytes
+    :return: Dict[str, str] Dictionary with parsed tone parameters
+    """
+    if len(data) < ParameterLength.ONE_BYTE.value:
+        return _return_minimal_metadata(data)
+
+    temporary_area, synth_tone = determine_tone_mapping(data)
+    log_metadata({}, temporary_area, synth_tone)
+
+    parameter_cls = JDXiMapParameterAddress.MAP.get(
+        (temporary_area, synth_tone), DrumPartialParam
+    )
+    if parameter_cls is None:
+        log.warning(f"No parameter mapping found for ({temporary_area}, {synth_tone})")
+        return _return_minimal_metadata(data)
+
+    parsed_data = initialize_parameters(data)
+    update_func = (
+        update_short_data_with_parsed_parameters
+        if is_short_data(data)
+        else update_data_with_parsed_parameters
+    )
+    update_func(data, parameter_cls, parsed_data)
+
+    log.json(parsed_data, silent=True)
+    return parsed_data
 
 
 def parse_sysex(data: bytes) -> Dict[str, str]:
