@@ -89,6 +89,12 @@ def extract_tone_name(data: bytes) -> str:
         .strip("\x00\r ")
     )  # Start at index 12
     return raw_name  # Strip null and carriage return
+    
+    
+def log_metadata(metadata: dict, temporary_area: str, synth_tone: str):
+    log.message(
+        f"Parsed metadata: {metadata}, Area: {temporary_area}, Tone: {synth_tone}", silent=True
+    )
 
 
 def parse_parameters(data: bytes, parameter_type: Iterable) -> Dict[str, int]:
