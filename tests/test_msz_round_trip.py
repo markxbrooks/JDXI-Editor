@@ -115,7 +115,7 @@ class TestMSZRoundTrip(unittest.TestCase):
         values = {}
         for param, widget in editor.controls.items():
             if hasattr(widget, 'value'):
-                values[param.name] = widget.STATUS()
+                values[param.name] = widget.value()
         return values
 
     def _create_mock_midi_file_editor(self) -> Mock:

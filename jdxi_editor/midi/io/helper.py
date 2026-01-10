@@ -57,18 +57,29 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
 
     def __init__(self, parent=None):
         """constructor"""
+        # Check if QObject has already been initialized (singleton pattern)
+        # QObject sets _parent attribute when initialized
+        if hasattr(self, "_parent") or hasattr(self, "initialized"):
+            # Already initialized, just update parent if provided
+            if parent and hasattr(self, "setParent"):
+                self.setParent(parent)
+            return
+        
         self._current_out_port = None
         self._current_in_port = None
         self.in_port_name = ""  # Store input port name
         self.out_port_name = ""  # Store output port name
-        if not hasattr(self, "initialized"):  # To avoid reinitialization
-            super().__init__()
-            self.midi_messages = []
-            self.current_in = None
-            self.current_out = None
-            if parent:
-                self.parent = parent
-            self.initialized = True
+        
+        # Initialize parent classes - this will initialize QObject once through MRO
+        # Since both MidiInHandler and MidiOutHandler inherit from MidiIOController (QObject),
+        # Python's MRO ensures QObject.__init__ is only called once
+        super().__init__(parent)
+        
+        # Set additional attributes
+        self.midi_messages = []
+        self.current_in = None
+        self.current_out = None
+        self.initialized = True
 
     def send_mido_message(self, msg: mido.Message):
         """
