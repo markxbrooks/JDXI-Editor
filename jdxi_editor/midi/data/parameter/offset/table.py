@@ -1,3 +1,7 @@
+"""
+Parameter Offset Table
+"""
+
 from jdxi_editor.midi.data.parameter.offset.name import ParameterOffsetName
 from picomidi.core.parameter.factory import AddressFactory
 
