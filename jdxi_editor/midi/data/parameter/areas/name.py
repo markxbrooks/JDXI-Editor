@@ -1,3 +1,7 @@
+"""
+ParameterAreas
+"""
+
 from enum import Enum, auto
 
 
