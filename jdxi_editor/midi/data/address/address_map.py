@@ -100,6 +100,8 @@ from jdxi_editor.midi.data.address.address import (
     AddressOffsetTemporaryToneUMB,
     AddressStartMSB,
 )
+BYTE_GROUPS_4 = "4-byte-addresses"
+BYTE_GROUPS_3 = "3-byte-offsets"
 
 ADDRESS_SYSTEM_SETUP = "01 00 00 00"
 ADDRESS_SYSTEM_COMMON = "00 00 00"
