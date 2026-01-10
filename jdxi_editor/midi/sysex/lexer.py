@@ -118,7 +118,29 @@ def map_tokens_all(tokens):
                                 matched_offsets.add(offset_str)
                                 break
 
-                        # If offset not found but we have a base area, show base info
+                        # If offset not found, try matching just the first 2 bytes (base offset)
+                        if not matched and offset_str:
+                            offset_parts = offset_str.split()
+                            if len(offset_parts) == 3:
+                                # Try matching base offset (first 2 bytes + 00)
+                                base_offset_str = f"{offset_parts[0]} {offset_parts[1]} 00"
+                                try:
+                                    base_offset_obj = AddressFactory.from_str(base_offset_str)
+                                    for area_name, entry in PARAMETER_ADDRESS_MAP.items():
+                                        offset_map = entry.get(ByteGroupKind.OFFSET_3, {})
+                                        if base_offset_obj in offset_map:
+                                            enum_value = entry[ByteGroupKind.OFFSET_3][base_offset_obj]
+                                            param_byte = offset_parts[2]
+                                            mapped[token_value] = (
+                                                f"{enum_value.name} [{area_name.name}] + param 0x{param_byte}"
+                                            )
+                                            matched = True
+                                            matched_offsets.add(offset_str)
+                                            break
+                                except (ValueError, AttributeError):
+                                    pass
+
+                        # If still not matched but we have a base area, show base info
                         if not matched and base_area and base_enum:
                             mapped[token_value] = (
                                 f"{base_enum.name} [{base_area.name}] + offset {offset_str} (unknown)"
@@ -159,9 +181,9 @@ def map_tokens_all(tokens):
 
 if __name__ == "__main__":
     input_data = """
-    19 01 20 00
-    19 01 20 00
-    19 00 22 00
+    19 01 20 13
+    19 01 20 08
+    19 00 22 01
     18 00 03 00
     """
 
