@@ -102,11 +102,6 @@ from jdxi_editor.midi.data.address.address import (
     AddressStartMSB,
 )
 
-@dataclass
-class ByteGroup:
-    length: int
-    address: int | None = None 
-    name: str = None
     
 @dataclass
 class ByteGroup:
