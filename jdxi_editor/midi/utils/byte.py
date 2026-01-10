@@ -71,8 +71,11 @@ def encode_roland_4byte(value: int) -> list[int]:
     :param value: int
     :return: list[int]
     >>> encode_roland_4byte(0)  # [0x00, 0x00, 0x00, 0x00]
+    [0, 0, 0, 0]
     >>> encode_roland_4byte(1)  # [0x00, 0x00, 0x00, 0x01]
-    >>> encode_roland_4byte(1048576)  # [0x08, 0x00, 0x00, 0x00]
+    [0, 0, 0, 1]
+    >>> encode_roland_4byte(1048576)  # [0x00, 0x40, 0x00, 0x00]
+    [0, 64, 0, 0]
     """
     if value < 0:
         value += 1 << 28
@@ -163,10 +166,10 @@ def encode_14bit_to_7bit_midi_bytes(value: int) -> list[int]:
         Encodes a 14-bit integer into two 7-bit MIDI-safe bytes.
         MIDI SysEx requires all data bytes to be in the range 0x00–0x7F.
         # Example usage:
-    >>>     value = 0x1234  # 4660 in decimal
-    >>>     data_bytes = encode_14bit_to_7bit_midi_bytes(value)
-    >>>     print(data_bytes)  # Output: [0x24, 0x34] → [36, 52]
-
+    >>> value = 0x1234  # 4660 in decimal
+    >>> data_bytes = encode_14bit_to_7bit_midi_bytes(value)
+    >>> print(data_bytes)  # Output: [0x24, 0x34] → [36, 52]
+    [36, 52]
     """
     if not (0 <= value <= Midi.VALUE.MAX.FOURTEEN_BIT):  # 0x3FFF):
         raise ValueError("Value must be a 14-bit integer (0–16383)")
