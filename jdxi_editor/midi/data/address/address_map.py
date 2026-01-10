@@ -145,13 +145,13 @@ ADDRESS_SYSTEM_SETUP = "01 00 00 00"
 ADDRESS_SYSTEM_COMMON = "00 00 00"
 
 class ParameterAreas(Enum):
-    """Parameter areas"""
-    "System" = auto()
-    "Temporary Tone" = auto()
-    "Program" = auto()
-    "SuperNATURAL Synth Tone" = auto()
-    "Analog Synth Tone" = auto()
-    "Drum Kit" = auto()
+    """Enumerates parameter areas"""
+    SYSTEM = auto()
+    TEMPORARY_TONE = auto()
+    PROGRAM = auto()
+    SUPERNATURAL_SYNTH_TONE = auto()
+    ANALOG_SYNTH_TONE = auto()
+    DRUM_KIT = auto()
 
 
 PARAMETER_ADDRESS_MAP = {
