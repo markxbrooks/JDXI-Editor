@@ -108,7 +108,7 @@ class ByteGroup:
     address: int | None = None 
     name: str = None
     
-    @dataclass
+@dataclass
 class ByteGroup:
     length: int
     address: int | None = None
