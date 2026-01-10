@@ -43,6 +43,12 @@ from jdxi_editor.midi.sysex.parser.tone_mapper import (
 UNKNOWN = "Unknown"
 UNKNOWN_AREA = "Unknown area"
 
+from enum import Enum
+
+class ParameterLength(Enum):
+    ONE_BYTE = 1
+    FOUR_BYTE = 4
+
 
 def get_byte_offset_by_tone_name(
     data: bytes, index: int, offset: int = 12, default: int = 0
