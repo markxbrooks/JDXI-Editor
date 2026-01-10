@@ -108,9 +108,7 @@ class SystemCommonParam(AddressParameter):
         :param value: int The value
         :return: str The display text
         """
-        if self == self.AUTO_NOTE_SWITCH:
-            return ["OFF", "---", "ON"][value]
-        elif self.is_switch:
+        if self.is_switch:
             return "ON" if value else "OFF"
         return str(value)
 
@@ -121,11 +119,6 @@ class SystemCommonParam(AddressParameter):
         """
         if not isinstance(value, int):
             raise ValueError(f"Value must be integer, got {type(value)}")
-
-        # Special handling for ring switch
-        if self == self.AUTO_NOTE_SWITCH and value == 1:
-            # Skip over the "---" value
-            value = 2
 
         # Regular range check
         if value < self.min_val or value > self.max_val:

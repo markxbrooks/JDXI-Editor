@@ -37,7 +37,7 @@ from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import AddressStartMSB as AreaMSB
 from jdxi_editor.midi.data.programs import JDXiProgramList
 from jdxi_editor.midi.io.controller import MidiIOController
-from jdxi_editor.midi.io.utils import handle_identity_request
+# handle_identity_request moved to JDXiSysExParser.parse_identity_request
 from jdxi_editor.midi.map.synth_type import JDXiMapSynthType
 from jdxi_editor.midi.sysex.parser.sysex import JDXiSysExParser
 from jdxi_editor.midi.sysex.request.data import IGNORED_KEYS
@@ -294,7 +294,7 @@ class MidiInHandler(MidiIOController):
                 message.data[mido_sub_id_byte_offset]
                 == JDXiMidi.SYSEX.IDENTITY.CONST.SUB2_IDENTITY_REPLY
             ):
-                handle_identity_request(message)
+                self.sysex_parser.parse_identity_request(message)
                 return
 
             hex_string = " ".join(f"{byte:02X}" for byte in message.data)
