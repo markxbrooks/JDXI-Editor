@@ -280,6 +280,8 @@ JD_XI_MODEL_ID = [
     ModelID.MODEL_ID_4,
 ]
 
+# Deprecated: Use JDXiSysexHeader from jdxi_editor.midi.message.jdxi instead
+# This is kept here for backward compatibility only
 JD_XI_HEADER_LIST = [RolandID.ROLAND_ID, RolandID.DEVICE_ID, *JD_XI_MODEL_ID]
 
 

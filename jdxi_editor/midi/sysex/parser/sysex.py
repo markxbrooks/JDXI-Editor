@@ -25,12 +25,13 @@ from jdxi_editor.jdxi.midi.constant import JDXiMidi
 from jdxi_editor.jdxi.midi.message.sysex.offset import (
     JDXIControlChangeOffset,
     JDXIProgramChangeOffset,
-    JDXiParameterSysExLayout,
+    JDXiSysExMessageLayout,
+    FieldSpec,
 )
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import ModelID, RolandID
 from jdxi_editor.midi.io.utils import nibble_data
-from jdxi_editor.midi.message.jdxi import JD_XI_HEADER_LIST
+from jdxi_editor.midi.message.jdxi import JDXiSysexHeader
 from jdxi_editor.midi.sysex.device import DeviceInfo
 from jdxi_editor.midi.sysex.parser.utils import parse_sysex
 from jdxi_editor.project import __package_name__
@@ -42,6 +43,15 @@ class JDXiSysExParser:
     
     Parses JD-Xi SysEx messages following a structure similar to Picomidi's Parser pattern.
     Handles identity requests, parameter messages (short and long), and message conversion.
+    
+    The parser leverages field mappings defined in JDXiSysExParameterLayout.FIELDS to provide
+    structured parsing of SysEx messages. Use get_structured_fields() to extract parsed field data.
+    
+    Example:
+        >>> parser = JDXiSysExParser(sysex_bytes)
+        >>> fields = parser.get_structured_fields()
+        >>> roland_id = fields['roland_id']  # RolandID enum member
+        >>> address = fields['address']      # ParameterAddress or bytes
     """
 
     def __init__(self, sysex_data: Optional[bytes] = None):
@@ -79,6 +89,10 @@ class JDXiSysExParser:
 
         if not self._is_sysex_frame():
             raise ValueError("Invalid SysEx framing")
+
+        # Check if this is a JD-Xi message before attempting to parse
+        if not self._is_jdxi_sysex():
+            raise ValueError("Not a JD-Xi SysEx message")
 
         if not self._is_valid_sysex():
             raise ValueError("Invalid SysEx message")
@@ -161,8 +175,8 @@ class JDXiSysExParser:
     def _is_valid_sysex(self) -> bool:
         """Checks if the SysEx message starts and ends with the correct bytes."""
         return (
-                self.sysex_data[JDXiParameterSysExLayout.START] == Midi.SYSEX.START
-                and self.sysex_data[JDXiParameterSysExLayout.END] == Midi.SYSEX.END
+                self.sysex_data[JDXiSysExMessageLayout.START] == Midi.SYSEX.START
+                and self.sysex_data[JDXiSysExMessageLayout.END] == Midi.SYSEX.END
         )
 
     def _is_sysex_frame(self) -> bool:
@@ -171,12 +185,247 @@ class JDXiSysExParser:
                 and self.sysex_data[-1] == SysExByte.END
         )
 
+    def _is_jdxi_sysex(self) -> bool:
+        """
+        Check if this is a JD-Xi specific SysEx message.
+        
+        JD-Xi messages either:
+        1. Start with Roland ID (0x41) at position 1 (parameter messages)
+        2. Are JD-Xi identity messages (have Roland ID at position 5 after universal header)
+        
+        Universal MIDI messages (like F0 7E 7F 06 01 F7) are not JD-Xi messages.
+        """
+        if len(self.sysex_data) < 2:
+            return False
+        
+        # Check if it's a JD-Xi parameter message (starts with Roland ID 0x41 at position 1)
+        if len(self.sysex_data) > JDXiSysExMessageLayout.ROLAND_ID:
+            if self.sysex_data[JDXiSysExMessageLayout.ROLAND_ID] == RolandID.ROLAND_ID:
+                return True
+        
+        # Check if it's a JD-Xi identity message
+        # Universal identity requests (F0 7E 7F 06 01 F7) are only 6 bytes
+        # JD-Xi identity replies are longer and have Roland ID at position 5
+        if len(self.sysex_data) >= JDXiMidi.SYSEX.IDENTITY.LAYOUT.expected_length():
+            # Check if it matches the identity message structure
+            if (self.sysex_data[JDXiMidi.SYSEX.IDENTITY.LAYOUT.START] == SysExByte.START
+                and self.sysex_data[JDXiMidi.SYSEX.IDENTITY.LAYOUT.ID.NUMBER] in (JDXiSysExIdentity.NUMBER, JDXiSysExIdentity.DEVICE)
+                and self.sysex_data[JDXiMidi.SYSEX.IDENTITY.LAYOUT.ID.SUB1] == JDXiSysExIdentity.SUB1_GENERAL_INFORMATION
+                and self.sysex_data[JDXiMidi.SYSEX.IDENTITY.LAYOUT.ID.SUB2] in (JDXiSysExIdentity.SUB2_IDENTITY_REQUEST, JDXiSysExIdentity.SUB2_IDENTITY_REPLY)):
+                # If it's an identity reply (SUB2 == 0x02), check for Roland ID
+                if self.sysex_data[JDXiMidi.SYSEX.IDENTITY.LAYOUT.ID.SUB2] == JDXiSysExIdentity.SUB2_IDENTITY_REPLY:
+                    if len(self.sysex_data) > JDXiMidi.SYSEX.IDENTITY.LAYOUT.ID.ROLAND:
+                        if self.sysex_data[JDXiMidi.SYSEX.IDENTITY.LAYOUT.ID.ROLAND] == RolandID.ROLAND_ID:
+                            return True
+                # Identity requests don't have Roland ID, but we can check length
+                # Universal requests are 6 bytes, JD-Xi requests would be longer if they exist
+                # For now, we'll treat identity requests as non-JD-Xi if they're too short
+                return False
+        
+        return False
+
+    def _extract_field_bytes(self, field: FieldSpec) -> bytes:
+        """
+        Extract bytes for a given FieldSpec.
+        
+        :param field: FieldSpec The field specification
+        :return: bytes The extracted bytes
+        """
+        data = self.sysex_data
+        data_len = len(data)
+        
+        # Handle offset - can be int, IntEnum member, or IntEnum class
+        offset = field.offset
+        
+        # Check if it's an IntEnum class (has __members__)
+        if isinstance(offset, type) and hasattr(offset, '__members__'):
+            # It's an IntEnum class, use START if available, otherwise first member
+            if hasattr(offset, 'START'):
+                offset = offset.START.value
+            elif hasattr(offset, 'POS1'):
+                offset = offset.POS1.value
+            elif hasattr(offset, 'MSB'):
+                offset = offset.MSB.value
+            else:
+                # Get first member value
+                members = list(offset.__members__.values())
+                if members:
+                    offset = members[0].value
+                else:
+                    raise ValueError(f"Cannot determine offset from IntEnum class {offset}")
+        elif hasattr(offset, 'value'):
+            # It's an IntEnum member
+            offset = offset.value
+        elif not isinstance(offset, int):
+            # Try to convert to int
+            try:
+                offset = int(offset)
+            except (ValueError, TypeError):
+                raise ValueError(f"Invalid offset type: {type(offset)}")
+        
+        # Handle negative offsets (from end)
+        if offset < 0:
+            start = data_len + offset
+        else:
+            start = offset
+        
+        # Handle length
+        if field.length is None:
+            # Extract to end if length not specified
+            end = data_len
+        else:
+            end = start + field.length
+        
+        # Bounds checking
+        if start < 0 or start >= data_len:
+            raise ValueError(f"Field offset {offset} out of range for data length {data_len}")
+        if end > data_len:
+            raise ValueError(f"Field end {end} out of range for data length {data_len}")
+        
+        return data[start:end]
+
+    def _parse_field(self, field: FieldSpec) -> any:
+        """
+        Parse a field using its parser.
+        
+        :param field: FieldSpec The field specification
+        :return: Parsed value or raw bytes
+        """
+        raw_bytes = self._extract_field_bytes(field)
+        
+        # If no parser specified, return raw bytes
+        if field.parser is None:
+            return raw_bytes
+        
+        # If parser is a type/class, try to use it
+        parser = field.parser
+        
+        # Handle enum types (like RolandID, CommandID)
+        if isinstance(parser, type) and hasattr(parser, '__members__'):
+            # It's an enum class, try to match the byte value
+            try:
+                byte_value = raw_bytes[0] if len(raw_bytes) == 1 else None
+                if byte_value is not None:
+                    # Try to find matching enum member
+                    for member in parser:
+                        if member.value == byte_value:
+                            return member
+            except (AttributeError, IndexError):
+                pass
+        
+        # Handle ParameterAddress from picomidi
+        if hasattr(parser, 'from_bytes'):
+            try:
+                return parser.from_bytes(raw_bytes)
+            except (AttributeError, ValueError, TypeError):
+                pass
+        
+        # Handle bytes type
+        if parser is bytes:
+            return raw_bytes
+        
+        # Fallback: return raw bytes
+        return raw_bytes
+
+    def _parse_fields(self) -> dict:
+        """
+        Parse all fields using the FIELDS specification from JDXiSysExParameterLayout.
+        
+        This method leverages the field mappings defined in JDXiSysExParameterLayout.FIELDS
+        to extract and parse structured data from the SysEx message.
+        
+        :return: dict Parsed field data with meaningful keys
+        """
+        parsed_fields = {}
+        
+        # Map field indices to meaningful names based on JDXiSysExParameterLayout structure
+        field_names = {
+            0: "start",
+            1: "roland_id", 
+            2: "device_id",
+            3: "model_id",  # 4 bytes
+            4: "command_id",
+            5: "address",  # 4 bytes - ParameterAddress
+            6: "tone_name",  # 12 bytes
+            7: "value",  # 3 bytes
+            8: "checksum",  # 1 byte
+            9: "end",
+        }
+        
+        for i, field in enumerate(JDXiSysExMessageLayout.FIELDS):
+            try:
+                parsed_value = self._parse_field(field)
+                field_name = field_names.get(i, f"field_{i}")
+                parsed_fields[field_name] = parsed_value
+            except (ValueError, IndexError) as e:
+                # Field extraction failed, skip it
+                log.debug(f"Failed to parse field {i}: {e}")
+                continue
+        
+        return parsed_fields
+    
+    def get_structured_fields(self) -> dict:
+        """
+        Get structured field data using the field mappings.
+        
+        This is a public method that can be used to extract structured data
+        from SysEx messages using the field specifications.
+        
+        Example:
+            >>> parser = JDXiSysExParser(sysex_bytes)
+            >>> fields = parser.get_structured_fields()
+            >>> print(fields['roland_id'])  # RolandID.ROLAND_ID
+            >>> print(fields['address'])    # ParameterAddress object
+        
+        :return: dict Parsed field data
+        """
+        return self._parse_fields()
+
+    def _validate_message_structure(self) -> bool:
+        """
+        Validate message structure using field mappings.
+        
+        :return: bool True if message structure is valid
+        """
+        try:
+            # Validate start byte
+            start_field = JDXiSysExMessageLayout.FIELDS[0]
+            start_bytes = self._extract_field_bytes(start_field)
+            if start_bytes[0] != Midi.SYSEX.START:
+                return False
+            
+            # Validate end byte
+            end_field = JDXiSysExMessageLayout.FIELDS[-1]
+            end_bytes = self._extract_field_bytes(end_field)
+            if end_bytes[0] != Midi.SYSEX.END:
+                return False
+            
+            # Validate Roland ID
+            roland_field = JDXiSysExMessageLayout.FIELDS[1]
+            roland_bytes = self._extract_field_bytes(roland_field)
+            if roland_bytes[0] != RolandID.ROLAND_ID:
+                return False
+            
+            # Validate Device ID
+            device_field = JDXiSysExMessageLayout.FIELDS[2]
+            device_bytes = self._extract_field_bytes(device_field)
+            if device_bytes[0] != RolandID.DEVICE_ID:
+                return False
+            
+            return True
+        except (ValueError, IndexError):
+            return False
+
     def _verify_header(self) -> bool:
         """Checks if the SysEx header matches the JD-Xi model ID."""
+        # Use field mappings for validation if available
+        if not self._validate_message_structure():
+            return False
+        
         # --- Remove the SysEx start (F0) and end (F7) bytes
-        data = self.sysex_data[JDXiParameterSysExLayout.ROLAND_ID: JDXiParameterSysExLayout.END]
-        header_data = data[: len(JD_XI_HEADER_LIST)]
-        return header_data == bytes(JD_XI_HEADER_LIST)
+        data = self.sysex_data[JDXiSysExMessageLayout.ROLAND_ID: JDXiSysExMessageLayout.END]
+        header_data = data[: JDXiSysexHeader.length()]
+        return header_data == JDXiSysexHeader.to_bytes()
 
     def _parse_identity_sysex(self) -> dict:
         """
@@ -218,11 +467,12 @@ class JDXiSysExParser:
         device_id = device_info.device_id
         manufacturer_id = device_info.manufacturer
         version = message.data[
-            JDXiParameterSysExLayout.ADDRESS.UMB: JDXiParameterSysExLayout.TONE_NAME.START
+            JDXiSysExMessageLayout.ADDRESS.UMB: JDXiSysExMessageLayout.TONE_NAME.START
         ]  # Extract firmware version bytes
 
         version_str = ".".join(str(byte) for byte in version)
-        if device_id == ModelID.DEVICE_ID:
+        # Use DeviceInfo.is_jdxi property to check if it's a JD-Xi device
+        if device_info and device_info.is_jdxi:
             device_name = "JD-Xi"
         else:
             device_name = "Unknown"
@@ -259,7 +509,7 @@ class JDXiSysExParser:
         try:
             if (
                 status_byte == Midi.SYSEX.START
-                and message_content[JDXiParameterSysExLayout.END] == Midi.SYSEX.END
+                and message_content[JDXiSysExMessageLayout.END] == Midi.SYSEX.END
             ):
                 return self._parse_sysex_to_mido(message_content)
         except Exception as ex:

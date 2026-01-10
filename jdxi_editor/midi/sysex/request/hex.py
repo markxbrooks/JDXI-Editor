@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from picomidi.sysex.conversion import bytes_to_hex
 
-from jdxi_editor.midi.message.jdxi import JD_XI_HEADER_LIST
+from jdxi_editor.midi.message.jdxi import JDXiSysexHeader
 
 
 class JDXISysExHex:
@@ -10,7 +10,7 @@ class JDXISysExHex:
     class to represent bytes as strings
     """
 
-    JDXI_HEADER = bytes_to_hex(JD_XI_HEADER_LIST)
+    JDXI_HEADER = bytes_to_hex(JDXiSysexHeader.to_list())
     START = "F0"
     END = "F7"
     RQ1_COMMAND_11 = "11"

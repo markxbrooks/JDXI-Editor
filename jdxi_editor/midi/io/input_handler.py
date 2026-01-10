@@ -29,7 +29,7 @@ from picomidi.constant import Midi
 from PySide6.QtCore import Signal
 
 from jdxi_editor.jdxi.midi.constant import JDXiMidi
-from jdxi_editor.jdxi.midi.message.sysex.offset import JDXiIdentitySysExLayout
+from jdxi_editor.jdxi.midi.message.sysex.offset import JDXiSysExIdentityLayout
 from jdxi_editor.jdxi.preset.button import JDXiPresetButtonData
 from jdxi_editor.jdxi.preset.incoming_data import IncomingPresetData
 from jdxi_editor.jdxi.program.program import JDXiProgram
@@ -288,7 +288,7 @@ class MidiInHandler(MidiIOController):
             if not (message.type == "sysex" and len(message.data) > 6):
                 return
             mido_sub_id_byte_offset = (
-                    JDXiIdentitySysExLayout.ID.SUB2 - 1
+                    JDXiSysExIdentityLayout.ID.SUB2 - 1
             )  # account for lack of status byte
             if (
                 message.data[mido_sub_id_byte_offset]
@@ -301,13 +301,24 @@ class MidiInHandler(MidiIOController):
             sysex_message_bytes = (
                 bytes([Midi.SYSEX.START])
                 + bytes(message.data)
-                + bytes([Midi.SYSEX.START])
+                + bytes([Midi.SYSEX.END])
             )
             try:
                 parsed_data = self.sysex_parser.parse_bytes(sysex_message_bytes)
                 filtered_data = {
                     k: v for k, v in parsed_data.items() if k not in IGNORED_KEYS
                 }
+            except ValueError as ex:
+                # Skip logging for non-JD-Xi messages (e.g., universal identity requests)
+                error_msg = str(ex)
+                if "Not a JD-Xi SysEx message" in error_msg:
+                    # This is a universal MIDI message, not a JD-Xi message - skip silently
+                    filtered_data = {}
+                    return
+                else:
+                    # Log error for actual JD-Xi parsing errors
+                    log.error(f"Error {ex} occurred parsing data")
+                    filtered_data = {}
             except Exception as ex:
                 log.error(f"Error {ex} occurred parsing data")
                 filtered_data = {}

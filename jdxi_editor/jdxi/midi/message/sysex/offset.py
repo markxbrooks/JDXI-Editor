@@ -11,6 +11,20 @@ from __future__ import annotations
 
 from enum import IntEnum
 
+from jdxi_editor.midi.data.address.address import RolandID, ModelID, CommandID, RolandSysExAddress
+from picomidi import SysExByte
+from dataclasses import dataclass
+from typing import Type, Union
+
+from picomidi.core.parameter.address import ParameterAddress
+
+
+@dataclass(frozen=True)
+class FieldSpec:
+    offset: Union[int, type]   # int or OffsetEnum
+    length: int | None
+    parser: Type | None
+
 
 class JDXIControlChangeOffset(IntEnum):
     """
@@ -86,9 +100,13 @@ class JDXiSysExAddressOffset(IntEnum):
     LSB = 11
 
 
-class JDXiParameterSysExLayout:
+class Checksum:
+    pass
+
+
+class JDXiSysExMessageLayout:
     """
-    JDXiSysExOffset
+    JDXiSysExMessageLayout
 
     Represents the offsets for JD-Xi SysEx messages.
     Byte        |	Description
@@ -110,8 +128,23 @@ class JDXiParameterSysExLayout:
     VALUE |	Value (3 bytes, varies by command)
     CHECKSUM |	Checksum byte (calculated from the message)
     SYSEX_END |	End of SysEx message (0xF7)
-    """
 
+    for field in self.FIELDS:
+        raw = slice_bytes(data, field)
+        parsed = field.parser.from_bytes(raw)
+    """
+    FIELDS = (
+        FieldSpec(0, 1, SysExByte.START),
+        FieldSpec(1, 1, RolandID),
+        FieldSpec(2, 1, RolandID),
+        FieldSpec(JDXiSysExModelIDOffset, 4, ModelID),
+        FieldSpec(7, 1, CommandID),
+        FieldSpec(JDXiSysExAddressOffset, 4, ParameterAddress),
+        FieldSpec(JDXiSysExToneNameOffset, 12, bytes),
+        FieldSpec(-3, 3, bytes),
+        FieldSpec(-2, 1, Checksum),
+        FieldSpec(-1, 1, SysExByte.END),
+    )
     START = 0
     ROLAND_ID = 1
     DEVICE_ID = 2
@@ -149,7 +182,7 @@ class JDXiIdentitySoftwareOffset:
     REVISION_4 = 13  # 0x00
 
 
-class JDXiIdentitySysExLayout:
+class JDXiSysExIdentityLayout:
     """
     JDXiIdentitySysExLayout
     Represents the offsets for JD-Xi Identity SysEx messages.

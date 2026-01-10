@@ -36,17 +36,18 @@ from typing import List
 
 from picomidi.constant import Midi
 
-from jdxi_editor.jdxi.midi.message.sysex.offset import JDXiParameterSysExLayout
+from jdxi_editor.jdxi.midi.message.sysex.offset import JDXiSysExMessageLayout
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetProgramLMB,
     CommandID,
     RolandID,
 )
-from jdxi_editor.midi.message.jdxi import JD_XI_HEADER_LIST
+from jdxi_editor.midi.message.jdxi import JDXiSysexHeader
 from jdxi_editor.midi.message.midi import MidiMessage
 
 # MIDI Constants
-JD_XI_HEADER_BYTES = bytes(JD_XI_HEADER_LIST)
+# Deprecated: Use JDXiSysexHeader.to_bytes() instead
+JD_XI_HEADER_BYTES = JDXiSysexHeader.to_bytes()
 
 
 class SysexParameter(Enum):
@@ -133,8 +134,8 @@ class SysExMessage(MidiMessage):
         if len(data) < 12:
             raise ValueError(f"Invalid SysEx message: too short ({len(data)} bytes)")
         if (
-            data[JDXiParameterSysExLayout.START] != Midi.SYSEX.START
-            or data[JDXiParameterSysExLayout.END] != Midi.SYSEX.END
+            data[JDXiSysExMessageLayout.START] != Midi.SYSEX.START
+            or data[JDXiSysExMessageLayout.END] != Midi.SYSEX.END
         ):
             raise ValueError("Invalid SysEx message: missing start or end bytes")
 

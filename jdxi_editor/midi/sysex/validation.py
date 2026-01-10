@@ -4,9 +4,10 @@ from picomidi.constant import Midi
 from picomidi.core.bitmask import BitMask
 
 from jdxi_editor.jdxi.midi.constant import JDXiMidi
-from jdxi_editor.jdxi.midi.message.sysex.offset import JDXiParameterSysExLayout
+from jdxi_editor.jdxi.midi.message.sysex.offset import JDXiSysExMessageLayout
 from jdxi_editor.log.logger import Logger as log
-from jdxi_editor.midi.data.address.address import JD_XI_HEADER_LIST, CommandID
+from jdxi_editor.midi.data.address.address import CommandID
+from jdxi_editor.midi.message.jdxi import JDXiSysexHeader
 
 
 def validate_raw_sysex_message(message: List[int]) -> bool:
@@ -22,31 +23,31 @@ def validate_raw_sysex_message(message: List[int]) -> bool:
 
         # Check header
         if (
-            message[: JDXiParameterSysExLayout.COMMAND_ID]
-            != [Midi.SYSEX.START] + JD_XI_HEADER_LIST
+            message[: JDXiSysExMessageLayout.COMMAND_ID]
+            != [Midi.SYSEX.START] + JDXiSysexHeader.to_list()
         ):
             log.message("Invalid SysEx header")
             return False
 
         # Check DT1 command
-        if message[JDXiParameterSysExLayout.COMMAND_ID] not in [CommandID.DT1, CommandID.RQ1]:
+        if message[JDXiSysExMessageLayout.COMMAND_ID] not in [CommandID.DT1, CommandID.RQ1]:
             log.message("Invalid command byte")
             return False
 
         # Check end marker
-        if message[JDXiParameterSysExLayout.END] != Midi.SYSEX.END:
+        if message[JDXiSysExMessageLayout.END] != Midi.SYSEX.END:
             log.message("Invalid SysEx end marker")
             return False
 
         # Verify checksum
         data_sum = (
-            sum(message[JDXiParameterSysExLayout.ADDRESS.MSB: JDXiParameterSysExLayout.CHECKSUM])
+            sum(message[JDXiSysExMessageLayout.ADDRESS.MSB: JDXiSysExMessageLayout.CHECKSUM])
             & BitMask.LOW_7_BITS
         )  # Sum from area to value
         checksum = (128 - data_sum) & BitMask.LOW_7_BITS
-        if message[JDXiParameterSysExLayout.CHECKSUM] != checksum:
+        if message[JDXiSysExMessageLayout.CHECKSUM] != checksum:
             log.message(
-                f"Invalid checksum: expected {checksum}, got {message[JDXiParameterSysExLayout.CHECKSUM]}"
+                f"Invalid checksum: expected {checksum}, got {message[JDXiSysExMessageLayout.CHECKSUM]}"
             )
             return False
 
