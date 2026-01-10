@@ -91,6 +91,7 @@ JD-Xi (ModelID = 00H 00H 00H 0EH)
 |    00 76 00 | Drum Kit Partial (Key # 72)                                    |
 +------------------------------------------------------------------------------+
 """
+from dataclasses import dataclass
 
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetDrumKitLMB,
@@ -101,17 +102,18 @@ from jdxi_editor.midi.data.address.address import (
     AddressStartMSB,
 )
 
+@dataclass
 class ByteGroup:
-    lenght: int
+    length: int
     address: int | None = None 
     name: str = None
     
-    
+@dataclass
 class SystemAddress(ByteGroup): 
     lenght: int = 4
     address: int | None = None
     
-    
+@dataclass
 class ThreeByteOffset(ByteGroup):
     length: int = 4
     address: int | None = None
