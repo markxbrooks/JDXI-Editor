@@ -108,17 +108,35 @@ class ByteGroup:
     address: int | None = None 
     name: str = None
     
+    @dataclass
+class ByteGroup:
+    length: int
+    address: int | None = None
+    name: str = None
+
+    def __post_init__(self):
+        if self.length not in [3, 4]:
+            raise ValueError("ByteGroup length must be 3 or 4.")
+        if self.address and not (0 <= self.address < (1 << (self.length * 8))):
+            raise ValueError("Address out of range for given length.")
+    
 @dataclass
 class SystemAddress(ByteGroup): 
     lenght: int = 4
     address: int | None = None
+    msb: str = "00"
+    umb: str = "00"
+    lmb: str = "00"
+    lsb: str = "00"
     
 @dataclass
 class ThreeByteOffset(ByteGroup):
-    length: int = 4
-    address: int | None = None
+    length: int = 3
+    msb: str = "00"
+    mb: str = "00"
+    lsb: str = "00"
     
-    
+  
 
 BYTE_GROUPS_4 = "4-byte-addresses"
 BYTE_GROUPS_3 = "3-byte-offsets"
