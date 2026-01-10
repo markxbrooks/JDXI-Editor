@@ -84,8 +84,20 @@ class MidiOutHandler(MidiIOController):
                             for k, v in parsed_data.items()
                             if k not in OUTBOUND_MESSAGE_IGNORED_KEYS
                         }
+                    except ValueError as parse_ex:
+                        # Skip logging for non-JD-Xi messages (e.g., universal identity requests)
+                        error_msg = str(parse_ex)
+                        if "Not a JD-Xi SysEx message" in error_msg:
+                            # This is a universal MIDI message, not a JD-Xi message - skip silently
+                            filtered_data = {}
+                        else:
+                            # Log warning for actual JD-Xi parsing errors
+                            log.message(
+                                f"SysEx parsing failed: {parse_ex}", level=logging.WARNING
+                            )
+                            filtered_data = {}
                     except Exception as parse_ex:
-                        # Only log warning for actual SysEx messages that fail to parse
+                        # Log warning for other parsing errors
                         log.message(
                             f"SysEx parsing failed: {parse_ex}", level=logging.WARNING
                         )

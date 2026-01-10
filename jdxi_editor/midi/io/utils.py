@@ -12,7 +12,7 @@ from picomidi.core.bitmask import BitMask
 from jdxi_editor.jdxi.midi.message.sysex.offset import (
     JDXIControlChangeOffset,
     JDXIProgramChangeOffset,
-    JDXiParameterSysExLayout,
+    JDXiSysExMessageLayout,
 )
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import ModelID

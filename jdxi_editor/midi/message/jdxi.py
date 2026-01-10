@@ -9,12 +9,9 @@ Constants Used:
     - RolandID: Roland ID constants
 
 Usage Example:
-    >>> from jdxi_editor.midi_state.data.address.address import ModelID
-    >>> from jdxi_editor.midi_state.data.address.SYSEX import RolandID
-    >>> JD_XI_MODEL_ID
     [<ModelID.MODEL_ID_1: 0x00>, <ModelID.MODEL_ID_1: 0x00>, <ModelID.MODEL_ID_1: 0x00>, <ModelID.MODEL_ID_4: 0x0E>]
     >>> JDXiSysexHeader.to_list()
-        [<RolandID.ROLAND_ID: 65>, <RolandID.DEVICE_ID: 16>, <ModelID.MODEL_ID_1: 0x00>, <ModelID.MODEL_ID_1: 0x00>, <ModelID.MODEL_ID_1: 0x00>, <ModelID.MODEL_ID_4: 0x0E>]
+    [<RolandID.ROLAND_ID: 65>, <RolandID.DEVICE_ID: 16>, <ModelID.MODEL_ID_1: 0x00>, <ModelID.MODEL_ID_1: 0x00>, <ModelID.MODEL_ID_1: 0x00>, <ModelID.MODEL_ID_4: 0x0E>]
 
 
 """
@@ -28,12 +25,19 @@ JD_XI_MODEL_ID = [
     ModelID.MODEL_ID_3,
     ModelID.MODEL_ID_4,
 ]
-JD_XI_HEADER_LIST = [RolandID.ROLAND_ID, RolandID.DEVICE_ID, *JD_XI_MODEL_ID]
 
 
 class JDXiSysexHeader:
     """
     JD-Xi System Exclusive Message Header
+    
+    This class provides a structured way to work with JD-Xi SysEx headers,
+    replacing the old JD_XI_HEADER_LIST constant.
+    
+    Usage:
+        >>> header = JDXiSysexHeader.to_list()
+        >>> header_bytes = JDXiSysexHeader.to_bytes()
+        >>> header_len = len(JDXiSysexHeader.to_list())
     """
     ID = RolandID
     MODEL = ModelID
@@ -41,6 +45,30 @@ class JDXiSysexHeader:
     @classmethod
     def to_list(cls) -> list[int]:
         """
-        Convert the header to a list of integers
+        Convert the header to a list of integers.
+        
+        :return: list[int] Header bytes as a list [RolandID, DeviceID, ModelID1-4]
         """
         return [cls.ID.ROLAND_ID, cls.ID.DEVICE_ID, cls.MODEL.MODEL_ID_1, cls.MODEL.MODEL_ID_2, cls.MODEL.MODEL_ID_3, cls.MODEL.MODEL_ID_4]
+
+    @classmethod
+    def to_bytes(cls) -> bytes:
+        """
+        Convert the header to bytes.
+        
+        :return: bytes Header bytes
+        """
+        return bytes(cls.to_list())
+
+    @classmethod
+    def length(cls) -> int:
+        """
+        Get the length of the header in bytes.
+        
+        :return: int Number of bytes in the header
+        """
+        return len(cls.to_list())
+
+
+# Deprecated: Use JDXiSysexHeader.to_list() instead
+JD_XI_HEADER_LIST = JDXiSysexHeader.to_list()
