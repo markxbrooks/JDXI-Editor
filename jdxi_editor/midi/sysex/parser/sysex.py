@@ -36,7 +36,7 @@ class JDXiSysExParser:
             self.sysex_data = sysex_data
         self.sysex_dict = {}
         self.log_folder = Path.home() / f".{__package_name__}" / "logs"
-        if not os.path.exists(self.log_folder):
+        if not self.log_folder.exists():
             self.log_folder.mkdir(parents=True, exist_ok=True)
 
     def from_bytes(self, sysex_data: bytes) -> None:
