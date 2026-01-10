@@ -100,6 +100,22 @@ from jdxi_editor.midi.data.address.address import (
     AddressOffsetTemporaryToneUMB,
     AddressStartMSB,
 )
+
+class ByteGroup:
+    lenght: int
+    address: int | None = None 
+    
+    
+class SystemAddress: 
+    lenght: int = 4
+    address: int | None = None
+    
+    
+class ThreeByteOffset(ByteGroup):
+    length: int = 4
+    address: int | None = None
+    
+
 BYTE_GROUPS_4 = "4-byte-addresses"
 BYTE_GROUPS_3 = "3-byte-offsets"
 
