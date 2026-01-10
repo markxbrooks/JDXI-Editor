@@ -34,7 +34,7 @@ def validate_raw_sysex_message(message: List[int]) -> bool:
             return False
 
         # Check end marker
-        if message[JDXiParameterSysExLayout.END] != Midi.SYSEX.START:
+        if message[JDXiParameterSysExLayout.END] != Midi.SYSEX.END:
             log.message("Invalid SysEx end marker")
             return False
 
