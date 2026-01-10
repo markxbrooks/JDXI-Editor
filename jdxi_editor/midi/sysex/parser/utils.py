@@ -19,6 +19,7 @@ Functions:
 from __future__ import annotations
 
 from typing import Dict, Iterable
+from enum import Enum
 
 from picomidi.constant import Midi
 from picomidi.sysex.parameter.address import AddressParameter
@@ -42,8 +43,12 @@ from jdxi_editor.midi.sysex.parser.tone_mapper import (
 
 UNKNOWN = "Unknown"
 UNKNOWN_AREA = "Unknown area"
+MINIMAL_METADATA = {"error": "Minimal metadata provided", "raw_data": None}
 
-from enum import Enum
+def _return_minimal_metadata(data: bytes) -> dict:
+    return MINIMAL_METADATA.copy()
+
+
 
 class ParameterLength(Enum):
     ONE_BYTE = 1
