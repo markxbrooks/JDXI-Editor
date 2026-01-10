@@ -241,3 +241,13 @@ PARAMETER_ADDRESS_MAP = {
         }
     },
 }
+
+def parse_address(raw_data: bytes) -> SystemAddress:
+    if len(raw_data) != 4:
+        raise ValueError("Raw address must be 4 bytes.")
+    return SystemAddress(
+        msb=f"{raw_data[0]:02X}",
+        umb=f"{raw_data[1]:02X}",
+        lmb=f"{raw_data[2]:02X}",
+        lsb=f"{raw_data[3]:02X}",
+    )
