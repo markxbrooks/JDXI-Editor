@@ -40,6 +40,7 @@ Dependencies:
 from typing import Dict, Optional
 
 import qtawesome as qta
+from decologr import Decologr as log
 from picomidi.constant import Midi
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import QRect, QSize, Qt, QTimer, Signal
@@ -72,7 +73,6 @@ from jdxi_editor.jdxi.program.program import JDXiProgram
 from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
 from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.jdxi.synth.type import JDXiSynth
-from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.log.midi_info import log_midi_info
 from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.midi.channel.channel import MidiChannel
@@ -476,7 +476,9 @@ class ProgramEditor(BasicEditor):
         preset_vlayout.addWidget(self.category_combo_box)
         # Load button
         self.load_button = QPushButton(
-            IconRegistry.get_icon(IconRegistry.FOLDER_NOTCH_OPEN, color=JDXiStyle.FOREGROUND),
+            IconRegistry.get_icon(
+                IconRegistry.FOLDER_NOTCH_OPEN, color=JDXiStyle.FOREGROUND
+            ),
             "Load Preset",
         )
         self.load_button.clicked.connect(self.load_preset_by_program_change)
@@ -621,7 +623,9 @@ class ProgramEditor(BasicEditor):
         program_vlayout.addWidget(self.bank_combo_box)
         # Load button
         self.load_button = QPushButton(
-            IconRegistry.get_icon(IconRegistry.FOLDER_NOTCH_OPEN, color=JDXiStyle.FOREGROUND),
+            IconRegistry.get_icon(
+                IconRegistry.FOLDER_NOTCH_OPEN, color=JDXiStyle.FOREGROUND
+            ),
             "Load Program",
         )
         self.load_button.clicked.connect(self.load_program)
@@ -832,12 +836,15 @@ class ProgramEditor(BasicEditor):
         )
         self.master_level_title = QLabel("Master Level")
         from jdxi_editor.jdxi.style.theme_manager import JDXiThemeManager
+
         JDXiThemeManager.apply_mixer_label(self.master_level_title)
         self.master_level_current_label = QLabel("Current Program")
         JDXiThemeManager.apply_mixer_label(self.master_level_current_label)
         self.digital_synth_1_icon = QLabel()
         self.digital_synth_1_icon.setPixmap(
-            IconRegistry.get_icon_pixmap(IconRegistry.PIANO, color=JDXiStyle.FOREGROUND, size=40)
+            IconRegistry.get_icon_pixmap(
+                IconRegistry.PIANO, color=JDXiStyle.FOREGROUND, size=40
+            )
         )
         self.digital_synth_1_title = QLabel("Digital Synth 1")
         JDXiThemeManager.apply_mixer_label(self.digital_synth_1_title)
@@ -845,7 +852,9 @@ class ProgramEditor(BasicEditor):
         JDXiThemeManager.apply_mixer_label(self.digital_synth_1_current_label)
         self.digital_synth_2_icon = QLabel()
         self.digital_synth_2_icon.setPixmap(
-            IconRegistry.get_icon_pixmap(IconRegistry.PIANO, color=JDXiStyle.FOREGROUND, size=40)
+            IconRegistry.get_icon_pixmap(
+                IconRegistry.PIANO, color=JDXiStyle.FOREGROUND, size=40
+            )
         )
 
         self.digital_synth_2_title = QLabel("Digital Synth 2")
@@ -854,7 +863,9 @@ class ProgramEditor(BasicEditor):
         JDXiThemeManager.apply_mixer_label(self.digital_synth_2_current_label)
         self.drum_kit_icon = QLabel()
         self.drum_kit_icon.setPixmap(
-            IconRegistry.get_icon_pixmap(IconRegistry.DRUM, color=JDXiStyle.FOREGROUND, size=40)
+            IconRegistry.get_icon_pixmap(
+                IconRegistry.DRUM, color=JDXiStyle.FOREGROUND, size=40
+            )
         )
         self.drum_kit_title = QLabel("Drums")
         JDXiThemeManager.apply_mixer_label(self.drum_kit_title)
@@ -862,7 +873,9 @@ class ProgramEditor(BasicEditor):
         JDXiThemeManager.apply_mixer_label(self.drum_kit_current_label)
         self.analog_synth_icon = QLabel()
         self.analog_synth_icon.setPixmap(
-            IconRegistry.get_icon_pixmap(IconRegistry.PIANO, color=JDXiStyle.FOREGROUND, size=40)
+            IconRegistry.get_icon_pixmap(
+                IconRegistry.PIANO, color=JDXiStyle.FOREGROUND, size=40
+            )
         )
         self.analog_synth_title = QLabel("Analog Synth")
         JDXiThemeManager.apply_mixer_label(self.analog_synth_title, analog=True)
@@ -1258,7 +1271,8 @@ class ProgramEditor(BasicEditor):
         button_layout = QHBoxLayout()
         button_layout.addStretch()
         self.save_user_programs_button = QPushButton(
-            IconRegistry.get_icon(IconRegistry.FLOPPY_DISK, color=JDXiStyle.FOREGROUND), "Save Changes"
+            IconRegistry.get_icon(IconRegistry.FLOPPY_DISK, color=JDXiStyle.FOREGROUND),
+            "Save Changes",
         )
         self.save_user_programs_button.clicked.connect(self._save_user_programs_changes)
         button_layout.addWidget(self.save_user_programs_button)
@@ -1564,13 +1578,15 @@ class ProgramEditor(BasicEditor):
         button_layout.addWidget(self.create_playlist_button)
 
         self.delete_playlist_button = QPushButton(
-            IconRegistry.get_icon(IconRegistry.TRASH_FILL, color=JDXiStyle.FOREGROUND), "Delete Playlist"
+            IconRegistry.get_icon(IconRegistry.TRASH_FILL, color=JDXiStyle.FOREGROUND),
+            "Delete Playlist",
         )
         self.delete_playlist_button.clicked.connect(self._delete_selected_playlist)
         button_layout.addWidget(self.delete_playlist_button)
 
         self.refresh_playlist_button = QPushButton(
-            IconRegistry.get_icon(IconRegistry.REFRESH, color=JDXiStyle.FOREGROUND), "Refresh Playlist"
+            IconRegistry.get_icon(IconRegistry.REFRESH, color=JDXiStyle.FOREGROUND),
+            "Refresh Playlist",
         )
         self.refresh_playlist_button.clicked.connect(self._refresh_playlists)
         button_layout.addWidget(self.refresh_playlist_button)

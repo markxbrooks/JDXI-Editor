@@ -1,6 +1,6 @@
 """scan MIDI ports for JD-Xi"""
 
-from jdxi_editor.log.logger import Logger as log
+from decologr import Decologr as log
 
 
 def find_jdxi_port(port_list: list[str]) -> str | None:

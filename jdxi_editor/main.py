@@ -29,11 +29,10 @@ import sys
 from pathlib import Path
 
 from PySide6.QtCore import QSettings
-from PySide6.QtGui import QColor, QFont, QFontInfo, QIcon, QPixmap, QScreen, Qt
+from PySide6.QtGui import QColor, QIcon, QPixmap, Qt
 from PySide6.QtWidgets import (
     QApplication,
     QFrame,
-    QGroupBox,
     QHBoxLayout,
     QLabel,
     QProgressBar,
@@ -41,9 +40,9 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
 )
 
+from decologr import setup_logging
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.log.message import log_message
-from jdxi_editor.log.setup import setup_logging
 from jdxi_editor.project import __organization_name__, __program__, __version__
 from jdxi_editor.resources import resource_path
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
@@ -59,7 +58,7 @@ def main() -> None:
         # Set up logging first
         settings = QSettings(__organization_name__, __program__)
         log_level = int(str(settings.value("log_level", logging.DEBUG)))
-        logger = setup_logging(log_level=log_level)
+        logger = setup_logging(use_rich=True, project_name="jdxi_editor")
 
         # Create application
         app = QApplication(sys.argv)

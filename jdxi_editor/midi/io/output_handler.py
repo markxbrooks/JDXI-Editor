@@ -20,11 +20,11 @@ Example usage:
 import logging
 from typing import Iterable, Optional
 
+from decologr import Decologr as log
 from picomidi.constant import Midi
 from picomidi.core.bitmask import BitMask
 from PySide6.QtCore import Signal
 
-from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.parsers.util import OUTBOUND_MESSAGE_IGNORED_KEYS
 from jdxi_editor.midi.io.controller import MidiIOController
 from jdxi_editor.midi.io.utils import format_midi_message_to_hex_string

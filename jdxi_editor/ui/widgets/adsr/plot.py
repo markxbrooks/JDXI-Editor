@@ -28,6 +28,7 @@ Customization:
 """
 
 import numpy as np
+from decologr import Decologr as log
 from PySide6.QtCore import QPointF, Qt
 from PySide6.QtGui import (
     QColor,
@@ -42,7 +43,6 @@ from PySide6.QtGui import (
 from PySide6.QtWidgets import QWidget
 
 from jdxi_editor.jdxi.style import JDXiStyle
-from jdxi_editor.log.logger import Logger as log
 
 
 class ADSRPlot(QWidget):
@@ -72,6 +72,7 @@ class ADSRPlot(QWidget):
         self.setMaximumWidth(width)
         # Use dark gray background
         from jdxi_editor.jdxi.style.theme_manager import JDXiThemeManager
+
         JDXiThemeManager.apply_adsr_plot(self)
         # Sample rate for converting times to samples
         self.sample_rate = 256

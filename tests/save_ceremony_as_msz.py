@@ -17,7 +17,7 @@ from typing import Dict, List, Any
 
 # Import logger only if available, otherwise use print
 try:
-    from jdxi_editor.log.logger import Logger as log
+    from decologr import Decologr as log
 except ImportError:
     # Fallback logger using print
     class SimpleLogger:

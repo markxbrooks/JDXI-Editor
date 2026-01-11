@@ -4,6 +4,7 @@ Favorite Button
 
 import logging
 
+from decologr import Decologr as log
 from PySide6.QtCore import QSettings, Signal
 from PySide6.QtWidgets import QPushButton, QWidget
 
@@ -11,7 +12,6 @@ from jdxi_editor.jdxi.preset.button import JDXiPresetButtonData
 from jdxi_editor.jdxi.preset.data import JDXiPresetData
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.jdxi.synth.type import JDXiSynth
-from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.project import __package_name__
 

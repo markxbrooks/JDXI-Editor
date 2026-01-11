@@ -5,10 +5,10 @@ Provides centralized icon definitions and retrieval with fallback support.
 """
 
 import qtawesome as qta
+from decologr import Decologr as log
 from PySide6.QtGui import QIcon
 
 from jdxi_editor.jdxi.style import JDXiStyle
-from jdxi_editor.log.logger import Logger as log
 
 
 class IconRegistry:
@@ -83,7 +83,9 @@ class IconRegistry:
     AMPLIFIER = "mdi.amplifier"
 
     @staticmethod
-    def get_icon(icon_name: str, color: str = None, size: int = None, fallback: str = None) -> QIcon:
+    def get_icon(
+        icon_name: str, color: str = None, size: int = None, fallback: str = None
+    ) -> QIcon:
         """
         Get icon with fallback support.
 
@@ -96,8 +98,8 @@ class IconRegistry:
         try:
             kwargs = {}
             if color:
-                kwargs['color'] = color
-            
+                kwargs["color"] = color
+
             icon = qta.icon(icon_name, **kwargs)
             if icon.isNull():
                 raise ValueError(f"Icon {icon_name} is null")
@@ -109,7 +111,7 @@ class IconRegistry:
                 try:
                     kwargs = {}
                     if color:
-                        kwargs['color'] = color
+                        kwargs["color"] = color
                     icon = qta.icon(fallback, **kwargs)
                     if not icon.isNull():
                         log.info(f"Using fallback icon {fallback} for {icon_name}")
@@ -121,7 +123,9 @@ class IconRegistry:
             return None
 
     @staticmethod
-    def get_icon_pixmap(icon_name: str, color: str = None, size: int = None, fallback: str = None):
+    def get_icon_pixmap(
+        icon_name: str, color: str = None, size: int = None, fallback: str = None
+    ):
         """
         Get icon as QPixmap with fallback support.
 
@@ -134,12 +138,14 @@ class IconRegistry:
         icon = IconRegistry.get_icon(icon_name, color=color, fallback=fallback)
         if icon is None:
             return None
-        
+
         icon_size = size or JDXiStyle.ICON_SIZE
         return icon.pixmap(icon_size, icon_size)
 
     @staticmethod
-    def get_icon_safe(icon_name: str, color: str = None, size: int = None, fallback: str = None) -> QIcon:
+    def get_icon_safe(
+        icon_name: str, color: str = None, size: int = None, fallback: str = None
+    ) -> QIcon:
         """
         Get icon with fallback support, returns empty QIcon if all fail.
 

@@ -116,7 +116,9 @@ from jdxi_editor.midi.data.parameter.address.name import (
 from jdxi_editor.midi.data.parameter.address.table import (
     PARAMETER_ADDRESS_TABLE as ADDRESSES,
 )
-from jdxi_editor.midi.data.parameter.address.table import parameter_address_table
+from jdxi_editor.midi.data.parameter.address.table import (
+    parameter_address_table,
+)
 from jdxi_editor.midi.data.parameter.areas.name import ParameterAreas
 from jdxi_editor.midi.data.parameter.offset.name import (
     ParameterOffsetName as OffsetName,
@@ -124,7 +126,9 @@ from jdxi_editor.midi.data.parameter.offset.name import (
 from jdxi_editor.midi.data.parameter.offset.table import (
     PARAMETER_OFFSET_TABLE as OFFSETS,
 )
-from jdxi_editor.midi.data.parameter.offset.table import parameter_offset_table
+from jdxi_editor.midi.data.parameter.offset.table import (
+    parameter_offset_table,
+)
 
 parameter_address_map = {}
 parameter_offset_map = {}

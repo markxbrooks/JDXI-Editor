@@ -4,11 +4,11 @@ JDXiSysExComposer
 
 from typing import Optional
 
+from decologr import Decologr as log
 from picomidi.constant import Midi
 from picomidi.sysex.parameter.address import AddressParameter
 
 from jdxi_editor.jdxi.midi.message.sysex.offset import JDXiSysExMessageLayout
-from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetSuperNATURALLMB,
     RolandSysExAddress,

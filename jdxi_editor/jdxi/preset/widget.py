@@ -250,12 +250,13 @@ class InstrumentPresetWidget(QWidget):
         Load a Digital Synth preset on the Analog Synth channel (Cheat Mode).
         """
         if not hasattr(self.parent, "midi_helper") or not self.parent.midi_helper:
-            from jdxi_editor.log.logger import Logger as log
+            from decologr import Decologr as log
 
             log.warning("⚠️ MIDI helper not available for cheat preset loading")
             return
 
-        from jdxi_editor.log.logger import Logger as log
+        from decologr import Decologr as log
+
         from jdxi_editor.log.midi_info import log_midi_info
         from jdxi_editor.midi.channel.channel import MidiChannel
         from jdxi_editor.midi.data.programs.digital import DIGITAL_PRESET_LIST

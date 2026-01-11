@@ -36,6 +36,7 @@ Example:
 import re
 from typing import Any, Callable
 
+from decologr import Decologr as log
 from PySide6.QtWidgets import (
     QComboBox,
     QFormLayout,
@@ -50,7 +51,6 @@ from PySide6.QtWidgets import (
 )
 
 from jdxi_editor.jdxi.style import JDXiStyle
-from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.drum.data import rm_waves
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.ui.widgets.wmt.envelope import WMTEnvelopeWidget

@@ -28,13 +28,13 @@ Customization:
 """
 
 import numpy as np
+from decologr import Decologr as log
 from picomidi.constant import Midi
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QColor, QFont, QLinearGradient, QPainter, QPainterPath, QPen
 from PySide6.QtWidgets import QWidget
 
 from jdxi_editor.jdxi.style import JDXiStyle
-from jdxi_editor.log.logger import Logger as log
 
 
 def midi_value_to_float(value: int) -> float:
@@ -73,6 +73,7 @@ class WMTEnvPlot(QWidget):
         self.setMaximumWidth(width)
         # Use dark gray background
         from jdxi_editor.jdxi.style.theme_manager import JDXiThemeManager
+
         JDXiThemeManager.apply_adsr_plot(self)
         # Sample rate for converting times to samples
         self.sample_rate = 256

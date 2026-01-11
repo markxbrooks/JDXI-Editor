@@ -7,11 +7,11 @@ and ensuring consistent styling across the application.
 
 from typing import Optional
 
+from decologr import Decologr as log
 from PySide6.QtCore import QObject
 from PySide6.QtWidgets import QApplication, QWidget
 
 from jdxi_editor.jdxi.style import JDXiStyle
-from jdxi_editor.log.logger import Logger as log
 
 
 class JDXiThemeManager(QObject):
@@ -119,7 +119,7 @@ class JDXiThemeManager(QObject):
         :param widget: QWidget to style
         :param analog: bool If True, use analog editor style, else standard
         """
-        if analog and hasattr(JDXiStyle, 'EDITOR_ANALOG'):
+        if analog and hasattr(JDXiStyle, "EDITOR_ANALOG"):
             JDXiThemeManager.apply_style(widget, JDXiStyle.EDITOR_ANALOG)
         else:
             JDXiThemeManager.apply_style(widget, JDXiStyle.EDITOR)

@@ -4,9 +4,9 @@ from pathlib import Path
 
 import mido
 import rtmidi
+from decologr import Decologr as log
 from picomidi.constant import Midi
 
-from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.ui.widgets.midi.utils import ticks_to_seconds
 
 # Constants

@@ -29,9 +29,9 @@ Example Usage:
 from typing import Iterable, Optional
 
 import rtmidi
+from decologr import Decologr as log
 from PySide6.QtWidgets import QMainWindow
 
-from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.message.identity_request import IdentityRequestMessage
 from jdxi_editor.midi.sysex.device import DeviceInfo
 

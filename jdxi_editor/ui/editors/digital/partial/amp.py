@@ -63,6 +63,7 @@ class DigitalAmpSection(QWidget):
         amp_section_layout.setContentsMargins(5, 15, 5, 5)
         amp_section_layout.setSpacing(5)
         from jdxi_editor.jdxi.style.theme_manager import JDXiThemeManager
+
         JDXiThemeManager.apply_adsr_style(self)
         self.setMinimumHeight(JDXiDimensions.EDITOR_MINIMUM_HEIGHT)
 
