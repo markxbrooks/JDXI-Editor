@@ -36,7 +36,7 @@ from PySide6.QtWidgets import (
 )
 
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
-from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
 from jdxi_editor.midi.data.address.address import (
     ZERO_BYTE,
     AddressOffsetProgramLMB,
@@ -79,7 +79,9 @@ class VocalFXEditor(BasicEditor):
             AddressOffsetProgramLMB.VOCAL_EFFECT,
             ZERO_BYTE,
         )
-        self.setStyleSheet(JDXiStyle.EDITOR + JDXiStyle.TABS)
+        from jdxi_editor.jdxi.style.theme_manager import JDXiThemeManager
+        JDXiThemeManager.apply_editor_style(self)
+        JDXiThemeManager.apply_tabs_style(self)
 
         # Main layout
 
@@ -106,7 +108,8 @@ class VocalFXEditor(BasicEditor):
         # self.title_label = QLabel("Vocal Effects")
         self.title_label = DigitalTitle()
         self.title_label.setText("Vocal Effects")
-        self.title_label.setStyleSheet(JDXiStyle.INSTRUMENT_TITLE_LABEL)
+        from jdxi_editor.jdxi.style.theme_manager import JDXiThemeManager
+        JDXiThemeManager.apply_instrument_title_label(self.title_label)
         title_layout = QHBoxLayout()
         title_layout.addWidget(self.title_label)
 
@@ -276,7 +279,7 @@ class VocalFXEditor(BasicEditor):
         vocoder_layout.addLayout(hpf_row)
 
         layout.addWidget(vocoder_group)
-        vocoder_group.setStyleSheet(JDXiStyle.ADSR)
+        JDXiThemeManager.apply_adsr_style(vocoder_group)
         return vocal_effect_section
 
     def _create_mixer_section(self) -> QWidget:

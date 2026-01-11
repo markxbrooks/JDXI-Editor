@@ -2,8 +2,9 @@
 Parameter Offset Table
 """
 
-from jdxi_editor.midi.data.parameter.offset.name import ParameterOffsetName
 from picomidi.core.parameter.factory import AddressFactory
+
+from jdxi_editor.midi.data.parameter.offset.name import ParameterOffsetName
 
 parameter_offset_table = [  # must be 3-byte offsets
     (ParameterOffsetName.SYSTEM_COMMON, "00 00 00"),
@@ -34,11 +35,11 @@ parameter_offset_table = [  # must be 3-byte offsets
     (ParameterOffsetName.ANALOG_SYNTH_TONE, "02 00 00"),
     (ParameterOffsetName.DRUM_KIT_COMMON, "02 00 00"),
     (ParameterOffsetName.DRUM_KIT_PARTIAL1, "00 2E 00"),
-    (ParameterOffsetName.DRUM_KIT_PARTIAL2, "00 30 00"),   # Key # 37  # BD2"),
+    (ParameterOffsetName.DRUM_KIT_PARTIAL2, "00 30 00"),  # Key # 37  # BD2"),
     (ParameterOffsetName.DRUM_KIT_PARTIAL3, "00 32 00"),
     (ParameterOffsetName.DRUM_KIT_PARTIAL4, "00 34 00"),  # Key # 39"),
-    (ParameterOffsetName.DRUM_KIT_PARTIAL5, "00 36 00"),   # Key # 40"),
-    (ParameterOffsetName.DRUM_KIT_PARTIAL6, "00 38 00"),   # Key # 41"),
+    (ParameterOffsetName.DRUM_KIT_PARTIAL5, "00 36 00"),  # Key # 40"),
+    (ParameterOffsetName.DRUM_KIT_PARTIAL6, "00 38 00"),  # Key # 41"),
     (ParameterOffsetName.DRUM_KIT_PARTIAL7, "00 3A 00"),
     (ParameterOffsetName.DRUM_KIT_PARTIAL8, "00 3C 00"),
     (ParameterOffsetName.DRUM_KIT_PARTIAL9, "00 3C 00"),
@@ -72,6 +73,5 @@ parameter_offset_table = [  # must be 3-byte offsets
     (ParameterOffsetName.DRUM_KIT_PARTIAL37, "00 76 00"),
 ]
 PARAMETER_OFFSET_TABLE = {
-    name: AddressFactory.from_str(address)
-    for name, address in parameter_offset_table
+    name: AddressFactory.from_str(address) for name, address in parameter_offset_table
 }

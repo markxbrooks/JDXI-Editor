@@ -7,6 +7,7 @@ from enum import Enum, auto
 
 class ParameterAddressName(Enum):
     """Address Names"""
+
     SETUP = auto()
     SYSTEM = auto()
     SYSTEM_COMMON = auto()

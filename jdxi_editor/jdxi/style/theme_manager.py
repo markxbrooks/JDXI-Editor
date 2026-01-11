@@ -112,6 +112,116 @@ class JDXiThemeManager(QObject):
         JDXiThemeManager.apply_style(widget, JDXiStyle.INSTRUMENT)
 
     @staticmethod
+    def apply_editor_style(widget: QWidget, analog: bool = False) -> None:
+        """
+        Apply editor style
+
+        :param widget: QWidget to style
+        :param analog: bool If True, use analog editor style, else standard
+        """
+        if analog and hasattr(JDXiStyle, 'EDITOR_ANALOG'):
+            JDXiThemeManager.apply_style(widget, JDXiStyle.EDITOR_ANALOG)
+        else:
+            JDXiThemeManager.apply_style(widget, JDXiStyle.EDITOR)
+
+    @staticmethod
+    def apply_instrument_title_label(widget: QWidget) -> None:
+        """Apply instrument title label style"""
+        JDXiThemeManager.apply_style(widget, JDXiStyle.INSTRUMENT_TITLE_LABEL)
+
+    @staticmethod
+    def apply_mixer_label(widget: QWidget, analog: bool = False) -> None:
+        """
+        Apply mixer label style
+
+        :param widget: QWidget to style
+        :param analog: bool If True, use analog mixer label style, else standard
+        """
+        if analog:
+            JDXiThemeManager.apply_style(widget, JDXiStyle.MIXER_LABEL_ANALOG)
+        else:
+            JDXiThemeManager.apply_style(widget, JDXiStyle.MIXER_LABEL)
+
+    @staticmethod
+    def apply_partial_switch(widget: QWidget) -> None:
+        """Apply partial switch (checkbox) style"""
+        JDXiThemeManager.apply_style(widget, JDXiStyle.PARTIAL_SWITCH)
+
+    @staticmethod
+    def apply_adsr_style(widget: QWidget, analog: bool = False) -> None:
+        """
+        Apply ADSR envelope style
+
+        :param widget: QWidget to style
+        :param analog: bool If True, use analog ADSR style, else standard
+        """
+        if analog:
+            JDXiThemeManager.apply_style(widget, JDXiStyle.ADSR_ANALOG)
+        else:
+            JDXiThemeManager.apply_style(widget, JDXiStyle.ADSR)
+
+    @staticmethod
+    def apply_adsr_plot(widget: QWidget) -> None:
+        """Apply ADSR plot style"""
+        JDXiThemeManager.apply_style(widget, JDXiStyle.ADSR_PLOT)
+
+    @staticmethod
+    def apply_adsr_disabled(widget: QWidget) -> None:
+        """Apply ADSR disabled style"""
+        JDXiThemeManager.apply_style(widget, JDXiStyle.ADSR_DISABLED)
+
+    @staticmethod
+    def apply_tabs_style(widget: QWidget, analog: bool = False) -> None:
+        """
+        Apply tabs style
+
+        :param widget: QWidget to style
+        :param analog: bool If True, use analog tabs style, else standard
+        """
+        if analog:
+            JDXiThemeManager.apply_style(widget, JDXiStyle.TABS_ANALOG)
+        else:
+            JDXiThemeManager.apply_style(widget, JDXiStyle.TABS)
+
+    @staticmethod
+    def apply_transparent(widget: QWidget) -> None:
+        """Apply transparent style"""
+        JDXiThemeManager.apply_style(widget, JDXiStyle.TRANSPARENT)
+
+    @staticmethod
+    def apply_debugger_window(widget: QWidget) -> None:
+        """Apply debugger window style"""
+        JDXiThemeManager.apply_style(widget, JDXiStyle.DEBUGGER)
+
+    @staticmethod
+    def apply_combo_box(widget: QWidget, analog: bool = False) -> None:
+        """
+        Apply combo box style
+
+        :param widget: QWidget to style
+        :param analog: bool If True, use analog combo box style, else standard
+        """
+        if analog:
+            JDXiThemeManager.apply_style(widget, JDXiStyle.COMBO_BOX_ANALOG)
+        else:
+            JDXiThemeManager.apply_style(widget, JDXiStyle.COMBO_BOX)
+
+    @staticmethod
+    def apply_line_edit(widget: QWidget) -> None:
+        """Apply line edit style"""
+        JDXiThemeManager.apply_style(widget, JDXiStyle.QLINEEDIT)
+
+    @staticmethod
+    def apply_button_rect_analog(widget: QWidget) -> None:
+        """Apply analog rectangular button style (blue)"""
+        JDXiThemeManager.apply_style(widget, JDXiStyle.BUTTON_RECT_ANALOG)
+
+    @staticmethod
+    def apply_button_analog_active(widget: QWidget) -> None:
+        """Apply analog active button style (blue, active state)"""
+        JDXiThemeManager.apply_style(widget, JDXiStyle.BUTTON_ANALOG_ACTIVE)
+
+    @staticmethod
     def apply_table_style(widget: QWidget) -> None:
         """Apply table style with rounded corners and charcoal embossed cells"""
         # This uses the style from program.py's _get_table_style method

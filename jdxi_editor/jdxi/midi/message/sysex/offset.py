@@ -9,19 +9,24 @@ to provide a clear and structured way to access the byte positions within the Sy
 
 from __future__ import annotations
 
-from enum import IntEnum
-
-from jdxi_editor.midi.data.address.address import RolandID, ModelID, CommandID, RolandSysExAddress
-from picomidi import SysExByte
 from dataclasses import dataclass
+from enum import IntEnum
 from typing import Type, Union
 
+from picomidi import SysExByte
 from picomidi.core.parameter.address import ParameterAddress
+
+from jdxi_editor.midi.data.address.address import (
+    CommandID,
+    ModelID,
+    RolandID,
+    RolandSysExAddress,
+)
 
 
 @dataclass(frozen=True)
 class FieldSpec:
-    offset: Union[int, type]   # int or OffsetEnum
+    offset: Union[int, type]  # int or OffsetEnum
     length: int | None
     parser: Type | None
 
@@ -133,6 +138,7 @@ class JDXiSysExMessageLayout:
         raw = slice_bytes(data, field)
         parsed = field.parser.from_bytes(raw)
     """
+
     FIELDS = (
         FieldSpec(0, 1, SysExByte.START),
         FieldSpec(1, 1, RolandID),
@@ -159,6 +165,7 @@ class JDXiSysExMessageLayout:
 
 class JDXiIdentityHeaderOffset:
     """ID Offsets"""
+
     NUMBER = 1  # ID Number (0x7E for non-realtime, 0x7F for realtime)
     DEVICE = 2  # Device ID (0x7F for all devices)
     SUB1 = 3  # 0x06 for General Information
@@ -168,6 +175,7 @@ class JDXiIdentityHeaderOffset:
 
 class JDXiIdentityDeviceOffset:
     """Device Offsets"""
+
     FAMILY_CODE_1 = 6  # Device family code 1 0x0E
     FAMILY_CODE_2 = 7  # Device family code 2 0x03
     FAMILY_NUMBER_CODE_1 = 8  # Device family number code (0x00 for JD-Xi)
@@ -176,6 +184,7 @@ class JDXiIdentityDeviceOffset:
 
 class JDXiIdentitySoftwareOffset:
     """Software revision offsets"""
+
     REVISION_1 = 10  # Software revision level 0x00
     REVISION_2 = 11  # 0x03
     REVISION_3 = 12  # 0x00

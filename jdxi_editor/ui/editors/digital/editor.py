@@ -48,7 +48,7 @@ from PySide6.QtWidgets import (
 
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.jdxi.preset.widget import InstrumentPresetWidget
-from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
 from jdxi_editor.jdxi.synth.factory import create_synth_data
 from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.log.logger import Logger as log
@@ -150,7 +150,9 @@ class DigitalSynthEditor(SynthEditor):
         """set up user interface"""
         self.setMinimumSize(850, 300)
         self.resize(1030, 600)
-        self.setStyleSheet(JDXiStyle.TABS + JDXiStyle.EDITOR)
+        from jdxi_editor.jdxi.style.theme_manager import JDXiThemeManager
+        JDXiThemeManager.apply_tabs_style(self)
+        JDXiThemeManager.apply_editor_style(self)
 
         # Main layout
         main_layout = QVBoxLayout()
@@ -163,7 +165,7 @@ class DigitalSynthEditor(SynthEditor):
 
         # Partials panel only
         self.partials_panel = PartialsPanel()
-        self.partials_panel.setStyleSheet(JDXiStyle.TABS)
+        JDXiThemeManager.apply_tabs_style(self.partials_panel)
 
         for switch in self.partials_panel.switches.values():
             switch.stateChanged.connect(self._on_partial_state_changed)
@@ -219,7 +221,8 @@ class DigitalSynthEditor(SynthEditor):
         :return: None
         """
 
-        self.partial_tab_widget.setStyleSheet(JDXiStyle.TABS + JDXiStyle.EDITOR)
+        JDXiThemeManager.apply_tabs_style(self.partial_tab_widget)
+        JDXiThemeManager.apply_editor_style(self.partial_tab_widget)
         self.partial_editors = {}
         # Create editor for each partial
         for i in range(1, 4):

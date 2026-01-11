@@ -18,20 +18,25 @@ Features:
 
 import datetime
 import logging
-from typing import Optional
+from typing import Optional, Any
 
 import qtawesome as qta
 from mido import Message, MetaMessage, MidiFile, MidiTrack, bpm2tempo, tempo2bpm
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtWidgets import (
+    QCheckBox,
     QComboBox,
     QFileDialog,
     QGroupBox,
     QHBoxLayout,
     QLabel,
+    QListWidget,
+    QListWidgetItem,
     QMessageBox,
     QPushButton,
+    QSizePolicy,
     QSpinBox,
+    QSplitter,
     QVBoxLayout,
     QWidget,
 )
@@ -55,6 +60,7 @@ class PatternSequenceEditor(SynthEditor):
         midi_helper: Optional[MidiIOHelper],
         preset_helper: Optional[JDXiPresetHelper],
         parent: Optional[QWidget] = None,
+        midi_file_editor: Optional[Any] = None,
     ):
         super().__init__(parent=parent)
         """
@@ -63,17 +69,22 @@ class PatternSequenceEditor(SynthEditor):
         :param midi_helper: Optional[MidiIOHelper]
         :param preset_helper: Optional[JDXiPresetHelper]
         :param parent: Optional[QWidget]
+        :param midi_file_editor: Optional[MidiFileEditor] Reference to MidiFileEditor for shared MIDI file
         """
         self.muted_channels = []
-        self.total_measures = None
+        self.total_measures = 1  # Start with 1 bar by default
         self.midi_helper = midi_helper
         self.preset_helper = preset_helper
-        self.buttons = []
-        self.measures = []
+        self.midi_file_editor = midi_file_editor  # Reference to MidiFileEditor
+        self.buttons = []  # Main sequencer buttons (always 16 steps, one bar)
+        self.button_layouts = []  # Store references to button layouts for each row
+        self.measures = []  # Each measure stores its own notes
+        self.current_bar_index = 0  # Currently selected bar (0-indexed)
         self.timer = None
         self.current_step = 0
-        self.total_steps = 16
+        self.total_steps = 16  # Always 16 steps per bar (don't multiply by measures)
         self.beats_per_pattern = 4
+        self.beats_per_bar = 16  # Number of beats per bar (16 or 12)
         self.bpm = 120
         self.last_tap_time = None
         self.tap_times = []
@@ -84,7 +95,14 @@ class PatternSequenceEditor(SynthEditor):
         self.midi_file.tracks.append(self.midi_track)  # Add the track to the file
         self._setup_ui()
         self._init_midi_file()
-        self.setStyleSheet(JDXiStyle.EDITOR)
+        self._initialize_default_bar()
+        from jdxi_editor.jdxi.style.theme_manager import JDXiThemeManager
+        JDXiThemeManager.apply_editor_style(self)
+        
+        # If MidiFileEditor is provided and has a loaded file, load it
+        if self.midi_file_editor and hasattr(self.midi_file_editor, 'midi_state'):
+            if self.midi_file_editor.midi_state.file:
+                self.load_from_midi_file_editor()
 
     def _setup_ui(self):
         self.layout = QVBoxLayout()
@@ -120,6 +138,7 @@ class PatternSequenceEditor(SynthEditor):
             qta.icon("ei.broom", color=JDXiStyle.FOREGROUND), "Clear"
         )
         self.clear_learn_button.clicked.connect(self._clear_learned_pattern)
+        
         self.drum_selector = QComboBox()
         self.drum_selector.addItems(self.drum_options)
         self.drum_selector.currentIndexChanged.connect(self._update_drum_rows)
@@ -129,6 +148,27 @@ class PatternSequenceEditor(SynthEditor):
         file_layout.addWidget(self.clear_learn_button)
         file_group.setLayout(file_layout)
         control_panel.addWidget(file_group)
+
+        # Bar management area (separate row for Add Bar button and checkbox)
+        bar_group = QGroupBox("Bars")
+        bar_layout = QVBoxLayout()
+        
+        # First row: Add Bar button and Copy checkbox
+        bar_controls_layout = QHBoxLayout()
+        self.add_bar_button = QPushButton(
+            qta.icon("mdi.plus", color=JDXiStyle.FOREGROUND), "Add Bar"
+        )
+        self.add_bar_button.clicked.connect(self._add_bar)
+        self.copy_previous_bar_checkbox = QCheckBox("Copy previous bar")
+        self.copy_previous_bar_checkbox.setChecked(False)
+        
+        bar_controls_layout.addWidget(self.add_bar_button)
+        bar_controls_layout.addWidget(self.copy_previous_bar_checkbox)
+        bar_controls_layout.addStretch()  # Push controls to the left
+        
+        bar_layout.addLayout(bar_controls_layout)
+        bar_group.setLayout(bar_layout)
+        control_panel.addWidget(bar_group)
 
         learn_group = QGroupBox("Learn Pattern")
         learn_layout = QHBoxLayout()
@@ -170,6 +210,19 @@ class PatternSequenceEditor(SynthEditor):
         tempo_group.setLayout(tempo_layout)
         control_panel.addWidget(tempo_group)
 
+        # Beats per bar control area
+        beats_group = QGroupBox("Beats per Bar")
+        beats_layout = QHBoxLayout()
+        
+        self.beats_per_bar_combo = QComboBox()
+        self.beats_per_bar_combo.addItems(["16 beats per bar", "12 beats per bar"])
+        self.beats_per_bar_combo.setCurrentIndex(0)  # Default to 16 beats
+        self.beats_per_bar_combo.currentIndexChanged.connect(self._on_beats_per_bar_changed)
+        
+        beats_layout.addWidget(self.beats_per_bar_combo)
+        beats_group.setLayout(beats_layout)
+        control_panel.addWidget(beats_group)
+
         # Transport controls area
         transport_group = QGroupBox("Transport")
         transport_layout = QHBoxLayout()
@@ -189,7 +242,32 @@ class PatternSequenceEditor(SynthEditor):
         control_panel.addWidget(transport_group)
 
         self.layout.addLayout(control_panel)
+        
+        # Create splitter for bars list and sequencer
+        splitter = QSplitter(Qt.Orientation.Horizontal)
+        
+        # Bars list widget
+        bars_group = QGroupBox("Bars")
+        bars_layout = QVBoxLayout()
+        self.bars_list = QListWidget()
+        self.bars_list.setMaximumWidth(150)
+        self.bars_list.itemClicked.connect(self._on_bar_selected)
+        bars_layout.addWidget(self.bars_list)
+        bars_group.setLayout(bars_layout)
+        splitter.addWidget(bars_group)
+        
+        # Sequencer area
+        sequencer_widget = QWidget()
+        sequencer_layout = QVBoxLayout()
+        sequencer_widget.setLayout(sequencer_layout)
+        # Allow sequencer widget to expand vertically in full screen
+        sequencer_widget.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        
+        # Connect to incoming MIDI messages (from hardware keyboard)
         self.midi_helper.midi_message_incoming.connect(self._update_combo_boxes)
+        
+        # Connect to outgoing MIDI messages (from virtual instrument)
+        self.midi_helper.midi_message_outgoing.connect(self._update_combo_boxes_from_outgoing)
 
         for row_idx, label_text in enumerate(row_labels):
             row_layout = QVBoxLayout()
@@ -246,10 +324,20 @@ class PatternSequenceEditor(SynthEditor):
             self.mute_buttons.append(mute_button)
             button_row_layout.addWidget(mute_button)
             button_row_layout = self.ui_generate_button_row(row_idx, True)
+            self.button_layouts.append(button_row_layout)  # Store layout reference
             row_layout.addLayout(button_row_layout)
-            self.layout.addLayout(row_layout)
-            self.setLayout(self.layout)
-            self.layout.addStretch()
+            sequencer_layout.addLayout(row_layout)
+        
+        # Add stretch to push content to top, but allow expansion
+        sequencer_layout.addStretch()
+        # Set size policy on splitter to allow expansion
+        splitter.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        splitter.addWidget(sequencer_widget)
+        splitter.setStretchFactor(0, 0)  # Bars list doesn't stretch
+        splitter.setStretchFactor(1, 1)  # Sequencer stretches
+        
+        self.layout.addWidget(splitter)
+        self.setLayout(self.layout)
 
     def ui_generate_button_row(self, row_index: int, visible: bool = False):
         """generate sequencer button row"""
@@ -281,19 +369,65 @@ class PatternSequenceEditor(SynthEditor):
         self.midi_helper.midi_message_incoming.disconnect(self._learn_pattern)
         self.midi_helper.midi_message_incoming.connect(self._update_combo_boxes)
 
+    def _update_combo_boxes_from_outgoing(self, message):
+        """
+        Update combo boxes from outgoing MIDI messages (sent from virtual instrument).
+        Converts raw message list to mido Message and calls _update_combo_boxes.
+        
+        :param message: List[int] or mido.Message Raw MIDI message bytes or mido Message
+        """
+        try:
+            # If it's already a mido Message, use it directly
+            if isinstance(message, Message):
+                self._update_combo_boxes(message)
+                return
+            
+            # Convert raw message list to mido Message
+            if isinstance(message, (list, tuple)) and len(message) >= 2:
+                status_byte = message[0]
+                note = message[1]
+                velocity = message[2] if len(message) > 2 else 0
+                
+                # Extract channel from status byte
+                # Note On: 0x90-0x9F, Note Off: 0x80-0x8F
+                if (status_byte & 0xF0) in (0x90, 0x80):  # Note On or Note Off
+                    channel = status_byte & 0x0F
+                    msg_type = "note_on" if (status_byte & 0xF0) == 0x90 and velocity > 0 else "note_off"
+                    
+                    # Create mido Message
+                    mido_msg = Message(msg_type, note=note, velocity=velocity, channel=channel)
+                    self._update_combo_boxes(mido_msg)
+        except Exception as ex:
+            log.debug(f"Error updating combo boxes from outgoing message: {ex}")
+
     def _update_combo_boxes(self, message):
         """Update the combo box index to match the note for each channel."""
         if message.type == "note_on" and message.velocity > 0:
-            log.message(f"message note: {message.NOTE} channel: {message.channel}")
-            if message.type == "note_on":
-                if message.channel == MidiChannel.DIGITAL_SYNTH_1:
-                    self.digital1_selector.setCurrentIndex(message.NOTE - 36)
-                elif message.channel == MidiChannel.DIGITAL_SYNTH_2:
-                    self.digital2_selector.setCurrentIndex(message.NOTE - 36)
-                elif message.channel == MidiChannel.ANALOG_SYNTH:
-                    self.analog_selector.setCurrentIndex(message.NOTE - 36)
-                elif message.channel == MidiChannel.DRUM_KIT:
-                    self.drum_selector.setCurrentIndex(message.NOTE - 36)
+            note = message.note  # mido uses lowercase 'note'
+            channel = message.channel
+            log.message(f"message note: {note} channel: {channel}")
+            
+            # Calculate combo box index (notes start at MIDI note 36 = C2)
+            combo_index = note - 36
+            
+            # Ensure index is valid
+            if combo_index < 0:
+                log.debug(f"Note {note} is below C2 (36), skipping combo box update")
+                return
+            
+            # Update the appropriate combo box based on channel
+            if channel == MidiChannel.DIGITAL_SYNTH_1:
+                if combo_index < self.digital1_selector.count():
+                    self.digital1_selector.setCurrentIndex(combo_index)
+            elif channel == MidiChannel.DIGITAL_SYNTH_2:
+                if combo_index < self.digital2_selector.count():
+                    self.digital2_selector.setCurrentIndex(combo_index)
+            elif channel == MidiChannel.ANALOG_SYNTH:
+                if combo_index < self.analog_selector.count():
+                    self.analog_selector.setCurrentIndex(combo_index)
+            elif channel == MidiChannel.DRUM_KIT:
+                if combo_index < self.drum_selector.count():
+                    self.drum_selector.setCurrentIndex(combo_index)
 
     def _midi_note_to_combo_index(self, row, midi_note):
         """Convert a MIDI note number to the corresponding combo box index."""
@@ -318,19 +452,130 @@ class PatternSequenceEditor(SynthEditor):
         elif row == 3:
             self.drum_selector.setCurrentIndex(index)
 
-    def _add_measure(self):
-        """Add a new measure tab"""
+    def _initialize_default_bar(self):
+        """Initialize with one default bar"""
+        self._add_bar()
+    
+    def _add_bar(self):
+        """Add a new bar to the pattern, optionally copying from the previous bar"""
+        bar_number = len(self.measures) + 1
         measure = PatternMeasure()
+        
+        # Check if we should copy the previous bar
+        copy_previous = self.copy_previous_bar_checkbox.isChecked()
+        
+        if copy_previous and len(self.measures) > 0:
+            # Copy notes from the previous bar (most recently added bar)
+            previous_measure = self.measures[-1]
+            for row in range(4):
+                for step in range(16):
+                    if step < len(previous_measure.buttons[row]) and step < len(measure.buttons[row]):
+                        previous_button = previous_measure.buttons[row][step]
+                        new_button = measure.buttons[row][step]
+                        
+                        # Copy button state and note
+                        new_button.row = row
+                        new_button.column = step
+                        new_button.setChecked(previous_button.isChecked())
+                        new_button.NOTE = previous_button.NOTE
+        else:
+            # Initialize all buttons in the new measure as unchecked with no notes
+            for row in range(4):
+                for button in measure.buttons[row]:
+                    button.row = row
+                    button.column = button.column  # Keep local column (0-15)
+                    button.NOTE = None
+                    button.setChecked(False)
+        
         self.measures.append(measure)
-
-        # Connect button signals
+        
+        # Add to bars list
+        item = QListWidgetItem(f"Bar {bar_number}")
+        item.setData(Qt.ItemDataRole.UserRole, len(self.measures) - 1)  # Store bar index
+        self.bars_list.addItem(item)
+        
+        # Select the new bar and sync sequencer display
+        self.bars_list.setCurrentItem(item)
+        self.current_bar_index = len(self.measures) - 1
+        
+        # Update total measures (but keep total_steps at 16)
+        self.total_measures = len(self.measures)
+        self._update_pattern_length()
+        
+        # Sync sequencer buttons with the new (empty) bar
+        self._sync_sequencer_with_bar(self.current_bar_index)
+        
+        log.message(f"Added bar {bar_number}. Total bars: {self.total_measures}")
+    
+    def _on_bar_selected(self, item: QListWidgetItem):
+        """Handle bar selection from list"""
+        bar_index = item.data(Qt.ItemDataRole.UserRole)
+        if bar_index is not None:
+            self.current_bar_index = bar_index
+            # Sync sequencer buttons with the selected bar's notes
+            self._sync_sequencer_with_bar(bar_index)
+            log.message(f"Selected bar {bar_index + 1}")
+    
+    def _sync_sequencer_with_bar(self, bar_index: int):
+        """
+        Sync the main sequencer buttons with the notes from the specified bar.
+        This displays the bar's notes in the sequencer grid.
+        
+        :param bar_index: int Index of the bar to display (0-indexed)
+        """
+        if bar_index < 0 or bar_index >= len(self.measures):
+            return
+        
+        measure = self.measures[bar_index]
+        
+        # Copy note data from the measure to the main sequencer buttons
         for row in range(4):
-            for button in measure.buttons[row]:
-                button.clicked.connect(
-                    lambda checked, btn=button: self._on_button_clicked(btn, checked)
-                )
-
-        self.tab_widget.addTab(measure, f"Measure {len(self.measures)}")
+            for step in range(16):
+                if step < len(self.buttons[row]) and step < len(measure.buttons[row]):
+                    sequencer_button = self.buttons[row][step]
+                    measure_button = measure.buttons[row][step]
+                    
+                    # Sync checked state and note
+                    sequencer_button.setChecked(measure_button.isChecked())
+                    sequencer_button.NOTE = measure_button.NOTE
+                    
+                    # Update tooltip
+                    if sequencer_button.NOTE is not None:
+                        if row == 3:  # Drums
+                            note_name = self._midi_to_note_name(sequencer_button.NOTE, drums=True)
+                        else:
+                            note_name = self._midi_to_note_name(sequencer_button.NOTE)
+                        sequencer_button.setToolTip(f"Note: {note_name}")
+                    else:
+                        sequencer_button.setToolTip("")
+                    
+                    # Update style
+                    is_current = (self.current_step % self.total_steps) == step
+                    sequencer_button.setStyleSheet(
+                        self.generate_sequencer_button_style(
+                            sequencer_button.isChecked(), 
+                            is_current, 
+                            is_selected_bar=True  # All displayed buttons are from selected bar
+                        )
+                    )
+    
+    def _highlight_bar(self, bar_index: int):
+        """Update button styles to highlight the current step in the selected bar"""
+        if bar_index < 0 or bar_index >= len(self.measures):
+            return
+        
+        # Update all sequencer buttons to show current step
+        for row in range(4):
+            for step in range(16):
+                if step < len(self.buttons[row]):
+                    button = self.buttons[row][step]
+                    is_checked = button.isChecked()
+                    is_current = (self.current_step % self.total_steps) == step
+                    button.setStyleSheet(
+                        self.generate_sequencer_button_style(
+                            is_checked, is_current, is_selected_bar=True
+                        )
+                    )
 
     def _clear_learned_pattern(self):
         """Clear the learned pattern and reset button states."""
@@ -366,10 +611,16 @@ class PatternSequenceEditor(SynthEditor):
 
     def _update_pattern_length(self):
         """Update total pattern length based on measure count"""
-        self.total_steps = self.total_measures * 16
+        # Keep total_steps at 16 (one bar) - sequencer always shows one bar at a time
+        # Playback will iterate through all bars
+        self.total_steps = 16
 
     def _on_button_clicked(self, button, checked):
         """Handle button clicks and store the selected note"""
+        # Don't allow checking disabled buttons
+        if not button.isEnabled():
+            return
+        
         if checked:
             # Store the currently selected note when button is activated
             if button.row == 0:  # Digital Synth 1
@@ -389,13 +640,64 @@ class PatternSequenceEditor(SynthEditor):
                 button.setToolTip(f"Note: {drums_note_name}")
             else:
                 button.setToolTip(f"Note: {note_name}")
+        
+        # Store the note in the currently selected bar's measure
+        if len(self.measures) > 0 and self.current_bar_index < len(self.measures):
+            measure = self.measures[self.current_bar_index]
+            step_in_bar = button.column  # button.column is 0-15 for sequencer buttons
+            
+            if button.row < len(measure.buttons) and step_in_bar < len(measure.buttons[button.row]):
+                measure_button = measure.buttons[button.row][step_in_bar]
+                measure_button.setChecked(checked)
+                if checked:
+                    measure_button.NOTE = button.NOTE
+                else:
+                    measure_button.NOTE = None
 
         # Update button style
+        is_current = (self.current_step % self.total_steps) == button.column
+        is_selected_bar = len(self.measures) > 0 and (button.column // 16) == self.current_bar_index
         button.setStyleSheet(
             self.generate_sequencer_button_style(
-                checked, self.current_step % self.total_steps == button.column
+                checked, is_current, is_selected_bar=is_selected_bar and checked
             )
         )
+
+    def _on_beats_per_bar_changed(self, index: int):
+        """Handle beats per bar changes from the combobox"""
+        if index == 0:
+            self.beats_per_bar = 16
+        else:
+            self.beats_per_bar = 12
+        
+        # Update button states based on beats per bar
+        self._update_button_states_for_beats_per_bar()
+        log.message(f"Beats per bar changed to {self.beats_per_bar}")
+
+    def _update_button_states_for_beats_per_bar(self):
+        """Enable/disable sequencer buttons based on beats per bar setting"""
+        # Steps 0-11 are always enabled, steps 12-15 are disabled when beats_per_bar is 12
+        for row in range(4):
+            for step in range(16):
+                if step < len(self.buttons[row]):
+                    button = self.buttons[row][step]
+                    if self.beats_per_bar == 12:
+                        # Disable last 4 buttons (steps 12-15)
+                        button.setEnabled(step < 12)
+                        if step >= 12:
+                            button.setChecked(False)  # Uncheck disabled buttons
+                            # Also clear notes in measures for disabled steps
+                            for measure in self.measures:
+                                if step < len(measure.buttons[row]):
+                                    measure.buttons[row][step].setChecked(False)
+                                    measure.buttons[row][step].NOTE = None
+                    else:
+                        # Enable all 16 buttons
+                        button.setEnabled(True)
+        
+        # Sync sequencer display after updating button states
+        if self.current_bar_index < len(self.measures):
+            self._sync_sequencer_with_bar(self.current_bar_index)
 
     def _on_tempo_changed(self, bpm: int):
         """Handle tempo changes from the spinbox"""
@@ -466,17 +768,9 @@ class PatternSequenceEditor(SynthEditor):
                 self.load_pattern(filename)
                 log.message(f"Pattern loaded from {filename}")
 
-                # Update tempo from loaded file
-                if self.midi_file and self.midi_file.tracks:
-                    for event in self.midi_file.tracks[0]:
-                        if (
-                            event.type == "set_tempo"
-                        ):  # Compare with the string "set_tempo"
-                            bpm = int(
-                                tempo2bpm(event.midi_tempo_at_position)
-                            )  # Use .tempo instead of .data
-                            self.tempo_spinbox.setValue(bpm)
-                            break
+                # Update tempo from loaded file (already handled in load_pattern)
+                # Tempo is set in load_pattern() method
+                pass
             except Exception as ex:
                 log.error(f"Error loading pattern: {ex}")
                 QMessageBox.critical(
@@ -554,6 +848,170 @@ class PatternSequenceEditor(SynthEditor):
                         )
                         button.setToolTip(f"Note: {note_name}")
 
+    def set_midi_file_editor(self, midi_file_editor: Any) -> None:
+        """
+        Set reference to MidiFileEditor for shared MIDI file editing.
+        
+        :param midi_file_editor: MidiFileEditor instance
+        """
+        self.midi_file_editor = midi_file_editor
+        # If MidiFileEditor already has a loaded file, load it
+        if self.midi_file_editor and hasattr(self.midi_file_editor, 'midi_state'):
+            if self.midi_file_editor.midi_state.file:
+                self.load_from_midi_file_editor()
+    
+    def load_from_midi_file_editor(self, midi_file_editor: Optional[Any] = None) -> None:
+        """
+        Load pattern from the MidiFileEditor's current MIDI file.
+        
+        :param midi_file_editor: Optional MidiFileEditor instance. If not provided, uses self.midi_file_editor
+        """
+        try:
+            # Use provided instance or fall back to stored reference
+            editor = midi_file_editor or self.midi_file_editor
+            
+            if not editor:
+                log.debug("MidiFileEditor not available - no reference provided and self.midi_file_editor is None")
+                return
+                
+            if not hasattr(editor, 'midi_state'):
+                log.debug("MidiFileEditor missing midi_state attribute")
+                return
+            
+            # Store the reference if it wasn't set before
+            if not self.midi_file_editor:
+                self.midi_file_editor = editor
+                log.debug("Stored MidiFileEditor reference in Pattern Sequencer")
+            
+            midi_file = editor.midi_state.file
+            if not midi_file:
+                log.debug("No MIDI file loaded in MidiFileEditor")
+                return
+            
+            # Try to get filename from multiple possible locations
+            filename = None
+            if hasattr(midi_file, 'filename'):
+                filename = midi_file.filename
+            elif hasattr(editor.midi_state, 'file') and hasattr(editor.midi_state.file, 'filename'):
+                filename = editor.midi_state.file.filename
+            
+            if filename:
+                log.message(f"Loading pattern from MidiFileEditor file: {filename}")
+                self.load_pattern(filename)
+            else:
+                # Load from the MidiFile object directly
+                log.message("Loading pattern from MidiFileEditor's MidiFile object (no filename available)")
+                self._load_from_midi_file_object(midi_file)
+        except Exception as ex:
+            log.error(f"Error loading from MidiFileEditor: {ex}")
+            import traceback
+            log.debug(traceback.format_exc())
+    
+    def _load_from_midi_file_object(self, midi_file: MidiFile) -> None:
+        """Load pattern from a MidiFile object (internal method)."""
+        try:
+            ppq = midi_file.ticks_per_beat
+            beats_per_bar = 4
+            ticks_per_bar = ppq * beats_per_bar
+
+            # Detect number of bars
+            num_bars = self._detect_bars_from_midi(midi_file)
+            log.message(f"Detected {num_bars} bars in MIDI file")
+            
+            # Clear existing bars and bars list
+            self.bars_list.clear()
+            self.measures.clear()
+            
+            # Create new bars
+            for bar_num in range(num_bars):
+                measure = PatternMeasure()
+                for row in range(4):
+                    for button in measure.buttons[row]:
+                        button.row = row
+                        button.column = button.column
+                        button.NOTE = None
+                        button.setChecked(False)
+                self.measures.append(measure)
+                item = QListWidgetItem(f"Bar {bar_num + 1}")
+                item.setData(Qt.ItemDataRole.UserRole, bar_num)
+                self.bars_list.addItem(item)
+            
+            self.total_measures = len(self.measures)
+            self._update_pattern_length()
+            
+            # Load notes from all tracks, mapping by MIDI channel
+            # Channel mapping: 0 -> Digital Synth 1 (row 0), 1 -> Digital Synth 2 (row 1), 
+            #                  2 -> Analog Synth (row 2), 9 -> Drums (row 3)
+            notes_loaded = 0
+            channel_to_row = {
+                0: 0,  # Channel 0 -> Digital Synth 1 (row 0)
+                1: 1,  # Channel 1 -> Digital Synth 2 (row 1)
+                2: 2,  # Channel 2 -> Analog Synth (row 2)
+                9: 3,  # Channel 9 -> Drums (row 3)
+            }
+            
+            for track in midi_file.tracks:
+                absolute_time = 0
+                for msg in track:
+                    absolute_time += msg.time
+                    # Check if message is a note_on with velocity > 0 and has a channel attribute
+                    if msg.type == "note_on" and msg.velocity > 0:
+                        # Get channel - note messages always have channel attribute
+                        if not hasattr(msg, 'channel'):
+                            continue
+                        channel = msg.channel
+                        if channel not in channel_to_row:
+                            continue
+                        row = channel_to_row[channel]
+                        bar_index = int(absolute_time / ticks_per_bar)
+                        step_in_bar = int((absolute_time % ticks_per_bar) / (ticks_per_bar / 16))
+                        
+                        while bar_index >= len(self.measures):
+                            measure = PatternMeasure()
+                            for r in range(4):
+                                for button in measure.buttons[r]:
+                                    button.row = r
+                                    button.column = button.column
+                                    button.NOTE = None
+                                    button.setChecked(False)
+                            self.measures.append(measure)
+                            item = QListWidgetItem(f"Bar {len(self.measures)}")
+                            item.setData(Qt.ItemDataRole.UserRole, len(self.measures) - 1)
+                            self.bars_list.addItem(item)
+                        
+                        if bar_index < len(self.measures) and step_in_bar < 16:
+                            measure = self.measures[bar_index]
+                            if step_in_bar < len(measure.buttons[row]):
+                                button = measure.buttons[row][step_in_bar]
+                                button.setChecked(True)
+                                button.NOTE = msg.note
+                                notes_loaded += 1
+            
+            # Update tempo - search all tracks for tempo events
+            tempo_found = False
+            for track in midi_file.tracks:
+                for event in track:
+                    if event.type == "set_tempo":
+                        bpm = int(tempo2bpm(event.tempo))
+                        self.tempo_spinbox.setValue(bpm)
+                        tempo_found = True
+                        break
+                if tempo_found:
+                    break
+            
+            # Select first bar and sync
+            if self.bars_list.count() > 0:
+                self.current_bar_index = 0
+                self.bars_list.setCurrentRow(0)
+                self._sync_sequencer_with_bar(0)
+                log.message(f"Loaded {notes_loaded} notes from MidiFileEditor's MIDI file in {len(self.measures)} bars")
+            else:
+                log.warning("No bars were created from MIDI file")
+        except Exception as ex:
+            log.error(f"Error loading from MidiFileEditor: {ex}")
+            import traceback
+            log.debug(traceback.format_exc())
+
     def save_pattern(self, filename: str):
         """Save the current pattern to a MIDI file using mido."""
         midi_file = MidiFile()
@@ -566,78 +1024,175 @@ class PatternSequenceEditor(SynthEditor):
             # Add track name and program change
             track.append(Message("program_change", program=0, time=0))
 
-            # Add notes to the track
-            for step in range(self.total_steps):
-                button = self.buttons[row][step]
-                if button.isChecked() and button.NOTE is not None:
-                    # Calculate the time for the note_on event
-                    time = step * 480  # Assuming 480 ticks per beat
-                    track.append(
-                        Message("note_on", note=button.NOTE, velocity=100, time=time)
-                    )
-                    # Add a note_off event after a short duration
-                    track.append(
-                        Message(
-                            "note_off", note=button.NOTE, velocity=0, time=time + 120
-                        )
-                    )
+            # Add notes from all bars to the track
+            for bar_index, measure in enumerate(self.measures):
+                for step in range(16):
+                    if step < len(measure.buttons[row]):
+                        measure_button = measure.buttons[row][step]
+                        if measure_button.isChecked() and measure_button.NOTE is not None:
+                            # Calculate the time for the note_on event (across all bars)
+                            global_step = bar_index * 16 + step
+                            time = global_step * 480  # Assuming 480 ticks per beat
+                            track.append(
+                                Message("note_on", note=measure_button.NOTE, velocity=100, time=time)
+                            )
+                            # Add a note_off event after a short duration
+                            track.append(
+                                Message(
+                                    "note_off", note=measure_button.NOTE, velocity=0, time=time + 120
+                                )
+                            )
 
         # Save the MIDI file
         midi_file.save(filename)
         log.message(f"Pattern saved to {filename}")
+        
+        # If MidiFileEditor is connected, update its file too
+        if self.midi_file_editor and hasattr(self.midi_file_editor, 'midi_state'):
+            try:
+                # Reload the saved file into MidiFileEditor
+                self.midi_file_editor.midi_load_file_from_path(filename)
+                log.message("Updated MidiFileEditor with saved pattern")
+            except Exception as ex:
+                log.warning(f"Could not update MidiFileEditor: {ex}")
 
     def clear_pattern(self):
-        """Clear the current pattern, resetting all steps."""
-        for row in range(4):
-            for step in range(self.total_steps):
-                self.buttons[row][step].setChecked(False)
-                self.buttons[row][step].NOTE = None
-                self.buttons[row][step].setStyleSheet(
-                    self.generate_sequencer_button_style(False)
-                )
-                self.buttons[row][step].setToolTip(
-                    f"Note: {self.buttons[row][step].NOTE}"
-                )
+        """Clear the current bar's pattern, resetting all steps in the selected bar."""
+        if self.current_bar_index < len(self.measures):
+            measure = self.measures[self.current_bar_index]
+            for row in range(4):
+                for step in range(16):
+                    if step < len(measure.buttons[row]):
+                        measure.buttons[row][step].setChecked(False)
+                        measure.buttons[row][step].NOTE = None
+            
+            # Sync sequencer display
+            self._sync_sequencer_with_bar(self.current_bar_index)
 
+    def _detect_bars_from_midi(self, midi_file: MidiFile) -> int:
+        """Detect number of bars in MIDI file"""
+        ppq = midi_file.ticks_per_beat
+        beats_per_bar = 4  # Assuming 4/4 time signature
+        ticks_per_bar = ppq * beats_per_bar
+        
+        max_time = 0
+        for track in midi_file.tracks:
+            absolute_time = 0
+            for msg in track:
+                absolute_time += msg.time
+                if not msg.is_meta:
+                    max_time = max(max_time, absolute_time)
+        
+        # Calculate number of bars (round up)
+        num_bars = int((max_time / ticks_per_bar) + 1) if max_time > 0 else 1
+        return max(1, num_bars)  # At least 1 bar
+    
     def load_pattern(self, filename: str):
         """Load a pattern from a MIDI file"""
         try:
-            self.clear_pattern()
             midi_file = MidiFile(filename)
             ppq = midi_file.ticks_per_beat
+            beats_per_bar = 4
+            ticks_per_bar = ppq * beats_per_bar
 
-            for track_num, track in enumerate(midi_file.tracks[:4]):
-                if track_num >= len(self.buttons):
-                    log.message(f"Track {track_num} exceeds available button rows.")
-                    continue
-
+            # Detect number of bars
+            num_bars = self._detect_bars_from_midi(midi_file)
+            log.message(f"Detected {num_bars} bars in MIDI file")
+            
+            # Clear existing bars and bars list
+            self.bars_list.clear()
+            self.measures.clear()
+            
+            # Create new bars without selecting them (to avoid UI flicker)
+            for bar_num in range(num_bars):
+                measure = PatternMeasure()
+                
+                # Initialize all buttons in the new measure as unchecked with no notes
+                for row in range(4):
+                    for button in measure.buttons[row]:
+                        button.row = row
+                        button.column = button.column  # Keep local column (0-15)
+                        button.NOTE = None
+                        button.setChecked(False)
+                
+                self.measures.append(measure)
+                
+                # Add to bars list
+                item = QListWidgetItem(f"Bar {bar_num + 1}")
+                item.setData(Qt.ItemDataRole.UserRole, bar_num)  # Store bar index
+                self.bars_list.addItem(item)
+            
+            # Update total measures
+            self.total_measures = len(self.measures)
+            self._update_pattern_length()
+            
+            # Load notes from ALL tracks, mapping by MIDI channel (like Midi Editor)
+            # Channel mapping: 0 -> Digital Synth 1 (row 0), 1 -> Digital Synth 2 (row 1), 
+            #                  2 -> Analog Synth (row 2), 9 -> Drums (row 3)
+            notes_loaded = 0
+            channel_to_row = {
+                MidiChannel.DIGITAL_SYNTH_1: 0,  # Channel 0
+                MidiChannel.DIGITAL_SYNTH_2: 1,  # Channel 1
+                MidiChannel.ANALOG_SYNTH: 2,     # Channel 2
+                MidiChannel.DRUM_KIT: 3,          # Channel 9
+            }
+            
+            for track in midi_file.tracks:
                 absolute_time = 0
                 for msg in track:
                     absolute_time += msg.time
-                    if msg.type == "note_on" and msg.velocity > 0:
-                        step = int((absolute_time / ppq) * 4) % self.total_steps
-                        if step >= len(self.buttons[track_num]):
-                            log.message(
-                                f"Step {step} exceeds available buttons in row {track_num}."
-                            )
+                    
+                    # Only process note_on messages with velocity > 0
+                    if msg.type == "note_on" and msg.velocity > 0 and hasattr(msg, 'channel'):
+                        channel = msg.channel
+                        
+                        # Map channel to row (skip channels we don't support)
+                        if channel not in channel_to_row:
                             continue
+                        
+                        row = channel_to_row[channel]
+                        
+                        # Calculate which bar and step this note belongs to
+                        bar_index = int(absolute_time / ticks_per_bar)
+                        step_in_bar = int((absolute_time % ticks_per_bar) / (ticks_per_bar / 16))
+                        
+                        # Ensure we have enough bars (safety check)
+                        while bar_index >= len(self.measures):
+                            measure = PatternMeasure()
+                            for r in range(4):
+                                for button in measure.buttons[r]:
+                                    button.row = r
+                                    button.column = button.column
+                                    button.NOTE = None
+                                    button.setChecked(False)
+                            self.measures.append(measure)
+                            item = QListWidgetItem(f"Bar {len(self.measures)}")
+                            item.setData(Qt.ItemDataRole.UserRole, len(self.measures) - 1)
+                            self.bars_list.addItem(item)
+                        
+                        if bar_index < len(self.measures) and step_in_bar < 16:
+                            measure = self.measures[bar_index]
+                            if step_in_bar < len(measure.buttons[row]):
+                                button = measure.buttons[row][step_in_bar]
+                                button.setChecked(True)
+                                button.NOTE = msg.note  # mido uses lowercase 'note'
+                                notes_loaded += 1
+            
+            log.message(f"Loaded {notes_loaded} notes from MIDI file across all tracks and channels")
 
-                        button = self.buttons[track_num][step]
-                        button.setChecked(True)
-                        button.NOTE = msg.NOTE
-                        if track_num == 3:
-                            drums_note_name = self._midi_to_note_name(
-                                button.NOTE, drums=True
-                            )
-                            button.setToolTip(f"Note: {drums_note_name}")
-                        else:
-                            note_name = self._midi_to_note_name(button.NOTE)
-                            button.setToolTip(f"Note: {note_name}")
-
+            # Update tempo (use first tempo found)
             for event in midi_file.tracks[0]:
                 if event.type == "set_tempo":
-                    bpm = int(tempo2bpm(event.midi_tempo_at_position))
+                    bpm = int(tempo2bpm(event.tempo))
                     self.tempo_spinbox.setValue(bpm)
+                    break  # Use first tempo found
+            
+            # Select first bar and sync sequencer display
+            if self.bars_list.count() > 0:
+                self.current_bar_index = 0
+                self.bars_list.setCurrentRow(0)
+                self._sync_sequencer_with_bar(0)
+                log.message(f"Loaded {num_bars} bars from MIDI file. Bars are displayed in the side panel.")
 
         except Exception as ex:
             log.error(f"Error loading pattern: {ex}")
@@ -747,65 +1302,97 @@ class PatternSequenceEditor(SynthEditor):
 
     def _play_step(self):
         """Plays the current step and advances to the next one."""
-        step = self.current_step % self.total_steps
-        log.message(f"Playing step {step}")
+        # Calculate which bar and step within that bar
+        # Use beats_per_bar to determine steps per bar
+        steps_per_bar = self.beats_per_bar
+        total_pattern_steps = len(self.measures) * steps_per_bar
+        global_step = self.current_step % total_pattern_steps if total_pattern_steps > 0 else 0
+        bar_index = global_step // steps_per_bar
+        step_in_bar = global_step % steps_per_bar
+        
+        log.message(f"Playing step {step_in_bar} in bar {bar_index + 1} (global step {global_step}, {self.beats_per_bar} beats per bar)")
 
-        # Check each row's button at the current step
-        for row in range(4):
-            button = self.buttons[row][step]
-            if (
-                button.isChecked()
-                and hasattr(button, "note")
-                and button.NOTE is not None
-            ):
-                # Determine channel based on row
-                channel = (
-                    row if row < 3 else 9
-                )  # channels 0,1,2 for synths, 9 for drums
+        # Sync sequencer with the current bar being played
+        if bar_index < len(self.measures):
+            self.current_bar_index = bar_index
+            self._sync_sequencer_with_bar(bar_index)
+            
+            # Highlight the current bar in the bars list
+            if bar_index < self.bars_list.count():
+                self.bars_list.setCurrentRow(bar_index)
+                # Ensure the item is visible (scroll to it if needed)
+                item = self.bars_list.item(bar_index)
+                if item:
+                    self.bars_list.scrollToItem(item)
+            
+            # Play notes from the current bar
+            measure = self.measures[bar_index]
+            for row in range(4):
+                if step_in_bar < len(measure.buttons[row]):
+                    measure_button = measure.buttons[row][step_in_bar]
+                    if (
+                        measure_button.isChecked()
+                        and hasattr(measure_button, "NOTE")
+                        and measure_button.NOTE is not None
+                    ):
+                        # Determine channel based on row
+                        channel = (
+                            row if row < 3 else 9
+                        )  # channels 0,1,2 for synths, 9 for drums
 
-                # Send Note On message using the stored note
-                if self.midi_helper:
-                    if channel not in self.muted_channels:
-                        log.message(
-                            f"Row {row} active at step {step}, sending note {button.NOTE} on channel {channel}"
-                        )
-                        self.midi_helper.send_raw_message(
-                            [NOTE_ON | channel, button.NOTE, 100]
-                        )  # velocity 100
-                        # Note Off message after a short delay
-                        QTimer.singleShot(
-                            100,
-                            lambda ch=channel, n=button.NOTE: self.midi_helper.send_raw_message(
-                                [NOTE_ON | ch, n, 0]
-                            ),
-                        )
-                else:
-                    logging.warning("MIDI helper not available")
+                        # Send Note On message using the stored note
+                        if self.midi_helper:
+                            if channel not in self.muted_channels:
+                                log.message(
+                                    f"Row {row} active at step {step_in_bar} in bar {bar_index + 1}, sending note {measure_button.NOTE} on channel {channel}"
+                                )
+                                self.midi_helper.send_raw_message(
+                                    [NOTE_ON | channel, measure_button.NOTE, 100]
+                                )  # velocity 100
+                                # Note Off message after a short delay
+                                QTimer.singleShot(
+                                    100,
+                                    lambda ch=channel, n=measure_button.NOTE: self.midi_helper.send_raw_message(
+                                        [NOTE_ON | ch, n, 0]
+                                    ),
+                                )
+                        else:
+                            logging.warning("MIDI helper not available")
 
-        # Advance to next step
-        self.current_step = (self.current_step + 1) % self.total_steps
+        # Advance to next step (across all bars)
+        steps_per_bar = self.beats_per_bar
+        total_pattern_steps = len(self.measures) * steps_per_bar
+        self.current_step = (self.current_step + 1) % total_pattern_steps if total_pattern_steps > 0 else 0
 
         # Update UI to show current step
         for row in range(4):
-            for col in range(self.total_steps):
-                button = self.buttons[row][col]
-                button.setStyleSheet(
-                    self.generate_sequencer_button_style(
-                        button.isChecked(), col == step
+            for col in range(16):  # Always 16 steps in sequencer
+                if col < len(self.buttons[row]):
+                    button = self.buttons[row][col]
+                    is_checked = button.isChecked()
+                    is_current = step_in_bar == col  # Current step within the displayed bar
+                    button.setStyleSheet(
+                        self.generate_sequencer_button_style(is_checked, is_current, is_selected_bar=True)
                     )
-                )
 
     def generate_sequencer_button_style(
-        self, is_checked: bool, is_current: bool = False
+        self, is_checked: bool, is_current: bool = False, is_selected_bar: bool = False
     ) -> str:
         """Generate button style based on state and current step"""
         base_color = "#3498db" if is_checked else "#2c3e50"
         border_color = "#e74c3c" if is_current else base_color
+        
+        # Add extra highlight for selected bar
+        if is_selected_bar and is_checked:
+            border_color = "#f39c12"  # Orange border for selected bar
+            border_width = "3px"
+        else:
+            border_width = "2px"
 
         return f"""
             QPushButton {{
                 background-color: {base_color};
-                border: 2px solid {border_color};
+                border: {border_width} solid {border_color};
                 border-radius: 5px;
                 color: white;
                 padding: 5px;
@@ -821,16 +1408,30 @@ class PatternSequenceEditor(SynthEditor):
     def _learn_pattern(self, message):
         """Learn the pattern of incoming MIDI notes, preserving rests."""
         if message.type == "note_on" and message.velocity > 0:
-            note = message.NOTE
+            note = message.note  # mido uses lowercase 'note'
 
             # Determine the correct row for the note
             for row in range(4):
                 if note in self._get_note_range_for_row(row):
-                    # Record the note in the current step
-                    log.message(f"Recording note: {note} at step {self.current_step}")
-                    self.learned_pattern[row][self.current_step] = note
+                    # Calculate step within current bar (0 to beats_per_bar-1)
+                    step_in_bar = self.current_step % self.beats_per_bar
+                    
+                    # Store note in the current bar's measure
+                    if self.current_bar_index < len(self.measures):
+                        measure = self.measures[self.current_bar_index]
+                        if step_in_bar < len(measure.buttons[row]):
+                            measure_button = measure.buttons[row][step_in_bar]
+                            measure_button.setChecked(True)
+                            measure_button.NOTE = note
+                            
+                            # Also update sequencer display
+                            if step_in_bar < len(self.buttons[row]):
+                                self.buttons[row][step_in_bar].setChecked(True)
+                                self.buttons[row][step_in_bar].NOTE = note
+                    
+                    # Record the note in the learned pattern (for compatibility)
+                    self.learned_pattern[row][step_in_bar] = note
                     self.active_notes[note] = row  # Mark the note as active
-                    self._apply_learned_pattern()
 
                     # Add the note_on message to the MIDI track
                     self.midi_track.append(
@@ -839,7 +1440,7 @@ class PatternSequenceEditor(SynthEditor):
                     break  # Stop checking once the note is assigned
 
         elif message.type == "note_off":
-            note = message.NOTE
+            note = message.note  # mido uses lowercase 'note'
             if note in self.active_notes:
                 # Advance step only if the note was previously turned on
                 log.message(f"Note off: {note} at step {self.current_step}")
@@ -849,7 +1450,8 @@ class PatternSequenceEditor(SynthEditor):
                 self.midi_track.append(
                     Message("note_off", note=note, velocity=0, time=0)
                 )
-                self.current_step = (self.current_step + 1) % self.total_steps
+                # Advance step within current bar (0 to beats_per_bar-1)
+                self.current_step = (self.current_step + 1) % self.beats_per_bar
 
     def _apply_learned_pattern(self):
         """Apply the learned pattern to the sequencer UI."""

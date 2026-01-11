@@ -17,7 +17,9 @@ def get_temporary_area(data: bytes) -> str:
     :param data: bytes SysEx message data
     :return: str Temporary Area: TEMPORARY_PROGRAM, ANALOG_SYNTH, DIGITAL_SYNTH_1 ...
     """
-    temp_area_bytes = data[JDXiSysExMessageLayout.ADDRESS.MSB: JDXiSysExMessageLayout.ADDRESS.LMB]
+    temp_area_bytes = data[
+        JDXiSysExMessageLayout.ADDRESS.MSB : JDXiSysExMessageLayout.ADDRESS.LMB
+    ]
     return (
         JDXiMapTemporaryArea.MAP.get(tuple(temp_area_bytes), "Unknown")
         if len(data) >= JDXiSysExMessageLayout.ADDRESS.LSB

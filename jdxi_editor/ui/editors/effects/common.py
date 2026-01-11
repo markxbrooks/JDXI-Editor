@@ -272,7 +272,8 @@ class EffectsCommonEditor(BasicEditor):
         main_layout.addLayout(main_rows_hlayout)
 
         self.title_label = DigitalTitle("Effects")
-        self.title_label.setStyleSheet(JDXiStyle.INSTRUMENT_TITLE_LABEL)
+        from jdxi_editor.jdxi.style.theme_manager import JDXiThemeManager
+        JDXiThemeManager.apply_instrument_title_label(self.title_label)
         self.image_label = QLabel()
         self.image_label.setAlignment(
             Qt.AlignmentFlag.AlignCenter
@@ -304,7 +305,7 @@ class EffectsCommonEditor(BasicEditor):
 
         # Create address tab widget
         self.tabs = QTabWidget()
-        self.tabs.setStyleSheet(JDXiStyle.TABS)
+        JDXiThemeManager.apply_tabs_style(self.tabs)
         rows_layout.addWidget(self.tabs)
         # self.setup_ui()
 

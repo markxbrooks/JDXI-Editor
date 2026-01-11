@@ -62,7 +62,7 @@ from PySide6.QtWidgets import (
 
 from jdxi_editor.jdxi.preset.helper import create_scroll_area, create_scroll_container
 from jdxi_editor.jdxi.preset.widget import InstrumentPresetWidget
-from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
 from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.log.midi_info import log_midi_info
@@ -131,6 +131,12 @@ class AnalogSynthEditor(SynthEditor):
         self.previous_json_data = None
         self.main_window = parent
 
+        # Initialize mappings as empty dicts/lists early to prevent AttributeError
+        # These will be populated after sections are created
+        self.adsr_mapping = {}
+        self.pitch_env_mapping = {}
+        self.pwm_mapping = []
+
         self._init_parameter_mappings()
         self._init_synth_data(JDXiSynth.ANALOG_SYNTH)
         self.setup_ui()
@@ -184,7 +190,8 @@ class AnalogSynthEditor(SynthEditor):
         self.resize(
             JDXiDimensions.EDITOR_ANALOG_WIDTH, JDXiDimensions.EDITOR_ANALOG_HEIGHT
         )
-        self.setStyleSheet(JDXiStyle.TABS_ANALOG + JDXiStyle.EDITOR_ANALOG)
+        JDXiThemeManager.apply_tabs_style(self, analog=True)
+        JDXiThemeManager.apply_editor_style(self, analog=True)
 
         self.setup_main_layout()
         self.scroll = create_scroll_area()
@@ -216,6 +223,7 @@ class AnalogSynthEditor(SynthEditor):
 
         # --- Tab sections
         self.tab_widget = QTabWidget()
+        JDXiThemeManager.apply_tabs_style(self.tab_widget, analog=True)
         container_layout.addWidget(self.tab_widget)
         self.tab_widget.addTab(self.instrument_preset, "Presets")
 
@@ -354,13 +362,13 @@ class AnalogSynthEditor(SynthEditor):
 
             for btn in self.wave_buttons.values():
                 btn.setChecked(False)
-                btn.setStyleSheet(JDXiStyle.BUTTON_RECT_ANALOG)
+                JDXiThemeManager.apply_button_rect_analog(btn)
 
             # Apply active style to the selected waveform button
             selected_btn = self.wave_buttons.get(waveform)
             if selected_btn:
                 selected_btn.setChecked(True)
-                selected_btn.setStyleSheet(JDXiStyle.BUTTON_ANALOG_ACTIVE)
+                JDXiThemeManager.apply_button_analog_active(selected_btn)
             self._update_pw_controls_state(waveform)
 
     def get_controls_as_dict(self):
@@ -401,13 +409,13 @@ class AnalogSynthEditor(SynthEditor):
             # --- Reset all buttons to default style ---
             for btn in self.lfo_shape_buttons.values():
                 btn.setChecked(False)
-                btn.setStyleSheet(JDXiStyle.BUTTON_RECT_ANALOG)
+                JDXiThemeManager.apply_button_rect_analog(btn)
 
             # --- Apply active style to the selected button ---
             selected_btn = self.lfo_shape_buttons.get(value)
             if selected_btn:
                 selected_btn.setChecked(True)
-                selected_btn.setStyleSheet(JDXiStyle.BUTTON_ANALOG_ACTIVE)
+                JDXiThemeManager.apply_button_analog_active(selected_btn)
 
     def update_slider(
         self,
@@ -581,11 +589,19 @@ class AnalogSynthEditor(SynthEditor):
                 ):
                     self._update_lfo_shape_buttons(param_value)
                 elif param_name == "LFO_TEMPO_SYNC_SWITCH":
-                    self.controls[AnalogParam.LFO_TEMPO_SYNC_SWITCH].setValue(
-                        param_value
-                    )
+                    control = self.controls.get(AnalogParam.LFO_TEMPO_SYNC_SWITCH)
+                    if control:
+                        control.setValue(param_value)
+                        successes.append(param_name)
+                    else:
+                        failures.append(param_name)
                 elif param_name == "LFO_TEMPO_SYNC_NOTE":
-                    self.controls[AnalogParam.LFO_TEMPO_SYNC_NOTE].setValue(param_value)
+                    control = self.controls.get(AnalogParam.LFO_TEMPO_SYNC_NOTE)
+                    if control:
+                        control.setValue(param_value)
+                        successes.append(param_name)
+                    else:
+                        failures.append(param_name)
                 elif (
                     param == AnalogParam.FILTER_MODE_SWITCH
                     and param_value in self.filter_switch_map
@@ -646,13 +662,13 @@ class AnalogSynthEditor(SynthEditor):
         # Reset all buttons to default style
         for btn in wave_buttons.values():
             btn.setChecked(False)
-            btn.setStyleSheet(JDXiStyle.BUTTON_RECT_ANALOG)
+            JDXiThemeManager.apply_button_rect_analog(btn)
 
         # Apply active style to the selected waveform button
         selected_btn = wave_buttons.get(selected_waveform)
         if selected_btn:
             selected_btn.setChecked(True)
-            selected_btn.setStyleSheet(JDXiStyle.BUTTON_ANALOG_ACTIVE)
+            JDXiThemeManager.apply_button_analog_active(selected_btn)
 
     def _update_lfo_shape_buttons(self, value: int):
         """
@@ -664,13 +680,13 @@ class AnalogSynthEditor(SynthEditor):
         # Reset all buttons to default style
         for btn in self.lfo_shape_buttons.values():
             btn.setChecked(False)
-            btn.setStyleSheet(JDXiStyle.BUTTON_RECT_ANALOG)
+            JDXiThemeManager.apply_button_rect_analog(btn)
 
         # Apply active style to the selected button
         selected_btn = self.lfo_shape_buttons.get(value)
         if selected_btn:
             selected_btn.setChecked(True)
-            selected_btn.setStyleSheet(JDXiStyle.BUTTON_ANALOG_ACTIVE)
+            JDXiThemeManager.apply_button_analog_active(selected_btn)
         else:
             log.message(f"Unknown LFO shape value: {value}", level=logging.WARNING)
 
@@ -705,6 +721,7 @@ class AnalogSynthEditor(SynthEditor):
 
         # Create tabbed widget inside the group box
         preset_tabs = QTabWidget()
+        JDXiThemeManager.apply_tabs_style(preset_tabs, analog=True)
         instrument_title_group_layout.addWidget(preset_tabs)
 
         # === Tab 1: Normal Analog Presets ===
@@ -727,7 +744,7 @@ class AnalogSynthEditor(SynthEditor):
         normal_preset_layout.addWidget(self.instrument_selection_label)
 
         self.instrument_selection_combo = PresetComboBox(self.preset_list)
-        self.instrument_selection_combo.setStyleSheet(JDXiStyle.COMBO_BOX_ANALOG)
+        JDXiThemeManager.apply_combo_box(self.instrument_selection_combo, analog=True)
         self.instrument_selection_combo.combo_box.setEditable(True)
         self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
             self.update_instrument_image

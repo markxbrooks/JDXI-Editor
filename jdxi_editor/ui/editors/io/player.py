@@ -15,6 +15,8 @@ import mido
 import pyaudio
 import qtawesome as qta
 from mido import MidiFile, bpm2tempo
+
+from jdxi_editor.jdxi.style.icons import IconRegistry
 from picomidi.constant import Midi
 from PySide6.QtCore import Qt, QThread, QTimer
 from PySide6.QtWidgets import (
@@ -33,7 +35,7 @@ from PySide6.QtWidgets import (
 from jdxi_editor.globals import PROFILING
 from jdxi_editor.jdxi.midi.constant import JDXiMidi
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
-from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.address.address import (
@@ -219,14 +221,15 @@ class MidiFileEditor(SynthEditor):
         """
         layout = QHBoxLayout()
 
+        from jdxi_editor.jdxi.style.icons import IconRegistry
         self.ui.load_button = QPushButton(
-            qta.icon("mdi.midi-port", color=JDXiStyle.FOREGROUND), "Load MIDI File"
+            IconRegistry.get_icon(IconRegistry.MIDI_PORT, color=JDXiStyle.FOREGROUND), "Load MIDI File"
         )
         self.ui.load_button.clicked.connect(self.midi_load_file)
         layout.addWidget(self.ui.load_button)
 
         self.ui.save_button = QPushButton(
-            qta.icon("mdi.midi-port", color=JDXiStyle.FOREGROUND), "Save MIDI File"
+            IconRegistry.get_icon(IconRegistry.MIDI_PORT, color=JDXiStyle.FOREGROUND), "Save MIDI File"
         )
         self.ui.save_button.clicked.connect(self.midi_save_file)
         layout.addWidget(self.ui.save_button)
@@ -234,9 +237,8 @@ class MidiFileEditor(SynthEditor):
         layout.addWidget(QLabel("Suppress MIDI Events:"))
 
         self.ui.midi_suppress_program_changes_checkbox = QCheckBox("Program Changes")
-        self.ui.midi_suppress_program_changes_checkbox.setStyleSheet(
-            JDXiStyle.PARTIAL_SWITCH
-        )
+        from jdxi_editor.jdxi.style.theme_manager import JDXiThemeManager
+        JDXiThemeManager.apply_partial_switch(self.ui.midi_suppress_program_changes_checkbox)
         self.ui.midi_suppress_program_changes_checkbox.setChecked(
             self.midi_state.suppress_program_changes
         )
@@ -246,9 +248,7 @@ class MidiFileEditor(SynthEditor):
         layout.addWidget(self.ui.midi_suppress_program_changes_checkbox)
 
         self.ui.midi_suppress_control_changes_checkbox = QCheckBox("Control Changes")
-        self.ui.midi_suppress_control_changes_checkbox.setStyleSheet(
-            JDXiStyle.PARTIAL_SWITCH
-        )
+        JDXiThemeManager.apply_partial_switch(self.ui.midi_suppress_control_changes_checkbox)
         self.ui.midi_suppress_control_changes_checkbox.setChecked(
             self.midi_state.suppress_control_changes
         )
@@ -287,7 +287,7 @@ class MidiFileEditor(SynthEditor):
 
         # Insert button
         self.ui.automation_insert_button = QPushButton(
-            qta.icon("mdi.plus", color=JDXiStyle.FOREGROUND),
+            IconRegistry.get_icon(IconRegistry.ADD, color=JDXiStyle.FOREGROUND),
             "Insert Program Change Here",
         )
         self.ui.automation_insert_button.clicked.connect(
@@ -342,7 +342,7 @@ class MidiFileEditor(SynthEditor):
             return
 
         # Time in seconds from slider
-        current_seconds = float(self.ui.midi_file_position_slider.STATUS())
+        current_seconds = float(self.ui.midi_file_position_slider.value())
         # Channel (display is 1-16, convert to 0-based)
         display_channel = int(self.ui.automation_channel_combo.currentData())
         channel = display_channel - 1
@@ -497,7 +497,7 @@ class MidiFileEditor(SynthEditor):
         layout.addWidget(self.ui.usb_file_select)
 
         self.ui.usb_file_record_checkbox = QCheckBox("Save USB recording to file")
-        self.ui.usb_file_record_checkbox.setStyleSheet(JDXiStyle.PARTIAL_SWITCH)
+        JDXiThemeManager.apply_partial_switch(self.ui.usb_file_record_checkbox)
         self.ui.usb_file_record_checkbox.setChecked(
             self.usb_recorder.file_save_recording
         )
@@ -510,7 +510,7 @@ class MidiFileEditor(SynthEditor):
         self.ui.usb_file_auto_generate_checkbox = QCheckBox(
             "Auto generate .Wav filename based on date, time and Midi file"
         )
-        self.ui.usb_file_auto_generate_checkbox.setStyleSheet(JDXiStyle.PARTIAL_SWITCH)
+        JDXiThemeManager.apply_partial_switch(self.ui.usb_file_auto_generate_checkbox)
         self.ui.usb_file_auto_generate_checkbox.setChecked(False)
         self.ui.usb_file_auto_generate_checkbox.stateChanged.connect(
             self.on_usb_file_auto_generate_toggled
@@ -602,19 +602,19 @@ class MidiFileEditor(SynthEditor):
         layout = QHBoxLayout(group)
 
         self.ui.play_button = QPushButton(
-            qta.icon("ri.play-line", color=JDXiStyle.FOREGROUND), "Play"
+            IconRegistry.get_icon(IconRegistry.PLAY, color=JDXiStyle.FOREGROUND), "Play"
         )
         self.ui.play_button.clicked.connect(self.midi_playback_start)
         layout.addWidget(self.ui.play_button)
 
         self.ui.stop_button = QPushButton(
-            qta.icon("ri.stop-line", color=JDXiStyle.FOREGROUND), "Stop"
+            IconRegistry.get_icon(IconRegistry.STOP, color=JDXiStyle.FOREGROUND), "Stop"
         )
         self.ui.stop_button.clicked.connect(self.midi_stop_playback)
         layout.addWidget(self.ui.stop_button)
 
         self.ui.pause_button = QPushButton(
-            qta.icon("ri.pause-line", color=JDXiStyle.FOREGROUND), "Pause"
+            IconRegistry.get_icon(IconRegistry.PAUSE, color=JDXiStyle.FOREGROUND), "Pause"
         )
         self.ui.pause_button.clicked.connect(self.midi_playback_pause_toggle)
         layout.addWidget(self.ui.pause_button)
@@ -888,6 +888,9 @@ class MidiFileEditor(SynthEditor):
         self.calculate_duration()
         self.calculate_tick_duration()
         self.ui_position_slider_reset()
+
+        # Notify Pattern Sequencer if it exists
+        self._notify_pattern_sequencer_file_loaded()
 
         # Add to recent files if parent has recent_files_manager
         if (
@@ -1519,7 +1522,7 @@ class MidiFileEditor(SynthEditor):
             return  # Don't update while user is dragging
 
         new_value = int(elapsed_time)
-        current_value = self.ui.midi_file_position_slider.STATUS()
+        current_value = self.ui.midi_file_position_slider.value()
 
         if abs(new_value - current_value) >= 1:  # Only update if full second has passed
             self.ui.midi_file_position_slider.setValue(new_value)
@@ -1563,7 +1566,7 @@ class MidiFileEditor(SynthEditor):
         """
         Retrieves the target time from the slider and logs it.
         """
-        target_time = self.ui.midi_file_position_slider.STATUS()
+        target_time = self.ui.midi_file_position_slider.value()
         log.parameter("target_time", target_time)
         return target_time
 
@@ -2023,3 +2026,44 @@ class MidiFileEditor(SynthEditor):
 
         # Replace the buffer with the fixed messages
         self.midi_state.buffered_msgs = fixed_msgs
+    
+    def _notify_pattern_sequencer_file_loaded(self) -> None:
+        """Notify Pattern Sequencer that a MIDI file has been loaded."""
+        try:
+            # Try to find Pattern Sequencer through parent
+            if not self.parent:
+                log.debug("No parent available to notify Pattern Sequencer")
+                return
+                
+            # Look for PatternSequenceEditor in parent's attributes
+            pattern_editor = None
+            if hasattr(self.parent, 'get_existing_editor'):
+                try:
+                    from jdxi_editor.ui.editors.pattern.pattern import PatternSequenceEditor
+                    pattern_editor = self.parent.get_existing_editor(PatternSequenceEditor)
+                    log.debug(f"Found Pattern Sequencer via get_existing_editor: {pattern_editor is not None}")
+                except Exception as ex:
+                    log.debug(f"Error getting Pattern Sequencer via get_existing_editor: {ex}")
+            elif hasattr(self.parent, 'patternsequenceeditor_instance'):
+                pattern_editor = self.parent.patternsequenceeditor_instance
+                log.debug(f"Found Pattern Sequencer via instance attribute: {pattern_editor is not None}")
+            
+            if pattern_editor:
+                if hasattr(pattern_editor, '_load_from_midi_file_editor'):
+                    log.message("Notifying Pattern Sequencer of MIDI file load")
+                    # Pass self (MidiFileEditor) directly to ensure the reference is available
+                    pattern_editor._load_from_midi_file_editor(midi_file_editor=self)
+                elif hasattr(pattern_editor, 'set_midi_file_editor'):
+                    # If Pattern Sequencer doesn't have the reference, set it first
+                    log.message("Setting MidiFileEditor reference in Pattern Sequencer")
+                    pattern_editor.set_midi_file_editor(self)
+                    if hasattr(pattern_editor, '_load_from_midi_file_editor'):
+                        pattern_editor._load_from_midi_file_editor(midi_file_editor=self)
+                else:
+                    log.debug("Pattern Sequencer found but missing required methods")
+            else:
+                log.debug("Pattern Sequencer not found - it may not be initialized yet")
+        except Exception as ex:
+            log.error(f"Error notifying Pattern Sequencer: {ex}")
+            import traceback
+            log.debug(traceback.format_exc())

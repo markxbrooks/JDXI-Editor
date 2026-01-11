@@ -93,7 +93,8 @@ class MidiOutHandler(MidiIOController):
                         else:
                             # Log warning for actual JD-Xi parsing errors
                             log.message(
-                                f"SysEx parsing failed: {parse_ex}", level=logging.WARNING
+                                f"SysEx parsing failed: {parse_ex}",
+                                level=logging.WARNING,
                             )
                             filtered_data = {}
                     except Exception as parse_ex:

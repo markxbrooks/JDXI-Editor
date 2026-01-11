@@ -328,7 +328,9 @@ class JDXiSysEx(RolandSysEx):
             < JDXiMidi.SYSEX.PARAMETER.LENGTH.ONE_BYTE  # Minimum length: F0 + ID + dev + model(4) + cmd + addr(4) + sum + F7
             or data[JDXiSysExMessageLayout.START] != START_OF_SYSEX
             or data[JDXiSysExMessageLayout.ROLAND_ID] != ModelID.ROLAND_ID  # Roland ID
-            or data[JDXiSysExMessageLayout.MODEL_ID.POS1 : JDXiSysExMessageLayout.COMMAND_ID]
+            or data[
+                JDXiSysExMessageLayout.MODEL_ID.POS1 : JDXiSysExMessageLayout.COMMAND_ID
+            ]
             != bytes(
                 [
                     ModelID.MODEL_ID_1,
@@ -343,10 +345,14 @@ class JDXiSysEx(RolandSysEx):
         device_id = data[JDXiSysExMessageLayout.DEVICE_ID]
         command = data[JDXiSysExMessageLayout.COMMAND_ID]
         address = list(
-            data[JDXiSysExMessageLayout.ADDRESS.MSB: JDXiSysExMessageLayout.TONE_NAME.START]
+            data[
+                JDXiSysExMessageLayout.ADDRESS.MSB : JDXiSysExMessageLayout.TONE_NAME.START
+            ]
         )
         message_data = list(
-            data[JDXiSysExMessageLayout.TONE_NAME.START: JDXiSysExMessageLayout.CHECKSUM]
+            data[
+                JDXiSysExMessageLayout.TONE_NAME.START : JDXiSysExMessageLayout.CHECKSUM
+            ]
         )  # Everything between address and checksum
         received_checksum = data[JDXiSysExMessageLayout.CHECKSUM]
 

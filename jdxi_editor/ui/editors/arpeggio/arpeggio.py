@@ -116,7 +116,8 @@ class ArpeggioEditor(BasicEditor):
         self.setLayout(layout)
 
         self.title_label = DigitalTitle(tone_name="Arpeggiator")
-        self.title_label.setStyleSheet(JDXiStyle.INSTRUMENT_TITLE_LABEL)
+        from jdxi_editor.jdxi.style.theme_manager import JDXiThemeManager
+        JDXiThemeManager.apply_instrument_title_label(self.title_label)
 
         # Image display
         self.image_label = QLabel()

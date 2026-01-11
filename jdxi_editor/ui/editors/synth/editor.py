@@ -135,7 +135,8 @@ class SynthEditor(SynthBase):
         self.setWindowFlags(Qt.WindowType.Tool)
 
         # Apply common style
-        self.setStyleSheet(JDXiStyle.EDITOR)
+        from jdxi_editor.jdxi.style.theme_manager import JDXiThemeManager
+        JDXiThemeManager.apply_editor_style(self)
 
         # Add keyboard shortcuts
         self.refresh_shortcut = QShortcut(QKeySequence.StandardKey.Refresh, self)
@@ -261,9 +262,10 @@ class SynthEditor(SynthBase):
         instrument_title_group_layout.addWidget(self.instrument_selection_label)
         self.instrument_selection_combo = PresetComboBox(self.preset_list)
         if synth_type == "Analog":
-            self.instrument_selection_combo.setStyleSheet(JDXiStyle.COMBO_BOX_ANALOG)
+            from jdxi_editor.jdxi.style.theme_manager import JDXiThemeManager
+            JDXiThemeManager.apply_combo_box(self.instrument_selection_combo, analog=True)
         else:
-            self.instrument_selection_combo.setStyleSheet(JDXiStyle.COMBO_BOX)
+            JDXiThemeManager.apply_combo_box(self.instrument_selection_combo)
         self.instrument_selection_combo.combo_box.setEditable(True)
         self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
             self.update_instrument_image

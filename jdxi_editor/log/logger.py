@@ -1,29 +1,32 @@
 """log message"""
 
+import importlib.util
 import logging
-from typing import Any, Optional
+import os
 
 # Import standard library json explicitly to avoid shadowing from local json_parser.py files
 # Use importlib to load the standard library json module directly from its file path
 import sys
-import os
-import importlib.util
+from typing import Any, Optional
 
 # Find the standard library json module
-_json_path = os.path.join(os.path.dirname(os.__file__), 'json', '__init__.py')
+_json_path = os.path.join(os.path.dirname(os.__file__), "json", "__init__.py")
 if os.path.exists(_json_path):
     # Load the standard library json module directly
-    _json_spec = importlib.util.spec_from_file_location('json', _json_path)
+    _json_spec = importlib.util.spec_from_file_location("json", _json_path)
     if _json_spec and _json_spec.loader:
         # Remove any existing json module that might be a local file
-        if 'json' in sys.modules:
-            _existing_json = sys.modules['json']
+        if "json" in sys.modules:
+            _existing_json = sys.modules["json"]
             # If it's not the standard library, remove it
-            if not hasattr(_existing_json, 'dumps') or (hasattr(_existing_json, '__file__') and 'json/__init__.py' not in str(_existing_json.__file__)):
-                del sys.modules['json']
+            if not hasattr(_existing_json, "dumps") or (
+                hasattr(_existing_json, "__file__")
+                and "json/__init__.py" not in str(_existing_json.__file__)
+            ):
+                del sys.modules["json"]
         # Load the standard library json
         _json_module = importlib.util.module_from_spec(_json_spec)
-        sys.modules['json'] = _json_module
+        sys.modules["json"] = _json_module
         _json_spec.loader.exec_module(_json_module)
         json = _json_module
     else:

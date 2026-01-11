@@ -7,6 +7,7 @@ from enum import Enum, auto
 
 class ParameterOffsetName(Enum):
     """Offset Names"""
+
     SYSTEM_COMMON = auto()
     SYSTEM_CONTROLLER = auto()
     TEMPORARY_SUPERNATURAL_SYNTH_TONE = auto()

@@ -7,6 +7,7 @@ from enum import Enum, auto
 
 class ParameterAreas(Enum):
     """Enumerates parameter areas"""
+
     SYSTEM = auto()
     TEMPORARY_TONE = auto()
     PROGRAM = auto()
