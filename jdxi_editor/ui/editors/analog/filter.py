@@ -16,7 +16,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.parameter.analog import AnalogParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
@@ -69,6 +69,7 @@ class AnalogFilterSection(QWidget):
         layout.addLayout(adsr_icon_row_layout)
 
         self.analog_filter_tab_widget = QTabWidget()
+        JDXiThemeManager.apply_tabs_style(self.analog_filter_tab_widget, analog=True)
 
         # --- Filter Selection Buttons ---
         filter_row = self._create_filter_controls_row()
@@ -152,7 +153,7 @@ class AnalogFilterSection(QWidget):
         # layout.addWidget(self.filter_env_depth)
         controls_layout.addWidget(self.filter_env_velocity_sens)
         controls_layout.addStretch()
-        controls_group.setStyleSheet(JDXiStyle.ADSR_ANALOG)
+        JDXiThemeManager.apply_adsr_style(controls_group, analog=True)
         return controls_group
 
     def _create_filter_adsr_env_group(self) -> QGroupBox:
@@ -168,7 +169,7 @@ class AnalogFilterSection(QWidget):
             controls=self.controls,
             address=self.address,
         )
-        self.filter_adsr_widget.setStyleSheet(JDXiStyle.ADSR_ANALOG)
+        JDXiThemeManager.apply_adsr_style(self.filter_adsr_widget, analog=True)
 
         env_group = QGroupBox("Envelope")
         env_group.setProperty("adsr", True)

@@ -8,7 +8,7 @@ from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QGroupBox, QHBoxLayout, QTabWidget, QVBoxLayout, QWidget
 
-from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.analog.oscillator import AnalogOscWave, AnalogSubOscType
 from jdxi_editor.midi.data.parameter.analog import AnalogParam
@@ -64,13 +64,14 @@ class AnalogOscillatorSection(QWidget):
         layout = QVBoxLayout()
         layout.setContentsMargins(1, 1, 1, 1)
         self.setLayout(layout)
-        self.setStyleSheet(JDXiStyle.ADSR_ANALOG)
+        JDXiThemeManager.apply_adsr_style(self, analog=True)
 
         # --- Waveform buttons ---
         layout.addLayout(self.create_waveform_buttons())
 
         # --- Tab widget to add pitch and PW controls to ---
         self.oscillator_tab_widget = QTabWidget()
+        JDXiThemeManager.apply_tabs_style(self.oscillator_tab_widget, analog=True)
         layout.addWidget(self.oscillator_tab_widget)
 
         # --- Pitch Envelope ---
@@ -108,7 +109,7 @@ class AnalogOscillatorSection(QWidget):
             AnalogOscWave.PULSE,
         ]:
             btn = AnalogWaveformButton(waveform)
-            btn.setStyleSheet(JDXiStyle.BUTTON_RECT_ANALOG)
+            JDXiThemeManager.apply_button_rect_analog(btn)
 
             # Set icons
             icon_name = (
@@ -181,7 +182,7 @@ class AnalogOscillatorSection(QWidget):
             create_parameter_slider=self._create_parameter_slider,
             controls=self.controls,
         )
-        self.pwm_widget.setStyleSheet(JDXiStyle.ADSR_ANALOG)
+        JDXiThemeManager.apply_adsr_style(self.pwm_widget, analog=True)
         self.pwm_widget.setMaximumHeight(JDXiStyle.PWM_WIDGET_HEIGHT)
         pw_layout.addWidget(self.pwm_widget)
         pw_layout.addStretch()
@@ -208,7 +209,7 @@ class AnalogOscillatorSection(QWidget):
             controls=self.controls,
             address=self.address,
         )
-        self.pitch_env_widget.setStyleSheet(JDXiStyle.ADSR_ANALOG)
+        JDXiThemeManager.apply_adsr_style(self.pitch_env_widget, analog=True)
 
         env_group = QGroupBox("Envelope")
         env_group.setProperty("adsr", True)

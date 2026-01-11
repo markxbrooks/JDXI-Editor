@@ -47,6 +47,7 @@ DIGITAL_PARTIAL_MAP = {i: 0x1F + i for i in range(1, 4)}  # 1: 0x20, 2: 0x21, 3:
 @unique
 class RolandID(IntEnum):
     """Roland IDs"""
+
     ROLAND_ID = 0x41
     DEVICE_ID = 0x10
 
@@ -61,6 +62,7 @@ class RolandID(IntEnum):
 @unique
 class ResponseID(IntEnum):
     """Midi responses"""
+
     ACK = 0x4F  # Acknowledge
     ERR = 0x4E  # Error
 
@@ -258,6 +260,7 @@ class ModelID(Address):
     """
     Model ID
     """
+
     # Model ID bytes
     MODEL_ID_1 = ZERO_BYTE  # Manufacturer ID extension
     MODEL_ID_2 = ZERO_BYTE  # Device family code MSB
@@ -269,8 +272,7 @@ class ModelID(Address):
         """
         Convert the header to a list of integers
         """
-        return [cls.MODEL_ID_1, cls.MODEL_ID_2, cls.MODEL_ID_3,
-                cls.MODEL_ID_4]
+        return [cls.MODEL_ID_1, cls.MODEL_ID_2, cls.MODEL_ID_3, cls.MODEL_ID_4]
 
 
 JD_XI_MODEL_ID = [

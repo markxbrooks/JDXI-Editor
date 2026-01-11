@@ -86,8 +86,8 @@ def convert_to_mido_message(
 ) -> Optional[Union[mido.Message, List[mido.Message]]]:
     """
     Convert raw MIDI message content to a mido.Message object or a list of them.
-    
-    .. deprecated:: 
+
+    .. deprecated::
         This function is deprecated. Use JDXiSysExParser.convert_to_mido_message() instead.
         This function is kept for backward compatibility and delegates to the parser.
 
@@ -95,7 +95,7 @@ def convert_to_mido_message(
     :return: Optional[Union[mido.Message, List[mido.Message]]] either a single mido message or a list of mido messages
     """
     from jdxi_editor.midi.sysex.parser.sysex import JDXiSysExParser
-    
+
     parser = JDXiSysExParser()
     return parser.convert_to_mido_message(message_content)
 
@@ -120,8 +120,8 @@ def mido_message_data_to_byte_list(message: mido.Message) -> bytes:
 def handle_identity_request(message: mido.Message) -> dict:
     """
     Handles an incoming Identity Request/Reply message.
-    
-    .. deprecated:: 
+
+    .. deprecated::
         This function is deprecated. Use JDXiSysExParser.parse_identity_request() instead.
         This function is kept for backward compatibility and delegates to the parser.
 
@@ -129,6 +129,6 @@ def handle_identity_request(message: mido.Message) -> dict:
     :return: dict device details
     """
     from jdxi_editor.midi.sysex.parser.sysex import JDXiSysExParser
-    
+
     parser = JDXiSysExParser()
     return parser.parse_identity_request(message)

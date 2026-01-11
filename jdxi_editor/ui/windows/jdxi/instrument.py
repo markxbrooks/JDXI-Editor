@@ -52,7 +52,7 @@ from jdxi_editor.jdxi.preset.button import JDXiPresetButtonData
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.jdxi.preset.lists import JDXiPresetToneList
 from jdxi_editor.jdxi.program.program import JDXiProgram
-from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
 from jdxi_editor.jdxi.style.factory import generate_sequencer_button_style
 from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.log.logger import Logger as log
@@ -122,7 +122,8 @@ class JDXiInstrument(JDXiUi):
         self.splash_progress_bar = progress_bar
         self.splash_status_label = status_label
         if platform.system() == "Windows":
-            self.setStyleSheet(JDXiStyle.TRANSPARENT + JDXiStyle.ADSR_DISABLED)
+            JDXiThemeManager.apply_transparent(self)
+            JDXiThemeManager.apply_adsr_disabled(self)
         # Try to auto-connect to JD-Xi
         self.midi_helper.auto_connect_jdxi()
         if (
@@ -687,6 +688,21 @@ class JDXiInstrument(JDXiUi):
                 }
                 else None
             )
+            
+            # Connect Pattern Sequencer to MidiFileEditor if both exist
+            if editor_class == PatternSequenceEditor:
+                midi_file_editor = self.get_existing_editor(MidiFileEditor)
+                if midi_file_editor:
+                    kwargs['midi_file_editor'] = midi_file_editor
+            elif editor_class == MidiFileEditor:
+                # After creating MidiFileEditor, connect it to Pattern Sequencer
+                def connect_pattern_sequencer():
+                    pattern_editor = self.get_existing_editor(PatternSequenceEditor)
+                    if pattern_editor and hasattr(pattern_editor, 'set_midi_file_editor'):
+                        pattern_editor.set_midi_file_editor(existing_editor)
+                # Use QTimer to connect after editor is fully created
+                from PySide6.QtCore import QTimer
+                QTimer.singleShot(100, connect_pattern_sequencer)
 
             # Update splash screen when creating editors
             if self.splash_status_label and self.splash_progress_bar:
@@ -747,6 +763,18 @@ class JDXiInstrument(JDXiUi):
 
             setattr(self, instance_attr, editor)
             self.register_editor(editor)
+            
+            # Connect Pattern Sequencer to MidiFileEditor after creation
+            if editor_class == MidiFileEditor:
+                # Connect to Pattern Sequencer if it exists
+                pattern_editor = self.get_existing_editor(PatternSequenceEditor)
+                if pattern_editor and hasattr(pattern_editor, 'set_midi_file_editor'):
+                    pattern_editor.set_midi_file_editor(editor)
+            elif editor_class == PatternSequenceEditor:
+                # Connect to MidiFileEditor if it exists
+                midi_file_editor = self.get_existing_editor(MidiFileEditor)
+                if midi_file_editor:
+                    editor.set_midi_file_editor(midi_file_editor)
 
             if hasattr(editor, "preset_helper"):
                 editor.preset_helper.update_display.connect(

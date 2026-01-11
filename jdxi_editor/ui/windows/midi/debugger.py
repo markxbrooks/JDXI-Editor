@@ -138,7 +138,8 @@ class MIDIDebugger(QMainWindow):
         # Set window properties
         self.setWindowTitle("MIDI Debugger")
         self.setMinimumSize(800, 600)
-        self.setStyleSheet(JDXiStyle.DEBUGGER)
+        from jdxi_editor.jdxi.style.theme_manager import JDXiThemeManager
+        JDXiThemeManager.apply_debugger_window(self)
 
         # Create central widget
         central = QWidget()
@@ -257,7 +258,9 @@ class MIDIDebugger(QMainWindow):
             value = message[JDXiSysExMessageLayout.VALUE]
             checksum = message[JDXiSysExMessageLayout.CHECKSUM]
             checksum_valid = validate_checksum(
-                message[JDXiSysExMessageLayout.ADDRESS.MSB: JDXiSysExMessageLayout.CHECKSUM],
+                message[
+                    JDXiSysExMessageLayout.ADDRESS.MSB : JDXiSysExMessageLayout.CHECKSUM
+                ],
                 checksum,
             )
 
@@ -265,7 +268,9 @@ class MIDIDebugger(QMainWindow):
                 f"|{'-' * 7}|{'-' * 30}|{'-' * 19}|{'-' * 32}|\n",
                 fmt_row("Byte", "Description", "Value", "Notes"),
                 f"|{'-' * 7}|{'-' * 30}|{'-' * 19}|{'-' * 32}|\n",
-                fmt_row(0, "Start of SysEx", hex(message[JDXiSysExMessageLayout.START])),
+                fmt_row(
+                    0, "Start of SysEx", hex(message[JDXiSysExMessageLayout.START])
+                ),
                 fmt_row(
                     1,
                     "Manufacturer ID",
@@ -279,7 +284,7 @@ class MIDIDebugger(QMainWindow):
                     " ".join(
                         hex(x)
                         for x in message[
-                            JDXiSysExMessageLayout.MODEL_ID.POS1: JDXiSysExMessageLayout.COMMAND_ID
+                            JDXiSysExMessageLayout.MODEL_ID.POS1 : JDXiSysExMessageLayout.COMMAND_ID
                         ]
                     ),
                 ),

@@ -13,13 +13,13 @@ from jdxi_editor.midi.data.address.address import (
     AddressOffsetSuperNATURALLMB,
     RolandSysExAddress,
 )
-from jdxi_editor.midi.message.jdxi import JDXiSysexHeader
 from jdxi_editor.midi.data.address.helpers import apply_address_offset
 from jdxi_editor.midi.data.parameter.digital import (
     DigitalCommonParam,
     DigitalModifyParam,
 )
 from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParam
+from jdxi_editor.midi.message.jdxi import JDXiSysexHeader
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.midi.sysex.validation import (
     validate_raw_midi_message,
@@ -132,14 +132,14 @@ class JDXiSysExComposer:
         if not validate_raw_sysex_message(raw_message):
             raise ValueError("Invalid JD-Xi SysEx message detected")
         return (
-                raw_message[JDXiSysExMessageLayout.START] == Midi.SYSEX.START
-                and raw_message[JDXiSysExMessageLayout.END] == Midi.SYSEX.END
+            raw_message[JDXiSysExMessageLayout.START] == Midi.SYSEX.START
+            and raw_message[JDXiSysExMessageLayout.END] == Midi.SYSEX.END
         )
 
     def _verify_header(self) -> bool:
         """Checks if the SysEx header matches the JD-Xi model ID."""
         message = self.sysex_message.to_bytes()
         # Remove the SysEx start (F0) and end (F7) bytes
-        data = message[JDXiSysExMessageLayout.ROLAND_ID: JDXiSysExMessageLayout.END]
+        data = message[JDXiSysExMessageLayout.ROLAND_ID : JDXiSysExMessageLayout.END]
         header_data = data[: JDXiSysexHeader.length()]
         return header_data == JDXiSysexHeader.to_bytes()

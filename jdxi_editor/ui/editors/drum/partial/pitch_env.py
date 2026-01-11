@@ -50,7 +50,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
@@ -83,7 +83,8 @@ class DrumPitchEnvPlot(QWidget):
         self.setMinimumSize(width, height)
         self.setMaximumHeight(height)
         self.setMaximumWidth(width)
-        self.setStyleSheet(JDXiStyle.ADSR_PLOT)
+        from jdxi_editor.jdxi.style.theme_manager import JDXiThemeManager
+        JDXiThemeManager.apply_adsr_plot(self)
         self.sample_rate = 256
         self.setMinimumHeight(150)
 
@@ -320,7 +321,7 @@ class DrumPitchEnvSection(QWidget):
         controls_group = QGroupBox("Pitch Envelope Controls")
         controls_layout = QGridLayout()
         controls_group.setLayout(controls_layout)
-        controls_group.setStyleSheet(JDXiStyle.ADSR)
+        JDXiThemeManager.apply_adsr_style(controls_group)
         main_layout.addWidget(controls_group)
 
         # Create sliders and connect them

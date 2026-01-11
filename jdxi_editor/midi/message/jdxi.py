@@ -30,15 +30,16 @@ JD_XI_MODEL_ID = [
 class JDXiSysexHeader:
     """
     JD-Xi System Exclusive Message Header
-    
+
     This class provides a structured way to work with JD-Xi SysEx headers,
     replacing the old JD_XI_HEADER_LIST constant.
-    
+
     Usage:
         >>> header = JDXiSysexHeader.to_list()
         >>> header_bytes = JDXiSysexHeader.to_bytes()
         >>> header_len = len(JDXiSysexHeader.to_list())
     """
+
     ID = RolandID
     MODEL = ModelID
 
@@ -46,16 +47,23 @@ class JDXiSysexHeader:
     def to_list(cls) -> list[int]:
         """
         Convert the header to a list of integers.
-        
+
         :return: list[int] Header bytes as a list [RolandID, DeviceID, ModelID1-4]
         """
-        return [cls.ID.ROLAND_ID, cls.ID.DEVICE_ID, cls.MODEL.MODEL_ID_1, cls.MODEL.MODEL_ID_2, cls.MODEL.MODEL_ID_3, cls.MODEL.MODEL_ID_4]
+        return [
+            cls.ID.ROLAND_ID,
+            cls.ID.DEVICE_ID,
+            cls.MODEL.MODEL_ID_1,
+            cls.MODEL.MODEL_ID_2,
+            cls.MODEL.MODEL_ID_3,
+            cls.MODEL.MODEL_ID_4,
+        ]
 
     @classmethod
     def to_bytes(cls) -> bytes:
         """
         Convert the header to bytes.
-        
+
         :return: bytes Header bytes
         """
         return bytes(cls.to_list())
@@ -64,7 +72,7 @@ class JDXiSysexHeader:
     def length(cls) -> int:
         """
         Get the length of the header in bytes.
-        
+
         :return: int Number of bytes in the header
         """
         return len(cls.to_list())

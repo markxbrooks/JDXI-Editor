@@ -37,6 +37,7 @@ from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import AddressStartMSB as AreaMSB
 from jdxi_editor.midi.data.programs import JDXiProgramList
 from jdxi_editor.midi.io.controller import MidiIOController
+
 # handle_identity_request moved to JDXiSysExParser.parse_identity_request
 from jdxi_editor.midi.map.synth_type import JDXiMapSynthType
 from jdxi_editor.midi.sysex.parser.sysex import JDXiSysExParser
@@ -288,7 +289,7 @@ class MidiInHandler(MidiIOController):
             if not (message.type == "sysex" and len(message.data) > 6):
                 return
             mido_sub_id_byte_offset = (
-                    JDXiSysExIdentityLayout.ID.SUB2 - 1
+                JDXiSysExIdentityLayout.ID.SUB2 - 1
             )  # account for lack of status byte
             if (
                 message.data[mido_sub_id_byte_offset]

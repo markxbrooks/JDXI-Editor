@@ -8,7 +8,7 @@ import qtawesome as qta
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout, QWidget
 
-from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
 from jdxi_editor.midi.data.parameter.analog import AnalogParam
 
 
@@ -35,7 +35,7 @@ class AnalogCommonSection(QWidget):
         self._create_parameter_switch = create_parameter_switch
         self._create_parameter_combo_box = create_parameter_combo_box
         self.controls = controls
-        self.setStyleSheet(JDXiStyle.ADSR_ANALOG)
+        JDXiThemeManager.apply_adsr_style(self, analog=True)
         self.init_ui()
 
     def init_ui(self):

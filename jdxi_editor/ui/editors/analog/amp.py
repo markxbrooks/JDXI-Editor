@@ -18,7 +18,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.parameter.analog import AnalogParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
@@ -61,13 +61,14 @@ class AnalogAmpSection(QWidget):
         main_rows_vlayout.setSpacing(5)
         main_rows_vlayout.setContentsMargins(5, 15, 5, 5)
         self.setLayout(main_rows_vlayout)
-        self.setStyleSheet(JDXiStyle.ADSR_ANALOG)
+        JDXiThemeManager.apply_adsr_style(self, analog=True)
 
         # --- Add spiffy icons ---
         icons_hlayout = self._create_icons_layout()
         main_rows_vlayout.addLayout(icons_hlayout)
 
         self.analog_amp_tab_widget = QTabWidget()
+        JDXiThemeManager.apply_tabs_style(self.analog_amp_tab_widget, analog=True)
         main_rows_vlayout.addWidget(self.analog_amp_tab_widget)
         # --- Add Analog Amp Level controls ---
         amp_controls_layout = self._create_analog_amp_level_controls()
@@ -152,6 +153,6 @@ class AnalogAmpSection(QWidget):
             address=self.address,
             controls=self.controls,
         )
-        self.amp_env_adsr_widget.setStyleSheet(JDXiStyle.ADSR_ANALOG)
+        JDXiThemeManager.apply_adsr_style(self.amp_env_adsr_widget, analog=True)
         amp_env_adsr_vlayout.addWidget(self.amp_env_adsr_widget)
         return env_group

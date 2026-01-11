@@ -25,7 +25,6 @@ SystemCommonMessage
 
 from dataclasses import dataclass
 
-from jdxi_editor.midi.data.parameter.system.common import SystemCommonParam
 from picomidi.constant import Midi
 
 from jdxi_editor.midi.data.address.address import (
@@ -33,6 +32,7 @@ from jdxi_editor.midi.data.address.address import (
     AddressStartMSB,
     CommandID,
 )
+from jdxi_editor.midi.data.parameter.system.common import SystemCommonParam
 from jdxi_editor.midi.message.roland import RolandSysEx
 
 

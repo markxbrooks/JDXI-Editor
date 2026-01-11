@@ -64,17 +64,17 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
             if parent and hasattr(self, "setParent"):
                 self.setParent(parent)
             return
-        
+
         self._current_out_port = None
         self._current_in_port = None
         self.in_port_name = ""  # Store input port name
         self.out_port_name = ""  # Store output port name
-        
+
         # Initialize parent classes - this will initialize QObject once through MRO
         # Since both MidiInHandler and MidiOutHandler inherit from MidiIOController (QObject),
         # Python's MRO ensures QObject.__init__ is only called once
         super().__init__(parent)
-        
+
         # Set additional attributes
         self.midi_messages = []
         self.current_in = None

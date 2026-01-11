@@ -41,7 +41,9 @@ def dynamic_map_resolver(data: bytes) -> Dict[str, str]:
             address_lmb = data[JDXiSysExMessageLayout.ADDRESS.LMB]
             synth_tone, offset = get_drum_tone(address_lmb)
         else:
-            synth_tone, offset = get_synth_tone(data[JDXiSysExMessageLayout.ADDRESS.LMB])
+            synth_tone, offset = get_synth_tone(
+                data[JDXiSysExMessageLayout.ADDRESS.LMB]
+            )
 
         # Resolve parameter class dynamically
         parameter_cls = PARAMETER_ADDRESS_NAME_MAP.get(

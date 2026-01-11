@@ -16,7 +16,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.parameter.digital.partial import (
     DigitalPartialParam,
@@ -62,7 +62,8 @@ class DigitalAmpSection(QWidget):
         self.setLayout(amp_section_layout)
         amp_section_layout.setContentsMargins(5, 15, 5, 5)
         amp_section_layout.setSpacing(5)
-        self.setStyleSheet(JDXiStyle.ADSR)
+        from jdxi_editor.jdxi.style.theme_manager import JDXiThemeManager
+        JDXiThemeManager.apply_adsr_style(self)
         self.setMinimumHeight(JDXiDimensions.EDITOR_MINIMUM_HEIGHT)
 
         # Icons layout
@@ -190,6 +191,6 @@ class DigitalAmpSection(QWidget):
             controls=self.controls,
             address=self.address,
         )
-        self.amp_env_adsr_widget.setStyleSheet(JDXiStyle.ADSR)
+        JDXiThemeManager.apply_adsr_style(self.amp_env_adsr_widget)
         amp_env_adsr_vlayout.addWidget(self.amp_env_adsr_widget)
         return env_group

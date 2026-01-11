@@ -84,7 +84,8 @@ class DrumTVFEnvPlot(QWidget):
         self.setMinimumSize(width, height)
         self.setMaximumHeight(height)
         self.setMaximumWidth(width)
-        self.setStyleSheet(JDXiStyle.ADSR_PLOT)
+        from jdxi_editor.jdxi.style.theme_manager import JDXiThemeManager
+        JDXiThemeManager.apply_adsr_plot(self)
         self.sample_rate = 256
         self.setMinimumHeight(150)
 

@@ -1,7 +1,9 @@
 import re
-from jdxi_editor.midi.data.address.address_map import PARAMETER_ADDRESS_MAP
+
 from picomidi.core.parameter.factory import AddressFactory
 from picomidi.core.parameter.kind import ByteGroupKind
+
+from jdxi_editor.midi.data.address.address_map import PARAMETER_ADDRESS_MAP
 
 # Simplified token matchers
 TOKENS = {
@@ -54,7 +56,9 @@ def lex_addresses(input_data: str):
 
 def map_tokens_all(tokens):
     mapped = {}
-    matched_offsets = set()  # Track offsets that were matched as part of 4-byte addresses
+    matched_offsets = (
+        set()
+    )  # Track offsets that were matched as part of 4-byte addresses
 
     for token_type, token_value in tokens:
         matched = False
@@ -80,9 +84,7 @@ def map_tokens_all(tokens):
                 address_map = entry.get(ByteGroupKind.ADDRESS_4, {})
                 if address_obj in address_map:
                     enum_value = entry[ByteGroupKind.ADDRESS_4][address_obj]
-                    mapped[token_value] = (
-                        f"{enum_value.name} [{area_name.name}]"
-                    )
+                    mapped[token_value] = f"{enum_value.name} [{area_name.name}]"
                     matched = True
                     break
 
@@ -102,7 +104,9 @@ def map_tokens_all(tokens):
                             address_map = entry.get(ByteGroupKind.ADDRESS_4, {})
                             if base_address_obj in address_map:
                                 base_area = area_name
-                                base_enum = entry[ByteGroupKind.ADDRESS_4][base_address_obj]
+                                base_enum = entry[ByteGroupKind.ADDRESS_4][
+                                    base_address_obj
+                                ]
                                 break
 
                         # Now search all areas for the offset (not just base_area)
@@ -123,13 +127,24 @@ def map_tokens_all(tokens):
                             offset_parts = offset_str.split()
                             if len(offset_parts) == 3:
                                 # Try matching base offset (first 2 bytes + 00)
-                                base_offset_str = f"{offset_parts[0]} {offset_parts[1]} 00"
+                                base_offset_str = (
+                                    f"{offset_parts[0]} {offset_parts[1]} 00"
+                                )
                                 try:
-                                    base_offset_obj = AddressFactory.from_str(base_offset_str)
-                                    for area_name, entry in PARAMETER_ADDRESS_MAP.items():
-                                        offset_map = entry.get(ByteGroupKind.OFFSET_3, {})
+                                    base_offset_obj = AddressFactory.from_str(
+                                        base_offset_str
+                                    )
+                                    for (
+                                        area_name,
+                                        entry,
+                                    ) in PARAMETER_ADDRESS_MAP.items():
+                                        offset_map = entry.get(
+                                            ByteGroupKind.OFFSET_3, {}
+                                        )
                                         if base_offset_obj in offset_map:
-                                            enum_value = entry[ByteGroupKind.OFFSET_3][base_offset_obj]
+                                            enum_value = entry[ByteGroupKind.OFFSET_3][
+                                                base_offset_obj
+                                            ]
                                             param_byte = offset_parts[2]
                                             mapped[token_value] = (
                                                 f"{enum_value.name} [{area_name.name}] + param 0x{param_byte}"
@@ -167,9 +182,7 @@ def map_tokens_all(tokens):
                 offset_map = entry.get(ByteGroupKind.OFFSET_3, {})
                 if offset_obj in offset_map:
                     enum_value = entry[ByteGroupKind.OFFSET_3][offset_obj]
-                    mapped[token_value] = (
-                        f"{enum_value.name} [{area_name.name}]"
-                    )
+                    mapped[token_value] = f"{enum_value.name} [{area_name.name}]"
                     matched = True
                     break
 

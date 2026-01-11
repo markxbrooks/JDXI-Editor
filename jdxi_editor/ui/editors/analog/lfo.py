@@ -18,7 +18,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
 from jdxi_editor.midi.data.parameter.analog import AnalogParam
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
@@ -46,8 +46,7 @@ class AnalogLFOSectionNew(QWidget):
         self._create_parameter_combo_box = create_parameter_combo_box
         self._on_lfo_shape_changed = on_lfo_shape_changed
         self.lfo_shape_buttons = lfo_shape_buttons
-
-        self.setStyleSheet(JDXiStyle.ADSR_ANALOG)
+        JDXiThemeManager.apply_adsr_style(self, analog=True)
 
         self._init_ui()
 
@@ -102,7 +101,7 @@ class AnalogLFOSectionNew(QWidget):
             btn.setCheckable(True)
             btn.setProperty("value", value)
             btn.setIcon(qta.icon(icon_name, color="#FFFFFF", scale_factor=0.9))
-            btn.setStyleSheet(JDXiStyle.BUTTON_RECT_ANALOG)
+            JDXiThemeManager.apply_button_rect_analog(btn)
 
             btn.setMinimumSize(QSize(self.MIN_CONTROL_WIDTH, self.MIN_CONTROL_HEIGHT))
             btn.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
@@ -217,7 +216,7 @@ class AnalogLFOSection(QWidget):
         self._create_parameter_combo_box = create_parameter_combo_box
         self._on_lfo_shape_changed = on_lfo_shape_changed
         self.lfo_shape_buttons = lfo_shape_buttons
-        self.setStyleSheet(JDXiStyle.ADSR_ANALOG)
+        JDXiThemeManager.apply_adsr_style(self, analog=True)
         self._init_ui()
 
     def _init_ui(self):
@@ -243,7 +242,7 @@ class AnalogLFOSection(QWidget):
             btn.setCheckable(True)
             btn.setProperty("value", value)
             btn.setIcon(qta.icon(icon_name, color="#FFFFFF", icon_size=0.7))
-            btn.setStyleSheet(JDXiStyle.BUTTON_RECT_ANALOG)
+            JDXiThemeManager.apply_button_rect_analog(btn)
             btn.setIconSize(QSize(20, 20))
             btn.setFixedSize(60, 30)
             btn.setToolTip(name)
@@ -261,6 +260,7 @@ class AnalogLFOSection(QWidget):
         main_rows_vlayout.addLayout(sync_row_layout)
 
         self.lfo_controls_tab_widget = QTabWidget()
+        JDXiThemeManager.apply_tabs_style(self.lfo_controls_tab_widget, analog=True)
         main_rows_vlayout.addWidget(self.lfo_controls_tab_widget)
 
         # ---LFO Rate and Fade Time ---

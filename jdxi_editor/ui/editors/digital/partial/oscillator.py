@@ -18,7 +18,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.digital.oscillator import DigitalOscWave
@@ -66,7 +66,8 @@ class DigitalOscillatorSection(QWidget):
         layout = QVBoxLayout()
         layout.setContentsMargins(1, 1, 1, 1)
         self.setLayout(layout)
-        self.setStyleSheet(JDXiStyle.ADSR)
+        from jdxi_editor.jdxi.style.theme_manager import JDXiThemeManager
+        JDXiThemeManager.apply_adsr_style(self)
 
         # --- Top row: Waveform buttons and variation switch ---
         layout.addLayout(self.create_waveform_buttons())
@@ -165,7 +166,7 @@ class DigitalOscillatorSection(QWidget):
         )
         tuning_layout.addWidget(self.super_saw_detune)
         tuning_layout.addStretch()
-        tuning_group.setStyleSheet(JDXiStyle.ADSR)
+        JDXiThemeManager.apply_adsr_style(tuning_group)
         return tuning_group
 
     def _create_pitch_env_group(self) -> QGroupBox:
@@ -183,7 +184,7 @@ class DigitalOscillatorSection(QWidget):
             controls=self.controls,
             address=self.address,
         )
-        self.pitch_env_widget.setStyleSheet(JDXiStyle.ADSR)
+        JDXiThemeManager.apply_adsr_style(self.pitch_env_widget)
         pitch_env_layout.addWidget(self.pitch_env_widget)
         return pitch_env_group
 
@@ -199,7 +200,7 @@ class DigitalOscillatorSection(QWidget):
             "Shift (range of change)",
             vertical=True,
         )
-        self.pw_shift_slider.setStyleSheet(JDXiStyle.ADSR)
+        JDXiThemeManager.apply_adsr_style(self.pw_shift_slider)
         pwm_widget_layout = QHBoxLayout()
         pwm_widget_layout.addStretch()
         self.pwm_widget = PWMWidget(
@@ -210,7 +211,7 @@ class DigitalOscillatorSection(QWidget):
             create_parameter_slider=self._create_parameter_slider,
             controls=self.controls,
         )
-        self.pwm_widget.setStyleSheet(JDXiStyle.ADSR)
+        JDXiThemeManager.apply_adsr_style(self.pwm_widget)
         self.pwm_widget.setMaximumHeight(JDXiStyle.PWM_WIDGET_HEIGHT)
         pwm_widget_layout.addWidget(self.pwm_widget)
         pwm_widget_layout.addWidget(self.pw_shift_slider)

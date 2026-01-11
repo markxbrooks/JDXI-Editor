@@ -40,6 +40,7 @@ from PySide6.QtWidgets import (
 )
 
 from jdxi_editor.jdxi.preset.manager import JDXiPresetManager
+from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.jdxi.style.jdxi import JDXiStyle
 from jdxi_editor.jdxi.synth.factory import create_synth_data
 from jdxi_editor.jdxi.synth.type import JDXiSynth
@@ -228,8 +229,9 @@ class JDXiUi(QMainWindow):
 
         file_menu.addSeparator()
 
+        from jdxi_editor.jdxi.style.icons import IconRegistry
         load_program_action = QAction(
-            qta.icon("msc.folder-opened"), "Load Program...", self
+            IconRegistry.get_icon(IconRegistry.FOLDER_OPENED), "Load Program...", self
         )
         load_program_action.triggered.connect(lambda: self.show_editor("program"))
         file_menu.addAction(load_program_action)
@@ -371,13 +373,13 @@ class JDXiUi(QMainWindow):
         about_help_action.triggered.connect(self._show_about_help)
         self.help_menu.addAction(about_help_action)
 
-        preferences_action = QAction(qta.icon("msc.settings"), "Preferences", self)
+        preferences_action = QAction(IconRegistry.get_icon(IconRegistry.SETTINGS), "Preferences", self)
         preferences_action.setStatusTip("Show the Preferences window")
         preferences_action.triggered.connect(self.on_preferences)
         self.help_menu.addAction(preferences_action)
 
         documentation_action = QAction(
-            qta.icon("mdi6.help-rhombus-outline"), "Documentation", self
+            IconRegistry.get_icon(IconRegistry.HELP_RHOMBUS), "Documentation", self
         )
         documentation_action.setStatusTip(f"Show {__program__} documentation")
         documentation_action.triggered.connect(self.on_documentation)
@@ -392,7 +394,8 @@ class JDXiUi(QMainWindow):
     def _create_status_bar(self):
         """Create status bar with MIDI indicators"""
         status_bar = self.statusBar()
-        status_bar.setStyleSheet(JDXiStyle.TRANSPARENT)
+        from jdxi_editor.jdxi.style.theme_manager import JDXiThemeManager
+        JDXiThemeManager.apply_transparent(status_bar)
 
         midi_indicator_container = QWidget()
         midi_indicator_container.setLayout(self._build_status_layout())

@@ -18,9 +18,10 @@ Functions:
 
 from __future__ import annotations
 
-from typing import Dict, Iterable
 from enum import Enum
+from typing import Dict, Iterable, Any, Tuple
 
+from jdxi_editor.jdxi.midi.message.sysex.length import JDXiSysExLength
 from picomidi.constant import Midi
 from picomidi.sysex.parameter.address import AddressParameter
 
@@ -43,11 +44,7 @@ from jdxi_editor.midi.sysex.parser.tone_mapper import (
 
 UNKNOWN = "Unknown"
 UNKNOWN_AREA = "Unknown area"
-MINIMAL_METADATA = {"error": "Minimal metadata provided", "raw_data": None}
 
-def _return_minimal_metadata(data: bytes) -> dict:
-    return MINIMAL_METADATA.copy()
-    
 
 class ParameterLength(Enum):
     ONE_BYTE = 1
@@ -94,20 +91,26 @@ def extract_tone_name(data: bytes) -> str:
         return UNKNOWN
 
     raw_name = (
-        bytes(data[JDXiSysExMessageLayout.TONE_NAME.START: JDXiSysExMessageLayout.TONE_NAME.END])
+        bytes(
+            data[
+                JDXiSysExMessageLayout.TONE_NAME.START : JDXiSysExMessageLayout.TONE_NAME.END
+            ]
+        )
         .decode(errors="ignore")
         .strip("\x00\r ")
     )  # Start at index 12
     return raw_name  # Strip null and carriage return
-    
-    
+
+
 def log_metadata(metadata: dict, temporary_area: str, synth_tone: str):
     log.message(
-        f"Parsed metadata: {metadata}, Area: {temporary_area}, Tone: {synth_tone}", silent=True
+        f"Parsed metadata: {metadata}, Area: {temporary_area}, Tone: {synth_tone}",
+        silent=True,
     )
-    
-    
+
+
 def determine_tone_mapping(data: bytes) -> Tuple[str, Any]:
+    """determine tone mapping"""
     temporary_area = get_temporary_area(data) or UNKNOWN_AREA
     synth_tone, _ = _get_tone_from_data(data, temporary_area)
     return temporary_area, synth_tone
@@ -228,12 +231,18 @@ def _return_minimal_metadata(data: bytes) -> Dict[str, str]:
     """
     return {
         "JD_XI_HEADER": (
-            extract_hex(data, JDXiSysExMessageLayout.START, JDXiSysExMessageLayout.COMMAND_ID)
+            extract_hex(
+                data, JDXiSysExMessageLayout.START, JDXiSysExMessageLayout.COMMAND_ID
+            )
             if len(data) >= JDXiSysExMessageLayout.COMMAND_ID
             else UNKNOWN
         ),
         "ADDRESS": (
-            extract_hex(data, JDXiSysExMessageLayout.COMMAND_ID, JDXiSysExMessageLayout.ADDRESS.LSB)
+            extract_hex(
+                data,
+                JDXiSysExMessageLayout.COMMAND_ID,
+                JDXiSysExMessageLayout.ADDRESS.LSB,
+            )
             if len(data) >= JDXiSysExMessageLayout.ADDRESS.LSB
             else UNKNOWN
         ),
@@ -258,8 +267,15 @@ def _get_tone_from_data(data: bytes, temporary_area: str) -> tuple[str, int]:
     if temporary_area == TemporaryToneUMB.DRUM_KIT.name:
         return get_drum_tone(byte_value)
     return get_synth_tone(byte_value)
-    
-    
+
+
+def is_short_data(data):
+    """is short data"""
+    if len(data) < ParameterLength.FOUR_BYTE.value:
+        return True
+    return False
+
+
 def parse_sysex_new(data: bytes) -> Dict[str, str]:
     """
     Parses JD-Xi tone data from SysEx messages.
@@ -299,7 +315,7 @@ def parse_sysex(data: bytes) -> Dict[str, str]:
     :param data: bytes SysEx message bytes
     :return: Dict[str, str] Dictionary with parsed tone parameters
     """
-    if len(data) < JDXiMidi.SYSEX.PARAMETER.LENGTH.ONE_BYTE:
+    if len(data) < ParameterLength.ONE_BYTE.value:
         return _return_minimal_metadata(data)
 
     temporary_area = get_temporary_area(data) or UNKNOWN_AREA
@@ -317,10 +333,12 @@ def parse_sysex(data: bytes) -> Dict[str, str]:
         return _return_minimal_metadata(data)
 
     parsed_data = initialize_parameters(data)
-    if len(data) < JDXiMidi.SYSEX.PARAMETER.LENGTH.FOUR_BYTE:
-        update_short_data_with_parsed_parameters(data, parameter_cls, parsed_data)
-    else:
-        update_data_with_parsed_parameters(data, parameter_cls, parsed_data)
+    update_func = (
+        update_short_data_with_parsed_parameters
+        if is_short_data(data)
+        else update_data_with_parsed_parameters
+    )
+    update_func(data, parameter_cls, parsed_data)
 
     log.json(parsed_data, silent=True)
     return parsed_data

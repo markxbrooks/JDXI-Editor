@@ -30,7 +30,10 @@ def validate_raw_sysex_message(message: List[int]) -> bool:
             return False
 
         # Check DT1 command
-        if message[JDXiSysExMessageLayout.COMMAND_ID] not in [CommandID.DT1, CommandID.RQ1]:
+        if message[JDXiSysExMessageLayout.COMMAND_ID] not in [
+            CommandID.DT1,
+            CommandID.RQ1,
+        ]:
             log.message("Invalid command byte")
             return False
 
@@ -41,7 +44,11 @@ def validate_raw_sysex_message(message: List[int]) -> bool:
 
         # Verify checksum
         data_sum = (
-            sum(message[JDXiSysExMessageLayout.ADDRESS.MSB: JDXiSysExMessageLayout.CHECKSUM])
+            sum(
+                message[
+                    JDXiSysExMessageLayout.ADDRESS.MSB : JDXiSysExMessageLayout.CHECKSUM
+                ]
+            )
             & BitMask.LOW_7_BITS
         )  # Sum from area to value
         checksum = (128 - data_sum) & BitMask.LOW_7_BITS

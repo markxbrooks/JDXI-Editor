@@ -95,7 +95,8 @@ class DeviceInfo:
         """
         try:
             if (
-                len(data) < JDXiMidi.SYSEX.IDENTITY.LAYOUT.expected_length()  # Minimum length check
+                len(data)
+                < JDXiMidi.SYSEX.IDENTITY.LAYOUT.expected_length()  # Minimum length check
                 or data[JDXiMidi.SYSEX.IDENTITY.LAYOUT.START]
                 != Midi.SYSEX.START  # SysEx Start
                 or data[JDXiMidi.SYSEX.IDENTITY.LAYOUT.ID.NUMBER]
