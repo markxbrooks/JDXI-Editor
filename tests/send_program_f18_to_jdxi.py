@@ -19,7 +19,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from PySide6.QtCore import QCoreApplication
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.log.logger import Logger as log
+from decologr import Decologr as log
 
 
 def load_json_file(file_path: Path) -> Dict[str, Any] | None:

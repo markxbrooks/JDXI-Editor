@@ -41,6 +41,7 @@ import threading
 from typing import Optional, Union
 
 import qtawesome as qta
+from decologr import Decologr as log
 from picomidi.constant import Midi
 from PySide6.QtCore import QSettings, Qt, QTimer, Signal
 from PySide6.QtGui import QAction, QCloseEvent, QKeySequence, QMouseEvent, QShortcut
@@ -55,7 +56,6 @@ from jdxi_editor.jdxi.program.program import JDXiProgram
 from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
 from jdxi_editor.jdxi.style.factory import generate_sequencer_button_style
 from jdxi_editor.jdxi.synth.type import JDXiSynth
-from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetProgramLMB,
@@ -688,20 +688,24 @@ class JDXiInstrument(JDXiUi):
                 }
                 else None
             )
-            
+
             # Connect Pattern Sequencer to MidiFileEditor if both exist
             if editor_class == PatternSequenceEditor:
                 midi_file_editor = self.get_existing_editor(MidiFileEditor)
                 if midi_file_editor:
-                    kwargs['midi_file_editor'] = midi_file_editor
+                    kwargs["midi_file_editor"] = midi_file_editor
             elif editor_class == MidiFileEditor:
                 # After creating MidiFileEditor, connect it to Pattern Sequencer
                 def connect_pattern_sequencer():
                     pattern_editor = self.get_existing_editor(PatternSequenceEditor)
-                    if pattern_editor and hasattr(pattern_editor, 'set_midi_file_editor'):
+                    if pattern_editor and hasattr(
+                        pattern_editor, "set_midi_file_editor"
+                    ):
                         pattern_editor.set_midi_file_editor(existing_editor)
+
                 # Use QTimer to connect after editor is fully created
                 from PySide6.QtCore import QTimer
+
                 QTimer.singleShot(100, connect_pattern_sequencer)
 
             # Update splash screen when creating editors
@@ -763,12 +767,12 @@ class JDXiInstrument(JDXiUi):
 
             setattr(self, instance_attr, editor)
             self.register_editor(editor)
-            
+
             # Connect Pattern Sequencer to MidiFileEditor after creation
             if editor_class == MidiFileEditor:
                 # Connect to Pattern Sequencer if it exists
                 pattern_editor = self.get_existing_editor(PatternSequenceEditor)
-                if pattern_editor and hasattr(pattern_editor, 'set_midi_file_editor'):
+                if pattern_editor and hasattr(pattern_editor, "set_midi_file_editor"):
                     pattern_editor.set_midi_file_editor(editor)
             elif editor_class == PatternSequenceEditor:
                 # Connect to MidiFileEditor if it exists

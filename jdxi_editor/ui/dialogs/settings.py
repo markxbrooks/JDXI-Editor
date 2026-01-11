@@ -7,6 +7,7 @@ Sets settings for various biotoolkit features
 import logging
 
 import qtawesome as qta
+from decologr import Decologr as log
 from PySide6 import QtCore, QtWidgets
 from PySide6.QtCore import QSettings, QSize
 from PySide6.QtWidgets import (
@@ -20,7 +21,6 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.project import (
     __organization_name__,
     __package_name__,

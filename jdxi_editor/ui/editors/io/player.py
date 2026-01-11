@@ -14,9 +14,8 @@ from typing import Optional
 import mido
 import pyaudio
 import qtawesome as qta
+from decologr import Decologr as log
 from mido import MidiFile, bpm2tempo
-
-from jdxi_editor.jdxi.style.icons import IconRegistry
 from picomidi.constant import Midi
 from PySide6.QtCore import Qt, QThread, QTimer
 from PySide6.QtWidgets import (
@@ -36,7 +35,7 @@ from jdxi_editor.globals import PROFILING
 from jdxi_editor.jdxi.midi.constant import JDXiMidi
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
-from jdxi_editor.log.logger import Logger as log
+from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetProgramLMB,
@@ -222,14 +221,17 @@ class MidiFileEditor(SynthEditor):
         layout = QHBoxLayout()
 
         from jdxi_editor.jdxi.style.icons import IconRegistry
+
         self.ui.load_button = QPushButton(
-            IconRegistry.get_icon(IconRegistry.MIDI_PORT, color=JDXiStyle.FOREGROUND), "Load MIDI File"
+            IconRegistry.get_icon(IconRegistry.MIDI_PORT, color=JDXiStyle.FOREGROUND),
+            "Load MIDI File",
         )
         self.ui.load_button.clicked.connect(self.midi_load_file)
         layout.addWidget(self.ui.load_button)
 
         self.ui.save_button = QPushButton(
-            IconRegistry.get_icon(IconRegistry.MIDI_PORT, color=JDXiStyle.FOREGROUND), "Save MIDI File"
+            IconRegistry.get_icon(IconRegistry.MIDI_PORT, color=JDXiStyle.FOREGROUND),
+            "Save MIDI File",
         )
         self.ui.save_button.clicked.connect(self.midi_save_file)
         layout.addWidget(self.ui.save_button)
@@ -238,7 +240,10 @@ class MidiFileEditor(SynthEditor):
 
         self.ui.midi_suppress_program_changes_checkbox = QCheckBox("Program Changes")
         from jdxi_editor.jdxi.style.theme_manager import JDXiThemeManager
-        JDXiThemeManager.apply_partial_switch(self.ui.midi_suppress_program_changes_checkbox)
+
+        JDXiThemeManager.apply_partial_switch(
+            self.ui.midi_suppress_program_changes_checkbox
+        )
         self.ui.midi_suppress_program_changes_checkbox.setChecked(
             self.midi_state.suppress_program_changes
         )
@@ -248,7 +253,9 @@ class MidiFileEditor(SynthEditor):
         layout.addWidget(self.ui.midi_suppress_program_changes_checkbox)
 
         self.ui.midi_suppress_control_changes_checkbox = QCheckBox("Control Changes")
-        JDXiThemeManager.apply_partial_switch(self.ui.midi_suppress_control_changes_checkbox)
+        JDXiThemeManager.apply_partial_switch(
+            self.ui.midi_suppress_control_changes_checkbox
+        )
         self.ui.midi_suppress_control_changes_checkbox.setChecked(
             self.midi_state.suppress_control_changes
         )
@@ -614,7 +621,8 @@ class MidiFileEditor(SynthEditor):
         layout.addWidget(self.ui.stop_button)
 
         self.ui.pause_button = QPushButton(
-            IconRegistry.get_icon(IconRegistry.PAUSE, color=JDXiStyle.FOREGROUND), "Pause"
+            IconRegistry.get_icon(IconRegistry.PAUSE, color=JDXiStyle.FOREGROUND),
+            "Pause",
         )
         self.ui.pause_button.clicked.connect(self.midi_playback_pause_toggle)
         layout.addWidget(self.ui.pause_button)
@@ -2026,7 +2034,7 @@ class MidiFileEditor(SynthEditor):
 
         # Replace the buffer with the fixed messages
         self.midi_state.buffered_msgs = fixed_msgs
-    
+
     def _notify_pattern_sequencer_file_loaded(self) -> None:
         """Notify Pattern Sequencer that a MIDI file has been loaded."""
         try:
@@ -2034,31 +2042,44 @@ class MidiFileEditor(SynthEditor):
             if not self.parent:
                 log.debug("No parent available to notify Pattern Sequencer")
                 return
-                
+
             # Look for PatternSequenceEditor in parent's attributes
             pattern_editor = None
-            if hasattr(self.parent, 'get_existing_editor'):
+            if hasattr(self.parent, "get_existing_editor"):
                 try:
-                    from jdxi_editor.ui.editors.pattern.pattern import PatternSequenceEditor
-                    pattern_editor = self.parent.get_existing_editor(PatternSequenceEditor)
-                    log.debug(f"Found Pattern Sequencer via get_existing_editor: {pattern_editor is not None}")
+                    from jdxi_editor.ui.editors.pattern.pattern import (
+                        PatternSequenceEditor,
+                    )
+
+                    pattern_editor = self.parent.get_existing_editor(
+                        PatternSequenceEditor
+                    )
+                    log.debug(
+                        f"Found Pattern Sequencer via get_existing_editor: {pattern_editor is not None}"
+                    )
                 except Exception as ex:
-                    log.debug(f"Error getting Pattern Sequencer via get_existing_editor: {ex}")
-            elif hasattr(self.parent, 'patternsequenceeditor_instance'):
+                    log.debug(
+                        f"Error getting Pattern Sequencer via get_existing_editor: {ex}"
+                    )
+            elif hasattr(self.parent, "patternsequenceeditor_instance"):
                 pattern_editor = self.parent.patternsequenceeditor_instance
-                log.debug(f"Found Pattern Sequencer via instance attribute: {pattern_editor is not None}")
-            
+                log.debug(
+                    f"Found Pattern Sequencer via instance attribute: {pattern_editor is not None}"
+                )
+
             if pattern_editor:
-                if hasattr(pattern_editor, '_load_from_midi_file_editor'):
+                if hasattr(pattern_editor, "_load_from_midi_file_editor"):
                     log.message("Notifying Pattern Sequencer of MIDI file load")
                     # Pass self (MidiFileEditor) directly to ensure the reference is available
                     pattern_editor._load_from_midi_file_editor(midi_file_editor=self)
-                elif hasattr(pattern_editor, 'set_midi_file_editor'):
+                elif hasattr(pattern_editor, "set_midi_file_editor"):
                     # If Pattern Sequencer doesn't have the reference, set it first
                     log.message("Setting MidiFileEditor reference in Pattern Sequencer")
                     pattern_editor.set_midi_file_editor(self)
-                    if hasattr(pattern_editor, '_load_from_midi_file_editor'):
-                        pattern_editor._load_from_midi_file_editor(midi_file_editor=self)
+                    if hasattr(pattern_editor, "_load_from_midi_file_editor"):
+                        pattern_editor._load_from_midi_file_editor(
+                            midi_file_editor=self
+                        )
                 else:
                     log.debug("Pattern Sequencer found but missing required methods")
             else:
@@ -2066,4 +2087,5 @@ class MidiFileEditor(SynthEditor):
         except Exception as ex:
             log.error(f"Error notifying Pattern Sequencer: {ex}")
             import traceback
+
             log.debug(traceback.format_exc())

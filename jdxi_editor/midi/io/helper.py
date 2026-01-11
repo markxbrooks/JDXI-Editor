@@ -23,8 +23,8 @@ import logging
 import zipfile
 
 import mido
+from decologr import Decologr as log
 
-from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetTemporaryToneUMB,
     RolandSysExAddress,

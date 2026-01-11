@@ -4,6 +4,7 @@ Synth Factory
 
 from typing import Union
 
+from decologr import Decologr as log
 from PySide6.QtCore import QSettings
 
 from jdxi_editor.jdxi.preset.lists import JDXiPresetToneList
@@ -11,7 +12,6 @@ from jdxi_editor.jdxi.synth.analog import AnalogSynthData
 from jdxi_editor.jdxi.synth.digital import DigitalSynthData
 from jdxi_editor.jdxi.synth.drum import DrumSynthData
 from jdxi_editor.jdxi.synth.type import JDXiSynth
-from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetProgramLMB,

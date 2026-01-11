@@ -1,4 +1,4 @@
-from jdxi_editor.log.logger import Logger as log
+from decologr import Decologr as log
 
 
 def log_midi_info(msb: int, lsb: int, pc: int) -> None:

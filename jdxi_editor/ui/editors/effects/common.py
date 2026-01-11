@@ -57,6 +57,7 @@ Features:
 
 from typing import Dict, Union
 
+from decologr import Decologr as log
 from picomidi.constant import Midi
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import QEvent, Qt
@@ -76,7 +77,6 @@ from PySide6.QtWidgets import (
 
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.jdxi.style import JDXiStyle
-from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetProgramLMB,
     AddressOffsetSystemUMB,
@@ -273,6 +273,7 @@ class EffectsCommonEditor(BasicEditor):
 
         self.title_label = DigitalTitle("Effects")
         from jdxi_editor.jdxi.style.theme_manager import JDXiThemeManager
+
         JDXiThemeManager.apply_instrument_title_label(self.title_label)
         self.image_label = QLabel()
         self.image_label.setAlignment(

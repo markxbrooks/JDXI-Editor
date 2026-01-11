@@ -40,6 +40,7 @@ Dependencies:
 from typing import Optional
 
 import qtawesome as qta
+from decologr import Decologr as log
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import (
     QComboBox,
@@ -56,7 +57,6 @@ from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.jdxi.preset.lists import JDXiPresetToneList
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.jdxi.synth.type import JDXiSynth
-from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.log.midi_info import log_midi_info
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST

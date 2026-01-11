@@ -1,6 +1,6 @@
 from typing import Dict
 
-from jdxi_editor.log.logger import Logger as log
+from decologr import Decologr as log
 
 
 def log_changes(previous_data: Dict, current_data: Dict) -> None:

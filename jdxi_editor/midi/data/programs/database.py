@@ -10,8 +10,9 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Dict, List, Optional
 
+from decologr import Decologr as log
+
 from jdxi_editor.jdxi.program.program import JDXiProgram
-from jdxi_editor.log.logger import Logger as log
 
 
 class ProgramDatabase:

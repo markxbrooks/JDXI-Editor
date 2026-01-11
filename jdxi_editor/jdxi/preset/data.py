@@ -42,9 +42,10 @@ Example usage:
 from dataclasses import asdict, dataclass
 from typing import List, Optional
 
+from decologr import Decologr as log
+
 from jdxi_editor.jdxi.preset.lists import JDXiPresetToneList
 from jdxi_editor.jdxi.synth.type import JDXiSynth
-from jdxi_editor.log.logger import Logger as log
 
 
 @dataclass

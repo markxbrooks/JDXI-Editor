@@ -1,4 +1,4 @@
-from jdxi_editor.log.logger import Logger as log
+from decologr import Decologr as log
 
 
 def validate_checksum(data_bytes: bytes, checksum: int) -> bool:

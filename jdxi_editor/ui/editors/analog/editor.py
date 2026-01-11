@@ -45,6 +45,7 @@ import logging
 from typing import Dict, Optional, Union
 
 import qtawesome as qta
+from decologr import Decologr as log
 from PySide6.QtGui import QKeySequence, QShortcut
 from PySide6.QtWidgets import (
     QComboBox,
@@ -64,7 +65,6 @@ from jdxi_editor.jdxi.preset.helper import create_scroll_area, create_scroll_con
 from jdxi_editor.jdxi.preset.widget import InstrumentPresetWidget
 from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
 from jdxi_editor.jdxi.synth.type import JDXiSynth
-from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.log.midi_info import log_midi_info
 from jdxi_editor.log.slider_parameter import log_slider_parameters
 from jdxi_editor.midi.channel.channel import MidiChannel

@@ -1,6 +1,7 @@
 """Helper function for the AnalogParameterEditor."""
 
-from jdxi_editor.log.logger import Logger as log
+from decologr import Decologr as log
+
 from jdxi_editor.midi.data.parameter.analog import AnalogParam
 
 

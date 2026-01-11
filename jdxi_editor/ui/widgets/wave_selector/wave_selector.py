@@ -2,9 +2,8 @@
 Wave selector test class
 """
 
+from decologr import Decologr as log
 from PySide6.QtWidgets import QApplication, QComboBox, QVBoxLayout, QWidget
-
-from jdxi_editor.log.logger import Logger as log
 
 
 class WaveSelector(QWidget):

@@ -24,6 +24,7 @@ import re
 from typing import Union
 
 import qtawesome as qta
+from decologr import Decologr as log
 from PySide6.QtCore import QSettings, Qt
 from PySide6.QtGui import (
     QAction,
@@ -44,7 +45,6 @@ from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.jdxi.style.jdxi import JDXiStyle
 from jdxi_editor.jdxi.synth.factory import create_synth_data
 from jdxi_editor.jdxi.synth.type import JDXiSynth
-from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.request.midi_requests import MidiRequests
@@ -230,6 +230,7 @@ class JDXiUi(QMainWindow):
         file_menu.addSeparator()
 
         from jdxi_editor.jdxi.style.icons import IconRegistry
+
         load_program_action = QAction(
             IconRegistry.get_icon(IconRegistry.FOLDER_OPENED), "Load Program...", self
         )
@@ -373,7 +374,9 @@ class JDXiUi(QMainWindow):
         about_help_action.triggered.connect(self._show_about_help)
         self.help_menu.addAction(about_help_action)
 
-        preferences_action = QAction(IconRegistry.get_icon(IconRegistry.SETTINGS), "Preferences", self)
+        preferences_action = QAction(
+            IconRegistry.get_icon(IconRegistry.SETTINGS), "Preferences", self
+        )
         preferences_action.setStatusTip("Show the Preferences window")
         preferences_action.triggered.connect(self.on_preferences)
         self.help_menu.addAction(preferences_action)
@@ -395,6 +398,7 @@ class JDXiUi(QMainWindow):
         """Create status bar with MIDI indicators"""
         status_bar = self.statusBar()
         from jdxi_editor.jdxi.style.theme_manager import JDXiThemeManager
+
         JDXiThemeManager.apply_transparent(status_bar)
 
         midi_indicator_container = QWidget()

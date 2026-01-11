@@ -2,8 +2,9 @@ import json
 from pathlib import Path
 from typing import List, Optional
 
+from decologr import Decologr as log
+
 from jdxi_editor.jdxi.program.program import JDXiProgram
-from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.project import __package_name__
 
 ROM_PROGRAMS = [

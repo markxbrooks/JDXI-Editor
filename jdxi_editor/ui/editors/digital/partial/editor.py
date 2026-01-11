@@ -39,6 +39,7 @@ Dependencies:
 from typing import Dict, Optional, Union
 
 import qtawesome as qta
+from decologr import Decologr as log
 from PySide6.QtWidgets import (
     QTabWidget,
     QVBoxLayout,
@@ -47,7 +48,6 @@ from PySide6.QtWidgets import (
 
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.jdxi.synth.type import JDXiSynth
-from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import AddressOffsetSuperNATURALLMB
 from jdxi_editor.midi.data.digital.oscillator import DigitalOscWave
 from jdxi_editor.midi.data.digital.partial import DIGITAL_PARTIAL_NAMES

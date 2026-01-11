@@ -3,7 +3,7 @@ import wave
 import pyaudio
 
 # import logging as log
-from jdxi_editor.log.logger import Logger as log
+from decologr import Decologr as log
 
 
 class USBRecorder:

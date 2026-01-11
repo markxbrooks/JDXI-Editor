@@ -8,7 +8,8 @@ import json
 from pathlib import Path
 from typing import List, Optional
 
-from jdxi_editor.log.logger import Logger as log
+from decologr import Decologr as log
+
 from jdxi_editor.project import __package_name__
 
 

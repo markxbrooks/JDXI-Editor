@@ -29,6 +29,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
+from decologr import Decologr as log
 from PySide6.QtWidgets import (
     QFileDialog,
     QHBoxLayout,
@@ -40,7 +41,6 @@ from PySide6.QtWidgets import (
 )
 
 from jdxi_editor.jdxi.style import JDXiStyle
-from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.json_composer import JDXiJSONComposer
 from jdxi_editor.project import __package_name__

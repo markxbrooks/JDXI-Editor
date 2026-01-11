@@ -37,6 +37,7 @@ Example:
 from typing import Callable
 
 import numpy as np
+from decologr import Decologr as log
 from picomidi.constant import Midi
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QColor, QFont, QLinearGradient, QPainter, QPainterPath, QPen
@@ -52,7 +53,6 @@ from PySide6.QtWidgets import (
 )
 
 from jdxi_editor.jdxi.style import JDXiStyle
-from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
@@ -85,6 +85,7 @@ class DrumTVFEnvPlot(QWidget):
         self.setMaximumHeight(height)
         self.setMaximumWidth(width)
         from jdxi_editor.jdxi.style.theme_manager import JDXiThemeManager
+
         JDXiThemeManager.apply_adsr_plot(self)
         self.sample_rate = 256
         self.setMinimumHeight(150)

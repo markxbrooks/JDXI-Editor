@@ -45,10 +45,10 @@ import json
 import logging
 from typing import Dict, List, Optional
 
+from decologr import Decologr as log
 from picomidi.constant import Midi
 
 from jdxi_editor.jdxi.program.program import JDXiProgram
-from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.programs.programs import JDXiProgramList
 
 

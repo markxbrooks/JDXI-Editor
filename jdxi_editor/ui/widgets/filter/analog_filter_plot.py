@@ -108,6 +108,7 @@ class AnalogFilterPlot(QWidget):
         self.setMaximumWidth(width)
         # Use dark gray background
         from jdxi_editor.jdxi.style.theme_manager import JDXiThemeManager
+
         JDXiThemeManager.apply_adsr_plot(self)
         # Sample rate for converting times to samples
         self.sample_rate = 256

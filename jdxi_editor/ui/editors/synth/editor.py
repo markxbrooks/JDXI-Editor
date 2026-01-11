@@ -25,6 +25,7 @@ import os
 import re
 from typing import Any, Optional
 
+from decologr import Decologr as log
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QKeySequence, QPixmap, QShortcut, QShowEvent
 from PySide6.QtWidgets import QGroupBox, QLabel, QPushButton, QVBoxLayout, QWidget
@@ -32,7 +33,6 @@ from PySide6.QtWidgets import QGroupBox, QLabel, QPushButton, QVBoxLayout, QWidg
 from jdxi_editor.jdxi.preset.lists import JDXiPresetToneList
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.jdxi.synth.type import JDXiSynth
-from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.log.midi_info import log_midi_info
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.address.address import (
@@ -136,6 +136,7 @@ class SynthEditor(SynthBase):
 
         # Apply common style
         from jdxi_editor.jdxi.style.theme_manager import JDXiThemeManager
+
         JDXiThemeManager.apply_editor_style(self)
 
         # Add keyboard shortcuts
@@ -263,7 +264,10 @@ class SynthEditor(SynthBase):
         self.instrument_selection_combo = PresetComboBox(self.preset_list)
         if synth_type == "Analog":
             from jdxi_editor.jdxi.style.theme_manager import JDXiThemeManager
-            JDXiThemeManager.apply_combo_box(self.instrument_selection_combo, analog=True)
+
+            JDXiThemeManager.apply_combo_box(
+                self.instrument_selection_combo, analog=True
+            )
         else:
             JDXiThemeManager.apply_combo_box(self.instrument_selection_combo)
         self.instrument_selection_combo.combo_box.setEditable(True)

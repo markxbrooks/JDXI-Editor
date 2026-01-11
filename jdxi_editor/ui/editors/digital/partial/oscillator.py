@@ -2,9 +2,9 @@
 Digital Oscillator Section for the JDXI Editor
 """
 
-import logging
 from typing import Callable
 
+from decologr import Decologr as log
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
@@ -19,7 +19,6 @@ from PySide6.QtWidgets import (
 )
 
 from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
-from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.digital.oscillator import DigitalOscWave
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParam
@@ -30,7 +29,6 @@ from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from jdxi_editor.ui.widgets.button.waveform.waveform import WaveformButton
 from jdxi_editor.ui.widgets.pitch.envelope import PitchEnvelopeWidget
-from jdxi_editor.ui.widgets.slider import Slider
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
@@ -67,6 +65,7 @@ class DigitalOscillatorSection(QWidget):
         layout.setContentsMargins(1, 1, 1, 1)
         self.setLayout(layout)
         from jdxi_editor.jdxi.style.theme_manager import JDXiThemeManager
+
         JDXiThemeManager.apply_adsr_style(self)
 
         # --- Top row: Waveform buttons and variation switch ---
@@ -264,7 +263,7 @@ class DigitalOscillatorSection(QWidget):
 
         # --- Send MIDI message ---
         if not self.send_midi_parameter(DigitalPartialParam.OSC_WAVE, waveform.value):
-            logging.warning(f"Failed to set waveform to {waveform.name}")
+            log.warning(f"Failed to set waveform to {waveform.name}")
 
         self._update_waveform_controls_enabled_states(waveform)
 

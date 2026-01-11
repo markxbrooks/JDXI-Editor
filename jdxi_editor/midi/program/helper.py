@@ -32,9 +32,9 @@ preset changes and communicate them to the UI and MIDI engine.
 import threading
 from typing import Optional
 
+from decologr import Decologr as log
 from PySide6.QtCore import QObject, Signal
 
-from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.io.delay import send_with_delay
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.program.utils import (

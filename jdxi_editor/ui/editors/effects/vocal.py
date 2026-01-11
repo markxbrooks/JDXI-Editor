@@ -80,6 +80,7 @@ class VocalFXEditor(BasicEditor):
             ZERO_BYTE,
         )
         from jdxi_editor.jdxi.style.theme_manager import JDXiThemeManager
+
         JDXiThemeManager.apply_editor_style(self)
         JDXiThemeManager.apply_tabs_style(self)
 
@@ -109,6 +110,7 @@ class VocalFXEditor(BasicEditor):
         self.title_label = DigitalTitle()
         self.title_label.setText("Vocal Effects")
         from jdxi_editor.jdxi.style.theme_manager import JDXiThemeManager
+
         JDXiThemeManager.apply_instrument_title_label(self.title_label)
         title_layout = QHBoxLayout()
         title_layout.addWidget(self.title_label)

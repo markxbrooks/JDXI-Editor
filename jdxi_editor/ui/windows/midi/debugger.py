@@ -42,6 +42,7 @@ This class is useful for MIDI developers, musicians, and anyone working with MID
 import re
 from typing import Optional, Protocol, Tuple, TypeVar
 
+from decologr import Decologr as log
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
@@ -58,7 +59,6 @@ from PySide6.QtWidgets import (
 
 from jdxi_editor.jdxi.midi.message.sysex.offset import JDXiSysExMessageLayout
 from jdxi_editor.jdxi.style import JDXiStyle
-from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import CommandID
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.parser.sysex import JDXiSysExParser
@@ -139,6 +139,7 @@ class MIDIDebugger(QMainWindow):
         self.setWindowTitle("MIDI Debugger")
         self.setMinimumSize(800, 600)
         from jdxi_editor.jdxi.style.theme_manager import JDXiThemeManager
+
         JDXiThemeManager.apply_debugger_window(self)
 
         # Create central widget

@@ -2,7 +2,8 @@ import os
 import platform
 import subprocess
 
-from jdxi_editor.log.logger import Logger as log
+from decologr import Decologr as log
+
 from jdxi_editor.resources import resource_path
 
 

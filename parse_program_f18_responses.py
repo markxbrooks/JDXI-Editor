@@ -14,7 +14,7 @@ from typing import List, Dict, Any
 sys.path.insert(0, str(Path(__file__).parent))
 
 from jdxi_editor.midi.sysex.parser.sysex import JDXiSysExParser
-from jdxi_editor.log.logger import Logger as log
+from decologr import Decologr as log
 
 
 def hex_string_to_bytes(hex_string: str) -> bytes:

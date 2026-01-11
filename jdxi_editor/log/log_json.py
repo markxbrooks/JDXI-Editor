@@ -1,7 +1,7 @@
 import json
 from typing import Dict
 
-from jdxi_editor.log.logger import Logger as log
+from decologr import Decologr as log
 
 
 def log_json(data: Dict[str], silent: bool = False) -> None:
