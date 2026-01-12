@@ -16,7 +16,7 @@ import threading
 
 from decologr import Decologr as log
 
-from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
 from jdxi_editor.midi.io.delay import send_with_delay
 from jdxi_editor.midi.sysex.request.midi_requests import MidiRequests
 from jdxi_editor.ui.widgets.slider import Slider
@@ -81,7 +81,7 @@ class NRPNSlider(Slider):
         if value == 0:
             self.setStyleSheet(JDXiStyle.ADSR_DISABLED)
         else:
-            self.setStyleSheet(JDXiStyle.ADSR)
+            JDXiThemeManager.apply_adsr_style(self, analog=False)
 
     def data_request(self) -> None:
         """

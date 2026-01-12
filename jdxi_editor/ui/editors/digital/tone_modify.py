@@ -6,7 +6,7 @@ from typing import Callable
 
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout, QWidget
 
-from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
 from jdxi_editor.midi.data.lfo.lfo import LFOSyncNote
 from jdxi_editor.midi.data.parameter.digital.modify import DigitalModifyParam
 
@@ -32,7 +32,7 @@ class DigitalToneModifySection(QWidget):
         self._create_parameter_combo_box = create_parameter_combo_box
         self._create_parameter_switch = create_parameter_switch
         self.controls = controls
-        self.setStyleSheet(JDXiStyle.ADSR)
+        JDXiThemeManager.apply_adsr_style(self, analog=False)
         self.init_ui()
 
     def init_ui(self):

@@ -16,7 +16,8 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
+from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
@@ -66,11 +67,11 @@ class DigitalFilterSection(QWidget):
         self.setLayout(layout)
         layout.setContentsMargins(5, 15, 5, 5)
         layout.setSpacing(5)
-        self.setStyleSheet(JDXiStyle.ADSR)
+        JDXiThemeManager.apply_adsr_style(self, analog=False)
         self.setMinimumHeight(JDXiDimensions.EDITOR_MINIMUM_HEIGHT)
 
         # Icons
-        icon_hlayout = self._create_adsr_icons_row()
+        icon_hlayout = IconRegistry.create_adsr_icons_row()
         layout.addLayout(icon_hlayout)
 
         # Filter mode and slope
@@ -91,24 +92,6 @@ class DigitalFilterSection(QWidget):
 
         layout.addSpacing(JDXiStyle.SPACING)
         layout.addStretch()
-
-    def _create_adsr_icons_row(self) -> QHBoxLayout:
-        """Create ADSR icons row"""
-        icon_hlayout = QHBoxLayout()
-        for icon in [
-            "mdi.triangle-wave",
-            "mdi.sine-wave",
-            "fa5s.wave-square",
-            "mdi.cosine-wave",
-            "mdi.triangle-wave",
-            "mdi.waveform",
-        ]:
-            icon_label = QLabel()
-            icon_pixmap = qta.icon(icon, color="#666666").pixmap(30, 30)
-            icon_label.setPixmap(icon_pixmap)
-            icon_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
-            icon_hlayout.addWidget(icon_label)
-        return icon_hlayout
 
     def _create_filter_controls_row(self) -> QHBoxLayout:
         """Filter mode controls row"""

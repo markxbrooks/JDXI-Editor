@@ -15,7 +15,7 @@ def send_nrpn(self, channel, msb, lsb, value):
 
 from decologr import Decologr as log
 
-from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
 from jdxi_editor.ui.widgets.slider import Slider
 
 
@@ -75,7 +75,7 @@ class ControlChangeSlider(Slider):
         if value == 0:
             self.setStyleSheet(JDXiStyle.ADSR_DISABLED)
         else:
-            self.setStyleSheet(JDXiStyle.ADSR)
+            JDXiThemeManager.apply_adsr_style(self, analog=False)
 
     def on_valueChanged(self, value: int):
         """

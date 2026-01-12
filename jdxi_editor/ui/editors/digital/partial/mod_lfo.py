@@ -6,7 +6,7 @@ from typing import Callable
 
 from PySide6.QtWidgets import QGroupBox, QHBoxLayout, QTabWidget, QVBoxLayout, QWidget
 
-from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
 from jdxi_editor.midi.data.parameter.digital.partial import (
     DigitalPartialParam,
 )
@@ -36,7 +36,7 @@ class DigitalModLFOSection(QWidget):
         self._create_parameter_combo_box = create_parameter_combo_box
         self._on_parameter_changed = on_parameter_changed
         self.controls = controls
-        self.setStyleSheet(JDXiStyle.ADSR)
+        JDXiThemeManager.apply_adsr_style(self, analog=False)
         self._init_ui()
 
     def _init_ui(self):

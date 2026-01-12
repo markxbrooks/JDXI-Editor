@@ -5,6 +5,8 @@ Analog Filter Section
 from typing import Callable
 
 import qtawesome as qta
+
+from jdxi_editor.jdxi.style.icons import IconRegistry
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
@@ -65,7 +67,7 @@ class AnalogFilterSection(QWidget):
         self.setLayout(layout)
 
         # --- Add fancy icons ---
-        adsr_icon_row_layout = self._create_adsr_icons_row()
+        adsr_icon_row_layout = IconRegistry.create_adsr_icons_row()
         layout.addLayout(adsr_icon_row_layout)
 
         self.analog_filter_tab_widget = QTabWidget()
@@ -99,26 +101,6 @@ class AnalogFilterSection(QWidget):
         filter_row.addWidget(self.filter_mode_switch)
         filter_row.addStretch(1)
         return filter_row
-
-    def _create_adsr_icons_row(self) -> QHBoxLayout:
-        """ADSR Icon Row"""
-        adsr_icon_row_layout = QHBoxLayout()
-        for icon in [
-            "mdi.triangle-wave",
-            "mdi.sine-wave",
-            "fa5s.wave-square",
-            "mdi.cosine-wave",
-            "mdi.triangle-wave",
-            "mdi.waveform",
-        ]:
-            adsr_icon_label = QLabel()
-            icon_pixmap = qta.icon(icon, color="#666666").pixmap(
-                JDXiStyle.ICON_PIXMAP_SIZE, JDXiStyle.ICON_PIXMAP_SIZE
-            )
-            adsr_icon_label.setPixmap(icon_pixmap)
-            adsr_icon_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
-            adsr_icon_row_layout.addWidget(adsr_icon_label)
-        return adsr_icon_row_layout
 
     def _create_filter_controls_group(self) -> QGroupBox:
         """Controls Group"""

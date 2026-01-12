@@ -15,7 +15,8 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
+from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.midi.data.parameter.digital.partial import (
     DigitalPartialParam,
 )
@@ -33,6 +34,7 @@ class DigitalLFOSection(QWidget):
         controls: dict,
     ):
         super().__init__()
+        self.lfo_shape = None
         """
         Initialize the DigitalLFOSection
 
@@ -50,23 +52,10 @@ class DigitalLFOSection(QWidget):
         """Set up the UI for the LFO section."""
         layout = QVBoxLayout()
         self.setLayout(layout)
-        self.setStyleSheet(JDXiStyle.ADSR)
+        JDXiThemeManager.apply_adsr_style(self, analog=False)
 
         # Icons row
-        icons_hlayout = QHBoxLayout()
-        for icon in [
-            "mdi.triangle-wave",
-            "mdi.sine-wave",
-            "fa5s.wave-square",
-            "mdi.cosine-wave",
-            "mdi.triangle-wave",
-            "mdi.waveform",
-        ]:
-            icon_label = QLabel()
-            pixmap = qta.icon(icon, color="#666666").pixmap(30, 30)
-            icon_label.setPixmap(pixmap)
-            icon_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
-            icons_hlayout.addWidget(icon_label)
+        icons_hlayout = IconRegistry.create_adsr_icons_row()
         layout.addLayout(icons_hlayout)
 
         # Shape and sync controls

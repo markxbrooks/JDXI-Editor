@@ -5,8 +5,10 @@ Provides centralized icon definitions and retrieval with fallback support.
 """
 
 import qtawesome as qta
+from PySide6.QtWidgets import QHBoxLayout, QLabel
+
 from decologr import Decologr as log
-from PySide6.QtGui import QIcon
+from PySide6.QtGui import QIcon, Qt
 
 from jdxi_editor.jdxi.style import JDXiStyle
 
@@ -162,3 +164,22 @@ class IconRegistry:
             # Return empty icon
             return qta.icon("")
         return icon
+
+    @staticmethod
+    def create_adsr_icons_row() -> QHBoxLayout:
+        """Create ADSR icons row"""
+        icon_hlayout = QHBoxLayout()
+        for icon in [
+            "mdi.triangle-wave",
+            "mdi.sine-wave",
+            "fa5s.wave-square",
+            "mdi.cosine-wave",
+            "mdi.triangle-wave",
+            "mdi.waveform",
+        ]:
+            icon_label = QLabel()
+            icon_pixmap = qta.icon(icon, color="#666666").pixmap(30, 30)
+            icon_label.setPixmap(icon_pixmap)
+            icon_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+            icon_hlayout.addWidget(icon_label)
+        return icon_hlayout
