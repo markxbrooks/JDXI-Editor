@@ -9,7 +9,12 @@ Class to store dimensions of a Roland JDXi instrument
 >>> print(JDXIDimensions.DISPLAY_WIDTH)
 
 """
-
+class DigitalDimensions:
+    """Digital Dimensions"""
+    SPACING = 5 
+    MARGIN = 5
+    MIN_CONTROL_WIDTH = 20
+    MIN_CONTROL_HEIGHT = 14
 
 class AnalogDimensions:
     """Analog Editor Dimensions"""
