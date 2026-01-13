@@ -148,7 +148,7 @@ class DigitalSynthEditor(SynthEditor):
 
     def setup_ui(self):
         """set up user interface"""
-        self.setMinimumSize(850, 300)
+        self.setMinimumSize(DigitalDimensions.MIN_WIDTH, DigitalDimensions.MIN_HEIGHT)
         self.resize(1030, 600)
         from jdxi_editor.jdxi.style.theme_manager import JDXiThemeManager
 
