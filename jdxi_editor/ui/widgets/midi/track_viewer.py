@@ -7,6 +7,7 @@ from copy import deepcopy
 import mido
 import qtawesome as qta
 from decologr import Decologr as log
+from jdxi_editor.jdxi.style.icons import IconRegistry
 from picomidi.constant import Midi
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
@@ -479,13 +480,12 @@ class MidiTrackViewer(QWidget):
             button_hlayout = QHBoxLayout()
             label_vlayout.addLayout(button_hlayout)
 
-            apply_icon = qta.icon("fa5.save", color=JDXiStyle.FOREGROUND)
+            apply_icon = IconRegistry.get_icon(IconRegistry.SAVE, color=JDXiStyle.FOREGROUND)
             apply_button = QPushButton()
             apply_button.setIcon(apply_icon)
             apply_button.setToolTip("Apply changes to Track Channel")
             apply_button.setFixedWidth(JDXiStyle.TRACK_SPINBOX_WIDTH)
             apply_button.clicked.connect(self.make_apply_slot(i, spin))
-            # apply_button.clicked.connect(self.make_apply_name(i, track_name_line_edit))
             apply_button.clicked.connect(
                 lambda _, tr=i, le=track_name_line_edit: self.change_track_name(
                     tr, le.text()
@@ -499,7 +499,7 @@ class MidiTrackViewer(QWidget):
             """
             button_hlayout.addWidget(apply_button)
 
-            mute_icon = qta.icon("msc.mute", color=JDXiStyle.FOREGROUND)
+            mute_icon = IconRegistry.get_icon(IconRegistry.MUTE, color=JDXiStyle.FOREGROUND)
             mute_button = QPushButton()
             mute_button.setIcon(mute_icon)
             mute_button.setToolTip("Mute Track")
@@ -513,9 +513,7 @@ class MidiTrackViewer(QWidget):
             )
             button_hlayout.addWidget(mute_button)
 
-            delete_icon = qta.icon(
-                "mdi.delete-empty-outline", color=JDXiStyle.FOREGROUND
-            )
+            delete_icon = IconRegistry.get_icon(IconRegistry.DELETE, color=JDXiStyle.FOREGROUND)
             delete_button = QPushButton()
             delete_button.setIcon(delete_icon)
             delete_button.setToolTip("Delete Track")

@@ -19,17 +19,13 @@ from PySide6.QtWidgets import (
 )
 
 from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
+from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.midi.data.parameter.analog import AnalogParam
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
-class AnalogLFOSectionNew(QWidget):
+class AnalogLFOSection(QWidget):
     """Analog LFO Section (responsive layout version)"""
-
-    SPACING = 8
-    MARGIN = 10
-    MIN_CONTROL_WIDTH = 56
-    MIN_CONTROL_HEIGHT = 28
 
     def __init__(
         self,
@@ -55,8 +51,11 @@ class AnalogLFOSectionNew(QWidget):
     # ------------------------------------------------------------------
     def _init_ui(self):
         layout = QGridLayout(self)
-        layout.setSpacing(self.SPACING)
-        layout.setContentsMargins(self.MARGIN, self.MARGIN, self.MARGIN, self.MARGIN)
+        layout.setSpacing(JDXiDimensions.ANALOG.SPACING)
+        layout.setContentsMargins(JDXiDimensions.ANALOG.MARGIN,
+                                  JDXiDimensions.ANALOG.MARGIN,
+                                  JDXiDimensions.ANALOG.MARGIN,
+                                  JDXiDimensions.ANALOG.MARGIN)
 
         row = 0
 
@@ -80,7 +79,7 @@ class AnalogLFOSectionNew(QWidget):
     # ------------------------------------------------------------------
     def _create_shape_row(self) -> QHBoxLayout:
         shape_layout = QHBoxLayout()
-        shape_layout.setSpacing(self.SPACING)
+        shape_layout.setSpacing(JDXiDimensions.ANALOG.SPACING)
 
         shape_layout.addWidget(QLabel("Shape"))
 
@@ -100,10 +99,10 @@ class AnalogLFOSectionNew(QWidget):
             btn = QPushButton(label)
             btn.setCheckable(True)
             btn.setProperty("value", value)
-            btn.setIcon(qta.icon(icon_name, color="#FFFFFF", scale_factor=0.9))
+            btn.setIcon(IconRegistry.get_icon_by_qta_name(icon_name, color=JDXiStyle.WHITE, scale_factor=0.9))
             JDXiThemeManager.apply_button_rect_analog(btn)
 
-            btn.setMinimumSize(QSize(self.MIN_CONTROL_WIDTH, self.MIN_CONTROL_HEIGHT))
+            btn.setMinimumSize(QSize(JDXiDimensions.ANALOG.MIN_CONTROL_WIDTH, JDXiDimensions.ANALOG.MIN_CONTROL_HEIGHT))
             btn.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
 
             btn.clicked.connect(lambda _, v=value: self._on_lfo_shape_changed(v))
@@ -120,7 +119,7 @@ class AnalogLFOSectionNew(QWidget):
     # ------------------------------------------------------------------
     def _create_lfo_depth_controls(self) -> QHBoxLayout:
         layout = QHBoxLayout()
-        layout.setSpacing(self.SPACING)
+        layout.setSpacing(JDXiDimensions.ANALOG.SPACING)
 
         controls = [
             (AnalogParam.LFO_PITCH_DEPTH, "Pitch Depth"),
@@ -143,7 +142,7 @@ class AnalogLFOSectionNew(QWidget):
     # ------------------------------------------------------------------
     def _create_lfo_fade_rate_controls_row_layout(self) -> QHBoxLayout:
         layout = QHBoxLayout()
-        layout.setSpacing(self.SPACING)
+        layout.setSpacing(JDXiDimensions.ANALOG.SPACING)
 
         controls = [
             (AnalogParam.LFO_RATE, "Rate"),
@@ -163,7 +162,7 @@ class AnalogLFOSectionNew(QWidget):
     # ------------------------------------------------------------------
     def _create_tempo_sync_controls(self) -> QHBoxLayout:
         layout = QHBoxLayout()
-        layout.setSpacing(self.SPACING)
+        layout.setSpacing(JDXiDimensions.ANALOG.SPACING)
 
         self.lfo_sync_switch = self._create_parameter_switch(
             AnalogParam.LFO_TEMPO_SYNC_SWITCH,
@@ -190,7 +189,7 @@ class AnalogLFOSectionNew(QWidget):
         return layout
 
 
-class AnalogLFOSection(QWidget):
+class AnalogLFOSectionOld(QWidget):
     """Analog LFO Section"""
 
     def __init__(
@@ -241,7 +240,7 @@ class AnalogLFOSection(QWidget):
             btn = QPushButton(name)
             btn.setCheckable(True)
             btn.setProperty("value", value)
-            btn.setIcon(qta.icon(icon_name, color="#FFFFFF", icon_size=0.7))
+            btn.setIcon(qta.icon(icon_name, color=JDXiStyle.WHITE, icon_size=0.7))
             JDXiThemeManager.apply_button_rect_analog(btn)
             btn.setIconSize(QSize(20, 20))
             btn.setFixedSize(60, 30)

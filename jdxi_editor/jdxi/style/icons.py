@@ -17,7 +17,10 @@ class IconRegistry:
     """Centralized icon definitions and retrieval"""
 
     # Action icons
+    CLEAR = "ei.broom"
     RUN = "msc.run"
+    SAVE = "fa5.save"
+    DELETE = "mdi.delete-empty-outline"
     REFRESH = "ei.refresh"
     SETTINGS = "msc.settings"
     EXPORT = "fa5s.file-export"
@@ -40,11 +43,14 @@ class IconRegistry:
 
     # MIDI icons
     MIDI_PORT = "mdi.midi-port"
+    MUSIC = "mdi.file-music-outline"
+    KEYBOARD = "mdi6.keyboard-settings-outline"
 
     # Playback icons
     PLAY = "ri.play-line"
     STOP = "ri.stop-line"
     PAUSE = "ri.pause-line"
+    MUTE = "msc.mute"
 
     # Instrument icons
     PIANO = "msc.piano"
@@ -77,12 +83,14 @@ class IconRegistry:
     DELETE = "mdi.delete"
     PAUSE_ICON = "mdi.pause"
     SERVER_PROCESS = "msc.server-process"
+    REPORT: str = "msc.report"
 
     # Waveform/Synth icons
     TRIANGLE_WAVE = "mdi.triangle-wave"
     SINE_WAVE = "mdi.sine-wave"
     FILTER = "ri.filter-3-fill"
     AMPLIFIER = "mdi.amplifier"
+    WAVEFORM = "mdi.waveform"
 
     @staticmethod
     def get_icon(
@@ -178,8 +186,35 @@ class IconRegistry:
             "mdi.waveform",
         ]:
             icon_label = QLabel()
-            icon_pixmap = qta.icon(icon, color="#666666").pixmap(30, 30)
+            icon_pixmap = qta.icon(icon, color=JDXiStyle.GREY).pixmap(30, 30)
             icon_label.setPixmap(icon_pixmap)
             icon_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
             icon_hlayout.addWidget(icon_label)
         return icon_hlayout
+
+    @staticmethod
+    def create_generic_musical_icon_row() -> QHBoxLayout:
+        # Icons
+        icons_hlayout = QHBoxLayout()
+        for icon_name in [
+            "ph.bell-ringing-bold",
+            "mdi.call-merge",
+            "mdi.account-voice",
+            "ri.voiceprint-fill",
+            "mdi.piano",
+        ]:
+            icon_label = QLabel()
+            icon = qta.icon(icon_name, color=JDXiStyle.GREY)
+            pixmap = icon.pixmap(24, 24)  # Using fixed icon size
+            icon_label.setPixmap(pixmap)
+            icon_label.setAlignment(Qt.AlignHCenter)
+            icons_hlayout.addWidget(icon_label)
+        return icons_hlayout
+
+    @classmethod
+    def get_icon_by_qta_name(cls, name, color, scale_factor=1):
+        """ get icon by qta name"""
+        try:
+            return qta.icon(name, color, scale_factor)
+        except Exception as ex:
+            return qta.icon("mdi.piano")

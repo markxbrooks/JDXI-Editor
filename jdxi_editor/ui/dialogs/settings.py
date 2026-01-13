@@ -6,7 +6,6 @@ Sets settings for various biotoolkit features
 
 import logging
 
-import qtawesome as qta
 from decologr import Decologr as log
 from PySide6 import QtCore, QtWidgets
 from PySide6.QtCore import QSettings, QSize
@@ -16,11 +15,11 @@ from PySide6.QtWidgets import (
     QDialog,
     QHBoxLayout,
     QLabel,
-    QPushButton,
     QVBoxLayout,
     QWidget,
 )
 
+from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.project import (
     __organization_name__,
     __package_name__,
@@ -86,7 +85,7 @@ class UiPreferencesDialog(QDialog):
 
         self.log_level_layout = QHBoxLayout(self)
         self.log_icon = QLabel()
-        self.log_icon.setPixmap(qta.icon("msc.report").pixmap(self.icon_size))
+        self.log_icon.setPixmap(IconRegistry.get_icon(IconRegistry.REPORT).pixmap(self.icon_size))
         self.log_level_label = QLabel("Log file error reporting level:")
         self.log_level_layout.addWidget(self.log_icon)
         self.log_level_layout.addWidget(self.log_level_label)
@@ -99,7 +98,7 @@ class UiPreferencesDialog(QDialog):
         self.logging_checkbox.setChecked(
             bool(self.settings.value("logging", type=bool))
         )
-        self.logging_icon.setPixmap(qta.icon("msc.report").pixmap(self.icon_size))
+        self.logging_icon.setPixmap(IconRegistry.get_icon(IconRegistry.REPORT).pixmap(self.icon_size))
         self.logging_label = QLabel("Logging On or Off:")
         self.logging_layout.addWidget(self.logging_icon)
         self.logging_layout.addWidget(self.logging_label)

@@ -745,7 +745,7 @@ class JDXiInstrument(JDXiUi):
             editor.setWindowTitle(title)
 
             tab_index = self.main_editor.editor_tab_widget.addTab(
-                editor, qta.icon(icon, color="#666666"), title
+                editor, qta.icon(icon, color=JDXiStyle.GREY), title
             )
 
             # Store the tab index for Analog Synth to enable styling

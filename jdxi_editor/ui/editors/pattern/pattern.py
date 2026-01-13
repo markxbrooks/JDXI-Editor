@@ -20,7 +20,6 @@ import datetime
 import logging
 from typing import Any, Optional
 
-import qtawesome as qta
 from decologr import Decologr as log
 from mido import Message, MetaMessage, MidiFile, MidiTrack, bpm2tempo, tempo2bpm
 from PySide6.QtCore import Qt, QTimer
@@ -45,6 +44,7 @@ from rtmidi.midiconstants import CONTROL_CHANGE, NOTE_ON
 
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.io.data.options import DIGITAL_OPTIONS, DRUM_OPTIONS
@@ -127,16 +127,16 @@ class PatternSequenceEditor(SynthEditor):
         file_layout = QHBoxLayout()
 
         self.load_button = QPushButton(
-            qta.icon("mdi.file-music-outline", color=JDXiStyle.FOREGROUND), "Load"
+            IconRegistry.get_icon(IconRegistry.MUSIC, color=JDXiStyle.FOREGROUND), "Load"
         )
         self.load_button.clicked.connect(self._load_pattern_dialog)
         self.save_button = QPushButton(
-            qta.icon("fa5.save", color=JDXiStyle.FOREGROUND), "Save"
+            IconRegistry.get_icon(IconRegistry.SAVE, color=JDXiStyle.FOREGROUND), "Save"
         )
         self.save_button.clicked.connect(self._save_pattern_dialog)
         # Add the Clear Learned Pattern button
         self.clear_learn_button = QPushButton(
-            qta.icon("ei.broom", color=JDXiStyle.FOREGROUND), "Clear"
+            IconRegistry.get_icon(IconRegistry.CLEAR, color=JDXiStyle.FOREGROUND), "Clear"
         )
         self.clear_learn_button.clicked.connect(self._clear_learned_pattern)
 
@@ -157,7 +157,7 @@ class PatternSequenceEditor(SynthEditor):
         # First row: Add Bar button and Copy checkbox
         bar_controls_layout = QHBoxLayout()
         self.add_bar_button = QPushButton(
-            qta.icon("mdi.plus", color=JDXiStyle.FOREGROUND), "Add Bar"
+            IconRegistry.get_icon(IconRegistry.ADD, color=JDXiStyle.FOREGROUND), "Add Bar"
         )
         self.add_bar_button.clicked.connect(self._add_bar)
         self.copy_previous_bar_checkbox = QCheckBox("Copy previous bar")
@@ -176,11 +176,11 @@ class PatternSequenceEditor(SynthEditor):
 
         # Add the Clear Learned Pattern button
         self.learn_button = QPushButton(
-            qta.icon("ri.play-line", color=JDXiStyle.FOREGROUND), "Start"
+            IconRegistry.get_icon(IconRegistry.PLAY, color=JDXiStyle.FOREGROUND), "Start"
         )
         self.learn_button.clicked.connect(self.on_learn_pattern_button_clicked)
         self.stop_learn_button = QPushButton(
-            qta.icon("ri.stop-line", color=JDXiStyle.FOREGROUND), "Stop"
+            IconRegistry.get_icon(IconRegistry.STOP, color=JDXiStyle.FOREGROUND), "Stop"
         )
         self.stop_learn_button.clicked.connect(
             self.on_stop_learn_pattern_button_clicked
@@ -201,7 +201,7 @@ class PatternSequenceEditor(SynthEditor):
         self.tempo_spinbox.valueChanged.connect(self._on_tempo_changed)
 
         self.tap_tempo_button = QPushButton(
-            qta.icon("fa5s.drum", color=JDXiStyle.FOREGROUND), "Tap"
+            IconRegistry.get_icon(IconRegistry.DRUM, color=JDXiStyle.FOREGROUND), "Tap"
         )
         self.tap_tempo_button.clicked.connect(self._on_tap_tempo)
 
@@ -231,10 +231,10 @@ class PatternSequenceEditor(SynthEditor):
         transport_layout = QHBoxLayout()
 
         self.start_button = QPushButton(
-            qta.icon("ri.play-line", color=JDXiStyle.FOREGROUND), "Play"
+            IconRegistry.get_icon(IconRegistry.PLAY, color=JDXiStyle.FOREGROUND), "Play"
         )
         self.stop_button = QPushButton(
-            qta.icon("ri.stop-line", color=JDXiStyle.FOREGROUND), "Stop"
+            IconRegistry.get_icon(IconRegistry.STOP, color=JDXiStyle.FOREGROUND), "Stop"
         )
         self.start_button.clicked.connect(self.play_pattern)
         self.stop_button.clicked.connect(self.stop_pattern)
@@ -281,13 +281,12 @@ class PatternSequenceEditor(SynthEditor):
             header_layout = QHBoxLayout()
 
             if label_text == "Drums":
-                icon_name = "fa5s.drum"
+                icon = IconRegistry.get_icon(IconRegistry.DRUM, color=JDXiStyle.FOREGROUND)
             else:
-                icon_name = "msc.piano"
+                icon = IconRegistry.get_icon(IconRegistry.PIANO, color=JDXiStyle.FOREGROUND)
             # Create and add label
             icon_label = QLabel()
-            icon_label.setPixmap(
-                qta.icon(icon_name, color=JDXiStyle.FOREGROUND).pixmap(40, 40)
+            icon_label.setPixmap(icon.pixmap(40, 40)
             )
 
             icon_label.setAlignment(Qt.AlignmentFlag.AlignCenter)

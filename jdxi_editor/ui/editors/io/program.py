@@ -39,16 +39,14 @@ Dependencies:
 
 from typing import Dict, Optional
 
-import qtawesome as qta
 from decologr import Decologr as log
 from picomidi.constant import Midi
 from picomidi.sysex.parameter.address import AddressParameter
-from PySide6.QtCore import QRect, QSize, Qt, QTimer, Signal
-from PySide6.QtGui import QPainter
+from PySide6.QtCore import QSize, Qt, QTimer, Signal
+
 from PySide6.QtWidgets import (
     QComboBox,
     QFileDialog,
-    QFormLayout,
     QGridLayout,
     QGroupBox,
     QHBoxLayout,
@@ -74,7 +72,6 @@ from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
 from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.log.midi_info import log_midi_info
-from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetSuperNATURALLMB,
@@ -826,13 +823,10 @@ class ProgramEditor(BasicEditor):
         """
 
         mixer_section = QWidget()
-        layout = QVBoxLayout(mixer_section)
 
         self.master_level_icon = QLabel()
         self.master_level_icon.setPixmap(
-            qta.icon(
-                "mdi6.keyboard-settings-outline", color=JDXiStyle.FOREGROUND
-            ).pixmap(40, 40)
+            IconRegistry.get_icon(IconRegistry.KEYBOARD).pixmap(40, 40)
         )
         self.master_level_title = QLabel("Master Level")
         from jdxi_editor.jdxi.style.theme_manager import JDXiThemeManager
@@ -1572,7 +1566,7 @@ class ProgramEditor(BasicEditor):
         # Button layout for create/delete actions
         button_layout = QHBoxLayout()
         self.create_playlist_button = QPushButton(
-            qta.icon("ph.plus-circle-fill", color=JDXiStyle.FOREGROUND), "New Playlist"
+            IconRegistry.get_icon(IconRegistry.PLUS_CIRCLE, color=JDXiStyle.FOREGROUND), "New Playlist"
         )
         self.create_playlist_button.clicked.connect(self._create_new_playlist)
         button_layout.addWidget(self.create_playlist_button)
@@ -1895,7 +1889,7 @@ class ProgramEditor(BasicEditor):
         # Add/Delete buttons
         button_layout = QHBoxLayout()
         self.add_to_playlist_button = QPushButton(
-            qta.icon("ph.plus-circle-fill", color=JDXiStyle.FOREGROUND),
+            IconRegistry.get_icon(IconRegistry.PLUS_CIRCLE),
             "Add to Playlist",
         )
         self.add_to_playlist_button.clicked.connect(self._add_program_to_playlist)

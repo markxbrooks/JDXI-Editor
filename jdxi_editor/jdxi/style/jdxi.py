@@ -89,6 +89,7 @@ class JDXiStyle:
 
     # Colors
 
+    WHITE = "#FFFFFF"
     TRACK_LABEL_WIDTH = 70
     TRACK_BUTTON_WIDTH = 20
     TRACK_SPINBOX_WIDTH = 40
@@ -163,7 +164,7 @@ class JDXiStyle:
     FONT_SIZE_MAIN_TABS = "14px"
     FONT_WEIGHT_BOLD = "bold"
     FONT_WEIGHT_NORMAL = "normal"
-    GREY = "#CCCCCC"
+    GREY = "#666666"
     # Define button styles
     BUTTON_ROUND = generate_button_style(
         BACKGROUND,

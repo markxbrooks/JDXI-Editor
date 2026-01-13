@@ -39,7 +39,6 @@ Dependencies:
 
 from typing import Optional
 
-import qtawesome as qta
 from decologr import Decologr as log
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import (
@@ -56,6 +55,7 @@ from PySide6.QtWidgets import (
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.jdxi.preset.lists import JDXiPresetToneList
 from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.log.midi_info import log_midi_info
 from jdxi_editor.midi.channel.channel import MidiChannel
@@ -158,7 +158,9 @@ class PresetEditor(BasicEditor):
 
         self.digital_synth_1_icon = QLabel()
         self.digital_synth_1_icon.setPixmap(
-            qta.icon("msc.piano", color=JDXiStyle.FOREGROUND).pixmap(40, 40)
+            IconRegistry.get_icon_pixmap(
+                IconRegistry.PIANO, color=JDXiStyle.FOREGROUND, size=40
+            )
         )
         self.digital_synth_1_hlayout.addWidget(self.digital_synth_1_icon)
 
@@ -185,7 +187,9 @@ class PresetEditor(BasicEditor):
 
         self.digital_synth_2_icon = QLabel()
         self.digital_synth_2_icon.setPixmap(
-            qta.icon("msc.piano", color=JDXiStyle.FOREGROUND).pixmap(40, 40)
+            IconRegistry.get_icon_pixmap(
+                IconRegistry.PIANO, color=JDXiStyle.FOREGROUND, size=40
+            )
         )
         self.digital_synth_2_hlayout.addWidget(self.digital_synth_2_icon)
 
@@ -212,7 +216,9 @@ class PresetEditor(BasicEditor):
 
         self.drum_kit_icon = QLabel()
         self.drum_kit_icon.setPixmap(
-            qta.icon("fa5s.drum", color=JDXiStyle.FOREGROUND).pixmap(40, 40)
+            IconRegistry.get_icon_pixmap(
+                IconRegistry.DRUM, color=JDXiStyle.FOREGROUND, size=40
+            )
         )
         self.drum_kit_hlayout.addWidget(self.drum_kit_icon)
 
@@ -238,7 +244,7 @@ class PresetEditor(BasicEditor):
 
         self.analog_synth_icon = QLabel()
         self.analog_synth_icon.setPixmap(
-            qta.icon("msc.piano", color=JDXiStyle.FOREGROUND).pixmap(40, 40)
+            IconRegistry.get_icon(IconRegistry.PIANO, color=JDXiStyle.FOREGROUND).pixmap(40, 40)
         )
         self.analog_synth_hlayout.addWidget(self.analog_synth_icon)
 
@@ -315,7 +321,7 @@ class PresetEditor(BasicEditor):
         preset_vlayout.addWidget(self.category_combo_box)
         # Load button
         self.load_button = QPushButton(
-            qta.icon("ph.folder-notch-open-fill", color=JDXiStyle.FOREGROUND),
+            IconRegistry.get_icon(IconRegistry.FOLDER_NOTCH_OPEN, color=JDXiStyle.FOREGROUND),
             "Load Preset",
         )
         self.load_button.clicked.connect(self.load_preset_by_program_change)

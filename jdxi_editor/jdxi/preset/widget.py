@@ -18,6 +18,7 @@ from PySide6.QtWidgets import (
 
 from jdxi_editor.jdxi.preset.helper import create_scroll_container
 from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 from jdxi_editor.ui.widgets.preset.combo_box import PresetComboBox
 
@@ -187,7 +188,7 @@ class InstrumentPresetWidget(QWidget):
 
         # Load Button
         self.cheat_load_button = QPushButton(
-            qta.icon("ph.folder-notch-open-fill", color=JDXiStyle.FOREGROUND),
+            IconRegistry.get_icon(IconRegistry.FOLDER_NOTCH_OPEN, color=JDXiStyle.FOREGROUND),
             "Load Preset",
         )
         self.cheat_load_button.clicked.connect(self._load_cheat_preset)

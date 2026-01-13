@@ -37,7 +37,7 @@ class PartialsPanel(QWidget):
             group_layout = QHBoxLayout()
             partial_icon = QLabel()
             qta_icon = qta.icon(
-                f"mdi.numeric-{partial}-circle-outline", color="#666666"
+                f"mdi.numeric-{partial}-circle-outline", color=JDXiStyle.GREY
             )
             partial_icon_pixmap = qta_icon.pixmap(
                 JDXiStyle.ICON_SIZE, JDXiStyle.ICON_SIZE

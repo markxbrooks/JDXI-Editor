@@ -128,7 +128,7 @@ class JDXiThemeManager(QObject):
     def apply_instrument_title_label(widget: QWidget) -> None:
         """Apply instrument title label style"""
         JDXiThemeManager.apply_style(widget, JDXiStyle.INSTRUMENT_TITLE_LABEL)
-F
+        
     @staticmethod
     def apply_mixer_label(widget: QWidget, analog: bool = False) -> None:
         """

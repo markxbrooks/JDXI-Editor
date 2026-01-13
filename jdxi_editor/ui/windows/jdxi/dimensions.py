@@ -11,10 +11,19 @@ Class to store dimensions of a Roland JDXi instrument
 """
 
 
+class AnalogDimensions:
+    """Analog Editor Dimensions"""
+    SPACING = 4
+    MARGIN = 5
+    MIN_CONTROL_WIDTH = 20
+    MIN_CONTROL_HEIGHT = 14
+
+
 class JDXiDimensions:
     """
     A class to store dimensions for the JD-Xi editor UI.
     """
+    ANALOG = AnalogDimensions
 
     SPLASH_HEIGHT = 540
     SPLASH_WIDTH = 850

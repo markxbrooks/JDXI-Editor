@@ -7,6 +7,8 @@ This section contains the controls for the amp section of the JD-Xi editor.
 from typing import Callable
 
 import qtawesome as qta
+
+from jdxi_editor.jdxi.style.icons import IconRegistry
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
@@ -64,7 +66,7 @@ class AnalogAmpSection(QWidget):
         JDXiThemeManager.apply_adsr_style(self, analog=True)
 
         # --- Add spiffy icons ---
-        icons_hlayout = self._create_icons_layout()
+        icons_hlayout = IconRegistry.create_adsr_icons_row()
         main_rows_vlayout.addLayout(icons_hlayout)
 
         self.analog_amp_tab_widget = QTabWidget()
@@ -107,23 +109,6 @@ class AnalogAmpSection(QWidget):
         level_controls_row_layout.addWidget(self.amp_level_velocity_sensitivity)
         level_controls_row_layout.addStretch()
         return level_controls_row_layout
-
-    def _create_icons_layout(self) -> QHBoxLayout:
-        # Icon row
-        icons_hlayout = QHBoxLayout()
-        for icon in [
-            "mdi.volume-variant-off",
-            "mdi6.volume-minus",
-            "mdi.amplifier",
-            "mdi6.volume-plus",
-            "mdi.waveform",
-        ]:
-            icon_label = QLabel()
-            icon_pixmap = qta.icon(icon, color="#666666").pixmap(30, 30)
-            icon_label.setPixmap(icon_pixmap)
-            icon_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
-            icons_hlayout.addWidget(icon_label)
-        return icons_hlayout
 
     def _create_analog_amp_adsr_group(self) -> QGroupBox:
         """Amp Envelope"""

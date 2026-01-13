@@ -11,6 +11,7 @@ from PySide6.QtWidgets import QPushButton, QWidget
 from jdxi_editor.jdxi.preset.button import JDXiPresetButtonData
 from jdxi_editor.jdxi.preset.data import JDXiPresetData
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
+from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.project import __package_name__
@@ -152,7 +153,7 @@ class FavoriteButton(QPushButton):
             elif self.preset.type == JDXiSynth.DRUM_KIT:
                 color = "#00FF00"  # Green for drums
             else:
-                color = "#666666"  # Gray for unknown types
+                color = JDXiStyle.GREY  # Gray for unknown types
 
             # Set text to preset name
             # Get just the preset name without the number prefix
@@ -163,7 +164,7 @@ class FavoriteButton(QPushButton):
 
             text = f"FAV {self.slot_num + 1}\n{preset_display_name}"
         else:
-            color = "#666666"  # Gray for empty slot
+            color = JDXiStyle.GREY  # Gray for empty slot
             text = f"FAV {self.slot_num + 1}"
 
         # Create gradient background

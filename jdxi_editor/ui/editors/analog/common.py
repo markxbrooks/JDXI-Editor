@@ -4,11 +4,11 @@ Common Section
 
 from typing import Callable
 
-import qtawesome as qta
-from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout, QWidget
 
-from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
+from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget
+
+from jdxi_editor.jdxi.style import JDXiThemeManager
+from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.midi.data.parameter.analog import AnalogParam
 
 
@@ -45,21 +45,7 @@ class AnalogCommonSection(QWidget):
         main_rows_vlayout = QVBoxLayout()
         self.setLayout(main_rows_vlayout)
 
-        # Icons
-        icons_hlayout = QHBoxLayout()
-        for icon_name in [
-            "ph.bell-ringing-bold",
-            "mdi.call-merge",
-            "mdi.account-voice",
-            "ri.voiceprint-fill",
-            "mdi.piano",
-        ]:
-            icon_label = QLabel()
-            icon = qta.icon(icon_name, color="#666666")
-            pixmap = icon.pixmap(24, 24)  # Using fixed icon size
-            icon_label.setPixmap(pixmap)
-            icon_label.setAlignment(Qt.AlignHCenter)
-            icons_hlayout.addWidget(icon_label)
+        icons_hlayout = IconRegistry.create_generic_musical_icon_row()
         main_rows_vlayout.addLayout(icons_hlayout)
 
         # Mono Switch

@@ -38,7 +38,6 @@ Dependencies:
 
 from typing import Dict, Optional, Union
 
-import qtawesome as qta
 from decologr import Decologr as log
 from PySide6.QtWidgets import (
     QTabWidget,
@@ -47,6 +46,7 @@ from PySide6.QtWidgets import (
 )
 
 from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.midi.data.address.address import AddressOffsetSuperNATURALLMB
 from jdxi_editor.midi.data.digital.oscillator import DigitalOscWave
@@ -147,7 +147,7 @@ class DigitalPartialEditor(PartialEditor):
         )
         self.tab_widget.addTab(
             self.oscillator_tab,
-            qta.icon("mdi.triangle-wave", color="#666666"),
+            IconRegistry.get_icon(IconRegistry.TRIANGLE_WAVE, color=JDXiStyle.GREY),
             "Oscillator",
         )
         self.filter_tab = DigitalFilterSection(
@@ -159,7 +159,7 @@ class DigitalPartialEditor(PartialEditor):
             self.synth_data.address,
         )
         self.tab_widget.addTab(
-            self.filter_tab, qta.icon("ri.filter-3-fill", color="#666666"), "Filter"
+            self.filter_tab, IconRegistry.get_icon(IconRegistry.FILTER, color=JDXiStyle.GREY), "Filter"
         )
         self.amp_tab = DigitalAmpSection(
             self._create_parameter_slider,
@@ -169,7 +169,7 @@ class DigitalPartialEditor(PartialEditor):
             self.synth_data.address,
         )
         self.tab_widget.addTab(
-            self.amp_tab, qta.icon("mdi.amplifier", color="#666666"), "Amp"
+            self.amp_tab, IconRegistry.get_icon(IconRegistry.AMPLIFIER, color=JDXiStyle.GREY), "Amp"
         )
         self.lfo_tab = DigitalLFOSection(
             self._create_parameter_slider,
@@ -178,7 +178,7 @@ class DigitalPartialEditor(PartialEditor):
             self.controls,
         )
         self.tab_widget.addTab(
-            self.lfo_tab, qta.icon("mdi.sine-wave", color="#666666"), "LFO"
+            self.lfo_tab, IconRegistry.get_icon(IconRegistry.SINE_WAVE, color=JDXiStyle.GREY), "LFO"
         )
         self.mod_lfo_tab = DigitalModLFOSection(
             self._create_parameter_slider,
@@ -187,7 +187,7 @@ class DigitalPartialEditor(PartialEditor):
             self.controls,
         )
         self.tab_widget.addTab(
-            self.mod_lfo_tab, qta.icon("mdi.waveform", color="#666666"), "Mod LFO"
+            self.mod_lfo_tab, IconRegistry.get_icon(IconRegistry.WAVEFORM, color=JDXiStyle.GREY), "Mod LFO"
         )
 
         # Add container to scroll area

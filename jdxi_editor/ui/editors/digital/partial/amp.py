@@ -5,6 +5,7 @@ AMP section for the digital partial editor.
 from typing import Callable
 
 import qtawesome as qta
+
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
@@ -99,7 +100,7 @@ class DigitalAmpSection(QWidget):
             "mdi.waveform",
         ]:
             icon_label = QLabel()
-            icon_pixmap = qta.icon(icon, color="#666666").pixmap(30, 30)
+            icon_pixmap = qta.icon(icon, color=JDXiStyle.GREY).pixmap(30, 30)
             icon_label.setPixmap(icon_pixmap)
             icon_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
             icons_hlayout.addWidget(icon_label)
@@ -165,7 +166,7 @@ class DigitalAmpSection(QWidget):
         env_group.setLayout(amp_env_adsr_vlayout)
 
         # Generate the ADSR waveform icon
-        icon_base64 = generate_waveform_icon("adsr", "#FFFFFF", 2.0)
+        icon_base64 = generate_waveform_icon("adsr", JDXiStyle.WHITE, 2.0)
         pixmap = base64_to_pixmap(icon_base64)
 
         icon_label = QLabel()

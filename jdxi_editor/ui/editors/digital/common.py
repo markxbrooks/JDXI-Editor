@@ -50,7 +50,7 @@ class DigitalCommonSection(QWidget):
             "mdi.piano",
         ]:
             icon_label = QLabel()
-            icon = qta.icon(icon_name, color="#666666")
+            icon = qta.icon(names=icon_name, color=JDXiStyle.GREY)
             pixmap = icon.pixmap(24, 24)  # Using fixed icon size
             icon_label.setPixmap(pixmap)
             icon_label.setAlignment(Qt.AlignHCenter)
