@@ -176,8 +176,8 @@ class DigitalSynthEditor(SynthEditor):
 
         container = QWidget()
         container_layout = QVBoxLayout()
-        container_layout.setSpacing(5)  # Reduced spacing
-        container_layout.setContentsMargins(5, 5, 5, 5)  # Reduced margins
+        container_layout.setSpacing(DigitalDimensions.SPACING)  # Reduced spacing
+        container_layout.setContentsMargins(DigitalDimensions.MARGIN, DigitalDimensions.MARGIN, DigitalDimensions.MARGIN, DigitalDimensions.MARGIN)  # Reduced margins
         container.setLayout(container_layout)
 
         # Use InstrumentPresetWidget for consistent layout
