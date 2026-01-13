@@ -69,7 +69,7 @@ from jdxi_editor.ui.editors.digital import (
 )
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.widgets.panel.partial import PartialsPanel
-from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
+from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions, DigitalDimensions
 
 
 class DigitalSynthEditor(SynthEditor):
