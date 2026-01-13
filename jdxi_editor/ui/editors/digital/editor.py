@@ -29,7 +29,6 @@ Dependencies:
 
 """
 
-import logging
 from typing import Dict, Optional, Union
 
 from decologr import Decologr as log
@@ -716,14 +715,14 @@ class DigitalSynthEditor(SynthEditor):
         selected_waveform = waveform_map.get(value)
 
         if selected_waveform is None:
-            logging.warning("Unknown waveform value: %s", value)
+            log.warning("Unknown waveform value: %s", value)
             return
 
         log.parameter(f"Waveform value {value} found, selecting", selected_waveform)
 
         # Retrieve waveform buttons for the given partial
         if partial_number not in self.partial_editors:
-            logging.warning(f"Partial editor {partial_number} not found")
+            log.warning(f"Partial editor {partial_number} not found")
             return
 
         wave_buttons = self.partial_editors[partial_number].oscillator_tab.wave_buttons
@@ -739,7 +738,7 @@ class DigitalSynthEditor(SynthEditor):
             selected_btn.setChecked(True)
             selected_btn.setStyleSheet(JDXiStyle.BUTTON_RECT)
         else:
-            logging.warning("Waveform button not found for: %s", selected_waveform)
+            log.warning("Waveform button not found for: %s", selected_waveform)
 
 
 class DigitalSynth2Editor(DigitalSynthEditor):
