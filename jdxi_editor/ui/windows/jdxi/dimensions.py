@@ -17,6 +17,9 @@ class DigitalDimensions:
     MIN_CONTROL_HEIGHT = 14
     MIN_WIDTH = 850
     MIN_HEIGHT = 300
+    WIDTH = 1030
+    HEIGHT = 600
+    
 
 class AnalogDimensions:
     """Analog Editor Dimensions"""
