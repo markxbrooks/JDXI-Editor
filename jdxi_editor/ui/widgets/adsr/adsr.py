@@ -18,7 +18,7 @@ from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QGridLayout, QWidget
 
-from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
@@ -45,6 +45,7 @@ class ADSR(EnvelopeWidgetBase):
         address: Optional[RolandSysExAddress] = None,
         controls: Dict[AddressParameter, QWidget] = None,
         parent: Optional[QWidget] = None,
+        analog: bool = False,
     ):
         super().__init__(
             envelope_keys=[
@@ -205,6 +206,7 @@ class ADSR(EnvelopeWidgetBase):
         for control in self._control_widgets:
             control.envelope_changed.connect(self.on_control_changed)
         self.update_controls_from_envelope()
+        JDXiThemeManager.apply_adsr_style(self, analog=analog)
 
     def on_control_changed(self, change: dict):
         self.envelope.update(change)

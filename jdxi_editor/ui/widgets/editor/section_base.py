@@ -50,6 +50,23 @@ class IconType(str, Enum):
     NONE = "none"  # No icon row
 
 
+def create_hrow_layout(widget_list: list):
+    """create a row from a list of widgets"""
+    row = QHBoxLayout()
+    row.addStretch()
+    for widget in widget_list:
+        row.addWidget(widget)
+    row.addStretch()
+    return row
+
+
+def create_vcolumn_layout(inner_layout: QHBoxLayout) -> QVBoxLayout:
+    """create vbox layout"""
+    vlayout = QVBoxLayout()
+    vlayout.addLayout(inner_layout)
+    return vlayout
+
+
 class SectionBaseWidget(QWidget):
     """
     Base widget for editor sections that automatically adds icon rows.
@@ -112,15 +129,6 @@ class SectionBaseWidget(QWidget):
                 self._icon_added = True
         
         return self._layout
-        
-    def _create_row(widget_list: list):
-        """create a row from a list of widgets"""
-        row = QHBoxLayout()
-        row.addStretch()
-        for widget in widget_list:
-            row.addWidget(widget)
-        row.addStretch()
-        return row
 
     def _add_icon_row(self) -> None:
         """Add the appropriate icon row based on icon_type"""

@@ -4,16 +4,12 @@ Analog Filter Section
 
 from typing import Callable
 
-import qtawesome as qta
 
 from picomidi.sysex.parameter.address import AddressParameter
-from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QGroupBox,
     QHBoxLayout,
-    QLabel,
     QTabWidget,
-    QVBoxLayout,
     QWidget,
 )
 
@@ -50,6 +46,7 @@ class AnalogFilterSection(SectionBaseWidget):
         :param controls: dict[AddressParameter, QWidget] controls to add to
         :param address: RolandSysExAddress
         """
+        self.analog_filter_tab_widget: QTabWidget | None = None
         self.filter_resonance = None
         self._create_parameter_slider = create_parameter_slider
         self._create_parameter_switch = create_parameter_switch
@@ -86,25 +83,18 @@ class AnalogFilterSection(SectionBaseWidget):
 
     def _create_filter_controls_row(self) -> QHBoxLayout:
         """Filter controls"""
-        filter_row = QHBoxLayout()
-        filter_row.addStretch(1)
         self.filter_mode_switch = self._create_parameter_switch(
             AnalogParam.FILTER_MODE_SWITCH, "Filter", ["BYPASS", "LPF"]
         )
         self.filter_mode_switch.valueChanged.connect(
             lambda v: self._on_filter_mode_changed(v)
         )
-        filter_row.addWidget(self.filter_mode_switch)
-        filter_row.addStretch(1)
+        filter_row = create_hrow_layout([self.filter_mode_switch])
         return filter_row
 
     def _create_filter_controls_group(self) -> QGroupBox:
         """Controls Group"""
         controls_group = QGroupBox("Controls")
-
-        controls_layout = QHBoxLayout()
-        controls_group.setLayout(controls_layout)
-        controls_layout.addStretch()
         self.filter_widget = AnalogFilterWidget(
             cutoff_param=AnalogParam.FILTER_CUTOFF,
             midi_helper=self.midi_helper,
@@ -112,7 +102,6 @@ class AnalogFilterSection(SectionBaseWidget):
             controls=self.controls,
             address=self.address,
         )
-
         self.filter_resonance = self._create_parameter_slider(
             AnalogParam.FILTER_RESONANCE, "Resonance", vertical=True
         )
@@ -124,13 +113,12 @@ class AnalogFilterSection(SectionBaseWidget):
             "Env. Velocity Sens.",
             vertical=True,
         )
+        controls_layout = create_hrow_layout([self.filter_resonance,
+                                                   self.filter_cutoff_keyfollow,
+                                                   self.filter_widget,
+                                                   self.filter_env_velocity_sens])
 
-        controls_layout.addWidget(self.filter_resonance)
-        controls_layout.addWidget(self.filter_cutoff_keyfollow)
-        controls_layout.addWidget(self.filter_widget)
-        # layout.addWidget(self.filter_env_depth)
-        controls_layout.addWidget(self.filter_env_velocity_sens)
-        controls_layout.addStretch()
+        controls_group.setLayout(controls_layout)
         JDXiThemeManager.apply_adsr_style(controls_group, analog=True)
         return controls_group
 
@@ -146,12 +134,10 @@ class AnalogFilterSection(SectionBaseWidget):
             create_parameter_slider=self._create_parameter_slider,
             controls=self.controls,
             address=self.address,
+            analog=True,
         )
-        JDXiThemeManager.apply_adsr_style(self.filter_adsr_widget, analog=True)
-
         env_group = QGroupBox("Envelope")
         env_group.setProperty("adsr", True)
-        env_layout = QHBoxLayout()
-        env_layout.addWidget(self.filter_adsr_widget)
+        env_layout = create_hrow_layout([self.filter_adsr_widget])
         env_group.setLayout(env_layout)
         return env_group

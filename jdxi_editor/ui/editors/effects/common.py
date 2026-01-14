@@ -97,7 +97,7 @@ from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
 from jdxi_editor.ui.editors.effects.data import EffectsData
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
-from jdxi_editor.ui.editors.synth.simple import BasicEditor
+from jdxi_editor.ui.editors.synth.simple import BasicEditor, create_vcolumn_layout
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
@@ -489,12 +489,10 @@ class EffectsCommonEditor(BasicEditor):
     def _create_effect1_section(self):
         """Create Effect 1 section"""
         container = QWidget()
-        container_layout = QVBoxLayout()
-        container.setLayout(container_layout)
-        
         # Icons row (standardized across editor tabs)
         icon_hlayout = IconRegistry.create_adsr_icons_row()
-        container_layout.addLayout(icon_hlayout)
+        container_layout = create_vcolumn_layout(icon_hlayout)
+        container.setLayout(container_layout)
         
         widget = QWidget()
         layout = QFormLayout()

@@ -107,20 +107,18 @@ class AnalogAmpSection(SectionBaseWidget):
         """Amp Envelope"""
         env_group = QGroupBox("Envelope")
         env_group.setProperty("adsr", True)
-        amp_env_adsr_vlayout = QVBoxLayout()
-        env_group.setLayout(amp_env_adsr_vlayout)
 
-        # ADSR Icon
+        # --- ADSR Icon
         icon_base64 = self.generate_waveform_icon("adsr", "#FFFFFF", 2.0)
         pixmap = self.base64_to_pixmap(icon_base64)
         icon_label = QLabel()
         icon_label.setPixmap(pixmap)
         icon_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
-        icons_hlayout = QHBoxLayout()
-        icons_hlayout.addWidget(icon_label)
-        amp_env_adsr_vlayout.addLayout(icons_hlayout)
+        icons_hlayout = create_hrow_layout([icon_label])
+        amp_env_adsr_vlayout = create_vcolumn_layout(icons_hlayout)
+        env_group.setLayout(amp_env_adsr_vlayout)
 
-        # ADSR Widget
+        # --- ADSR Widget
         self.amp_env_adsr_widget = ADSR(
             attack_param=AnalogParam.AMP_ENV_ATTACK_TIME,
             decay_param=AnalogParam.AMP_ENV_DECAY_TIME,
@@ -130,7 +128,7 @@ class AnalogAmpSection(SectionBaseWidget):
             create_parameter_slider=self._create_parameter_slider,
             address=self.address,
             controls=self.controls,
+            analog=True
         )
-        JDXiThemeManager.apply_adsr_style(self.amp_env_adsr_widget, analog=True)
         amp_env_adsr_vlayout.addWidget(self.amp_env_adsr_widget)
         return env_group

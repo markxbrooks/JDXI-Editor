@@ -47,14 +47,14 @@ class DigitalCommonSection(SectionBaseWidget):
             ["-3", "-2", "-1", "0", "+1", "+2", "+3"],
             [61, 62, 63, 64, 65, 66, 67],
         )
-        octave_shift_switch_row = self._create_row([self.octave_shift_switch])
+        octave_shift_switch_row = create_hrow_layout([self.octave_shift_switch])
         layout.addLayout(octave_shift_switch_row)
 
         # --- Mono Switch
         self.mono_switch = self._create_parameter_switch(
             DigitalCommonParam.MONO_SWITCH, "Mono", ["OFF", "ON"]
         )
-        mono_switch_row = self._create_row([self.mono_switch])
+        mono_switch_row = create_hrow_layout([self.mono_switch])
         layout.addLayout(mono_switch_row)
 
         # --- Pitch Bend
@@ -79,19 +79,19 @@ class DigitalCommonSection(SectionBaseWidget):
         self.wave_shape = self._create_parameter_slider(
             DigitalCommonParam.WAVE_SHAPE, "Wave Shape", vertical=True
         )
-        self.pitch_bend_row = self._create_row([self.pitch_bend_up, 
-                                              self.pitch_bend_down, 
-                                              self.tone_level,
-                                              self.portamento_time,
-                                              self.analog_feel,
-                                              self.wave_shape])
+        self.pitch_bend_row = create_hrow_layout([self.pitch_bend_up,
+                                                       self.pitch_bend_down,
+                                                       self.tone_level,
+                                                       self.portamento_time,
+                                                       self.analog_feel,
+                                                       self.wave_shape])
         layout.addLayout(self.pitch_bend_row)
 
         # --- Ring Modulator
         self.ring_switch = self._create_parameter_switch(
             DigitalCommonParam.RING_SWITCH, "Ring", ["OFF", "---", "ON"]
         )
-        ring_row = self._create_row([self.ring_switch])
+        ring_row = create_hrow_layout([self.ring_switch])
         layout.addLayout(ring_row)
 
         # --- Unison Switch and Size
@@ -103,8 +103,8 @@ class DigitalCommonSection(SectionBaseWidget):
             "Size",
             ["2 VOICE", "3 VOICE", "4 VOICE", "5 VOICE"],
         )
-        unison_row = self._create_row([self.unison_switch, 
-                                       self.unison_size])
+        unison_row = create_hrow_layout([self.unison_switch,
+                                              self.unison_size])
         layout.addLayout(unison_row)
 
         # --- Portamento Switch
@@ -120,7 +120,7 @@ class DigitalCommonSection(SectionBaseWidget):
         self.legato_switch = self._create_parameter_switch(
             DigitalCommonParam.LEGATO_SWITCH, "Legato", ["OFF", "ON"]
         )
-        portamento_row = self._create_row([self.portamento_switch, 
-                                           self.legato_switch]
+        portamento_row = create_hrow_layout([self.portamento_switch,
+                                                  self.legato_switch])
         layout.addLayout(portamento_row)
         layout.addStretch()
