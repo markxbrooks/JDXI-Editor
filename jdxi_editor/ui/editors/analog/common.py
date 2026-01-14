@@ -38,7 +38,7 @@ class AnalogCommonSection(SectionBaseWidget):
         super().__init__(icon_type=IconType.GENERIC, analog=True)
         self.init_ui()
         
-    def create_row(widget_list: list):
+    def _create_row(widget_list: list):
         """create a row from a list of widgets"""
         row = QHBoxLayout()
         row.addStretch()
@@ -60,10 +60,11 @@ class AnalogCommonSection(SectionBaseWidget):
             ["-3", "-2", "-1", "0", "+1", "+2", "+3"],
             [61, 62, 63, 64, 65, 66, 67],
         )
-        octave_shift_switch_row = QHBoxLayout()
-        octave_shift_switch_row.addStretch()
-        octave_shift_switch_row.addWidget(self.octave_shift_switch)
-        octave_shift_switch_row.addStretch()
+        octave_shift_switch_row = self._create_row([self.octave_shift_switch])
+        # octave_shift_switch_row = QHBoxLayout()
+        # octave_shift_switch_row.addStretch()
+        # octave_shift_switch_row.addWidget(self.octave_shift_switch)
+        # octave_shift_switch_row.addStretch()
         main_rows_vlayout.addLayout(octave_shift_switch_row)
 
         self.legato_switch = self._create_parameter_switch(
