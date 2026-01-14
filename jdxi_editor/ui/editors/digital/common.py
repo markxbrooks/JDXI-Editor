@@ -91,10 +91,7 @@ class DigitalCommonSection(SectionBaseWidget):
         self.ring_switch = self._create_parameter_switch(
             DigitalCommonParam.RING_SWITCH, "Ring", ["OFF", "---", "ON"]
         )
-        ring_row = QHBoxLayout()
-        ring_row.addStretch()
-        ring_row.addWidget(self.ring_switch)
-        ring_row.addStretch()
+        ring_row = self._create_row([self.ring_switch])
         layout.addLayout(ring_row)
 
         # Unison Switch and Size
@@ -106,11 +103,8 @@ class DigitalCommonSection(SectionBaseWidget):
             "Size",
             ["2 VOICE", "3 VOICE", "4 VOICE", "5 VOICE"],
         )
-        unison_row = QHBoxLayout()
-        unison_row.addStretch()
-        unison_row.addWidget(self.unison_switch)
-        unison_row.addWidget(self.unison_size)
-        unison_row.addStretch()
+        unison_row = self._create_row([self.unison_switch, 
+                                       self.unison_size])
         layout.addLayout(unison_row)
 
         # Portamento Switch
