@@ -40,7 +40,7 @@ class DigitalCommonSection(SectionBaseWidget):
     def init_ui(self):
         layout = self.get_layout()
 
-        # Mono Switch
+        # --- Mono Switch
         self.octave_shift_switch = self._create_parameter_combo_box(
             DigitalCommonParam.OCTAVE_SHIFT,
             "Octave shift",
@@ -50,14 +50,14 @@ class DigitalCommonSection(SectionBaseWidget):
         octave_shift_switch_row = self._create_row([self.octave_shift_switch])
         layout.addLayout(octave_shift_switch_row)
 
-        # Mono Switch
+        # ---Mono Switch
         self.mono_switch = self._create_parameter_switch(
             DigitalCommonParam.MONO_SWITCH, "Mono", ["OFF", "ON"]
         )
         mono_switch_row = self._create_row([self.mono_switch])
         layout.addLayout(mono_switch_row)
 
-        # Pitch Bend
+        # --- Pitch Bend
         self.pitch_bend_row = QHBoxLayout()
         self.pitch_bend_row.addStretch()
         self.pitch_bend_up = self._create_parameter_slider(
@@ -72,7 +72,7 @@ class DigitalCommonSection(SectionBaseWidget):
         self.portamento_time = self._create_parameter_slider(
             DigitalCommonParam.PORTAMENTO_TIME, "Portamento Time", vertical=True
         )
-        # Analog Feel and Wave Shape
+        # --- Analog Feel and Wave Shape
         self.analog_feel = self._create_parameter_slider(
             DigitalCommonParam.ANALOG_FEEL, "Analog Feel", vertical=True
         )
@@ -87,14 +87,14 @@ class DigitalCommonSection(SectionBaseWidget):
                                               self.wave_shape])
         layout.addLayout(self.pitch_bend_row)
 
-        # Ring Modulator
+        # --- Ring Modulator
         self.ring_switch = self._create_parameter_switch(
             DigitalCommonParam.RING_SWITCH, "Ring", ["OFF", "---", "ON"]
         )
         ring_row = self._create_row([self.ring_switch])
         layout.addLayout(ring_row)
 
-        # Unison Switch and Size
+        # --- Unison Switch and Size
         self.unison_switch = self._create_parameter_switch(
             DigitalCommonParam.UNISON_SWITCH, "Unison", ["OFF", "ON"]
         )
@@ -107,16 +107,11 @@ class DigitalCommonSection(SectionBaseWidget):
                                        self.unison_size])
         layout.addLayout(unison_row)
 
-        # Portamento Switch
+        # --- Portamento Switch
         self.portamento_switch = self._create_parameter_switch(
             DigitalCommonParam.PORTAMENTO_SWITCH, "Portamento", ["OFF", "ON"]
         )
-        portamento_row = QHBoxLayout()
-        portamento_row.addStretch()
-        portamento_row.addWidget(self.portamento_switch)
-        layout.addLayout(portamento_row)
-
-        # Portamento Mode and Legato
+        # --- Portamento Mode and Legato
         self.portamento_mode = self._create_parameter_switch(
             DigitalCommonParam.PORTAMENTO_MODE,
             "Portamento Mode",
@@ -125,9 +120,7 @@ class DigitalCommonSection(SectionBaseWidget):
         self.legato_switch = self._create_parameter_switch(
             DigitalCommonParam.LEGATO_SWITCH, "Legato", ["OFF", "ON"]
         )
-
-        portamento_row.addWidget(self.legato_switch)
-        portamento_row.addStretch()
-
-        self.pitch_bend_row.addStretch()
+        portamento_row = self._create_row([self.portamento_switch, 
+                                           self.legato_switch]
+        layout.addLayout(portamento_row)
         layout.addStretch()
