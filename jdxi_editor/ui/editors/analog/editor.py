@@ -87,7 +87,7 @@ from jdxi_editor.ui.editors.synth.editor import SynthEditor, log_changes
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
-from jdxi_editor.ui.widgets.preset.combo_box import PresetComboBox
+from jdxi_editor.ui.widgets.combo_box.searchable_filterable import SearchableFilterableComboBox
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
@@ -739,20 +739,64 @@ class AnalogSynthEditor(SynthEditor):
         self.instrument_selection_label = QLabel(f"Select a {synth_type} synth:")
         normal_preset_layout.addWidget(self.instrument_selection_label)
 
-        self.instrument_selection_combo = PresetComboBox(self.preset_list)
-        JDXiThemeManager.apply_combo_box(self.instrument_selection_combo, analog=True)
-        self.instrument_selection_combo.combo_box.setEditable(True)
+        # Build preset options, values, and categories from preset_list
+        preset_options = [f"{preset['id']} - {preset['name']}" for preset in self.preset_list]
+        # Convert preset IDs to integers for SearchableFilterableComboBox (e.g., "001" -> 1)
+        preset_values = [int(preset['id']) for preset in self.preset_list]
+        preset_categories = sorted(set(preset["category"] for preset in self.preset_list))
+        
+        # Category filter function for presets
+        def preset_category_filter(preset_display: str, category: str) -> bool:
+            """Check if a preset matches a category."""
+            if not category:
+                return True
+            # Extract preset ID from display string (format: "001 - Preset Name")
+            preset_id_str = preset_display.split(" - ")[0] if " - " in preset_display else None
+            if preset_id_str:
+                # Find the preset in the list and check its category
+                for preset in self.preset_list:
+                    if preset["id"] == preset_id_str:
+                        return preset["category"] == category
+            return False
+        
+        # Create SearchableFilterableComboBox for preset selection
+        self.instrument_selection_combo = SearchableFilterableComboBox(
+            label="",
+            options=preset_options,
+            values=preset_values,
+            categories=preset_categories,
+            category_filter_func=preset_category_filter,
+            show_label=False,
+            show_search=True,
+            show_category=True,
+            search_placeholder="Search presets...",
+        )
+        
+        # Apply Analog styling
+        JDXiThemeManager.apply_combo_box(self.instrument_selection_combo.combo_box, analog=True)
+        
+        # Connect signals - use combo_box for currentIndexChanged
         self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
             self.update_instrument_image
         )
         self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
             self.update_instrument_title
         )
-        self.instrument_selection_combo.load_button.clicked.connect(
-            self.update_instrument_preset
-        )
-        self.instrument_selection_combo.preset_loaded.connect(self.load_preset)
-        normal_preset_layout.addWidget(self.instrument_selection_combo)
+        
+        # Create a load button (SearchableFilterableComboBox doesn't have one built-in)
+        load_button = QPushButton("Load")
+        load_button.clicked.connect(self.update_instrument_preset)
+        # Connect valueChanged signal to load preset
+        self.instrument_selection_combo.valueChanged.connect(self.load_preset)
+        
+        # Add combo box and load button
+        button_layout = QHBoxLayout()
+        button_layout.addWidget(self.instrument_selection_combo)
+        button_layout.addWidget(load_button)
+        normal_preset_layout.addLayout(button_layout)
+        
+        # Store reference to load button for compatibility
+        self.instrument_selection_combo.load_button = load_button
         normal_preset_layout.addStretch()
 
         preset_tabs.addTab(normal_preset_widget, "Analog Presets")
@@ -760,35 +804,39 @@ class AnalogSynthEditor(SynthEditor):
         # === Tab 2: Cheat Presets (Digital Synth presets on Analog channel) ===
         cheat_preset_widget, cheat_preset_layout = create_scroll_container()
 
-        # Search Box
-        search_row = QHBoxLayout()
-        search_row.addWidget(QLabel("Search Presets:"))
-        self.cheat_search_box = QLineEdit()
-        self.cheat_search_box.setPlaceholderText("Search presets...")
-        self.cheat_search_box.textChanged.connect(
-            lambda text: self._populate_cheat_presets(text)
+        # Build preset options, values, and categories from DIGITAL_PRESET_LIST
+        preset_options = [f"{preset['id']} - {preset['name']}" for preset in DIGITAL_PRESET_LIST]
+        # Convert preset IDs to integers for SearchableFilterableComboBox (e.g., "001" -> 1)
+        preset_values = [int(preset['id']) for preset in DIGITAL_PRESET_LIST]
+        preset_categories = sorted(set(preset["category"] for preset in DIGITAL_PRESET_LIST))
+        
+        # Category filter function for presets
+        def cheat_preset_category_filter(preset_display: str, category: str) -> bool:
+            """Check if a preset matches a category."""
+            if not category:
+                return True
+            # Extract preset ID from display string (format: "001 - Preset Name")
+            preset_id_str = preset_display.split(" - ")[0] if " - " in preset_display else None
+            if preset_id_str:
+                # Find the preset in the list and check its category
+                for preset in DIGITAL_PRESET_LIST:
+                    if preset["id"] == preset_id_str:
+                        return preset["category"] == category
+            return False
+        
+        # Create SearchableFilterableComboBox for cheat preset selection
+        self.cheat_preset_combo_box = SearchableFilterableComboBox(
+            label="Preset",
+            options=preset_options,
+            values=preset_values,
+            categories=preset_categories,
+            category_filter_func=cheat_preset_category_filter,
+            show_label=True,
+            show_search=True,
+            show_category=True,
+            search_placeholder="Search presets...",
         )
-        search_row.addWidget(self.cheat_search_box)
-        cheat_preset_layout.addLayout(search_row)
-
-        # Preset List Combobox
-        self.cheat_preset_label = QLabel("Preset")
-        cheat_preset_layout.addWidget(self.cheat_preset_label)
-        self.cheat_preset_combo_box = QComboBox()
-        # Will be populated by _populate_cheat_presets()
         cheat_preset_layout.addWidget(self.cheat_preset_combo_box)
-
-        # Category Combobox
-        self.cheat_category_label = QLabel("Category")
-        cheat_preset_layout.addWidget(self.cheat_category_label)
-        self.cheat_category_combo_box = QComboBox()
-        self.cheat_category_combo_box.addItem("No Category Selected")
-        categories = set(preset["category"] for preset in DIGITAL_PRESET_LIST)
-        self.cheat_category_combo_box.addItems(sorted(categories))
-        self.cheat_category_combo_box.currentIndexChanged.connect(
-            self._on_cheat_category_changed
-        )
-        cheat_preset_layout.addWidget(self.cheat_category_combo_box)
 
         # Load Button
         self.cheat_load_button = QPushButton(IconRegistry.get_icon(IconRegistry.FOLDER_NOTCH_OPEN,
@@ -801,55 +849,8 @@ class AnalogSynthEditor(SynthEditor):
         cheat_preset_layout.addStretch()
         preset_tabs.addTab(cheat_preset_widget, "Cheat Presets")
 
-        # Initialize cheat presets
-        self.cheat_presets = {}  # Maps preset names to indices
-        self._populate_cheat_presets()
-
         return instrument_preset_group
 
-    def _populate_cheat_presets(self, search_text: str = ""):
-        """
-        Populate the cheat preset combo box with Digital Synth presets.
-
-        :param search_text: str Search filter text
-        """
-        if not hasattr(self, "cheat_preset_combo_box"):
-            return
-
-        selected_category = self.cheat_category_combo_box.currentText()
-
-        self.cheat_preset_combo_box.clear()
-        self.cheat_presets.clear()
-
-        # Filter presets by category and search text
-        filtered_list = [
-            preset
-            for preset in DIGITAL_PRESET_LIST
-            if (selected_category in ["No Category Selected", preset["category"]])
-        ]
-
-        filtered_presets = []
-        for preset in filtered_list:
-            if search_text.lower() in preset["name"].lower():
-                filtered_presets.append(preset)
-
-        # Add presets to combo box
-        for preset in filtered_presets:
-            preset_name = preset["name"]
-            preset_id = preset["id"]
-            index = len(self.cheat_presets)
-            self.cheat_preset_combo_box.addItem(f"{preset_id} - {preset_name}", index)
-            self.cheat_presets[preset_name] = index
-
-        if self.cheat_preset_combo_box.count() > 0:
-            self.cheat_preset_combo_box.setCurrentIndex(0)
-
-    def _on_cheat_category_changed(self, index: int):  # pylint: disable=unused-argument
-        """Handle category selection change for cheat presets."""
-        search_text = (
-            self.cheat_search_box.text() if hasattr(self, "cheat_search_box") else ""
-        )
-        self._populate_cheat_presets(search_text)
 
     def _load_cheat_preset(self):
         """
@@ -859,12 +860,12 @@ class AnalogSynthEditor(SynthEditor):
             log.warning("⚠️ MIDI helper not available for cheat preset loading")
             return
 
-        preset_name = self.cheat_preset_combo_box.currentText()
+        # Get the current value from SearchableFilterableComboBox
+        # The value is the preset ID as integer (e.g., 1 for "001")
+        preset_id_int = self.cheat_preset_combo_box.value()
+        program_number = str(preset_id_int).zfill(3)  # Convert back to 3-digit format
+        
         log.message("=======load_cheat_preset (Cheat Mode)=======")
-        log.parameter("combo box preset_name", preset_name)
-
-        # Extract program number from preset name (format: "001 - Preset Name")
-        program_number = preset_name[:3]
         log.parameter("combo box program_number", program_number)
 
         # Get MSB, LSB, PC values from the Digital preset list

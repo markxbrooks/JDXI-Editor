@@ -54,7 +54,6 @@ from PySide6.QtWidgets import (
     QLabel,
     QLineEdit,
     QPushButton,
-    QScrollArea,
     QStyle,
     QStyledItemDelegate,
     QStyleOptionButton,
@@ -71,6 +70,7 @@ from jdxi_editor.jdxi.program.program import JDXiProgram
 from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 from jdxi_editor.jdxi.style.icons import IconRegistry
+from jdxi_editor.ui.widgets.combo_box.searchable_filterable import SearchableFilterableComboBox
 from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.log.midi_info import log_midi_info
 from jdxi_editor.midi.channel.channel import MidiChannel
@@ -262,8 +262,9 @@ class ProgramEditor(BasicEditor):
         self.program_label = None
         self.genre_combo_box = None
         self.preset_type = None
-        self.programs = {}
         self.programs = {}  # Maps program names to numbers
+        self.preset_list = None
+        self._actual_preset_list = DIGITAL_PRESET_LIST  # Default preset list for combo box
         # --- Playlist playback tracking ---
         self._current_playlist_row = None
         self._playlist_midi_editor = None
@@ -467,31 +468,25 @@ class ProgramEditor(BasicEditor):
             self.on_preset_type_changed
         )
         preset_vlayout.addWidget(self.digital_preset_type_combo)
-        # Search Box
-        search_row = QHBoxLayout()
-        search_row.addWidget(QLabel("Search:"))
-        self.search_box = QLineEdit()
-        JDXiThemeManager.apply_line_edit(self.search_box)
-        self.search_box.setPlaceholderText("Search presets...")
-        self.search_box.textChanged.connect(self._populate_presets)
-        search_row.addWidget(self.search_box)
-        preset_vlayout.addLayout(search_row)
-        self.digital_preset_label = QLabel("Preset")
-        preset_vlayout.addWidget(self.digital_preset_label)
-        # Program number selection combo box
-        self.preset_combo_box = QComboBox()
-        self.preset_combo_box.addItems([f"{i:02}" for i in range(1, 65)])
-        # self.preset_combo_box.currentIndexChanged.connect(self.on_preset_number_changed)
+        
+        # Create SearchableFilterableComboBox for preset selection
+        # Initialize with empty data - will be populated when preset type is selected
+        self.preset_combo_box = SearchableFilterableComboBox(
+            label="Preset",
+            options=[],
+            values=[],
+            categories=[],
+            show_label=True,
+            show_search=True,
+            show_category=True,
+            search_placeholder="Search presets...",
+        )
         preset_vlayout.addWidget(self.preset_combo_box)
-        self.genre_label = QLabel("Category")
-        preset_vlayout.addWidget(self.genre_label)
-        # Category selection combo box
-        self.category_combo_box = QComboBox()
-        self.category_combo_box.addItem("No Category Selected")
-        categories = set(preset["category"] for preset in DIGITAL_PRESET_LIST)
-        self.category_combo_box.addItems(sorted(categories))
-        self.category_combo_box.currentIndexChanged.connect(self.on_category_changed)
-        preset_vlayout.addWidget(self.category_combo_box)
+        
+        # Initialize the combo box with default preset type (Digital Synth 1)
+        # This will be called again when preset type changes, but we need initial population
+        QTimer.singleShot(0, self._update_preset_combo_box)
+        
         # Load button
         self.load_button = QPushButton(
             IconRegistry.get_icon(
@@ -499,21 +494,30 @@ class ProgramEditor(BasicEditor):
             ),
             "Load Preset",
         )
-        self.load_button.clicked.connect(self.load_preset_by_program_change)
+        self.load_button.clicked.connect(lambda: self.load_preset_by_program_change())
         preset_vlayout.addWidget(self.load_button)
+        
+        # Connect combo box valueChanged to load preset directly (optional)
+        # self.preset_combo_box.valueChanged.connect(self.load_preset_by_program_change)
         return preset_widget
 
-    def load_preset_by_program_change(self, preset_index: int) -> None:
+    def load_preset_by_program_change(self, preset_id: str = None) -> None:
         """
         Load a preset by program change.
 
-        :param preset_index: int
+        :param preset_id: str Optional preset ID (if None, gets from combo box)
         """
-        preset_name = self.preset_combo_box.currentText()
+        # Get preset ID from combo box value if not provided
+        if preset_id is None:
+            # Get the current value from SearchableFilterableComboBox
+            # The value is the preset ID as integer (e.g., 1 for "001")
+            preset_id_int = self.preset_combo_box.value()
+            preset_id = str(preset_id_int).zfill(3)  # Convert back to 3-digit format
+        
+        program_number = str(preset_id).zfill(3)  # Ensure 3-digit format
         log.message("=======load_preset_by_program_change=======")
-        log.parameter("combo box preset_name", preset_name)
-        program_number = preset_name[:3]
-        log.parameter("combo box program_number", program_number)
+        log.parameter("preset_id", preset_id)
+        log.parameter("program_number", program_number)
 
         # Get MSB, LSB, PC values from the preset using get_preset_parameter_value
         msb = get_preset_parameter_value("msb", program_number, self.preset_list)
@@ -543,8 +547,8 @@ class ProgramEditor(BasicEditor):
         self.data_request()
 
     def on_category_changed(self, _: int) -> None:
-        """Handle category selection change."""
-        self._populate_presets()
+        """Handle category selection change - no longer needed, handled by SearchableFilterableComboBox."""
+        pass
 
     def _create_transport_group(self) -> QGroupBox:
         """
@@ -607,43 +611,26 @@ class ProgramEditor(BasicEditor):
         self.edit_program_name_button.clicked.connect(self.edit_program_name)
         program_vlayout.addWidget(self.edit_program_name_button)
 
-        # Search Box
-        search_row = QHBoxLayout()
-        search_row.addWidget(QLabel("Search:"))
-        self.search_box = QLineEdit()
-        self.search_box.setPlaceholderText("Search programs...")
-        JDXiThemeManager.apply_line_edit(self.search_box)
-        self.search_box.textChanged.connect(self.populate_programs)  # @@
-        search_row.addWidget(self.search_box)
-        program_vlayout.addLayout(search_row)
-
-        # Program number selection combo box
-        # Note: This combo box is populated by populate_programs() which uses SQLite database
-        # as the single source of truth. No need to add generic items here.
-        self.program_number_combo_box = QComboBox()
-        self.program_number_combo_box.currentIndexChanged.connect(
-            self.on_program_number_changed
+        # Create SearchableFilterableComboBox for program selection with bank and genre filtering
+        # Initialize with empty data - will be populated by populate_programs()
+        self.program_number_combo_box = SearchableFilterableComboBox(
+            label="Program",
+            options=[],
+            values=[],
+            categories=[],
+            banks=["A", "B", "C", "D", "E", "F", "G", "H"],
+            show_label=True,
+            show_search=True,
+            show_category=True,
+            show_bank=True,
+            search_placeholder="Search programs...",
+            category_label="Genre:",
+            bank_label="Bank:",
         )
         program_vlayout.addWidget(self.program_number_combo_box)
-        self.genre_label = QLabel("Genre")
-        program_vlayout.addWidget(self.genre_label)
-        # Genre selection combo box
-        self.genre_combo_box = QComboBox()
-        self.genre_combo_box.addItem("No Genre Selected")
-        genres = set(
-            program.genre for program in JDXiProgramList.list_rom_and_user_programs()
-        )
-        self.genre_combo_box.addItems(sorted(genres))
-        self.genre_combo_box.currentIndexChanged.connect(self.on_genre_changed)
-        program_vlayout.addWidget(self.genre_combo_box)
-        self.bank_label = QLabel("Bank")
-        program_vlayout.addWidget(self.bank_label)
-        # Bank selection combo box
-        self.bank_combo_box = QComboBox()
-        self.bank_combo_box.addItem("No Bank Selected")
-        self.bank_combo_box.addItems(["A", "B", "C", "D", "E", "F", "G", "H"])
-        self.bank_combo_box.currentIndexChanged.connect(self.on_bank_changed)
-        program_vlayout.addWidget(self.bank_combo_box)
+        
+        # Store reference to actual program list for use in filtering
+        self._program_list_data = []
         # Load button
         self.load_button = QPushButton(
             IconRegistry.get_icon(
@@ -678,8 +665,7 @@ class ProgramEditor(BasicEditor):
         preset_type = self.digital_preset_type_combo.currentText()
         log.message(f"preset_type: {preset_type}")
         self.set_channel_and_preset_lists(preset_type)
-        self._populate_presets()
-        self.update_category_combo_box_categories()
+        self._update_preset_combo_box()
 
     def set_channel_and_preset_lists(self, preset_type: str) -> None:
         """
@@ -701,32 +687,72 @@ class ProgramEditor(BasicEditor):
             self.midi_channel = MidiChannel.ANALOG_SYNTH
             self.preset_list = JDXiPresetToneList.ANALOG_PROGRAM_CHANGE
 
-    def update_category_combo_box_categories(self) -> None:
+    def _update_preset_combo_box(self) -> None:
         """
-        update_category_combo_box_categories
-
-        :return: None
-        Update the category combo box.
+        Update the SearchableFilterableComboBox with current preset list.
+        Called when preset type changes.
         """
-        # Update the category combo box
-        categories = set(preset["category"] for preset in self.preset_list)
-        self.category_combo_box.blockSignals(True)  # Block signals during update
-
-        # Clear and update items
-        self.category_combo_box.clear()
-        self.category_combo_box.addItem(
-            "No Category Selected"
-        )  # Add the default option
-        self.category_combo_box.addItems(
-            sorted(categories)
-        )  # Add the sorted categories
-
-        # Set the default selected index
-        self.category_combo_box.setCurrentIndex(
-            0
-        )  # Select "No Category Selected" as default
-
-        self.category_combo_box.blockSignals(False)  # Unblock signals after update
+        preset_type = self.digital_preset_type_combo.currentText()
+        if preset_type in ["Digital Synth 1", "Digital Synth 2"]:
+            preset_list = DIGITAL_PRESET_LIST
+        elif preset_type == "Drums":
+            preset_list = DRUM_KIT_LIST
+        elif preset_type == "Analog Synth":
+            preset_list = ANALOG_PRESET_LIST
+        else:
+            preset_list = DIGITAL_PRESET_LIST  # Default to digital synth 1
+        
+        # Store the actual preset list for use in load_preset_by_program_change
+        # Note: self.preset_list is still set to JDXiPresetToneList enum in set_channel_and_preset_lists
+        # for use with get_preset_parameter_value, but we also need the actual list for the combo box
+        self._actual_preset_list = preset_list
+        
+        # Build options, values, and categories
+        preset_options = [f"{preset['id']} - {preset['name']}" for preset in self._actual_preset_list]
+        # Convert preset IDs to integers for SearchableFilterableComboBox (e.g., "001" -> 1)
+        preset_values = [int(preset['id']) for preset in self._actual_preset_list]
+        preset_categories = sorted(set(preset["category"] for preset in self._actual_preset_list))
+        
+        # Category filter function for presets
+        def preset_category_filter(preset_display: str, category: str) -> bool:
+            """Check if a preset matches a category."""
+            if not category:
+                return True
+            # Extract preset ID from display string (format: "001 - Preset Name")
+            preset_id_str = preset_display.split(" - ")[0] if " - " in preset_display else None
+            if preset_id_str:
+                # Find the preset in the list and check its category
+                for preset in self._actual_preset_list:
+                    if preset["id"] == preset_id_str:
+                        return preset["category"] == category
+            return False
+        
+        # Update the combo box by recreating it (since SearchableFilterableComboBox doesn't have update methods)
+        # Get parent widget and layout
+        preset_widget = self.digital_preset_type_combo.parent()
+        preset_vlayout = preset_widget.layout() if preset_widget else None
+        
+        if preset_vlayout:
+            # Remove old combo box from layout
+            preset_vlayout.removeWidget(self.preset_combo_box)
+            self.preset_combo_box.deleteLater()
+            
+            # Create new combo box with updated data
+            self.preset_combo_box = SearchableFilterableComboBox(
+                label="Preset",
+                options=preset_options,
+                values=preset_values,
+                categories=preset_categories,
+                category_filter_func=preset_category_filter,
+                show_label=True,
+                show_search=True,
+                show_category=True,
+                search_placeholder="Search presets...",
+            )
+            
+            # Insert after digital_preset_type_combo
+            index = preset_vlayout.indexOf(self.digital_preset_type_combo)
+            preset_vlayout.insertWidget(index + 1, self.preset_combo_box)
 
     def _populate_programs(self, search_text: str = "") -> None:
         """
@@ -768,48 +794,12 @@ class ProgramEditor(BasicEditor):
     def _populate_presets(self, search_text: str = "") -> None:
         """
         Populate the program list with available presets.
-
-        :param search_text: str
+        Now handled by SearchableFilterableComboBox, so this just updates the combo box.
+        
+        :param search_text: str (ignored, handled by SearchableFilterableComboBox)
         :return: None
         """
-        if not self.preset_helper:
-            return
-        self.programs = {}  # reset dictionary each time
-        preset_type = self.digital_preset_type_combo.currentText()
-        if preset_type in ["Digital Synth 1", "Digital Synth 2"]:
-            self.preset_list = DIGITAL_PRESET_LIST
-        elif preset_type == "Drums":
-            self.preset_list = DRUM_KIT_LIST
-        elif preset_type == "Analog Synth":
-            self.preset_list = ANALOG_PRESET_LIST
-        else:
-            self.preset_list = DIGITAL_PRESET_LIST  # Default to digital synth 1
-        # self.update_category_combo_box_categories()
-
-        selected_category = self.category_combo_box.currentText()
-        log.message(f"Selected Category: {selected_category}")
-
-        self.preset_combo_box.clear()
-
-        filtered_list = [  # Filter programs based on bank and genre
-            preset
-            for preset in self.preset_list
-            if (selected_category in ["No Category Selected", preset["category"]])
-        ]
-        filtered_presets = []
-        for i, preset in enumerate(filtered_list):
-            if search_text.lower() in preset["name"].lower():
-                filtered_presets.append(preset)
-
-        for preset in filtered_presets:  # Add programs to the combo box
-            preset_name = preset["name"]
-            preset_id = preset["id"]
-            index = len(self.programs)  # Use the current number of programs
-            self.preset_combo_box.addItem(f"{preset_id} - {preset_name}", index)
-            self.programs[preset_name] = index
-        self.preset_combo_box.setCurrentIndex(
-            0
-        )  # Select "No Category Selected" as default
+        self._update_preset_combo_box()
 
     def _init_synth_data(
         self,
@@ -1019,120 +1009,112 @@ class ProgramEditor(BasicEditor):
         """Stop playback of the MIDI file."""
         self.midi_helper.send_raw_message([Midi.SONG.STOP])
 
+    def _update_program_combo_box(self) -> None:
+        """
+        Update the SearchableFilterableComboBox with current program list.
+        Handles both ROM banks (A-D) and user banks (E-H) with SQLite integration.
+        """
+        if not self.preset_helper:
+            return
+        
+        # Get all programs (ROM + user from database)
+        all_programs = JDXiProgramList.list_rom_and_user_programs()
+        self._program_list_data = all_programs
+        
+        # Build program options, values, and filter data
+        program_options = []
+        program_values = []
+        program_genres = set()
+        program_banks = set()
+        
+        # Process ROM programs
+        for program in all_programs:
+            if program.id and len(program.id) >= 1:
+                bank = program.id[0]
+                program_banks.add(bank)
+                if program.genre:
+                    program_genres.add(program.genre)
+                program_options.append(f"{program.id} - {program.name}")
+                program_values.append(len(program_options) - 1)  # Use index as value
+        
+        # Add user bank placeholders (E, F, G, H) - these will be handled dynamically
+        # but we need to ensure they're in the banks list
+        program_banks.update(["E", "F", "G", "H"])
+        
+        # Bank filter function for programs
+        def program_bank_filter(program_display: str, bank: str) -> bool:
+            """Check if a program matches a bank."""
+            if not bank:
+                return True
+            # Extract bank from display string (format: "A01 - Program Name")
+            if " - " in program_display:
+                program_id = program_display.split(" - ")[0]
+            else:
+                program_id = program_display.split()[0] if program_display.split() else ""
+            if program_id and len(program_id) >= 1:
+                return program_id[0].upper() == bank.upper()
+            return False
+        
+        # Genre filter function for programs
+        def program_genre_filter(program_display: str, genre: str) -> bool:
+            """Check if a program matches a genre."""
+            if not genre:
+                return True
+            # Find the program in the list and check its genre
+            # Extract program ID from display string
+            if " - " in program_display:
+                program_id = program_display.split(" - ")[0]
+            else:
+                program_id = program_display.split()[0] if program_display.split() else ""
+            
+            # Find program in list
+            for program in self._program_list_data:
+                if program.id == program_id:
+                    return program.genre == genre if program.genre else False
+            return False
+        
+        # Update the combo box by recreating it (since SearchableFilterableComboBox doesn't have update methods)
+        # Get parent widget and layout
+        program_widget = self.edit_program_name_button.parent()
+        program_vlayout = program_widget.layout() if program_widget else None
+        
+        if program_vlayout:
+            # Remove old combo box from layout
+            program_vlayout.removeWidget(self.program_number_combo_box)
+            self.program_number_combo_box.deleteLater()
+            
+            # Create new combo box with updated data
+            self.program_number_combo_box = SearchableFilterableComboBox(
+                label="Program",
+                options=program_options,
+                values=program_values,
+                categories=sorted(program_genres),
+                banks=sorted(program_banks),
+                bank_filter_func=program_bank_filter,
+                category_filter_func=program_genre_filter,
+                show_label=True,
+                show_search=True,
+                show_category=True,
+                show_bank=True,
+                search_placeholder="Search programs...",
+                category_label="Genre:",
+                bank_label="Bank:",
+            )
+            
+            # Insert after edit_program_name_button
+            index = program_vlayout.indexOf(self.edit_program_name_button)
+            program_vlayout.insertWidget(index + 1, self.program_number_combo_box)
+    
     def populate_programs(self, search_text: str = ""):
         """Populate the program list with available presets.
+        Now handled by SearchableFilterableComboBox, so this just updates the combo box.
         Uses SQLite database to ensure all user bank programs are loaded correctly.
         """
         if not self.preset_helper:
             return
-
-        selected_bank = self.bank_combo_box.currentText()
-        selected_genre = self.genre_combo_box.currentText()
-
-        log.parameter("selected bank", selected_bank)
-        log.parameter("selected genre", selected_genre)
-
-        self.program_number_combo_box.clear()
-        self.programs.clear()
-
-        # If a specific user bank is selected, load ALL programs from that bank from SQLite
-        user_banks = ["E", "F", "G", "H"]
-        if selected_bank in user_banks:
-            # Load all programs from the selected user bank directly from SQLite
-            from jdxi_editor.jdxi.program.program import JDXiProgram
-            from jdxi_editor.midi.data.programs.database import get_database
-            from jdxi_editor.ui.editors.helpers.program import calculate_midi_values
-
-            db = get_database()
-            bank_programs = db.get_programs_by_bank(selected_bank)
-            log.message(
-                f"🔍 Bank {selected_bank}: Found {len(bank_programs)} programs in database"
-            )
-
-            # Create a dictionary of existing programs by ID for quick lookup
-            existing_programs = {program.id: program for program in bank_programs}
-
-            # Ensure all 64 programs are shown (create placeholders for missing ones)
-            for i in range(1, 65):
-                program_id = f"{selected_bank}{i:02}"
-
-                # Check if program exists in database
-                if program_id in existing_programs:
-                    program = existing_programs[program_id]
-                    # Filter by genre and search text
-                    if selected_genre not in ["No Genre Selected", program.genre]:
-                        continue
-                    if search_text and search_text.lower() not in program.name.lower():
-                        continue
-
-                    program_name = program.name
-                else:
-                    # Create placeholder program for missing entry
-                    try:
-                        msb, lsb, pc = calculate_midi_values(selected_bank, i)
-                    except:
-                        msb, lsb, pc = 85, (0 if selected_bank in ["E", "F"] else 1), i
-
-                    program = JDXiProgram(
-                        id=program_id,
-                        name=f"User bank {selected_bank} program {i:02}",
-                        genre=None,
-                        pc=pc,
-                        msb=msb,
-                        lsb=lsb,
-                        digital_1=None,
-                        digital_2=None,
-                        analog=None,
-                        drums=None,
-                    )
-                    program_name = program.name
-
-                    # Filter placeholder by search text
-                    if search_text and search_text.lower() not in program_name.lower():
-                        continue
-
-                # Add program to combo box
-                index = len(self.programs)
-                self.program_number_combo_box.addItem(
-                    f"{program_id} - {program_name}", index
-                )
-                self.programs[program_name] = index
-
-            log.message(
-                f"🔍 Bank {selected_bank}: Populated {self.program_number_combo_box.count()} programs (including placeholders)"
-            )
-        else:
-            # For ROM banks (A, B, C, D) or "No Bank Selected", use standard filtering
-            filtered_list = [  # Filter programs based on bank and genre
-                program
-                for program in JDXiProgramList.list_rom_and_user_programs()
-                if (selected_bank in ["No Bank Selected", program.id[0]])
-                and (selected_genre in ["No Genre Selected", program.genre])
-            ]
-
-            for program in filtered_list:  # Add programs to the combo box
-                if search_text and search_text.lower() not in program.name.lower():
-                    continue
-                program_name = program.name
-                program_id = program.id
-                index = len(self.programs)  # Use the current number of programs
-                self.program_number_combo_box.addItem(
-                    f"{program_id} - {program_name}", index
-                )
-                self.programs[program_name] = index
-
-            # If "No Bank Selected" and no genre filter, add user banks
-            if (
-                selected_bank == "No Bank Selected"
-                and selected_genre == "No Genre Selected"
-            ):
-                self.add_user_banks(
-                    filtered_list, selected_bank, search_text
-                )  # Handle user banks if necessary
-
-        self.program_number_combo_box.setCurrentIndex(
-            0
-        )  # Update the UI with the new program list
+        
+        # Update the combo box with current program data
+        self._update_program_combo_box()
 
     def add_user_banks(
         self, filtered_list: list, bank: str, search_text: str = None
@@ -2945,8 +2927,8 @@ class ProgramEditor(BasicEditor):
                 break
 
     def on_bank_changed(self, _: int) -> None:
-        """Handle bank selection change."""
-        self.populate_programs()
+        """Handle bank selection change - no longer needed, handled by SearchableFilterableComboBox."""
+        pass
 
     def on_program_number_changed(self, index: int) -> None:
         """Handle program number selection change.
@@ -2956,10 +2938,12 @@ class ProgramEditor(BasicEditor):
 
     def load_program(self):
         """Load the selected program based on bank and number."""
-        program_name = self.program_number_combo_box.currentText()
-        program_id = program_name[:3]
-        bank_letter = program_name[0]
-        bank_number = int(program_name[1:3])
+        # Get program name from combo box
+        program_name = self.program_number_combo_box.combo_box.currentText()
+        # Extract program ID from format "A01 - Program Name"
+        program_id = program_name[:3] if " - " in program_name else program_name.split()[0]
+        bank_letter = program_id[0] if len(program_id) >= 1 else ""
+        bank_number = int(program_id[1:3]) if len(program_id) >= 3 else 0
         log.parameter("combo box bank_letter", bank_letter)
         log.parameter("combo box bank_number", bank_number)
         if bank_letter in ["A", "B", "C", "D"]:
@@ -3011,11 +2995,9 @@ class ProgramEditor(BasicEditor):
 
     def on_genre_changed(self, _: int) -> None:
         """
-        Handle genre selection change.
-
-        :param _: int
+        Handle genre selection change - no longer needed, handled by SearchableFilterableComboBox.
         """
-        self.populate_programs()
+        pass
 
     def _dispatch_sysex_to_area(self, json_sysex_data: str) -> None:
         """

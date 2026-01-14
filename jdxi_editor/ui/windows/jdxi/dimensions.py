@@ -33,6 +33,8 @@ class JDXiDimensions:
     """
     A class to store dimensions for the JD-Xi editor UI.
     """
+    DRUM_WIDTH = 1100
+    DRUM_HEIGHT = 800
     ANALOG = AnalogDimensions
 
     SPLASH_HEIGHT = 540

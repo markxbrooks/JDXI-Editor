@@ -85,6 +85,7 @@ from jdxi_editor.ui.editors.drum.common import DrumCommonSection
 from jdxi_editor.ui.editors.drum.partial.editor import DrumPartialEditor
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.widgets.dialog.progress import ProgressDialog
+from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
 class DrumCommonEditor(SynthEditor):
@@ -130,9 +131,7 @@ class DrumCommonEditor(SynthEditor):
     def setup_ui(self) -> None:
         """Setup the UI components for the drum editor."""
         main_layout = QVBoxLayout(self)
-        self.setMinimumSize(1100, 500)
-
-        # splitter = QSplitter(Qt.Orientation.Vertical)
+        self.setMinimumSize(JDXiDimensions.DRUM_WIDTH, JDXiDimensions.DRUM_HEIGHT)
         self.presets_parts_tab_widget = QTabWidget()
 
         main_layout.addWidget(self.presets_parts_tab_widget)

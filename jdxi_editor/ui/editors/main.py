@@ -36,6 +36,8 @@ class MainEditor(QMainWindow):
         self.editor_tab_widget.setStyleSheet(JDXiStyle.TABS_MAIN_EDITOR)
         self.setStyleSheet(JDXiStyle.EDITOR)
         self.setWindowTitle(f"{__program__} - {__version__}")
+        # Hide status bar to maximize editor space
+        self.statusBar().hide()
 
     def closeEvent(self, event) -> None:  # pylint: disable=unused-argument
         """

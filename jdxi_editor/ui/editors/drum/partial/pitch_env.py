@@ -48,7 +48,7 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QScrollArea,
     QVBoxLayout,
-    QWidget,
+    QWidget, QSizePolicy,
 )
 
 from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
@@ -302,15 +302,30 @@ class DrumPitchEnvSection(QWidget):
     def setup_ui(self) -> None:
         """setup UI"""
         self.setMinimumWidth(JDXiDimensions.DRUM_PARTIAL_TAB_MIN_WIDTH)
+        # Set size policy to allow vertical expansion
+        self.setSizePolicy(
+            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
+        )
         layout = QVBoxLayout(self)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(0)
 
         scroll_area = QScrollArea()
-        scroll_area.setMinimumHeight(JDXiDimensions.SCROLL_AREA_HEIGHT)
         scroll_area.setWidgetResizable(True)
+        scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        scroll_area.setSizePolicy(
+            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
+        )
         layout.addWidget(scroll_area)
 
         scrolled_widget = QWidget()
+        scrolled_widget.setSizePolicy(
+            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
+        )
         scrolled_layout = QVBoxLayout(scrolled_widget)
+        scrolled_layout.setContentsMargins(0, 0, 0, 0)
+
         scroll_area.setWidget(scrolled_widget)
 
         # Icons row (standardized across editor tabs)

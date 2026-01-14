@@ -41,12 +41,14 @@ from decologr import Decologr as log
 from picomidi.constant import Midi
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QColor, QFont, QLinearGradient, QPainter, QPainterPath, QPen
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QFormLayout,
     QGridLayout,
     QGroupBox,
     QHBoxLayout,
     QScrollArea,
+    QSizePolicy,
     QTabWidget,
     QVBoxLayout,
     QWidget,
@@ -322,8 +324,12 @@ class DrumTVFSection(QWidget):
         layout = QVBoxLayout(self)
 
         scroll_area = QScrollArea()
-        scroll_area.setMinimumHeight(JDXiDimensions.SCROLL_AREA_HEIGHT)
         scroll_area.setWidgetResizable(True)
+        scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        scroll_area.setSizePolicy(
+            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
+        )
         layout.addWidget(scroll_area)
 
         scrolled_widget = QWidget()

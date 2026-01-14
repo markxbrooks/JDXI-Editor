@@ -8,11 +8,9 @@ from decologr import Decologr as log
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
-    QComboBox,
     QGridLayout,
     QGroupBox,
     QHBoxLayout,
-    QLabel,
     QTabWidget,
     QVBoxLayout,
     QWidget,
@@ -30,6 +28,7 @@ from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from jdxi_editor.ui.widgets.button.waveform.waveform import WaveformButton
 from jdxi_editor.ui.widgets.pitch.envelope import PitchEnvelopeWidget
+from jdxi_editor.ui.widgets.combo_box.searchable_filterable import SearchableFilterableComboBox
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
@@ -226,22 +225,49 @@ class DigitalOscillatorSection(SectionBaseWidget):
             "Gain [dB]",
             ["-6", "0", "+6", "+12"],
         )
-        self.pcm_wave_number = self._create_parameter_combo_box(
-            DigitalPartialParam.PCM_WAVE_NUMBER,
-            "Number",
-            [f"{w['Wave Number']}: {w['Wave Name']}" for w in PCM_WAVES_CATEGORIZED],
+        
+        # Create PCM wave options and values
+        pcm_wave_options = [
+            f"{w['Wave Number']}: {w['Wave Name']}" for w in PCM_WAVES_CATEGORIZED
+        ]
+        pcm_wave_values = [w["Wave Number"] for w in PCM_WAVES_CATEGORIZED]
+        pcm_categories = sorted(set(w["Category"] for w in PCM_WAVES_CATEGORIZED))
+        
+        # Category filter function for PCM waves
+        def pcm_category_filter(wave_name: str, category: str) -> bool:
+            """Check if a wave name matches a category."""
+            if not category:
+                return True
+            # Find the wave in PCM_WAVES_CATEGORIZED and check its category
+            for wave in PCM_WAVES_CATEGORIZED:
+                wave_display = f"{wave['Wave Number']}: {wave['Wave Name']}"
+                if wave_display == wave_name:
+                    return wave["Category"] == category
+            return False
+        
+        # Create SearchableFilterableComboBox for PCM wave selection
+        self.pcm_wave_number = SearchableFilterableComboBox(
+            label="Number",
+            options=pcm_wave_options,
+            values=pcm_wave_values,
+            categories=pcm_categories,
+            category_filter_func=pcm_category_filter,
+            show_label=True,
+            show_search=True,
+            show_category=True,
         )
-        self.pcm_category_combo = QComboBox()
-        self.pcm_categories = ["No selection"] + sorted(
-            set(w["Category"] for w in PCM_WAVES_CATEGORIZED)
+        
+        # Connect valueChanged signal to send MIDI parameter updates
+        self.pcm_wave_number.valueChanged.connect(
+            lambda v: self.send_midi_parameter(DigitalPartialParam.PCM_WAVE_NUMBER, v)
         )
-        self.pcm_category_combo.addItems(self.pcm_categories)
-        self.pcm_category_combo.currentIndexChanged.connect(self.update_waves)
+        
+        # Store in controls dict for consistency
+        self.controls[DigitalPartialParam.PCM_WAVE_NUMBER] = self.pcm_wave_number
+        
         pcm_layout.setColumnStretch(0, 1)  # left side stretches
         pcm_layout.addWidget(self.pcm_wave_gain, 0, 1)
-        pcm_layout.addWidget(QLabel("Category"), 0, 2)
-        pcm_layout.addWidget(self.pcm_category_combo, 0, 3)
-        pcm_layout.addWidget(self.pcm_wave_number, 0, 4)
+        pcm_layout.addWidget(self.pcm_wave_number, 0, 2, 1, 3)  # Span 3 columns
         pcm_layout.setColumnStretch(5, 1)  # right side stretches
         return pcm_group
 
@@ -277,24 +303,6 @@ class DigitalOscillatorSection(SectionBaseWidget):
         self._update_pcm_controls_enabled_state(waveform)
         self._update_supersaw_controls_enabled_state(waveform)
 
-    def update_waves(self):
-        """Update PCM waves based on selected category"""
-        selected_category = self.pcm_category_combo.currentText()
-
-        # --- Filter waves or show all if "No selection" ---
-        if selected_category == "No selection":
-            filtered_waves = PCM_WAVES_CATEGORIZED  # Show all waves
-        else:
-            filtered_waves = [
-                w for w in PCM_WAVES_CATEGORIZED if w["Category"] == selected_category
-            ]
-
-        # --- Update wave combo box ---
-        self.pcm_wave_number.combo_box.clear()
-        self.pcm_wave_number.combo_box.addItems(
-            [f"{w['Wave Number']}: {w['Wave Name']}" for w in filtered_waves]
-        )
-        self.pcm_wave_number.values = [w["Wave Number"] for w in filtered_waves]
 
     def _update_pw_controls_enabled_state(self, waveform: DigitalOscWave):
         """Update pulse width controls enabled state based on waveform"""
@@ -306,7 +314,6 @@ class DigitalOscillatorSection(SectionBaseWidget):
         """Update PCM wave controls visibility based on waveform"""
         pcm_enabled = waveform == DigitalOscWave.PCM
         self.pcm_wave_gain.setEnabled(pcm_enabled)
-        self.pcm_category_combo.setEnabled(pcm_enabled)
         self.pcm_wave_number.setEnabled(pcm_enabled)
 
     def _update_supersaw_controls_enabled_state(self, waveform: DigitalOscWave):

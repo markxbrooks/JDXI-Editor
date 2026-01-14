@@ -10,7 +10,15 @@ parameter adjustments and preset management.
 Key Features:
 -------------
 - Provides a graphical editor for modifying drum output parameters, including
-  from PySide6.QtWidgets import QGroupBox, QFormLayout, QWidget, QVBoxLayout, QScrollArea
+  from PySide6.QtCore import Qt
+from PySide6.QtWidgets import (
+    QFormLayout,
+    QGroupBox,
+    QScrollArea,
+    QSizePolicy,
+    QVBoxLayout,
+    QWidget,
+)
   partial output level, partial chorus send level, partial reverb send level, and partial output assign.
 
 Dependencies:
@@ -34,13 +42,14 @@ Example:
 
 from typing import Callable
 
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QFormLayout,
     QGroupBox,
     QHBoxLayout,
     QScrollArea,
     QVBoxLayout,
-    QWidget,
+    QWidget, QSizePolicy,
 )
 
 from jdxi_editor.jdxi.style.icons import IconRegistry
@@ -72,8 +81,12 @@ class DrumOutputSection(QWidget):
         layout = QVBoxLayout(self)
 
         scroll_area = QScrollArea()
-        scroll_area.setMinimumHeight(JDXiDimensions.SCROLL_AREA_HEIGHT)
-        scroll_area.setWidgetResizable(True)  # Important for resizing behavior
+        scroll_area.setWidgetResizable(True)
+        scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        scroll_area.setSizePolicy(
+            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
+        )
         layout.addWidget(scroll_area)
 
         scrolled_widget = QWidget()

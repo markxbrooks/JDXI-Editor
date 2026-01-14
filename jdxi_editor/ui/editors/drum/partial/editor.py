@@ -9,9 +9,10 @@ WMT (Wave Modulation Time), and TVA (Time Variant Amplitude) settings.
 from functools import partial
 from typing import Dict, Optional
 
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
-    QGridLayout,
     QScrollArea,
+    QSizePolicy,
     QTabWidget,
     QVBoxLayout,
     QWidget,
@@ -55,27 +56,43 @@ class DrumPartialEditor(PartialEditor):
         # Store parameter controls for easy access
         self.controls: Dict[DrumPartialParam, QWidget] = {}
 
-        # Main layout
+        # Main layout with no margins/spacing to maximize space
         main_layout = QVBoxLayout()
+        main_layout.setContentsMargins(0, 0, 0, 0)
+        main_layout.setSpacing(0)
         self.setLayout(main_layout)
+        self.setSizePolicy(
+            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
+        )
 
-        # Create scroll area
+        # Create scroll area with hidden scrollbars and proper sizing
         scroll_area = QScrollArea()
         scroll_area.setWidgetResizable(True)
+        scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        scroll_area.setSizePolicy(
+            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
+        )
         scroll_content = QWidget()
+        scroll_content.setSizePolicy(
+            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
+        )
         scroll_layout = QVBoxLayout(scroll_content)
+        scroll_layout.setContentsMargins(0, 0, 0, 0)
+        scroll_layout.setSpacing(0)
         scroll_area.setWidget(scroll_content)
-
-        # Create grid layout for parameter groups
-        grid_layout = QGridLayout()
-        scroll_layout.addLayout(grid_layout)
 
         tab_widget = QTabWidget()
         tab_widget.setMinimumWidth(JDXiDimensions.DRUM_PARTIAL_TAB_MIN_WIDTH)
+        tab_widget.setSizePolicy(
+            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
+        )
         scroll_layout.addWidget(tab_widget)
 
         tab_partial = QWidget()
         tab_partial_layout = QVBoxLayout(tab_partial)
+        tab_partial_layout.setContentsMargins(0, 0, 0, 0)
+        tab_partial_layout.setSpacing(0)
         tab_widget.addTab(tab_partial, "Partial")
 
         partial_group = DrumPartialSection(
@@ -85,9 +102,12 @@ class DrumPartialEditor(PartialEditor):
             midi_helper=self.midi_helper,
         )
         tab_partial_layout.addWidget(partial_group)
+        tab_partial_layout.addStretch()
 
         tab_wmt = QWidget()
         tab_wmt_layout = QVBoxLayout(tab_wmt)
+        tab_wmt_layout.setContentsMargins(0, 0, 0, 0)
+        tab_wmt_layout.setSpacing(0)
         tab_widget.addTab(tab_wmt, "WMT")
 
         wmt_group = DrumWMTSection(
@@ -97,11 +117,15 @@ class DrumPartialEditor(PartialEditor):
             create_parameter_switch=self._create_parameter_switch,
             midi_helper=self.midi_helper,
             address=self.address,
+            on_parameter_changed=self._on_parameter_changed,
         )
         tab_wmt_layout.addWidget(wmt_group)
+        tab_wmt_layout.addStretch()
 
         tab_pitch_env = QWidget()
         tab_pitch_env_layout = QVBoxLayout(tab_pitch_env)
+        tab_pitch_env_layout.setContentsMargins(0, 0, 0, 0)
+        tab_pitch_env_layout.setSpacing(0)
         tab_widget.addTab(tab_pitch_env, "Pitch Env")
 
         pitch_env_group = DrumPitchEnvSection(
@@ -111,9 +135,12 @@ class DrumPartialEditor(PartialEditor):
             midi_helper=self.midi_helper,
         )
         tab_pitch_env_layout.addWidget(pitch_env_group)
+        tab_pitch_env_layout.addStretch()
 
         tab_output = QWidget()
         tab_output_layout = QVBoxLayout(tab_output)
+        tab_output_layout.setContentsMargins(0, 0, 0, 0)
+        tab_output_layout.setSpacing(0)
         tab_widget.addTab(tab_output, "Output")
 
         output_group = DrumOutputSection(
@@ -127,6 +154,8 @@ class DrumPartialEditor(PartialEditor):
 
         tab_tvf = QWidget()
         tab_tvf_layout = QVBoxLayout(tab_tvf)
+        tab_tvf_layout.setContentsMargins(0, 0, 0, 0)
+        tab_tvf_layout.setSpacing(0)
         tab_widget.addTab(tab_tvf, "TVF")
 
         tvf_group = DrumTVFSection(
@@ -136,9 +165,12 @@ class DrumPartialEditor(PartialEditor):
             midi_helper=self.midi_helper,
         )
         tab_tvf_layout.addWidget(tvf_group)
+        tab_tvf_layout.addStretch()
 
         tab_tva = QWidget()
         tab_tva_layout = QVBoxLayout(tab_tva)
+        tab_tva_layout.setContentsMargins(0, 0, 0, 0)
+        tab_tva_layout.setSpacing(0)
         tab_widget.addTab(tab_tva, "TVA")
 
         tva_group = DrumTVASection(
@@ -148,5 +180,6 @@ class DrumPartialEditor(PartialEditor):
             midi_helper=self.midi_helper,
         )
         tab_tva_layout.addWidget(tva_group)
+        tab_tva_layout.addStretch()
 
         main_layout.addWidget(scroll_area)
