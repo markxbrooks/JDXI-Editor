@@ -71,10 +71,11 @@ class AnalogCommonSection(SectionBaseWidget):
             AnalogParam.LEGATO_SWITCH, "Legato", ["OFF", "ON"]
         )
 
-        legato_row = QHBoxLayout()
-        legato_row.addStretch()
-        legato_row.addWidget(self.legato_switch)
-        legato_row.addStretch()
+        # legato_row = QHBoxLayout()
+        # legato_row.addStretch()
+        # legato_row.addWidget(self.legato_switch)
+        # legato_row.addStretch()
+        legato_row = self._create_row([self.legato_switch])
         main_rows_vlayout.addLayout(legato_row)
 
         # Portamento Switch
