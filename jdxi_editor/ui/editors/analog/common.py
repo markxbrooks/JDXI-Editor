@@ -89,11 +89,11 @@ class AnalogCommonSection(SectionBaseWidget):
             AnalogParam.PORTAMENTO_TIME, "Portamento Time", vertical=True
         )
         # Pitch Bend
-        self.pitch_bend_row = QHBoxLayout()
-        self.pitch_bend_row.addStretch()
-        self.pitch_bend_row.addWidget(self.pitch_bend_up)
-        self.pitch_bend_row.addWidget(self.pitch_bend_down)
-        self.pitch_bend_row.addWidget(self.portamento_time)
-        self.pitch_bend_row.addStretch()
-        main_rows_vlayout.addLayout(self.pitch_bend_row)
+        pitch_bend_row = QHBoxLayout()
+        pitch_bend_row.addStretch()
+        pitch_bend_row.addWidget(self.pitch_bend_up)
+        pitch_bend_row.addWidget(self.pitch_bend_down)
+        pitch_bend_row.addWidget(self.portamento_time)
+        pitch_bend_row.addStretch()
+        main_rows_vlayout.addLayout(pitch_bend_row)
         main_rows_vlayout.addStretch()
