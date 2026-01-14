@@ -58,6 +58,7 @@ Features:
 from typing import Dict, Union
 
 from decologr import Decologr as log
+from jdxi_editor.ui.widgets.editor.helper import create_vcolumn_layout
 from picomidi.constant import Midi
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import QEvent, Qt
@@ -97,7 +98,7 @@ from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
 from jdxi_editor.ui.editors.effects.data import EffectsData
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
-from jdxi_editor.ui.editors.synth.simple import BasicEditor, create_vcolumn_layout
+from jdxi_editor.ui.editors.synth.simple import BasicEditor
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 

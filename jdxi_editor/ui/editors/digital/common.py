@@ -4,14 +4,12 @@ Common Section
 
 from typing import Callable
 
-import qtawesome as qta
-from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QHBoxLayout
 
-from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
 from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParam
-from jdxi_editor.ui.editors.synth.simple import create_hrow_layout
-from jdxi_editor.ui.widgets.editor.section_base import IconType, SectionBaseWidget
+from jdxi_editor.ui.widgets.editor.helper import create_hrow_layout
+from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
+from jdxi_editor.ui.widgets.editor import IconType
 
 
 class DigitalCommonSection(SectionBaseWidget):

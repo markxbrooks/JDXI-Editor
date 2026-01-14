@@ -10,7 +10,8 @@ from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
 from jdxi_editor.midi.data.parameter.digital.partial import (
     DigitalPartialParam,
 )
-from jdxi_editor.ui.widgets.editor.section_base import IconType, SectionBaseWidget
+from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
+from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 

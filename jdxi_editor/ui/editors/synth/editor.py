@@ -31,7 +31,7 @@ from PySide6.QtGui import QKeySequence, QPixmap, QShortcut, QShowEvent
 from PySide6.QtWidgets import QGroupBox, QLabel, QPushButton, QVBoxLayout, QWidget
 
 from jdxi_editor.jdxi.preset.lists import JDXiPresetToneList
-from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
 from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.log.midi_info import log_midi_info
 from jdxi_editor.midi.channel.channel import MidiChannel
@@ -263,8 +263,6 @@ class SynthEditor(SynthBase):
         instrument_title_group_layout.addWidget(self.instrument_selection_label)
         self.instrument_selection_combo = PresetComboBox(self.preset_list)
         if synth_type == "Analog":
-            from jdxi_editor.jdxi.style.theme_manager import JDXiThemeManager
-
             JDXiThemeManager.apply_combo_box(
                 self.instrument_selection_combo, analog=True
             )
@@ -418,7 +416,6 @@ class SynthEditor(SynthBase):
         :param synth_type: str
         :return: None
         """
-
         if self.preset_type == synth_type:
             # Get title label from widget or direct attribute
             title_label = None
@@ -447,7 +444,7 @@ class SynthEditor(SynthBase):
         """
         selected_synth_text = self._get_selected_instrument_text()
         log.message(f"selected_synth_text: {selected_synth_text}")
-        # Get title label from widget or direct attribute
+        # --- Get title label from widget or direct attribute
         title_label = None
         if hasattr(self, "instrument_preset") and self.instrument_preset:
             title_label = getattr(
@@ -458,7 +455,13 @@ class SynthEditor(SynthBase):
         if title_label:
             title_label.setText(selected_synth_text)
 
-    def update_instrument_preset(self, text):
+    def update_instrument_preset(self, text: str):
+        """
+        update_instrument_preset
+
+        :param text:
+        :return:
+        """
         selected_synth_text = self._get_selected_instrument_text()
         if synth_matches := re.search(
             r"(\d{3}): (\S+).+", selected_synth_text, re.IGNORECASE
@@ -472,7 +475,7 @@ class SynthEditor(SynthBase):
 
     def load_preset(self, preset_index):
         """Load a preset by program change."""
-        # Get the combo box - it might be in instrument_preset widget or directly on self
+        # --- Get the combo box - it might be in instrument_preset widget or directly on self
         combo_box = self._get_instrument_selection_combo()
         if not combo_box:
             log.error("Instrument selection combo box is not available")
@@ -483,7 +486,7 @@ class SynthEditor(SynthBase):
         program_number = preset_name[:3]
         log.message(f"combo box program_number : {program_number}")
 
-        # Get MSB, LSB, PC values from the preset using get_preset_parameter_value
+        # --- Get MSB, LSB, PC values from the preset using get_preset_parameter_value
         msb = get_preset_parameter_value("msb", program_number, self.preset_list)
         lsb = get_preset_parameter_value("lsb", program_number, self.preset_list)
         pc = get_preset_parameter_value("pc", program_number, self.preset_list)
@@ -494,9 +497,9 @@ class SynthEditor(SynthBase):
             )
             return
 
-        # Ensure midi_channel is set - it should be set by _init_synth_data, but check anyway
+        # --- Ensure midi_channel is set - it should be set by _init_synth_data, but check anyway
         if self.midi_channel is None:
-            # Try to determine channel from preset_type
+            # --- Try to determine channel from preset_type
             channel_map = {
                 JDXiSynth.DIGITAL_SYNTH_1: MidiChannel.DIGITAL_SYNTH_1,
                 JDXiSynth.DIGITAL_SYNTH_2: MidiChannel.DIGITAL_SYNTH_2,
@@ -517,7 +520,7 @@ class SynthEditor(SynthBase):
         log.message(f"retrieved msb, lsb, pc : {msb}, {lsb}, {pc}")
         log.message(f"Using MIDI channel: {self.midi_channel}")
         log_midi_info(msb, lsb, pc)
-        # Send bank select and program change
+        # -- Send bank select and program change
         self.midi_helper.send_bank_select_and_program_change(
             self.midi_channel,  # MIDI channel
             msb,  # MSB is already correct
@@ -560,7 +563,7 @@ class SynthEditor(SynthBase):
         elif secondary_image_path and os.path.exists(secondary_image_path):
             file_to_load = secondary_image_path
         else:
-            # Fallback to default image using resource_path
+            # --- Fallback to default image using resource_path
             if hasattr(self, "instrument_icon_folder") and hasattr(
                 self, "instrument_default_image"
             ):
@@ -595,7 +598,7 @@ class SynthEditor(SynthBase):
                 image_label.clear()
             return False
 
-        # Scale maintaining aspect ratio, fitting within width and height constraints
+        # --- Scale maintaining aspect ratio, fitting within width and height constraints
         scaled_pixmap = pixmap.scaled(
             JDXiStyle.INSTRUMENT_IMAGE_WIDTH,
             JDXiStyle.INSTRUMENT_IMAGE_HEIGHT,
@@ -634,10 +637,10 @@ class SynthEditor(SynthBase):
         Get the instrument selection combo box from either the widget or direct attribute.
         Returns None if not found.
         """
-        # Try to get from InstrumentPresetWidget first (for Digital/Drum editors)
+        # --- Try to get from InstrumentPresetWidget first (for Digital/Drum editors)
         if hasattr(self, "instrument_preset") and self.instrument_preset:
             return getattr(self.instrument_preset, "instrument_selection_combo", None)
-        # Fallback to direct attribute (for Analog editor or legacy code)
+        # --- Fallback to direct attribute (for Analog editor or legacy code)
         return getattr(self, "instrument_selection_combo", None)
 
     def _get_instrument_image_label(self):
@@ -662,6 +665,11 @@ class SynthEditor(SynthBase):
         return label
 
     def _get_selected_instrument_text(self) -> str:
+        """
+        _get_selected_instrument_text
+
+        :return: str
+        """
         combo_box = self._get_instrument_selection_combo()
         if combo_box:
             combo = getattr(combo_box, "combo_box", None)
@@ -671,6 +679,11 @@ class SynthEditor(SynthBase):
         return ""
 
     def _parse_instrument_text(self, text: str) -> tuple:
+        """
+        _parse_instrument_text
+        :param text: str
+        :return: tuple name, type_
+        """
         match = re.search(r"(\d{3}) - (\S+)\s(\S+)+", text, re.IGNORECASE)
         if not match:
             log.warning("Instrument text did not match expected pattern.")
@@ -718,144 +731,6 @@ class SynthEditor(SynthBase):
             image_label = self._get_instrument_image_label()
             if image_label:
                 image_label.clear()
-
-    def update_instrument_image_new(self):
-        """Update the instrument image based on the selected synth."""
-        try:
-            # Prepare default image path
-            if not hasattr(self, "instrument_icon_folder") or not hasattr(
-                self, "instrument_default_image"
-            ):
-                log.error(
-                    "Missing attributes: 'instrument_icon_folder' or 'instrument_default_image'"
-                )
-                return
-
-            default_image_path = resource_path(
-                os.path.join(
-                    "resources",
-                    self.instrument_icon_folder,
-                    self.instrument_default_image,
-                )
-            )
-
-            # Extract selected instrument text
-            selected_instrument_text = self._get_selected_instrument_text()
-            if not selected_instrument_text:
-                log.error("Instrument combo box is missing or malformed.")
-                return
-            if not selected_instrument_text:
-                log.warning("No instrument selected.")
-                self.load_and_set_image(default_image_path)
-                return
-
-            log.parameter("Selected instrument text:", selected_instrument_text)
-
-            # Try to extract synth name and type
-            instrument_matches = re.search(
-                r"(\d{3}) - (\S+)\s(\S+)+", selected_instrument_text, re.IGNORECASE
-            )
-
-            if instrument_matches:
-                try:
-                    selected_instrument_name = (
-                        instrument_matches.group(2)
-                        .lower()
-                        .replace("&", "_")
-                        .split("_")[0]
-                    )
-                    selected_instrument_type = (
-                        instrument_matches.group(3)
-                        .lower()
-                        .replace("&", "_")
-                        .split("_")[0]
-                    )
-                    log.parameter("Selected instrument name:", selected_instrument_name)
-                    log.parameter("Selected instrument type:", selected_instrument_type)
-
-                    specific_image_path = resource_path(
-                        os.path.join(
-                            "resources",
-                            self.instrument_icon_folder,
-                            f"{selected_instrument_name}.png",
-                        )
-                    )
-                    generic_image_path = resource_path(
-                        os.path.join(
-                            "resources",
-                            self.instrument_icon_folder,
-                            f"{selected_instrument_type}.png",
-                        )
-                    )
-
-                    image_loaded = self.load_and_set_image(
-                        specific_image_path, generic_image_path
-                    )
-                except Exception as ex:
-                    log.error(f"Error parsing instrument name/type: {ex}")
-                    image_loaded = False
-            else:
-                log.warning("Instrument text did not match expected pattern.")
-                image_loaded = False
-
-            # Fallback to default image
-            if not image_loaded:
-                log.info("Falling back to default instrument image.")
-                if not self.load_and_set_image(default_image_path):
-                    log.error(
-                        "Default instrument image not found. Clearing image label."
-                    )
-                    image_label = self._get_instrument_image_label()
-                    if image_label:
-                        image_label.clear()
-
-        except Exception as e:
-            log.error(f"Unhandled exception in update_instrument_image: {e}")
-
-    def update_instrument_image_old(self):
-        """Update the instrument image based on the selected synth."""
-        default_image_path = resource_path(
-            os.path.join(
-                "resources", self.instrument_icon_folder, self.instrument_default_image
-            )
-        )
-        selected_instrument_text = self._get_selected_instrument_text()
-        log.parameter("Selected instrument text:", selected_instrument_text)
-        # Try to extract synth name from the selected text
-        image_loaded = False
-        if instrument_matches := re.search(
-            r"(\d{3}) - (\S+)\s(\S+)+", selected_instrument_text, re.IGNORECASE
-        ):
-            selected_instrument_name = (
-                instrument_matches.group(2).lower().replace("&", "_").split("_")[0]
-            )
-            log.parameter("selected instrument name:", selected_instrument_name)
-            selected_instrument_type = (
-                instrument_matches.group(3).lower().replace("&", "_").split("_")[0]
-            )
-            log.parameter("Selected instrument type:", selected_instrument_type)
-            specific_image_path = resource_path(
-                os.path.join(
-                    "resources",
-                    self.instrument_icon_folder,
-                    f"{selected_instrument_name}.png",
-                )
-            )
-            generic_image_path = resource_path(
-                os.path.join(
-                    "resources",
-                    self.instrument_icon_folder,
-                    f"{selected_instrument_type}.png",
-                )
-            )
-            image_loaded = self.load_and_set_image(
-                specific_image_path, generic_image_path
-            )
-
-        # Fallback to default image if no specific image is found
-        if not image_loaded:
-            if not self.load_and_set_image(default_image_path):
-                self.instrument_image_label.clear()  # Clear label if default image is also missing
 
     def _update_common_controls(
         self, partial_number: int, filtered_data, successes, failures

@@ -33,38 +33,13 @@ Usage Example:
 
 """
 
-from enum import Enum
 from typing import Literal, Optional
 
-from PySide6.QtWidgets import QVBoxLayout, QWidget, QHBoxLayout
+from PySide6.QtWidgets import QVBoxLayout, QWidget
 
 from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.jdxi.style.theme_manager import JDXiThemeManager
-
-
-class IconType(str, Enum):
-    """Icon row types for sections"""
-    ADSR = "adsr"  # ADSR/envelope-related sections (Filter, Amp, LFO, etc.)
-    OSCILLATOR = "oscillator"  # Oscillator sections
-    GENERIC = "generic"  # Common/general sections
-    NONE = "none"  # No icon row
-
-
-def create_hrow_layout(widget_list: list):
-    """create a row from a list of widgets"""
-    row = QHBoxLayout()
-    row.addStretch()
-    for widget in widget_list:
-        row.addWidget(widget)
-    row.addStretch()
-    return row
-
-
-def create_vcolumn_layout(inner_layout: QHBoxLayout) -> QVBoxLayout:
-    """create vbox layout"""
-    vlayout = QVBoxLayout()
-    vlayout.addLayout(inner_layout)
-    return vlayout
+from jdxi_editor.ui.widgets.editor.icon_type import IconType
 
 
 class SectionBaseWidget(QWidget):

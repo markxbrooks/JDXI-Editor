@@ -26,7 +26,8 @@ from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
-from jdxi_editor.ui.widgets.editor.section_base import IconType, SectionBaseWidget
+from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
+from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 

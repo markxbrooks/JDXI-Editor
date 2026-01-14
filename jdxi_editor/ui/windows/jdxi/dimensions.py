@@ -33,6 +33,9 @@ class JDXiDimensions:
     """
     A class to store dimensions for the JD-Xi editor UI.
     """
+    BASIC_EDITOR_IMAGE_HEIGHT = 150
+    BASIC_EDITOR_WIDTH = 550
+    BASIC_EDITOR_HEIGHT = 550
     DRUM_WIDTH = 1100
     DRUM_HEIGHT = 800
     ANALOG = AnalogDimensions

@@ -25,7 +25,8 @@ from jdxi_editor.midi.data.address.address import (
 )
 from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.ui.widgets.editor.section_base import IconType, SectionBaseWidget
+from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
+from jdxi_editor.ui.widgets.editor import IconType
 
 
 class DrumCommonSection(SectionBaseWidget):

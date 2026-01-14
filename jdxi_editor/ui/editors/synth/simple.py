@@ -40,28 +40,11 @@ import os
 
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
-from PySide6.QtWidgets import QVBoxLayout, QHBoxLayout
 
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.resources import resource_path
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
-
-
-def create_hrow_layout(widget_list: list):
-    """create a row from a list of widgets"""
-    row = QHBoxLayout()
-    row.addStretch()
-    for widget in widget_list:
-        row.addWidget(widget)
-    row.addStretch()
-    return row
-
-
-def create_vcolumn_layout(inner_layout: QHBoxLayout) -> QVBoxLayout:
-    """create vbox layout"""
-    vlayout = QVBoxLayout()
-    vlayout.addLayout(inner_layout)
-    return vlayout
+from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
 class BasicEditor(SynthEditor):
@@ -69,19 +52,18 @@ class BasicEditor(SynthEditor):
 
     def __init__(self, midi_helper: MidiIOHelper, parent=None):
         super().__init__(midi_helper=midi_helper, parent=parent)
-        # self.setFixedWidth(450)
         self.default_image = None
         self.image_label = None
-        self.setMinimumWidth(550)
-        self.setMinimumHeight(550)
+        self.setMinimumWidth(JDXiDimensions.BASIC_EDITOR_WIDTH)
+        self.setMinimumHeight(JDXiDimensions.BASIC_EDITOR_HEIGHT)
 
-    def load_and_set_image(self, image_path, secondary_image_path=None):
+    def load_and_set_image(self, image_path: str, secondary_image_path: str = None):
         """Helper function to load and set the image on the label."""
         if os.path.exists(image_path):
             pixmap = QPixmap(image_path)
             scaled_pixmap = pixmap.scaledToHeight(
-                150, Qt.TransformationMode.SmoothTransformation
-            )  # Resize to 250px height
+                JDXiDimensions.BASIC_EDITOR_IMAGE_HEIGHT, Qt.TransformationMode.SmoothTransformation
+            )  # Resize to 150px height
             self.image_label.setPixmap(scaled_pixmap)
             return True
         return False

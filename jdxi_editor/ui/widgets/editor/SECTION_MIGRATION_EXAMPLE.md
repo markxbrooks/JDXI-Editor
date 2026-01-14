@@ -38,17 +38,19 @@ class DigitalFilterSection(QWidget):
 ### After (Automatic Icon Row)
 
 ```python
-from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget, IconType
+from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
+from jdxi_editor.ui.widgets.editor import IconType
+
 
 class DigitalFilterSection(SectionBaseWidget):
     def __init__(self, ...):
         super().__init__(icon_type=IconType.ADSR, analog=False)
         # ... initialization ...
         self.setup_ui()
-    
+
     def setup_ui(self):
         layout = self.get_layout()  # Icon row already added!
-        
+
         # Rest of UI setup...
         layout.addWidget(my_widget)
 ```
