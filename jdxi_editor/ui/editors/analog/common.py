@@ -90,11 +90,10 @@ class AnalogCommonSection(SectionBaseWidget):
         )
         # Pitch Bend
         self.pitch_bend_row = QHBoxLayout()
-        main_rows_vlayout.addLayout(self.pitch_bend_row)
         self.pitch_bend_row.addStretch()
         self.pitch_bend_row.addWidget(self.pitch_bend_up)
         self.pitch_bend_row.addWidget(self.pitch_bend_down)
         self.pitch_bend_row.addWidget(self.portamento_time)
         self.pitch_bend_row.addStretch()
-
+        main_rows_vlayout.addLayout(self.pitch_bend_row)
         main_rows_vlayout.addStretch()
