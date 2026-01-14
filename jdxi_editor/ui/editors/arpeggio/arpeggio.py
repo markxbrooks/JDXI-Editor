@@ -50,7 +50,10 @@ from PySide6.QtWidgets import (
 
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.midi.data.address.address import ZERO_BYTE, RolandSysExAddress
+from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
+from jdxi_editor.ui.widgets.editor.simple_editor_helper import SimpleEditorHelper
 from jdxi_editor.midi.data.address.arpeggio import ArpeggioAddress
 from jdxi_editor.midi.data.arpeggio.arpeggio import (
     ArpeggioDuration,
@@ -66,7 +69,6 @@ from jdxi_editor.midi.data.parameter.arpeggio import ArpeggioParam
 from jdxi_editor.midi.data.parameter.program.zone import ProgramZoneParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
-from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 
 
 class ArpeggioEditor(BasicEditor):
@@ -96,8 +98,6 @@ class ArpeggioEditor(BasicEditor):
             lsb=ZERO_BYTE,
         )
         self.partial_number = 0
-        self.instrument_icon_folder = "arpeggiator"
-        self.default_image = "arpeggiator2.png"
         self.controls: Dict[AddressParameter, QWidget] = {}
 
         if parent:
@@ -111,35 +111,25 @@ class ArpeggioEditor(BasicEditor):
                 elif parent.current_synth_type == "Digital 4":
                     self.partial_number = 3
 
-        # Main layout
-        layout = QVBoxLayout()
-        self.setLayout(layout)
+        # Use EditorBaseWidget for consistent scrollable layout structure
+        self.base_widget = EditorBaseWidget(parent=self, analog=False)
+        self.base_widget.setup_scrollable_content()
+        
+        # Use SimpleEditorHelper for standardized title/image/tab setup
+        self.editor_helper = SimpleEditorHelper(
+            editor=self,
+            base_widget=self.base_widget,
+            title="Arpeggiator",
+            image_folder="arpeggiator",
+            default_image="arpeggiator2.png"
+        )
 
-        self.title_label = DigitalTitle(tone_name="Arpeggiator")
-        from jdxi_editor.jdxi.style.theme_manager import JDXiThemeManager
-
-        JDXiThemeManager.apply_instrument_title_label(self.title_label)
-
-        # Image display
-        self.image_label = QLabel()
-        self.image_label.setAlignment(
-            Qt.AlignmentFlag.AlignCenter
-        )  # Center align the image
-
-        title_group_box = QGroupBox()
-        title_group_layout = QHBoxLayout()
-        title_group_box.setLayout(title_group_layout)
-        title_group_layout.addWidget(self.title_label)
-        title_group_layout.addWidget(self.image_label)
-
-        self.update_instrument_image()
-
-        main_row_hlayout = QHBoxLayout()
-        layout.addLayout(main_row_hlayout)
-        main_row_hlayout.addStretch()
-        rows_layout = QVBoxLayout()
-        main_row_hlayout.addLayout(rows_layout)
-        rows_layout.addWidget(title_group_box)
+        # Get rows layout to add additional content (icon row and switches)
+        rows_layout = self.editor_helper.get_rows_layout()
+        
+        # Icons row (standardized across editor tabs)
+        icon_hlayout = IconRegistry.create_generic_musical_icon_row()
+        rows_layout.addLayout(icon_hlayout)
         # Add on-off switch
         program_zone_row = QHBoxLayout()
         common_button = self._create_parameter_switch(
@@ -225,4 +215,9 @@ class ArpeggioEditor(BasicEditor):
         motif_row.addWidget(self.motif_combo)
         rows_layout.addLayout(motif_row)
         rows_layout.addStretch()
-        main_row_hlayout.addStretch()
+        
+        # Add base widget to editor's layout
+        if not hasattr(self, 'main_layout') or self.main_layout is None:
+            self.main_layout = QVBoxLayout(self)
+            self.setLayout(self.main_layout)
+        self.main_layout.addWidget(self.base_widget)

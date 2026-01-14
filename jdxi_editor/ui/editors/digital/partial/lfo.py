@@ -16,14 +16,14 @@ from PySide6.QtWidgets import (
 )
 
 from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
-from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.midi.data.parameter.digital.partial import (
     DigitalPartialParam,
 )
+from jdxi_editor.ui.widgets.editor.section_base import IconType, SectionBaseWidget
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
-class DigitalLFOSection(QWidget):
+class DigitalLFOSection(SectionBaseWidget):
     """LFO section for the digital partial editor."""
 
     def __init__(
@@ -33,7 +33,6 @@ class DigitalLFOSection(QWidget):
         create_parameter_combo_box: Callable,
         controls: dict,
     ):
-        super().__init__()
         self.lfo_shape = None
         """
         Initialize the DigitalLFOSection
@@ -46,17 +45,13 @@ class DigitalLFOSection(QWidget):
         self._create_parameter_switch = create_parameter_switch
         self._create_parameter_combo_box = create_parameter_combo_box
         self.controls = controls
+        
+        super().__init__(icon_type=IconType.ADSR, analog=False)
         self.setup_ui()
 
     def setup_ui(self):
         """Set up the UI for the LFO section."""
-        layout = QVBoxLayout()
-        self.setLayout(layout)
-        JDXiThemeManager.apply_adsr_style(self, analog=False)
-
-        # Icons row
-        icons_hlayout = IconRegistry.create_adsr_icons_row()
-        layout.addLayout(icons_hlayout)
+        layout = self.get_layout()
 
         # Shape and sync controls
         shape_row_layout = QHBoxLayout()

@@ -69,6 +69,7 @@ from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.jdxi.preset.lists import JDXiPresetToneList
 from jdxi_editor.jdxi.program.program import JDXiProgram
 from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
+from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.log.midi_info import log_midi_info
@@ -281,34 +282,34 @@ class ProgramEditor(BasicEditor):
         self.main_tab_widget = QTabWidget()
         main_vlayout.addWidget(self.main_tab_widget)
 
-        # --- Scrolled area for Programs/Presets tab
-        # --- Scrollable area setup
-        scrolled_area = QScrollArea()
-        scrolled_area.setWidgetResizable(True)
-
-        scrolled_area_container = QWidget()
-        scrolled_area_container_layout = QVBoxLayout(scrolled_area_container)
-        scrolled_area_container_layout.addStretch()
-
-        scrolled_area.setWidget(scrolled_area_container)
-
-        self.title_vlayout = QVBoxLayout()
-        self.title_hlayout = QHBoxLayout()
+        # --- Use EditorBaseWidget for Programs/Presets tab
+        self.base_widget = EditorBaseWidget(parent=self, analog=False)
+        self.base_widget.setup_scrollable_content()
+        container_layout = self.base_widget.get_container_layout()
+        
+        # Create centered content widget
+        centered_content = QWidget()
+        self.title_vlayout = QVBoxLayout(centered_content)
         self.title_vlayout.addStretch()
-        self.title_vlayout.addLayout(self.title_hlayout)
+        
+        self.title_hlayout = QHBoxLayout()
         self.title_hlayout.addStretch()
-
+        
         self.title_left_vlayout = QVBoxLayout()
         self.title_hlayout.addLayout(self.title_left_vlayout)
 
         self.title_right_vlayout = QVBoxLayout()
         self.title_hlayout.addLayout(self.title_right_vlayout)
+        
+        self.title_hlayout.addStretch()
+        self.title_vlayout.addLayout(self.title_hlayout)
+        self.title_vlayout.addStretch()
+        
+        # Add centered content to base widget
+        self.base_widget.add_centered_content(centered_content)
 
-        scrolled_area_container_layout.addLayout(self.title_vlayout)
-        scrolled_area_container_layout.addStretch()
-
-        # Add Programs/Presets tab to main tab widget
-        self.main_tab_widget.addTab(scrolled_area, "Programs & Presets")
+        # Add Programs/Presets tab to main tab widget (base widget contains the scroll area)
+        self.main_tab_widget.addTab(self.base_widget, "Programs & Presets")
 
         # Add User Programs tab to main tab widget
         try:

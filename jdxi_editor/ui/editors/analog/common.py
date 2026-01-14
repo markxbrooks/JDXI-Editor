@@ -8,11 +8,11 @@ from typing import Callable
 from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget
 
 from jdxi_editor.jdxi.style import JDXiThemeManager
-from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.midi.data.parameter.analog import AnalogParam
+from jdxi_editor.ui.widgets.editor.section_base import IconType, SectionBaseWidget
 
 
-class AnalogCommonSection(QWidget):
+class AnalogCommonSection(SectionBaseWidget):
     """Common section for analog synth parameters."""
 
     def __init__(
@@ -22,7 +22,6 @@ class AnalogCommonSection(QWidget):
         create_parameter_combo_box: Callable,
         controls: dict,
     ):
-        super().__init__()
         """
         Initialize the AnalogCommonSection
 
@@ -35,18 +34,15 @@ class AnalogCommonSection(QWidget):
         self._create_parameter_switch = create_parameter_switch
         self._create_parameter_combo_box = create_parameter_combo_box
         self.controls = controls
-        JDXiThemeManager.apply_adsr_style(self, analog=True)
+        
+        super().__init__(icon_type=IconType.GENERIC, analog=True)
         self.init_ui()
 
     def init_ui(self):
         """
         init ui
         """
-        main_rows_vlayout = QVBoxLayout()
-        self.setLayout(main_rows_vlayout)
-
-        icons_hlayout = IconRegistry.create_generic_musical_icon_row()
-        main_rows_vlayout.addLayout(icons_hlayout)
+        main_rows_vlayout = self.get_layout()
 
         # Mono Switch
         self.octave_shift_switch = self._create_parameter_combo_box(

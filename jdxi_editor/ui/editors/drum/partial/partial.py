@@ -44,6 +44,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
@@ -82,6 +83,10 @@ class DrumPartialSection(QWidget):
 
         main_rows_vlayout = QVBoxLayout()
         main_row_hlayout.addLayout(main_rows_vlayout)
+
+        # Icons row (standardized across editor tabs)
+        icon_hlayout = IconRegistry.create_adsr_icons_row()
+        main_rows_vlayout.addLayout(icon_hlayout)
 
         self.partial_controls_tab_widget = QTabWidget()
         main_rows_vlayout.addWidget(self.partial_controls_tab_widget)

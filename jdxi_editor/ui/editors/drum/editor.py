@@ -74,6 +74,7 @@ from PySide6.QtWidgets import (
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.jdxi.preset.widget import InstrumentPresetWidget
 from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.midi.data.address.address import AddressOffsetProgramLMB
 from jdxi_editor.midi.data.drum.data import JDXiMapPartialDrum
@@ -165,14 +166,17 @@ class DrumCommonEditor(SynthEditor):
 
         self.presets_parts_tab_widget.addTab(instrument_widget, "Drum Kit Presets")
 
-        scroll = QScrollArea()
-        scroll.setWidgetResizable(True)
-        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
-        scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
-
+        # Use EditorBaseWidget for consistent scrollable layout structure
+        self.base_widget = EditorBaseWidget(parent=self, analog=False)
+        self.base_widget.setup_scrollable_content()
+        container_layout = self.base_widget.get_container_layout()
+        
+        # Add partial_tab_widget to the container
         self.partial_tab_widget.setStyleSheet(JDXiStyle.TABS_DRUMS)
-        scroll.setWidget(self.partial_tab_widget)
-        self.presets_parts_tab_widget.addTab(scroll, "Drum Kit Parts")
+        container_layout.addWidget(self.partial_tab_widget)
+        
+        # Add the base widget as the second tab (it contains the scroll area)
+        self.presets_parts_tab_widget.addTab(self.base_widget, "Drum Kit Parts")
 
         self.presets_parts_tab_widget.setStyleSheet(JDXiStyle.TABS_DRUMS)
         self.partial_tab_widget.setStyleSheet(JDXiStyle.TABS_DRUMS)

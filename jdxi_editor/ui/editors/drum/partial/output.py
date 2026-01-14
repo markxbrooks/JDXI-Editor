@@ -43,6 +43,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
@@ -81,6 +82,10 @@ class DrumOutputSection(QWidget):
         # Add widgets to scrolled_layout here if needed
 
         scroll_area.setWidget(scrolled_widget)
+
+        # Icons row (standardized across editor tabs)
+        icon_hlayout = IconRegistry.create_adsr_icons_row()
+        scrolled_layout.addLayout(icon_hlayout)
 
         main_row_hlayout = QHBoxLayout()
         main_row_hlayout.addStretch()

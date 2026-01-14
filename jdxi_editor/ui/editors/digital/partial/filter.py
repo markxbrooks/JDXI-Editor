@@ -17,18 +17,18 @@ from PySide6.QtWidgets import (
 )
 
 from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
-from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
+from jdxi_editor.ui.widgets.editor.section_base import IconType, SectionBaseWidget
 from jdxi_editor.ui.widgets.filter.filter import FilterWidget
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
-class DigitalFilterSection(QWidget):
+class DigitalFilterSection(SectionBaseWidget):
     """Filter section for the digital partial editor."""
 
     def __init__(
@@ -40,7 +40,6 @@ class DigitalFilterSection(QWidget):
         controls: dict,
         address: RolandSysExAddress,
     ):
-        super().__init__()
         """
         Initialize the DigitalFilterSection
 
@@ -58,21 +57,14 @@ class DigitalFilterSection(QWidget):
         self._create_parameter_slider = create_parameter_slider
         self._create_parameter_switch = create_parameter_switch
 
+        super().__init__(icon_type=IconType.ADSR, analog=False)
         self.setup_ui()
         log.parameter(f"initialization complete for", self)
 
     def setup_ui(self):
         """Set up the UI for the filter section."""
-        layout = QVBoxLayout()
-        self.setLayout(layout)
-        layout.setContentsMargins(5, 15, 5, 5)
-        layout.setSpacing(5)
-        JDXiThemeManager.apply_adsr_style(self, analog=False)
+        layout = self.get_layout(margins=(5, 15, 5, 5), spacing=5)
         self.setMinimumHeight(JDXiDimensions.EDITOR_MINIMUM_HEIGHT)
-
-        # Icons
-        icon_hlayout = IconRegistry.create_adsr_icons_row()
-        layout.addLayout(icon_hlayout)
 
         # Filter mode and slope
         filter_mode_row = self._create_filter_controls_row()

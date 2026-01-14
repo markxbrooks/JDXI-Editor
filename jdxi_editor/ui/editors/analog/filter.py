@@ -6,7 +6,6 @@ from typing import Callable
 
 import qtawesome as qta
 
-from jdxi_editor.jdxi.style.icons import IconRegistry
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
@@ -23,10 +22,11 @@ from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.parameter.analog import AnalogParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
+from jdxi_editor.ui.widgets.editor.section_base import IconType, SectionBaseWidget
 from jdxi_editor.ui.widgets.filter.analog_filter import AnalogFilterWidget
 
 
-class AnalogFilterSection(QWidget):
+class AnalogFilterSection(SectionBaseWidget):
     """Analog Filter Section"""
 
     def __init__(
@@ -39,7 +39,6 @@ class AnalogFilterSection(QWidget):
         controls: dict[AddressParameter, QWidget],
         address: RolandSysExAddress,
     ):
-        super().__init__()
         """
         Initialize the AnalogFilterSection
 
@@ -59,16 +58,13 @@ class AnalogFilterSection(QWidget):
         self.midi_helper = midi_helper
         self.address = address
         self.controls = controls
+
+        super().__init__(icon_type=IconType.ADSR, analog=True)
         self.init_ui()
 
     def init_ui(self):
         """Initialize the UI"""
-        layout = QVBoxLayout()
-        self.setLayout(layout)
-
-        # --- Add fancy icons ---
-        adsr_icon_row_layout = IconRegistry.create_adsr_icons_row()
-        layout.addLayout(adsr_icon_row_layout)
+        layout = self.get_layout()
 
         self.analog_filter_tab_widget = QTabWidget()
         JDXiThemeManager.apply_tabs_style(self.analog_filter_tab_widget, analog=True)

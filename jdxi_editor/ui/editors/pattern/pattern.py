@@ -45,6 +45,7 @@ from rtmidi.midiconstants import CONTROL_CHANGE, NOTE_ON
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.jdxi.style.icons import IconRegistry
+from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.io.data.options import DIGITAL_OPTIONS, DRUM_OPTIONS
@@ -106,7 +107,14 @@ class PatternSequenceEditor(SynthEditor):
                 self.load_from_midi_file_editor()
 
     def _setup_ui(self):
-        self.layout = QVBoxLayout()
+        # Use EditorBaseWidget for consistent scrollable layout structure
+        self.base_widget = EditorBaseWidget(parent=self, analog=False)
+        self.base_widget.setup_scrollable_content()
+        container_layout = self.base_widget.get_container_layout()
+        
+        # Create content widget with main layout
+        content_widget = QWidget()
+        self.layout = QVBoxLayout(content_widget)
         row_labels = ["Digital Synth 1", "Digital Synth 2", "Analog Synth", "Drums"]
         self.buttons = [[] for _ in range(4)]
         self.mute_buttons = []  # List to store mute buttons
@@ -345,7 +353,15 @@ class PatternSequenceEditor(SynthEditor):
         splitter.setStretchFactor(1, 1)  # Sequencer stretches
 
         self.layout.addWidget(splitter)
-        self.setLayout(self.layout)
+        
+        # Add content widget to base widget
+        container_layout.addWidget(content_widget)
+        
+        # Add base widget to editor's layout
+        if not hasattr(self, 'main_layout') or self.main_layout is None:
+            self.main_layout = QVBoxLayout(self)
+            self.setLayout(self.main_layout)
+        self.main_layout.addWidget(self.base_widget)
 
     def ui_generate_button_row(self, row_index: int, visible: bool = False):
         """generate sequencer button row"""

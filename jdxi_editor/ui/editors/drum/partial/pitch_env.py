@@ -52,6 +52,7 @@ from PySide6.QtWidgets import (
 )
 
 from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
+from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
@@ -311,6 +312,10 @@ class DrumPitchEnvSection(QWidget):
         scrolled_widget = QWidget()
         scrolled_layout = QVBoxLayout(scrolled_widget)
         scroll_area.setWidget(scrolled_widget)
+
+        # Icons row (standardized across editor tabs)
+        icon_hlayout = IconRegistry.create_adsr_icons_row()
+        scrolled_layout.addLayout(icon_hlayout)
 
         # Main container with controls and plot
         main_container = QWidget()

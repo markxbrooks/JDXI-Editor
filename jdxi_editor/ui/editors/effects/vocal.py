@@ -37,6 +37,9 @@ from PySide6.QtWidgets import (
 
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
+from jdxi_editor.jdxi.style.icons import IconRegistry
+from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
+from jdxi_editor.ui.widgets.editor.simple_editor_helper import SimpleEditorHelper
 from jdxi_editor.midi.data.address.address import (
     ZERO_BYTE,
     AddressOffsetProgramLMB,
@@ -58,7 +61,6 @@ from jdxi_editor.midi.data.vocal_effects.vocal import (
 )
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
-from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 
 
 class VocalFXEditor(BasicEditor):
@@ -82,82 +84,34 @@ class VocalFXEditor(BasicEditor):
         from jdxi_editor.jdxi.style.theme_manager import JDXiThemeManager
 
         JDXiThemeManager.apply_editor_style(self)
-        JDXiThemeManager.apply_tabs_style(self)
 
-        # Main layout
-
-        main_layout = QVBoxLayout()
-        self.setLayout(main_layout)
+        # Use EditorBaseWidget for consistent scrollable layout structure
+        self.base_widget = EditorBaseWidget(parent=self, analog=False)
+        self.base_widget.setup_scrollable_content()
+        
+        # Use SimpleEditorHelper for standardized title/image/tab setup
+        self.editor_helper = SimpleEditorHelper(
+            editor=self,
+            base_widget=self.base_widget,
+            title="Vocal Effects",
+            image_folder="vocal_fx",
+            default_image="vocal_fx.png"
+        )
 
         self.controls: Dict[AddressParameter, QWidget] = {}
 
-        # Create scroll area
-        scroll = QScrollArea()
-        scroll.setWidgetResizable(True)
-        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
-        scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
-
-        # Create container widget for scroll area
-        container = QWidget()
-        container_hlayout = QHBoxLayout()
-        container.setLayout(container_hlayout)
-        container_layout = QVBoxLayout()
-        container_hlayout.addStretch()
-        container_hlayout.addLayout(container_layout)
-        container_hlayout.addStretch()
-
-        # self.title_label = QLabel("Vocal Effects")
-        self.title_label = DigitalTitle()
-        self.title_label.setText("Vocal Effects")
-        from jdxi_editor.jdxi.style.theme_manager import JDXiThemeManager
-
-        JDXiThemeManager.apply_instrument_title_label(self.title_label)
-        title_layout = QHBoxLayout()
-        title_layout.addWidget(self.title_label)
-
-        main_rows_hlayout = QHBoxLayout()
-        main_layout.addLayout(main_rows_hlayout)
-        container_layout.addLayout(main_rows_hlayout)
-
-        # Image display
-        self.image_label = QLabel()
-        self.image_label.setAlignment(
-            Qt.AlignmentFlag.AlignCenter
-        )  # Center align the image
-        self.default_image = "vocal_fx.png"
-        self.instrument_icon_folder = "vocal_fx"
-        container_layout.addWidget(self.image_label)
-        self.update_instrument_image()
-        ###
-        title_group_box = QGroupBox()
-        title_group_layout = QHBoxLayout()
-        title_group_box.setLayout(title_group_layout)
-        title_group_layout.addWidget(self.title_label)
-        title_group_layout.addWidget(self.image_label)
-
-        main_row_hlayout = QHBoxLayout()
-        main_rows_hlayout.addLayout(main_row_hlayout)
-        main_row_hlayout.addStretch()
-        rows_layout = QVBoxLayout()
-        main_row_hlayout.addLayout(rows_layout)
-        rows_layout.addWidget(title_group_box)
-
-        main_rows_hlayout.addLayout(rows_layout)
-        main_row_hlayout.addStretch()
-        ###
-
-        self.tab_widget = QTabWidget()
+        # Get tab widget from helper and add tabs
+        self.tab_widget = self.editor_helper.get_tab_widget()
         self.tab_widget.addTab(self._create_common_section(), "Common")
         self.tab_widget.addTab(self._create_vocal_effect_section(), "Vocal FX")
         self.tab_widget.addTab(self._create_mixer_section(), "Mixer")
         self.tab_widget.addTab(self._create_auto_pitch_section(), "Auto Pitch")
-
-        # Add sections to container
-        container_layout.addWidget(self.tab_widget)
-
-        # Add container to scroll area
-        scroll.setWidget(container)
-        main_layout.addWidget(scroll)
+        
+        # Add base widget to editor's layout
+        if not hasattr(self, 'main_layout') or self.main_layout is None:
+            self.main_layout = QVBoxLayout(self)
+            self.setLayout(self.main_layout)
+        self.main_layout.addWidget(self.base_widget)
 
     def _create_common_section(self) -> QWidget:
         """
@@ -168,6 +122,11 @@ class VocalFXEditor(BasicEditor):
         common_section = QWidget()
         layout = QVBoxLayout()
         common_section.setLayout(layout)
+        
+        # Icons row (standardized across editor tabs)
+        icon_hlayout = IconRegistry.create_generic_musical_icon_row()
+        layout.addLayout(icon_hlayout)
+        
         self.program_tempo = self._create_parameter_slider(
             ProgramCommonParam.PROGRAM_TEMPO, "Tempo"
         )
@@ -217,6 +176,10 @@ class VocalFXEditor(BasicEditor):
         vocal_effect_section = QWidget()
         layout = QVBoxLayout()
         vocal_effect_section.setLayout(layout)
+        
+        # Icons row (standardized across editor tabs)
+        icon_hlayout = IconRegistry.create_adsr_icons_row()
+        layout.addLayout(icon_hlayout)
 
         # Add vocoder switch
         switch_row = QHBoxLayout()
@@ -293,6 +256,10 @@ class VocalFXEditor(BasicEditor):
         mixer_section = QWidget()
         layout = QVBoxLayout()
         mixer_section.setLayout(layout)
+        
+        # Icons row (standardized across editor tabs)
+        icon_hlayout = IconRegistry.create_adsr_icons_row()
+        layout.addLayout(icon_hlayout)
 
         # Level and Pan
         self.level = self._create_parameter_slider(
@@ -338,6 +305,10 @@ class VocalFXEditor(BasicEditor):
         self.auto_pitch_group = auto_pitch_section  # Store reference
         layout = QVBoxLayout()
         auto_pitch_section.setLayout(layout)
+        
+        # Icons row (standardized across editor tabs)
+        icon_hlayout = IconRegistry.create_adsr_icons_row()
+        layout.addLayout(icon_hlayout)
 
         self.pitch_switch = self._create_parameter_switch(
             VocalFXParam.AUTO_PITCH_SWITCH,

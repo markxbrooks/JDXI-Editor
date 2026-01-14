@@ -60,9 +60,9 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from jdxi_editor.jdxi.preset.helper import create_scroll_area, create_scroll_container
 from jdxi_editor.jdxi.preset.widget import InstrumentPresetWidget
 from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
+from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.log.midi_info import log_midi_info
@@ -193,16 +193,22 @@ class AnalogSynthEditor(SynthEditor):
         JDXiThemeManager.apply_tabs_style(self, analog=True)
         JDXiThemeManager.apply_editor_style(self, analog=True)
 
-        self.setup_main_layout()
-        self.scroll = create_scroll_area()
-        self.main_layout.addWidget(self.scroll)
+        # Use EditorBaseWidget for consistent layout structure
+        self.base_widget = EditorBaseWidget(parent=self, analog=True)
+        self.base_widget.setup_scrollable_content()
+        
+        # Add base widget to editor's layout (if editor has a layout)
+        if not hasattr(self, 'main_layout') or self.main_layout is None:
+            self.main_layout = QVBoxLayout(self)
+            self.setLayout(self.main_layout)
+        self.main_layout.addWidget(self.base_widget)
+        
+        # Store references for backward compatibility
+        self.scroll = self.base_widget.get_scroll_area()
 
-        container, container_layout = create_scroll_container()
-        self.scroll.setWidget(container)
-
+        # Set up instrument preset widget
         self.instrument_preset = InstrumentPresetWidget(parent=self)
         self.instrument_preset.setup_header_layout()
-
         self.instrument_preset.setup()
 
         self.instrument_preset_group = (
@@ -221,10 +227,8 @@ class AnalogSynthEditor(SynthEditor):
 
         self.update_instrument_image()
 
-        # --- Tab sections
-        self.tab_widget = QTabWidget()
-        JDXiThemeManager.apply_tabs_style(self.tab_widget, analog=True)
-        container_layout.addWidget(self.tab_widget)
+        # Create tab widget and add preset as first tab
+        self.tab_widget = self.base_widget.create_tab_widget()
         self.tab_widget.addTab(self.instrument_preset, "Presets")
 
         # --- Configure sliders
@@ -232,13 +236,6 @@ class AnalogSynthEditor(SynthEditor):
             if isinstance(slider, QSlider):
                 slider.setTickPosition(QSlider.TickPosition.TicksBothSides)
                 slider.setTickInterval(10)
-
-        self.scroll.setWidget(container)
-
-    def setup_main_layout(self):
-        """set up main layout"""
-        self.main_layout = QVBoxLayout()
-        self.setLayout(self.main_layout)
 
     def _create_sections(self):
         """Create the sections for the Analog Synth Editor."""

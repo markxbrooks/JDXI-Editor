@@ -29,6 +29,7 @@ Dependencies:
 
 """
 
+import logging
 from typing import Dict, Optional, Union
 
 from decologr import Decologr as log
@@ -49,6 +50,7 @@ from PySide6.QtWidgets import (
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.jdxi.preset.widget import InstrumentPresetWidget
 from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
+from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 from jdxi_editor.jdxi.synth.factory import create_synth_data
 from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.log.slider_parameter import log_slider_parameters
@@ -68,7 +70,7 @@ from jdxi_editor.ui.editors.digital import (
 )
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.widgets.panel.partial import PartialsPanel
-from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions, DigitalDimensions
+from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
 class DigitalSynthEditor(SynthEditor):
@@ -147,16 +149,25 @@ class DigitalSynthEditor(SynthEditor):
 
     def setup_ui(self):
         """set up user interface"""
-        self.setMinimumSize(DigitalDimensions.MIN_WIDTH, DigitalDimensions.MIN_HEIGHT)
-        self.resize(DigitalDimensions.WIDTH, DigitalDimensions.HEIGHT)
+        self.setMinimumSize(850, 300)
+        self.resize(1030, 600)
         from jdxi_editor.jdxi.style.theme_manager import JDXiThemeManager
 
         JDXiThemeManager.apply_tabs_style(self)
         JDXiThemeManager.apply_editor_style(self)
 
-        # Main layout
-        main_layout = QVBoxLayout()
-        self.setLayout(main_layout)
+        # Use EditorBaseWidget for consistent layout structure
+        self.base_widget = EditorBaseWidget(parent=self, analog=False)
+        self.base_widget.setup_scrollable_content(spacing=5, margins=(5, 5, 5, 5))
+        
+        # Get container layout for adding content
+        container_layout = self.base_widget.get_container_layout()
+        
+        # Add base widget to editor's layout
+        if not hasattr(self, 'main_layout') or self.main_layout is None:
+            self.main_layout = QVBoxLayout(self)
+            self.setLayout(self.main_layout)
+        self.main_layout.addWidget(self.base_widget)
 
         # === Top half ===
         instrument_widget = QWidget()
@@ -169,15 +180,6 @@ class DigitalSynthEditor(SynthEditor):
 
         for switch in self.partials_panel.switches.values():
             switch.stateChanged.connect(self._on_partial_state_changed)
-
-        scroll = QScrollArea()
-        scroll.setWidgetResizable(True)
-
-        container = QWidget()
-        container_layout = QVBoxLayout()
-        container_layout.setSpacing(DigitalDimensions.SPACING)  # Reduced spacing
-        container_layout.setContentsMargins(DigitalDimensions.MARGIN, DigitalDimensions.MARGIN, DigitalDimensions.MARGIN, DigitalDimensions.MARGIN)  # Reduced margins
-        container.setLayout(container_layout)
 
         # Use InstrumentPresetWidget for consistent layout
         self.instrument_preset = InstrumentPresetWidget(parent=self)
@@ -201,14 +203,16 @@ class DigitalSynthEditor(SynthEditor):
 
         instrument_layout.addWidget(self.instrument_preset)
         instrument_layout.setSpacing(5)  # Minimal spacing
+        
+        # Add partials panel directly to container
         container_layout.addWidget(self.partials_panel)
         container_layout.setSpacing(5)  # Minimal spacing instead of stretch
+        
+        # Create partial tab widget
         self.partial_tab_widget = QTabWidget()
         instrument_widget.setLayout(instrument_layout)
         self.partial_tab_widget.addTab(instrument_widget, "Presets")
         self._create_partial_tab_widget(container_layout, self.midi_helper)
-        scroll.setWidget(container)
-        main_layout.addWidget(scroll)
 
     def _create_partial_tab_widget(
         self, container_layout: QVBoxLayout, midi_helper: MidiIOHelper
@@ -715,14 +719,14 @@ class DigitalSynthEditor(SynthEditor):
         selected_waveform = waveform_map.get(value)
 
         if selected_waveform is None:
-            log.warning("Unknown waveform value: %s", value)
+            logging.warning("Unknown waveform value: %s", value)
             return
 
         log.parameter(f"Waveform value {value} found, selecting", selected_waveform)
 
         # Retrieve waveform buttons for the given partial
         if partial_number not in self.partial_editors:
-            log.warning(f"Partial editor {partial_number} not found")
+            logging.warning(f"Partial editor {partial_number} not found")
             return
 
         wave_buttons = self.partial_editors[partial_number].oscillator_tab.wave_buttons
@@ -738,7 +742,7 @@ class DigitalSynthEditor(SynthEditor):
             selected_btn.setChecked(True)
             selected_btn.setStyleSheet(JDXiStyle.BUTTON_RECT)
         else:
-            log.warning("Waveform button not found for: %s", selected_waveform)
+            logging.warning("Waveform button not found for: %s", selected_waveform)
 
 
 class DigitalSynth2Editor(DigitalSynthEditor):

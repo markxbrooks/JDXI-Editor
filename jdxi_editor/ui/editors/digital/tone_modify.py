@@ -9,9 +9,10 @@ from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget
 from jdxi_editor.jdxi.style import JDXiThemeManager
 from jdxi_editor.midi.data.lfo.lfo import LFOSyncNote
 from jdxi_editor.midi.data.parameter.digital.modify import DigitalModifyParam
+from jdxi_editor.ui.widgets.editor.section_base import IconType, SectionBaseWidget
 
 
-class DigitalToneModifySection(QWidget):
+class DigitalToneModifySection(SectionBaseWidget):
     def __init__(
         self,
         create_parameter_slider: Callable,
@@ -27,21 +28,21 @@ class DigitalToneModifySection(QWidget):
         :param create_parameter_switch: Callable
         :param controls: dict
         """
-        super().__init__()
         self._create_parameter_slider = create_parameter_slider
         self._create_parameter_combo_box = create_parameter_combo_box
         self._create_parameter_switch = create_parameter_switch
         self.controls = controls
-        JDXiThemeManager.apply_adsr_style(self, analog=False)
+        
+        super().__init__(icon_type=IconType.ADSR, analog=False)
         self.init_ui()
 
     def init_ui(self):
         """
         Initialize the UI for the DigitalToneModifySection
         """
-        main_rows_vlayout = QVBoxLayout()
+        main_rows_vlayout = self.get_layout()
+
         slider_row_layout = QHBoxLayout()
-        self.setLayout(main_rows_vlayout)
         main_rows_vlayout.addLayout(slider_row_layout)
         slider_row_layout.addStretch()
 

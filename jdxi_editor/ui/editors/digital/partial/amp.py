@@ -26,10 +26,11 @@ from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
+from jdxi_editor.ui.widgets.editor.section_base import IconType, SectionBaseWidget
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
-class DigitalAmpSection(QWidget):
+class DigitalAmpSection(SectionBaseWidget):
     """Digital Amp Section for the JDXI Editor"""
 
     def __init__(
@@ -40,7 +41,6 @@ class DigitalAmpSection(QWidget):
         controls: dict[AddressParameter, QWidget],
         address: RolandSysExAddress,
     ):
-        super().__init__()
         """
         Initialize the DigitalAmpSection
 
@@ -55,20 +55,16 @@ class DigitalAmpSection(QWidget):
         self.address = address
         self.controls = controls
         self._create_parameter_slider = create_parameter_slider
+        
+        super().__init__(icon_type=IconType.NONE, analog=False)  # Use NONE since we have custom icons
         self.setup_ui()
 
     def setup_ui(self):
         """Setup the amplifier section UI."""
-        amp_section_layout = QVBoxLayout()
-        self.setLayout(amp_section_layout)
-        amp_section_layout.setContentsMargins(5, 15, 5, 5)
-        amp_section_layout.setSpacing(5)
-        from jdxi_editor.jdxi.style.theme_manager import JDXiThemeManager
-
-        JDXiThemeManager.apply_adsr_style(self)
+        amp_section_layout = self.get_layout(margins=(5, 15, 5, 5), spacing=5)
         self.setMinimumHeight(JDXiDimensions.EDITOR_MINIMUM_HEIGHT)
 
-        # Icons layout
+        # Custom icons layout (kept for Digital Amp's unique icon set)
         icons_hlayout = self._create_icons_layout()
         amp_section_layout.addLayout(icons_hlayout)
 

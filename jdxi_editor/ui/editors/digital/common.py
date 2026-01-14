@@ -10,9 +10,10 @@ from PySide6.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout, QWidget
 
 from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
 from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParam
+from jdxi_editor.ui.widgets.editor.section_base import IconType, SectionBaseWidget
 
 
-class DigitalCommonSection(QWidget):
+class DigitalCommonSection(SectionBaseWidget):
     def __init__(
         self,
         create_parameter_slider: Callable,
@@ -20,7 +21,6 @@ class DigitalCommonSection(QWidget):
         create_parameter_combo_box: Callable,
         controls: dict,
     ):
-        super().__init__()
         """
         Initialize the DigitalCommonSection
 
@@ -33,29 +33,12 @@ class DigitalCommonSection(QWidget):
         self._create_parameter_switch = create_parameter_switch
         self._create_parameter_combo_box = create_parameter_combo_box
         self.controls = controls
-        JDXiThemeManager.apply_adsr_style(self, analog=False)
+        
+        super().__init__(icon_type=IconType.GENERIC, analog=False)
         self.init_ui()
 
     def init_ui(self):
-        layout = QVBoxLayout()
-        self.setLayout(layout)
-
-        # Icons
-        icons_hlayout = QHBoxLayout()
-        for icon_name in [
-            "ph.bell-ringing-bold",
-            "mdi.call-merge",
-            "mdi.account-voice",
-            "ri.voiceprint-fill",
-            "mdi.piano",
-        ]:
-            icon_label = QLabel()
-            icon = qta.icon(names=icon_name, color=JDXiStyle.GREY)
-            pixmap = icon.pixmap(24, 24)  # Using fixed icon size
-            icon_label.setPixmap(pixmap)
-            icon_label.setAlignment(Qt.AlignHCenter)
-            icons_hlayout.addWidget(icon_label)
-        layout.addLayout(icons_hlayout)
+        layout = self.get_layout()
 
         # Mono Switch
         self.octave_shift_switch = self._create_parameter_combo_box(

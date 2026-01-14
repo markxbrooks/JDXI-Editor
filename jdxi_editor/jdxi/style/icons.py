@@ -193,6 +193,25 @@ class IconRegistry:
         return icon_hlayout
 
     @staticmethod
+    def create_oscillator_icons_row() -> QHBoxLayout:
+        """Create oscillator/waveform icons row for oscillator sections"""
+        icon_hlayout = QHBoxLayout()
+        for icon in [
+            "mdi.triangle-wave",
+            "mdi.sine-wave",
+            "fa5s.wave-square",
+            "mdi.sawtooth-wave",
+            "mdi.waveform",
+            "mdi.sine-wave",
+        ]:
+            icon_label = QLabel()
+            icon_pixmap = qta.icon(icon, color=JDXiStyle.GREY).pixmap(30, 30)
+            icon_label.setPixmap(icon_pixmap)
+            icon_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+            icon_hlayout.addWidget(icon_label)
+        return icon_hlayout
+
+    @staticmethod
     def create_generic_musical_icon_row() -> QHBoxLayout:
         # Icons
         icons_hlayout = QHBoxLayout()

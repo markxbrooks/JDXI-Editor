@@ -8,7 +8,6 @@ from typing import Callable
 
 import qtawesome as qta
 
-from jdxi_editor.jdxi.style.icons import IconRegistry
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
@@ -25,9 +24,10 @@ from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.parameter.analog import AnalogParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
+from jdxi_editor.ui.widgets.editor.section_base import IconType, SectionBaseWidget
 
 
-class AnalogAmpSection(QWidget):
+class AnalogAmpSection(SectionBaseWidget):
     """Amp section of the JD-Xi editor"""
 
     def __init__(
@@ -39,7 +39,6 @@ class AnalogAmpSection(QWidget):
         generate_waveform_icon: Callable,
         base64_to_pixmap: Callable,
     ):
-        super().__init__()
         """
         Initialize the Amp section of the JD-Xi editor
 
@@ -55,19 +54,13 @@ class AnalogAmpSection(QWidget):
         self._create_parameter_slider = create_parameter_slider
         self.generate_waveform_icon = generate_waveform_icon
         self.base64_to_pixmap = base64_to_pixmap
+        
+        super().__init__(icon_type=IconType.ADSR, analog=True)
         self.init_ui()
 
     def init_ui(self):
         """Initialize UI"""
-        main_rows_vlayout = QVBoxLayout()
-        main_rows_vlayout.setSpacing(5)
-        main_rows_vlayout.setContentsMargins(5, 15, 5, 5)
-        self.setLayout(main_rows_vlayout)
-        JDXiThemeManager.apply_adsr_style(self, analog=True)
-
-        # --- Add spiffy icons ---
-        icons_hlayout = IconRegistry.create_adsr_icons_row()
-        main_rows_vlayout.addLayout(icons_hlayout)
+        main_rows_vlayout = self.get_layout(margins=(5, 15, 5, 5), spacing=5)
 
         self.analog_amp_tab_widget = QTabWidget()
         JDXiThemeManager.apply_tabs_style(self.analog_amp_tab_widget, analog=True)

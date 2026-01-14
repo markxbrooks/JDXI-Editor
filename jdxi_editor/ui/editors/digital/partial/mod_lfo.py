@@ -10,10 +10,11 @@ from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
 from jdxi_editor.midi.data.parameter.digital.partial import (
     DigitalPartialParam,
 )
+from jdxi_editor.ui.widgets.editor.section_base import IconType, SectionBaseWidget
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
-class DigitalModLFOSection(QWidget):
+class DigitalModLFOSection(SectionBaseWidget):
     """MOD LFO section for the digital partial editor."""
 
     def __init__(
@@ -23,7 +24,6 @@ class DigitalModLFOSection(QWidget):
         on_parameter_changed: Callable,
         controls: dict,
     ):
-        super().__init__()
         """
         Initialize the DigitalModLFOSection
 
@@ -36,13 +36,12 @@ class DigitalModLFOSection(QWidget):
         self._create_parameter_combo_box = create_parameter_combo_box
         self._on_parameter_changed = on_parameter_changed
         self.controls = controls
-        JDXiThemeManager.apply_adsr_style(self, analog=False)
+
+        super().__init__(icon_type=IconType.ADSR, analog=False)
         self._init_ui()
 
     def _init_ui(self):
-        mod_lfo_layout = QVBoxLayout()
-
-        self.setLayout(mod_lfo_layout)
+        mod_lfo_layout = self.get_layout()
 
         # Shape and sync controls
         shape_row_layout = QHBoxLayout()

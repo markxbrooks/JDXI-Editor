@@ -77,6 +77,9 @@ from PySide6.QtWidgets import (
 
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.jdxi.style.icons import IconRegistry
+from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
+from jdxi_editor.ui.widgets.editor.simple_editor_helper import SimpleEditorHelper
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetProgramLMB,
     AddressOffsetSystemUMB,
@@ -95,7 +98,6 @@ from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
 from jdxi_editor.ui.editors.effects.data import EffectsData
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
-from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
@@ -262,40 +264,20 @@ class EffectsCommonEditor(BasicEditor):
             Effect2Param.EFX2_PARAM_2,
             Effect2Param.EFX2_PARAM_32,
         ]
-        self.default_image = "effects.png"
-        self.instrument_icon_folder = "effects"
         self.setWindowTitle("Effects")
-        # Main layout
-        main_layout = QVBoxLayout()
-        self.setLayout(main_layout)
-        main_rows_hlayout = QHBoxLayout()
-        main_layout.addLayout(main_rows_hlayout)
-
-        self.title_label = DigitalTitle("Effects")
-        from jdxi_editor.jdxi.style.theme_manager import JDXiThemeManager
-
-        JDXiThemeManager.apply_instrument_title_label(self.title_label)
-        self.image_label = QLabel()
-        self.image_label.setAlignment(
-            Qt.AlignmentFlag.AlignCenter
-        )  # Center align the image
-        self.update_instrument_image()
-
-        title_group_box = QGroupBox()
-        title_group_layout = QHBoxLayout()
-        title_group_box.setLayout(title_group_layout)
-        title_group_layout.addWidget(self.title_label)
-        title_group_layout.addWidget(self.image_label)
-
-        main_row_hlayout = QHBoxLayout()
-        main_rows_hlayout.addLayout(main_row_hlayout)
-        main_row_hlayout.addStretch()
-        rows_layout = QVBoxLayout()
-        main_row_hlayout.addLayout(rows_layout)
-        rows_layout.addWidget(title_group_box)
-
-        main_rows_hlayout.addLayout(rows_layout)
-        main_row_hlayout.addStretch()
+        
+        # Use EditorBaseWidget for consistent scrollable layout structure
+        self.base_widget = EditorBaseWidget(parent=self, analog=False)
+        self.base_widget.setup_scrollable_content()
+        
+        # Use SimpleEditorHelper for standardized title/image/tab setup
+        self.editor_helper = SimpleEditorHelper(
+            editor=self,
+            base_widget=self.base_widget,
+            title="Effects",
+            image_folder="effects",
+            default_image="effects.png"
+        )
 
         self.controls: Dict[
             Union[
@@ -304,17 +286,19 @@ class EffectsCommonEditor(BasicEditor):
             QWidget,
         ] = {}
 
-        # Create address tab widget
-        self.tabs = QTabWidget()
-        JDXiThemeManager.apply_tabs_style(self.tabs)
-        rows_layout.addWidget(self.tabs)
-        # self.setup_ui()
-
-        # Add tabs
+        # Get tab widget from helper and add tabs
+        self.tabs = self.editor_helper.get_tab_widget()
         self.tabs.addTab(self._create_effect1_section(), "Effect 1")
         self.tabs.addTab(self._create_effect2_section(), "Effect 2")
         self.tabs.addTab(self._create_delay_tab(), "Delay")
         self.tabs.addTab(self._create_reverb_section(), "Reverb")
+        
+        # Add base widget to editor's layout
+        if not hasattr(self, 'main_layout') or self.main_layout is None:
+            self.main_layout = QVBoxLayout(self)
+            self.setLayout(self.main_layout)
+        self.main_layout.addWidget(self.base_widget)
+        
         self.address = RolandSysExAddress(
             AddressStartMSB.TEMPORARY_PROGRAM,
             AddressOffsetSystemUMB.COMMON,
@@ -504,9 +488,18 @@ class EffectsCommonEditor(BasicEditor):
 
     def _create_effect1_section(self):
         """Create Effect 1 section"""
+        container = QWidget()
+        container_layout = QVBoxLayout()
+        container.setLayout(container_layout)
+        
+        # Icons row (standardized across editor tabs)
+        icon_hlayout = IconRegistry.create_adsr_icons_row()
+        container_layout.addLayout(icon_hlayout)
+        
         widget = QWidget()
         layout = QFormLayout()
         widget.setLayout(layout)
+        container_layout.addWidget(widget)
 
         # Create address combo box for EFX1 preset_type
         self.efx1_type = self._create_parameter_combo_box(
@@ -575,14 +568,22 @@ class EffectsCommonEditor(BasicEditor):
             else:
                 log.warning(f"Parameter {param.name} already exists in controls.")
 
-        return widget
+        return container
 
     def _create_effect2_section(self):
         """Create Effect 2 section"""
-
+        container = QWidget()
+        container_layout = QVBoxLayout()
+        container.setLayout(container_layout)
+        
+        # Icons row (standardized across editor tabs)
+        icon_hlayout = IconRegistry.create_adsr_icons_row()
+        container_layout.addLayout(icon_hlayout)
+        
         widget = QWidget()
         layout = QFormLayout()
         widget.setLayout(layout)
+        container_layout.addWidget(widget)
 
         # Create address combo box for EFX2 preset_type
         self.efx2_type = self._create_parameter_combo_box(
@@ -632,13 +633,22 @@ class EffectsCommonEditor(BasicEditor):
                 self.controls[param] = control
             else:
                 log.warning(f"Parameter {param.name} already exists in controls.")
-        return widget
+        return container
 
     def _create_delay_tab(self):
         """Create Delay tab with parameters"""
+        container = QWidget()
+        container_layout = QVBoxLayout()
+        container.setLayout(container_layout)
+        
+        # Icons row (standardized across editor tabs)
+        icon_hlayout = IconRegistry.create_adsr_icons_row()
+        container_layout.addLayout(icon_hlayout)
+        
         widget = QWidget()
         layout = QFormLayout()
         widget.setLayout(layout)
+        container_layout.addWidget(widget)
         # Create address combo box for Delay Type
         delay_level_slider = self._create_parameter_slider(
             DelayParam.DELAY_LEVEL, "Delay Level"
@@ -664,13 +674,22 @@ class EffectsCommonEditor(BasicEditor):
             DelayParam.DELAY_PARAM_24, "Feedback (%)"
         )
         layout.addRow(delay_parameter24_slider)
-        return widget
+        return container
 
     def _create_reverb_section(self):
         """Create Reverb section"""
+        container = QWidget()
+        container_layout = QVBoxLayout()
+        container.setLayout(container_layout)
+        
+        # Icons row (standardized across editor tabs)
+        icon_hlayout = IconRegistry.create_adsr_icons_row()
+        container_layout.addLayout(icon_hlayout)
+        
         widget = QWidget()
         layout = QFormLayout()
         widget.setLayout(layout)
+        container_layout.addWidget(widget)
         reverb_level_slider = self._create_parameter_slider(
             ReverbParam.REVERB_LEVEL, "Level (0-127)"
         )
@@ -687,7 +706,7 @@ class EffectsCommonEditor(BasicEditor):
             ReverbParam.REVERB_PARAM_24, "Parameter 24"
         )
         layout.addRow(reverb_parameter24_slider)
-        return widget
+        return container
 
     def _on_parameter_changed(
         self, param: AddressParameter, value: int, address: RolandSysExAddress = None

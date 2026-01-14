@@ -20,6 +20,7 @@ from PySide6.QtWidgets import (
 
 from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
+from jdxi_editor.ui.widgets.editor.section_base import IconType, SectionBaseWidget
 from jdxi_editor.midi.data.digital.oscillator import DigitalOscWave
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParam
 from jdxi_editor.midi.data.pcm.waves import PCM_WAVES_CATEGORIZED
@@ -32,7 +33,7 @@ from jdxi_editor.ui.widgets.pitch.envelope import PitchEnvelopeWidget
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
-class DigitalOscillatorSection(QWidget):
+class DigitalOscillatorSection(SectionBaseWidget):
     """Digital Oscillator Section for the JDXI Editor"""
 
     def __init__(
@@ -46,7 +47,6 @@ class DigitalOscillatorSection(QWidget):
         controls: dict[AddressParameter, QWidget],
         address: RolandSysExAddress,
     ):
-        super().__init__()
         self.pwm_widget = None
         self.partial_number = partial_number
         self.midi_helper = midi_helper
@@ -56,17 +56,14 @@ class DigitalOscillatorSection(QWidget):
         self._create_parameter_combo_box = create_parameter_combo_box
         self.send_midi_parameter = send_midi_parameter
         self.address = address
+        
+        super().__init__(icon_type=IconType.OSCILLATOR, analog=False)
         self.setup_ui()
         log.parameter(f"initialization complete for", self)
 
     def setup_ui(self):
         """Setup the oscillator section UI."""
-        layout = QVBoxLayout()
-        layout.setContentsMargins(1, 1, 1, 1)
-        self.setLayout(layout)
-        from jdxi_editor.jdxi.style.theme_manager import JDXiThemeManager
-
-        JDXiThemeManager.apply_adsr_style(self)
+        layout = self.get_layout(margins=(1, 1, 1, 1))
 
         # --- Top row: Waveform buttons and variation switch ---
         layout.addLayout(self.create_waveform_buttons())

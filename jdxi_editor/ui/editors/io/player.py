@@ -63,6 +63,7 @@ from jdxi_editor.ui.editors.io.ui_midi_player import UiMidi
 from jdxi_editor.ui.editors.io.utils import format_time, tempo2bpm
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
+from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 from jdxi_editor.ui.widgets.midi.track_viewer import MidiTrackViewer
 from jdxi_editor.ui.widgets.midi.utils import get_total_duration_in_seconds
 from jdxi_editor.ui.windows.jdxi.utils import show_message_box
@@ -176,14 +177,27 @@ class MidiFileEditor(SynthEditor):
         right_panel_layout.addLayout(self.init_usb_port_controls())
         right_panel_layout.addLayout(self.init_usb_file_controls())
 
-        # Main vertical layout
-        main_layout = QVBoxLayout()
+        # Use EditorBaseWidget for consistent scrollable layout structure
+        self.base_widget = EditorBaseWidget(parent=self, analog=False)
+        self.base_widget.setup_scrollable_content()
+        container_layout = self.base_widget.get_container_layout()
+        
+        # Create content widget
+        content_widget = QWidget()
+        main_layout = QVBoxLayout(content_widget)
         main_layout.addLayout(header_layout)
         main_layout.addWidget(self.init_ruler())
         main_layout.addWidget(self.ui.midi_track_viewer)
         main_layout.addWidget(self.init_transport_controls())
-
-        self.setLayout(main_layout)
+        
+        # Add content to base widget
+        container_layout.addWidget(content_widget)
+        
+        # Add base widget to editor's layout
+        if not hasattr(self, 'main_layout') or self.main_layout is None:
+            self.main_layout = QVBoxLayout(self)
+            self.setLayout(self.main_layout)
+        self.main_layout.addWidget(self.base_widget)
 
     def init_ruler(self) -> QWidget:
         """

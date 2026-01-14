@@ -8,7 +8,6 @@ import qtawesome as qta
 from PySide6.QtCore import QSize
 from PySide6.QtWidgets import (
     QButtonGroup,
-    QGridLayout,
     QHBoxLayout,
     QLabel,
     QPushButton,
@@ -21,10 +20,11 @@ from PySide6.QtWidgets import (
 from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
 from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.midi.data.parameter.analog import AnalogParam
+from jdxi_editor.ui.widgets.editor.section_base import IconType, SectionBaseWidget
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
-class AnalogLFOSection(QWidget):
+class AnalogLFOSection(SectionBaseWidget):
     """Analog LFO Section (responsive layout version)"""
 
     def __init__(
@@ -35,44 +35,60 @@ class AnalogLFOSection(QWidget):
         on_lfo_shape_changed: Callable,
         lfo_shape_buttons: Dict[int, QPushButton],
     ):
-        super().__init__()
-
         self._create_parameter_slider = create_parameter_slider
         self._create_parameter_switch = create_parameter_switch
         self._create_parameter_combo_box = create_parameter_combo_box
         self._on_lfo_shape_changed = on_lfo_shape_changed
         self.lfo_shape_buttons = lfo_shape_buttons
-        JDXiThemeManager.apply_adsr_style(self, analog=True)
-
+        
+        super().__init__(icon_type=IconType.ADSR, analog=True)
         self._init_ui()
 
     # ------------------------------------------------------------------
     # UI Construction
     # ------------------------------------------------------------------
     def _init_ui(self):
-        layout = QGridLayout(self)
-        layout.setSpacing(JDXiDimensions.ANALOG.SPACING)
-        layout.setContentsMargins(JDXiDimensions.ANALOG.MARGIN,
-                                  JDXiDimensions.ANALOG.MARGIN,
-                                  JDXiDimensions.ANALOG.MARGIN,
-                                  JDXiDimensions.ANALOG.MARGIN)
+        """Initialize the UI with tabbed organization"""
+        main_rows_vlayout = self.get_layout()
 
-        row = 0
+        # Shape row (centered)
+        shape_row_layout = self._create_shape_row()
+        # Center the shape row
+        centered_shape_widget = QWidget()
+        centered_shape_layout = QHBoxLayout(centered_shape_widget)
+        centered_shape_layout.addStretch()
+        centered_shape_layout.addLayout(shape_row_layout)
+        centered_shape_layout.addStretch()
+        main_rows_vlayout.addWidget(centered_shape_widget)
 
-        # LFO Shape Row
-        layout.addLayout(self._create_shape_row(), row, 0, 1, 1)
-        row += 1
+        # Tempo Sync controls
+        sync_row_layout = self._create_tempo_sync_controls()
+        main_rows_vlayout.addLayout(sync_row_layout)
 
-        # Tempo Sync Row
-        layout.addLayout(self._create_tempo_sync_controls(), row, 0, 1, 1)
-        row += 1
+        # Create tab widget for organizing controls
+        self.lfo_controls_tab_widget = QTabWidget()
+        JDXiThemeManager.apply_tabs_style(self.lfo_controls_tab_widget, analog=True)
+        main_rows_vlayout.addWidget(self.lfo_controls_tab_widget)
 
-        # Rate / Fade Row
-        layout.addLayout(self._create_lfo_fade_rate_controls_row_layout(), row, 0, 1, 1)
-        row += 1
+        # --- Fade and Rate Controls Tab ---
+        fade_rate_controls_row_layout = self._create_lfo_fade_rate_controls_row_layout()
+        fade_rate_controls_row_widget = QWidget()
+        fade_rate_controls_row_widget.setMinimumHeight(
+            JDXiDimensions.EDITOR_MINIMUM_HEIGHT
+        )
+        fade_rate_controls_row_widget.setLayout(fade_rate_controls_row_layout)
+        self.lfo_controls_tab_widget.addTab(
+            fade_rate_controls_row_widget, "Fade and Rate Controls"
+        )
 
-        # Depth Row
-        layout.addLayout(self._create_lfo_depth_controls(), row, 0, 1, 1)
+        # --- Depth Controls Tab ---
+        depth_controls_row_layout = self._create_lfo_depth_controls()
+        depth_controls_row_widget = QWidget()
+        depth_controls_row_widget.setMinimumHeight(JDXiDimensions.EDITOR_MINIMUM_HEIGHT)
+        depth_controls_row_widget.setLayout(depth_controls_row_layout)
+        self.lfo_controls_tab_widget.addTab(depth_controls_row_widget, "Depth Controls")
+        
+        main_rows_vlayout.addStretch()
 
     # ------------------------------------------------------------------
     # Shape Controls
@@ -111,7 +127,6 @@ class AnalogLFOSection(QWidget):
             self.lfo_shape_buttons[value] = btn
             shape_layout.addWidget(btn)
 
-        shape_layout.addStretch()
         return shape_layout
 
     # ------------------------------------------------------------------

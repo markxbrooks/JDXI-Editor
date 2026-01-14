@@ -10,6 +10,7 @@ from PySide6.QtWidgets import QGroupBox, QHBoxLayout, QTabWidget, QVBoxLayout, Q
 
 from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
+from jdxi_editor.ui.widgets.editor.section_base import IconType, SectionBaseWidget
 from jdxi_editor.midi.data.analog.oscillator import AnalogOscWave, AnalogSubOscType
 from jdxi_editor.midi.data.parameter.analog import AnalogParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
@@ -21,7 +22,7 @@ from jdxi_editor.ui.widgets.pitch.envelope import PitchEnvelopeWidget
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
-class AnalogOscillatorSection(QWidget):
+class AnalogOscillatorSection(SectionBaseWidget):
     """Analog Oscillator Section"""
 
     def __init__(
@@ -34,7 +35,6 @@ class AnalogOscillatorSection(QWidget):
         controls: dict[AddressParameter, QWidget],
         address: RolandSysExAddress,
     ):
-        super().__init__()
         """
         Initialize the AnalogOscillatorSection
 
@@ -54,6 +54,8 @@ class AnalogOscillatorSection(QWidget):
         self.midi_helper = midi_helper
         self.address = address
         self.controls = controls
+        
+        super().__init__(icon_type=IconType.OSCILLATOR, analog=True)
         self.init_ui()
 
     def init_ui(self) -> None:
@@ -64,7 +66,7 @@ class AnalogOscillatorSection(QWidget):
         layout = QVBoxLayout()
         layout.setContentsMargins(1, 1, 1, 1)
         self.setLayout(layout)
-        JDXiThemeManager.apply_adsr_style(self, analog=True)
+        layout = self.get_layout(margins=(1, 1, 1, 1))
 
         # --- Waveform buttons ---
         layout.addLayout(self.create_waveform_buttons())
