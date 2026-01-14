@@ -328,6 +328,11 @@ class DrumTVASection(QWidget):
         # Add widgets to scrolled_layout here if needed
 
         scroll_area.setWidget(scrolled_widget)
+        
+        # Icons row (standardized across editor tabs)
+        icon_hlayout = IconRegistry.create_adsr_icons_row()
+        scrolled_layout.addLayout(icon_hlayout)
+        
         main_vbox_layout = QVBoxLayout()
         main_row_hlayout = QHBoxLayout()
         main_row_hlayout.addStretch()

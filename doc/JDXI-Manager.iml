@@ -21,7 +21,10 @@
       <excludeFolder url="file://$MODULE_DIR$/../.eggs" />
       <excludeFolder url="file://$MODULE_DIR$/build" />
     </content>
-    <content url="file://$MODULE_DIR$/../../PicoMidi" />
+    <content url="file://$MODULE_DIR$/../../PicoMidi">
+      <excludeFolder url="file://$MODULE_DIR$/../../PicoMidi/.idea" />
+      <excludeFolder url="file://$MODULE_DIR$/../../PicoMidi/picomidi.egg-info" />
+    </content>
     <content url="file://$MODULE_DIR$/../../decologr">
       <excludeFolder url="file://$MODULE_DIR$/../../decologr/decologr.egg-info" />
     </content>

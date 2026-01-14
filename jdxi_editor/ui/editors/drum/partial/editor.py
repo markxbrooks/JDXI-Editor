@@ -123,6 +123,7 @@ class DrumPartialEditor(PartialEditor):
             midi_helper=self.midi_helper,
         )
         tab_output_layout.addWidget(output_group)
+        tab_output_layout.addStretch()
 
         tab_tvf = QWidget()
         tab_tvf_layout = QVBoxLayout(tab_tvf)

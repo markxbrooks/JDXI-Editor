@@ -169,6 +169,7 @@ class VocalFXEditor(BasicEditor):
         auto_note_switch_row.addWidget(self.auto_note_switch)
         layout.addLayout(auto_note_switch_row)  # Add at bottom
 
+        layout.addStretch()
         return common_section
 
     def _create_vocal_effect_section(self) -> QWidget:
@@ -245,6 +246,7 @@ class VocalFXEditor(BasicEditor):
 
         layout.addWidget(vocoder_group)
         JDXiThemeManager.apply_adsr_style(vocoder_group)
+        layout.addStretch()
         return vocal_effect_section
 
     def _create_mixer_section(self) -> QWidget:
@@ -293,6 +295,7 @@ class VocalFXEditor(BasicEditor):
         layout.addWidget(self.delay_send_level_slider)
         layout.addWidget(self.reverb_send_level_slider)
 
+        layout.addStretch()
         return mixer_section
 
     def _create_auto_pitch_section(self):
@@ -382,4 +385,5 @@ class VocalFXEditor(BasicEditor):
         layout.addWidget(self.octave)
         layout.addWidget(self.auto_pitch_balance)
 
+        layout.addStretch()
         return auto_pitch_section

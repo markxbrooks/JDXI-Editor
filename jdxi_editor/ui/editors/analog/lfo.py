@@ -179,6 +179,8 @@ class AnalogLFOSection(SectionBaseWidget):
         layout = QHBoxLayout()
         layout.setSpacing(JDXiDimensions.ANALOG.SPACING)
 
+        layout.addStretch()
+
         self.lfo_sync_switch = self._create_parameter_switch(
             AnalogParam.LFO_TEMPO_SYNC_SWITCH,
             "Tempo Sync",

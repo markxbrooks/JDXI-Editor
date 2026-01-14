@@ -568,6 +568,7 @@ class EffectsCommonEditor(BasicEditor):
             else:
                 log.warning(f"Parameter {param.name} already exists in controls.")
 
+        container_layout.addStretch()
         return container
 
     def _create_effect2_section(self):
@@ -633,6 +634,7 @@ class EffectsCommonEditor(BasicEditor):
                 self.controls[param] = control
             else:
                 log.warning(f"Parameter {param.name} already exists in controls.")
+        container_layout.addStretch()
         return container
 
     def _create_delay_tab(self):
@@ -674,6 +676,7 @@ class EffectsCommonEditor(BasicEditor):
             DelayParam.DELAY_PARAM_24, "Feedback (%)"
         )
         layout.addRow(delay_parameter24_slider)
+        container_layout.addStretch()
         return container
 
     def _create_reverb_section(self):
@@ -706,6 +709,7 @@ class EffectsCommonEditor(BasicEditor):
             ReverbParam.REVERB_PARAM_24, "Parameter 24"
         )
         layout.addRow(reverb_parameter24_slider)
+        container_layout.addStretch()
         return container
 
     def _on_parameter_changed(
