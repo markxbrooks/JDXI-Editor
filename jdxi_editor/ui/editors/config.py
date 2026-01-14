@@ -29,7 +29,7 @@ class EditorConfig:
     """Configuration for a synth editor."""
 
     title: str
-    editor_class: SynthBase
+    editor_class: Optional[Any]
     synth_type: Optional[Any] = None
     midi_channel: Optional[Any] = None
     kwargs: Dict[str, Any] = field(default_factory=dict)
