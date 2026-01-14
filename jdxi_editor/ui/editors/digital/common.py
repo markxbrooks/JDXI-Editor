@@ -40,7 +40,7 @@ class DigitalCommonSection(SectionBaseWidget):
     def init_ui(self):
         layout = self.get_layout()
 
-        # --- Mono Switch
+        # --- Octave Switch
         self.octave_shift_switch = self._create_parameter_combo_box(
             DigitalCommonParam.OCTAVE_SHIFT,
             "Octave shift",
@@ -50,7 +50,7 @@ class DigitalCommonSection(SectionBaseWidget):
         octave_shift_switch_row = self._create_row([self.octave_shift_switch])
         layout.addLayout(octave_shift_switch_row)
 
-        # ---Mono Switch
+        # --- Mono Switch
         self.mono_switch = self._create_parameter_switch(
             DigitalCommonParam.MONO_SWITCH, "Mono", ["OFF", "ON"]
         )
