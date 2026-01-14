@@ -37,6 +37,15 @@ class AnalogCommonSection(SectionBaseWidget):
         
         super().__init__(icon_type=IconType.GENERIC, analog=True)
         self.init_ui()
+        
+    def create_row(widget_list: list):
+        """create a row from a list of widgets"""
+        row = QHBoxLayout()
+        row.addStretch()
+        for widget in widget_list:
+            row.addWidget(widget)
+        row.addStretch()
+        return row
 
     def init_ui(self):
         """
