@@ -36,7 +36,7 @@ Usage Example:
 from enum import Enum
 from typing import Literal, Optional
 
-from PySide6.QtWidgets import QVBoxLayout, QWidget
+from PySide6.QtWidgets import QVBoxLayout, QWidget, QHBoxLayout
 
 from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.jdxi.style.theme_manager import JDXiThemeManager
@@ -112,6 +112,15 @@ class SectionBaseWidget(QWidget):
                 self._icon_added = True
         
         return self._layout
+        
+    def _create_row(widget_list: list):
+        """create a row from a list of widgets"""
+        row = QHBoxLayout()
+        row.addStretch()
+        for widget in widget_list:
+            row.addWidget(widget)
+        row.addStretch()
+        return row
 
     def _add_icon_row(self) -> None:
         """Add the appropriate icon row based on icon_type"""
