@@ -54,6 +54,7 @@ def add_octave_buttons(widget, send_octave):
     octave_down_button.setCheckable(True)
     octave_down_button.clicked.connect(lambda: send_octave(-1))
     octave_down_button.setStyleSheet(JDXiStyle.BUTTON_ROUND)
+    octave_down_button.setToolTip("Octave Down: Lower the keyboard pitch by one octave")
     buttons_row.addWidget(octave_down_button)
 
     # Create and store octave up button
@@ -62,6 +63,7 @@ def add_octave_buttons(widget, send_octave):
     octave_up_button.setCheckable(True)
     octave_up_button.clicked.connect(lambda: send_octave(1))
     octave_up_button.setStyleSheet(JDXiStyle.BUTTON_ROUND)
+    octave_up_button.setToolTip("Octave Up: Raise the keyboard pitch by one octave")
     buttons_row.addWidget(octave_up_button)
 
     # Add buttons row

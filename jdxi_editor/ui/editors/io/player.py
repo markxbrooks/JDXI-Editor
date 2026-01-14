@@ -406,6 +406,8 @@ class MidiFileEditor(SynthEditor):
 
         # Refresh viewer and internal state
         self.ui.midi_track_viewer.set_midi_file(self.midi_state.file)
+        # Sync mute buttons after setting MIDI file
+        self._sync_mute_buttons_from_track_viewer()
         self.midi_extract_events()
         self.calculate_duration()
         self.ui_position_label_update_time()
@@ -538,7 +540,71 @@ class MidiFileEditor(SynthEditor):
         )
         layout.addWidget(self.ui.usb_file_auto_generate_checkbox)
 
+        # Add Mute Channels section
+        layout.addWidget(QLabel("Mute Channels:"))
+        # Create mute buttons for channels 1-16
+        self.mute_channel_buttons = {}
+        for ch in range(1, 17):
+            btn = QPushButton(f"{ch}")
+            btn.setCheckable(True)
+            btn.setFixedWidth(30)
+            btn.toggled.connect(
+                lambda checked, c=ch: self._toggle_channel_mute(c, checked)
+            )
+            btn.setStyleSheet(
+                "QPushButton:checked { background-color: #cc0000; color: white; }"
+            )
+            self.mute_channel_buttons[ch] = btn
+            layout.addWidget(btn)
+
+        # Add "Apply All Track Changes" button
+        apply_all_btn = QPushButton("Apply All Track Changes")
+        apply_all_btn.setToolTip("Apply all Track Name and MIDI Channel changes")
+        apply_all_btn.clicked.connect(self._apply_all_track_changes)
+        layout.addWidget(apply_all_btn)
+
         return layout
+
+    def _toggle_channel_mute(self, channel: int, is_muted: bool) -> None:
+        """
+        Toggle mute state for a specific MIDI channel.
+        Updates both the track viewer and the player's muted channels state.
+
+        :param channel: int MIDI channel (1-16)
+        :param is_muted: bool is the channel muted?
+        """
+        # Update track viewer's mute state (this will also update track viewer's buttons)
+        if hasattr(self.ui, 'midi_track_viewer') and self.ui.midi_track_viewer:
+            self.ui.midi_track_viewer.toggle_channel_mute(channel, is_muted)
+            # Sync the track viewer's mute buttons
+            if channel in self.ui.midi_track_viewer.mute_buttons:
+                self.ui.midi_track_viewer.mute_buttons[channel].setChecked(is_muted)
+        
+        # Update player's muted channels state
+        self.midi_state.muted_channels = self.get_muted_channels()
+    
+    def _sync_mute_buttons_from_track_viewer(self) -> None:
+        """
+        Sync mute channel buttons in the USB file controls with the track viewer's state.
+        Called when MIDI file is loaded or track viewer's mute state changes.
+        """
+        if not hasattr(self, 'mute_channel_buttons'):
+            return
+        
+        if hasattr(self.ui, 'midi_track_viewer') and self.ui.midi_track_viewer:
+            muted_channels = self.ui.midi_track_viewer.get_muted_channels()
+            for channel, btn in self.mute_channel_buttons.items():
+                btn.blockSignals(True)
+                btn.setChecked(channel in muted_channels)
+                btn.blockSignals(False)
+    
+    def _apply_all_track_changes(self) -> None:
+        """
+        Apply all Track Name and MIDI Channel changes.
+        Calls the track viewer's apply_all_track_changes method.
+        """
+        if hasattr(self.ui, 'midi_track_viewer') and self.ui.midi_track_viewer:
+            self.ui.midi_track_viewer.apply_all_track_changes()
 
     def generate_auto_wav_filename(self) -> Optional[str]:
         """
@@ -889,6 +955,8 @@ class MidiFileEditor(SynthEditor):
             )
         self.ui.midi_track_viewer.clear()
         self.ui.midi_track_viewer.set_midi_file(self.midi_state.file)
+        # Sync mute buttons after loading MIDI file
+        self._sync_mute_buttons_from_track_viewer()
 
         # Auto-generate WAV filename if checkbox is enabled
         if self.ui.usb_file_auto_generate_checkbox.isChecked():

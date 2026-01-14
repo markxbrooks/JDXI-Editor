@@ -46,10 +46,12 @@ def create_tone_buttons_row(previous_tone, next_tone):
     # Create tone up button
     tone_up_button.setFixedSize(tone_button_diameter, tone_button_diameter)
     tone_up_button.setStyleSheet(JDXiStyle.BUTTON_ROUND_SMALL)
+    tone_up_button.setToolTip("Tone Up: Navigate to the next preset/tone")
 
     # Create tone down button
     tone_down_button.setFixedSize(tone_button_diameter, tone_button_diameter)
     tone_down_button.setStyleSheet(JDXiStyle.BUTTON_ROUND_SMALL)
+    tone_down_button.setToolTip("Tone Down: Navigate to the previous preset/tone")
 
     # Connect buttons to functions
     tone_down_button.clicked.connect(previous_tone)

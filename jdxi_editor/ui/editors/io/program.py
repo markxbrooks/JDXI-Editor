@@ -432,7 +432,27 @@ class ProgramEditor(BasicEditor):
         # Program controls group
         preset_widget = QWidget()
         preset_vlayout = QVBoxLayout()
+        preset_vlayout.setContentsMargins(
+            JDXiStyle.PADDING, JDXiStyle.PADDING, JDXiStyle.PADDING, JDXiStyle.PADDING
+        )
+        preset_vlayout.setSpacing(JDXiStyle.SPACING)
         preset_widget.setLayout(preset_vlayout)
+        
+        # Add icon row at the top (centered with stretch on both sides)
+        icon_row_container = QHBoxLayout()
+        icon_row_container.addStretch()
+        icon_row = IconRegistry.create_generic_musical_icon_row()
+        # Transfer all items from icon_row to icon_row_container
+        while icon_row.count() > 0:
+            item = icon_row.takeAt(0)
+            if item.widget():
+                icon_row_container.addWidget(item.widget())
+            elif item.spacerItem():
+                icon_row_container.addItem(item.spacerItem())
+        icon_row_container.addStretch()
+        preset_vlayout.addLayout(icon_row_container)
+        preset_vlayout.addSpacing(10)  # Add spacing after icon row
+        
         self.image_label = QLabel()
         self.image_label.setAlignment(
             Qt.AlignmentFlag.AlignVCenter
@@ -571,6 +591,11 @@ class ProgramEditor(BasicEditor):
         )  # Ensure tab widget is visible
         program_widget = QWidget()
         program_widget.setLayout(program_vlayout)
+        
+        # Add icon row at the top of Programs tab
+        icon_row = IconRegistry.create_generic_musical_icon_row()
+        program_vlayout.addLayout(icon_row)
+        
         program_layout.addWidget(self.program_preset_tab_widget)
         self.program_preset_tab_widget.addTab(program_widget, "Programs")
         log.message(
@@ -1177,6 +1202,10 @@ class ProgramEditor(BasicEditor):
         layout = QVBoxLayout(widget)
         log.message("✅ Created widget and layout")
 
+        # Add icon row at the top
+        icon_row = IconRegistry.create_generic_musical_icon_row()
+        layout.addLayout(icon_row)
+
         # Search box
         search_layout = QHBoxLayout()
         search_label = QLabel("Search:")
@@ -1564,6 +1593,10 @@ class ProgramEditor(BasicEditor):
         layout = QVBoxLayout(widget)
         log.message("✅ Created playlist widget and layout")
 
+        # Add icon row at the top
+        icon_row = IconRegistry.create_generic_musical_icon_row()
+        layout.addLayout(icon_row)
+
         # Button layout for create/delete actions
         button_layout = QHBoxLayout()
         self.create_playlist_button = QPushButton(
@@ -1875,6 +1908,10 @@ class ProgramEditor(BasicEditor):
         widget = QWidget()
         layout = QVBoxLayout(widget)
         log.message("✅ Created playlist editor widget and layout")
+
+        # Add icon row at the top
+        icon_row = IconRegistry.create_generic_musical_icon_row()
+        layout.addLayout(icon_row)
 
         # Playlist selection
         playlist_select_layout = QHBoxLayout()

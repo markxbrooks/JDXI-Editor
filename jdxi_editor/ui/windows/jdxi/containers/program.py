@@ -45,10 +45,12 @@ def create_program_buttons_row():
     # create program up button
     program_up_button.setFixedSize(25, 25)
     program_up_button.setStyleSheet(JDXiStyle.BUTTON_ROUND_SMALL)
+    program_up_button.setToolTip("Program Up: Navigate to the next program")
 
     # create program down button
     program_down_button.setFixedSize(25, 25)
     program_down_button.setStyleSheet(JDXiStyle.BUTTON_ROUND_SMALL)
+    program_down_button.setToolTip("Program Down: Navigate to the previous program")
 
     # create program layout
     program_layout = QHBoxLayout()

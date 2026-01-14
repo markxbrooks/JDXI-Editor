@@ -53,6 +53,7 @@ def add_arpeggiator_buttons(widget):
     arpeggiator_button.setFixedSize(30, 30)
     arpeggiator_button.setCheckable(True)
     arpeggiator_button.setStyleSheet(JDXiStyle.BUTTON_ROUND)
+    arpeggiator_button.setToolTip("Arpeggiator On/Off: Enable or disable the arpeggiator")
     buttons_row.addWidget(arpeggiator_button)
 
     # Create and store octave down button
@@ -60,6 +61,7 @@ def add_arpeggiator_buttons(widget):
     key_hold_button.setFixedSize(30, 30)
     key_hold_button.setCheckable(True)
     key_hold_button.setStyleSheet(JDXiStyle.BUTTON_ROUND)
+    key_hold_button.setToolTip("Key Hold: Hold arpeggiator notes when enabled")
     buttons_row.addWidget(key_hold_button)
 
     # Add buttons row

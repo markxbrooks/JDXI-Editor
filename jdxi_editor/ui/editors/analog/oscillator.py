@@ -63,9 +63,6 @@ class AnalogOscillatorSection(SectionBaseWidget):
         Initialize the UI
         :return: None
         """
-        layout = QVBoxLayout()
-        layout.setContentsMargins(1, 1, 1, 1)
-        self.setLayout(layout)
         layout = self.get_layout(margins=(1, 1, 1, 1))
 
         # --- Waveform buttons ---

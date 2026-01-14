@@ -121,6 +121,10 @@ class InstrumentPresetWidget(QWidget):
 
     def _add_normal_preset_content(self, layout: QVBoxLayout, synth_type: str):
         """Add normal preset selection content to the layout."""
+        # Add icon row at the top
+        icon_row = IconRegistry.create_generic_musical_icon_row()
+        layout.addLayout(icon_row)
+        
         self.instrument_title_label = DigitalTitle()
         layout.addWidget(self.instrument_title_label)
         # --- Update_tone_name
@@ -155,6 +159,10 @@ class InstrumentPresetWidget(QWidget):
     def _add_cheat_preset_content(self, layout: QVBoxLayout):
         """Add cheat preset content to the layout (Analog only)."""
         from jdxi_editor.midi.data.programs.digital import DIGITAL_PRESET_LIST
+
+        # Add icon row at the top
+        icon_row = IconRegistry.create_generic_musical_icon_row()
+        layout.addLayout(icon_row)
 
         # Search Box
         search_row = QHBoxLayout()
