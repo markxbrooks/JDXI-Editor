@@ -61,20 +61,12 @@ class AnalogCommonSection(SectionBaseWidget):
             [61, 62, 63, 64, 65, 66, 67],
         )
         octave_shift_switch_row = self._create_row([self.octave_shift_switch])
-        # octave_shift_switch_row = QHBoxLayout()
-        # octave_shift_switch_row.addStretch()
-        # octave_shift_switch_row.addWidget(self.octave_shift_switch)
-        # octave_shift_switch_row.addStretch()
         main_rows_vlayout.addLayout(octave_shift_switch_row)
 
         self.legato_switch = self._create_parameter_switch(
             AnalogParam.LEGATO_SWITCH, "Legato", ["OFF", "ON"]
         )
 
-        # legato_row = QHBoxLayout()
-        # legato_row.addStretch()
-        # legato_row.addWidget(self.legato_switch)
-        # legato_row.addStretch()
         legato_row = self._create_row([self.legato_switch])
         main_rows_vlayout.addLayout(legato_row)
 
@@ -97,11 +89,8 @@ class AnalogCommonSection(SectionBaseWidget):
             AnalogParam.PORTAMENTO_TIME, "Portamento Time", vertical=True
         )
         # Pitch Bend
-        pitch_bend_row = QHBoxLayout()
-        pitch_bend_row.addStretch()
-        pitch_bend_row.addWidget(self.pitch_bend_up)
-        pitch_bend_row.addWidget(self.pitch_bend_down)
-        pitch_bend_row.addWidget(self.portamento_time)
-        pitch_bend_row.addStretch()
+        pitch_bend_row = self._create_row([self.pitch_bend_up,
+                                           self.pitch_bend_down, 
+                                            self.portamento_time])
         main_rows_vlayout.addLayout(pitch_bend_row)
         main_rows_vlayout.addStretch()
