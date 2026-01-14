@@ -82,10 +82,7 @@ class AnalogCommonSection(SectionBaseWidget):
         self.portamento_switch = self._create_parameter_switch(
             AnalogParam.PORTAMENTO_SWITCH, "Portamento", ["OFF", "ON"]
         )
-        portamento_switch_row = QHBoxLayout()
-        portamento_switch_row.addStretch()
-        portamento_switch_row.addWidget(self.portamento_switch)
-        portamento_switch_row.addStretch()
+        portamento_switch_row = self._create_row([self.portamento_switch])
         main_rows_vlayout.addLayout(portamento_switch_row)
 
         self.pitch_bend_up = self._create_parameter_slider(
