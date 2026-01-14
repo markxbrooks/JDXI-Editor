@@ -47,21 +47,15 @@ class DigitalCommonSection(SectionBaseWidget):
             ["-3", "-2", "-1", "0", "+1", "+2", "+3"],
             [61, 62, 63, 64, 65, 66, 67],
         )
-        octave_shift_switch_row = QHBoxLayout()
-        octave_shift_switch_row.addStretch()
-        octave_shift_switch_row.addWidget(self.octave_shift_switch)
-        octave_shift_switch_row.addStretch()
+        octave_shift_switch_row = self._create_row([self.octave_shift_switch])
         layout.addLayout(octave_shift_switch_row)
 
         # Mono Switch
         self.mono_switch = self._create_parameter_switch(
             DigitalCommonParam.MONO_SWITCH, "Mono", ["OFF", "ON"]
         )
-        mono_switch_row = QHBoxLayout()
-        mono_switch_row.addStretch()
-        mono_switch_row.addWidget(self.mono_switch)
+        mono_switch_row = self._create_row([self.mono_switch])
         layout.addLayout(mono_switch_row)
-        mono_switch_row.addStretch()
 
         # Pitch Bend
         self.pitch_bend_row = QHBoxLayout()
@@ -75,15 +69,9 @@ class DigitalCommonSection(SectionBaseWidget):
         self.tone_level = self._create_parameter_slider(
             DigitalCommonParam.TONE_LEVEL, "Tone Level", vertical=True
         )
-
-        self.pitch_bend_row.addWidget(self.pitch_bend_up)
-        self.pitch_bend_row.addWidget(self.pitch_bend_down)
-        self.pitch_bend_row.addWidget(self.tone_level)
         self.portamento_time = self._create_parameter_slider(
             DigitalCommonParam.PORTAMENTO_TIME, "Portamento Time", vertical=True
         )
-        self.pitch_bend_row.addWidget(self.portamento_time)
-
         # Analog Feel and Wave Shape
         self.analog_feel = self._create_parameter_slider(
             DigitalCommonParam.ANALOG_FEEL, "Analog Feel", vertical=True
@@ -91,8 +79,12 @@ class DigitalCommonSection(SectionBaseWidget):
         self.wave_shape = self._create_parameter_slider(
             DigitalCommonParam.WAVE_SHAPE, "Wave Shape", vertical=True
         )
-        self.pitch_bend_row.addWidget(self.analog_feel)
-        self.pitch_bend_row.addWidget(self.wave_shape)
+        self.pitch_bend_row = self._create_row([self.pitch_bend_up, 
+                                              self.pitch_bend_down, 
+                                              self.tone_level,
+                                              self.portamento_time,
+                                              self.analog_feel,
+                                              self.wave_shape])
         layout.addLayout(self.pitch_bend_row)
 
         # Ring Modulator
