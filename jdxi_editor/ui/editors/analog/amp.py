@@ -24,7 +24,8 @@ from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.parameter.analog import AnalogParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
-from jdxi_editor.ui.widgets.editor.section_base import IconType, SectionBaseWidget
+from jdxi_editor.ui.widgets.editor.section_base import IconType, SectionBaseWidget, create_vcolumn_layout, \
+    create_hrow_layout
 
 
 class AnalogAmpSection(SectionBaseWidget):

@@ -9,7 +9,7 @@ from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget
 
 from jdxi_editor.jdxi.style import JDXiThemeManager
 from jdxi_editor.midi.data.parameter.analog import AnalogParam
-from jdxi_editor.ui.widgets.editor.section_base import IconType, SectionBaseWidget
+from jdxi_editor.ui.widgets.editor.section_base import IconType, SectionBaseWidget, create_hrow_layout
 
 
 class AnalogCommonSection(SectionBaseWidget):

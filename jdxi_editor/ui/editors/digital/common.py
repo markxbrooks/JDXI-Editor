@@ -10,6 +10,7 @@ from PySide6.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout, QWidget
 
 from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
 from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParam
+from jdxi_editor.ui.editors.synth.simple import create_hrow_layout
 from jdxi_editor.ui.widgets.editor.section_base import IconType, SectionBaseWidget
 
 
