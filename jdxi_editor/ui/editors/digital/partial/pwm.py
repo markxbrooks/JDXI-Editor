@@ -41,6 +41,7 @@ class PWMWidget(EnvelopeWidgetBase):
         address: Optional[RolandSysExAddress] = None,
         create_parameter_slider: Callable = None,
         parent: Optional[QWidget] = None,
+        analog: bool = False
     ):
         super().__init__(
             envelope_keys=["pulse_width", "mod_depth"],
