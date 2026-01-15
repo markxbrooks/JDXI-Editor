@@ -48,6 +48,9 @@ class JDXiDimensions:
     WIDTH = 1000
 
     MARGIN = 15
+    
+    ARP_MARGIN = 5
+    ARP_SPACING = 20
 
     # LED display area (enlarged for 2 rows)
     DISPLAY_WIDTH = 210
