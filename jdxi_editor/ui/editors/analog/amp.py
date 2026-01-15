@@ -76,11 +76,15 @@ class AnalogAmpSection(SectionBaseWidget):
         self.analog_amp_tab_widget = QTabWidget()
         self.analog_amp_tab_widget.addTab(amp_controls_widget, "Controls")
         self.analog_amp_tab_widget.addTab(amp_adsr_group, "ADSR")
+        self.main_rows_layout = self.create_main_rows_layout()
         
-        main_rows_vlayout = self.get_layout(margins=(5, 15, 5, 5), spacing=5)
-        main_rows_vlayout.addWidget(self.analog_amp_tab_widget)
-        main_rows_vlayout.addSpacing(10)
-        main_rows_vlayout.addStretch()
+    def create_main_rows_layout(self):
+        """create main rows layout"""
+        main_layout = self.get_layout(margins=(5, 15, 5, 5), spacing=5)
+        main_layout.addWidget(self.analog_amp_tab_widget)
+        main_layout.addSpacing(10)
+        main_layout.addStretch()
+        return main_layout
 
     def _create_analog_amp_level_controls(self) -> QHBoxLayout:
         """Level controls"""
