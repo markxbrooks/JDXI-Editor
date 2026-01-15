@@ -41,6 +41,9 @@ class JDXiDimensions:
     DRUM_WIDTH = 1100
     DRUM_HEIGHT = 800
     ANALOG = AnalogDimensions
+    
+    WAVEFORM_ICON_WIDTH = 60
+    WAVEFORM_ICON_HEIGHT = 30
 
     SPLASH_HEIGHT = 540
     SPLASH_WIDTH = 850
