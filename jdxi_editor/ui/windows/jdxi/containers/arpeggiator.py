@@ -49,19 +49,11 @@ def add_arpeggiator_buttons(widget):
     labels_row.addWidget(key_hold_label)
 
     # Create and store arpeggiator  button
-    arpeggiator_button = QPushButton()
-    arpeggiator_button.setFixedSize(30, 30)
-    arpeggiator_button.setCheckable(True)
-    arpeggiator_button.setStyleSheet(JDXiStyle.BUTTON_ROUND)
-    arpeggiator_button.setToolTip("Arpeggiator On/Off: Enable or disable the arpeggiator")
+    arpeggiator_button = create_button_with_tooltip("Arpeggiator On/Off: Enable or disable the arpeggiator")
     buttons_row.addWidget(arpeggiator_button)
 
     # Create and store octave down button
-    key_hold_button = QPushButton()
-    key_hold_button.setFixedSize(30, 30)
-    key_hold_button.setCheckable(True)
-    key_hold_button.setStyleSheet(JDXiStyle.BUTTON_ROUND)
-    key_hold_button.setToolTip("Key Hold: Hold arpeggiator notes when enabled")
+    key_hold_button = create_button_with_tooltip("Key Hold: Hold arpeggiator notes when enabled")
     buttons_row.addWidget(key_hold_button)
 
     # Add buttons row
@@ -70,3 +62,12 @@ def add_arpeggiator_buttons(widget):
     # Make container transparent
     arpeggiator_buttons_container.setStyleSheet("background: transparent;")
     return arpeggiator_button, key_hold_button
+    
+def create_button_with_tooltip(tooltip: str):
+    """Create and store octave down button"""
+    button = QPushButton()
+    button.setFixedSize(30, 30)
+    button.setCheckable(True)
+    button.setStyleSheet(JDXiStyle.BUTTON_ROUND)
+    button.setToolTip(tooltip)
+    return button
