@@ -33,6 +33,8 @@ class JDXiDimensions:
     """
     A class to store dimensions for the JD-Xi editor UI.
     """
+    DIGITAL_FILTER_SPACING = 5
+    DIGITAL_FILTER_MARGINS = (5, 15, 5, 5)
     BASIC_EDITOR_IMAGE_HEIGHT = 150
     BASIC_EDITOR_WIDTH = 550
     BASIC_EDITOR_HEIGHT = 550

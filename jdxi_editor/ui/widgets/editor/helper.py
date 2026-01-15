@@ -5,7 +5,7 @@ Helpers to create HBox and VBoxes
 from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout
 
 
-def create_hrow_layout(widget_list: list):
+def create_hrow_layout(widget_list: list) -> QHBoxLayout:
     """create a row from a list of widgets"""
     row = QHBoxLayout()
     row.addStretch()

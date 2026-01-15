@@ -4,7 +4,6 @@ Digital Filter Section for the JDXI Editor
 
 from typing import Callable
 
-import qtawesome as qta
 from decologr import Decologr as log
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
@@ -13,16 +12,16 @@ from PySide6.QtWidgets import (
     QLabel,
     QTabWidget,
     QVBoxLayout,
-    QWidget,
 )
 
-from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
+from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
+from jdxi_editor.ui.widgets.editor.helper import create_hrow_layout
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.filter.filter import FilterWidget
@@ -33,13 +32,13 @@ class DigitalFilterSection(SectionBaseWidget):
     """Filter section for the digital partial editor."""
 
     def __init__(
-        self,
-        create_parameter_slider: Callable,
-        create_parameter_switch: Callable,
-        partial_number: int,
-        midi_helper: MidiIOHelper,
-        controls: dict,
-        address: RolandSysExAddress,
+            self,
+            create_parameter_slider: Callable,
+            create_parameter_switch: Callable,
+            partial_number: int,
+            midi_helper: MidiIOHelper,
+            controls: dict,
+            address: RolandSysExAddress,
     ):
         """
         Initialize the DigitalFilterSection
@@ -64,22 +63,23 @@ class DigitalFilterSection(SectionBaseWidget):
 
     def setup_ui(self):
         """Set up the UI for the filter section."""
-        layout = self.get_layout(margins=(5, 15, 5, 5), spacing=5)
+        layout = self.get_layout(margins=JDXiDimensions.DIGITAL_FILTER_MARGINS,
+                                 spacing=JDXiDimensions.DIGITAL_FILTER_SPACING)
         self.setMinimumHeight(JDXiDimensions.EDITOR_MINIMUM_HEIGHT)
 
-        # Filter mode and slope
+        # --- Filter mode and slope
         filter_mode_row = self._create_filter_controls_row()
         layout.addLayout(filter_mode_row)
 
-        # Create tab widget
+        # --- Create tab widget
         self.digital_filter_tab_widget = QTabWidget()
         layout.addWidget(self.digital_filter_tab_widget)
 
-        # Add Controls tab
+        # --- Add Controls tab
         controls_group = self._create_filter_controls_group()
         self.digital_filter_tab_widget.addTab(controls_group, "Controls")
 
-        # Add ADSR tab
+        # --- Add ADSR tab
         adsr_group = self._create_filter_adsr_env_group()
         self.digital_filter_tab_widget.addTab(adsr_group, "ADSR")
 
@@ -88,25 +88,17 @@ class DigitalFilterSection(SectionBaseWidget):
 
     def _create_filter_controls_row(self) -> QHBoxLayout:
         """Filter mode controls row"""
-        filter_mode_row = QHBoxLayout()
-        filter_mode_row.addStretch()
         self.filter_mode_switch = self._create_parameter_switch(
             DigitalPartialParam.FILTER_MODE_SWITCH,
             "Mode",
             ["BYPASS", "LPF", "HPF", "BPF", "PKG", "LPF2", "LPF3", "LPF4"],
         )
         self.filter_mode_switch.valueChanged.connect(self._on_filter_mode_changed)
-        filter_mode_row.addWidget(self.filter_mode_switch)
-        filter_mode_row.addStretch()
+        filter_mode_row = create_hrow_layout([self.filter_mode_switch])
         return filter_mode_row
 
     def _create_filter_controls_group(self) -> QGroupBox:
         """Create filter controls group"""
-        controls_group = QGroupBox("Controls")
-        controls_layout = QHBoxLayout()
-        controls_layout.addStretch()
-        controls_group.setLayout(controls_layout)
-
         self.filter_widget = FilterWidget(
             cutoff_param=DigitalPartialParam.FILTER_CUTOFF,
             slope_param=DigitalPartialParam.FILTER_SLOPE,
@@ -117,26 +109,23 @@ class DigitalFilterSection(SectionBaseWidget):
             controls=self.controls,
             address=self.address,
         )
+        filter_controls_list = [self.filter_widget,
+                                self._create_parameter_slider(
+                                    DigitalPartialParam.FILTER_RESONANCE, "Resonance", vertical=True
+                                ),
+                                self._create_parameter_slider(
+                                    DigitalPartialParam.FILTER_CUTOFF_KEYFOLLOW, "KeyFollow", vertical=True
+                                ),
+                                self._create_parameter_slider(
+                                    DigitalPartialParam.FILTER_ENV_VELOCITY_SENSITIVITY,
+                                    "Velocity",
+                                    vertical=True,
+                                )
+                                ]
+        controls_layout = create_hrow_layout(filter_controls_list)
+        controls_group = QGroupBox("Controls")
+        controls_group.setLayout(controls_layout)
         controls_group.setStyleSheet(JDXiStyle.ADSR)
-        controls_layout.addWidget(self.filter_widget)
-        controls_layout.addWidget(
-            self._create_parameter_slider(
-                DigitalPartialParam.FILTER_RESONANCE, "Resonance", vertical=True
-            )
-        )
-        controls_layout.addWidget(
-            self._create_parameter_slider(
-                DigitalPartialParam.FILTER_CUTOFF_KEYFOLLOW, "KeyFollow", vertical=True
-            )
-        )
-        controls_layout.addWidget(
-            self._create_parameter_slider(
-                DigitalPartialParam.FILTER_ENV_VELOCITY_SENSITIVITY,
-                "Velocity",
-                vertical=True,
-            )
-        )
-        controls_layout.addStretch()
         return controls_group
 
     def _create_filter_adsr_env_group(self) -> QGroupBox:
