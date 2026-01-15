@@ -1,8 +1,14 @@
+"""
+JDXISynthData
+
+Data Model for JDXi Synth
+
+"""
+
 from dataclasses import dataclass, field
 from typing import Dict, Optional, Union
 
 from picomidi.constant import Midi
-from picomidi.sysex.parameter.address import AddressParameter
 
 from jdxi_editor.jdxi.synth.instrument_display import InstrumentDisplayConfig
 from jdxi_editor.jdxi.synth.midi_config import MidiSynthConfig

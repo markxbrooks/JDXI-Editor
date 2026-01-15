@@ -87,11 +87,13 @@ def create_synth_data(
 
             midi_requests = MidiRequests.DIGITAL2
 
-        """elif synth_type == JDXiSynth.DIGITAL_SYNTH_3:
-            synth_number = 3
-            digital_partial_address_umb = AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_1  # reuse
-            midi_channel = MidiChannel.ANALOG_SYNTH  # Channel 3, cheat mode
-            midi_requests = MidiRequests.DIGITAL1  # reuse digital command set"""
+        else:
+            # Default to Synth 1
+            synth_type = JDXiSynth.DIGITAL_SYNTH_1
+            synth_number = 1
+            digital_partial_address_umb = AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_1
+            midi_channel = MidiChannel.DIGITAL_SYNTH_1
+            midi_requests = MidiRequests.DIGITAL1
 
         return DigitalSynthData(
             midi_requests=midi_requests,

@@ -47,5 +47,5 @@ class DigitalSynthData(JDXISynthData):
     @property
     def partial_lmb(self) -> int:
         """Partial LMB"""
-        # Use group_map lookup
+        # --- Use group_map lookup
         return self.group_map.get(self.partial_number, AddressOffsetProgramLMB.COMMON)

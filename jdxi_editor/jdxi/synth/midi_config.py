@@ -18,4 +18,4 @@ class MidiSynthConfig:
     midi_channel: int
     presets: List[str]
     preset_list: List[str]
-    preset_type: JDXiSynth
+    preset_type: str  # JDXiSynth
