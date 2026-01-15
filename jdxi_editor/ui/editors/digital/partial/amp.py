@@ -190,6 +190,5 @@ class DigitalAmpSection(SectionBaseWidget):
             controls=self.controls,
             address=self.address,
         )
-        JDXiThemeManager.apply_adsr_style(self.amp_env_adsr_widget)
         amp_env_adsr_vlayout.addWidget(self.amp_env_adsr_widget)
         return env_group
