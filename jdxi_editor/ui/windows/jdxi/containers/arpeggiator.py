@@ -5,6 +5,16 @@ from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
+def create_button_with_tooltip(tooltip: str):
+    """Create button with tooltip"""
+    button = QPushButton()
+    button.setFixedSize(30, 30)
+    button.setCheckable(True)
+    button.setStyleSheet(JDXiStyle.BUTTON_ROUND)
+    button.setToolTip(tooltip)
+    return button
+    
+
 def add_arpeggiator_buttons(widget):
     """Add arpeggiator up/down buttons to the interface"""
     # Create container
@@ -62,12 +72,3 @@ def add_arpeggiator_buttons(widget):
     # Make container transparent
     arpeggiator_buttons_container.setStyleSheet("background: transparent;")
     return arpeggiator_button, key_hold_button
-    
-def create_button_with_tooltip(tooltip: str):
-    """Create and store octave down button"""
-    button = QPushButton()
-    button.setFixedSize(30, 30)
-    button.setCheckable(True)
-    button.setStyleSheet(JDXiStyle.BUTTON_ROUND)
-    button.setToolTip(tooltip)
-    return button
