@@ -21,7 +21,7 @@ from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
-from jdxi_editor.ui.widgets.editor.helper import create_hrow_layout, create_icon_label
+from jdxi_editor.ui.widgets.editor.helper import create_hlayout_with_widgets, create_icon_label_with_pixmap
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.filter.filter import FilterWidget
@@ -92,7 +92,7 @@ class DigitalFilterSection(SectionBaseWidget):
             ["BYPASS", "LPF", "HPF", "BPF", "PKG", "LPF2", "LPF3", "LPF4"],
         )
         self.filter_mode_switch.valueChanged.connect(self._on_filter_mode_changed)
-        filter_mode_row = create_hrow_layout([self.filter_mode_switch])
+        filter_mode_row = create_hlayout_with_widgets([self.filter_mode_switch])
         return filter_mode_row
 
     def _create_filter_controls_group(self) -> QGroupBox:
@@ -120,7 +120,7 @@ class DigitalFilterSection(SectionBaseWidget):
                                     vertical=True,
                                 )
                                 ]
-        controls_layout = create_hrow_layout(filter_controls_list)
+        controls_layout = create_hlayout_with_widgets(filter_controls_list)
         controls_group = QGroupBox("Controls")
         controls_group.setLayout(controls_layout)
         controls_group.setStyleSheet(JDXiStyle.ADSR)
@@ -139,7 +139,7 @@ class DigitalFilterSection(SectionBaseWidget):
                 waveform="adsr", foreground_color="#FFFFFF", icon_scale=2.0
             )
         )
-        icon_label = create_icon_label(icon_pixmap)
+        icon_label = create_icon_label_with_pixmap(icon_pixmap)
         env_layout.addWidget(icon_label)
 
         # --- ADSR Widget ---

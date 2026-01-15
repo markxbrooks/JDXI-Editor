@@ -4,27 +4,21 @@ AMP section for the digital partial editor.
 
 from typing import Callable
 
-import qtawesome as qta
-
+from jdxi_editor.ui.widgets.editor.helper import create_hlayout_with_widgets, \
+    create_vlayout_with_hlayout_and_widgets, create_vlayout_with_hlayouts, create_icons_layout, create_adsr_icon
 from picomidi.sysex.parameter.address import AddressParameter
-from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QGroupBox,
-    QHBoxLayout,
-    QLabel,
     QTabWidget,
     QVBoxLayout,
     QWidget,
 )
 
-from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.parameter.digital.partial import (
     DigitalPartialParam,
 )
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.ui.image.utils import base64_to_pixmap
-from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.editor import IconType
@@ -66,7 +60,7 @@ class DigitalAmpSection(SectionBaseWidget):
         self.setMinimumHeight(JDXiDimensions.EDITOR_MINIMUM_HEIGHT)
 
         # Custom icons layout (kept for Digital Amp's unique icon set)
-        icons_hlayout = self._create_icons_layout()
+        icons_hlayout = create_icons_layout()
         amp_section_layout.addLayout(icons_hlayout)
 
         # Create tab widget
@@ -86,94 +80,54 @@ class DigitalAmpSection(SectionBaseWidget):
         amp_section_layout.addSpacing(10)
         amp_section_layout.addStretch()
 
-    def _create_icons_layout(self) -> QHBoxLayout:
-        """Create icons layout"""
-        icons_hlayout = QHBoxLayout()
-        for icon in [
-            "mdi.volume-variant-off",
-            "mdi6.volume-minus",
-            "mdi.amplifier",
-            "mdi6.volume-plus",
-            "mdi.waveform",
-        ]:
-            icon_label = QLabel()
-            icon_pixmap = qta.icon(icon, color=JDXiStyle.GREY).pixmap(30, 30)
-            icon_label.setPixmap(icon_pixmap)
-            icon_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
-            icons_hlayout.addWidget(icon_label)
-        return icons_hlayout
-
     def _create_amp_controls_layout(self) -> QVBoxLayout:
         """Create amp controls layout"""
-        main_layout = QVBoxLayout()
 
-        # Level and velocity controls row
-        controls_row_layout = QHBoxLayout()
-        controls_row_layout.addStretch()
-
-        controls_row_layout.addWidget(
+        # --- Level and velocity controls row
+        controls_row_layout = create_hlayout_with_widgets([
             self._create_parameter_slider(
                 DigitalPartialParam.AMP_LEVEL, "Level", vertical=True
-            )
-        )
-        controls_row_layout.addWidget(
+            ),
             self._create_parameter_slider(
                 DigitalPartialParam.AMP_VELOCITY, "Velocity", vertical=True
-            )
-        )
-        controls_row_layout.addWidget(
+            ),
+
             self._create_parameter_slider(
                 DigitalPartialParam.AMP_LEVEL_KEYFOLLOW, "KeyFollow", vertical=True
-            )
-        )
-        controls_row_layout.addWidget(
+            ),
             self._create_parameter_slider(
                 DigitalPartialParam.LEVEL_AFTERTOUCH,
                 "After-touch Sensitivity",
                 vertical=True,
-            )
-        )
-        controls_row_layout.addWidget(
+            ),
             self._create_parameter_slider(
                 DigitalPartialParam.CUTOFF_AFTERTOUCH,
                 "After-touch Cutoff",
                 vertical=True,
             )
-        )
-        controls_row_layout.addStretch()
-        main_layout.addLayout(controls_row_layout)
+        ])
 
-        # Pan slider in a separate row
-        pan_row_layout = QHBoxLayout()
-        pan_row_layout.addStretch()
+        # --- Pan slider in a separate row to get left to right
         pan_slider = self._create_parameter_slider(DigitalPartialParam.AMP_PAN, "Pan")
         pan_slider.setValue(0)
-        pan_row_layout.addWidget(pan_slider)
-        pan_row_layout.addStretch()
-        main_layout.addLayout(pan_row_layout)
+        pan_row_layout = create_hlayout_with_widgets([pan_slider])
 
-        main_layout.addStretch()
+        # --- Create main layout with list of layouts
+        main_layout = create_vlayout_with_hlayouts([controls_row_layout,
+                                                    pan_row_layout])
+
+        main_layout.addLayout(pan_row_layout)
         return main_layout
 
     def _create_amp_adsr_group(self) -> QGroupBox:
         """Create amp ADSR group"""
         env_group = QGroupBox("Envelope")
         env_group.setProperty("adsr", True)
-        amp_env_adsr_vlayout = QVBoxLayout()
-        env_group.setLayout(amp_env_adsr_vlayout)
 
-        # Generate the ADSR waveform icon
-        icon_base64 = generate_waveform_icon("adsr", JDXiStyle.WHITE, 2.0)
-        pixmap = base64_to_pixmap(icon_base64)
+        icon_label = create_adsr_icon()
+        icons_hlayout = create_hlayout_with_widgets([icon_label])
 
-        icon_label = QLabel()
-        icon_label.setPixmap(pixmap)
-        icon_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
-        icons_hlayout = QHBoxLayout()
-        icons_hlayout.addWidget(icon_label)
-        amp_env_adsr_vlayout.addLayout(icons_hlayout)
-
-        # Create ADSRWidget
+        # --- Create ADSRWidget
         (
             group_address,
             _,
@@ -190,5 +144,7 @@ class DigitalAmpSection(SectionBaseWidget):
             controls=self.controls,
             address=self.address,
         )
-        amp_env_adsr_vlayout.addWidget(self.amp_env_adsr_widget)
+        amp_env_adsr_vlayout = create_vlayout_with_hlayout_and_widgets(icons_hlayout,
+                                                                       [self.amp_env_adsr_widget])
+        env_group.setLayout(amp_env_adsr_vlayout)
         return env_group

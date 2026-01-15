@@ -11,7 +11,7 @@ from jdxi_editor.jdxi.style import JDXiThemeManager
 from jdxi_editor.midi.data.parameter.analog import AnalogParam
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.editor import IconType
-from jdxi_editor.ui.widgets.editor.helper import create_hrow_layout
+from jdxi_editor.ui.widgets.editor.helper import create_hlayout_with_widgets
 
 
 class AnalogCommonSection(SectionBaseWidget):
@@ -53,21 +53,21 @@ class AnalogCommonSection(SectionBaseWidget):
             ["-3", "-2", "-1", "0", "+1", "+2", "+3"],
             [61, 62, 63, 64, 65, 66, 67],
         )
-        octave_shift_switch_row = create_hrow_layout([self.octave_shift_switch])
+        octave_shift_switch_row = create_hlayout_with_widgets([self.octave_shift_switch])
         main_rows_vlayout.addLayout(octave_shift_switch_row)
 
         self.legato_switch = self._create_parameter_switch(
             AnalogParam.LEGATO_SWITCH, "Legato", ["OFF", "ON"]
         )
 
-        legato_row = create_hrow_layout([self.legato_switch])
+        legato_row = create_hlayout_with_widgets([self.legato_switch])
         main_rows_vlayout.addLayout(legato_row)
 
         # Portamento Switch
         self.portamento_switch = self._create_parameter_switch(
             AnalogParam.PORTAMENTO_SWITCH, "Portamento", ["OFF", "ON"]
         )
-        portamento_switch_row = create_hrow_layout([self.portamento_switch])
+        portamento_switch_row = create_hlayout_with_widgets([self.portamento_switch])
         main_rows_vlayout.addLayout(portamento_switch_row)
 
         self.pitch_bend_up = self._create_parameter_slider(
@@ -82,8 +82,8 @@ class AnalogCommonSection(SectionBaseWidget):
             AnalogParam.PORTAMENTO_TIME, "Portamento Time", vertical=True
         )
         # Pitch Bend
-        pitch_bend_row = create_hrow_layout([self.pitch_bend_up,
-                                                  self.pitch_bend_down,
-                                                  self.portamento_time])
+        pitch_bend_row = create_hlayout_with_widgets([self.pitch_bend_up,
+                                                      self.pitch_bend_down,
+                                                      self.portamento_time])
         main_rows_vlayout.addLayout(pitch_bend_row)
         main_rows_vlayout.addStretch()

@@ -20,7 +20,7 @@ from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.editor import IconType
-from jdxi_editor.ui.widgets.editor.helper import create_hrow_layout
+from jdxi_editor.ui.widgets.editor.helper import create_hlayout_with_widgets
 from jdxi_editor.ui.widgets.filter.analog_filter import AnalogFilterWidget
 
 
@@ -91,7 +91,7 @@ class AnalogFilterSection(SectionBaseWidget):
         self.filter_mode_switch.valueChanged.connect(
             lambda v: self._on_filter_mode_changed(v)
         )
-        filter_row = create_hrow_layout([self.filter_mode_switch])
+        filter_row = create_hlayout_with_widgets([self.filter_mode_switch])
         return filter_row
 
     def _create_filter_controls_group(self) -> QGroupBox:
@@ -115,10 +115,10 @@ class AnalogFilterSection(SectionBaseWidget):
             "Env. Velocity Sens.",
             vertical=True,
         )
-        controls_layout = create_hrow_layout([self.filter_resonance,
-                                                   self.filter_cutoff_keyfollow,
-                                                   self.filter_widget,
-                                                   self.filter_env_velocity_sens])
+        controls_layout = create_hlayout_with_widgets([self.filter_resonance,
+                                                       self.filter_cutoff_keyfollow,
+                                                       self.filter_widget,
+                                                       self.filter_env_velocity_sens])
 
         controls_group.setLayout(controls_layout)
         JDXiThemeManager.apply_adsr_style(controls_group, analog=True)
@@ -140,6 +140,6 @@ class AnalogFilterSection(SectionBaseWidget):
         )
         env_group = QGroupBox("Envelope")
         env_group.setProperty("adsr", True)
-        env_layout = create_hrow_layout([self.filter_adsr_widget])
+        env_layout = create_hlayout_with_widgets([self.filter_adsr_widget])
         env_group.setLayout(env_layout)
         return env_group

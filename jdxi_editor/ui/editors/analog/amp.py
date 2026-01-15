@@ -23,7 +23,7 @@ from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.editor import IconType
-from jdxi_editor.ui.widgets.editor.helper import create_hrow_layout, create_vcolumn_layout, create_icon_label
+from jdxi_editor.ui.widgets.editor.helper import create_hlayout_with_widgets, create_vlayout_with_hlayout_and_widgets, create_icon_label_with_pixmap
 
 
 class AnalogAmpSection(SectionBaseWidget):
@@ -85,9 +85,9 @@ class AnalogAmpSection(SectionBaseWidget):
             "Velocity Sensitivity",
             vertical=True,
         )
-        level_controls_row_layout = create_hrow_layout([self.amp_level,
-                                                        self.amp_level_keyfollow,
-                                                        self.amp_level_velocity_sensitivity])
+        level_controls_row_layout = create_hlayout_with_widgets([self.amp_level,
+                                                                 self.amp_level_keyfollow,
+                                                                 self.amp_level_velocity_sensitivity])
         return level_controls_row_layout
 
     def _create_analog_amp_adsr_group(self) -> QGroupBox:
@@ -99,10 +99,10 @@ class AnalogAmpSection(SectionBaseWidget):
         icon_base64 = generate_waveform_icon("adsr", "#FFFFFF", 2.0)
         pixmap = base64_to_pixmap(icon_base64)
 
-        icon_label = create_icon_label(pixmap)
+        icon_label = create_icon_label_with_pixmap(pixmap)
 
-        icons_hlayout = create_hrow_layout([icon_label])
-        amp_env_adsr_vlayout = create_vcolumn_layout(icons_hlayout)
+        icons_hlayout = create_hlayout_with_widgets([icon_label])
+        amp_env_adsr_vlayout = create_vlayout_with_hlayout_and_widgets(icons_hlayout)
         env_group.setLayout(amp_env_adsr_vlayout)
 
         # --- ADSR Widget

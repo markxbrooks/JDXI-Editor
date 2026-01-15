@@ -58,7 +58,7 @@ Features:
 from typing import Dict, Union
 
 from decologr import Decologr as log
-from jdxi_editor.ui.widgets.editor.helper import create_vcolumn_layout
+from jdxi_editor.ui.widgets.editor.helper import create_vlayout_with_hlayout_and_widgets
 from picomidi.constant import Midi
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import QEvent, Qt
@@ -492,7 +492,7 @@ class EffectsCommonEditor(BasicEditor):
         container = QWidget()
         # Icons row (standardized across editor tabs)
         icon_hlayout = IconRegistry.create_adsr_icons_row()
-        container_layout = create_vcolumn_layout(icon_hlayout)
+        container_layout = create_vlayout_with_hlayout_and_widgets(icon_hlayout)
         container.setLayout(container_layout)
         
         widget = QWidget()
