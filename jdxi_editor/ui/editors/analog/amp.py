@@ -6,40 +6,35 @@ This section contains the controls for the amp section of the JD-Xi editor.
 
 from typing import Callable
 
-import qtawesome as qta
-
+from jdxi_editor.ui.image.utils import base64_to_pixmap
+from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from picomidi.sysex.parameter.address import AddressParameter
-from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QGroupBox,
     QHBoxLayout,
-    QLabel,
     QTabWidget,
-    QVBoxLayout,
     QWidget,
 )
 
-from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
+from jdxi_editor.jdxi.style import JDXiThemeManager
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.parameter.analog import AnalogParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.editor import IconType
-from jdxi_editor.ui.widgets.editor.helper import create_hrow_layout, create_vcolumn_layout
+from jdxi_editor.ui.widgets.editor.helper import create_hrow_layout, create_vcolumn_layout, create_icon_label
 
 
 class AnalogAmpSection(SectionBaseWidget):
     """Amp section of the JD-Xi editor"""
 
     def __init__(
-        self,
-        midi_helper: MidiIOHelper,
-        address: RolandSysExAddress,
-        controls: dict[AddressParameter, QWidget],
-        create_parameter_slider: Callable,
-        generate_waveform_icon: Callable,
-        base64_to_pixmap: Callable,
+            self,
+            midi_helper: MidiIOHelper,
+            address: RolandSysExAddress,
+            controls: dict[AddressParameter, QWidget],
+            create_parameter_slider: Callable
     ):
         """
         Initialize the Amp section of the JD-Xi editor
@@ -47,24 +42,18 @@ class AnalogAmpSection(SectionBaseWidget):
         :param midi_helper: MidiIOHelper
         :param address: RolandSysExAddress
         :param create_parameter_slider: Callable
-        :param generate_waveform_icon: Callable
-        :param base64_to_pixmap: Callable
         """
         self.midi_helper = midi_helper
         self.address = address
         self.controls = controls
         self._create_parameter_slider = create_parameter_slider
-        self.generate_waveform_icon = generate_waveform_icon
-        self.base64_to_pixmap = base64_to_pixmap
-        
+
         super().__init__(icon_type=IconType.ADSR, analog=True)
         self.init_ui()
 
     def init_ui(self):
         """Initialize UI"""
-        
-        JDXiThemeManager.apply_tabs_style(self.analog_amp_tab_widget, analog=True)
-        
+
         # --- Add Analog Amp Level controls ---
         amp_controls_layout = self._create_analog_amp_level_controls()
         amp_controls_widget = QWidget()
@@ -72,23 +61,18 @@ class AnalogAmpSection(SectionBaseWidget):
 
         # --- Add Analog Amp ADSR controls ---
         amp_adsr_group = self._create_analog_amp_adsr_group()
-        
+
         self.analog_amp_tab_widget = QTabWidget()
         self.analog_amp_tab_widget.addTab(amp_controls_widget, "Controls")
         self.analog_amp_tab_widget.addTab(amp_adsr_group, "ADSR")
+        JDXiThemeManager.apply_tabs_style(self.analog_amp_tab_widget, analog=True)
+
         self.main_rows_layout = self.create_main_rows_layout()
-        
-    def create_main_rows_layout(self):
-        """create main rows layout"""
-        main_layout = self.get_layout(margins=(5, 15, 5, 5), spacing=5)
-        main_layout.addWidget(self.analog_amp_tab_widget)
-        main_layout.addSpacing(10)
-        main_layout.addStretch()
-        return main_layout
+        self.main_rows_layout.addWidget(self.analog_amp_tab_widget)
+        self.main_rows_layout.addStretch()
 
     def _create_analog_amp_level_controls(self) -> QHBoxLayout:
         """Level controls"""
-        level_controls_row_layout = QHBoxLayout()
 
         self.amp_level = self._create_parameter_slider(
             AnalogParam.AMP_LEVEL, "Level", vertical=True
@@ -101,12 +85,9 @@ class AnalogAmpSection(SectionBaseWidget):
             "Velocity Sensitivity",
             vertical=True,
         )
-
-        level_controls_row_layout.addStretch()
-        level_controls_row_layout.addWidget(self.amp_level)
-        level_controls_row_layout.addWidget(self.amp_level_keyfollow)
-        level_controls_row_layout.addWidget(self.amp_level_velocity_sensitivity)
-        level_controls_row_layout.addStretch()
+        level_controls_row_layout = create_hrow_layout([self.amp_level,
+                                                        self.amp_level_keyfollow,
+                                                        self.amp_level_velocity_sensitivity])
         return level_controls_row_layout
 
     def _create_analog_amp_adsr_group(self) -> QGroupBox:
@@ -115,11 +96,11 @@ class AnalogAmpSection(SectionBaseWidget):
         env_group.setProperty("adsr", True)
 
         # --- ADSR Icon
-        icon_base64 = self.generate_waveform_icon("adsr", "#FFFFFF", 2.0)
-        pixmap = self.base64_to_pixmap(icon_base64)
-        icon_label = QLabel()
-        icon_label.setPixmap(pixmap)
-        icon_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+        icon_base64 = generate_waveform_icon("adsr", "#FFFFFF", 2.0)
+        pixmap = base64_to_pixmap(icon_base64)
+
+        icon_label = create_icon_label(pixmap)
+
         icons_hlayout = create_hrow_layout([icon_label])
         amp_env_adsr_vlayout = create_vcolumn_layout(icons_hlayout)
         env_group.setLayout(amp_env_adsr_vlayout)

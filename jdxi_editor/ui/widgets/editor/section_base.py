@@ -40,6 +40,7 @@ from PySide6.QtWidgets import QVBoxLayout, QWidget
 from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.jdxi.style.theme_manager import JDXiThemeManager
 from jdxi_editor.ui.widgets.editor.icon_type import IconType
+from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
 class SectionBaseWidget(QWidget):
@@ -144,3 +145,10 @@ class SectionBaseWidget(QWidget):
         Subclasses can override either setup_ui() or init_ui().
         """
         self.setup_ui()
+
+    def create_main_rows_layout(self):
+        """create main rows layout"""
+        layout = self.get_layout(margins=JDXiDimensions.DIGITAL_FILTER_MARGINS,
+                                 spacing=JDXiDimensions.DIGITAL_FILTER_SPACING)
+        layout.addSpacing(JDXiDimensions.DIGITAL_FILTER_SPACING)
+        return layout

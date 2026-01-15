@@ -21,7 +21,7 @@ from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
-from jdxi_editor.ui.widgets.editor.helper import create_hrow_layout
+from jdxi_editor.ui.widgets.editor.helper import create_hrow_layout, create_icon_label
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.filter.filter import FilterWidget
@@ -63,17 +63,13 @@ class DigitalFilterSection(SectionBaseWidget):
 
     def setup_ui(self):
         """Set up the UI for the filter section."""
-        layout = self.get_layout(margins=JDXiDimensions.DIGITAL_FILTER_MARGINS,
-                                 spacing=JDXiDimensions.DIGITAL_FILTER_SPACING)
         self.setMinimumHeight(JDXiDimensions.EDITOR_MINIMUM_HEIGHT)
 
         # --- Filter mode and slope
         filter_mode_row = self._create_filter_controls_row()
-        layout.addLayout(filter_mode_row)
 
         # --- Create tab widget
         self.digital_filter_tab_widget = QTabWidget()
-        layout.addWidget(self.digital_filter_tab_widget)
 
         # --- Add Controls tab
         controls_group = self._create_filter_controls_group()
@@ -83,8 +79,10 @@ class DigitalFilterSection(SectionBaseWidget):
         adsr_group = self._create_filter_adsr_env_group()
         self.digital_filter_tab_widget.addTab(adsr_group, "ADSR")
 
-        layout.addSpacing(JDXiStyle.SPACING)
-        layout.addStretch()
+        self.main_rows_layout = self.create_main_rows_layout()
+        self.main_rows_layout.addWidget(self.digital_filter_tab_widget)
+        self.main_rows_layout.addLayout(filter_mode_row)
+        self.main_rows_layout.addStretch()
 
     def _create_filter_controls_row(self) -> QHBoxLayout:
         """Filter mode controls row"""
@@ -136,14 +134,12 @@ class DigitalFilterSection(SectionBaseWidget):
         env_group.setLayout(env_layout)
 
         # --- ADSR Icon ---
-        icon_label = QLabel()
         icon_pixmap = base64_to_pixmap(
             generate_waveform_icon(
                 waveform="adsr", foreground_color="#FFFFFF", icon_scale=2.0
             )
         )
-        icon_label.setPixmap(icon_pixmap)
-        icon_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+        icon_label = create_icon_label(icon_pixmap)
         env_layout.addWidget(icon_label)
 
         # --- ADSR Widget ---

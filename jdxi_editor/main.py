@@ -46,7 +46,7 @@ from jdxi_editor.log.message import log_message
 from jdxi_editor.project import __organization_name__, __program__, __version__
 from jdxi_editor.resources import resource_path
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
-from jdxi_editor.ui.widgets.editor.helper import create_hrow_layout
+from jdxi_editor.ui.widgets.editor.helper import create_hrow_layout, create_icon_label
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 from jdxi_editor.ui.windows.jdxi.instrument import JDXiInstrument
 
@@ -135,7 +135,7 @@ def main() -> None:
 
 def setup_splash_screen(
     app: QApplication,
-) -> tuple[QSplashScreen, QProgressBar, QLabel]:
+) -> tuple[QSplashScreen, QProgressBar, DigitalTitle]:
     """Setup and display a professional application splash screen with rotating status text.
 
     Returns:
@@ -203,9 +203,7 @@ def setup_splash_screen(
     pixmap = QPixmap(image_path).scaled(
         360, 220, Qt.KeepAspectRatio, Qt.SmoothTransformation
     )
-    logo = QLabel()
-    logo.setPixmap(pixmap)
-    logo.setAlignment(Qt.AlignCenter)
+    logo = create_icon_label(pixmap)
     card_layout.addWidget(logo)
 
     # Subtitle

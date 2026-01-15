@@ -1,8 +1,8 @@
 """
 Helpers to create HBox and VBoxes
 """
-
-from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout, QLabel
 
 
 def create_hrow_layout(widget_list: list) -> QHBoxLayout:
@@ -20,3 +20,11 @@ def create_vcolumn_layout(inner_layout: QHBoxLayout) -> QVBoxLayout:
     vlayout = QVBoxLayout()
     vlayout.addLayout(inner_layout)
     return vlayout
+
+
+def create_icon_label(pixmap) -> QLabel:
+    """ create icon label"""
+    label = QLabel()
+    label.setPixmap(pixmap)
+    label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+    return label
