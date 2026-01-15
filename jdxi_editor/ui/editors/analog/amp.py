@@ -62,11 +62,10 @@ class AnalogAmpSection(SectionBaseWidget):
 
     def init_ui(self):
         """Initialize UI"""
-        main_rows_vlayout = self.get_layout(margins=(5, 15, 5, 5), spacing=5)
 
         self.analog_amp_tab_widget = QTabWidget()
         JDXiThemeManager.apply_tabs_style(self.analog_amp_tab_widget, analog=True)
-        main_rows_vlayout.addWidget(self.analog_amp_tab_widget)
+        
         # --- Add Analog Amp Level controls ---
         amp_controls_layout = self._create_analog_amp_level_controls()
         amp_controls_widget = QWidget()
@@ -76,7 +75,9 @@ class AnalogAmpSection(SectionBaseWidget):
         # --- Add Analog Amp ADSR controls ---
         amp_adsr_group = self._create_analog_amp_adsr_group()
         self.analog_amp_tab_widget.addTab(amp_adsr_group, "ADSR")
-
+        
+        main_rows_vlayout = self.get_layout(margins=(5, 15, 5, 5), spacing=5)
+        main_rows_vlayout.addWidget(self.analog_amp_tab_widget)
         #  --- Add spacing ---
         main_rows_vlayout.addSpacing(10)
 
