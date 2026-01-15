@@ -62,25 +62,24 @@ class AnalogAmpSection(SectionBaseWidget):
 
     def init_ui(self):
         """Initialize UI"""
-
-        self.analog_amp_tab_widget = QTabWidget()
+        
         JDXiThemeManager.apply_tabs_style(self.analog_amp_tab_widget, analog=True)
         
         # --- Add Analog Amp Level controls ---
         amp_controls_layout = self._create_analog_amp_level_controls()
         amp_controls_widget = QWidget()
         amp_controls_widget.setLayout(amp_controls_layout)
-        self.analog_amp_tab_widget.addTab(amp_controls_widget, "Controls")
 
         # --- Add Analog Amp ADSR controls ---
         amp_adsr_group = self._create_analog_amp_adsr_group()
+        
+        self.analog_amp_tab_widget = QTabWidget()
+        self.analog_amp_tab_widget.addTab(amp_controls_widget, "Controls")
         self.analog_amp_tab_widget.addTab(amp_adsr_group, "ADSR")
         
         main_rows_vlayout = self.get_layout(margins=(5, 15, 5, 5), spacing=5)
         main_rows_vlayout.addWidget(self.analog_amp_tab_widget)
-        #  --- Add spacing ---
         main_rows_vlayout.addSpacing(10)
-
         main_rows_vlayout.addStretch()
 
     def _create_analog_amp_level_controls(self) -> QHBoxLayout:
