@@ -5,8 +5,6 @@ Midi Synth Config
 from dataclasses import dataclass
 from typing import List
 
-from jdxi_editor.jdxi.synth.type import JDXiSynth
-
 
 @dataclass
 class MidiSynthConfig:

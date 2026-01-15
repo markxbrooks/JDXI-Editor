@@ -3,7 +3,7 @@ Drum Synth Data
 """
 
 from dataclasses import dataclass, field
-from typing import Dict, Optional
+from typing import Dict
 
 from jdxi_editor.jdxi.synth.data import JDXISynthData
 from jdxi_editor.midi.data.address.address import Address, AddressOffsetDrumKitLMB
