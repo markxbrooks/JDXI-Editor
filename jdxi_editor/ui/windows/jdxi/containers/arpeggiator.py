@@ -29,7 +29,7 @@ def add_arpeggiator_buttons(widget):
     )
 
     arpeggiator_layout = QVBoxLayout(arpeggiator_buttons_container)
-    arpeggiator_layout.setSpacing(5)
+    arpeggiator_layout.setSpacing(JDXiDimensions.ARP_SPACING)
 
     # Add "ARPEGGIO" label at the top
     arpeggiator_label = QLabel("ARPEGGIO")
@@ -39,7 +39,7 @@ def add_arpeggiator_buttons(widget):
 
     # Create horizontal layout for Down/Up labels
     labels_row = QHBoxLayout()
-    labels_row.setSpacing(20)  # Space between labels
+    labels_row.setSpacing(JDXiDimensions.ARP_SPACING)  # Space between labels
 
     # On label
     on_label = QLabel("On")
@@ -51,7 +51,7 @@ def add_arpeggiator_buttons(widget):
 
     # Create horizontal layout for buttons
     buttons_row = QHBoxLayout()
-    buttons_row.setSpacing(20)  # Space between buttons
+    buttons_row.setSpacing(JDXiDimensions.ARP_SPACING)  # Space between buttons
 
     # Down label
     key_hold_label = QLabel("Key Hold")
