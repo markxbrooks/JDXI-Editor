@@ -55,6 +55,7 @@ class AnalogOscillatorSection(SectionBaseWidget):
         self.midi_helper = midi_helper
         self.address = address
         self.controls = controls
+        self.analog = True
         
         super().__init__(icon_type=IconType.OSCILLATOR, analog=True)
         self.init_ui()
@@ -181,6 +182,7 @@ class AnalogOscillatorSection(SectionBaseWidget):
             address=self.address,
             create_parameter_slider=self._create_parameter_slider,
             controls=self.controls,
+            analog=self.analog
         )
         JDXiThemeManager.apply_adsr_style(self.pwm_widget, analog=True)
         self.pwm_widget.setMaximumHeight(JDXiStyle.PWM_WIDGET_HEIGHT)
