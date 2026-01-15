@@ -112,7 +112,7 @@ class DigitalOscillatorSection(SectionBaseWidget):
         for wave, icon_base64 in wave_icons.items():
             btn = WaveformButton(wave)
             btn.setStyleSheet(JDXiStyle.BUTTON_RECT)
-            btn.setFixedSize(60, 30)
+            btn.setFixedSize(JDXiDimensions.WAVEFORM_ICON_WIDTH, JDXiDimensions.WAVEFORM_ICON_HEIGHT)
             btn.setIcon(QIcon(base64_to_pixmap(icon_base64)))
             btn.clicked.connect(lambda checked, w=wave: self._on_waveform_selected(w))
             self.wave_buttons[wave] = btn
