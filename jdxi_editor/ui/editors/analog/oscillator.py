@@ -119,7 +119,7 @@ class AnalogOscillatorSection(SectionBaseWidget):
             )
             icon_base64 = generate_waveform_icon(icon_name, "#FFFFFF", 0.7)
             btn.setIcon(QIcon(base64_to_pixmap(icon_base64)))
-            btn.setFixedSize(60, 30)
+            btn.setFixedSize(JDXiDimensions.WAVEFORM_ICON_WIDTH, JDXiDimensions.WAVEFORM_ICON_HEIGHT)
             btn.waveform_selected.connect(self._on_waveform_selected)
             self.wave_buttons[waveform] = btn
             self.controls[AnalogParam.OSC_WAVEFORM] = btn
