@@ -17,6 +17,7 @@ from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QGridLayout, QSlider, QWidget
 
+from jdxi_editor.jdxi.style import JDXiThemeManager
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.utils.conversions import midi_value_to_ms, ms_to_midi_value
