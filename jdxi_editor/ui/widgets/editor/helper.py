@@ -40,7 +40,7 @@ def create_group_with_layout(group_name: str = None, inner_layout: QLayout = Non
     """create Group and a layout"""
     group = QGroupBox(group_name) if group_name is not None else QGroupBox()
     if inner_layout is None:
-        inner_layout = create_layout(vertical=True)
+        inner_layout = create_layout(vertical=vertical)
     group.setLayout(inner_layout)
     return group, inner_layout
     
