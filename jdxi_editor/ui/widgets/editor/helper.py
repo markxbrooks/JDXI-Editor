@@ -74,6 +74,12 @@ def create_adsr_icon_label() -> QLabel:
     pixmap = base64_to_pixmap(icon_base64)
     icon_label = create_icon_label_with_pixmap(pixmap)
     return icon_label
+    
+    
+def create_adsr_icon() -> QIcon:
+    """create adsr icon"""
+    adsr_icon_base64 = generate_waveform_icon("adsr", "#FFFFFF", 1.0)
+    adsr_icon = QIcon(base64_to_pixmap(adsr_icon_base64))
 
 
 def create_centered_adsr_icon_layout() -> QHBoxLayout:
