@@ -20,7 +20,6 @@ from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
-import qtawesome as qta
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.digital.filter import DigitalFilterMode
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParam
@@ -82,7 +81,7 @@ class DigitalFilterSection(SectionBaseWidget):
 
         # --- Add Controls tab
         controls_group = self._create_filter_controls_group()
-        controls_icon = qta.icon("mdi.tune", color=JDXiStyle.GREY)
+        controls_icon = IconRegistry.get_icon(IconRegistry.TUNE, color=JDXiStyle.GREY)
         self.digital_filter_tab_widget.addTab(controls_group, controls_icon, "Controls")
 
         # --- Add ADSR tab

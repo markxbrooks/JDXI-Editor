@@ -213,9 +213,8 @@ class DigitalSynthEditor(SynthEditor):
         self.partial_tab_widget = QTabWidget()
         instrument_widget.setLayout(instrument_layout)
         try:
-            import qtawesome as qta
-            presets_icon = qta.icon("mdi.music-note-multiple", color=JDXiStyle.GREY)
-            if presets_icon.isNull():
+            presets_icon = IconRegistry.get_icon(IconRegistry.MUSIC_NOTE_MULTIPLE, color=JDXiStyle.GREY)
+            if presets_icon is None or presets_icon.isNull():
                 raise ValueError("Icon is null")
         except:
             presets_icon = IconRegistry.get_icon(IconRegistry.MUSIC, color=JDXiStyle.GREY)

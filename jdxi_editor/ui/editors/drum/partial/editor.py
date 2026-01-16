@@ -36,7 +36,6 @@ from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from PySide6.QtGui import QIcon
-import qtawesome as qta
 
 
 class DrumPartialEditor(PartialEditor):
@@ -99,7 +98,7 @@ class DrumPartialEditor(PartialEditor):
         tab_partial_layout = QVBoxLayout(tab_partial)
         tab_partial_layout.setContentsMargins(0, 0, 0, 0)
         tab_partial_layout.setSpacing(0)
-        partial_icon = qta.icon("mdi.circle-outline", color=JDXiStyle.GREY)
+        partial_icon = IconRegistry.get_icon(IconRegistry.CIRCLE_OUTLINE, color=JDXiStyle.GREY)
         tab_widget.addTab(tab_partial, partial_icon, "Partial")
 
         partial_group = DrumPartialSection(
@@ -115,7 +114,7 @@ class DrumPartialEditor(PartialEditor):
         tab_wmt_layout = QVBoxLayout(tab_wmt)
         tab_wmt_layout.setContentsMargins(0, 0, 0, 0)
         tab_wmt_layout.setSpacing(0)
-        wmt_icon = qta.icon("mdi.waveform", color=JDXiStyle.GREY)
+        wmt_icon = IconRegistry.get_icon(IconRegistry.WAVEFORM, color=JDXiStyle.GREY)
         tab_widget.addTab(tab_wmt, wmt_icon, "WMT")
 
         wmt_group = DrumWMTSection(
@@ -151,7 +150,7 @@ class DrumPartialEditor(PartialEditor):
         tab_output_layout = QVBoxLayout(tab_output)
         tab_output_layout.setContentsMargins(0, 0, 0, 0)
         tab_output_layout.setSpacing(0)
-        output_icon = qta.icon("mdi.volume-high", color=JDXiStyle.GREY)
+        output_icon = IconRegistry.get_icon(IconRegistry.VOLUME_HIGH, color=JDXiStyle.GREY)
         tab_widget.addTab(tab_output, output_icon, "Output")
 
         output_group = DrumOutputSection(

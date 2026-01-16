@@ -66,7 +66,7 @@ class AnalogAmpSection(SectionBaseWidget):
         amp_adsr_group = self._create_analog_amp_adsr_group()
 
         self.analog_amp_tab_widget = QTabWidget()
-        controls_icon = qta.icon("mdi.tune", color=JDXiStyle.GREY)
+        controls_icon = IconRegistry.get_icon(IconRegistry.TUNE, color=JDXiStyle.GREY)
         self.analog_amp_tab_widget.addTab(amp_controls_widget, controls_icon, "Controls")
         adsr_icon_base64 = generate_waveform_icon("adsr", "#FFFFFF", 1.0)
         adsr_icon = QIcon(base64_to_pixmap(adsr_icon_base64))

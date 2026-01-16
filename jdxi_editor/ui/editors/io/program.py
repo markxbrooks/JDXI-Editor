@@ -311,9 +311,8 @@ class ProgramEditor(BasicEditor):
 
         # Add Programs/Presets tab to main tab widget (base widget contains the scroll area)
         try:
-            import qtawesome as qta
-            programs_presets_icon = qta.icon("mdi.music-note-multiple", color=JDXiStyle.GREY)
-            if programs_presets_icon.isNull():
+            programs_presets_icon = IconRegistry.get_icon(IconRegistry.MUSIC_NOTE_MULTIPLE, color=JDXiStyle.GREY)
+            if programs_presets_icon is None or programs_presets_icon.isNull():
                 raise ValueError("Icon is null")
         except:
             programs_presets_icon = IconRegistry.get_icon(IconRegistry.MUSIC, color=JDXiStyle.GREY)
@@ -413,7 +412,7 @@ class ProgramEditor(BasicEditor):
         preset_group = self._create_preset_selection_widget()
         try:
             import qtawesome as qta
-            presets_icon = qta.icon("mdi.music-note-multiple", color=JDXiStyle.GREY)
+            presets_icon = IconRegistry.get_icon(IconRegistry.MUSIC_NOTE_MULTIPLE, color=JDXiStyle.GREY)
             if presets_icon.isNull():
                 raise ValueError("Icon is null")
         except:

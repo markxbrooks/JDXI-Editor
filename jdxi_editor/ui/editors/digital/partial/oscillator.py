@@ -76,7 +76,7 @@ class DigitalOscillatorSection(SectionBaseWidget):
 
         # --- Tuning and Pitch tab (combines Tuning and Pitch Envelope like Analog) ---
         tuning_pitch_widget = self._create_tuning_pitch_widget()
-        tuning_icon = qta.icon("mdi.music-note", color=JDXiStyle.GREY)
+        tuning_icon = IconRegistry.get_icon(IconRegistry.MUSIC_NOTE, color=JDXiStyle.GREY)
         self.oscillator_tab_widget.addTab(tuning_pitch_widget, tuning_icon, "Tuning and Pitch")
 
         # --- Pulse Width tab ---

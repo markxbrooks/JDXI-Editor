@@ -55,6 +55,26 @@ class IconRegistry:
     # Instrument icons
     PIANO = "msc.piano"
     DRUM = "fa5s.drum"
+    DISTORTION = "mdi6.signal-distance-variant"
+
+    # Effect icons
+    EFFECT = "mdi.effect"
+    DELAY = "mdi.timer-outline"
+    REVERB = "mdi.wave"
+    MICROPHONE = "mdi.microphone"
+    EQUALIZER = "mdi.equalizer"
+    
+    # Control icons
+    TUNE = "mdi.tune"
+    CLOCK = "mdi.clock-outline"
+    MUSIC_NOTE = "mdi.music-note"
+    MUSIC_NOTE_MULTIPLE = "mdi.music-note-multiple"
+    CODE_BRACES = "mdi.code-braces"
+    CIRCLE_OUTLINE = "mdi.circle-outline"
+    VOLUME_HIGH = "mdi.volume-high"
+    COG_OUTLINE = "mdi.cog-outline"
+    DOTS_HORIZONTAL = "mdi.dots-horizontal"
+    PAN_HORIZONTAL = "mdi.pan-horizontal"
 
     # Tab icons
     SEARCH_WEB = "mdi6.search-web"

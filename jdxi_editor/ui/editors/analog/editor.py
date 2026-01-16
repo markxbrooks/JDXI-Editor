@@ -228,9 +228,8 @@ class AnalogSynthEditor(SynthEditor):
         # Create tab widget and add preset as first tab
         self.tab_widget = self.base_widget.create_tab_widget()
         try:
-            import qtawesome as qta
-            presets_icon = qta.icon("mdi.music-note-multiple", color=JDXiStyle.GREY)
-            if presets_icon.isNull():
+            presets_icon = IconRegistry.get_icon(IconRegistry.MUSIC_NOTE_MULTIPLE, color=JDXiStyle.GREY)
+            if presets_icon is None or presets_icon.isNull():
                 raise ValueError("Icon is null")
         except:
             presets_icon = IconRegistry.get_icon(IconRegistry.MUSIC, color=JDXiStyle.GREY)
@@ -884,7 +883,7 @@ class AnalogSynthEditor(SynthEditor):
         cheat_preset_layout.addWidget(self.cheat_load_button)
 
         cheat_preset_layout.addStretch()
-        cheat_presets_icon = qta.icon("mdi.code-braces", color=JDXiStyle.GREY)
+        cheat_presets_icon = IconRegistry.get_icon(IconRegistry.CODE_BRACES, color=JDXiStyle.GREY)
         preset_tabs.addTab(cheat_preset_widget, cheat_presets_icon, "Cheat Presets")
 
         return instrument_preset_group

@@ -78,7 +78,7 @@ class AnalogLFOSection(SectionBaseWidget):
             JDXiDimensions.EDITOR_MINIMUM_HEIGHT
         )
         fade_rate_controls_row_widget.setLayout(fade_rate_controls_row_layout)
-        fade_rate_icon = qta.icon("mdi.clock-outline", color=JDXiStyle.GREY)
+        fade_rate_icon = IconRegistry.get_icon(IconRegistry.CLOCK, color=JDXiStyle.GREY)
         self.lfo_controls_tab_widget.addTab(
             fade_rate_controls_row_widget, fade_rate_icon, "Fade and Rate Controls"
         )
@@ -88,7 +88,7 @@ class AnalogLFOSection(SectionBaseWidget):
         depth_controls_row_widget = QWidget()
         depth_controls_row_widget.setMinimumHeight(JDXiDimensions.EDITOR_MINIMUM_HEIGHT)
         depth_controls_row_widget.setLayout(depth_controls_row_layout)
-        depth_icon = qta.icon("mdi.waveform", color=JDXiStyle.GREY)
+        depth_icon = IconRegistry.get_icon(IconRegistry.WAVEFORM, color=JDXiStyle.GREY)
         self.lfo_controls_tab_widget.addTab(depth_controls_row_widget, depth_icon, "Depth Controls")
         
         main_rows_vlayout.addStretch()
@@ -302,7 +302,7 @@ class AnalogLFOSectionOld(QWidget):
         depth_controls_row_widget = QWidget()
         depth_controls_row_widget.setMinimumHeight(JDXiDimensions.EDITOR_MINIMUM_HEIGHT)
         depth_controls_row_widget.setLayout(depth_controls_row_layout)
-        depth_icon = qta.icon("mdi.waveform", color=JDXiStyle.GREY)
+        depth_icon = IconRegistry.get_icon(IconRegistry.WAVEFORM, color=JDXiStyle.GREY)
         self.lfo_controls_tab_widget.addTab(depth_controls_row_widget, depth_icon, "Depth Controls")
         main_rows_vlayout.addStretch()
 

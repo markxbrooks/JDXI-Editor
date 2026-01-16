@@ -18,6 +18,7 @@ from PySide6.QtWidgets import (
 
 from decologr import Decologr as log
 from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
+from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.midi.data.digital.lfo import DigitalLFOShape
 from jdxi_editor.midi.data.parameter.digital.partial import (
     DigitalPartialParam,
@@ -154,7 +155,7 @@ class DigitalLFOSection(SectionBaseWidget):
         )
         rate_fade_layout.addStretch()
 
-        rate_fade_icon = qta.icon("mdi.clock-outline", color=JDXiStyle.GREY)
+        rate_fade_icon = IconRegistry.get_icon(IconRegistry.CLOCK, color=JDXiStyle.GREY)
         lfo_controls_tab_widget.addTab(rate_fade_widget, rate_fade_icon, "Rate and Fade")
 
         # --- Depths Tab ---
@@ -186,7 +187,7 @@ class DigitalLFOSection(SectionBaseWidget):
         )
         depths_layout.addStretch()
 
-        depths_icon = qta.icon("mdi.waveform", color=JDXiStyle.GREY)
+        depths_icon = IconRegistry.get_icon(IconRegistry.WAVEFORM, color=JDXiStyle.GREY)
         lfo_controls_tab_widget.addTab(depths_widget, depths_icon, "Depths")
 
         layout.addStretch()

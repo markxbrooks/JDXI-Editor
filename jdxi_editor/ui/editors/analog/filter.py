@@ -84,7 +84,7 @@ class AnalogFilterSection(SectionBaseWidget):
         layout.addLayout(filter_row)
         layout.addWidget(self.analog_filter_tab_widget)
         # --- Filter Controls ---
-        controls_icon = qta.icon("mdi.tune", color=JDXiStyle.GREY)
+        controls_icon = IconRegistry.get_icon(IconRegistry.TUNE, color=JDXiStyle.GREY)
         self.analog_filter_tab_widget.addTab(
             self._create_filter_controls_group(), controls_icon, "Controls"
         )

@@ -77,7 +77,7 @@ class DigitalAmpSection(SectionBaseWidget):
         amp_controls_layout = self._create_amp_controls_layout()
         amp_controls_widget = QWidget()
         amp_controls_widget.setLayout(amp_controls_layout)
-        controls_icon = qta.icon("mdi.tune", color=JDXiStyle.GREY)
+        controls_icon = IconRegistry.get_icon(IconRegistry.TUNE, color=JDXiStyle.GREY)
         self.digital_amp_tab_widget.addTab(amp_controls_widget, controls_icon, "Controls")
 
         # Add ADSR tab

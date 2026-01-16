@@ -79,7 +79,7 @@ class AnalogOscillatorSection(SectionBaseWidget):
 
         # --- Pitch Envelope ---
         pitch_widget = self._create_pitch_widget()
-        tuning_icon = qta.icon("mdi.music-note", color=JDXiStyle.GREY)
+        tuning_icon = IconRegistry.get_icon(IconRegistry.MUSIC_NOTE, color=JDXiStyle.GREY)
         self.oscillator_tab_widget.addTab(pitch_widget, tuning_icon, "Tuning and Pitch")
         layout.addStretch()
 
