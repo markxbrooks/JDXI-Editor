@@ -1444,6 +1444,33 @@ class JDXiStyle:
                 height: 60;
             }}
             """
+    TAB_TITLE = f"""
+            QTabBar::tab {{
+            font-family: {FONT_FAMILY};
+            font-size: 13px;
+            font-weight: bold;
+            color: {GREY};
+        }}
+        QTabBar::tab:selected {{
+            font-family: {FONT_FAMILY};
+            font-size: 13px;
+            font-weight: bold;
+            color: {ACCENT};
+        }}
+        QTabBar::tab:hover {{
+            font-family: {FONT_FAMILY};
+            font-size: 13px;
+            font-weight: bold;
+            color: {ACCENT};
+        }}
+        QTabBar::tab:disabled {{
+            font-family: {FONT_FAMILY};
+            font-size: 13px;
+            font-weight: bold;
+            color: {GREY};
+        }}
+        """
+
     TAB_TITLE_ANALOG = f"""
         QTabBar::tab:selected:analog {{
         font-family: {FONT_FAMILY};

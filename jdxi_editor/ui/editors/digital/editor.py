@@ -205,12 +205,13 @@ class DigitalSynthEditor(SynthEditor):
         instrument_layout.addWidget(self.instrument_preset)
         instrument_layout.setSpacing(5)  # Minimal spacing
         
-        # Add partials panel directly to container
+        # --- Add partials panel directly to container
         container_layout.addWidget(self.partials_panel)
         container_layout.setSpacing(5)  # Minimal spacing instead of stretch
         
-        # Create partial tab widget
+        # --- Create partial tab widget
         self.partial_tab_widget = QTabWidget()
+        self.partial_tab_widget.setStyleSheet(JDXiStyle.TAB_TITLE)
         instrument_widget.setLayout(instrument_layout)
         try:
             presets_icon = IconRegistry.get_icon(IconRegistry.MUSIC_NOTE_MULTIPLE, color=JDXiStyle.GREY)
@@ -235,7 +236,7 @@ class DigitalSynthEditor(SynthEditor):
         JDXiThemeManager.apply_tabs_style(self.partial_tab_widget)
         JDXiThemeManager.apply_editor_style(self.partial_tab_widget)
         self.partial_editors = {}
-        # Create editor for each partial
+        # --- Create editor for each partial
         for i in range(1, 4):
             editor = DigitalPartialEditor(
                 midi_helper,
