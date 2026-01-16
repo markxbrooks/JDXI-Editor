@@ -47,15 +47,15 @@ def create_group_with_layout(group_name: str = None, inner_layout: QLayout = Non
     return group, inner_layout
     
 
-def create_vlayout_with_hlayout_and_widgets(inner_layout: QHBoxLayout, widgets: list = None) -> QVBoxLayout:
+def create_vlayout_with_hlayout_and_widgets(inner_layout: QLayout, widgets: list = None, vertical: bool = True) -> QVBoxLayout:
     """create vbox layout with horizontal layout and widgets below it"""
-    vlayout = QVBoxLayout()
-    vlayout.addLayout(inner_layout)
+    layout = create_layout(vertical=vertical)
+    layout.addLayout(inner_layout)
     if widgets:
         for widget in widgets:
-            vlayout.addWidget(widget)  # Add widgets to vertical layout, not horizontal layout
-    vlayout.addStretch()
-    return vlayout
+            layout.addWidget(widget)  # Add widgets to vertical layout, not horizontal layout
+    layout.addStretch()
+    return layout
 
 
 def create_icon_label_with_pixmap(pixmap: QPixmap) -> QLabel:
