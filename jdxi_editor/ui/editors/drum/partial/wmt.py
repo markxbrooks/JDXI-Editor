@@ -206,8 +206,7 @@ class DrumWMTSection(QWidget):
         self.wmt_controls_tab_widget.addTab(self._create_tuning_group(p), tuning_icon, "Tuning")
         pan_icon = IconRegistry.get_icon(IconRegistry.PAN_HORIZONTAL, color=JDXiStyle.GREY)
         self.wmt_controls_tab_widget.addTab(self._create_wmt_pan_group(p), pan_icon, "Pan")
-        adsr_icon_base64 = generate_waveform_icon("adsr", "#FFFFFF", 1.0)
-        adsr_icon = QIcon(base64_to_pixmap(adsr_icon_base64))
+        adsr_icon = create_adsr_icon()
         self.wmt_controls_tab_widget.addTab(
             self._create_adsr_widget(p), adsr_icon, "ADSR Envelope"
         )
