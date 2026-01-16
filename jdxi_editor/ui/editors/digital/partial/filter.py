@@ -86,8 +86,7 @@ class DigitalFilterSection(SectionBaseWidget):
 
         # --- Add ADSR tab
         adsr_group = self._create_filter_adsr_env_group()
-        adsr_icon_base64 = generate_waveform_icon("adsr", "#FFFFFF", 1.0)
-        adsr_icon = QIcon(base64_to_pixmap(adsr_icon_base64))
+        adsr_icon = create_adsr_icon()
         self.digital_filter_tab_widget.addTab(adsr_group, adsr_icon, "ADSR")
 
         self.main_rows_layout = self.create_main_rows_layout()
