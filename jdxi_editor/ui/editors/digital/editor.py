@@ -182,7 +182,7 @@ class DigitalSynthEditor(SynthEditor):
         for switch in self.partials_panel.switches.values():
             switch.stateChanged.connect(self._on_partial_state_changed)
 
-        # Use InstrumentPresetWidget for consistent layout
+        # --- Use InstrumentPresetWidget for consistent layout
         self.instrument_preset = InstrumentPresetWidget(parent=self)
         self.instrument_preset.setup_header_layout()
         self.instrument_preset.setup()
