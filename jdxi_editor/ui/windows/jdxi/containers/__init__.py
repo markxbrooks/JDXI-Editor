@@ -1,7 +1,6 @@
 from .arpeggiator import add_octave_and_arp_buttons
 from .digital_display import add_digital_display
 from .effects import add_effects_container
-from .octave import add_octave_buttons
 from .parts import create_parts_container
 from .program import add_program_container, create_program_buttons_row
 from .sequencer import (
@@ -18,7 +17,6 @@ __all__ = [
     "add_octave_and_arp_buttons",
     "add_digital_display",
     "add_effects_container",
-    "add_octave_buttons",
     "create_parts_container",
     "add_program_container",
     "create_program_buttons_row",
