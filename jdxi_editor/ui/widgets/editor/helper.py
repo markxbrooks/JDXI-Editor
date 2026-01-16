@@ -13,14 +13,14 @@ from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
-def create_hlayout_with_widgets(widget_list: list) -> QHBoxLayout:
+def create_hlayout_with_widgets(widget_list: list, vertical: bool=False) -> QHBoxLayout:
     """create a row from a list of widgets (centered with stretches)"""
-    row = QHBoxLayout()
-    row.addStretch()
+    layout = create_layout(vertical=vertical)
+    layout.addStretch()
     for widget in widget_list:
-        row.addWidget(widget)
-    row.addStretch()
-    return row
+        layout.addWidget(widget)
+    layout.addStretch()
+    return layout
 
 
 def create_vlayout_with_hlayouts(inner_layouts: list, vertical=True) -> QVBoxLayout:
