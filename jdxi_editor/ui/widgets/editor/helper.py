@@ -83,17 +83,21 @@ def create_icons_layout() -> QHBoxLayout:
     return icons_hlayout
 
 
-def create_adsr_icon_label() -> QLabel:
-    """Generate the ADSR waveform icon (centered)"""
+def create_adsr_icon_pixmap() -> QPixmap:
+    """Generate the ADSR waveform pixmap"""
     icon_base64 = generate_waveform_icon(waveform="adsr", foreground_color=JDXiStyle.WHITE, icon_scale=2.0)
     pixmap = base64_to_pixmap(icon_base64)
+    
+
+def create_adsr_icon_label() -> QLabel:
+    """Generate the ADSR waveform icon (centered)"""
+    pixmap = create_adsr_icon_pixmap()
     return create_icon_label_with_pixmap(pixmap)
     
     
 def create_adsr_icon() -> QIcon:
     """create adsr icon"""
-    adsr_icon_base64 = generate_waveform_icon("adsr", "#FFFFFF", 1.0)
-    return QIcon(base64_to_pixmap(adsr_icon_base64))
+    return QIcon(create_adsr_icon_pixmap())
 
 
 def create_centered_adsr_icon_layout() -> QHBoxLayout:
