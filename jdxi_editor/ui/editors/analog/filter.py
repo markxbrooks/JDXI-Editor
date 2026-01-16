@@ -29,7 +29,7 @@ from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.editor import IconType
-from jdxi_editor.ui.widgets.editor.helper import create_hlayout_with_widgets, create_envelope_group
+from jdxi_editor.ui.widgets.editor.helper import create_hlayout_with_widgets, create_adsr_icon, create_envelope_group
 from jdxi_editor.ui.widgets.filter.analog_filter import AnalogFilterWidget
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
@@ -89,8 +89,7 @@ class AnalogFilterSection(SectionBaseWidget):
             self._create_filter_controls_group(), controls_icon, "Controls"
         )
         # --- Filter ADSR ---
-        adsr_icon_base64 = generate_waveform_icon("adsr", "#FFFFFF", 1.0)
-        adsr_icon = QIcon(base64_to_pixmap(adsr_icon_base64))
+        adsr_icon = create_adsr_icon()
         self.analog_filter_tab_widget.addTab(
             self._create_filter_adsr_env_group(), adsr_icon, "ADSR"
         )
