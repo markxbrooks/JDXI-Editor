@@ -59,6 +59,7 @@ from jdxi_editor.ui.widgets.combo_box.searchable_filterable import (
 )
 from jdxi_editor.ui.widgets.wmt.envelope import WMTEnvelopeWidget
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
+from jdxi_editor.ui.widgets.editor.helper import create_adsr_icon
 
 
 class DrumWMTSection(QWidget):
