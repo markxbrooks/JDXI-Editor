@@ -87,7 +87,7 @@ class DigitalAmpSection(SectionBaseWidget):
         adsr_icon = QIcon(base64_to_pixmap(adsr_icon_base64))
         self.digital_amp_tab_widget.addTab(amp_adsr_group, adsr_icon, "ADSR")
 
-        amp_section_layout.addSpacing(10)
+        amp_section_layout.addSpacing(JDXiDimensions.DIGITAL_FILTER_SPACING)
         amp_section_layout.addStretch()
 
     def _create_amp_controls_layout(self) -> QVBoxLayout:
