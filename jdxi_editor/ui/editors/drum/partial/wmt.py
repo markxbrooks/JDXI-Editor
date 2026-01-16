@@ -190,9 +190,7 @@ class DrumWMTSection(QWidget):
 
         self.wmt_controls_tab_widget = QTabWidget()
         main_row_hlayout.addWidget(self.wmt_controls_tab_widget)
-        from jdxi_editor.ui.image.utils import base64_to_pixmap
-        from jdxi_editor.ui.image.waveform import generate_waveform_icon
-        from PySide6.QtGui import QIcon
+
         controls_icon = IconRegistry.get_icon(IconRegistry.TUNE, color=JDXiStyle.GREY)
         self.wmt_controls_tab_widget.addTab(
             self._create_wmt_controls_group(p), controls_icon, "Controls"
