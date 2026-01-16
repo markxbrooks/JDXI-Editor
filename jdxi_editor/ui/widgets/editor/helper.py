@@ -29,7 +29,7 @@ def create_vlayout_with_hlayouts(inner_layouts: list, vertical=True) -> QVBoxLay
     for inner_layout in inner_layouts:
         layout.addLayout(inner_layout)
     layout.addStretch()
-    return vlayout
+    return layout
 
 
 def create_layout(vertical: bool = True) -> QLayout:
