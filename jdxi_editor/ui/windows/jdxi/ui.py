@@ -64,7 +64,6 @@ from jdxi_editor.ui.windows.jdxi.containers import (
     add_digital_display,
     add_effects_container,
     add_favorite_button_container,
-    add_octave_buttons,
     add_program_container,
     add_sequencer_container,
     add_slider_container,
