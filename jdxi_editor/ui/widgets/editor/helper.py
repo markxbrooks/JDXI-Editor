@@ -32,10 +32,9 @@ def create_vlayout_with_hlayouts(inner_layouts: list) -> QVBoxLayout:
     return vlayout
 
 
-def create_group_with_layout(group_name: str = None, vertical: bool = True) -> tuple(QGroupBox, QHBoxLayout):
+def create_group_with_layout(group_name: str = None, vertical: bool = True) -> tuple(QGroupBox, QLayout):
     """create Group and an hlayout"""
-    if group_name is not None:
-        group = QGroupBox(group_name)
+    group = QGroupBox(group_name) if group_name is not None else QGroupBox()
     else:
         group = QGroupBox()
     if vertical:
