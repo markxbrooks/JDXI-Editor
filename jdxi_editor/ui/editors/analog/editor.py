@@ -64,6 +64,7 @@ from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.jdxi.synth.type import JDXiSynth
+import qtawesome as qta
 from jdxi_editor.log.midi_info import log_midi_info
 from jdxi_editor.log.slider_parameter import log_slider_parameters
 from jdxi_editor.midi.channel.channel import MidiChannel
@@ -226,7 +227,14 @@ class AnalogSynthEditor(SynthEditor):
 
         # Create tab widget and add preset as first tab
         self.tab_widget = self.base_widget.create_tab_widget()
-        self.tab_widget.addTab(self.instrument_preset, "Presets")
+        try:
+            import qtawesome as qta
+            presets_icon = qta.icon("mdi.music-note-multiple", color=JDXiStyle.GREY)
+            if presets_icon.isNull():
+                raise ValueError("Icon is null")
+        except:
+            presets_icon = IconRegistry.get_icon(IconRegistry.MUSIC, color=JDXiStyle.GREY)
+        self.tab_widget.addTab(self.instrument_preset, presets_icon, "Presets")
 
         # --- Configure sliders
         for slider in self.controls.values():
@@ -286,7 +294,8 @@ class AnalogSynthEditor(SynthEditor):
             create_parameter_combo_box=self._create_parameter_combo_box,
             controls=self.controls,
         )
-        self.tab_widget.addTab(self.common_section, "Common")
+        common_icon = IconRegistry.get_icon("mdi.cog-outline", color=JDXiStyle.GREY)
+        self.tab_widget.addTab(self.common_section, common_icon, "Common")
 
     def _init_parameter_mappings(self):
         """Initialize MIDI parameter mappings."""
@@ -334,7 +343,41 @@ class AnalogSynthEditor(SynthEditor):
         :param value: int value
         :return: None
         """
+        self._update_filter_mode_buttons(value)
         self.update_filter_controls_state(value)
+
+    def _update_filter_mode_buttons(self, value: int):
+        """
+        Update the filter mode buttons based on the FILTER_MODE_SWITCH value with visual feedback
+
+        :param value: int filter mode value (0 = BYPASS, 1 = LPF)
+        :return: None
+        """
+        from jdxi_editor.midi.data.analog.filter import AnalogFilterType
+
+        filter_mode_map = {
+            0: AnalogFilterType.BYPASS,
+            1: AnalogFilterType.LPF,
+        }
+
+        selected_filter_mode = filter_mode_map.get(value)
+
+        if selected_filter_mode is None:
+            log.warning("Unknown filter mode value: %s", value)
+            return
+
+        # Reset all buttons to default style
+        for btn in self.filter_section.filter_mode_buttons.values():
+            btn.setChecked(False)
+            JDXiThemeManager.apply_button_rect_analog(btn)
+
+        # Apply active style to the selected filter mode button
+        selected_btn = self.filter_section.filter_mode_buttons.get(selected_filter_mode)
+        if selected_btn:
+            selected_btn.setChecked(True)
+            JDXiThemeManager.apply_button_analog_active(selected_btn)
+        else:
+            log.warning("Filter mode button not found for: %s", selected_filter_mode)
 
     def _on_waveform_selected(self, waveform: AnalogOscWave):
         """
@@ -593,15 +636,8 @@ class AnalogSynthEditor(SynthEditor):
                         successes.append(param_name)
                     else:
                         failures.append(param_name)
-                elif (
-                        param == AnalogParam.FILTER_MODE_SWITCH
-                        and param_value in self.filter_switch_map
-                ):
-                    self.filter_section.filter_mode_switch.blockSignals(True)
-                    self.filter_section.filter_mode_switch.setValue(
-                        self.filter_switch_map[param_value]
-                    )
-                    self.filter_section.filter_mode_switch.blockSignals(False)
+                elif param == AnalogParam.FILTER_MODE_SWITCH:
+                    self._update_filter_mode_buttons(param_value)
                     self.update_filter_controls_state(bool(param_value))
                 elif param in [
                     AnalogParam.AMP_ENV_ATTACK_TIME,
@@ -794,7 +830,13 @@ class AnalogSynthEditor(SynthEditor):
         self.instrument_selection_combo.load_button = load_button
         normal_preset_layout.addStretch()
 
-        preset_tabs.addTab(normal_preset_widget, "Analog Presets")
+        try:
+            analog_presets_icon = qta.icon("mdi.music-note-multiple", color=JDXiStyle.GREY)
+            if analog_presets_icon.isNull():
+                raise ValueError("Icon is null")
+        except:
+            analog_presets_icon = IconRegistry.get_icon(IconRegistry.MUSIC, color=JDXiStyle.GREY)
+        preset_tabs.addTab(normal_preset_widget, analog_presets_icon, "Analog Presets")
 
         # --- === Tab 2: Cheat Presets (Digital Synth presets on Analog channel) ===
         cheat_preset_widget, cheat_preset_layout = create_scroll_container()
@@ -842,7 +884,8 @@ class AnalogSynthEditor(SynthEditor):
         cheat_preset_layout.addWidget(self.cheat_load_button)
 
         cheat_preset_layout.addStretch()
-        preset_tabs.addTab(cheat_preset_widget, "Cheat Presets")
+        cheat_presets_icon = qta.icon("mdi.code-braces", color=JDXiStyle.GREY)
+        preset_tabs.addTab(cheat_preset_widget, cheat_presets_icon, "Cheat Presets")
 
         return instrument_preset_group
 

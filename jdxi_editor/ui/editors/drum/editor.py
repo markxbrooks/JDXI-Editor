@@ -74,6 +74,7 @@ from PySide6.QtWidgets import (
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.jdxi.preset.widget import InstrumentPresetWidget
 from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.midi.data.address.address import AddressOffsetProgramLMB
@@ -163,7 +164,10 @@ class DrumCommonEditor(SynthEditor):
 
         instrument_vrow_layout.addWidget(self.instrument_preset)
 
-        self.presets_parts_tab_widget.addTab(instrument_widget, "Drum Kit Presets")
+        drum_kit_presets_icon = IconRegistry.get_icon("mdi.music-note-multiple", color=JDXiStyle.GREY)
+        if drum_kit_presets_icon is None:
+            drum_kit_presets_icon = IconRegistry.get_icon(IconRegistry.MUSIC, color=JDXiStyle.GREY)
+        self.presets_parts_tab_widget.addTab(instrument_widget, drum_kit_presets_icon, "Drum Kit Presets")
 
         # Use EditorBaseWidget for consistent scrollable layout structure
         self.base_widget = EditorBaseWidget(parent=self, analog=False)
@@ -175,7 +179,8 @@ class DrumCommonEditor(SynthEditor):
         container_layout.addWidget(self.partial_tab_widget)
         
         # Add the base widget as the second tab (it contains the scroll area)
-        self.presets_parts_tab_widget.addTab(self.base_widget, "Drum Kit Parts")
+        drum_kit_parts_icon = IconRegistry.get_icon("mdi.puzzle", color=JDXiStyle.GREY)
+        self.presets_parts_tab_widget.addTab(self.base_widget, drum_kit_parts_icon, "Drum Kit Parts")
 
         self.presets_parts_tab_widget.setStyleSheet(JDXiStyle.TABS_DRUMS)
         self.partial_tab_widget.setStyleSheet(JDXiStyle.TABS_DRUMS)
@@ -188,7 +193,8 @@ class DrumCommonEditor(SynthEditor):
             midi_helper=self.midi_helper,
             address=self.address,
         )
-        self.partial_tab_widget.addTab(self.common_section, "Common")
+        common_icon = IconRegistry.get_icon("mdi.cog-outline", color=JDXiStyle.GREY)
+        self.partial_tab_widget.addTab(self.common_section, common_icon, "Common")
 
         self.update_instrument_image()
         self.partial_tab_widget.currentChanged.connect(self.update_partial_number)

@@ -310,13 +310,21 @@ class ProgramEditor(BasicEditor):
         self.base_widget.add_centered_content(centered_content)
 
         # Add Programs/Presets tab to main tab widget (base widget contains the scroll area)
-        self.main_tab_widget.addTab(self.base_widget, "Programs & Presets")
+        try:
+            import qtawesome as qta
+            programs_presets_icon = qta.icon("mdi.music-note-multiple", color=JDXiStyle.GREY)
+            if programs_presets_icon.isNull():
+                raise ValueError("Icon is null")
+        except:
+            programs_presets_icon = IconRegistry.get_icon(IconRegistry.MUSIC, color=JDXiStyle.GREY)
+        self.main_tab_widget.addTab(self.base_widget, programs_presets_icon, "Programs & Presets")
 
         # Add User Programs tab to main tab widget
         try:
             log.message("🔨 Creating User Programs tab for main window...")
             user_programs_widget = self._create_user_programs_tab()
-            self.main_tab_widget.addTab(user_programs_widget, "User Programs")
+            user_programs_icon = IconRegistry.get_icon("mdi.account-music", color=JDXiStyle.GREY)
+            self.main_tab_widget.addTab(user_programs_widget, user_programs_icon, "User Programs")
             log.message(
                 f"✅ Added 'User Programs' tab to main window (total tabs: {self.main_tab_widget.count()})"
             )
@@ -333,7 +341,8 @@ class ProgramEditor(BasicEditor):
             placeholder_layout = QVBoxLayout(placeholder_widget)
             placeholder_label = QLabel(f"Error loading user programs: {e}")
             placeholder_layout.addWidget(placeholder_label)
-            self.main_tab_widget.addTab(placeholder_widget, "User Programs")
+            user_programs_icon = IconRegistry.get_icon("mdi.account-music", color=JDXiStyle.GREY)
+            self.main_tab_widget.addTab(placeholder_widget, user_programs_icon, "User Programs")
             log.message(
                 f"✅ Added 'User Programs' tab (placeholder) (total tabs: {self.main_tab_widget.count()})"
             )
@@ -342,7 +351,8 @@ class ProgramEditor(BasicEditor):
         try:
             log.message("🔨 Creating Playlist tab for main window...")
             playlist_widget = self._create_playlist_tab()
-            self.main_tab_widget.addTab(playlist_widget, "Playlist")
+            playlist_icon = IconRegistry.get_icon("mdi.playlist-music", color=JDXiStyle.GREY)
+            self.main_tab_widget.addTab(playlist_widget, playlist_icon, "Playlist")
             log.message(
                 f"✅ Added 'Playlist' tab to main window (total tabs: {self.main_tab_widget.count()})"
             )
@@ -356,7 +366,8 @@ class ProgramEditor(BasicEditor):
             placeholder_layout = QVBoxLayout(placeholder_widget)
             placeholder_label = QLabel(f"Error loading playlists: {e}")
             placeholder_layout.addWidget(placeholder_label)
-            self.main_tab_widget.addTab(placeholder_widget, "Playlist")
+            playlist_icon = IconRegistry.get_icon("mdi.playlist-music", color=JDXiStyle.GREY)
+            self.main_tab_widget.addTab(placeholder_widget, playlist_icon, "Playlist")
             log.message(
                 f"✅ Added 'Playlist' tab (placeholder) (total tabs: {self.main_tab_widget.count()})"
             )
@@ -365,7 +376,8 @@ class ProgramEditor(BasicEditor):
         try:
             log.message("🔨 Creating Playlist Editor tab for main window...")
             playlist_editor_widget = self._create_playlist_editor_tab()
-            self.main_tab_widget.addTab(playlist_editor_widget, "Playlist Editor")
+            playlist_editor_icon = IconRegistry.get_icon("mdi.playlist-edit", color=JDXiStyle.GREY)
+            self.main_tab_widget.addTab(playlist_editor_widget, playlist_editor_icon, "Playlist Editor")
             log.message(
                 f"✅ Added 'Playlist Editor' tab to main window (total tabs: {self.main_tab_widget.count()})"
             )
@@ -379,7 +391,8 @@ class ProgramEditor(BasicEditor):
             placeholder_layout = QVBoxLayout(placeholder_widget)
             placeholder_label = QLabel(f"Error loading playlist editor: {e}")
             placeholder_layout.addWidget(placeholder_label)
-            self.main_tab_widget.addTab(placeholder_widget, "Playlist Editor")
+            playlist_editor_icon = IconRegistry.get_icon("mdi.playlist-edit", color=JDXiStyle.GREY)
+            self.main_tab_widget.addTab(placeholder_widget, playlist_editor_icon, "Playlist Editor")
             log.message(
                 f"✅ Added 'Playlist Editor' tab (placeholder) (total tabs: {self.main_tab_widget.count()})"
             )
@@ -398,7 +411,14 @@ class ProgramEditor(BasicEditor):
         program_preset_hlayout.addStretch()
 
         preset_group = self._create_preset_selection_widget()
-        self.program_preset_tab_widget.addTab(preset_group, "Presets")
+        try:
+            import qtawesome as qta
+            presets_icon = qta.icon("mdi.music-note-multiple", color=JDXiStyle.GREY)
+            if presets_icon.isNull():
+                raise ValueError("Icon is null")
+        except:
+            presets_icon = IconRegistry.get_icon(IconRegistry.MUSIC, color=JDXiStyle.GREY)
+        self.program_preset_tab_widget.addTab(preset_group, presets_icon, "Presets")
         program_preset_hlayout.addStretch()
 
         self.title_left_vlayout.addLayout(program_preset_hlayout)
@@ -601,7 +621,10 @@ class ProgramEditor(BasicEditor):
         program_vlayout.addLayout(icon_row)
         
         program_layout.addWidget(self.program_preset_tab_widget)
-        self.program_preset_tab_widget.addTab(program_widget, "Programs")
+        programs_icon = IconRegistry.get_icon("mdi.music-box-multiple", color=JDXiStyle.GREY)
+        if programs_icon is None:
+            programs_icon = IconRegistry.get_icon(IconRegistry.MUSIC, color=JDXiStyle.GREY)
+        self.program_preset_tab_widget.addTab(program_widget, programs_icon, "Programs")
         log.message(
             f"📑 Created nested tab widget, added 'Programs' tab (total tabs: {self.program_preset_tab_widget.count()})"
         )

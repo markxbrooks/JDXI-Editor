@@ -35,6 +35,7 @@ class JDXiDimensions:
     """
     A class to store dimensions for the JD-Xi editor UI.
     """
+    ICON_SIZE_SMALL = 0.7
     ICON_WIDTH = 30
     ICON_HEIGHT = 30
     DIGITAL_FILTER_SPACING = 5

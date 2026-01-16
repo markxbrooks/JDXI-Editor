@@ -44,6 +44,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
@@ -91,18 +92,22 @@ class DrumPartialSection(QWidget):
         self.partial_controls_tab_widget = QTabWidget()
         main_rows_vlayout.addWidget(self.partial_controls_tab_widget)
 
+        controls_icon = IconRegistry.get_icon("mdi.tune", color=JDXiStyle.GREY)
         self.partial_controls_tab_widget.addTab(
-            self._create_pitch_controls_group(), "Controls"
+            self._create_pitch_controls_group(), controls_icon, "Controls"
         )
 
-        self.partial_controls_tab_widget.addTab(self._create_partial_pan_group(), "Pan")
+        pan_icon = IconRegistry.get_icon("mdi.pan-horizontal", color=JDXiStyle.GREY)
+        self.partial_controls_tab_widget.addTab(self._create_partial_pan_group(), pan_icon, "Pan")
 
+        misc_icon = IconRegistry.get_icon("mdi.dots-horizontal", color=JDXiStyle.GREY)
         self.partial_controls_tab_widget.addTab(
-            self._create_partial_misc_group(), "Misc"
+            self._create_partial_misc_group(), misc_icon, "Misc"
         )
 
+        modes_icon = IconRegistry.get_icon("mdi.toggle-switch", color=JDXiStyle.GREY)
         self.partial_controls_tab_widget.addTab(
-            self._create_partial_modes_group(), "Modes"
+            self._create_partial_modes_group(), modes_icon, "Modes"
         )
 
         # pitch_group.setLayout(scrolled_layout)

@@ -9,9 +9,11 @@ from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QGroupBox, QHBoxLayout, QTabWidget, QVBoxLayout, QWidget
 
 from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
+from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.editor import IconType
+import qtawesome as qta
 from jdxi_editor.midi.data.analog.oscillator import AnalogOscWave, AnalogSubOscType
 from jdxi_editor.midi.data.parameter.analog import AnalogParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
@@ -77,11 +79,13 @@ class AnalogOscillatorSection(SectionBaseWidget):
 
         # --- Pitch Envelope ---
         pitch_widget = self._create_pitch_widget()
-        self.oscillator_tab_widget.addTab(pitch_widget, "Tuning and Pitch")
+        tuning_icon = qta.icon("mdi.music-note", color=JDXiStyle.GREY)
+        self.oscillator_tab_widget.addTab(pitch_widget, tuning_icon, "Tuning and Pitch")
         layout.addStretch()
 
         # --- Pulse Width controls ---
-        self.oscillator_tab_widget.addTab(self.create_pw_group(), "Pulse Width")
+        pw_icon = QIcon(base64_to_pixmap(generate_waveform_icon("square", "#FFFFFF", 1.0)))
+        self.oscillator_tab_widget.addTab(self.create_pw_group(), pw_icon, "Pulse Width")
 
     def _create_pitch_widget(self) -> QWidget:
         """Tuning and pitch controls"""

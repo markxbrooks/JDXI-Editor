@@ -74,7 +74,6 @@ class DigitalPartialEditor(PartialEditor):
         parent: Optional[QWidget] = None,
     ):
         super().__init__(parent)
-        self.filter_mode_switch = None
         """
         Initialize the DigitalPartialEditor
 
@@ -157,6 +156,7 @@ class DigitalPartialEditor(PartialEditor):
             self.midi_helper,
             self.controls,
             self.synth_data.address,
+            self.send_midi_parameter,
         )
         self.tab_widget.addTab(
             self.filter_tab, IconRegistry.get_icon(IconRegistry.FILTER, color=JDXiStyle.GREY), "Filter"
@@ -176,15 +176,17 @@ class DigitalPartialEditor(PartialEditor):
             self._create_parameter_switch,
             self._create_parameter_combo_box,
             self.controls,
+            self.send_midi_parameter,
         )
         self.tab_widget.addTab(
             self.lfo_tab, IconRegistry.get_icon(IconRegistry.SINE_WAVE, color=JDXiStyle.GREY), "LFO"
         )
         self.mod_lfo_tab = DigitalModLFOSection(
             self._create_parameter_slider,
-            self._create_parameter_switch,
+            self._create_parameter_combo_box,
             self._on_parameter_changed,
             self.controls,
+            self.send_midi_parameter,
         )
         self.tab_widget.addTab(
             self.mod_lfo_tab, IconRegistry.get_icon(IconRegistry.WAVEFORM, color=JDXiStyle.GREY), "Mod LFO"

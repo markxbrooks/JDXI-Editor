@@ -304,15 +304,15 @@ class AnalogFilterPlot(QWidget):
                     painter.drawPath(path)
 
                     # Now fill in to axes
-                    path.lineTo(left_pad + plot_w, zero_y)
-                    path.lineTo(left_pad, zero_y)
-                    path.closeSubpath()
+                    #path.lineTo(left_pad + plot_w, zero_y)
+                    #path.lineTo(left_pad, zero_y)
+                    #path.closeSubpath()
 
                     # Fill the path black first
-                    painter.fillPath(path, gradient)
+                    # painter.fillPath(path, gradient)
                     # redraw x-axis
-                    painter.setPen(axis_pen)
-                    painter.drawLine(left_pad, zero_y, left_pad + plot_w, zero_y)
+                    # painter.setPen(axis_pen)
+                    #painter.drawLine(left_pad, zero_y, left_pad + plot_w, zero_y)
                     # === X-axis Labels & Ticks ===
                     num_ticks = 6
                     for i in range(num_ticks + 1):

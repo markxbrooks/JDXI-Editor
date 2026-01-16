@@ -102,10 +102,15 @@ class VocalFXEditor(BasicEditor):
 
         # Get tab widget from helper and add tabs
         self.tab_widget = self.editor_helper.get_tab_widget()
-        self.tab_widget.addTab(self._create_common_section(), "Common")
-        self.tab_widget.addTab(self._create_vocal_effect_section(), "Vocal FX")
-        self.tab_widget.addTab(self._create_mixer_section(), "Mixer")
-        self.tab_widget.addTab(self._create_auto_pitch_section(), "Auto Pitch")
+        import qtawesome as qta
+        common_icon = IconRegistry.get_icon("mdi.cog-outline", color=JDXiStyle.GREY)
+        self.tab_widget.addTab(self._create_common_section(), common_icon, "Common")
+        vocal_fx_icon = qta.icon("mdi.microphone", color=JDXiStyle.GREY)
+        self.tab_widget.addTab(self._create_vocal_effect_section(), vocal_fx_icon, "Vocal FX")
+        mixer_icon = qta.icon("mdi.equalizer", color=JDXiStyle.GREY)
+        self.tab_widget.addTab(self._create_mixer_section(), mixer_icon, "Mixer")
+        auto_pitch_icon = qta.icon("mdi.music-note", color=JDXiStyle.GREY)
+        self.tab_widget.addTab(self._create_auto_pitch_section(), auto_pitch_icon, "Auto Pitch")
         
         # Add base widget to editor's layout
         if not hasattr(self, 'main_layout') or self.main_layout is None:

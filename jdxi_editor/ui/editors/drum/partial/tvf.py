@@ -56,6 +56,9 @@ from PySide6.QtWidgets import (
 
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.jdxi.style.icons import IconRegistry
+from jdxi_editor.ui.image.utils import base64_to_pixmap
+from jdxi_editor.ui.image.waveform import generate_waveform_icon
+from PySide6.QtGui import QIcon
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
@@ -349,10 +352,13 @@ class DrumTVFSection(QWidget):
         self.tvf_tab_widget = QTabWidget()
 
         # --- Basic TVF controls and envelope controls ---
-        self.tvf_tab_widget.addTab(self._create_tvf_basic_group(), "Controls")
+        controls_icon = IconRegistry.get_icon("mdi.tune", color=JDXiStyle.GREY)
+        self.tvf_tab_widget.addTab(self._create_tvf_basic_group(), controls_icon, "Controls")
 
         # --- TVF Envelope Controls
-        self.tvf_tab_widget.addTab(self._create_tvf_env_group(), "Envelope")
+        envelope_icon_base64 = generate_waveform_icon("adsr", "#FFFFFF", 1.0)
+        envelope_icon = QIcon(base64_to_pixmap(envelope_icon_base64))
+        self.tvf_tab_widget.addTab(self._create_tvf_env_group(), envelope_icon, "Envelope")
 
         main_layout.addWidget(self.tvf_tab_widget)
         main_layout.addStretch()

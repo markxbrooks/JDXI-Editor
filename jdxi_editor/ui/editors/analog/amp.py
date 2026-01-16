@@ -16,8 +16,11 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from jdxi_editor.jdxi.style import JDXiThemeManager
+from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
+from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
+from PySide6.QtGui import QIcon
+import qtawesome as qta
 from jdxi_editor.midi.data.parameter.analog import AnalogParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
@@ -63,8 +66,11 @@ class AnalogAmpSection(SectionBaseWidget):
         amp_adsr_group = self._create_analog_amp_adsr_group()
 
         self.analog_amp_tab_widget = QTabWidget()
-        self.analog_amp_tab_widget.addTab(amp_controls_widget, "Controls")
-        self.analog_amp_tab_widget.addTab(amp_adsr_group, "ADSR")
+        controls_icon = qta.icon("mdi.tune", color=JDXiStyle.GREY)
+        self.analog_amp_tab_widget.addTab(amp_controls_widget, controls_icon, "Controls")
+        adsr_icon_base64 = generate_waveform_icon("adsr", "#FFFFFF", 1.0)
+        adsr_icon = QIcon(base64_to_pixmap(adsr_icon_base64))
+        self.analog_amp_tab_widget.addTab(amp_adsr_group, adsr_icon, "ADSR")
         JDXiThemeManager.apply_tabs_style(self.analog_amp_tab_widget, analog=True)
 
         self.main_rows_layout = self.create_main_rows_layout()

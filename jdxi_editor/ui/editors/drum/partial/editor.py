@@ -31,6 +31,12 @@ from jdxi_editor.ui.editors.drum.partial.tvf import DrumTVFSection
 from jdxi_editor.ui.editors.drum.partial.wmt import DrumWMTSection
 from jdxi_editor.ui.editors.synth.partial import PartialEditor
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
+from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.jdxi.style.icons import IconRegistry
+from jdxi_editor.ui.image.utils import base64_to_pixmap
+from jdxi_editor.ui.image.waveform import generate_waveform_icon
+from PySide6.QtGui import QIcon
+import qtawesome as qta
 
 
 class DrumPartialEditor(PartialEditor):
@@ -93,7 +99,8 @@ class DrumPartialEditor(PartialEditor):
         tab_partial_layout = QVBoxLayout(tab_partial)
         tab_partial_layout.setContentsMargins(0, 0, 0, 0)
         tab_partial_layout.setSpacing(0)
-        tab_widget.addTab(tab_partial, "Partial")
+        partial_icon = qta.icon("mdi.circle-outline", color=JDXiStyle.GREY)
+        tab_widget.addTab(tab_partial, partial_icon, "Partial")
 
         partial_group = DrumPartialSection(
             controls=self.controls,
@@ -108,7 +115,8 @@ class DrumPartialEditor(PartialEditor):
         tab_wmt_layout = QVBoxLayout(tab_wmt)
         tab_wmt_layout.setContentsMargins(0, 0, 0, 0)
         tab_wmt_layout.setSpacing(0)
-        tab_widget.addTab(tab_wmt, "WMT")
+        wmt_icon = qta.icon("mdi.waveform", color=JDXiStyle.GREY)
+        tab_widget.addTab(tab_wmt, wmt_icon, "WMT")
 
         wmt_group = DrumWMTSection(
             controls=self.controls,
@@ -126,7 +134,9 @@ class DrumPartialEditor(PartialEditor):
         tab_pitch_env_layout = QVBoxLayout(tab_pitch_env)
         tab_pitch_env_layout.setContentsMargins(0, 0, 0, 0)
         tab_pitch_env_layout.setSpacing(0)
-        tab_widget.addTab(tab_pitch_env, "Pitch Env")
+        pitch_env_icon_base64 = generate_waveform_icon("adsr", "#FFFFFF", 1.0)
+        pitch_env_icon = QIcon(base64_to_pixmap(pitch_env_icon_base64))
+        tab_widget.addTab(tab_pitch_env, pitch_env_icon, "Pitch Env")
 
         pitch_env_group = DrumPitchEnvSection(
             controls=self.controls,
@@ -141,7 +151,8 @@ class DrumPartialEditor(PartialEditor):
         tab_output_layout = QVBoxLayout(tab_output)
         tab_output_layout.setContentsMargins(0, 0, 0, 0)
         tab_output_layout.setSpacing(0)
-        tab_widget.addTab(tab_output, "Output")
+        output_icon = qta.icon("mdi.volume-high", color=JDXiStyle.GREY)
+        tab_widget.addTab(tab_output, output_icon, "Output")
 
         output_group = DrumOutputSection(
             controls=self.controls,
@@ -156,7 +167,8 @@ class DrumPartialEditor(PartialEditor):
         tab_tvf_layout = QVBoxLayout(tab_tvf)
         tab_tvf_layout.setContentsMargins(0, 0, 0, 0)
         tab_tvf_layout.setSpacing(0)
-        tab_widget.addTab(tab_tvf, "TVF")
+        tvf_icon = IconRegistry.get_icon(IconRegistry.FILTER, color=JDXiStyle.GREY)
+        tab_widget.addTab(tab_tvf, tvf_icon, "TVF")
 
         tvf_group = DrumTVFSection(
             controls=self.controls,
@@ -171,7 +183,8 @@ class DrumPartialEditor(PartialEditor):
         tab_tva_layout = QVBoxLayout(tab_tva)
         tab_tva_layout.setContentsMargins(0, 0, 0, 0)
         tab_tva_layout.setSpacing(0)
-        tab_widget.addTab(tab_tva, "TVA")
+        tva_icon = IconRegistry.get_icon(IconRegistry.AMPLIFIER, color=JDXiStyle.GREY)
+        tab_widget.addTab(tab_tva, tva_icon, "TVA")
 
         tva_group = DrumTVASection(
             controls=self.controls,

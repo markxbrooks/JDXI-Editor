@@ -289,10 +289,15 @@ class EffectsCommonEditor(BasicEditor):
 
         # Get tab widget from helper and add tabs
         self.tabs = self.editor_helper.get_tab_widget()
-        self.tabs.addTab(self._create_effect1_section(), "Effect 1")
-        self.tabs.addTab(self._create_effect2_section(), "Effect 2")
-        self.tabs.addTab(self._create_delay_tab(), "Delay")
-        self.tabs.addTab(self._create_reverb_section(), "Reverb")
+        import qtawesome as qta
+        effect1_icon = qta.icon("mdi.effect", color=JDXiStyle.GREY)
+        self.tabs.addTab(self._create_effect1_section(), effect1_icon, "Effect 1")
+        effect2_icon = qta.icon("mdi.effect", color=JDXiStyle.GREY)
+        self.tabs.addTab(self._create_effect2_section(), effect2_icon, "Effect 2")
+        delay_icon = qta.icon("mdi.timer-outline", color=JDXiStyle.GREY)
+        self.tabs.addTab(self._create_delay_tab(), delay_icon, "Delay")
+        reverb_icon = qta.icon("mdi.wave", color=JDXiStyle.GREY)
+        self.tabs.addTab(self._create_reverb_section(), reverb_icon, "Reverb")
         
         # Add base widget to editor's layout
         if not hasattr(self, 'main_layout') or self.main_layout is None:

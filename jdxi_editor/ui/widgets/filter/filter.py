@@ -85,11 +85,13 @@ class FilterWidget(EnvelopeWidgetBase):
 
         self.horizontal_layout = QHBoxLayout()
         self.setLayout(self.horizontal_layout)
+        self.filter_mode = "lpf"  # Default filter mode
         self.plot = FilterPlot(
             width=JDXiDimensions.PWM_WIDGET_WIDTH - 20,
             height=JDXiDimensions.PWM_WIDGET_HEIGHT - 20,
             parent=self,
             envelope=self.envelope,
+            filter_mode=self.filter_mode,
         )
         self.controls_vertical_layout = QVBoxLayout()
         self.horizontal_layout.addLayout(self.controls_vertical_layout)

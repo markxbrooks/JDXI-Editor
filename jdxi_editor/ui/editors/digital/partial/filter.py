@@ -5,14 +5,24 @@ Digital Filter Section for the JDXI Editor
 from typing import Callable
 
 from decologr import Decologr as log
+from PySide6.QtCore import QSize
+from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
     QGroupBox,
     QHBoxLayout,
+    QLabel,
+    QPushButton,
     QTabWidget,
     QVBoxLayout,
 )
 
+from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.jdxi.style.icons import IconRegistry
+from jdxi_editor.ui.image.utils import base64_to_pixmap
+from jdxi_editor.ui.image.waveform import generate_waveform_icon
+import qtawesome as qta
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
+from jdxi_editor.midi.data.digital.filter import DigitalFilterMode
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
@@ -35,6 +45,7 @@ class DigitalFilterSection(SectionBaseWidget):
             midi_helper: MidiIOHelper,
             controls: dict,
             address: RolandSysExAddress,
+            send_midi_parameter: Callable = None,
     ):
         """
         Initialize the DigitalFilterSection
@@ -52,6 +63,8 @@ class DigitalFilterSection(SectionBaseWidget):
         self.address = address
         self._create_parameter_slider = create_parameter_slider
         self._create_parameter_switch = create_parameter_switch
+        self.send_midi_parameter = send_midi_parameter
+        self.filter_mode_buttons = {}  # Dictionary to store filter mode buttons
 
         super().__init__(icon_type=IconType.ADSR, analog=False)
         self.setup_ui()
@@ -69,11 +82,14 @@ class DigitalFilterSection(SectionBaseWidget):
 
         # --- Add Controls tab
         controls_group = self._create_filter_controls_group()
-        self.digital_filter_tab_widget.addTab(controls_group, "Controls")
+        controls_icon = qta.icon("mdi.tune", color=JDXiStyle.GREY)
+        self.digital_filter_tab_widget.addTab(controls_group, controls_icon, "Controls")
 
         # --- Add ADSR tab
         adsr_group = self._create_filter_adsr_env_group()
-        self.digital_filter_tab_widget.addTab(adsr_group, "ADSR")
+        adsr_icon_base64 = generate_waveform_icon("adsr", "#FFFFFF", 1.0)
+        adsr_icon = QIcon(base64_to_pixmap(adsr_icon_base64))
+        self.digital_filter_tab_widget.addTab(adsr_group, adsr_icon, "ADSR")
 
         self.main_rows_layout = self.create_main_rows_layout()
         self.main_rows_layout.addLayout(filter_mode_row)
@@ -81,14 +97,55 @@ class DigitalFilterSection(SectionBaseWidget):
         self.main_rows_layout.addStretch()
 
     def _create_filter_controls_row(self) -> QHBoxLayout:
-        """Filter mode controls row"""
-        self.filter_mode_switch = self._create_parameter_switch(
-            DigitalPartialParam.FILTER_MODE_SWITCH,
-            "Mode",
-            ["BYPASS", "LPF", "HPF", "BPF", "PKG", "LPF2", "LPF3", "LPF4"],
-        )
-        self.filter_mode_switch.valueChanged.connect(self._on_filter_mode_changed)
-        filter_mode_row = create_hlayout_with_widgets([self.filter_mode_switch])
+        """Filter mode controls row with individual buttons"""
+        filter_mode_row = QHBoxLayout()
+        filter_mode_row.addStretch()
+        
+        # Add label
+        mode_label = QLabel("Mode")
+        filter_mode_row.addWidget(mode_label)
+        
+        # Create buttons for each filter mode
+        filter_modes = [
+            DigitalFilterMode.BYPASS,
+            DigitalFilterMode.LPF,
+            DigitalFilterMode.HPF,
+            DigitalFilterMode.BPF,
+            DigitalFilterMode.PKG,
+            DigitalFilterMode.LPF2,
+            DigitalFilterMode.LPF3,
+            DigitalFilterMode.LPF4,
+        ]
+        
+        # Map filter modes to their waveform icon types
+        # Use scale 2.0 to make the icon larger and more visible (17*2=34x9*2=18 pixels)
+        filter_icon_map = {
+            DigitalFilterMode.BYPASS: "bypass_filter",  # Straight horizontal line for bypass (no filtering)
+            DigitalFilterMode.LPF: "lpf_filter",
+            DigitalFilterMode.HPF: "hpf_filter",
+            DigitalFilterMode.BPF: "bpf_filter",  # Band-pass filter icon
+            DigitalFilterMode.PKG: "lpf_filter",  # Peaking can use LPF icon
+            DigitalFilterMode.LPF2: "lpf_filter",
+            DigitalFilterMode.LPF3: "lpf_filter",
+            DigitalFilterMode.LPF4: "lpf_filter",
+        }
+        
+        for filter_mode in filter_modes:
+            btn = QPushButton(filter_mode.display_name)
+            btn.setCheckable(True)
+            # Generate waveform icon for this specific filter mode
+            icon_type = filter_icon_map.get(filter_mode, "filter")
+            filter_icon_base64 = generate_waveform_icon(icon_type, "#FFFFFF", 2.0)
+            filter_icon = QIcon(base64_to_pixmap(filter_icon_base64))
+            # Add waveform icon (let Qt handle icon sizing automatically, like oscillator buttons)
+            btn.setIcon(filter_icon)
+            btn.setStyleSheet(JDXiStyle.BUTTON_RECT)
+            btn.setFixedSize(JDXiDimensions.WAVEFORM_ICON_WIDTH, JDXiDimensions.WAVEFORM_ICON_HEIGHT)
+            btn.clicked.connect(lambda checked, mode=filter_mode: self._on_filter_mode_selected(mode))
+            self.filter_mode_buttons[filter_mode] = btn
+            filter_mode_row.addWidget(btn)
+        
+        filter_mode_row.addStretch()
         return filter_mode_row
 
     def _create_filter_controls_group(self) -> QGroupBox:
@@ -152,13 +209,53 @@ class DigitalFilterSection(SectionBaseWidget):
         env_layout.addWidget(self.filter_adsr_widget)
         return env_group
 
-    def _on_filter_mode_changed(self, mode: int):
-        """Handle filter mode changes"""
-        self.update_filter_controls_state(mode)
+    def _on_filter_mode_selected(self, filter_mode: DigitalFilterMode):
+        """
+        Handle filter mode button clicks
+        
+        :param filter_mode: DigitalFilterMode enum value
+        """
+        # Reset all buttons to default style
+        for btn in self.filter_mode_buttons.values():
+            btn.setChecked(False)
+            btn.setStyleSheet(JDXiStyle.BUTTON_RECT)
+        
+        # Apply active style to the selected filter mode button
+        selected_btn = self.filter_mode_buttons.get(filter_mode)
+        if selected_btn:
+            selected_btn.setChecked(True)
+            selected_btn.setStyleSheet(JDXiStyle.BUTTON_RECT_ACTIVE)
+        
+        # Update filter controls state
+        self.update_filter_controls_state(filter_mode.value)
+        
+        # Send MIDI message
+        if self.send_midi_parameter:
+            if not self.send_midi_parameter(DigitalPartialParam.FILTER_MODE_SWITCH, filter_mode.value):
+                log.warning(f"Failed to set filter mode to {filter_mode.name}")
 
     def update_filter_controls_state(self, mode: int):
         """Update filter controls enabled state based on mode"""
         enabled = mode != 0  # Enable if not BYPASS
+        
+        # Map filter mode value to filter mode string for the plot
+        filter_mode_map = {
+            0: "bypass",
+            1: "lpf",
+            2: "hpf",
+            3: "bpf",
+            4: "lpf",  # PKG uses LPF-style response
+            5: "lpf",  # LPF2
+            6: "lpf",  # LPF3
+            7: "lpf",  # LPF4
+        }
+        filter_mode_str = filter_mode_map.get(mode, "lpf")
+        
+        # Update plot filter mode
+        if self.filter_widget and hasattr(self.filter_widget, 'plot'):
+            self.filter_widget.filter_mode = filter_mode_str
+            self.filter_widget.plot.set_filter_mode(filter_mode_str)
+        
         for param in [
             DigitalPartialParam.FILTER_CUTOFF,
             DigitalPartialParam.FILTER_RESONANCE,

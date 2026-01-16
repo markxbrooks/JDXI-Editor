@@ -189,17 +189,28 @@ class DrumWMTSection(QWidget):
 
         self.wmt_controls_tab_widget = QTabWidget()
         main_row_hlayout.addWidget(self.wmt_controls_tab_widget)
+        import qtawesome as qta
+        from jdxi_editor.ui.image.utils import base64_to_pixmap
+        from jdxi_editor.ui.image.waveform import generate_waveform_icon
+        from PySide6.QtGui import QIcon
+        controls_icon = IconRegistry.get_icon("mdi.tune", color=JDXiStyle.GREY)
         self.wmt_controls_tab_widget.addTab(
-            self._create_wmt_controls_group(p), "Controls"
+            self._create_wmt_controls_group(p), controls_icon, "Controls"
         )
+        waves_icon = qta.icon("mdi.waveform", color=JDXiStyle.GREY)
         self.wmt_controls_tab_widget.addTab(
-            self._create_wave_combo_group(p, wmt_index), "Waves"
+            self._create_wave_combo_group(p, wmt_index), waves_icon, "Waves"
         )
-        self.wmt_controls_tab_widget.addTab(self._create_fxm_group(p), "FXM")
-        self.wmt_controls_tab_widget.addTab(self._create_tuning_group(p), "Tuning")
-        self.wmt_controls_tab_widget.addTab(self._create_wmt_pan_group(p), "Pan")
+        fxm_icon = qta.icon("mdi.equalizer", color=JDXiStyle.GREY)
+        self.wmt_controls_tab_widget.addTab(self._create_fxm_group(p), fxm_icon, "FXM")
+        tuning_icon = qta.icon("mdi.music-note", color=JDXiStyle.GREY)
+        self.wmt_controls_tab_widget.addTab(self._create_tuning_group(p), tuning_icon, "Tuning")
+        pan_icon = qta.icon("mdi.pan-horizontal", color=JDXiStyle.GREY)
+        self.wmt_controls_tab_widget.addTab(self._create_wmt_pan_group(p), pan_icon, "Pan")
+        adsr_icon_base64 = generate_waveform_icon("adsr", "#FFFFFF", 1.0)
+        adsr_icon = QIcon(base64_to_pixmap(adsr_icon_base64))
         self.wmt_controls_tab_widget.addTab(
-            self._create_adsr_widget(p), "ADSR Envelope"
+            self._create_adsr_widget(p), adsr_icon, "ADSR Envelope"
         )
         return main_row_hlayout
 

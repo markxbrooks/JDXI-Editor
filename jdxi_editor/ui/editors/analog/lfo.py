@@ -78,8 +78,9 @@ class AnalogLFOSection(SectionBaseWidget):
             JDXiDimensions.EDITOR_MINIMUM_HEIGHT
         )
         fade_rate_controls_row_widget.setLayout(fade_rate_controls_row_layout)
+        fade_rate_icon = qta.icon("mdi.clock-outline", color=JDXiStyle.GREY)
         self.lfo_controls_tab_widget.addTab(
-            fade_rate_controls_row_widget, "Fade and Rate Controls"
+            fade_rate_controls_row_widget, fade_rate_icon, "Fade and Rate Controls"
         )
 
         # --- Depth Controls Tab ---
@@ -87,7 +88,8 @@ class AnalogLFOSection(SectionBaseWidget):
         depth_controls_row_widget = QWidget()
         depth_controls_row_widget.setMinimumHeight(JDXiDimensions.EDITOR_MINIMUM_HEIGHT)
         depth_controls_row_widget.setLayout(depth_controls_row_layout)
-        self.lfo_controls_tab_widget.addTab(depth_controls_row_widget, "Depth Controls")
+        depth_icon = qta.icon("mdi.waveform", color=JDXiStyle.GREY)
+        self.lfo_controls_tab_widget.addTab(depth_controls_row_widget, depth_icon, "Depth Controls")
         
         main_rows_vlayout.addStretch()
 
@@ -116,11 +118,14 @@ class AnalogLFOSection(SectionBaseWidget):
             btn = QPushButton(label)
             btn.setCheckable(True)
             btn.setProperty("value", value)
-            btn.setIcon(IconRegistry.get_icon_by_qta_name(icon_name, color=JDXiStyle.WHITE, scale_factor=0.9))
+            # Use qta.icon directly with icon_size parameter (like the old implementation)
+            icon = qta.icon(icon_name, color=JDXiStyle.WHITE, icon_size=0.7)
+            btn.setIcon(icon)
+            btn.setIconSize(QSize(20, 20))  # Set explicit icon size for proper display
             JDXiThemeManager.apply_button_rect_analog(btn)
 
-            btn.setMinimumSize(QSize(JDXiDimensions.ANALOG.MIN_CONTROL_WIDTH, JDXiDimensions.ANALOG.MIN_CONTROL_HEIGHT))
-            btn.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
+            # Use same dimensions as oscillator waveform buttons for consistency
+            btn.setFixedSize(JDXiDimensions.WAVEFORM_ICON_WIDTH, JDXiDimensions.WAVEFORM_ICON_HEIGHT)
 
             btn.clicked.connect(lambda _, v=value: self._on_lfo_shape_changed(v))
 
@@ -297,7 +302,8 @@ class AnalogLFOSectionOld(QWidget):
         depth_controls_row_widget = QWidget()
         depth_controls_row_widget.setMinimumHeight(JDXiDimensions.EDITOR_MINIMUM_HEIGHT)
         depth_controls_row_widget.setLayout(depth_controls_row_layout)
-        self.lfo_controls_tab_widget.addTab(depth_controls_row_widget, "Depth Controls")
+        depth_icon = qta.icon("mdi.waveform", color=JDXiStyle.GREY)
+        self.lfo_controls_tab_widget.addTab(depth_controls_row_widget, depth_icon, "Depth Controls")
         main_rows_vlayout.addStretch()
 
     def _create_lfo_depth_controls(self) -> QHBoxLayout:

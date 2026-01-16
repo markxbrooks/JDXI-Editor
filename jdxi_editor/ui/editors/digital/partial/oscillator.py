@@ -17,9 +17,11 @@ from PySide6.QtWidgets import (
 )
 
 from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
+from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.editor import IconType
+import qtawesome as qta
 from jdxi_editor.midi.data.digital.oscillator import DigitalOscWave
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParam
 from jdxi_editor.midi.data.pcm.waves import PCM_WAVES_CATEGORIZED
@@ -74,15 +76,18 @@ class DigitalOscillatorSection(SectionBaseWidget):
 
         # --- Tuning and Pitch tab (combines Tuning and Pitch Envelope like Analog) ---
         tuning_pitch_widget = self._create_tuning_pitch_widget()
-        self.oscillator_tab_widget.addTab(tuning_pitch_widget, "Tuning and Pitch")
+        tuning_icon = qta.icon("mdi.music-note", color=JDXiStyle.GREY)
+        self.oscillator_tab_widget.addTab(tuning_pitch_widget, tuning_icon, "Tuning and Pitch")
 
         # --- Pulse Width tab ---
         pw_group = self._create_pw_group()
-        self.oscillator_tab_widget.addTab(pw_group, "Pulse Width")
+        pw_icon = QIcon(base64_to_pixmap(generate_waveform_icon("square", "#FFFFFF", 1.0)))
+        self.oscillator_tab_widget.addTab(pw_group, pw_icon, "Pulse Width")
 
         # --- PCM Wave tab (unique to Digital) ---
         pcm_group = self._create_pcm_group()
-        self.oscillator_tab_widget.addTab(pcm_group, "PCM Wave")
+        pcm_icon = QIcon(base64_to_pixmap(generate_waveform_icon("pcm", "#FFFFFF", 1.0)))
+        self.oscillator_tab_widget.addTab(pcm_group, pcm_icon, "PCM Wave")
 
         layout.addStretch()
 

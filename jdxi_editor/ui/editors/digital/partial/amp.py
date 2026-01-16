@@ -23,6 +23,12 @@ from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
+from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.jdxi.style.icons import IconRegistry
+from jdxi_editor.ui.image.utils import base64_to_pixmap
+from jdxi_editor.ui.image.waveform import generate_waveform_icon
+from PySide6.QtGui import QIcon
+import qtawesome as qta
 
 
 class DigitalAmpSection(SectionBaseWidget):
@@ -71,11 +77,14 @@ class DigitalAmpSection(SectionBaseWidget):
         amp_controls_layout = self._create_amp_controls_layout()
         amp_controls_widget = QWidget()
         amp_controls_widget.setLayout(amp_controls_layout)
-        self.digital_amp_tab_widget.addTab(amp_controls_widget, "Controls")
+        controls_icon = qta.icon("mdi.tune", color=JDXiStyle.GREY)
+        self.digital_amp_tab_widget.addTab(amp_controls_widget, controls_icon, "Controls")
 
         # Add ADSR tab
         amp_adsr_group = self._create_amp_adsr_group()
-        self.digital_amp_tab_widget.addTab(amp_adsr_group, "ADSR")
+        adsr_icon_base64 = generate_waveform_icon("adsr", "#FFFFFF", 1.0)
+        adsr_icon = QIcon(base64_to_pixmap(adsr_icon_base64))
+        self.digital_amp_tab_widget.addTab(amp_adsr_group, adsr_icon, "ADSR")
 
         amp_section_layout.addSpacing(10)
         amp_section_layout.addStretch()

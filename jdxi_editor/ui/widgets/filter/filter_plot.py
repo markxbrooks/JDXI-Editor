@@ -46,37 +46,115 @@ from jdxi_editor.ui.constant import JDXiUI
 
 
 def generate_filter_plot(
-    width: float, slope: float, sample_rate: int, duration: float
+    width: float, slope: float, sample_rate: int, duration: float, filter_mode: str = "lpf"
 ) -> np.ndarray:
-    """Generates a filter envelope with a sustain plateau followed by a slope down to zero."""
+    """
+    Generates a filter frequency response plot based on filter mode.
+    
+    :param width: Cutoff frequency position (0.0-1.0)
+    :param slope: Filter slope (0.0-1.0)
+    :param sample_rate: Sample rate for the plot
+    :param duration: Duration of the plot
+    :param filter_mode: Filter mode - "lpf", "hpf", "bpf", "bypass"
+    :return: numpy array representing the frequency response
+    """
     width = max(0.0, min(1.0, width))  # Clip to valid range
     total_samples = int(duration * sample_rate)
+    
+    # Normalize filter_mode to lowercase
+    filter_mode = filter_mode.lower() if filter_mode else "lpf"
+    
+    if filter_mode == "bypass":
+        # Bypass: flat line at full amplitude
+        envelope = np.full(total_samples, JDXiUI.FILTER_PLOT_DEPTH, dtype=np.float32)
+        return envelope
+    
+    # Calculate slope steepness based on slope parameter
     slope_gradient = 0.5 - (slope * 0.25)
-    print(f"slope: \t{slope}")
-    print(f"slope_gradient: \t{slope_gradient}")
+    
     # Define segments in samples
     period = max(1, sample_rate)  # Avoid divide-by-zero
-    sustain_samples = int(period * width)
-    slope_samples = int(period * slope_gradient)
-
-    # At least 1 sample high or slope to avoid weird signals
-    sustain_samples = max(1, sustain_samples)
-    slope_samples = max(1, slope_samples)
-
-    # Create the sustain plateau first
-    sustain = np.full(sustain_samples, JDXiUI.FILTER_PLOT_DEPTH, dtype=np.float32)
-
-    # Now create slope descending to zero
-    slope_vals = np.linspace(
-        JDXiUI.FILTER_PLOT_DEPTH,
-        0,
-        slope_samples,
-        endpoint=False,
-        dtype=np.float32,
-    )
-
-    # Combine together
-    envelope = np.concatenate([sustain, slope_vals], axis=0)
+    cutoff_samples = int(period * width)
+    transition_samples = int(period * slope_gradient)
+    
+    # At least 1 sample to avoid weird signals
+    cutoff_samples = max(1, cutoff_samples)
+    transition_samples = max(1, transition_samples)
+    
+    if filter_mode == "lpf":
+        # Low-pass filter: full amplitude up to cutoff, then rolloff
+        # Create the passband (full amplitude up to cutoff)
+        passband = np.full(cutoff_samples, JDXiUI.FILTER_PLOT_DEPTH, dtype=np.float32)
+        
+        # Create transition rolloff
+        rolloff = np.linspace(
+            JDXiUI.FILTER_PLOT_DEPTH,
+            0,
+            transition_samples,
+            endpoint=False,
+            dtype=np.float32,
+        )
+        
+        # Combine together
+        envelope = np.concatenate([passband, rolloff], axis=0)
+        
+    elif filter_mode == "hpf":
+        # High-pass filter: rolloff up to cutoff, then full amplitude
+        # Create transition rolloff from 0 to cutoff
+        rolloff = np.linspace(
+            0,
+            JDXiUI.FILTER_PLOT_DEPTH,
+            cutoff_samples,
+            endpoint=False,
+            dtype=np.float32,
+        )
+        
+        # Create the passband (full amplitude after cutoff)
+        passband = np.full(transition_samples, JDXiUI.FILTER_PLOT_DEPTH, dtype=np.float32)
+        
+        # Combine together
+        envelope = np.concatenate([rolloff, passband], axis=0)
+        
+    elif filter_mode == "bpf":
+        # Band-pass filter: rolloff, passband, rolloff
+        # Low rolloff (before passband)
+        low_rolloff_samples = int(cutoff_samples * 0.3)
+        low_rolloff = np.linspace(
+            0,
+            JDXiUI.FILTER_PLOT_DEPTH,
+            low_rolloff_samples,
+            endpoint=False,
+            dtype=np.float32,
+        )
+        
+        # Passband (middle section)
+        passband_samples = int(cutoff_samples * 0.4)
+        passband = np.full(passband_samples, JDXiUI.FILTER_PLOT_DEPTH, dtype=np.float32)
+        
+        # High rolloff (after passband)
+        high_rolloff_samples = int(transition_samples * 0.5)
+        high_rolloff = np.linspace(
+            JDXiUI.FILTER_PLOT_DEPTH,
+            0,
+            high_rolloff_samples,
+            endpoint=False,
+            dtype=np.float32,
+        )
+        
+        # Combine together
+        envelope = np.concatenate([low_rolloff, passband, high_rolloff], axis=0)
+        
+    else:
+        # Default to LPF if unknown mode
+        passband = np.full(cutoff_samples, JDXiUI.FILTER_PLOT_DEPTH, dtype=np.float32)
+        rolloff = np.linspace(
+            JDXiUI.FILTER_PLOT_DEPTH,
+            0,
+            transition_samples,
+            endpoint=False,
+            dtype=np.float32,
+        )
+        envelope = np.concatenate([passband, rolloff], axis=0)
 
     # Trim or pad to match total_samples
     if envelope.size > total_samples:
@@ -95,6 +173,7 @@ class FilterPlot(QWidget):
         height: int = JDXiStyle.ADSR_PLOT_HEIGHT,
         envelope: dict = None,
         parent: QWidget = None,
+        filter_mode: str = "lpf",
     ):
         super().__init__(parent)
         self.point_moved = None
@@ -102,6 +181,7 @@ class FilterPlot(QWidget):
         # Default envelope parameters (times in ms)
         self.enabled = True
         self.envelope = envelope
+        self.filter_mode = filter_mode  # Store filter mode
         # Set address fixed size for the widget (or use layouts as needed)
         self.setMinimumSize(width, height)
         self.setMaximumHeight(height)
@@ -124,6 +204,16 @@ class FilterPlot(QWidget):
             self.parent.pulse_width_changed.connect(self.set_values)
         if hasattr(self.parent, "mod_depth_changed"):
             self.parent.mod_depth_changed.connect(self.set_values)
+    
+    def set_filter_mode(self, filter_mode: str) -> None:
+        """
+        Update filter mode and trigger redraw
+        
+        :param filter_mode: str - Filter mode ("lpf", "hpf", "bpf", "bypass")
+        :return: None
+        """
+        self.filter_mode = filter_mode.lower() if filter_mode else "lpf"
+        self.update()
 
     def set_values(self, envelope: dict) -> None:
         """
@@ -200,12 +290,13 @@ class FilterPlot(QWidget):
             font_metrics = painter.fontMetrics()
 
             # === Envelope Parameters ===
-            # Pulse width envelope: rise and fall
+            # Generate filter frequency response based on filter mode
             envelope = generate_filter_plot(
                 width=self.envelope["cutoff_param"],
                 slope=self.envelope["slope_param"],
                 sample_rate=self.sample_rate,
                 duration=self.envelope.get("duration", 1.0),
+                filter_mode=self.filter_mode,
             )
             total_samples = len(envelope)
             total_time = total_samples / self.sample_rate
@@ -232,6 +323,7 @@ class FilterPlot(QWidget):
             for i in range(num_ticks + 1):
                 x = left_pad + i * plot_w / num_ticks
 
+
             # === Y-axis Labels & Ticks ===
             for i in range(-1, 6):
                 y_val = i * 0.2
@@ -242,11 +334,19 @@ class FilterPlot(QWidget):
                 painter.drawText(
                     left_pad - 10 - label_width, y + font_metrics.ascent() / 2, label
                 )
-
             # === Title ===
             painter.setPen(QPen(QColor("orange")))
             painter.setFont(QFont("JD LCD Rounded", 16))
-            title = "Filter Cutoff"
+            # Update title based on filter mode
+            filter_mode_upper = self.filter_mode.upper() if self.filter_mode else "LPF"
+            if filter_mode_upper == "BYPASS":
+                title = "Filter Bypass"
+            elif filter_mode_upper == "HPF":
+                title = "HPF Cutoff"
+            elif filter_mode_upper == "BPF":
+                title = "BPF Cutoff"
+            else:
+                title = "LPF Cutoff"
             title_width = painter.fontMetrics().horizontalAdvance(title)
             painter.drawText(left_pad + (plot_w - title_width) / 2, top_pad / 2, title)
 
@@ -282,41 +382,64 @@ class FilterPlot(QWidget):
 
             # === Envelope Plot ===
             if self.enabled:
-                painter.setPen(orange_pen)
-                points = []
-                num_points = 500
-                indices = np.linspace(0, total_samples - 1, num_points).astype(int)
+                samples_per_pixel = max(1, int(total_samples / plot_w))
 
-                for i in indices:
-                    if i >= len(envelope):
+                # --- Build fill path (upper envelope only) ---
+                fill_path = QPainterPath()
+                first_point = True
+
+                for px in range(int(plot_w)):
+                    start = px * samples_per_pixel
+                    end = min(start + samples_per_pixel, total_samples)
+                    if start >= end:
                         continue
-                    t = i / self.sample_rate
-                    x = left_pad + (t / total_time) * plot_w
-                    y_val = envelope[i]
-                    y = top_pad + ((y_max - y_val) / (y_max - y_min)) * plot_h
-                    points.append(QPointF(x, y))
 
-                if points and self.enabled:
-                    path = QPainterPath()
-                    path.moveTo(points[0])
-                    for pt in points[1:]:
-                        path.lineTo(pt)  # For smoothing: use cubicTo
-                    painter.drawPath(path)
+                    ymax = max(envelope[start:end])
 
-                    # Now fill in to axes
-                    path.lineTo(left_pad + plot_w, zero_y)
-                    path.lineTo(left_pad, zero_y)
-                    path.closeSubpath()
+                    x = left_pad + px
+                    y = top_pad + ((y_max - ymax) / (y_max - y_min)) * plot_h
 
-                    # Fill the path black first
-                    painter.fillPath(path, gradient)
-                    # redraw x-axis
-                    painter.setPen(axis_pen)
-                    painter.drawLine(left_pad, zero_y, left_pad + plot_w, zero_y)
-                    # === X-axis Labels & Ticks ===
-                    num_ticks = 6
-                    for i in range(num_ticks + 1):
-                        x = left_pad + i * plot_w / num_ticks
+                    if first_point:
+                        fill_path.moveTo(x, y)
+                        first_point = False
+                    else:
+                        fill_path.lineTo(x, y)
+
+                # Close path to zero line
+                fill_path.lineTo(left_pad + plot_w, zero_y)
+                fill_path.lineTo(left_pad, zero_y)
+                fill_path.closeSubpath()
+
+                # --- Fill under curve (subtle LCD style) ---
+                fill_gradient = QLinearGradient(0, top_pad, 0, top_pad + plot_h)
+                fill_gradient.setColorAt(0.0, QColor(255, 160, 40, 60))
+                fill_gradient.setColorAt(1.0, QColor(255, 160, 40, 10))
+
+                painter.fillPath(fill_path, fill_gradient)
+
+                # --- Draw envelope strokes on top ---
+                pen = QPen(QColor("orange"), 1)
+                pen.setCapStyle(Qt.FlatCap)
+                pen.setCosmetic(True)
+                painter.setPen(pen)
+
+                for px in range(int(plot_w)):
+                    start = px * samples_per_pixel
+                    end = min(start + samples_per_pixel, total_samples)
+                    if start >= end:
+                        continue
+
+                    segment = envelope[start:end]
+                    ymin = min(segment)
+                    ymax = max(segment)
+
+                    x = left_pad + px
+                    y1 = top_pad + ((y_max - ymax) / (y_max - y_min)) * plot_h
+                    y2 = top_pad + ((y_max - ymin) / (y_max - y_min)) * plot_h
+
+                    painter.drawLine(QPointF(x, y1), QPointF(x, y2))
+
 
         finally:
             painter.end()
+

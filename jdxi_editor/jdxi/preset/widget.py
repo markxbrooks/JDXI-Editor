@@ -107,12 +107,19 @@ class InstrumentPresetWidget(QWidget):
             # === Tab 1: Normal Analog Presets ===
             normal_preset_widget, normal_preset_layout = create_scroll_container()
             self._add_normal_preset_content(normal_preset_layout, synth_type)
-            preset_tabs.addTab(normal_preset_widget, "Analog Presets")
+            try:
+                analog_presets_icon = qta.icon("mdi.music-note-multiple", color=JDXiStyle.GREY)
+                if analog_presets_icon.isNull():
+                    raise ValueError("Icon is null")
+            except:
+                analog_presets_icon = IconRegistry.get_icon(IconRegistry.MUSIC, color=JDXiStyle.GREY)
+            preset_tabs.addTab(normal_preset_widget, analog_presets_icon, "Analog Presets")
 
             # === Tab 2: Cheat Presets (Digital Synth presets on Analog channel) ===
             cheat_preset_widget, cheat_preset_layout = create_scroll_container()
             self._add_cheat_preset_content(cheat_preset_layout)
-            preset_tabs.addTab(cheat_preset_widget, "Cheat Presets")
+            cheat_presets_icon = qta.icon("mdi.code-braces", color=JDXiStyle.GREY)
+            preset_tabs.addTab(cheat_preset_widget, cheat_presets_icon, "Cheat Presets")
         else:
             # For Digital/Drums, create simple layout without tabs
             self._add_normal_preset_content(instrument_title_group_layout, synth_type)

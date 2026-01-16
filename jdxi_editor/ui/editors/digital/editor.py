@@ -50,6 +50,7 @@ from PySide6.QtWidgets import (
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.jdxi.preset.widget import InstrumentPresetWidget
 from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
+from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 from jdxi_editor.jdxi.synth.factory import create_synth_data
 from jdxi_editor.jdxi.synth.type import JDXiSynth
@@ -211,7 +212,14 @@ class DigitalSynthEditor(SynthEditor):
         # Create partial tab widget
         self.partial_tab_widget = QTabWidget()
         instrument_widget.setLayout(instrument_layout)
-        self.partial_tab_widget.addTab(instrument_widget, "Presets")
+        try:
+            import qtawesome as qta
+            presets_icon = qta.icon("mdi.music-note-multiple", color=JDXiStyle.GREY)
+            if presets_icon.isNull():
+                raise ValueError("Icon is null")
+        except:
+            presets_icon = IconRegistry.get_icon(IconRegistry.MUSIC, color=JDXiStyle.GREY)
+        self.partial_tab_widget.addTab(instrument_widget, presets_icon, "Presets")
         self._create_partial_tab_widget(container_layout, self.midi_helper)
 
     def _create_partial_tab_widget(
@@ -238,21 +246,24 @@ class DigitalSynthEditor(SynthEditor):
                 parent=self,
             )
             self.partial_editors[i] = editor
-            self.partial_tab_widget.addTab(editor, f"Partial {i}")
+            partial_icon = IconRegistry.get_icon(f"mdi.numeric-{i}-circle-outline", color=JDXiStyle.GREY)
+            self.partial_tab_widget.addTab(editor, partial_icon, f"Partial {i}")
         self.common_section = DigitalCommonSection(
             self._create_parameter_slider,
             self._create_parameter_switch,
             self._create_parameter_combo_box,
             self.controls,
         )
-        self.partial_tab_widget.addTab(self.common_section, "Common")
+        common_icon = IconRegistry.get_icon("mdi.cog-outline", color=JDXiStyle.GREY)
+        self.partial_tab_widget.addTab(self.common_section, common_icon, "Common")
         self.tone_modify_section = DigitalToneModifySection(
             self._create_parameter_slider,
             self._create_parameter_combo_box,
             self._create_parameter_switch,
             self.controls,
         )
-        self.partial_tab_widget.addTab(self.tone_modify_section, "Misc")
+        misc_icon = IconRegistry.get_icon("mdi.dots-horizontal", color=JDXiStyle.GREY)
+        self.partial_tab_widget.addTab(self.tone_modify_section, misc_icon, "Misc")
         container_layout.addWidget(self.partial_tab_widget)
 
     def _on_partial_state_changed(
@@ -330,11 +341,17 @@ class DigitalSynthEditor(SynthEditor):
             log.parameter("Updated waveform buttons for OSC_WAVE", value)
 
         elif param == DigitalPartialParam.FILTER_MODE_SWITCH:
-            self.partial_editors[partial_no].filter_tab.filter_mode_switch.setValue(
-                value
-            )
+            self._update_filter_mode_buttons(partial_no, value)
             self._update_filter_state(partial_no, value)
             log.parameter("Updated filter state for FILTER_MODE_SWITCH", value)
+
+        elif param == DigitalPartialParam.LFO_SHAPE:
+            self._update_lfo_shape_buttons(partial_no, value)
+            log.parameter("Updated LFO shape buttons for LFO_SHAPE", value)
+
+        elif param == DigitalPartialParam.MOD_LFO_SHAPE:
+            self._update_mod_lfo_shape_buttons(partial_no, value)
+            log.parameter("Updated Mod LFO shape buttons for MOD_LFO_SHAPE", value)
 
     def _update_partial_controls(
         self, partial_no: int, sysex_data: dict, successes: list, failures: list
@@ -357,7 +374,12 @@ class DigitalSynthEditor(SynthEditor):
             if param == DigitalPartialParam.OSC_WAVE:
                 self._update_waveform_buttons(partial_no, param_value)
             elif param == DigitalPartialParam.FILTER_MODE_SWITCH:
+                self._update_filter_mode_buttons(partial_no, param_value)
                 self._update_filter_state(partial_no, value=param_value)
+            elif param == DigitalPartialParam.LFO_SHAPE:
+                self._update_lfo_shape_buttons(partial_no, param_value)
+            elif param == DigitalPartialParam.MOD_LFO_SHAPE:
+                self._update_mod_lfo_shape_buttons(partial_no, param_value)
             elif param in self.adsr_parameters:
                 self._update_partial_adsr_widgets(
                     partial_no, param, param_value, successes, failures
@@ -743,6 +765,161 @@ class DigitalSynthEditor(SynthEditor):
             selected_btn.setStyleSheet(JDXiStyle.BUTTON_RECT)
         else:
             log.warning("Waveform button not found for: %s", selected_waveform)
+
+    def _update_filter_mode_buttons(self, partial_number: int, value: int):
+        """
+        Update the filter mode buttons based on the FILTER_MODE_SWITCH value with visual feedback
+
+        :param partial_number: int
+        :param value: int
+        :return:
+        """
+        log.parameter(f"Updating filter mode buttons for partial {partial_number}", value)
+        if partial_number is None:
+            return
+
+        from jdxi_editor.midi.data.digital.filter import DigitalFilterMode
+
+        filter_mode_map = {
+            0: DigitalFilterMode.BYPASS,
+            1: DigitalFilterMode.LPF,
+            2: DigitalFilterMode.HPF,
+            3: DigitalFilterMode.BPF,
+            4: DigitalFilterMode.PKG,
+            5: DigitalFilterMode.LPF2,
+            6: DigitalFilterMode.LPF3,
+            7: DigitalFilterMode.LPF4,
+        }
+
+        selected_filter_mode = filter_mode_map.get(value)
+
+        if selected_filter_mode is None:
+            log.warning("Unknown filter mode value: %s", value)
+            return
+
+        log.parameter(f"Filter mode value {value} found, selecting", selected_filter_mode)
+
+        # Retrieve filter mode buttons for the given partial
+        if partial_number not in self.partial_editors:
+            log.warning(f"Partial editor {partial_number} not found")
+            return
+
+        filter_mode_buttons = self.partial_editors[partial_number].filter_tab.filter_mode_buttons
+
+        # Reset all buttons to default style
+        for btn in filter_mode_buttons.values():
+            btn.setChecked(False)
+            btn.setStyleSheet(JDXiStyle.BUTTON_RECT)
+
+        # Apply active style to the selected filter mode button
+        selected_btn = filter_mode_buttons.get(selected_filter_mode)
+        if selected_btn:
+            selected_btn.setChecked(True)
+            selected_btn.setStyleSheet(JDXiStyle.BUTTON_RECT_ACTIVE)
+        else:
+            log.warning("Filter mode button not found for: %s", selected_filter_mode)
+
+    def _update_lfo_shape_buttons(self, partial_number: int, value: int):
+        """
+        Update the LFO shape buttons based on the LFO_SHAPE value with visual feedback
+
+        :param partial_number: int
+        :param value: int
+        :return:
+        """
+        log.parameter(f"Updating LFO shape buttons for partial {partial_number}", value)
+        if partial_number is None:
+            return
+
+        from jdxi_editor.midi.data.digital.lfo import DigitalLFOShape
+
+        lfo_shape_map = {
+            0: DigitalLFOShape.TRIANGLE,
+            1: DigitalLFOShape.SINE,
+            2: DigitalLFOShape.SAW,
+            3: DigitalLFOShape.SQUARE,
+            4: DigitalLFOShape.SAMPLE_HOLD,
+            5: DigitalLFOShape.RANDOM,
+        }
+
+        selected_lfo_shape = lfo_shape_map.get(value)
+
+        if selected_lfo_shape is None:
+            log.warning("Unknown LFO shape value: %s", value)
+            return
+
+        log.parameter(f"LFO shape value {value} found, selecting", selected_lfo_shape)
+
+        # Retrieve LFO shape buttons for the given partial
+        if partial_number not in self.partial_editors:
+            log.warning(f"Partial editor {partial_number} not found")
+            return
+
+        lfo_shape_buttons = self.partial_editors[partial_number].lfo_tab.lfo_shape_buttons
+
+        # Reset all buttons to default style
+        for btn in lfo_shape_buttons.values():
+            btn.setChecked(False)
+            btn.setStyleSheet(JDXiStyle.BUTTON_RECT)
+
+        # Apply active style to the selected LFO shape button
+        selected_btn = lfo_shape_buttons.get(selected_lfo_shape)
+        if selected_btn:
+            selected_btn.setChecked(True)
+            selected_btn.setStyleSheet(JDXiStyle.BUTTON_RECT_ACTIVE)
+        else:
+            log.warning("LFO shape button not found for: %s", selected_lfo_shape)
+
+    def _update_mod_lfo_shape_buttons(self, partial_number: int, value: int):
+        """
+        Update the Mod LFO shape buttons based on the MOD_LFO_SHAPE value with visual feedback
+
+        :param partial_number: int
+        :param value: int
+        :return:
+        """
+        log.parameter(f"Updating Mod LFO shape buttons for partial {partial_number}", value)
+        if partial_number is None:
+            return
+
+        from jdxi_editor.midi.data.digital.lfo import DigitalLFOShape
+
+        mod_lfo_shape_map = {
+            0: DigitalLFOShape.TRIANGLE,
+            1: DigitalLFOShape.SINE,
+            2: DigitalLFOShape.SAW,
+            3: DigitalLFOShape.SQUARE,
+            4: DigitalLFOShape.SAMPLE_HOLD,
+            5: DigitalLFOShape.RANDOM,
+        }
+
+        selected_mod_lfo_shape = mod_lfo_shape_map.get(value)
+
+        if selected_mod_lfo_shape is None:
+            log.warning("Unknown Mod LFO shape value: %s", value)
+            return
+
+        log.parameter(f"Mod LFO shape value {value} found, selecting", selected_mod_lfo_shape)
+
+        # Retrieve Mod LFO shape buttons for the given partial
+        if partial_number not in self.partial_editors:
+            log.warning(f"Partial editor {partial_number} not found")
+            return
+
+        mod_lfo_shape_buttons = self.partial_editors[partial_number].mod_lfo_tab.mod_lfo_shape_buttons
+
+        # Reset all buttons to default style
+        for btn in mod_lfo_shape_buttons.values():
+            btn.setChecked(False)
+            btn.setStyleSheet(JDXiStyle.BUTTON_RECT)
+
+        # Apply active style to the selected Mod LFO shape button
+        selected_btn = mod_lfo_shape_buttons.get(selected_mod_lfo_shape)
+        if selected_btn:
+            selected_btn.setChecked(True)
+            selected_btn.setStyleSheet(JDXiStyle.BUTTON_RECT_ACTIVE)
+        else:
+            log.warning("Mod LFO shape button not found for: %s", selected_mod_lfo_shape)
 
 
 class DigitalSynth2Editor(DigitalSynthEditor):
