@@ -381,7 +381,7 @@ class SynthBase(QWidget):
 
     def _init_synth_data(
         self,
-        synth_type: JDXiSynth = JDXiSynth.DIGITAL_SYNTH_1,
+        synth_type: str = JDXiSynth.DIGITAL_SYNTH_1,
         partial_number: Optional[int] = 0,
     ):
         """Initialize synth-specific data."""

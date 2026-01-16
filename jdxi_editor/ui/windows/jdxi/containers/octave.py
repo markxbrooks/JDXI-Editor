@@ -1,3 +1,5 @@
+from typing import Callable
+
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QPushButton, QVBoxLayout, QWidget
 
@@ -5,10 +7,10 @@ from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
-def add_octave_buttons(widget, send_octave):
+def add_octave_buttons(container: QWidget, send_octave: Callable):
     """Add octave up/down buttons to the interface"""
     # Create container
-    octave_buttons_container = QWidget(widget)
+    octave_buttons_container = QWidget(container)
 
     # Apply the height offset to the Y position
     octave_buttons_container.setGeometry(

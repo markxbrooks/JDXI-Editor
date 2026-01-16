@@ -1,4 +1,4 @@
-from .arpeggiator import add_arpeggiator_buttons
+from .arpeggiator import add_octave_and_arp_buttons
 from .digital_display import add_digital_display
 from .effects import add_effects_container
 from .octave import add_octave_buttons
@@ -15,7 +15,7 @@ from .tone import add_tone_container, create_tone_buttons_row
 from .wheels import build_wheel_label_row, build_wheel_row
 
 __all__ = [
-    "add_arpeggiator_buttons",
+    "add_octave_and_arp_buttons",
     "add_digital_display",
     "add_effects_container",
     "add_octave_buttons",

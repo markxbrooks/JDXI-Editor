@@ -118,23 +118,23 @@ class DigitalPartialEditor(PartialEditor):
         else:
             log.error(f"Invalid partial_num: {partial_number}. Using default value.")
             self.part_name = "Unknown"  # Provide a fallback value
-        # Store parameter controls for easy access
+        # --- Store parameter controls for easy access
         self.controls: Dict[
             Union[DigitalPartialParam, DigitalCommonParam],
             QWidget,
         ] = {}
 
-        # Main layout
+        # --- Main layout
         main_layout = QVBoxLayout()
         self.setLayout(main_layout)
 
-        # Create container widget for the tabs
+        # --- Create container widget for the tabs
         container = QWidget()
         container_layout = QVBoxLayout()
         container.setLayout(container_layout)
         self.tab_widget = QTabWidget()
         container_layout.addWidget(self.tab_widget)
-        # Add sections in address vertical layout
+        # --- Add sections in address vertical layout
         self.oscillator_tab = DigitalOscillatorSection(
             self._create_parameter_slider,
             self._create_parameter_switch,
@@ -190,7 +190,7 @@ class DigitalPartialEditor(PartialEditor):
             self.mod_lfo_tab, IconRegistry.get_icon(IconRegistry.WAVEFORM, color=JDXiStyle.GREY), "Mod LFO"
         )
 
-        # Add container to scroll area
+        # --- Add container to scroll area
         main_layout.addWidget(container)
         self.updating_from_spinbox = False
         log.parameter(f"DigitalPartialEditor initialized for", self)
@@ -207,7 +207,7 @@ class DigitalPartialEditor(PartialEditor):
 
         :param mode: int
         """
-        enabled = mode != 0  # Enable if not BYPASS
+        enabled = mode != 0  # --- Enable if not BYPASS
         for param in [
             DigitalPartialParam.FILTER_CUTOFF,
             DigitalPartialParam.FILTER_RESONANCE,
@@ -226,17 +226,17 @@ class DigitalPartialEditor(PartialEditor):
 
         :param waveform: DigitalOscWave
         """
-        # Reset all buttons to default style
+        # --- Reset all buttons to default style
         for btn in self.oscillator_tab.wave_buttons.values():
             btn.setChecked(False)
             btn.setStyleSheet(JDXiStyle.BUTTON_RECT)
 
-        # Apply active style to the selected waveform button
+        # --- Apply active style to the selected waveform button
         selected_btn = self.oscillator_tab.wave_buttons.get(waveform)
         if selected_btn:
             selected_btn.setChecked(True)
             selected_btn.setStyleSheet(JDXiStyle.BUTTON_RECT_ACTIVE)
 
-        # Send MIDI message
+        # --- Send MIDI message
         if not self.send_midi_parameter(DigitalPartialParam.OSC_WAVE, waveform.value):
             log.warning(f"Failed to set waveform to {waveform.name}")

@@ -60,7 +60,7 @@ from jdxi_editor.ui.widgets.button.sequencer import SequencerSquare
 from jdxi_editor.ui.widgets.indicator.led import LEDIndicator
 from jdxi_editor.ui.widgets.piano.keyboard import PianoKeyboard
 from jdxi_editor.ui.windows.jdxi.containers import (
-    add_arpeggiator_buttons,
+    add_octave_and_arp_buttons,
     add_digital_display,
     add_effects_container,
     add_favorite_button_container,
@@ -152,19 +152,20 @@ class JDXiUi(QMainWindow):
         layout.setSpacing(0)
 
         # Create container for image and overlays
-        container = QWidget()
-        container.setLayout(QVBoxLayout())
-        container.layout().setContentsMargins(0, 0, 0, 0)
+        container_widget = QWidget()
+        container_widget.setLayout(QVBoxLayout())
+        container_widget.layout().setContentsMargins(0, 0, 0, 0)
+        container_widget.layout().setSpacing(6)
 
         # Store reference to image label
         self.image_label = QLabel()
         self.image_label.setPixmap(draw_instrument_pixmap())
         self.image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        container.layout().addWidget(self.image_label)
+        container_widget.layout().addWidget(self.image_label)
 
         # Add overlaid controls
-        self.digital_display = add_digital_display(container, self)
-        add_title_container(container)
+        self.digital_display = add_digital_display(container_widget, self)
+        add_title_container(container_widget)
         self.parts_container, self.part_buttons = create_parts_container(
             parent_widget=self,
             on_open_d1=lambda: self.show_editor("digital1"),
@@ -181,34 +182,33 @@ class JDXiUi(QMainWindow):
             JDXiSynth.DRUM_KIT: self.part_buttons["drums"],
         }
         self.arp_button = self.part_buttons["arp"]
-        self.octave_down, self.octave_up = add_octave_buttons(
-            container, self._midi_send_octave
+
+        self.octave_down, self.octave_up, self.arpeggiator_button, self.key_hold_button = add_octave_and_arp_buttons(
+            container_widget, self._midi_send_octave
         )
-        self.arpeggiator_button, self.key_hold_button = add_arpeggiator_buttons(
-            container
-        )
+
         self.vocal_effects_button, self.effects_button = add_effects_container(
-            container,
+            container_widget,
             lambda: self.show_editor("vocal_fx"),
             lambda: self.show_editor("effects"),
         )
 
         (self.program_down_button, self.program_up_button) = add_program_container(
-            container, create_program_buttons_row
+            container_widget, create_program_buttons_row
         )
 
         self.tone_down_button, self.tone_up_button = add_tone_container(
-            container, create_tone_buttons_row, self._preset_previous, self._preset_next
+            container_widget, create_tone_buttons_row, self._preset_previous, self._preset_next
         )
         self.sequencer_buttons = add_sequencer_container(
-            container,
+            container_widget,
             midi_helper=self.midi_helper,
             on_context_menu=self._show_favorite_context_menu,
             on_save_favorite=self._save_favorite,
         )
-        self.favorite_button = add_favorite_button_container(container)
-        add_slider_container(container, self.midi_helper)
-        layout.addWidget(container)
+        self.favorite_button = add_favorite_button_container(container_widget)
+        add_slider_container(container_widget, self.midi_helper)
+        layout.addWidget(container_widget)
 
         # Initialize current preset index
         self.current_preset_index = 0

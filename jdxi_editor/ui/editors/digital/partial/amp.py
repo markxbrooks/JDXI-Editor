@@ -5,7 +5,7 @@ AMP section for the digital partial editor.
 from typing import Callable
 
 from jdxi_editor.ui.widgets.editor.helper import create_hlayout_with_widgets, \
-    create_vlayout_with_hlayout_and_widgets, create_vlayout_with_hlayouts, create_icons_layout, create_adsr_icon
+    create_vlayout_with_hlayout_and_widgets, create_vlayout_with_hlayouts, create_icons_layout, create_adsr_icon_label
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtWidgets import (
     QGroupBox,
@@ -124,7 +124,7 @@ class DigitalAmpSection(SectionBaseWidget):
         env_group = QGroupBox("Envelope")
         env_group.setProperty("adsr", True)
 
-        icon_label = create_adsr_icon()
+        icon_label = create_adsr_icon_label()
         icons_hlayout = create_hlayout_with_widgets([icon_label])
 
         # --- Create ADSRWidget

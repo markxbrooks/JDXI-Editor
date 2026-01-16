@@ -5,7 +5,7 @@ Helpers to create HBox and VBoxes
 import qtawesome as qta
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
-from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout, QLabel
+from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout, QLabel, QGroupBox, QPushButton
 
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.ui.image.utils import base64_to_pixmap
@@ -68,9 +68,38 @@ def create_icons_layout() -> QHBoxLayout:
     return icons_hlayout
 
 
-def create_adsr_icon() -> QLabel:
+def create_adsr_icon_label() -> QLabel:
     """Generate the ADSR waveform icon"""
-    icon_base64 = generate_waveform_icon("adsr", JDXiStyle.WHITE, 2.0)
+    icon_base64 = generate_waveform_icon(waveform="adsr", foreground_color=JDXiStyle.WHITE, icon_scale=2.0)
     pixmap = base64_to_pixmap(icon_base64)
     icon_label = create_icon_label_with_pixmap(pixmap)
     return icon_label
+
+
+def create_centered_adsr_icon_label() -> QLabel:
+    """ADSR Icon"""
+    icon_pixmap = base64_to_pixmap(
+        generate_waveform_icon(
+            waveform="adsr", foreground_color=JDXiStyle.WHITE, icon_scale=2.0
+        )
+    )
+    icon_label = create_icon_label_with_pixmap(icon_pixmap)
+    return icon_label
+
+
+def create_group_adsr_with_hlayout(name: str, hlayout: QHBoxLayout) -> QGroupBox:
+    """create ADSR Group with an hlayout"""
+    controls_group = QGroupBox(name)
+    controls_group.setLayout(hlayout)
+    controls_group.setStyleSheet(JDXiStyle.ADSR)
+    return controls_group
+
+
+def create_button_with_tooltip(tooltip: str) -> QPushButton:
+    """create button with tooltip"""
+    button = QPushButton()
+    button.setFixedSize(30, 30)
+    button.setCheckable(True)
+    button.setStyleSheet(JDXiStyle.BUTTON_ROUND)
+    button.setToolTip(tooltip)
+    return button
