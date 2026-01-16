@@ -5,7 +5,8 @@ AMP section for the digital partial editor.
 from typing import Callable
 
 from jdxi_editor.ui.widgets.editor.helper import create_hlayout_with_widgets, \
-    create_vlayout_with_hlayout_and_widgets, create_vlayout_with_hlayouts, create_icons_layout, create_adsr_icon_label
+    create_vlayout_with_hlayout_and_widgets, create_vlayout_with_hlayouts, create_icons_layout, \
+    create_adsr_icon_label, create_centered_adsr_icon_layout, create_envelope_group
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtWidgets import (
     QGroupBox,
@@ -92,17 +93,16 @@ class DigitalAmpSection(SectionBaseWidget):
     def _create_amp_controls_layout(self) -> QVBoxLayout:
         """Create amp controls layout"""
 
-        # --- Level and velocity controls row
+        # --- Level and velocity controls row - standardized order: Level, KeyFollow, Velocity
         controls_row_layout = create_hlayout_with_widgets([
             self._create_parameter_slider(
                 DigitalPartialParam.AMP_LEVEL, "Level", vertical=True
             ),
             self._create_parameter_slider(
-                DigitalPartialParam.AMP_VELOCITY, "Velocity", vertical=True
-            ),
-
-            self._create_parameter_slider(
                 DigitalPartialParam.AMP_LEVEL_KEYFOLLOW, "KeyFollow", vertical=True
+            ),
+            self._create_parameter_slider(
+                DigitalPartialParam.AMP_VELOCITY, "Velocity", vertical=True
             ),
             self._create_parameter_slider(
                 DigitalPartialParam.LEVEL_AFTERTOUCH,
@@ -124,18 +124,10 @@ class DigitalAmpSection(SectionBaseWidget):
         # --- Create main layout with list of layouts
         main_layout = create_vlayout_with_hlayouts([controls_row_layout,
                                                     pan_row_layout])
-
-        main_layout.addLayout(pan_row_layout)
         return main_layout
 
     def _create_amp_adsr_group(self) -> QGroupBox:
-        """Create amp ADSR group"""
-        env_group = QGroupBox("Envelope")
-        env_group.setProperty("adsr", True)
-
-        icon_label = create_adsr_icon_label()
-        icons_hlayout = create_hlayout_with_widgets([icon_label])
-
+        """Create amp ADSR group (harmonized with Analog Amp, uses standardized helper)"""
         # --- Create ADSRWidget
         (
             group_address,
@@ -153,7 +145,9 @@ class DigitalAmpSection(SectionBaseWidget):
             controls=self.controls,
             address=self.address,
         )
-        amp_env_adsr_vlayout = create_vlayout_with_hlayout_and_widgets(icons_hlayout,
-                                                                       [self.amp_env_adsr_widget])
-        env_group.setLayout(amp_env_adsr_vlayout)
-        return env_group
+        # Use standardized envelope group helper (centers icon automatically)
+        return create_envelope_group(
+            name="Envelope",
+            adsr_widget=self.amp_env_adsr_widget,
+            analog=False
+        )

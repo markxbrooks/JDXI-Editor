@@ -29,7 +29,7 @@ from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.editor import IconType
-from jdxi_editor.ui.widgets.editor.helper import create_hlayout_with_widgets
+from jdxi_editor.ui.widgets.editor.helper import create_hlayout_with_widgets, create_envelope_group
 from jdxi_editor.ui.widgets.filter.analog_filter import AnalogFilterWidget
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
@@ -70,10 +70,10 @@ class AnalogFilterSection(SectionBaseWidget):
         self.filter_mode_buttons = {}  # Dictionary to store filter mode buttons
 
         super().__init__(icon_type=IconType.ADSR, analog=True)
-        self.init_ui()
+        self.setup_ui()
 
-    def init_ui(self):
-        """Initialize the UI"""
+    def setup_ui(self):
+        """Setup the UI (standardized method name matching Digital Filter)"""
         layout = self.get_layout()
 
         self.analog_filter_tab_widget = QTabWidget()
@@ -168,8 +168,7 @@ class AnalogFilterSection(SectionBaseWidget):
         self._on_filter_mode_changed(filter_mode.value)
 
     def _create_filter_controls_group(self) -> QGroupBox:
-        """Controls Group"""
-        controls_group = QGroupBox("Controls")
+        """Controls Group - standardized order: FilterWidget, Resonance, KeyFollow, Velocity (harmonized with Digital)"""
         self.filter_widget = AnalogFilterWidget(
             cutoff_param=AnalogParam.FILTER_CUTOFF,
             midi_helper=self.midi_helper,
@@ -181,24 +180,24 @@ class AnalogFilterSection(SectionBaseWidget):
             AnalogParam.FILTER_RESONANCE, "Resonance", vertical=True
         )
         self.filter_cutoff_keyfollow = self._create_parameter_slider(
-            AnalogParam.FILTER_CUTOFF_KEYFOLLOW, "Keyfollow", vertical=True
+            AnalogParam.FILTER_CUTOFF_KEYFOLLOW, "KeyFollow", vertical=True
         )
         self.filter_env_velocity_sens = self._create_parameter_slider(
             AnalogParam.FILTER_ENV_VELOCITY_SENSITIVITY,
-            "Env. Velocity Sens.",
+            "Velocity",
             vertical=True,
         )
-        controls_layout = create_hlayout_with_widgets([self.filter_resonance,
+        # Standardized order: FilterWidget first, then Resonance, KeyFollow, Velocity
+        controls_layout = create_hlayout_with_widgets([self.filter_widget,
+                                                       self.filter_resonance,
                                                        self.filter_cutoff_keyfollow,
-                                                       self.filter_widget,
                                                        self.filter_env_velocity_sens])
-
-        controls_group.setLayout(controls_layout)
-        JDXiThemeManager.apply_adsr_style(controls_group, analog=True)
-        return controls_group
+        # Use harmonized helper function (matching Digital Filter pattern)
+        from jdxi_editor.ui.widgets.editor.helper import create_group_adsr_with_hlayout
+        return create_group_adsr_with_hlayout(name="Controls", hlayout=controls_layout, analog=True)
 
     def _create_filter_adsr_env_group(self) -> QGroupBox:
-        """ADSR Widget"""
+        """Create filter ADSR group (harmonized with Digital Filter, includes centered icon)"""
         self.filter_adsr_widget = ADSR(
             attack_param=AnalogParam.FILTER_ENV_ATTACK_TIME,
             decay_param=AnalogParam.FILTER_ENV_DECAY_TIME,
@@ -211,8 +210,9 @@ class AnalogFilterSection(SectionBaseWidget):
             address=self.address,
             analog=True,
         )
-        env_group = QGroupBox("Envelope")
-        env_group.setProperty("adsr", True)
-        env_layout = create_hlayout_with_widgets([self.filter_adsr_widget])
-        env_group.setLayout(env_layout)
-        return env_group
+        # Use standardized envelope group helper (centers icon automatically)
+        return create_envelope_group(
+            name="Envelope",
+            adsr_widget=self.filter_adsr_widget,
+            analog=True
+        )

@@ -99,6 +99,7 @@ class EditorBaseWidget(QWidget):
         self.container_layout: Optional[QVBoxLayout] = None
         self.tab_widget: Optional[QTabWidget] = None
         self.main_layout: Optional[QVBoxLayout] = None
+        self.centered_wrapper: Optional[QWidget] = None  # Wrapper widget with HBoxLayout for centering
 
     def setup_main_layout(self) -> QVBoxLayout:
         """
@@ -124,7 +125,8 @@ class EditorBaseWidget(QWidget):
         Set up the standard scrollable content area.
 
         Creates a scroll area with a container widget and layout, following
-        the common pattern used across all editors.
+        the common pattern used across all editors. The container is wrapped
+        in an HBoxLayout with stretches on both sides for horizontal centering.
 
         :param spacing: Spacing for the container layout
         :param margins: Contents margins (left, top, right, bottom) for container layout
@@ -147,7 +149,17 @@ class EditorBaseWidget(QWidget):
         self.container, self.container_layout = create_scroll_container()
         self.container_layout.setSpacing(spacing)
         self.container_layout.setContentsMargins(*margins)
-        self.scroll_area.setWidget(self.container)
+        
+        # Wrap container in HBoxLayout with stretches for horizontal centering
+        self.centered_wrapper = QWidget()
+        wrapper_layout = QHBoxLayout(self.centered_wrapper)
+        wrapper_layout.setContentsMargins(0, 0, 0, 0)
+        wrapper_layout.setSpacing(0)
+        wrapper_layout.addStretch()  # Left stretch for centering
+        wrapper_layout.addWidget(self.container)  # Container in middle
+        wrapper_layout.addStretch()  # Right stretch for centering
+        
+        self.scroll_area.setWidget(self.centered_wrapper)
 
         return self.scroll_area, self.container, self.container_layout
 

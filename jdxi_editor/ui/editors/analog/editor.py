@@ -191,9 +191,9 @@ class AnalogSynthEditor(SynthEditor):
         JDXiThemeManager.apply_tabs_style(self, analog=True)
         JDXiThemeManager.apply_editor_style(self, analog=True)
 
-        # Use EditorBaseWidget for consistent layout structure
+        # Use EditorBaseWidget for consistent layout structure (harmonized with Digital)
         self.base_widget = EditorBaseWidget(parent=self, analog=True)
-        self.base_widget.setup_scrollable_content()
+        self.base_widget.setup_scrollable_content(spacing=5, margins=(5, 5, 5, 5))
         
         # Add base widget to editor's layout (if editor has a layout)
         if not hasattr(self, 'main_layout') or self.main_layout is None:

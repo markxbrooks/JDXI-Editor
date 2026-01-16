@@ -26,7 +26,7 @@ from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.editor import IconType
-from jdxi_editor.ui.widgets.editor.helper import create_hlayout_with_widgets, create_vlayout_with_hlayout_and_widgets, create_icon_label_with_pixmap
+from jdxi_editor.ui.widgets.editor.helper import create_hlayout_with_widgets, create_envelope_group
 
 
 class AnalogAmpSection(SectionBaseWidget):
@@ -52,10 +52,10 @@ class AnalogAmpSection(SectionBaseWidget):
         self._create_parameter_slider = create_parameter_slider
 
         super().__init__(icon_type=IconType.ADSR, analog=True)
-        self.init_ui()
+        self.setup_ui()
 
-    def init_ui(self):
-        """Initialize UI"""
+    def setup_ui(self):
+        """Setup UI (standardized method name matching Digital Amp)"""
 
         # --- Add Analog Amp Level controls ---
         amp_controls_layout = self._create_analog_amp_level_controls()
@@ -78,39 +78,26 @@ class AnalogAmpSection(SectionBaseWidget):
         self.main_rows_layout.addStretch()
 
     def _create_analog_amp_level_controls(self) -> QHBoxLayout:
-        """Level controls"""
-
+        """Level controls - standardized order: Level, KeyFollow, Velocity"""
         self.amp_level = self._create_parameter_slider(
             AnalogParam.AMP_LEVEL, "Level", vertical=True
         )
         self.amp_level_keyfollow = self._create_parameter_slider(
-            AnalogParam.AMP_LEVEL_KEYFOLLOW, "Keyfollow", vertical=True
+            AnalogParam.AMP_LEVEL_KEYFOLLOW, "KeyFollow", vertical=True
         )
         self.amp_level_velocity_sensitivity = self._create_parameter_slider(
             AnalogParam.AMP_LEVEL_VELOCITY_SENSITIVITY,
-            "Velocity Sensitivity",
+            "Velocity",
             vertical=True,
         )
+        # Standardized order: Level, KeyFollow, Velocity (matching Filter pattern)
         level_controls_row_layout = create_hlayout_with_widgets([self.amp_level,
                                                                  self.amp_level_keyfollow,
                                                                  self.amp_level_velocity_sensitivity])
         return level_controls_row_layout
 
     def _create_analog_amp_adsr_group(self) -> QGroupBox:
-        """Amp Envelope"""
-        env_group = QGroupBox("Envelope")
-        env_group.setProperty("adsr", True)
-
-        # --- ADSR Icon
-        icon_base64 = generate_waveform_icon("adsr", "#FFFFFF", 2.0)
-        pixmap = base64_to_pixmap(icon_base64)
-
-        icon_label = create_icon_label_with_pixmap(pixmap)
-
-        icons_hlayout = create_hlayout_with_widgets([icon_label])
-        amp_env_adsr_vlayout = create_vlayout_with_hlayout_and_widgets(icons_hlayout)
-        env_group.setLayout(amp_env_adsr_vlayout)
-
+        """Amp Envelope - harmonized with Digital Amp, uses standardized helper"""
         # --- ADSR Widget
         self.amp_env_adsr_widget = ADSR(
             attack_param=AnalogParam.AMP_ENV_ATTACK_TIME,
@@ -123,5 +110,9 @@ class AnalogAmpSection(SectionBaseWidget):
             controls=self.controls,
             analog=True
         )
-        amp_env_adsr_vlayout.addWidget(self.amp_env_adsr_widget)
-        return env_group
+        # Use standardized envelope group helper (centers icon automatically)
+        return create_envelope_group(
+            name="Envelope",
+            adsr_widget=self.amp_env_adsr_widget,
+            analog=True
+        )

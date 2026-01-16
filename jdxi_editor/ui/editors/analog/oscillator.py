@@ -60,11 +60,11 @@ class AnalogOscillatorSection(SectionBaseWidget):
         self.analog = True
         
         super().__init__(icon_type=IconType.OSCILLATOR, analog=True)
-        self.init_ui()
+        self.setup_ui()
 
-    def init_ui(self) -> None:
+    def setup_ui(self) -> None:
         """
-        Initialize the UI
+        Setup the UI (standardized method name matching Digital Oscillator)
         :return: None
         """
         layout = self.get_layout(margins=(1, 1, 1, 1))
@@ -77,22 +77,24 @@ class AnalogOscillatorSection(SectionBaseWidget):
         JDXiThemeManager.apply_tabs_style(self.oscillator_tab_widget, analog=True)
         layout.addWidget(self.oscillator_tab_widget)
 
-        # --- Pitch Envelope ---
-        pitch_widget = self._create_pitch_widget()
+        # --- Tuning and Pitch tab (standardized name matching Digital) ---
+        tuning_pitch_widget = self._create_tuning_pitch_widget()
         tuning_icon = IconRegistry.get_icon(IconRegistry.MUSIC_NOTE, color=JDXiStyle.GREY)
-        self.oscillator_tab_widget.addTab(pitch_widget, tuning_icon, "Tuning and Pitch")
+        self.oscillator_tab_widget.addTab(tuning_pitch_widget, tuning_icon, "Tuning and Pitch")
+
+        # --- Pulse Width tab ---
+        pw_group = self._create_pw_group()
+        pw_icon = QIcon(base64_to_pixmap(generate_waveform_icon("square", "#FFFFFF", 1.0)))
+        self.oscillator_tab_widget.addTab(pw_group, pw_icon, "Pulse Width")
+        
         layout.addStretch()
 
-        # --- Pulse Width controls ---
-        pw_icon = QIcon(base64_to_pixmap(generate_waveform_icon("square", "#FFFFFF", 1.0)))
-        self.oscillator_tab_widget.addTab(self.create_pw_group(), pw_icon, "Pulse Width")
-
-    def _create_pitch_widget(self) -> QWidget:
-        """Tuning and pitch controls"""
+    def _create_tuning_pitch_widget(self) -> QWidget:
+        """Create tuning and pitch widget combining Tuning and Pitch Envelope (standardized name matching Digital)"""
         pitch_layout = QHBoxLayout()
         pitch_layout.addStretch()
-        pitch_layout.addWidget(self.create_tuning_group())
-        pitch_layout.addWidget(self.create_pitch_env_group())
+        pitch_layout.addWidget(self._create_tuning_group())
+        pitch_layout.addWidget(self._create_pitch_env_group())
         pitch_layout.addStretch()
         pitch_widget = QWidget()
         pitch_widget.setLayout(pitch_layout)
@@ -143,9 +145,9 @@ class AnalogOscillatorSection(SectionBaseWidget):
         wave_layout.addStretch()
         return wave_layout
 
-    def create_tuning_group(self) -> QGroupBox:
+    def _create_tuning_group(self) -> QGroupBox:
         """
-        Create the tuning group
+        Create the tuning group (standardized private method matching Digital)
 
         :return: QGroupBox
         """
@@ -167,9 +169,9 @@ class AnalogOscillatorSection(SectionBaseWidget):
 
         return tuning_group
 
-    def create_pw_group(self) -> QGroupBox:
+    def _create_pw_group(self) -> QGroupBox:
         """
-        Create the pulse width group
+        Create the pulse width group (standardized private method matching Digital)
 
         :return: QGroupBox
         """
@@ -195,9 +197,9 @@ class AnalogOscillatorSection(SectionBaseWidget):
 
         return pw_group
 
-    def create_pitch_env_group(self) -> QGroupBox:
+    def _create_pitch_env_group(self) -> QGroupBox:
         """
-        Create the pitch envelope group
+        Create the pitch envelope group (standardized private method matching Digital)
 
         :return: QGroupBox
         """

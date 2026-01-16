@@ -43,13 +43,13 @@ class AnalogLFOSection(SectionBaseWidget):
         self.lfo_shape_buttons = lfo_shape_buttons
         
         super().__init__(icon_type=IconType.ADSR, analog=True)
-        self._init_ui()
+        self.setup_ui()
 
     # ------------------------------------------------------------------
     # UI Construction
     # ------------------------------------------------------------------
-    def _init_ui(self):
-        """Initialize the UI with tabbed organization"""
+    def setup_ui(self):
+        """Setup the UI with tabbed organization (standardized method name matching Digital LFO)"""
         main_rows_vlayout = self.get_layout()
 
         # Shape row (centered)
@@ -239,10 +239,10 @@ class AnalogLFOSectionOld(QWidget):
         self._on_lfo_shape_changed = on_lfo_shape_changed
         self.lfo_shape_buttons = lfo_shape_buttons
         JDXiThemeManager.apply_adsr_style(self, analog=True)
-        self._init_ui()
+        self.setup_ui()
 
-    def _init_ui(self):
-        """Initialize the UI"""
+    def setup_ui(self):
+        """Setup the UI (standardized method name matching Digital LFO)"""
         main_rows_vlayout = QVBoxLayout()
         self.setLayout(main_rows_vlayout)
 

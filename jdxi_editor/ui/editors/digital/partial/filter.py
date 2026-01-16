@@ -26,7 +26,7 @@ from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 from jdxi_editor.ui.widgets.editor.helper import create_hlayout_with_widgets, \
-    create_group_adsr_with_hlayout, create_centered_adsr_icon_label
+    create_group_adsr_with_hlayout, create_centered_adsr_icon_layout, create_envelope_group
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.filter.filter import FilterWidget
@@ -178,15 +178,7 @@ class DigitalFilterSection(SectionBaseWidget):
         return controls_group
 
     def _create_filter_adsr_env_group(self) -> QGroupBox:
-        """Create filter ADSR group"""
-        env_group = QGroupBox("Envelope")
-        env_group.setProperty("adsr", True)
-        env_layout = QVBoxLayout()
-        env_group.setLayout(env_layout)
-
-        icon_label = create_centered_adsr_icon_label()
-        env_layout.addWidget(icon_label)
-
+        """Create filter ADSR group (harmonized with Analog Filter)"""
         # --- ADSR Widget ---
         (
             group_address,
@@ -205,8 +197,12 @@ class DigitalFilterSection(SectionBaseWidget):
             controls=self.controls,
             address=self.address,
         )
-        env_layout.addWidget(self.filter_adsr_widget)
-        return env_group
+        # Use standardized envelope group helper (centers icon automatically)
+        return create_envelope_group(
+            name="Envelope",
+            adsr_widget=self.filter_adsr_widget,
+            analog=False
+        )
 
     def _on_filter_mode_selected(self, filter_mode: DigitalFilterMode):
         """
