@@ -24,7 +24,7 @@ def create_hlayout_with_widgets(widget_list: list) -> QHBoxLayout:
 
 
 def create_vlayout_with_hlayouts(inner_layouts: list, vertical=True) -> QVBoxLayout:
-    """create vbox layout with widgets"""
+    """create layout with widgets"""
     layout = create_layout(vertical=vertical)
     for inner_layout in inner_layouts:
         layout.addLayout(inner_layout)
