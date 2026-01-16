@@ -31,14 +31,18 @@ def create_vlayout_with_hlayouts(inner_layouts: list) -> QVBoxLayout:
     vlayout.addStretch()
     return vlayout
 
+def create_layout(vertical: bool = True) -> QLayout:
+    """create Group and a layout"""
+    layout = QVBoxLayout() if vertical else QHBoxLayout()
+    return layout
 
 def create_group_with_layout(group_name: str = None, inner_layout: QLayout = None, vertical: bool = True) -> tuple(QGroupBox, QLayout):
     """create Group and a layout"""
     group = QGroupBox(group_name) if group_name is not None else QGroupBox()
     if inner_layout is None:
-        inner_layout = QVBoxLayout() if vertical else QHBoxLayout()
+        inner_layout = create_layout(vertical=True)
     group.setLayout(inner_layout)
-    return group, layout
+    return group, inner_layout
     
 
 def create_vlayout_with_hlayout_and_widgets(inner_layout: QHBoxLayout, widgets: list = None) -> QVBoxLayout:
