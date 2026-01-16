@@ -23,12 +23,12 @@ def create_hlayout_with_widgets(widget_list: list) -> QHBoxLayout:
     return row
 
 
-def create_vlayout_with_hlayouts(inner_layouts: list) -> QVBoxLayout:
+def create_vlayout_with_hlayouts(inner_layouts: list, vertical=True) -> QVBoxLayout:
     """create vbox layout with widgets"""
-    vlayout = QVBoxLayout()
+    layout = create_layout(vertical=vertical)
     for inner_layout in inner_layouts:
-        vlayout.addLayout(inner_layout)
-    vlayout.addStretch()
+        layout.addLayout(inner_layout)
+    layout.addStretch()
     return vlayout
 
 
