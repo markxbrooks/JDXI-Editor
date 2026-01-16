@@ -32,6 +32,13 @@ def create_vlayout_with_hlayouts(inner_layouts: list) -> QVBoxLayout:
     return vlayout
 
 
+def create_group_with_hlayout(name: str) -> QGroupBox:
+    """create Group and an hlayout"""
+    controls_group = QGroupBox(name)
+    hlayout = QHBoxLayout()
+    controls_group.setLayout(hlayout)
+    
+
 def create_vlayout_with_hlayout_and_widgets(inner_layout: QHBoxLayout, widgets: list = None) -> QVBoxLayout:
     """create vbox layout with horizontal layout and widgets below it"""
     vlayout = QVBoxLayout()
