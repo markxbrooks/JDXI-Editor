@@ -5,7 +5,7 @@ Helpers to create HBox and VBoxes
 import qtawesome as qta
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
-from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout, QLabel, QGroupBox, QPushButton, QWidget
+from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout, QLabel, QGroupBox, QLayout, QPushButton, QWidget
 
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.ui.image.utils import base64_to_pixmap
