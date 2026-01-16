@@ -88,7 +88,6 @@ class JDXiStyle:
     """Central style definitions for JD-Xi Manager"""
 
     # Colors
-
     WHITE = "#FFFFFF"
     TRACK_LABEL_WIDTH = 70
     TRACK_BUTTON_WIDTH = 20
@@ -317,6 +316,76 @@ class JDXiStyle:
                 font-size: 18px;
                 color: {ACCENT_ANALOG};
                 letter-spacing: 1px;
+            """
+
+    DATABASE_TABLE_STYLE = """
+                QTableWidget {
+                    background-color: #1a1a1a;
+                    border: 1px solid #333333;
+                    border-radius: 8px;
+                    gridline-color: #2a2a2a;
+                    color: #ffffff;
+                    selection-background-color: #3a3a3a;
+                    selection-color: #ffffff;
+                }
+
+                QTableWidget::item {
+                    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                        stop:0 #2a2a2a,
+                        stop:0.5 #252525,
+                        stop:1 #1f1f1f);
+                    border: 1px solid #1a1a1a;
+                    border-radius: 4px;
+                    padding: 4px;
+                    color: #ffffff;
+                }
+
+                QTableWidget::item:selected {
+                    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                        stop:0 #3a3a3a,
+                        stop:0.5 #353535,
+                        stop:1 #2f2f2f);
+                    border: 1px solid #4a4a4a;
+                }
+
+                QTableWidget::item:hover {
+                    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                        stop:0 #323232,
+                        stop:0.5 #2d2d2d,
+                        stop:1 #282828);
+                    border: 1px solid #3a3a3a;
+                }
+
+                QTableWidget::item:focus {
+                    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                        stop:0 #3a3a3a,
+                        stop:0.5 #353535,
+                        stop:1 #2f2f2f);
+                    border: 1px solid #ff2200;
+                }
+
+                QHeaderView::section {
+                    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                        stop:0 #2a2a2a,
+                        stop:1 #1f1f1f);
+                    color: #ffffff;
+                    padding: 6px;
+                    border: 1px solid #1a1a1a;
+                    border-radius: 4px;
+                    font-weight: bold;
+                }
+
+                QHeaderView::section:hover {
+                    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                        stop:0 #323232,
+                        stop:1 #272727);
+                }
+
+                QTableCornerButton::section {
+                    background-color: #1a1a1a;
+                    border: 1px solid #333333;
+                    border-radius: 8px 0 0 0;
+                }
             """
 
     DIGITAL_SECTION_HEADER = f"""

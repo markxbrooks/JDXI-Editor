@@ -70,7 +70,7 @@ from jdxi_editor.ui.editors.helpers.program import (
     get_program_by_id,
 )
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
-from jdxi_editor.ui.widgets.editor.helper import create_hlayout_with_widgets
+from jdxi_editor.ui.widgets.editor.helper import create_hlayout_with_widgets, create_group_with_layout
 
 
 class PresetEditor(BasicEditor):
@@ -282,10 +282,9 @@ class PresetEditor(BasicEditor):
 
         :return: QGroupBox
         """
-        # Program controls group
-        preset_group = QGroupBox("Load a program")
-        preset_vlayout = QVBoxLayout()
-        preset_group.setLayout(preset_vlayout)
+        # --- Program controls group
+        preset_group, preset_vlayout = create_group_with_layout(group_name="Load a program",
+                                                                vertical=True)
         # Synth type selection combo box
         self.digital_preset_type_combo = QComboBox()
         self.digital_preset_type_combo.addItems(

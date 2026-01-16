@@ -40,6 +40,7 @@ Dependencies:
 from typing import Dict, Optional
 
 from decologr import Decologr as log
+from jdxi_editor.ui.widgets.editor.helper import create_group_with_layout
 from picomidi.constant import Midi
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import QSize, Qt, QTimer, Signal
@@ -825,7 +826,7 @@ class ProgramEditor(BasicEditor):
 
     def _init_synth_data(
         self,
-        synth_type: JDXiSynth = JDXiSynth.DIGITAL_SYNTH_1,
+        synth_type: str = JDXiSynth.DIGITAL_SYNTH_1,
         partial_number: Optional[int] = 0,
     ) -> None:
         """
@@ -910,18 +911,23 @@ class ProgramEditor(BasicEditor):
             )
         )
         self.analog_synth_title = QLabel("Analog Synth")
-        JDXiThemeManager.apply_mixer_label(self.analog_synth_title, analog=True)
+        JDXiThemeManager.apply_mixer_label(self.analog_synth_title,
+                                           analog=True)
         self.analog_synth_current_label = QLabel("Current Synth:")
-        JDXiThemeManager.apply_mixer_label(self.analog_synth_current_label, analog=True)
+        JDXiThemeManager.apply_mixer_label(self.analog_synth_current_label,
+                                           analog=True)
 
-        # Mixer controls group
-        mixer_group = QGroupBox("Mixer Level Settings")
-        self.title_right_vlayout.addWidget(mixer_group)
-        # self.title_right_vlayout.addStretch()
+        # --- Mixer controls group
         mixer_layout = QGridLayout()
-        mixer_group.setLayout(mixer_layout)
+        mixer_group, _ = create_group_with_layout(group_name="Mixer Level Settings",
+                                                  inner_layout=mixer_layout)
+        self.title_right_vlayout.addWidget(mixer_group)
+        self.create_mixer_sliders()
+        self.populate_mixer_group(mixer_group, mixer_layout)
+        return mixer_section
 
-        # Sliders
+    def create_mixer_sliders(self):
+        """Create Mixer Sliders"""
         program_common_address = ProgramCommonAddress()
         self.address = program_common_address
         self.master_level_slider = self._create_parameter_slider(
@@ -953,7 +959,9 @@ class ProgramEditor(BasicEditor):
         )
         self.controls[AnalogParam.AMP_LEVEL] = self.analog_level_slider
         self.address = program_common_address
-        # Mixer layout population
+
+    def populate_mixer_group(self, mixer_group: QGroupBox, mixer_layout: QGridLayout):
+        """Mixer layout population"""
         mixer_layout.setColumnStretch(0, 1)
         mixer_layout.addWidget(self.master_level_slider, 0, 1)
         mixer_layout.addWidget(self.digital1_level_slider, 0, 2)
@@ -976,8 +984,6 @@ class ProgramEditor(BasicEditor):
 
         JDXiThemeManager.apply_adsr_style(mixer_group)
         JDXiThemeManager.apply_adsr_style(self.analog_level_slider, analog=True)
-
-        return mixer_section
 
     def update_tone_name_for_synth(self, tone_name: str, synth_type: str) -> None:
         """
@@ -1039,17 +1045,17 @@ class ProgramEditor(BasicEditor):
         if not self.preset_helper:
             return
         
-        # Get all programs (ROM + user from database)
+        # --- Get all programs (ROM + user from database)
         all_programs = JDXiProgramList.list_rom_and_user_programs()
         self._program_list_data = all_programs
         
-        # Build program options, values, and filter data
+        # --- Build program options, values, and filter data
         program_options = []
         program_values = []
         program_genres = set()
         program_banks = set()
         
-        # Process ROM programs
+        # --- Process ROM programs
         for program in all_programs:
             if program.id and len(program.id) >= 1:
                 bank = program.id[0]
@@ -1059,7 +1065,7 @@ class ProgramEditor(BasicEditor):
                 program_options.append(f"{program.id} - {program.name}")
                 program_values.append(len(program_options) - 1)  # Use index as value
         
-        # Add user bank placeholders (E, F, G, H) - these will be handled dynamically
+        # --- Add user bank placeholders (E, F, G, H) - these will be handled dynamically
         # but we need to ensure they're in the banks list
         program_banks.update(["E", "F", "G", "H"])
         
@@ -1068,7 +1074,7 @@ class ProgramEditor(BasicEditor):
             """Check if a program matches a bank."""
             if not bank:
                 return True
-            # Extract bank from display string (format: "A01 - Program Name")
+            # --- Extract bank from display string (format: "A01 - Program Name")
             if " - " in program_display:
                 program_id = program_display.split(" - ")[0]
             else:
@@ -1077,35 +1083,35 @@ class ProgramEditor(BasicEditor):
                 return program_id[0].upper() == bank.upper()
             return False
         
-        # Genre filter function for programs
+        # --- Genre filter function for programs
         def program_genre_filter(program_display: str, genre: str) -> bool:
             """Check if a program matches a genre."""
             if not genre:
                 return True
-            # Find the program in the list and check its genre
-            # Extract program ID from display string
+            # --- Find the program in the list and check its genre
+            # --- Extract program ID from display string
             if " - " in program_display:
                 program_id = program_display.split(" - ")[0]
             else:
                 program_id = program_display.split()[0] if program_display.split() else ""
             
-            # Find program in list
+            # ---Find program in list
             for program in self._program_list_data:
                 if program.id == program_id:
                     return program.genre == genre if program.genre else False
             return False
         
-        # Update the combo box by recreating it (since SearchableFilterableComboBox doesn't have update methods)
-        # Get parent widget and layout
+        # --- Update the combo box by recreating it (since SearchableFilterableComboBox doesn't have update methods)
+        # --- Get parent widget and layout
         program_widget = self.edit_program_name_button.parent()
         program_vlayout = program_widget.layout() if program_widget else None
         
         if program_vlayout:
-            # Remove old combo box from layout
+            # --- Remove old combo box from layout
             program_vlayout.removeWidget(self.program_number_combo_box)
             self.program_number_combo_box.deleteLater()
             
-            # Create new combo box with updated data
+            # ---Create new combo box with updated data
             self.program_number_combo_box = SearchableFilterableComboBox(
                 label="Program",
                 options=program_options,
@@ -1123,7 +1129,7 @@ class ProgramEditor(BasicEditor):
                 bank_label="Bank:",
             )
             
-            # Insert after edit_program_name_button
+            # --- Insert after edit_program_name_button
             index = program_vlayout.indexOf(self.edit_program_name_button)
             program_vlayout.insertWidget(index + 1, self.program_number_combo_box)
     
@@ -1135,7 +1141,7 @@ class ProgramEditor(BasicEditor):
         if not self.preset_helper:
             return
         
-        # Update the combo box with current program data
+        # --- Update the combo box with current program data
         self._update_program_combo_box()
 
     def add_user_banks(
@@ -1149,20 +1155,18 @@ class ProgramEditor(BasicEditor):
         :param bank: str
         """
         from jdxi_editor.midi.data.programs.database import get_database
-        from jdxi_editor.ui.editors.helpers.program import get_program_by_id
-
         user_banks = ["E", "F", "G", "H"]
-        # Create sets for quick lookup
+        # --- Create sets for quick lookup
         existing_program_ids_in_filtered = {program.id for program in filtered_list}
-        # Also check what's already in the combo box to avoid duplicates
+        # --- Also check what's already in the combo box to avoid duplicates
         existing_combo_items = {
             self.program_number_combo_box.itemText(i)[
                 :3
-            ]  # Extract program ID (e.g., "E01")
+            ]  # --- Extract program ID (e.g., "E01")
             for i in range(self.program_number_combo_box.count())
         }
 
-        # Get database instance for direct queries
+        # --- Get database instance for direct queries
         db = get_database()
 
         for user_bank in user_banks:
@@ -1170,22 +1174,22 @@ class ProgramEditor(BasicEditor):
                 for i in range(1, 65):
                     program_id = f"{user_bank}{i:02}"
 
-                    # Skip if already in combo box (avoid duplicates)
+                    # --- Skip if already in combo box (avoid duplicates)
                     if program_id in existing_combo_items:
                         continue
 
-                    # Check if program exists in filtered_list (already added)
+                    # --- Check if program exists in filtered_list (already added)
                     if program_id in existing_program_ids_in_filtered:
                         continue
 
-                    # Check database directly using SQLite
-                    # Only add programs that exist in the database (single source of truth)
+                    # --- Check database directly using SQLite
+                    # --- Only add programs that exist in the database (single source of truth)
                     existing_program = db.get_program_by_id(program_id)
                     if not existing_program:
-                        # If program doesn't exist in database, skip it (no placeholders)
+                        # --- If program doesn't exist in database, skip it (no placeholders)
                         continue
 
-                    # Program exists in database, add it with real name
+                    # --- Program exists in database, add it with real name
                     program_name = existing_program.name
                     if search_text and search_text.lower() not in program_name.lower():
                         continue
@@ -1206,11 +1210,11 @@ class ProgramEditor(BasicEditor):
         layout = QVBoxLayout(widget)
         log.message("✅ Created widget and layout")
 
-        # Add icon row at the top
+        # --- Add icon row at the top
         icon_row = IconRegistry.create_generic_musical_icon_row()
         layout.addLayout(icon_row)
 
-        # Search box
+        # --- Search box
         search_layout = QHBoxLayout()
         search_label = QLabel("Search:")
         self.user_programs_search_box = QLineEdit()
@@ -1224,7 +1228,7 @@ class ProgramEditor(BasicEditor):
         search_layout.addWidget(self.user_programs_search_box)
         layout.addLayout(search_layout)
 
-        # Create table
+        # --- Create table
         self.user_programs_table = QTableWidget()
         self.user_programs_table.setColumnCount(12)
         self.user_programs_table.setHorizontalHeaderLabels(
@@ -1244,13 +1248,13 @@ class ProgramEditor(BasicEditor):
             ]
         )
 
-        # Apply custom styling
+        # --- Apply custom styling
         self.user_programs_table.setStyleSheet(self._get_table_style())
 
-        # Enable sorting
+        # --- Enable sorting
         self.user_programs_table.setSortingEnabled(True)
 
-        # Set column widths
+        # ---Set column widths
         header = self.user_programs_table.horizontalHeader()
         header.setSectionResizeMode(0, QHeaderView.ResizeMode.ResizeToContents)  # ID
         header.setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)  # Name
@@ -1328,75 +1332,7 @@ class ProgramEditor(BasicEditor):
 
         :return: str CSS style string
         """
-        return """
-            QTableWidget {
-                background-color: #1a1a1a;
-                border: 1px solid #333333;
-                border-radius: 8px;
-                gridline-color: #2a2a2a;
-                color: #ffffff;
-                selection-background-color: #3a3a3a;
-                selection-color: #ffffff;
-            }
-            
-            QTableWidget::item {
-                background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                    stop:0 #2a2a2a,
-                    stop:0.5 #252525,
-                    stop:1 #1f1f1f);
-                border: 1px solid #1a1a1a;
-                border-radius: 4px;
-                padding: 4px;
-                color: #ffffff;
-            }
-            
-            QTableWidget::item:selected {
-                background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                    stop:0 #3a3a3a,
-                    stop:0.5 #353535,
-                    stop:1 #2f2f2f);
-                border: 1px solid #4a4a4a;
-            }
-            
-            QTableWidget::item:hover {
-                background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                    stop:0 #323232,
-                    stop:0.5 #2d2d2d,
-                    stop:1 #282828);
-                border: 1px solid #3a3a3a;
-            }
-            
-            QTableWidget::item:focus {
-                background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                    stop:0 #3a3a3a,
-                    stop:0.5 #353535,
-                    stop:1 #2f2f2f);
-                border: 1px solid #ff2200;
-            }
-            
-            QHeaderView::section {
-                background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                    stop:0 #2a2a2a,
-                    stop:1 #1f1f1f);
-                color: #ffffff;
-                padding: 6px;
-                border: 1px solid #1a1a1a;
-                border-radius: 4px;
-                font-weight: bold;
-            }
-            
-            QHeaderView::section:hover {
-                background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                    stop:0 #323232,
-                    stop:1 #272727);
-            }
-            
-            QTableCornerButton::section {
-                background-color: #1a1a1a;
-                border: 1px solid #333333;
-                border-radius: 8px 0 0 0;
-            }
-        """
+        return JDXiStyle.DATABASE_TABLE_STYLE
 
     def _populate_user_programs_table(self, search_text: str = "") -> None:
         """
@@ -1411,7 +1347,7 @@ class ProgramEditor(BasicEditor):
         try:
             from jdxi_editor.midi.data.programs.database import get_database
 
-            # Get all user programs from database
+            # --- Get all user programs from database
             db = get_database()
             all_programs = db.get_all_programs()
         except Exception as e:
@@ -1435,7 +1371,7 @@ class ProgramEditor(BasicEditor):
                 )
             ]
 
-        # Clear table
+        # --- Clear table
         try:
             self.user_programs_table.setRowCount(0)
         except Exception as e:
@@ -1514,7 +1450,7 @@ class ProgramEditor(BasicEditor):
         saved_count = 0
         error_count = 0
 
-        # Iterate through all rows in the table
+        # --- Iterate through all rows in the table
         for row in range(self.user_programs_table.rowCount()):
             # Get the program object from the first column's user data
             id_item = self.user_programs_table.item(row, 0)
@@ -1597,11 +1533,11 @@ class ProgramEditor(BasicEditor):
         layout = QVBoxLayout(widget)
         log.message("✅ Created playlist widget and layout")
 
-        # Add icon row at the top
+        # --- Add icon row at the top
         icon_row = IconRegistry.create_generic_musical_icon_row()
         layout.addLayout(icon_row)
 
-        # Button layout for create/delete actions
+        # --- Button layout for create/delete actions
         button_layout = QHBoxLayout()
         self.create_playlist_button = QPushButton(
             IconRegistry.get_icon(IconRegistry.PLUS_CIRCLE, color=JDXiStyle.FOREGROUND), "New Playlist"
@@ -1633,13 +1569,13 @@ class ProgramEditor(BasicEditor):
             ["ID", "Name", "Description", "Programs"]
         )
 
-        # Apply custom styling
+        # --- Apply custom styling
         self.playlist_table.setStyleSheet(self._get_table_style())
 
-        # Enable sorting
+        # --- Enable sorting
         self.playlist_table.setSortingEnabled(True)
 
-        # Set column widths
+        # --- Set column widths
         header = self.playlist_table.horizontalHeader()
         header.setSectionResizeMode(0, QHeaderView.ResizeMode.ResizeToContents)  # ID
         header.setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)  # Name
@@ -1648,19 +1584,19 @@ class ProgramEditor(BasicEditor):
             3, QHeaderView.ResizeMode.ResizeToContents
         )  # Programs
 
-        # Make Name and Description columns editable
+        # --- Make Name and Description columns editable
         # (We'll handle this in the populate method)
 
-        # Connect item changed to save edits
+        # --- Connect item changed to save edits
         self.playlist_table.itemChanged.connect(self._on_playlist_item_changed)
 
-        # Connect double-click to edit playlist
+        # --- Connect double-click to edit playlist
         self.playlist_table.itemDoubleClicked.connect(self._on_playlist_selected)
 
         layout.addWidget(self.playlist_table)
         log.message("✅ Added playlist table to layout")
 
-        # Populate table (with error handling)
+        # --- Populate table (with error handling)
         try:
             log.message("🔨 Calling _populate_playlist_table()...")
             self._populate_playlist_table()
@@ -1685,7 +1621,7 @@ class ProgramEditor(BasicEditor):
         try:
             from jdxi_editor.midi.data.programs.database import get_database
 
-            # Get all playlists from database
+            # --- Get all playlists from database
             db = get_database()
             all_playlists = db.get_all_playlists()
         except Exception as e:
@@ -1695,53 +1631,53 @@ class ProgramEditor(BasicEditor):
             log.error(traceback.format_exc())
             all_playlists = []
 
-        # Disable sorting while populating to prevent data misalignment
+        # --- Disable sorting while populating to prevent data misalignment
         was_sorting_enabled = self.playlist_table.isSortingEnabled()
         self.playlist_table.setSortingEnabled(False)
 
         try:
-            # Clear table
+            # --- Clear table
             self.playlist_table.setRowCount(0)
 
-            # Populate table
+            # ---Populate table
             for playlist in all_playlists:
                 row = self.playlist_table.rowCount()
                 self.playlist_table.insertRow(row)
 
-                # Create items
+                # --- Create items
                 id_item = QTableWidgetItem(str(playlist["id"]))
                 id_item.setFlags(
                     id_item.flags() & ~Qt.ItemFlag.ItemIsEditable
-                )  # ID not editable
-                # Set data role for proper sorting (as integer)
+                )  # --- ID not editable
+                # --- Set data role for proper sorting (as integer)
                 id_item.setData(Qt.ItemDataRole.DisplayRole, playlist["id"])
                 id_item.setData(Qt.ItemDataRole.UserRole, playlist)
                 self.playlist_table.setItem(row, 0, id_item)
 
-                # Name column - editable
+                # --- Name column - editable
                 name_item = QTableWidgetItem(playlist["name"] or "")
                 name_item.setFlags(name_item.flags() | Qt.ItemFlag.ItemIsEditable)
                 name_item.setData(Qt.ItemDataRole.UserRole, playlist)
                 self.playlist_table.setItem(row, 1, name_item)
 
-                # Description column - editable
+                # --- Description column - editable
                 desc_item = QTableWidgetItem(playlist["description"] or "")
                 desc_item.setFlags(desc_item.flags() | Qt.ItemFlag.ItemIsEditable)
                 desc_item.setData(Qt.ItemDataRole.UserRole, playlist)
                 self.playlist_table.setItem(row, 2, desc_item)
 
-                # Program count
+                # --- Program count
                 program_count = playlist.get("program_count", 0)
                 count_item = QTableWidgetItem(str(program_count))
                 count_item.setFlags(
                     count_item.flags() & ~Qt.ItemFlag.ItemIsEditable
-                )  # Not editable
-                # Set data role for proper sorting (as integer)
+                )  # --- Not editable
+                # --- Set data role for proper sorting (as integer)
                 count_item.setData(Qt.ItemDataRole.DisplayRole, program_count)
                 count_item.setData(Qt.ItemDataRole.UserRole, playlist)
                 self.playlist_table.setItem(row, 3, count_item)
         finally:
-            # Re-enable sorting if it was enabled before
+            # --- Re-enable sorting if it was enabled before
             self.playlist_table.setSortingEnabled(was_sorting_enabled)
 
         log.message(f"✅ Populated playlist table with {len(all_playlists)} playlists")
@@ -1760,7 +1696,7 @@ class ProgramEditor(BasicEditor):
             if playlist_id:
                 log.message(f"✅ Created playlist: {name}")
                 self._populate_playlist_table()
-                # Refresh playlist editor combo if it exists
+                # --- Refresh playlist editor combo if it exists
                 if hasattr(self, "playlist_editor_combo"):
                     self._populate_playlist_editor_combo()
             else:
@@ -1816,10 +1752,10 @@ class ProgramEditor(BasicEditor):
             if db.delete_playlist(playlist_id):
                 log.message(f"✅ Deleted playlist: {playlist_name}")
                 self._populate_playlist_table()
-                # Refresh playlist editor combo if it exists
+                # --- Refresh playlist editor combo if it exists
                 if hasattr(self, "playlist_editor_combo"):
                     self._populate_playlist_editor_combo()
-                    # Clear the programs table if the deleted playlist was selected
+                    # --- Clear the programs table if the deleted playlist was selected
                     if self.playlist_editor_combo.currentData() == playlist_id:
                         self.playlist_programs_table.setRowCount(0)
             else:
@@ -1837,11 +1773,11 @@ class ProgramEditor(BasicEditor):
         row = item.row()
         col = item.column()
 
-        # Only handle name (col 1) and description (col 2) changes
+        # --- Only handle name (col 1) and description (col 2) changes
         if col not in [1, 2]:
             return
 
-        # Get playlist data
+        # --- Get playlist data
         playlist = item.data(Qt.ItemDataRole.UserRole)
         if not playlist:
             return
@@ -1853,13 +1789,13 @@ class ProgramEditor(BasicEditor):
 
         db = get_database()
 
-        if col == 1:  # Name column
+        if col == 1:  # --- Name column
             if db.update_playlist(playlist_id, name=new_value):
                 try:
                     log.message(
                         f"✅ Updated playlist {playlist_id} name to: {new_value}"
                     )
-                    # Update stored playlist data
+                    # --- Update stored playlist data
                     playlist["name"] = new_value
                     for c in range(4):
                         table_item = self.playlist_table.item(row, c)
@@ -1869,11 +1805,11 @@ class ProgramEditor(BasicEditor):
                     log.error(f"Error {ex} occurred updating playlist")
             else:
                 log.error(f"❌ Failed to update playlist {playlist_id} name")
-                # Revert the change
+                # --- Revert the change
                 self.playlist_table.blockSignals(True)
                 item.setText(playlist.get("name", ""))
                 self.playlist_table.blockSignals(False)
-        elif col == 2:  # Description column
+        elif col == 2:  # --- Description column
             value = new_value or ""  # never pass None
             if db.update_playlist(playlist_id, description=value):
                 log.message(f"Updated playlist {playlist_id} description")

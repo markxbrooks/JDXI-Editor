@@ -4,8 +4,8 @@ Helpers to create HBox and VBoxes
 
 import qtawesome as qta
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QPixmap
-from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout, QLabel, QGroupBox, QLayout, QPushButton, QWidget
+from PySide6.QtGui import QPixmap, QIcon
+from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout, QLabel, QGroupBox, QLayout, QPushButton, QWidget, QGridLayout
 
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.ui.image.utils import base64_to_pixmap
@@ -13,7 +13,8 @@ from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
-def create_hlayout_with_widgets(widget_list: list, vertical: bool=False) -> QHBoxLayout:
+def create_hlayout_with_widgets(widget_list: list,
+                                vertical: bool = False) -> QHBoxLayout:
     """create a row from a list of widgets (centered with stretches)"""
     layout = create_layout(vertical=vertical)
     layout.addStretch()
@@ -23,7 +24,8 @@ def create_hlayout_with_widgets(widget_list: list, vertical: bool=False) -> QHBo
     return layout
 
 
-def create_vlayout_with_hlayouts(inner_layouts: list, vertical=True) -> QVBoxLayout:
+def create_layout_with_inner_layouts(inner_layouts: list,
+                                     vertical: bool = True) -> QVBoxLayout:
     """create layout with a list of inner layouts"""
     layout = create_layout(vertical=vertical)
     for inner_layout in inner_layouts:
@@ -32,13 +34,15 @@ def create_vlayout_with_hlayouts(inner_layouts: list, vertical=True) -> QVBoxLay
     return layout
 
 
-def create_layout(vertical: bool = True) -> QLayout:
+def create_layout(vertical: bool = True) -> QVBoxLayout | QHBoxLayout:
     """create Group and a layout"""
     layout = QVBoxLayout() if vertical else QHBoxLayout()
     return layout
 
 
-def create_group_with_layout(group_name: str = None, inner_layout: QLayout = None, vertical: bool = True) -> tuple(QGroupBox, QLayout):
+def create_group_with_layout(group_name: str = None,
+                             inner_layout: QHBoxLayout | QVBoxLayout | QGridLayout = None,
+                             vertical: bool = True) -> tuple[QGroupBox, QLayout]:
     """create Group and a layout"""
     group = QGroupBox(group_name) if group_name is not None else QGroupBox()
     if inner_layout is None:
@@ -47,7 +51,9 @@ def create_group_with_layout(group_name: str = None, inner_layout: QLayout = Non
     return group, inner_layout
     
 
-def create_vlayout_with_hlayout_and_widgets(inner_layout: QLayout, widgets: list = None, vertical: bool = True) -> QVBoxLayout:
+def create_vlayout_with_hlayout_and_widgets(inner_layout: QHBoxLayout | QVBoxLayout,
+                                            widgets: list = None,
+                                            vertical: bool = True) -> QVBoxLayout:
     """create vbox layout with horizontal layout and widgets below it"""
     layout = create_layout(vertical=vertical)
     layout.addLayout(inner_layout)
@@ -87,6 +93,7 @@ def create_adsr_icon_pixmap() -> QPixmap:
     """Generate the ADSR waveform pixmap"""
     icon_base64 = generate_waveform_icon(waveform="adsr", foreground_color=JDXiStyle.WHITE, icon_scale=2.0)
     pixmap = base64_to_pixmap(icon_base64)
+    return pixmap
     
 
 def create_adsr_icon_label() -> QLabel:
