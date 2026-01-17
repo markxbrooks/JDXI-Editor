@@ -195,3 +195,4 @@ class DrumPartialEditor(PartialEditor):
         tab_tva_layout.addStretch()
 
         main_layout.addWidget(scroll_area)
+        scroll_area.setMinimumHeight(1200)

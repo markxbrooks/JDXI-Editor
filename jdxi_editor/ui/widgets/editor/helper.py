@@ -5,7 +5,8 @@ Helpers to create HBox and VBoxes
 import qtawesome as qta
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap, QIcon
-from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout, QLabel, QGroupBox, QLayout, QPushButton, QWidget, QGridLayout
+from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout, QLabel, QGroupBox, QLayout, QPushButton, QWidget, QGridLayout, \
+    QFormLayout, QScrollArea, QSizePolicy
 
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.ui.image.utils import base64_to_pixmap
@@ -13,8 +14,8 @@ from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
-def create_hlayout_with_widgets(widget_list: list,
-                                vertical: bool = False) -> QHBoxLayout:
+def create_layout_with_widgets(widget_list: list,
+                               vertical: bool = False) -> QHBoxLayout:
     """create a row from a list of widgets (centered with stretches)"""
     layout = create_layout(vertical=vertical)
     layout.addStretch()
@@ -41,13 +42,16 @@ def create_layout(vertical: bool = True) -> QVBoxLayout | QHBoxLayout:
 
 
 def create_group_with_layout(group_name: str = None,
-                             inner_layout: QHBoxLayout | QVBoxLayout | QGridLayout = None,
-                             vertical: bool = True) -> tuple[QGroupBox, QLayout]:
+                             inner_layout: QHBoxLayout | QVBoxLayout | QGridLayout | QFormLayout = None,
+                             vertical: bool = True,
+                             style_sheet: str = None) -> tuple[QGroupBox, QLayout]:
     """create Group and a layout"""
     group = QGroupBox(group_name) if group_name is not None else QGroupBox()
     if inner_layout is None:
         inner_layout = create_layout(vertical=vertical)
     group.setLayout(inner_layout)
+    if style_sheet is not None:
+        group.setStyleSheet(style_sheet)
     return group, inner_layout
     
 
@@ -110,7 +114,7 @@ def create_adsr_icon() -> QIcon:
 def create_centered_adsr_icon_layout() -> QHBoxLayout:
     """Create a centered ADSR icon layout (for consistent centering in envelope groups)"""
     icon_label = create_adsr_icon_label()
-    return create_hlayout_with_widgets([icon_label])
+    return create_layout_with_widgets([icon_label])
 
 
 def create_group_adsr_with_hlayout(name: str, hlayout: QHBoxLayout, analog: bool = False) -> QGroupBox:
@@ -170,3 +174,34 @@ def create_button_with_tooltip(tooltip: str) -> QPushButton:
     button.setStyleSheet(JDXiStyle.BUTTON_ROUND)
     button.setToolTip(tooltip)
     return button
+
+
+def create_scrolled_area_with_layout() -> tuple[QScrollArea, QVBoxLayout]:
+    """create scrolled area with layout"""
+    scroll_area = QScrollArea()
+    scroll_area.setWidgetResizable(True)
+    scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+    scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+    scroll_area.setSizePolicy(
+        QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
+    )
+    scrolled_widget = QWidget()
+    scrolled_layout = QVBoxLayout(scrolled_widget)
+    scroll_area.setWidget(scrolled_widget)
+    return scroll_area, scrolled_layout
+
+
+def create_form_layout_with_widgets(widget_list: list) -> QFormLayout:
+    """create form layout with widgets"""
+    layout = QFormLayout()
+    for widget in widget_list:
+        layout.addRow(widget)
+    return layout
+
+
+def create_group_and_grid_layout(group_name: str) -> tuple[QGroupBox, QGridLayout]:
+    """A named group box with grid layout"""
+    group = QGroupBox(group_name)
+    layout = QGridLayout()
+    group.setLayout(layout)
+    return group, layout

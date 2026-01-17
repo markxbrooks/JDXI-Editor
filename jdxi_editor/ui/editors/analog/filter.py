@@ -29,7 +29,7 @@ from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.editor import IconType
-from jdxi_editor.ui.widgets.editor.helper import create_hlayout_with_widgets, create_adsr_icon, create_envelope_group
+from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets, create_adsr_icon, create_envelope_group
 from jdxi_editor.ui.widgets.filter.analog_filter import AnalogFilterWidget
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
@@ -187,10 +187,10 @@ class AnalogFilterSection(SectionBaseWidget):
             vertical=True,
         )
         # Standardized order: FilterWidget first, then Resonance, KeyFollow, Velocity
-        controls_layout = create_hlayout_with_widgets([self.filter_widget,
-                                                       self.filter_resonance,
-                                                       self.filter_cutoff_keyfollow,
-                                                       self.filter_env_velocity_sens])
+        controls_layout = create_layout_with_widgets([self.filter_widget,
+                                                      self.filter_resonance,
+                                                      self.filter_cutoff_keyfollow,
+                                                      self.filter_env_velocity_sens])
         # Use harmonized helper function (matching Digital Filter pattern)
         from jdxi_editor.ui.widgets.editor.helper import create_group_adsr_with_hlayout
         return create_group_adsr_with_hlayout(name="Controls", hlayout=controls_layout, analog=True)

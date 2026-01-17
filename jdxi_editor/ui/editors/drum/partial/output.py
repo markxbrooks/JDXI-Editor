@@ -42,31 +42,27 @@ Example:
 
 from typing import Callable
 
-from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QFormLayout,
-    QGroupBox,
-    QHBoxLayout,
-    QScrollArea,
-    QVBoxLayout,
-    QWidget, QSizePolicy,
+    QWidget,
 )
 
-from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
+from jdxi_editor.ui.editors.drum.partial.base import DrumBaseSection
+from jdxi_editor.ui.widgets.editor.helper import create_group_with_layout, create_layout_with_widgets, \
+    create_form_layout_with_widgets
 
 
-class DrumOutputSection(QWidget):
+class DrumOutputSection(DrumBaseSection):
     """Drum Output Section for the JDXI Editor"""
 
     def __init__(
-        self,
-        controls: dict[DrumPartialParam, QWidget],
-        create_parameter_combo_box: Callable,
-        create_parameter_slider: Callable,
-        midi_helper: MidiIOHelper,
+            self,
+            controls: dict[DrumPartialParam, QWidget],
+            create_parameter_combo_box: Callable,
+            create_parameter_slider: Callable,
+            midi_helper: MidiIOHelper,
     ):
         super().__init__()
         self.controls = controls
@@ -77,54 +73,18 @@ class DrumOutputSection(QWidget):
 
     def setup_ui(self) -> None:
         """setup UI"""
-        self.setMinimumWidth(JDXiDimensions.DRUM_PARTIAL_TAB_MIN_WIDTH)
-        layout = QVBoxLayout(self)
-
-        scroll_area = QScrollArea()
-        scroll_area.setWidgetResizable(True)
-        scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        scroll_area.setSizePolicy(
-            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
-        )
-        layout.addWidget(scroll_area)
-
-        scrolled_widget = QWidget()
-        scrolled_layout = QVBoxLayout(scrolled_widget)
-
-        # Add widgets to scrolled_layout here if needed
-
-        scroll_area.setWidget(scrolled_widget)
-
-        # Icons row (standardized across editor tabs)
-        icon_hlayout = IconRegistry.create_adsr_icons_row()
-        scrolled_layout.addLayout(icon_hlayout)
-
-        main_row_hlayout = QHBoxLayout()
-        main_row_hlayout.addStretch()
-        scrolled_layout.addLayout(main_row_hlayout)
-
-        # Pitch Group
-        output_group = QGroupBox("Output")
-        main_row_hlayout.addWidget(output_group)
-        output_layout = QFormLayout()
-        output_group.setLayout(output_layout)
-
-        # Add output parameters
+        # --- Create sliders
         partial_output_level_slider = self._create_parameter_slider(
             DrumPartialParam.PARTIAL_OUTPUT_LEVEL, "Output Level"
         )
-        output_layout.addRow(partial_output_level_slider)
 
         partial_chorus_send_level_slider = self._create_parameter_slider(
             DrumPartialParam.PARTIAL_CHORUS_SEND_LEVEL, "Chorus Send Level"
         )
-        output_layout.addRow(partial_chorus_send_level_slider)
 
         partial_reverb_send_level_slider = self._create_parameter_slider(
             DrumPartialParam.PARTIAL_REVERB_SEND_LEVEL, "Reverb Send Level"
         )
-        output_layout.addRow(partial_reverb_send_level_slider)
 
         partial_output_assign_combo = self._create_parameter_combo_box(
             DrumPartialParam.PARTIAL_OUTPUT_ASSIGN,
@@ -132,5 +92,12 @@ class DrumOutputSection(QWidget):
             ["EFX1", "EFX2", "DLY", "REV", "DIR"],
             [0, 1, 2, 3, 4],
         )
-        output_layout.addRow(partial_output_assign_combo)
-        main_row_hlayout.addStretch()
+
+        output_layout = create_form_layout_with_widgets([partial_chorus_send_level_slider,
+                                                         partial_output_assign_combo, partial_output_level_slider,
+                                                         partial_reverb_send_level_slider])
+
+        output_group, _ = create_group_with_layout(group_name="Output", inner_layout=output_layout)
+        main_row_hlayout = create_layout_with_widgets([output_group], vertical=True)
+        self.scrolled_layout.addLayout(main_row_hlayout)
+        self.vlayout.addStretch()

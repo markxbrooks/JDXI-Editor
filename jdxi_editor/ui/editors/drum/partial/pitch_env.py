@@ -38,6 +38,8 @@ from typing import Callable
 
 import numpy as np
 from decologr import Decologr as log
+from jdxi_editor.ui.editors.drum.partial.base import DrumBaseSection
+from jdxi_editor.ui.widgets.editor.helper import create_group_and_grid_layout
 from picomidi.constant import Midi
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QColor, QFont, QLinearGradient, QPainter, QPainterPath, QPen
@@ -257,7 +259,7 @@ class DrumPitchEnvPlot(QWidget):
             painter.end()
 
 
-class DrumPitchEnvSection(QWidget):
+class DrumPitchEnvSection(DrumBaseSection):
     """Drum Pitch Env Section for the JDXI Editor"""
 
     envelope_changed = Signal(dict)
@@ -301,51 +303,33 @@ class DrumPitchEnvSection(QWidget):
 
     def setup_ui(self) -> None:
         """setup UI"""
-        self.setMinimumWidth(JDXiDimensions.DRUM_PARTIAL_TAB_MIN_WIDTH)
-        # Set size policy to allow vertical expansion
-        self.setSizePolicy(
-            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
-        )
-        layout = QVBoxLayout(self)
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(0)
 
-        scroll_area = QScrollArea()
-        scroll_area.setWidgetResizable(True)
-        scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        scroll_area.setSizePolicy(
-            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
-        )
-        layout.addWidget(scroll_area)
-
-        scrolled_widget = QWidget()
-        scrolled_widget.setSizePolicy(
-            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
-        )
-        scrolled_layout = QVBoxLayout(scrolled_widget)
-        scrolled_layout.setContentsMargins(0, 0, 0, 0)
-
-        scroll_area.setWidget(scrolled_widget)
-
-        # Icons row (standardized across editor tabs)
-        icon_hlayout = IconRegistry.create_adsr_icons_row()
-        scrolled_layout.addLayout(icon_hlayout)
-
-        # Main container with controls and plot
+        # --- Main container with controls and plot
         main_container = QWidget()
         main_layout = QHBoxLayout(main_container)
         main_layout.addStretch()
-        scrolled_layout.addWidget(main_container)
+        self.scrolled_layout.addWidget(main_container)
 
-        # Left side: Controls in a grid layout
-        controls_group = QGroupBox("Pitch Envelope Controls")
-        controls_layout = QGridLayout()
-        controls_group.setLayout(controls_layout)
+        controls_group, controls_layout = create_group_and_grid_layout(group_name="Pitch Envelope Controls")
         JDXiThemeManager.apply_adsr_style(controls_group)
         main_layout.addWidget(controls_group)
+        self.create_sliders(controls_layout)
 
-        # Create sliders and connect them
+        self.setup_plot()
+        main_layout.addWidget(self.plot)
+        main_layout.addStretch()
+
+    def setup_plot(self):
+        # Right side: Envelope plot
+        self.plot = DrumPitchEnvPlot(
+            width=JDXiStyle.ADSR_PLOT_WIDTH,
+            height=JDXiStyle.ADSR_PLOT_HEIGHT,
+            envelope=self.envelope,
+            parent=self,
+        )
+
+    def create_sliders(self, controls_layout: QGridLayout):
+        """Create sliders and connect them"""
         row = 0
         depth_param = DrumPartialParam.PITCH_ENV_DEPTH
         self.depth_slider = self._create_parameter_slider(
@@ -480,16 +464,6 @@ class DrumPitchEnvSection(QWidget):
         self.level_4_slider.valueChanged.connect(
             lambda v: self._update_envelope("level_4", v, level_4_param)
         )
-
-        # Right side: Envelope plot
-        self.plot = DrumPitchEnvPlot(
-            width=JDXiStyle.ADSR_PLOT_WIDTH,
-            height=JDXiStyle.ADSR_PLOT_HEIGHT,
-            envelope=self.envelope,
-            parent=self,
-        )
-        main_layout.addWidget(self.plot)
-        main_layout.addStretch()
 
     def _update_envelope(
         self, key: str, value: int, param: DrumPartialParam = None

@@ -40,14 +40,16 @@ Dependencies:
 from typing import Dict, Optional
 
 from decologr import Decologr as log
+from jdxi_editor.ui.editors.io.helper import create_placeholder_icon
+from jdxi_editor.ui.widgets.delegates.midi_file import MidiFileDelegate
+from jdxi_editor.ui.widgets.delegates.play_button import PlayButtonDelegate
 from jdxi_editor.ui.widgets.editor.helper import create_group_with_layout
 from picomidi.constant import Midi
 from picomidi.sysex.parameter.address import AddressParameter
-from PySide6.QtCore import QSize, Qt, QTimer, Signal
+from PySide6.QtCore import Qt, QTimer, Signal
 
 from PySide6.QtWidgets import (
     QComboBox,
-    QFileDialog,
     QGridLayout,
     QGroupBox,
     QHBoxLayout,
@@ -55,9 +57,6 @@ from PySide6.QtWidgets import (
     QLabel,
     QLineEdit,
     QPushButton,
-    QStyle,
-    QStyledItemDelegate,
-    QStyleOptionButton,
     QTableWidget,
     QTableWidgetItem,
     QTabWidget,
@@ -104,128 +103,16 @@ from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 from jdxi_editor.ui.windows.patch.name_editor import PatchNameEditor
 
 
-class MidiFileDelegate(QStyledItemDelegate):
-    """Delegate for MIDI file selection with file dialog."""
-
-    # Class-level flag to ensure only one dialog is open at a time
-    _dialog_open = False
-
-    def __init__(self, table_widget=None, parent=None):
-        super().__init__(parent)
-        self.table_widget = table_widget
-
-    def paint(self, painter, option, index):
-        """Paint the cell with a button-like appearance."""
-        # Get the file path
-        if self.table_widget:
-            item = self.table_widget.item(index.row(), index.column())
-            file_path = item.text() if item else None
-        else:
-            file_path = index.data(Qt.ItemDataRole.EditRole)
-
-        if file_path:
-            import os
-
-            text = os.path.basename(file_path)
-        else:
-            text = "Select MIDI File..."
-
-        # Draw button-like appearance
-        button = QStyleOptionButton()
-        button.rect = option.rect
-        button.text = text
-        button.state = QStyle.StateFlag.State_Enabled
-        if option.state & QStyle.StateFlag.State_Selected:
-            button.state |= QStyle.StateFlag.State_HasFocus
-
-        if self.table_widget:
-            self.table_widget.style().drawControl(
-                QStyle.ControlElement.CE_PushButton, button, painter
-            )
-        else:
-            QWidget().style().drawControl(
-                QStyle.ControlElement.CE_PushButton, button, painter
-            )
-
-    def editorEvent(self, event, model, option, index):
-        """Handle mouse clicks to open file dialog."""
-        if event.type() == event.Type.MouseButtonPress:
-            if option.rect.contains(event.pos()):
-                # Check if dialog is already open (singleton)
-                if MidiFileDelegate._dialog_open:
-                    return True  # Ignore click if dialog is already open
-
-                # Open file dialog
-                if self.table_widget:
-                    try:
-                        MidiFileDelegate._dialog_open = True
-                        file_path, _ = QFileDialog.getOpenFileName(
-                            self.table_widget,
-                            "Select MIDI File",
-                            "",
-                            "MIDI Files (*.mid *.midi);;All Files (*)",
-                        )
-                        if file_path:
-                            # Update the table item directly
-                            item = self.table_widget.item(index.row(), index.column())
-                            if item:
-                                item.setText(file_path)
-                                # Trigger itemChanged signal to save to database
-                                self.table_widget.itemChanged.emit(item)
-                    finally:
-                        MidiFileDelegate._dialog_open = False
-                return True
-        return super().editorEvent(event, model, option, index)
-
-    def sizeHint(self, option, index):
-        """Return appropriate size for the button."""
-        return QSize(150, 30)
-
-
-class PlayButtonDelegate(QStyledItemDelegate):
-    """Delegate for Play button in table."""
-
-    def __init__(self, parent=None, play_callback=None):
-        super().__init__(parent)
-        self.play_callback = play_callback
-
-    def paint(self, painter, option, index):
-        """Draw a play button."""
-        if option.state & QStyle.StateFlag.State_Enabled:
-            button = QStyleOptionButton()
-            button.rect = option.rect
-            button.text = "▶ Play"
-            button.state = QStyle.StateFlag.State_Enabled
-            if option.state & QStyle.StateFlag.State_Selected:
-                button.state |= QStyle.StateFlag.State_HasFocus
-            QWidget().style().drawControl(
-                QStyle.ControlElement.CE_PushButton, button, painter
-            )
-
-    def editorEvent(self, event, model, option, index):
-        """Handle button click."""
-        if event.type() == event.Type.MouseButtonPress:
-            if option.rect.contains(event.pos()):
-                if self.play_callback:
-                    self.play_callback(index)
-                return True
-        return super().editorEvent(event, model, option, index)
-
-    def sizeHint(self, option, index):
-        """Return button size."""
-        return QSize(80, 30)
-
-
 class ProgramEditor(BasicEditor):
     """Program Editor Window"""
 
     program_changed = Signal(int, str, int)  # (channel, preset_name, program_number)
 
     def __init__(
-        self,
-        midi_helper: Optional[MidiIOHelper] = None,
-        parent: Optional[QWidget] = None,
-        preset_helper: JDXiPresetHelper = None,
+            self,
+            midi_helper: Optional[MidiIOHelper] = None,
+            parent: Optional[QWidget] = None,
+            preset_helper: JDXiPresetHelper = None,
     ):
         super().__init__(midi_helper=midi_helper, parent=parent)
         self.title_right_vlayout = None
@@ -288,25 +175,25 @@ class ProgramEditor(BasicEditor):
         self.base_widget = EditorBaseWidget(parent=self, analog=False)
         self.base_widget.setup_scrollable_content()
         container_layout = self.base_widget.get_container_layout()
-        
+
         # Create centered content widget
         centered_content = QWidget()
         self.title_vlayout = QVBoxLayout(centered_content)
         self.title_vlayout.addStretch()
-        
+
         self.title_hlayout = QHBoxLayout()
         self.title_hlayout.addStretch()
-        
+
         self.title_left_vlayout = QVBoxLayout()
         self.title_hlayout.addLayout(self.title_left_vlayout)
 
         self.title_right_vlayout = QVBoxLayout()
         self.title_hlayout.addLayout(self.title_right_vlayout)
-        
+
         self.title_hlayout.addStretch()
         self.title_vlayout.addLayout(self.title_hlayout)
         self.title_vlayout.addStretch()
-        
+
         # Add centered content to base widget
         self.base_widget.add_centered_content(centered_content)
 
@@ -336,18 +223,15 @@ class ProgramEditor(BasicEditor):
             import traceback
 
             log.error(traceback.format_exc())
-            # Create a placeholder widget so the tab still appears
-            placeholder_widget = QWidget()
-            placeholder_layout = QVBoxLayout(placeholder_widget)
-            placeholder_label = QLabel(f"Error loading user programs: {e}")
-            placeholder_layout.addWidget(placeholder_label)
-            user_programs_icon = IconRegistry.get_icon("mdi.account-music", color=JDXiStyle.GREY)
+            placeholder_widget, user_programs_icon = create_placeholder_icon(e,
+                                                                             error_message="Error loading user programs:",
+                                                                             icon_name="mdi.account-music")
             self.main_tab_widget.addTab(placeholder_widget, user_programs_icon, "User Programs")
             log.message(
                 f"✅ Added 'User Programs' tab (placeholder) (total tabs: {self.main_tab_widget.count()})"
             )
 
-        # Add Playlist tab to main tab widget
+        # --- Add Playlist tab to main tab widget
         try:
             log.message("🔨 Creating Playlist tab for main window...")
             playlist_widget = self._create_playlist_tab()
@@ -361,12 +245,8 @@ class ProgramEditor(BasicEditor):
             import traceback
 
             log.error(traceback.format_exc())
-            # Create a placeholder widget so the tab still appears
-            placeholder_widget = QWidget()
-            placeholder_layout = QVBoxLayout(placeholder_widget)
-            placeholder_label = QLabel(f"Error loading playlists: {e}")
-            placeholder_layout.addWidget(placeholder_label)
-            playlist_icon = IconRegistry.get_icon("mdi.playlist-music", color=JDXiStyle.GREY)
+            placeholder_widget, playlist_icon = create_placeholder_icon(e, error_message="Error loading playlists: ",
+                                                                        icon_name="mdi.playlist-music")
             self.main_tab_widget.addTab(placeholder_widget, playlist_icon, "Playlist")
             log.message(
                 f"✅ Added 'Playlist' tab (placeholder) (total tabs: {self.main_tab_widget.count()})"
@@ -387,11 +267,9 @@ class ProgramEditor(BasicEditor):
 
             log.error(traceback.format_exc())
             # Create a placeholder widget so the tab still appears
-            placeholder_widget = QWidget()
-            placeholder_layout = QVBoxLayout(placeholder_widget)
-            placeholder_label = QLabel(f"Error loading playlist editor: {e}")
-            placeholder_layout.addWidget(placeholder_label)
-            playlist_editor_icon = IconRegistry.get_icon("mdi.playlist-edit", color=JDXiStyle.GREY)
+            placeholder_widget, playlist_editor_icon = create_placeholder_icon(e,
+                                                                               error_message="Error loading playlist editor: ",
+                                                                               icon_name="mdi.playlist-edit")
             self.main_tab_widget.addTab(placeholder_widget, playlist_editor_icon, "Playlist Editor")
             log.message(
                 f"✅ Added 'Playlist Editor' tab (placeholder) (total tabs: {self.main_tab_widget.count()})"
@@ -458,7 +336,7 @@ class ProgramEditor(BasicEditor):
         )
         preset_vlayout.setSpacing(JDXiStyle.SPACING)
         preset_widget.setLayout(preset_vlayout)
-        
+
         # Add icon row at the top (centered with stretch on both sides)
         icon_row_container = QHBoxLayout()
         icon_row_container.addStretch()
@@ -473,7 +351,7 @@ class ProgramEditor(BasicEditor):
         icon_row_container.addStretch()
         preset_vlayout.addLayout(icon_row_container)
         preset_vlayout.addSpacing(10)  # Add spacing after icon row
-        
+
         self.image_label = QLabel()
         self.image_label.setAlignment(
             Qt.AlignmentFlag.AlignVCenter
@@ -488,7 +366,7 @@ class ProgramEditor(BasicEditor):
             self.on_preset_type_changed
         )
         preset_vlayout.addWidget(self.digital_preset_type_combo)
-        
+
         # Create SearchableFilterableComboBox for preset selection
         # Initialize with empty data - will be populated when preset type is selected
         self.preset_combo_box = SearchableFilterableComboBox(
@@ -502,11 +380,11 @@ class ProgramEditor(BasicEditor):
             search_placeholder="Search presets...",
         )
         preset_vlayout.addWidget(self.preset_combo_box)
-        
+
         # Initialize the combo box with default preset type (Digital Synth 1)
         # This will be called again when preset type changes, but we need initial population
         QTimer.singleShot(0, self._update_preset_combo_box)
-        
+
         # Load button
         self.load_button = QPushButton(
             IconRegistry.get_icon(
@@ -516,7 +394,7 @@ class ProgramEditor(BasicEditor):
         )
         self.load_button.clicked.connect(lambda: self.load_preset_by_program_change())
         preset_vlayout.addWidget(self.load_button)
-        
+
         # Connect combo box valueChanged to load preset directly (optional)
         # self.preset_combo_box.valueChanged.connect(self.load_preset_by_program_change)
         return preset_widget
@@ -533,7 +411,7 @@ class ProgramEditor(BasicEditor):
             # The value is the preset ID as integer (e.g., 1 for "001")
             preset_id_int = self.preset_combo_box.value()
             preset_id = str(preset_id_int).zfill(3)  # Convert back to 3-digit format
-        
+
         program_number = str(preset_id).zfill(3)  # Ensure 3-digit format
         log.message("=======load_preset_by_program_change=======")
         log.parameter("preset_id", preset_id)
@@ -615,11 +493,11 @@ class ProgramEditor(BasicEditor):
         )  # Ensure tab widget is visible
         program_widget = QWidget()
         program_widget.setLayout(program_vlayout)
-        
+
         # Add icon row at the top of Programs tab
         icon_row = IconRegistry.create_generic_musical_icon_row()
         program_vlayout.addLayout(icon_row)
-        
+
         program_layout.addWidget(self.program_preset_tab_widget)
         programs_icon = IconRegistry.get_icon("mdi.music-box-multiple", color=JDXiStyle.GREY)
         if programs_icon is None:
@@ -651,7 +529,7 @@ class ProgramEditor(BasicEditor):
             bank_label="Bank:",
         )
         program_vlayout.addWidget(self.program_number_combo_box)
-        
+
         # Store reference to actual program list for use in filtering
         self._program_list_data = []
         # Load button
@@ -724,18 +602,18 @@ class ProgramEditor(BasicEditor):
             preset_list = ANALOG_PRESET_LIST
         else:
             preset_list = DIGITAL_PRESET_LIST  # Default to digital synth 1
-        
+
         # Store the actual preset list for use in load_preset_by_program_change
         # Note: self.preset_list is still set to JDXiPresetToneList enum in set_channel_and_preset_lists
         # for use with get_preset_parameter_value, but we also need the actual list for the combo box
         self._actual_preset_list = preset_list
-        
+
         # Build options, values, and categories
         preset_options = [f"{preset['id']} - {preset['name']}" for preset in self._actual_preset_list]
         # Convert preset IDs to integers for SearchableFilterableComboBox (e.g., "001" -> 1)
         preset_values = [int(preset['id']) for preset in self._actual_preset_list]
         preset_categories = sorted(set(preset["category"] for preset in self._actual_preset_list))
-        
+
         # Category filter function for presets
         def preset_category_filter(preset_display: str, category: str) -> bool:
             """Check if a preset matches a category."""
@@ -749,17 +627,17 @@ class ProgramEditor(BasicEditor):
                     if preset["id"] == preset_id_str:
                         return preset["category"] == category
             return False
-        
+
         # Update the combo box by recreating it (since SearchableFilterableComboBox doesn't have update methods)
         # Get parent widget and layout
         preset_widget = self.digital_preset_type_combo.parent()
         preset_vlayout = preset_widget.layout() if preset_widget else None
-        
+
         if preset_vlayout:
             # Remove old combo box from layout
             preset_vlayout.removeWidget(self.preset_combo_box)
             self.preset_combo_box.deleteLater()
-            
+
             # Create new combo box with updated data
             self.preset_combo_box = SearchableFilterableComboBox(
                 label="Preset",
@@ -772,7 +650,7 @@ class ProgramEditor(BasicEditor):
                 show_category=True,
                 search_placeholder="Search presets...",
             )
-            
+
             # Insert after digital_preset_type_combo
             index = preset_vlayout.indexOf(self.digital_preset_type_combo)
             preset_vlayout.insertWidget(index + 1, self.preset_combo_box)
@@ -825,9 +703,9 @@ class ProgramEditor(BasicEditor):
         self._update_preset_combo_box()
 
     def _init_synth_data(
-        self,
-        synth_type: str = JDXiSynth.DIGITAL_SYNTH_1,
-        partial_number: Optional[int] = 0,
+            self,
+            synth_type: str = JDXiSynth.DIGITAL_SYNTH_1,
+            partial_number: Optional[int] = 0,
     ) -> None:
         """
 
@@ -1012,7 +890,7 @@ class ProgramEditor(BasicEditor):
             )
 
     def set_current_program_name(
-        self, program_name: str, synth_type: str = None
+            self, program_name: str, synth_type: str = None
     ) -> None:
         """
         Set the current program name in the file label
@@ -1044,17 +922,17 @@ class ProgramEditor(BasicEditor):
         """
         if not self.preset_helper:
             return
-        
+
         # --- Get all programs (ROM + user from database)
         all_programs = JDXiProgramList.list_rom_and_user_programs()
         self._program_list_data = all_programs
-        
+
         # --- Build program options, values, and filter data
         program_options = []
         program_values = []
         program_genres = set()
         program_banks = set()
-        
+
         # --- Process ROM programs
         for program in all_programs:
             if program.id and len(program.id) >= 1:
@@ -1064,11 +942,11 @@ class ProgramEditor(BasicEditor):
                     program_genres.add(program.genre)
                 program_options.append(f"{program.id} - {program.name}")
                 program_values.append(len(program_options) - 1)  # Use index as value
-        
+
         # --- Add user bank placeholders (E, F, G, H) - these will be handled dynamically
         # but we need to ensure they're in the banks list
         program_banks.update(["E", "F", "G", "H"])
-        
+
         # Bank filter function for programs
         def program_bank_filter(program_display: str, bank: str) -> bool:
             """Check if a program matches a bank."""
@@ -1082,7 +960,7 @@ class ProgramEditor(BasicEditor):
             if program_id and len(program_id) >= 1:
                 return program_id[0].upper() == bank.upper()
             return False
-        
+
         # --- Genre filter function for programs
         def program_genre_filter(program_display: str, genre: str) -> bool:
             """Check if a program matches a genre."""
@@ -1094,23 +972,23 @@ class ProgramEditor(BasicEditor):
                 program_id = program_display.split(" - ")[0]
             else:
                 program_id = program_display.split()[0] if program_display.split() else ""
-            
+
             # ---Find program in list
             for program in self._program_list_data:
                 if program.id == program_id:
                     return program.genre == genre if program.genre else False
             return False
-        
+
         # --- Update the combo box by recreating it (since SearchableFilterableComboBox doesn't have update methods)
         # --- Get parent widget and layout
         program_widget = self.edit_program_name_button.parent()
         program_vlayout = program_widget.layout() if program_widget else None
-        
+
         if program_vlayout:
             # --- Remove old combo box from layout
             program_vlayout.removeWidget(self.program_number_combo_box)
             self.program_number_combo_box.deleteLater()
-            
+
             # ---Create new combo box with updated data
             self.program_number_combo_box = SearchableFilterableComboBox(
                 label="Program",
@@ -1128,11 +1006,11 @@ class ProgramEditor(BasicEditor):
                 category_label="Genre:",
                 bank_label="Bank:",
             )
-            
+
             # --- Insert after edit_program_name_button
             index = program_vlayout.indexOf(self.edit_program_name_button)
             program_vlayout.insertWidget(index + 1, self.program_number_combo_box)
-    
+
     def populate_programs(self, search_text: str = ""):
         """Populate the program list with available presets.
         Now handled by SearchableFilterableComboBox, so this just updates the combo box.
@@ -1140,12 +1018,12 @@ class ProgramEditor(BasicEditor):
         """
         if not self.preset_helper:
             return
-        
+
         # --- Update the combo box with current program data
         self._update_program_combo_box()
 
     def add_user_banks(
-        self, filtered_list: list, bank: str, search_text: str = None
+            self, filtered_list: list, bank: str, search_text: str = None
     ) -> None:
         """Add user banks to the program list.
         Only adds generic entries for programs that don't exist in the database.
@@ -1361,13 +1239,13 @@ class ProgramEditor(BasicEditor):
                 p
                 for p in all_programs
                 if (
-                    search_lower in p.id.lower()
-                    or search_lower in p.name.lower()
-                    or (p.genre and search_lower in p.genre.lower())
-                    or (p.digital_1 and search_lower in p.digital_1.lower())
-                    or (p.digital_2 and search_lower in p.digital_2.lower())
-                    or (p.analog and search_lower in p.analog.lower())
-                    or (p.drums and search_lower in p.drums.lower())
+                        search_lower in p.id.lower()
+                        or search_lower in p.name.lower()
+                        or (p.genre and search_lower in p.genre.lower())
+                        or (p.digital_1 and search_lower in p.digital_1.lower())
+                        or (p.digital_2 and search_lower in p.digital_2.lower())
+                        or (p.analog and search_lower in p.analog.lower())
+                        or (p.drums and search_lower in p.drums.lower())
                 )
             ]
 
@@ -2111,7 +1989,7 @@ class ProgramEditor(BasicEditor):
         )
 
     def _on_cheat_preset_changed(
-        self, row: int, cheat_preset_id: Optional[str]
+            self, row: int, cheat_preset_id: Optional[str]
     ) -> None:
         """
         Handle cheat preset selection change.
@@ -2415,7 +2293,7 @@ class ProgramEditor(BasicEditor):
             # Walk up the parent chain to find JDXiInstrument if needed
             # (in case parent is not JDXiInstrument directly)
             while parent_instrument and not hasattr(
-                parent_instrument, "get_existing_editor"
+                    parent_instrument, "get_existing_editor"
             ):
                 # Get parent's parent (also stored as attribute in SynthBase)
                 next_parent = getattr(parent_instrument, "parent", None)
@@ -2442,7 +2320,7 @@ class ProgramEditor(BasicEditor):
                     try:
                         # Disconnect any existing finished signal from previous playlist playback
                         if self._playlist_midi_editor and hasattr(
-                            self._playlist_midi_editor, "midi_playback_worker"
+                                self._playlist_midi_editor, "midi_playback_worker"
                         ):
                             if self._playlist_midi_editor.midi_playback_worker:
                                 try:
@@ -2503,8 +2381,8 @@ class ProgramEditor(BasicEditor):
 
                         # Connect to worker's finished signal for auto-advance
                         if (
-                            hasattr(midi_file_editor, "midi_playback_worker")
-                            and midi_file_editor.midi_playback_worker
+                                hasattr(midi_file_editor, "midi_playback_worker")
+                                and midi_file_editor.midi_playback_worker
                         ):
                             try:
                                 # Disconnect any existing connection
@@ -2551,7 +2429,7 @@ class ProgramEditor(BasicEditor):
 
         # Disconnect the finished signal
         if self._playlist_midi_editor and hasattr(
-            self._playlist_midi_editor, "midi_playback_worker"
+                self._playlist_midi_editor, "midi_playback_worker"
         ):
             try:
                 if self._playlist_midi_editor.midi_playback_worker:
@@ -2584,7 +2462,6 @@ class ProgramEditor(BasicEditor):
         # Play the next item
         log.message(f"🎵 Auto-advancing to next playlist item (row {next_row})")
         # Create a QModelIndex for the play button column (column 5)
-        from PySide6.QtCore import QModelIndex
 
         model = self.playlist_programs_table.model()
         if model:
@@ -2617,7 +2494,7 @@ class ProgramEditor(BasicEditor):
         # JDXiInstrument should have both 'show_editor' and 'get_existing_editor' methods
         while parent_instrument:
             if hasattr(parent_instrument, "show_editor") and hasattr(
-                parent_instrument, "get_existing_editor"
+                    parent_instrument, "get_existing_editor"
             ):
                 # Found JDXiInstrument
                 try:
@@ -2750,13 +2627,12 @@ class ProgramEditor(BasicEditor):
         from jdxi_editor.log.midi_info import log_midi_info
         from jdxi_editor.midi.channel.channel import MidiChannel
         from jdxi_editor.midi.data.programs.digital import DIGITAL_PRESET_LIST
-        from jdxi_editor.ui.editors.helpers.preset import get_preset_parameter_value
 
         # Find preset in DIGITAL_PRESET_LIST
         preset = None
         for p in DIGITAL_PRESET_LIST:
             if str(p["id"]) == str(
-                preset_id
+                    preset_id
             ):  # Compare as strings to handle any type mismatches
                 preset = p
                 break
@@ -2786,7 +2662,7 @@ class ProgramEditor(BasicEditor):
                 pc - 1,  # Convert 1-based PC to 0-based
             )
             log.message(
-                f"✅ Sent cheat preset Program Change: Ch3, MSB={msb}, LSB={lsb}, PC={pc-1} (0-based)"
+                f"✅ Sent cheat preset Program Change: Ch3, MSB={msb}, LSB={lsb}, PC={pc - 1} (0-based)"
             )
         except Exception as e:
             log.error(f"❌ Error sending cheat preset Program Change: {e}")
@@ -3046,11 +2922,11 @@ class ProgramEditor(BasicEditor):
         log.debug_info(successes, failures)
 
     def _update_common_controls(
-        self,
-        partial_number: int,
-        sysex_data: Dict,
-        successes: list = None,
-        failures: list = None,
+            self,
+            partial_number: int,
+            sysex_data: Dict,
+            successes: list = None,
+            failures: list = None,
     ) -> None:
         """
         Update the UI components for tone common and modify parameters.
@@ -3103,12 +2979,12 @@ class ProgramEditor(BasicEditor):
                 log.error(f"Error {ex} occurred")
 
     def _update_slider(
-        self,
-        param: AddressParameter,
-        midi_value: int,
-        successes: list = None,
-        failures: list = None,
-        slider: QWidget = None,
+            self,
+            param: AddressParameter,
+            midi_value: int,
+            successes: list = None,
+            failures: list = None,
+            slider: QWidget = None,
     ) -> None:
         """
         Update slider based on parameter and value.

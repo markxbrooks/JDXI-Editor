@@ -47,7 +47,6 @@ from PySide6.QtGui import (
     Qt,
 )
 from PySide6.QtWidgets import (
-    QFormLayout,
     QGridLayout,
     QGroupBox,
     QHBoxLayout,
@@ -61,10 +60,12 @@ from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.editors.drum.partial.base import DrumBaseSection
 from jdxi_editor.ui.editors.drum.partial.tvf import (
     midi_to_cutoff_level,
     midi_to_time_normalized,
 )
+from jdxi_editor.ui.widgets.editor.helper import create_group_with_layout, create_layout_with_widgets
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
@@ -72,11 +73,11 @@ class DrumTVAEnvPlot(QWidget):
     """Plot widget for drum TVA envelope visualization."""
 
     def __init__(
-        self,
-        width: int = JDXiStyle.ADSR_PLOT_WIDTH,
-        height: int = JDXiStyle.ADSR_PLOT_HEIGHT,
-        envelope: dict = None,
-        parent: QWidget = None,
+            self,
+            width: int = JDXiStyle.ADSR_PLOT_WIDTH,
+            height: int = JDXiStyle.ADSR_PLOT_HEIGHT,
+            envelope: dict = None,
+            parent: QWidget = None,
     ):
         super().__init__(parent)
         self.enabled = True
@@ -273,17 +274,17 @@ class DrumTVAEnvPlot(QWidget):
             painter.end()
 
 
-class DrumTVASection(QWidget):
+class DrumTVASection(DrumBaseSection):
     """Drum TVA Section for the JDXI Editor"""
 
     envelope_changed = Signal(dict)
 
     def __init__(
-        self,
-        controls: dict[DrumPartialParam, QWidget],
-        create_parameter_combo_box: Callable,
-        create_parameter_slider: Callable,
-        midi_helper: MidiIOHelper,
+            self,
+            controls: dict[DrumPartialParam, QWidget],
+            create_parameter_combo_box: Callable,
+            create_parameter_slider: Callable,
+            midi_helper: MidiIOHelper,
     ):
         super().__init__()
         """
@@ -315,51 +316,18 @@ class DrumTVASection(QWidget):
 
     def setup_ui(self):
         """setup UI"""
-        self.setMinimumWidth(JDXiDimensions.DRUM_PARTIAL_TAB_MIN_WIDTH)
-        # Set size policy to allow vertical expansion
-        self.setSizePolicy(
-            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
-        )
-        layout = QVBoxLayout(self)
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(0)
 
-        scroll_area = QScrollArea()
-        scroll_area.setWidgetResizable(True)
-        scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        scroll_area.setSizePolicy(
-            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
-        )
-        layout.addWidget(scroll_area)
-
-        scrolled_widget = QWidget()
-        scrolled_widget.setSizePolicy(
-            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
-        )
-        scrolled_layout = QVBoxLayout(scrolled_widget)
-        scrolled_layout.setContentsMargins(0, 0, 0, 0)
-
-        scroll_area.setWidget(scrolled_widget)
-        
-        # Icons row (standardized across editor tabs)
-        icon_hlayout = IconRegistry.create_adsr_icons_row()
-        scrolled_layout.addLayout(icon_hlayout)
-        
-        main_vbox_layout = QVBoxLayout()
-        main_row_hlayout = QHBoxLayout()
-        main_row_hlayout.addStretch()
-        scrolled_layout.addLayout(main_vbox_layout)
-
-        tva_level_velocity_curve_spin = self._create_tva_spin()
-        main_vbox_layout.addWidget(tva_level_velocity_curve_spin)
-        main_vbox_layout.addLayout(main_row_hlayout)
-
+        self.tva_level_velocity_curve_spin = self._create_tva_spin()
         self.tva_group = self._create_tva_group()
-        main_row_hlayout.addWidget(self.tva_group)
         self.plot = self._create_tva_plot()
-        main_row_hlayout.addWidget(self.plot)
-        main_row_hlayout.addStretch()
+
+        main_row_hlayout = create_layout_with_widgets(widget_list=[self.tva_group,
+                                                                   self.plot], vertical=False)
+
+        main_vbox_layout = create_layout_with_widgets(widget_list=[self.tva_level_velocity_curve_spin],
+                                                      vertical=True)
+        main_vbox_layout.addLayout(main_row_hlayout)
+        self.scrolled_layout.addLayout(main_vbox_layout)
 
     def _create_tva_spin(self) -> QWidget:
         # Add TVA parameters
@@ -373,10 +341,10 @@ class DrumTVASection(QWidget):
 
     def _create_tva_group(self):
         """TVA Group"""
-        tva_group = QGroupBox("TVA")
-        tva_group.setStyleSheet(JDXiStyle.ADSR)
         envelope_slider_layout = QGridLayout()
-        tva_group.setLayout(envelope_slider_layout)
+        tva_group, _ = create_group_with_layout(group_name="TVA",
+                                                inner_layout=envelope_slider_layout,
+                                                style_sheet=JDXiStyle.ADSR)
 
         # --- Add TVA Velocity Sensitivity controls
         row = 0
@@ -494,7 +462,7 @@ class DrumTVASection(QWidget):
         return plot
 
     def _update_envelope(
-        self, key: str, value: int, param: DrumPartialParam = None
+            self, key: str, value: int, param: DrumPartialParam = None
     ) -> None:
         """Update envelope value and refresh plot
 

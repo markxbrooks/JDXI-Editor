@@ -26,7 +26,7 @@ from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.editor import IconType
-from jdxi_editor.ui.widgets.editor.helper import create_hlayout_with_widgets, create_adsr_icon, create_envelope_group
+from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets, create_adsr_icon, create_envelope_group
 
 
 class AnalogAmpSection(SectionBaseWidget):
@@ -90,9 +90,9 @@ class AnalogAmpSection(SectionBaseWidget):
             vertical=True,
         )
         # Standardized order: Level, KeyFollow, Velocity (matching Filter pattern)
-        level_controls_row_layout = create_hlayout_with_widgets([self.amp_level,
-                                                                 self.amp_level_keyfollow,
-                                                                 self.amp_level_velocity_sensitivity])
+        level_controls_row_layout = create_layout_with_widgets([self.amp_level,
+                                                                self.amp_level_keyfollow,
+                                                                self.amp_level_velocity_sensitivity])
         return level_controls_row_layout
 
     def _create_analog_amp_adsr_group(self) -> QGroupBox:

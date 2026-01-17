@@ -110,8 +110,6 @@ class DrumPartialSection(QWidget):
             self._create_partial_modes_group(), modes_icon, "Modes"
         )
 
-        # pitch_group.setLayout(scrolled_layout)
-        # scrolled_layout.addWidget(pitch_group)
         main_row_hlayout.addStretch()
 
     def _create_partial_misc_group(self) -> QGroupBox:

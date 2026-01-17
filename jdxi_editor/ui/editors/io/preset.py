@@ -70,7 +70,7 @@ from jdxi_editor.ui.editors.helpers.program import (
     get_program_by_id,
 )
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
-from jdxi_editor.ui.widgets.editor.helper import create_hlayout_with_widgets, create_group_with_layout
+from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets, create_group_with_layout
 
 
 class PresetEditor(BasicEditor):
@@ -297,8 +297,8 @@ class PresetEditor(BasicEditor):
         # Search Box
 
         self.search_box = QLineEdit()
-        search_row = create_hlayout_with_widgets([QLabel("Search:"),
-                                                  self.search_box])
+        search_row = create_layout_with_widgets([QLabel("Search:"),
+                                                 self.search_box])
         self.search_box.setStyleSheet(JDXiStyle.QLINEEDIT)
         self.search_box.setPlaceholderText("Search presets...")
         self.search_box.textChanged.connect(self._populate_presets)

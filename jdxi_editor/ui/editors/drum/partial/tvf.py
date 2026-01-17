@@ -38,6 +38,7 @@ from typing import Callable
 
 import numpy as np
 from decologr import Decologr as log
+from jdxi_editor.ui.editors.drum.partial.base import DrumBaseSection
 from picomidi.constant import Midi
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QColor, QFont, QLinearGradient, QPainter, QPainterPath, QPen
@@ -279,7 +280,7 @@ class DrumTVFEnvPlot(QWidget):
             painter.end()
 
 
-class DrumTVFSection(QWidget):
+class DrumTVFSection(DrumBaseSection):
     """Drum TVF Section for the JDXI Editor"""
 
     envelope_changed = Signal(dict)
@@ -323,31 +324,11 @@ class DrumTVFSection(QWidget):
 
     def setup_ui(self):
         """setup UI"""
-        self.setMinimumWidth(JDXiDimensions.DRUM_PARTIAL_TAB_MIN_WIDTH)
-        layout = QVBoxLayout(self)
-
-        scroll_area = QScrollArea()
-        scroll_area.setWidgetResizable(True)
-        scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        scroll_area.setSizePolicy(
-            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
-        )
-        layout.addWidget(scroll_area)
-
-        scrolled_widget = QWidget()
-        scrolled_layout = QVBoxLayout(scrolled_widget)
-        scroll_area.setWidget(scrolled_widget)
-
-        # Icons row (standardized across editor tabs)
-        icon_hlayout = IconRegistry.create_adsr_icons_row()
-        scrolled_layout.addLayout(icon_hlayout)
-
-        # Main container with controls and plot
+        # --- Main container with controls and plot
         main_container = QWidget()
         main_layout = QHBoxLayout(main_container)
         main_layout.addStretch()
-        scrolled_layout.addWidget(main_container)
+        self.scrolled_layout.addWidget(main_container)
 
         self.tvf_tab_widget = QTabWidget()
 

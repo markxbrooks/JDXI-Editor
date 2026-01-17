@@ -25,7 +25,7 @@ from jdxi_editor.midi.data.digital.filter import DigitalFilterMode
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
-from jdxi_editor.ui.widgets.editor.helper import create_hlayout_with_widgets, create_adsr_icon, \
+from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets, create_adsr_icon, \
     create_group_adsr_with_hlayout, create_envelope_group
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.editor import IconType
@@ -171,7 +171,7 @@ class DigitalFilterSection(SectionBaseWidget):
                                     vertical=True,
                                 )
                                 ]
-        controls_layout = create_hlayout_with_widgets(filter_controls_list)
+        controls_layout = create_layout_with_widgets(filter_controls_list)
         controls_group = create_group_adsr_with_hlayout(name="Controls",
                                                         hlayout=controls_layout)
         return controls_group
