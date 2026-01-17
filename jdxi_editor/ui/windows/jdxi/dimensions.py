@@ -13,7 +13,6 @@ Class to store dimensions of a Roland JDXi instrument
 
 class DigitalDimensions:
     """Digital Dimensions"""
-
     SPACING = 5
     MARGIN = 5
     MIN_CONTROL_WIDTH = 20
@@ -52,10 +51,14 @@ class BasicEditorDimensions:
     WIDTH = 550
     HEIGHT = 550
     
+    
 class DrumEditorDimensions:
     """Drum Editor Dimensions"""
     WIDTH = 1100
     HEIGHT = 800
+    DRUM_PARTIAL_TAB_MIN_WIDTH = (
+        400  # Minimum width for drum partial tabs to match WMT width
+    )
     
     
 class WaveformIconDimensions:
@@ -84,23 +87,100 @@ class InstrumentDimensions:
     
 class EditorDimensions:
     """EditorDimensions"""
-    EDITOR_MINIMUM_HEIGHT = 250
+    MINIMUM_HEIGHT = 250
     
     
 class ArpDimensions:
     """ArpDimensions"""
-    ARP_MARGIN = 5
-    ARP_SPACING = 20
+    MARGIN = 5
+    SPACING = 20
+    
+    
+class AnalogEditorDimensions:
+    """Analog Editor Dimensions"""
+    MIN_WIDTH = 330
+    MIN_HEIGHT = 330
+    WIDTH = 950
+    HEIGHT = 600
     
     
 class LedDisplayDimensions:
     """LED display area (enlarged for 2 rows)"""
-    DISPLAY_WIDTH = 210
-    DISPLAY_HEIGHT = 70
-    DISPLAY_X = MARGIN + 20
-    DISPLAY_Y = MARGIN + 35
+    WIDTH = 210
+    HEIGHT = 70
+    X = InstrumentDimensions.MARGIN + 20
+    Y = InstrumentDimensions.MARGIN + 35
+    
+class DigitalTitleDimensions:
+    """
+    Digital Title Dimensions
+    LED title area (enlarged for 2 rows)"""
+    WIDTH = 330
+    HEIGHT = 70
+    
+    
+class PWMWidgetDimensions:
+    """PWM Widget Dimensions"""
+    X = 100
+    Y = 100
+    WIDTH = 300
+    HEIGHT = 500
+    
+    
+class TitleDimensions:
+    """Title above display (moved down)"""
+    X = DISPLAY_X
+    Y = MARGIN
+    WIDTH = 200
+    HEIGHT = 50
     
 
+class KeyboardDimensions:
+    """Keyboard Dimensions"""
+    # Keyboard
+    HEIGHT = 127
+    WIDTH = 800
+    
+    
+class SequencerDimensions:
+    """Sequencer Dimensions"""
+    # --- Sequencer steps
+    STEPS = 16
+    STEP_SIZE = 18
+
+
+class SequencerGridDimensions:
+    """Sequencer Grid Dimensions"""
+    # --- Sequencer grid
+    WIDTH = 300
+    HEIGHT = 30
+
+
+class SequencerContainerDimensions:
+    """Sequencer container"""
+    X = InstrumentDimensions.MARGIN + 520
+    Y = InstrumentDimensions.MARGIN + 155
+    CONTAINER_WIDTH = 500
+    CONTAINER_HEIGHT = 80
+    
+
+class SliderDimensions:
+    """Slider Dimensions"""
+    X = 515
+    Y = InstrumentDimensions.MARGIN
+    CONTAINER_WIDTH = 360
+    HEIGHT = 120
+    CONTAINER_HEIGHT = HEIGHT + 20
+    
+    
+class PartsDimensions:
+    # Parts container
+    PARTS_X = LedDisplayDimensions.DISPLAY_X + LedDisplayDimensions.DISPLAY_WIDTH + 10
+    PARTS_Y = InstrumentDimensions.MARGIN
+    PARTS_WIDTH = 180
+    PARTS_HEIGHT = 220
+    
+    
 class JDXiDimensions:
     """
     A class to store dimensions for the JD-Xi editor UI.
@@ -134,6 +214,9 @@ class JDXiDimensions:
     DRUM: DrumEditorDimensions = DrumEditorDimensions
     DRUM_WIDTH = 1100
     DRUM_HEIGHT = 800
+    DRUM_PARTIAL_TAB_MIN_WIDTH = (
+        400  # Minimum width for drum partial tabs to match WMT width
+    )
     
     ANALOG = AnalogDimensions
 
@@ -151,6 +234,7 @@ class JDXiDimensions:
     ARP_MARGIN = 5
     ARP_SPACING = 20
 
+    LED: LedDisplayDimensions = LedDisplayDimensions
     # LED display area (enlarged for 2 rows)
     DISPLAY_WIDTH = 210
     DISPLAY_HEIGHT = 70
@@ -158,6 +242,7 @@ class JDXiDimensions:
     DISPLAY_Y = MARGIN + 35
 
     # LED title area (enlarged for 2 rows)
+    DIGITAL_TITLE: DigitalTitleDimensions = DigitalTitleDimensions
     DIGITAL_TITLE_WIDTH = 330
     DIGITAL_TITLE_HEIGHT = 70
 
@@ -166,25 +251,31 @@ class JDXiDimensions:
         450,
     ]  # More room for top section (Presets/Partials)
     EDITOR_DRUM_ANALOG_SPLITTER_SIZES = [200, 400]
+    
+    EDITOR_ANALOG: AnalogEditorDimensions = AnalogEditorDimensions
     EDITOR_ANALOG_MIN_WIDTH = 330
     EDITOR_ANALOG_MIN_HEIGHT = 330
     EDITOR_ANALOG_WIDTH = 950
     EDITOR_ANALOG_HEIGHT = 600
 
+    PWM_WIDGET: PWMWidgetDimensions = PWMWidgetDimensions
     PWM_WIDGET_X = 100
     PWM_WIDGET_Y = 100
     PWM_WIDGET_WIDTH = 300
     PWM_WIDGET_HEIGHT = 500
 
+    TITLE: TitleDimensions = TitleDimensions
     # Title above display (moved down)
     TITLE_X = DISPLAY_X
     TITLE_Y = MARGIN
     TITLE_WIDTH = 200
     TITLE_HEIGHT = 50
 
+    KEYBOARD: KeyboardDimensions = KeyboardDimensions
     # Keyboard
     WHITE_KEY_HEIGHT = 127
     KEYBOARD_WIDTH = 800
+
 
     # Sequencer above keyboard
     SEQUENCER_Y_WINDOWS = (
@@ -196,19 +287,24 @@ class JDXiDimensions:
     SEQUENCER_WIDTH = 440  # # Use roughly half keyboard width
     SEQUENCER_X = WIDTH - MARGIN - SEQUENCER_WIDTH  # Align with right edge of keyboard
 
+    SEQUENCER: SequencerDimensions = SequencerDimensions
     # Sequencer grid
     SEQUENCER_STEPS = 16
     SEQUENCER_STEP_SIZE = 18
+    
+    SEQUENCER_GRID: SequencerGridDimensions = SequencerGridDimensions
     SEQUENCER_GRID_WIDTH = 300
     SEQUENCER_GRID_HEIGHT = 30
     SEQUENCER_SQUARE_SIZE = 25
 
     # Sequencer container
+    SEQUENCER_CONTAINER: SequencerContainerDimensions = SequencerContainerDimensions
     SEQUENCER_CONTAINER_X = MARGIN + 520
     SEQUENCER_CONTAINER_Y = MARGIN + 155
     SEQUENCER_CONTAINER_WIDTH = 500
     SEQUENCER_CONTAINER_HEIGHT = 80
 
+    SLIDER: SliderDimensions = SliderDimensions
     # Sliders
     SLIDER_X = 515
     SLIDER_Y = MARGIN
@@ -216,6 +312,7 @@ class JDXiDimensions:
     SLIDER_HEIGHT = 120
     SLIDER_CONTAINER_HEIGHT = SLIDER_HEIGHT + 20
 
+    PARTS: PartsDimensions = PartsDimensions
     # Parts container
     PARTS_X = DISPLAY_X + DISPLAY_WIDTH + 10
     PARTS_Y = MARGIN
@@ -253,6 +350,3 @@ class JDXiDimensions:
     EFFECTS_HEIGHT = 120
 
     SCROLL_AREA_HEIGHT = 100
-    DRUM_PARTIAL_TAB_MIN_WIDTH = (
-        400  # Minimum width for drum partial tabs to match WMT width
-    )
