@@ -20,8 +20,8 @@ from PySide6.QtWidgets import (
 from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
 from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.midi.data.parameter.analog import AnalogParam
-from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.editor import IconType
+from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
@@ -41,7 +41,7 @@ class AnalogLFOSection(SectionBaseWidget):
         self._create_parameter_combo_box = create_parameter_combo_box
         self._on_lfo_shape_changed = on_lfo_shape_changed
         self.lfo_shape_buttons = lfo_shape_buttons
-        
+
         super().__init__(icon_type=IconType.ADSR, analog=True)
         self.setup_ui()
 
@@ -89,8 +89,10 @@ class AnalogLFOSection(SectionBaseWidget):
         depth_controls_row_widget.setMinimumHeight(JDXiDimensions.EDITOR_MINIMUM_HEIGHT)
         depth_controls_row_widget.setLayout(depth_controls_row_layout)
         depth_icon = IconRegistry.get_icon(IconRegistry.WAVEFORM, color=JDXiStyle.GREY)
-        self.lfo_controls_tab_widget.addTab(depth_controls_row_widget, depth_icon, "Depth Controls")
-        
+        self.lfo_controls_tab_widget.addTab(
+            depth_controls_row_widget, depth_icon, "Depth Controls"
+        )
+
         main_rows_vlayout.addStretch()
 
     # ------------------------------------------------------------------
@@ -125,7 +127,9 @@ class AnalogLFOSection(SectionBaseWidget):
             JDXiThemeManager.apply_button_rect_analog(btn)
 
             # Use same dimensions as oscillator waveform buttons for consistency
-            btn.setFixedSize(JDXiDimensions.WAVEFORM_ICON_WIDTH, JDXiDimensions.WAVEFORM_ICON_HEIGHT)
+            btn.setFixedSize(
+                JDXiDimensions.WAVEFORM_ICON_WIDTH, JDXiDimensions.WAVEFORM_ICON_HEIGHT
+            )
 
             btn.clicked.connect(lambda _, v=value: self._on_lfo_shape_changed(v))
 
@@ -303,7 +307,9 @@ class AnalogLFOSectionOld(QWidget):
         depth_controls_row_widget.setMinimumHeight(JDXiDimensions.EDITOR_MINIMUM_HEIGHT)
         depth_controls_row_widget.setLayout(depth_controls_row_layout)
         depth_icon = IconRegistry.get_icon(IconRegistry.WAVEFORM, color=JDXiStyle.GREY)
-        self.lfo_controls_tab_widget.addTab(depth_controls_row_widget, depth_icon, "Depth Controls")
+        self.lfo_controls_tab_widget.addTab(
+            depth_controls_row_widget, depth_icon, "Depth Controls"
+        )
         main_rows_vlayout.addStretch()
 
     def _create_lfo_depth_controls(self) -> QHBoxLayout:

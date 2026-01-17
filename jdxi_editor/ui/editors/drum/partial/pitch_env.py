@@ -37,10 +37,6 @@ Example:
 from typing import Callable
 
 import numpy as np
-from decologr import Decologr as log
-from jdxi_editor.ui.editors.drum.partial.base import DrumBaseSection
-from jdxi_editor.ui.widgets.editor.helper import create_group_and_grid_layout
-from picomidi.constant import Midi
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QColor, QFont, QLinearGradient, QPainter, QPainterPath, QPen
 from PySide6.QtWidgets import (
@@ -49,10 +45,14 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from decologr import Decologr as log
 from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.editors.drum.partial.base import DrumBaseSection
+from jdxi_editor.ui.widgets.editor.helper import create_group_and_grid_layout
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
+from picomidi.constant import Midi
 
 
 def midi_to_pitch_level(midi_value: int) -> float:
@@ -305,7 +305,9 @@ class DrumPitchEnvSection(DrumBaseSection):
         main_layout.addStretch()
         self.scrolled_layout.addWidget(main_container)
 
-        controls_group, controls_layout = create_group_and_grid_layout(group_name="Pitch Envelope Controls")
+        controls_group, controls_layout = create_group_and_grid_layout(
+            group_name="Pitch Envelope Controls"
+        )
         JDXiThemeManager.apply_adsr_style(controls_group)
         main_layout.addWidget(controls_group)
         self.create_sliders(controls_layout)

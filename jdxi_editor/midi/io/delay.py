@@ -7,7 +7,6 @@ import logging as log
 import time
 
 from decologr import Decologr as log
-
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sleep import MIDI_SLEEP_TIME
 

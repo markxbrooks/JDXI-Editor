@@ -3,7 +3,6 @@ import platform
 import subprocess
 
 from decologr import Decologr as log
-
 from jdxi_editor.resources import resource_path
 
 

@@ -22,9 +22,6 @@ from enum import Enum
 from typing import Any, Dict, Iterable, Tuple
 
 from decologr import Decologr as log
-from picomidi.constant import Midi
-from picomidi.sysex.parameter.address import AddressParameter
-
 from jdxi_editor.jdxi.midi.constant import JDXiMidi
 from jdxi_editor.jdxi.midi.message.sysex.length import JDXiSysExLength
 from jdxi_editor.jdxi.midi.message.sysex.offset import JDXiSysExMessageLayout
@@ -41,6 +38,8 @@ from jdxi_editor.midi.sysex.parser.tone_mapper import (
     get_synth_tone,
     get_temporary_area,
 )
+from picomidi.constant import Midi
+from picomidi.sysex.parameter.address import AddressParameter
 
 UNKNOWN = "Unknown"
 UNKNOWN_AREA = "Unknown area"

@@ -28,7 +28,6 @@ Customization:
 """
 
 import numpy as np
-from decologr import Decologr as log
 from PySide6.QtCore import QPointF, Qt
 from PySide6.QtGui import (
     QColor,
@@ -42,6 +41,7 @@ from PySide6.QtGui import (
 )
 from PySide6.QtWidgets import QWidget
 
+from decologr import Decologr as log
 from jdxi_editor.jdxi.style import JDXiStyle
 
 

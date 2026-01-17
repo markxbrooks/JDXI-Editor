@@ -25,11 +25,11 @@ import os
 import re
 from typing import Any, Optional
 
-from decologr import Decologr as log
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QKeySequence, QPixmap, QShortcut, QShowEvent
 from PySide6.QtWidgets import QGroupBox, QLabel, QPushButton, QVBoxLayout, QWidget
 
+from decologr import Decologr as log
 from jdxi_editor.jdxi.preset.lists import JDXiPresetToneList
 from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
 from jdxi_editor.jdxi.synth.type import JDXiSynth

@@ -7,9 +7,9 @@ from typing import Callable
 from PySide6.QtWidgets import QHBoxLayout
 
 from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParam
+from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
-from jdxi_editor.ui.widgets.editor import IconType
 
 
 class DigitalCommonSection(SectionBaseWidget):
@@ -32,7 +32,7 @@ class DigitalCommonSection(SectionBaseWidget):
         self._create_parameter_switch = create_parameter_switch
         self._create_parameter_combo_box = create_parameter_combo_box
         self.controls = controls
-        
+
         super().__init__(icon_type=IconType.GENERIC, analog=False)
         self.init_ui()
 
@@ -78,12 +78,16 @@ class DigitalCommonSection(SectionBaseWidget):
         self.wave_shape = self._create_parameter_slider(
             DigitalCommonParam.WAVE_SHAPE, "Wave Shape", vertical=True
         )
-        self.pitch_bend_row = create_layout_with_widgets([self.pitch_bend_up,
-                                                          self.pitch_bend_down,
-                                                          self.tone_level,
-                                                          self.portamento_time,
-                                                          self.analog_feel,
-                                                          self.wave_shape])
+        self.pitch_bend_row = create_layout_with_widgets(
+            [
+                self.pitch_bend_up,
+                self.pitch_bend_down,
+                self.tone_level,
+                self.portamento_time,
+                self.analog_feel,
+                self.wave_shape,
+            ]
+        )
         layout.addLayout(self.pitch_bend_row)
 
         # --- Ring Modulator
@@ -102,8 +106,7 @@ class DigitalCommonSection(SectionBaseWidget):
             "Size",
             ["2 VOICE", "3 VOICE", "4 VOICE", "5 VOICE"],
         )
-        unison_row = create_layout_with_widgets([self.unison_switch,
-                                                 self.unison_size])
+        unison_row = create_layout_with_widgets([self.unison_switch, self.unison_size])
         layout.addLayout(unison_row)
 
         # --- Portamento Switch
@@ -119,7 +122,8 @@ class DigitalCommonSection(SectionBaseWidget):
         self.legato_switch = self._create_parameter_switch(
             DigitalCommonParam.LEGATO_SWITCH, "Legato", ["OFF", "ON"]
         )
-        portamento_row = create_layout_with_widgets([self.portamento_switch,
-                                                     self.legato_switch])
+        portamento_row = create_layout_with_widgets(
+            [self.portamento_switch, self.legato_switch]
+        )
         layout.addLayout(portamento_row)
         layout.addStretch()

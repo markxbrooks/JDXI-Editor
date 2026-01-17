@@ -9,7 +9,6 @@ to filter and select them easily.
 #                 selected_text.split(":")[0].strip()
 """
 
-from decologr import Decologr as log
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import (
     QComboBox,
@@ -20,6 +19,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from decologr import Decologr as log
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets
 
@@ -165,4 +165,6 @@ class PresetComboBox(QWidget):
             self.combo_box.addItem(f"{preset_id} - {preset_name}", index)
             self.presets[preset_name] = index
         self.combo_box.setCurrentIndex(0)  # --- Update the UI with the new program list
-        self.combo_box.setCurrentIndex(0)  # --- Select "No Category Selected" as default
+        self.combo_box.setCurrentIndex(
+            0
+        )  # --- Select "No Category Selected" as default

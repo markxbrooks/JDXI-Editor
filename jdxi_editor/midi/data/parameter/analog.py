@@ -39,9 +39,8 @@ This class helps structure and manage parameter mappings for JD-Xi SysEx process
 
 from typing import Optional, Tuple
 
-from picomidi.sysex.parameter.address import AddressParameter
-
 from jdxi_editor.midi.data.parameter.digital.mapping import ENVELOPE_MAPPING
+from picomidi.sysex.parameter.address import AddressParameter
 
 
 class AnalogParam(AddressParameter):

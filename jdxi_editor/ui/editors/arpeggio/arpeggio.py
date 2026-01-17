@@ -38,7 +38,6 @@ Dependencies:
 
 from typing import Dict, Optional
 
-from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtWidgets import (
     QHBoxLayout,
     QVBoxLayout,
@@ -48,8 +47,6 @@ from PySide6.QtWidgets import (
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.midi.data.address.address import ZERO_BYTE, RolandSysExAddress
-from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
-from jdxi_editor.ui.widgets.editor.simple_editor_helper import SimpleEditorHelper
 from jdxi_editor.midi.data.address.arpeggio import ArpeggioAddress
 from jdxi_editor.midi.data.arpeggio.arpeggio import (
     ArpeggioDuration,
@@ -65,16 +62,19 @@ from jdxi_editor.midi.data.parameter.arpeggio import ArpeggioParam
 from jdxi_editor.midi.data.parameter.program.zone import ProgramZoneParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
+from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
+from jdxi_editor.ui.widgets.editor.simple_editor_helper import SimpleEditorHelper
+from picomidi.sysex.parameter.address import AddressParameter
 
 
 class ArpeggioEditor(BasicEditor):
     """Arpeggio Editor Window"""
 
     def __init__(
-            self,
-            midi_helper: MidiIOHelper,
-            preset_helper: Optional[JDXiPresetHelper] = None,
-            parent: Optional["JDXiInstrument"] = None,
+        self,
+        midi_helper: MidiIOHelper,
+        preset_helper: Optional[JDXiPresetHelper] = None,
+        parent: Optional["JDXiInstrument"] = None,
     ):
         super().__init__(midi_helper=midi_helper, parent=parent)
         """
@@ -117,7 +117,7 @@ class ArpeggioEditor(BasicEditor):
             base_widget=self.base_widget,
             title="Arpeggiator",
             image_folder="arpeggiator",
-            default_image="arpeggiator2.png"
+            default_image="arpeggiator2.png",
         )
 
         # --- Get rows layout to add additional content (icon row and switches)
@@ -192,19 +192,23 @@ class ArpeggioEditor(BasicEditor):
         )
         motif_row = create_left_aligned_row([self.motif_combo])
 
-        self.create_rows_layout({"duration_row": duration_row,
-                                 "grid_row": grid_row,
-                                 "icon_hlayout": icon_hlayout,
-                                 "motif_row": motif_row,
-                                 "octave_row": octave_row,
-                                 "program_zone_row": program_zone_row,
-                                 "style_row": style_row,
-                                 "switch_row": switch_row,
-                                 "velocity_slider": self.velocity_slider,
-                                 "accent_slider": self.accent_slider})
+        self.create_rows_layout(
+            {
+                "duration_row": duration_row,
+                "grid_row": grid_row,
+                "icon_hlayout": icon_hlayout,
+                "motif_row": motif_row,
+                "octave_row": octave_row,
+                "program_zone_row": program_zone_row,
+                "style_row": style_row,
+                "switch_row": switch_row,
+                "velocity_slider": self.velocity_slider,
+                "accent_slider": self.accent_slider,
+            }
+        )
 
         # Add base widget to editor's layout
-        if not hasattr(self, 'main_layout') or self.main_layout is None:
+        if not hasattr(self, "main_layout") or self.main_layout is None:
             self.main_layout = QVBoxLayout(self)
             self.setLayout(self.main_layout)
         self.main_layout.addWidget(self.base_widget)

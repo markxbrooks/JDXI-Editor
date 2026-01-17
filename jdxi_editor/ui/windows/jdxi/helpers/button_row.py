@@ -30,7 +30,7 @@ def create_button_row(text, slot, vertical=False, spacing=10):
 
     # Style the button with brighter hover/border_pressed/selected  states
     button.setStyleSheet(JDXiStyle.BUTTON_ROUND)
-    
+
     # Add tooltip based on button text
     tooltip_map = {
         "Digital Synth 1": "Digital Synth 1: Open the Digital Synth 1 editor",
@@ -42,6 +42,6 @@ def create_button_row(text, slot, vertical=False, spacing=10):
         "Effects": "Effects: Open the Effects editor",
     }
     button.setToolTip(tooltip_map.get(text, f"{text}: Click to open"))
-    
+
     row.addWidget(button)
     return row, button

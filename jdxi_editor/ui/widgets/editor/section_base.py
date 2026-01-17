@@ -19,13 +19,13 @@ Features:
 Usage Example:
 --------------
     # In a section's __init__ or setup_ui method:
-    
+
     class MySection(SectionBaseWidget):
         def __init__(self, ...):
             super().__init__(icon_type="adsr", analog=False)
             # Your initialization code
             self.setup_ui()
-        
+
         def setup_ui(self):
             layout = self.get_layout()  # Gets the QVBoxLayout with icon row already added
             # Add your controls to layout
@@ -46,7 +46,7 @@ from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 class SectionBaseWidget(QWidget):
     """
     Base widget for editor sections that automatically adds icon rows.
-    
+
     This widget standardizes section structure by automatically adding
     appropriate icon rows based on section type, reducing boilerplate
     and ensuring consistency.
@@ -78,7 +78,7 @@ class SectionBaseWidget(QWidget):
     ) -> QVBoxLayout:
         """
         Get or create the main layout for this section.
-        
+
         If the layout doesn't exist, creates it and adds the icon row.
         This should be called at the start of setup_ui() or init_ui().
 
@@ -89,28 +89,28 @@ class SectionBaseWidget(QWidget):
         if self._layout is None:
             self._layout = QVBoxLayout()
             self.setLayout(self._layout)
-            
+
             # Set margins and spacing if provided
             if margins is not None:
                 self._layout.setContentsMargins(*margins)
             if spacing is not None:
                 self._layout.setSpacing(spacing)
-            
+
             # Apply styling
             JDXiThemeManager.apply_adsr_style(self, analog=self.analog)
-            
+
             # Add icon row if not disabled
             if self.icon_type != IconType.NONE and not self._icon_added:
                 self._add_icon_row()
                 self._icon_added = True
-        
+
         return self._layout
 
     def _add_icon_row(self) -> None:
         """Add the appropriate icon row based on icon_type"""
         if self._layout is None:
             return
-        
+
         if self.icon_type == IconType.ADSR:
             icon_hlayout = IconRegistry.create_adsr_icons_row()
         elif self.icon_type == IconType.OSCILLATOR:
@@ -119,16 +119,16 @@ class SectionBaseWidget(QWidget):
             icon_hlayout = IconRegistry.create_generic_musical_icon_row()
         else:
             return  # IconType.NONE or unknown
-        
+
         self._layout.addLayout(icon_hlayout)
 
     def setup_ui(self) -> None:
         """
         Setup the UI for this section.
-        
+
         Subclasses should override this method and call get_layout()
         at the start to ensure the icon row is added.
-        
+
         Example:
             def setup_ui(self):
                 layout = self.get_layout()
@@ -140,7 +140,7 @@ class SectionBaseWidget(QWidget):
     def init_ui(self) -> None:
         """
         Initialize the UI for this section.
-        
+
         Alias for setup_ui() for sections that use init_ui() naming.
         Subclasses can override either setup_ui() or init_ui().
         """
@@ -148,7 +148,9 @@ class SectionBaseWidget(QWidget):
 
     def create_main_rows_layout(self):
         """create main rows layout"""
-        layout = self.get_layout(margins=JDXiDimensions.DIGITAL_FILTER_MARGINS,
-                                 spacing=JDXiDimensions.DIGITAL_FILTER_SPACING)
+        layout = self.get_layout(
+            margins=JDXiDimensions.DIGITAL_FILTER_MARGINS,
+            spacing=JDXiDimensions.DIGITAL_FILTER_SPACING,
+        )
         layout.addSpacing(JDXiDimensions.DIGITAL_FILTER_SPACING)
         return layout

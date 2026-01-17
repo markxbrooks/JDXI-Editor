@@ -46,11 +46,15 @@ from jdxi_editor.ui.constant import JDXiUI
 
 
 def generate_filter_plot(
-    width: float, slope: float, sample_rate: int, duration: float, filter_mode: str = "lpf"
+    width: float,
+    slope: float,
+    sample_rate: int,
+    duration: float,
+    filter_mode: str = "lpf",
 ) -> np.ndarray:
     """
     Generates a filter frequency response plot based on filter mode.
-    
+
     :param width: Cutoff frequency position (0.0-1.0)
     :param slope: Filter slope (0.0-1.0)
     :param sample_rate: Sample rate for the plot
@@ -60,32 +64,32 @@ def generate_filter_plot(
     """
     width = max(0.0, min(1.0, width))  # Clip to valid range
     total_samples = int(duration * sample_rate)
-    
+
     # Normalize filter_mode to lowercase
     filter_mode = filter_mode.lower() if filter_mode else "lpf"
-    
+
     if filter_mode == "bypass":
         # Bypass: flat line at full amplitude
         envelope = np.full(total_samples, JDXiUI.FILTER_PLOT_DEPTH, dtype=np.float32)
         return envelope
-    
+
     # Calculate slope steepness based on slope parameter
     slope_gradient = 0.5 - (slope * 0.25)
-    
+
     # Define segments in samples
     period = max(1, sample_rate)  # Avoid divide-by-zero
     cutoff_samples = int(period * width)
     transition_samples = int(period * slope_gradient)
-    
+
     # At least 1 sample to avoid weird signals
     cutoff_samples = max(1, cutoff_samples)
     transition_samples = max(1, transition_samples)
-    
+
     if filter_mode == "lpf":
         # Low-pass filter: full amplitude up to cutoff, then rolloff
         # Create the passband (full amplitude up to cutoff)
         passband = np.full(cutoff_samples, JDXiUI.FILTER_PLOT_DEPTH, dtype=np.float32)
-        
+
         # Create transition rolloff
         rolloff = np.linspace(
             JDXiUI.FILTER_PLOT_DEPTH,
@@ -94,10 +98,10 @@ def generate_filter_plot(
             endpoint=False,
             dtype=np.float32,
         )
-        
+
         # Combine together
         envelope = np.concatenate([passband, rolloff], axis=0)
-        
+
     elif filter_mode == "hpf":
         # High-pass filter: rolloff up to cutoff, then full amplitude
         # Create transition rolloff from 0 to cutoff
@@ -108,13 +112,15 @@ def generate_filter_plot(
             endpoint=False,
             dtype=np.float32,
         )
-        
+
         # Create the passband (full amplitude after cutoff)
-        passband = np.full(transition_samples, JDXiUI.FILTER_PLOT_DEPTH, dtype=np.float32)
-        
+        passband = np.full(
+            transition_samples, JDXiUI.FILTER_PLOT_DEPTH, dtype=np.float32
+        )
+
         # Combine together
         envelope = np.concatenate([rolloff, passband], axis=0)
-        
+
     elif filter_mode == "bpf":
         # Band-pass filter: rolloff, passband, rolloff
         # Low rolloff (before passband)
@@ -126,11 +132,11 @@ def generate_filter_plot(
             endpoint=False,
             dtype=np.float32,
         )
-        
+
         # Passband (middle section)
         passband_samples = int(cutoff_samples * 0.4)
         passband = np.full(passband_samples, JDXiUI.FILTER_PLOT_DEPTH, dtype=np.float32)
-        
+
         # High rolloff (after passband)
         high_rolloff_samples = int(transition_samples * 0.5)
         high_rolloff = np.linspace(
@@ -140,10 +146,10 @@ def generate_filter_plot(
             endpoint=False,
             dtype=np.float32,
         )
-        
+
         # Combine together
         envelope = np.concatenate([low_rolloff, passband, high_rolloff], axis=0)
-        
+
     else:
         # Default to LPF if unknown mode
         passband = np.full(cutoff_samples, JDXiUI.FILTER_PLOT_DEPTH, dtype=np.float32)
@@ -204,11 +210,11 @@ class FilterPlot(QWidget):
             self.parent.pulse_width_changed.connect(self.set_values)
         if hasattr(self.parent, "mod_depth_changed"):
             self.parent.mod_depth_changed.connect(self.set_values)
-    
+
     def set_filter_mode(self, filter_mode: str) -> None:
         """
         Update filter mode and trigger redraw
-        
+
         :param filter_mode: str - Filter mode ("lpf", "hpf", "bpf", "bypass")
         :return: None
         """
@@ -322,7 +328,6 @@ class FilterPlot(QWidget):
             num_ticks = 6
             for i in range(num_ticks + 1):
                 x = left_pad + i * plot_w / num_ticks
-
 
             # === Y-axis Labels & Ticks ===
             for i in range(-1, 6):
@@ -439,7 +444,5 @@ class FilterPlot(QWidget):
 
                     painter.drawLine(QPointF(x, y1), QPointF(x, y2))
 
-
         finally:
             painter.end()
-

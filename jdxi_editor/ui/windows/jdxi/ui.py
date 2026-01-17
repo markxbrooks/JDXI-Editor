@@ -24,7 +24,6 @@ import re
 from typing import Union
 
 import qtawesome as qta
-from decologr import Decologr as log
 from PySide6.QtCore import QSettings, Qt
 from PySide6.QtGui import (
     QAction,
@@ -40,6 +39,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from decologr import Decologr as log
 from jdxi_editor.jdxi.preset.manager import JDXiPresetManager
 from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.jdxi.style.jdxi import JDXiStyle
@@ -60,10 +60,10 @@ from jdxi_editor.ui.widgets.button.sequencer import SequencerSquare
 from jdxi_editor.ui.widgets.indicator.led import LEDIndicator
 from jdxi_editor.ui.widgets.piano.keyboard import PianoKeyboard
 from jdxi_editor.ui.windows.jdxi.containers import (
-    add_octave_and_arp_buttons,
     add_digital_display,
     add_effects_container,
     add_favorite_button_container,
+    add_octave_and_arp_buttons,
     add_program_container,
     add_sequencer_container,
     add_slider_container,
@@ -182,9 +182,12 @@ class JDXiUi(QMainWindow):
         }
         self.arp_button = self.part_buttons["arp"]
 
-        self.octave_down, self.octave_up, self.arpeggiator_button, self.key_hold_button = add_octave_and_arp_buttons(
-            container_widget, self._midi_send_octave
-        )
+        (
+            self.octave_down,
+            self.octave_up,
+            self.arpeggiator_button,
+            self.key_hold_button,
+        ) = add_octave_and_arp_buttons(container_widget, self._midi_send_octave)
 
         self.vocal_effects_button, self.effects_button = add_effects_container(
             container_widget,
@@ -197,7 +200,10 @@ class JDXiUi(QMainWindow):
         )
 
         self.tone_down_button, self.tone_up_button = add_tone_container(
-            container_widget, create_tone_buttons_row, self._preset_previous, self._preset_next
+            container_widget,
+            create_tone_buttons_row,
+            self._preset_previous,
+            self._preset_next,
         )
         self.sequencer_buttons = add_sequencer_container(
             container_widget,

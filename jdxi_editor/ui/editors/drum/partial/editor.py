@@ -10,6 +10,7 @@ from functools import partial
 from typing import Dict, Optional
 
 from PySide6.QtCore import Qt
+from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
     QScrollArea,
     QSizePolicy,
@@ -18,6 +19,8 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.midi.data.address.address import AddressOffsetProgramLMB
 from jdxi_editor.midi.data.parameter.drum.addresses import DRUM_GROUP_MAP
@@ -30,12 +33,9 @@ from jdxi_editor.ui.editors.drum.partial.tva import DrumTVASection
 from jdxi_editor.ui.editors.drum.partial.tvf import DrumTVFSection
 from jdxi_editor.ui.editors.drum.partial.wmt import DrumWMTSection
 from jdxi_editor.ui.editors.synth.partial import PartialEditor
-from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
-from jdxi_editor.jdxi.style import JDXiStyle
-from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
-from PySide6.QtGui import QIcon
+from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
 class DrumPartialEditor(PartialEditor):
@@ -66,9 +66,7 @@ class DrumPartialEditor(PartialEditor):
         main_layout.setContentsMargins(0, 0, 0, 0)
         main_layout.setSpacing(0)
         self.setLayout(main_layout)
-        self.setSizePolicy(
-            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
-        )
+        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
 
         # Create scroll area with hidden scrollbars and proper sizing
         scroll_area = QScrollArea()
@@ -98,7 +96,9 @@ class DrumPartialEditor(PartialEditor):
         tab_partial_layout = QVBoxLayout(tab_partial)
         tab_partial_layout.setContentsMargins(0, 0, 0, 0)
         tab_partial_layout.setSpacing(0)
-        partial_icon = IconRegistry.get_icon(IconRegistry.CIRCLE_OUTLINE, color=JDXiStyle.GREY)
+        partial_icon = IconRegistry.get_icon(
+            IconRegistry.CIRCLE_OUTLINE, color=JDXiStyle.GREY
+        )
         tab_widget.addTab(tab_partial, partial_icon, "Partial")
 
         partial_group = DrumPartialSection(
@@ -150,7 +150,9 @@ class DrumPartialEditor(PartialEditor):
         tab_output_layout = QVBoxLayout(tab_output)
         tab_output_layout.setContentsMargins(0, 0, 0, 0)
         tab_output_layout.setSpacing(0)
-        output_icon = IconRegistry.get_icon(IconRegistry.VOLUME_HIGH, color=JDXiStyle.GREY)
+        output_icon = IconRegistry.get_icon(
+            IconRegistry.VOLUME_HIGH, color=JDXiStyle.GREY
+        )
         tab_widget.addTab(tab_output, output_icon, "Output")
 
         output_group = DrumOutputSection(

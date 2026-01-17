@@ -25,10 +25,9 @@ import os
 from typing import Any, Callable, Dict, List, Optional
 
 import mido
-from decologr import Decologr as log
-from picomidi.constant import Midi
 from PySide6.QtCore import Signal
 
+from decologr import Decologr as log
 from jdxi_editor.jdxi.midi.constant import JDXiMidi
 from jdxi_editor.jdxi.midi.message.sysex.offset import JDXiSysExIdentityLayout
 from jdxi_editor.jdxi.preset.button import JDXiPresetButtonData
@@ -42,6 +41,7 @@ from jdxi_editor.midi.io.controller import MidiIOController
 from jdxi_editor.midi.map.synth_type import JDXiMapSynthType
 from jdxi_editor.midi.sysex.parser.sysex import JDXiSysExParser
 from jdxi_editor.midi.sysex.request.data import IGNORED_KEYS
+from picomidi.constant import Midi
 
 
 def add_or_replace_program_and_save(new_program: JDXiProgram) -> bool:

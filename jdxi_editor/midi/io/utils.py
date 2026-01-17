@@ -6,10 +6,8 @@ utility functions
 from typing import Iterable, List, Optional, Union
 
 import mido
-from decologr import Decologr as log
-from picomidi.constant import Midi
-from picomidi.core.bitmask import BitMask
 
+from decologr import Decologr as log
 from jdxi_editor.jdxi.midi.message.sysex.offset import (
     JDXIControlChangeOffset,
     JDXIProgramChangeOffset,
@@ -18,16 +16,8 @@ from jdxi_editor.jdxi.midi.message.sysex.offset import (
 from jdxi_editor.midi.data.address.address import ModelID
 from jdxi_editor.midi.data.address.sysex import RolandID
 from jdxi_editor.midi.sysex.device import DeviceInfo
-
-
-def format_midi_message_to_hex_string(message: Iterable[int]) -> str:
-    """
-    Convert a list of MIDI byte values to a space-separated hex string.
-
-    :param message: Iterable[int]
-    :return: str A string like "F0 41 10 00 00 00 0E ... F7"
-    """
-    return " ".join([hex(x)[2:].upper().zfill(2) for x in message])
+from picomidi.constant import Midi
+from picomidi.core.bitmask import BitMask
 
 
 def increment_if_lsb_exceeds_7bit(msb: int, lsb: int) -> int:

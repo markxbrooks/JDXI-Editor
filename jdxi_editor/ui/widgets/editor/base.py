@@ -21,36 +21,36 @@ Features:
 Usage Example:
 --------------
     # In an editor's setup_ui() method:
-    
+
     # Option 1: Using tabs (like AnalogSynthEditor)
     base_widget = EditorBaseWidget(parent=self, analog=True)
     base_widget.setup_scrollable_content()
-    
+
     # Add preset widget as first tab
     base_widget.add_tab_section("Presets", self.instrument_preset)
-    
+
     # Add other sections as tabs
     base_widget.add_tab_section("Oscillator", self.oscillator_section)
     base_widget.add_tab_section("Filter", self.filter_section)
-    
+
     # Option 2: Direct content (like DigitalSynthEditor)
     base_widget = EditorBaseWidget(parent=self)
     base_widget.setup_scrollable_content()
-    
+
     # Add widgets directly to container
     base_widget.add_content_section(self.partials_panel)
     base_widget.add_content_section(self.instrument_preset)
-    
+
     # Then add a tab widget for partials
     base_widget.add_tab_section("Partials", self.partial_tab_widget)
-    
+
     # Option 3: Mixed approach
     base_widget = EditorBaseWidget(parent=self, analog=True)
     base_widget.setup_scrollable_content()
-    
+
     # Add some content directly
     base_widget.add_content_section(header_widget)
-    
+
     # Then add tabs
     base_widget.add_tab_section("Section 1", widget1)
     base_widget.add_tab_section("Section 2", widget2)
@@ -76,7 +76,7 @@ from jdxi_editor.jdxi.style.theme_manager import JDXiThemeManager
 class EditorBaseWidget(QWidget):
     """
     Base widget that provides common layout structure for all Editor Windows.
-    
+
     This widget standardizes the scrollable content area and tab structure
     used across all editors, reducing boilerplate and ensuring consistency.
     """
@@ -99,7 +99,9 @@ class EditorBaseWidget(QWidget):
         self.container_layout: Optional[QVBoxLayout] = None
         self.tab_widget: Optional[QTabWidget] = None
         self.main_layout: Optional[QVBoxLayout] = None
-        self.centered_wrapper: Optional[QWidget] = None  # Wrapper widget with HBoxLayout for centering
+        self.centered_wrapper: Optional[QWidget] = (
+            None  # Wrapper widget with HBoxLayout for centering
+        )
 
     def setup_main_layout(self) -> QVBoxLayout:
         """
@@ -113,7 +115,9 @@ class EditorBaseWidget(QWidget):
             self.main_layout.setSpacing(0)
             self.setLayout(self.main_layout)
             # Ensure the widget itself expands
-            self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+            self.setSizePolicy(
+                QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
+            )
         return self.main_layout
 
     def setup_scrollable_content(
@@ -138,8 +142,12 @@ class EditorBaseWidget(QWidget):
         # Create scroll area with hidden scrollbars
         self.scroll_area = QScrollArea()
         self.scroll_area.setWidgetResizable(True)
-        self.scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        self.scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.scroll_area.setHorizontalScrollBarPolicy(
+            Qt.ScrollBarPolicy.ScrollBarAlwaysOff
+        )
+        self.scroll_area.setVerticalScrollBarPolicy(
+            Qt.ScrollBarPolicy.ScrollBarAlwaysOff
+        )
         self.scroll_area.setSizePolicy(
             QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
         )
@@ -149,7 +157,7 @@ class EditorBaseWidget(QWidget):
         self.container, self.container_layout = create_scroll_container()
         self.container_layout.setSpacing(spacing)
         self.container_layout.setContentsMargins(*margins)
-        
+
         # Wrap container in HBoxLayout with stretches for horizontal centering
         self.centered_wrapper = QWidget()
         wrapper_layout = QHBoxLayout(self.centered_wrapper)
@@ -158,7 +166,7 @@ class EditorBaseWidget(QWidget):
         wrapper_layout.addStretch()  # Left stretch for centering
         wrapper_layout.addWidget(self.container)  # Container in middle
         wrapper_layout.addStretch()  # Right stretch for centering
-        
+
         self.scroll_area.setWidget(self.centered_wrapper)
 
         return self.scroll_area, self.container, self.container_layout
@@ -245,12 +253,12 @@ class EditorBaseWidget(QWidget):
         centered_layout = QHBoxLayout(centered_container)
         centered_layout.setContentsMargins(0, 0, 0, 0)
         centered_layout.setSpacing(0)
-        
+
         # Add stretch, widget, stretch for horizontal centering
         centered_layout.addStretch()
         centered_layout.addWidget(widget)
         centered_layout.addStretch()
-        
+
         # Add the centered container to the main container layout
         self.container_layout.addWidget(centered_container)
 

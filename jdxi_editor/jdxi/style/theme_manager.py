@@ -7,10 +7,10 @@ and ensuring consistent styling across the application.
 
 from typing import Optional
 
-from decologr import Decologr as log
 from PySide6.QtCore import QObject
 from PySide6.QtWidgets import QApplication, QWidget
 
+from decologr import Decologr as log
 from jdxi_editor.jdxi.style import JDXiStyle
 
 
@@ -128,7 +128,7 @@ class JDXiThemeManager(QObject):
     def apply_instrument_title_label(widget: QWidget) -> None:
         """Apply instrument title label style"""
         JDXiThemeManager.apply_style(widget, JDXiStyle.INSTRUMENT_TITLE_LABEL)
-        
+
     @staticmethod
     def apply_mixer_label(widget: QWidget, analog: bool = False) -> None:
         """

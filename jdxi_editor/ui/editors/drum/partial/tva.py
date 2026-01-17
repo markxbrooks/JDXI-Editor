@@ -35,7 +35,6 @@ Example:
 from typing import Callable
 
 import numpy as np
-from decologr import Decologr as log
 from PySide6.QtCore import Signal
 from PySide6.QtGui import (
     QColor,
@@ -56,6 +55,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from decologr import Decologr as log
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
@@ -65,7 +65,10 @@ from jdxi_editor.ui.editors.drum.partial.tvf import (
     midi_to_cutoff_level,
     midi_to_time_normalized,
 )
-from jdxi_editor.ui.widgets.editor.helper import create_group_with_layout, create_layout_with_widgets
+from jdxi_editor.ui.widgets.editor.helper import (
+    create_group_with_layout,
+    create_layout_with_widgets,
+)
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
@@ -73,11 +76,11 @@ class DrumTVAEnvPlot(QWidget):
     """Plot widget for drum TVA envelope visualization."""
 
     def __init__(
-            self,
-            width: int = JDXiStyle.ADSR_PLOT_WIDTH,
-            height: int = JDXiStyle.ADSR_PLOT_HEIGHT,
-            envelope: dict = None,
-            parent: QWidget = None,
+        self,
+        width: int = JDXiStyle.ADSR_PLOT_WIDTH,
+        height: int = JDXiStyle.ADSR_PLOT_HEIGHT,
+        envelope: dict = None,
+        parent: QWidget = None,
     ):
         super().__init__(parent)
         self.enabled = True
@@ -280,11 +283,11 @@ class DrumTVASection(DrumBaseSection):
     envelope_changed = Signal(dict)
 
     def __init__(
-            self,
-            controls: dict[DrumPartialParam, QWidget],
-            create_parameter_combo_box: Callable,
-            create_parameter_slider: Callable,
-            midi_helper: MidiIOHelper,
+        self,
+        controls: dict[DrumPartialParam, QWidget],
+        create_parameter_combo_box: Callable,
+        create_parameter_slider: Callable,
+        midi_helper: MidiIOHelper,
     ):
         super().__init__()
         """
@@ -321,11 +324,13 @@ class DrumTVASection(DrumBaseSection):
         self.tva_group = self._create_tva_group()
         self.plot = self._create_tva_plot()
 
-        main_row_hlayout = create_layout_with_widgets(widget_list=[self.tva_group,
-                                                                   self.plot], vertical=False)
+        main_row_hlayout = create_layout_with_widgets(
+            widget_list=[self.tva_group, self.plot], vertical=False
+        )
 
-        main_vbox_layout = create_layout_with_widgets(widget_list=[self.tva_level_velocity_curve_spin],
-                                                      vertical=True)
+        main_vbox_layout = create_layout_with_widgets(
+            widget_list=[self.tva_level_velocity_curve_spin], vertical=True
+        )
         main_vbox_layout.addLayout(main_row_hlayout)
         self.scrolled_layout.addLayout(main_vbox_layout)
 
@@ -342,9 +347,11 @@ class DrumTVASection(DrumBaseSection):
     def _create_tva_group(self):
         """TVA Group"""
         envelope_slider_layout = QGridLayout()
-        tva_group, _ = create_group_with_layout(group_name="TVA",
-                                                inner_layout=envelope_slider_layout,
-                                                style_sheet=JDXiStyle.ADSR)
+        tva_group, _ = create_group_with_layout(
+            group_name="TVA",
+            inner_layout=envelope_slider_layout,
+            style_sheet=JDXiStyle.ADSR,
+        )
 
         # --- Add TVA Velocity Sensitivity controls
         row = 0
@@ -462,7 +469,7 @@ class DrumTVASection(DrumBaseSection):
         return plot
 
     def _update_envelope(
-            self, key: str, value: int, param: DrumPartialParam = None
+        self, key: str, value: int, param: DrumPartialParam = None
     ) -> None:
         """Update envelope value and refresh plot
 

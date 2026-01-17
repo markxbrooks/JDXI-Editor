@@ -25,19 +25,18 @@ SystemCommonMessage
 
 from dataclasses import dataclass
 
-from picomidi.constant import Midi
-
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetProgramLMB,
     AddressStartMSB,
     CommandID,
 )
 from jdxi_editor.midi.data.parameter.system.common import SystemCommonParam
-from jdxi_editor.midi.message.roland import RolandSysEx
+from jdxi_editor.midi.message.roland import JDXiSysEx
+from picomidi.constant import Midi
 
 
 @dataclass
-class SystemCommonMessage(RolandSysEx):
+class SystemCommonMessage(JDXiSysEx):
     """System Common parameter message"""
 
     command: int = CommandID.DT1

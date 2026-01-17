@@ -23,7 +23,6 @@ Dependencies:
 
 from typing import Dict, Optional
 
-from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QGroupBox,
@@ -38,8 +37,6 @@ from PySide6.QtWidgets import (
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
 from jdxi_editor.jdxi.style.icons import IconRegistry
-from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
-from jdxi_editor.ui.widgets.editor.simple_editor_helper import SimpleEditorHelper
 from jdxi_editor.midi.data.address.address import (
     ZERO_BYTE,
     AddressOffsetProgramLMB,
@@ -61,6 +58,9 @@ from jdxi_editor.midi.data.vocal_effects.vocal import (
 )
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
+from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
+from jdxi_editor.ui.widgets.editor.simple_editor_helper import SimpleEditorHelper
+from picomidi.sysex.parameter.address import AddressParameter
 
 
 class VocalFXEditor(BasicEditor):
@@ -88,31 +88,41 @@ class VocalFXEditor(BasicEditor):
         # Use EditorBaseWidget for consistent scrollable layout structure
         self.base_widget = EditorBaseWidget(parent=self, analog=False)
         self.base_widget.setup_scrollable_content()
-        
+
         # Use SimpleEditorHelper for standardized title/image/tab setup
         self.editor_helper = SimpleEditorHelper(
             editor=self,
             base_widget=self.base_widget,
             title="Vocal Effects",
             image_folder="vocal_fx",
-            default_image="vocal_fx.png"
+            default_image="vocal_fx.png",
         )
 
         self.controls: Dict[AddressParameter, QWidget] = {}
 
         # Get tab widget from helper and add tabs
         self.tab_widget = self.editor_helper.get_tab_widget()
-        common_icon = IconRegistry.get_icon(IconRegistry.COG_OUTLINE, color=JDXiStyle.GREY)
+        common_icon = IconRegistry.get_icon(
+            IconRegistry.COG_OUTLINE, color=JDXiStyle.GREY
+        )
         self.tab_widget.addTab(self._create_common_section(), common_icon, "Common")
-        vocal_fx_icon = IconRegistry.get_icon(IconRegistry.MICROPHONE, color=JDXiStyle.GREY)
-        self.tab_widget.addTab(self._create_vocal_effect_section(), vocal_fx_icon, "Vocal FX")
+        vocal_fx_icon = IconRegistry.get_icon(
+            IconRegistry.MICROPHONE, color=JDXiStyle.GREY
+        )
+        self.tab_widget.addTab(
+            self._create_vocal_effect_section(), vocal_fx_icon, "Vocal FX"
+        )
         mixer_icon = IconRegistry.get_icon(IconRegistry.EQUALIZER, color=JDXiStyle.GREY)
         self.tab_widget.addTab(self._create_mixer_section(), mixer_icon, "Mixer")
-        auto_pitch_icon = IconRegistry.get_icon(IconRegistry.MUSIC_NOTE, color=JDXiStyle.GREY)
-        self.tab_widget.addTab(self._create_auto_pitch_section(), auto_pitch_icon, "Auto Pitch")
-        
+        auto_pitch_icon = IconRegistry.get_icon(
+            IconRegistry.MUSIC_NOTE, color=JDXiStyle.GREY
+        )
+        self.tab_widget.addTab(
+            self._create_auto_pitch_section(), auto_pitch_icon, "Auto Pitch"
+        )
+
         # Add base widget to editor's layout
-        if not hasattr(self, 'main_layout') or self.main_layout is None:
+        if not hasattr(self, "main_layout") or self.main_layout is None:
             self.main_layout = QVBoxLayout(self)
             self.setLayout(self.main_layout)
         self.main_layout.addWidget(self.base_widget)
@@ -126,11 +136,11 @@ class VocalFXEditor(BasicEditor):
         common_section = QWidget()
         layout = QVBoxLayout()
         common_section.setLayout(layout)
-        
+
         # Icons row (standardized across editor tabs)
         icon_hlayout = IconRegistry.create_generic_musical_icon_row()
         layout.addLayout(icon_hlayout)
-        
+
         self.program_tempo = self._create_parameter_slider(
             ProgramCommonParam.PROGRAM_TEMPO, "Tempo"
         )
@@ -181,7 +191,7 @@ class VocalFXEditor(BasicEditor):
         vocal_effect_section = QWidget()
         layout = QVBoxLayout()
         vocal_effect_section.setLayout(layout)
-        
+
         # Icons row (standardized across editor tabs)
         icon_hlayout = IconRegistry.create_adsr_icons_row()
         layout.addLayout(icon_hlayout)
@@ -262,7 +272,7 @@ class VocalFXEditor(BasicEditor):
         mixer_section = QWidget()
         layout = QVBoxLayout()
         mixer_section.setLayout(layout)
-        
+
         # Icons row (standardized across editor tabs)
         icon_hlayout = IconRegistry.create_adsr_icons_row()
         layout.addLayout(icon_hlayout)
@@ -312,7 +322,7 @@ class VocalFXEditor(BasicEditor):
         self.auto_pitch_group = auto_pitch_section  # Store reference
         layout = QVBoxLayout()
         auto_pitch_section.setLayout(layout)
-        
+
         # Icons row (standardized across editor tabs)
         icon_hlayout = IconRegistry.create_adsr_icons_row()
         layout.addLayout(icon_hlayout)

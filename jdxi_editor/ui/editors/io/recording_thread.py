@@ -3,10 +3,10 @@
 import wave
 
 import pyaudio
-from decologr import Decologr as log
 from PySide6.QtCore import QThread, Signal
 from PySide6.QtWidgets import QWidget
 
+from decologr import Decologr as log
 from jdxi_editor.midi.utils.usb_recorder import USBRecorder
 
 

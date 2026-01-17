@@ -41,12 +41,11 @@ import threading
 from typing import Optional, Union
 
 import qtawesome as qta
-from decologr import Decologr as log
-from picomidi.constant import Midi
 from PySide6.QtCore import QSettings, Qt, QTimer, Signal
 from PySide6.QtGui import QAction, QCloseEvent, QKeySequence, QMouseEvent, QShortcut
 from PySide6.QtWidgets import QApplication, QMenu, QMessageBox, QProgressDialog
 
+from decologr import Decologr as log
 from jdxi_editor.jdxi.file.utils import documentation_file_path, os_file_open
 from jdxi_editor.jdxi.midi.constant import JDXiMidi
 from jdxi_editor.jdxi.preset.button import JDXiPresetButtonData
@@ -70,7 +69,7 @@ from jdxi_editor.midi.data.parameter.program.zone import ProgramZoneParam
 from jdxi_editor.midi.io.controller import MidiIOController
 from jdxi_editor.midi.io.delay import send_with_delay
 from jdxi_editor.midi.io.input_handler import add_or_replace_program_and_save
-from jdxi_editor.midi.message.roland import RolandSysEx
+from jdxi_editor.midi.message.roland import JDXiSysEx
 from jdxi_editor.midi.program.helper import JDXiProgramHelper
 from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
 from jdxi_editor.project import __package_name__
@@ -109,6 +108,7 @@ from jdxi_editor.ui.windows.midi.config_dialog import MIDIConfigDialog
 from jdxi_editor.ui.windows.midi.debugger import MIDIDebugger
 from jdxi_editor.ui.windows.midi.monitor import MIDIMessageMonitor
 from jdxi_editor.ui.windows.patch.manager import PatchManager
+from picomidi.constant import Midi
 
 
 class JDXiInstrument(JDXiUi):
@@ -1766,7 +1766,7 @@ class JDXiInstrument(JDXiUi):
                 lmb=AddressOffsetProgramLMB.COMMON,
                 lsb=DigitalCommonParam.OCTAVE_SHIFT.lsb,
             )
-            sysex_message = RolandSysEx(
+            sysex_message = JDXiSysEx(
                 sysex_address=address,
                 value=octave_value,
             )
@@ -1799,7 +1799,7 @@ class JDXiInstrument(JDXiUi):
                 # Assuming RolandSysEx accepts an address in bytes
                 for address in [address1, address2]:
                     # Send the SysEx message
-                    sysex_message = RolandSysEx(
+                    sysex_message = JDXiSysEx(
                         sysex_address=address,
                         value=value,
                     )

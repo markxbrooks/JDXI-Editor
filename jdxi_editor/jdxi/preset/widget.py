@@ -19,8 +19,10 @@ from PySide6.QtWidgets import (
 from jdxi_editor.jdxi.preset.helper import create_scroll_container
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.jdxi.style.icons import IconRegistry
+from jdxi_editor.ui.widgets.combo_box.searchable_filterable import (
+    SearchableFilterableComboBox,
+)
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
-from jdxi_editor.ui.widgets.combo_box.searchable_filterable import SearchableFilterableComboBox
 
 if TYPE_CHECKING:
     from jdxi_editor.ui.editors.synth.editor import SynthEditor
@@ -108,17 +110,25 @@ class InstrumentPresetWidget(QWidget):
             normal_preset_widget, normal_preset_layout = create_scroll_container()
             self._add_normal_preset_content(normal_preset_layout, synth_type)
             try:
-                analog_presets_icon = IconRegistry.get_icon(IconRegistry.MUSIC_NOTE_MULTIPLE, color=JDXiStyle.GREY)
+                analog_presets_icon = IconRegistry.get_icon(
+                    IconRegistry.MUSIC_NOTE_MULTIPLE, color=JDXiStyle.GREY
+                )
                 if analog_presets_icon is None or analog_presets_icon.isNull():
                     raise ValueError("Icon is null")
             except:
-                analog_presets_icon = IconRegistry.get_icon(IconRegistry.MUSIC, color=JDXiStyle.GREY)
-            preset_tabs.addTab(normal_preset_widget, analog_presets_icon, "Analog Presets")
+                analog_presets_icon = IconRegistry.get_icon(
+                    IconRegistry.MUSIC, color=JDXiStyle.GREY
+                )
+            preset_tabs.addTab(
+                normal_preset_widget, analog_presets_icon, "Analog Presets"
+            )
 
             # === Tab 2: Cheat Presets (Digital Synth presets on Analog channel) ===
             cheat_preset_widget, cheat_preset_layout = create_scroll_container()
             self._add_cheat_preset_content(cheat_preset_layout)
-            cheat_presets_icon = IconRegistry.get_icon(IconRegistry.CODE_BRACES, color=JDXiStyle.GREY)
+            cheat_presets_icon = IconRegistry.get_icon(
+                IconRegistry.CODE_BRACES, color=JDXiStyle.GREY
+            )
             preset_tabs.addTab(cheat_preset_widget, cheat_presets_icon, "Cheat Presets")
         else:
             # For Digital/Drums, create simple layout without tabs
@@ -131,7 +141,7 @@ class InstrumentPresetWidget(QWidget):
         # Add icon row at the top
         icon_row = IconRegistry.create_generic_musical_icon_row()
         layout.addLayout(icon_row)
-        
+
         self.instrument_title_label = DigitalTitle()
         layout.addWidget(self.instrument_title_label)
         # --- Update_tone_name
@@ -144,27 +154,33 @@ class InstrumentPresetWidget(QWidget):
         layout.addWidget(self.read_request_button)
         self.instrument_selection_label = QLabel(f"Select a {synth_type} synth:")
         layout.addWidget(self.instrument_selection_label)
-        
+
         # Build preset options, values, and categories from preset_list
-        preset_options = [f"{preset['id']} - {preset['name']}" for preset in self.parent.preset_list]
+        preset_options = [
+            f"{preset['id']} - {preset['name']}" for preset in self.parent.preset_list
+        ]
         # Convert preset IDs to integers for SearchableFilterableComboBox (e.g., "001" -> 1)
-        preset_values = [int(preset['id']) for preset in self.parent.preset_list]
-        preset_categories = sorted(set(preset["category"] for preset in self.parent.preset_list))
-        
+        preset_values = [int(preset["id"]) for preset in self.parent.preset_list]
+        preset_categories = sorted(
+            set(preset["category"] for preset in self.parent.preset_list)
+        )
+
         # Category filter function for presets
         def preset_category_filter(preset_display: str, category: str) -> bool:
             """Check if a preset matches a category."""
             if not category:
                 return True
             # Extract preset ID from display string (format: "001 - Preset Name")
-            preset_id_str = preset_display.split(" - ")[0] if " - " in preset_display else None
+            preset_id_str = (
+                preset_display.split(" - ")[0] if " - " in preset_display else None
+            )
             if preset_id_str:
                 # Find the preset in the list and check its category
                 for preset in self.parent.preset_list:
                     if preset["id"] == preset_id_str:
                         return preset["category"] == category
             return False
-        
+
         # Create SearchableFilterableComboBox for preset selection
         self.instrument_selection_combo = SearchableFilterableComboBox(
             label="",
@@ -177,14 +193,16 @@ class InstrumentPresetWidget(QWidget):
             show_category=True,
             search_placeholder="Search presets...",
         )
-        
+
         # Apply styling
         if synth_type == "Analog":
             # Apply Analog styling to the combo box widget
-            self.instrument_selection_combo.combo_box.setStyleSheet(JDXiStyle.COMBO_BOX_ANALOG)
+            self.instrument_selection_combo.combo_box.setStyleSheet(
+                JDXiStyle.COMBO_BOX_ANALOG
+            )
         else:
             self.instrument_selection_combo.combo_box.setStyleSheet(JDXiStyle.COMBO_BOX)
-        
+
         # Connect signals - use combo_box for currentIndexChanged
         self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
             self.parent.update_instrument_image
@@ -192,17 +210,17 @@ class InstrumentPresetWidget(QWidget):
         self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
             self.parent.update_instrument_title
         )
-        
+
         # Create a load button (SearchableFilterableComboBox doesn't have one built-in)
         load_button = QPushButton("Load")
         load_button.clicked.connect(self._on_load_preset)
-        
+
         # Add load button next to combo box
         button_layout = QHBoxLayout()
         button_layout.addWidget(self.instrument_selection_combo)
         button_layout.addWidget(load_button)
         layout.addLayout(button_layout)
-        
+
         # Store reference to load button for compatibility
         self.instrument_selection_combo.load_button = load_button
         layout.addStretch()
@@ -216,25 +234,31 @@ class InstrumentPresetWidget(QWidget):
         layout.addLayout(icon_row)
 
         # Build preset options, values, and categories from DIGITAL_PRESET_LIST
-        preset_options = [f"{preset['id']} - {preset['name']}" for preset in DIGITAL_PRESET_LIST]
+        preset_options = [
+            f"{preset['id']} - {preset['name']}" for preset in DIGITAL_PRESET_LIST
+        ]
         # Convert preset IDs to integers for SearchableFilterableComboBox (e.g., "001" -> 1)
-        preset_values = [int(preset['id']) for preset in DIGITAL_PRESET_LIST]
-        preset_categories = sorted(set(preset["category"] for preset in DIGITAL_PRESET_LIST))
-        
+        preset_values = [int(preset["id"]) for preset in DIGITAL_PRESET_LIST]
+        preset_categories = sorted(
+            set(preset["category"] for preset in DIGITAL_PRESET_LIST)
+        )
+
         # Category filter function for presets
         def cheat_preset_category_filter(preset_display: str, category: str) -> bool:
             """Check if a preset matches a category."""
             if not category:
                 return True
             # Extract preset ID from display string (format: "001 - Preset Name")
-            preset_id_str = preset_display.split(" - ")[0] if " - " in preset_display else None
+            preset_id_str = (
+                preset_display.split(" - ")[0] if " - " in preset_display else None
+            )
             if preset_id_str:
                 # Find the preset in the list and check its category
                 for preset in DIGITAL_PRESET_LIST:
                     if preset["id"] == preset_id_str:
                         return preset["category"] == category
             return False
-        
+
         # Create SearchableFilterableComboBox for cheat preset selection
         self.cheat_preset_combo_box = SearchableFilterableComboBox(
             label="Preset",
@@ -251,7 +275,9 @@ class InstrumentPresetWidget(QWidget):
 
         # Load Button
         self.cheat_load_button = QPushButton(
-            IconRegistry.get_icon(IconRegistry.FOLDER_NOTCH_OPEN, color=JDXiStyle.FOREGROUND),
+            IconRegistry.get_icon(
+                IconRegistry.FOLDER_NOTCH_OPEN, color=JDXiStyle.FOREGROUND
+            ),
             "Load Preset",
         )
         self.cheat_load_button.clicked.connect(self._load_cheat_preset)
@@ -279,7 +305,6 @@ class InstrumentPresetWidget(QWidget):
             return
 
         from decologr import Decologr as log
-
         from jdxi_editor.log.midi_info import log_midi_info
         from jdxi_editor.midi.channel.channel import MidiChannel
         from jdxi_editor.midi.data.programs.digital import DIGITAL_PRESET_LIST
@@ -289,7 +314,7 @@ class InstrumentPresetWidget(QWidget):
         # The value is the preset ID as integer (e.g., 1 for "001")
         preset_id_int = self.cheat_preset_combo_box.value()
         program_number = str(preset_id_int).zfill(3)  # Convert back to 3-digit format
-        
+
         log.message("=======load_cheat_preset (Cheat Mode)=======")
         log.parameter("combo box program_number", program_number)
 

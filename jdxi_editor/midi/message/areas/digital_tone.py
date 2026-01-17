@@ -19,11 +19,11 @@ from jdxi_editor.midi.data.address.address import (
     AddressStartMSB,
     CommandID,
 )
-from jdxi_editor.midi.message.roland import RolandSysEx
+from jdxi_editor.midi.message.roland import JDXiSysEx
 
 
 @dataclass
-class DigitalToneMessage(RolandSysEx):
+class DigitalToneMessage(JDXiSysEx):
     """
     SuperNATURAL Synth Tone parameter message for JD-Xi.
     Defaults to TEMPORARY_TONE / Digital 1 / Common / Param 0x00

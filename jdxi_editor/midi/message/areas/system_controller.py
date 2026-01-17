@@ -32,11 +32,11 @@ from jdxi_editor.midi.data.address.address import (
     CommandID,
 )
 from jdxi_editor.midi.data.address.sysex import ZERO_BYTE
-from jdxi_editor.midi.message.roland import RolandSysEx
+from jdxi_editor.midi.message.roland import JDXiSysEx
 
 
 @dataclass
-class SystemControllerMessage(RolandSysEx):
+class SystemControllerMessage(JDXiSysEx):
     """System Controller parameter message"""
 
     command: int = CommandID.DT1

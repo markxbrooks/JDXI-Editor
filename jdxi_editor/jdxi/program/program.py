@@ -26,7 +26,8 @@ from jdxi_editor.jdxi.preset.data import JDXiPresetData
 
 @dataclass
 class JDXiProgram:
-    """JDXi Program data model class """
+    """JDXi Program data model class"""
+
     id: str  # e.g. "A01"
     name: str
     genre: Optional[str] = None
@@ -63,6 +64,7 @@ class JDXiProgram:
         genre: Optional[str] = None,
         tempo: Optional[int] = None,
     ) -> "JDXiProgram":
+        """from patch"""
         return JDXiProgram(
             id="",  # to be set externally if needed
             name=name,
@@ -75,6 +77,7 @@ class JDXiProgram:
         )
 
     def to_json(self, filepath: str) -> None:
+        """to json"""
         with open(filepath, "w", encoding="utf8") as f:
             json.dump(asdict(self), f, indent=2)
 

@@ -5,9 +5,6 @@ JDXiSysExComposer
 from typing import Optional
 
 from decologr import Decologr as log
-from picomidi.constant import Midi
-from picomidi.sysex.parameter.address import AddressParameter
-
 from jdxi_editor.jdxi.midi.message.sysex.offset import JDXiSysExMessageLayout
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetSuperNATURALLMB,
@@ -20,12 +17,14 @@ from jdxi_editor.midi.data.parameter.digital import (
 )
 from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParam
 from jdxi_editor.midi.message.jdxi import JDXiSysexHeader
-from jdxi_editor.midi.message.roland import RolandSysEx
+from jdxi_editor.midi.message.roland import JDXiSysEx
 from jdxi_editor.midi.sysex.validation import (
     validate_raw_midi_message,
     validate_raw_sysex_message,
 )
-from jdxi_editor.midi.utils.byte import split_16bit_value_to_nibbles
+from picomidi.constant import Midi
+from picomidi.sysex.parameter.address import AddressParameter
+from picomidi.utils.conversion import split_16bit_value_to_nibbles
 
 
 def apply_lmb_offset(
@@ -54,7 +53,7 @@ class JDXiSysExComposer:
         param: AddressParameter,
         value: int,
         size: int = 1,
-    ) -> Optional[RolandSysEx]:
+    ) -> Optional[JDXiSysEx]:
         """
         Compose a SysEx message for the given address and parameter.
 
@@ -106,9 +105,7 @@ class JDXiSysExComposer:
                 return None
 
             # Build and store the SysEx message
-            sysex_message = RolandSysEx(
-                sysex_address=adjusted_address, value=data_bytes
-            )
+            sysex_message = JDXiSysEx(sysex_address=adjusted_address, value=data_bytes)
             self.sysex_message = sysex_message
 
             # Validate the message

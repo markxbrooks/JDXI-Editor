@@ -62,7 +62,8 @@ class BasicEditor(SynthEditor):
         if os.path.exists(image_path):
             pixmap = QPixmap(image_path)
             scaled_pixmap = pixmap.scaledToHeight(
-                JDXiDimensions.BASIC_EDITOR_IMAGE_HEIGHT, Qt.TransformationMode.SmoothTransformation
+                JDXiDimensions.BASIC_EDITOR_IMAGE_HEIGHT,
+                Qt.TransformationMode.SmoothTransformation,
             )  # Resize to 150px height
             self.image_label.setPixmap(scaled_pixmap)
             return True

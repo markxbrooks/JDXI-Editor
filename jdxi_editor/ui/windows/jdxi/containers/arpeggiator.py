@@ -1,7 +1,7 @@
 from typing import Callable
 
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QLabel, QWidget, QGridLayout
+from PySide6.QtWidgets import QGridLayout, QLabel, QWidget
 
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.ui.widgets.editor.helper import create_button_with_tooltip
@@ -86,4 +86,3 @@ def add_octave_and_arp_buttons(container: QWidget, send_octave: Callable):
         arpeggiator_button,
         key_hold_button,
     )
-

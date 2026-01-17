@@ -25,6 +25,7 @@ from picomidi.core.value import MidiValue
 from picomidi.message.base import Message
 from picomidi.message.channel_voice import (NRPN, RPN, ControlChange, NoteOff,
                                             NoteOn, PitchBend, ProgramChange)
+from picomidi.message.sysex import RolandSysExMessage
 # Message classes (legacy constants)
 from picomidi.messages.aftertouch import Aftertouch
 from picomidi.messages.control_change import \
@@ -65,6 +66,7 @@ __all__ = [
     "PitchBend",
     "RPN",
     "NRPN",
+    "RolandSysExMessage",
     # Messages (legacy constants)
     "Aftertouch",
     "ControlChangeStatus",

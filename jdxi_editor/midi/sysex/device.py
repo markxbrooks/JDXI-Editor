@@ -44,9 +44,8 @@ Dependencies:
 from dataclasses import dataclass
 from typing import List, Optional
 
-from picomidi.constant import Midi
-
 from jdxi_editor.jdxi.midi.constant import JDXiMidi
+from picomidi.constant import Midi
 
 
 @dataclass

@@ -119,7 +119,9 @@ def generate_waveform_icon(
 
             # Sigmoid-style amplitude drop for LPF
             # Left: full height, Right: approaches 0
-            y_pos = half_y + half_y * (1 - 1 / (1 + math.exp(-12 * (0.3 - t))))  # sigmoidal falloff
+            y_pos = half_y + half_y * (
+                1 - 1 / (1 + math.exp(-12 * (0.3 - t)))
+            )  # sigmoidal falloff
             # Flip vertically so 0 is bottom of canvas
             y_pos = y - y_pos
 

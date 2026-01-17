@@ -1,6 +1,5 @@
-from picomidi.core.parameter.factory import AddressFactory
-
 from jdxi_editor.midi.data.parameter.address.name import ParameterAddressName
+from picomidi.core.parameter.factory import AddressFactory
 
 parameter_address_table = [  # must be 3-byte addresses
     (ParameterAddressName.SETUP, "01 00 00 00"),

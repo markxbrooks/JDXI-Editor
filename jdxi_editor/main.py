@@ -46,7 +46,10 @@ from jdxi_editor.log.message import log_message
 from jdxi_editor.project import __organization_name__, __program__, __version__
 from jdxi_editor.resources import resource_path
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
-from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets, create_icon_label_with_pixmap
+from jdxi_editor.ui.widgets.editor.helper import (
+    create_icon_label_with_pixmap,
+    create_layout_with_widgets,
+)
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 from jdxi_editor.ui.windows.jdxi.instrument import JDXiInstrument
 

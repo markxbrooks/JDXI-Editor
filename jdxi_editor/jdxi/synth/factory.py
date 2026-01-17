@@ -4,9 +4,9 @@ Synth Factory
 
 from typing import Union
 
-from decologr import Decologr as log
 from PySide6.QtCore import QSettings
 
+from decologr import Decologr as log
 from jdxi_editor.jdxi.preset.lists import JDXiPresetToneList
 from jdxi_editor.jdxi.synth.analog import AnalogSynthData
 from jdxi_editor.jdxi.synth.digital import DigitalSynthData

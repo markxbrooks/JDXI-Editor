@@ -32,11 +32,11 @@ Dependencies:
 
 import platform
 
-from decologr import Decologr as log
 from PySide6.QtCore import QRect
 from PySide6.QtGui import QColor, QFont, QLinearGradient, QPainter, QPaintEvent, QPen
 from PySide6.QtWidgets import QSizePolicy, QWidget
 
+from decologr import Decologr as log
 from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
 from jdxi_editor.midi.data.programs.digital import DIGITAL_PRESET_LIST

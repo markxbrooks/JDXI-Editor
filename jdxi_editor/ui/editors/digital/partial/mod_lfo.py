@@ -5,7 +5,6 @@ MOD LFO section of the digital partial editor.
 from typing import Callable
 
 import qtawesome as qta
-from decologr import Decologr as log
 from PySide6.QtCore import QSize
 from PySide6.QtWidgets import (
     QGroupBox,
@@ -17,14 +16,15 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from decologr import Decologr as log
 from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
 from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.midi.data.digital.lfo import DigitalLFOShape
 from jdxi_editor.midi.data.parameter.digital.partial import (
     DigitalPartialParam,
 )
-from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.editor import IconType
+from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
@@ -64,11 +64,11 @@ class DigitalModLFOSection(SectionBaseWidget):
         # Shape and sync controls
         shape_row_layout = QHBoxLayout()
         shape_row_layout.addStretch()
-        
+
         # Add label
         shape_label = QLabel("Shape")
         shape_row_layout.addWidget(shape_label)
-        
+
         # Create buttons for each Mod LFO shape
         mod_lfo_shapes = [
             DigitalLFOShape.TRIANGLE,
@@ -78,7 +78,7 @@ class DigitalModLFOSection(SectionBaseWidget):
             DigitalLFOShape.SAMPLE_HOLD,
             DigitalLFOShape.RANDOM,
         ]
-        
+
         # Map Mod LFO shapes to icon names
         shape_icon_map = {
             DigitalLFOShape.TRIANGLE: "mdi.triangle-wave",
@@ -88,7 +88,7 @@ class DigitalModLFOSection(SectionBaseWidget):
             DigitalLFOShape.SAMPLE_HOLD: "mdi.waveform",
             DigitalLFOShape.RANDOM: "mdi.wave",
         }
-        
+
         for mod_lfo_shape in mod_lfo_shapes:
             btn = QPushButton(mod_lfo_shape.display_name)
             btn.setCheckable(True)
@@ -98,8 +98,14 @@ class DigitalModLFOSection(SectionBaseWidget):
             icon = qta.icon(icon_name, color=JDXiStyle.WHITE, icon_size=0.7)
             btn.setIcon(icon)
             btn.setIconSize(QSize(20, 20))
-            btn.setFixedSize(JDXiDimensions.WAVEFORM_ICON_WIDTH, JDXiDimensions.WAVEFORM_ICON_HEIGHT)
-            btn.clicked.connect(lambda checked, shape=mod_lfo_shape: self._on_mod_lfo_shape_selected(shape))
+            btn.setFixedSize(
+                JDXiDimensions.WAVEFORM_ICON_WIDTH, JDXiDimensions.WAVEFORM_ICON_HEIGHT
+            )
+            btn.clicked.connect(
+                lambda checked, shape=mod_lfo_shape: self._on_mod_lfo_shape_selected(
+                    shape
+                )
+            )
             self.mod_lfo_shape_buttons[mod_lfo_shape] = btn
             shape_row_layout.addWidget(btn)
 
@@ -187,21 +193,23 @@ class DigitalModLFOSection(SectionBaseWidget):
     def _on_mod_lfo_shape_selected(self, mod_lfo_shape: DigitalLFOShape):
         """
         Handle Mod LFO shape button clicks
-        
+
         :param mod_lfo_shape: DigitalLFOShape enum value
         """
         # Reset all buttons to default style
         for btn in self.mod_lfo_shape_buttons.values():
             btn.setChecked(False)
             btn.setStyleSheet(JDXiStyle.BUTTON_RECT)
-        
+
         # Apply active style to the selected Mod LFO shape button
         selected_btn = self.mod_lfo_shape_buttons.get(mod_lfo_shape)
         if selected_btn:
             selected_btn.setChecked(True)
             selected_btn.setStyleSheet(JDXiStyle.BUTTON_RECT_ACTIVE)
-        
+
         # Send MIDI message
         if self.send_midi_parameter:
-            if not self.send_midi_parameter(DigitalPartialParam.MOD_LFO_SHAPE, mod_lfo_shape.value):
+            if not self.send_midi_parameter(
+                DigitalPartialParam.MOD_LFO_SHAPE, mod_lfo_shape.value
+            ):
                 log.warning(f"Failed to set Mod LFO shape to {mod_lfo_shape.name}")

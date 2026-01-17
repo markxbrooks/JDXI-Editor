@@ -6,9 +6,10 @@ Playback Worker to play Midi files in a new thread
 import threading
 import time
 
+from PySide6.QtCore import QObject, Signal, Slot
+
 from picomidi.constant import Midi
 from picomidi.core.bitmask import BitMask
-from PySide6.QtCore import QObject, Signal, Slot
 
 
 class MidiPlaybackWorker(QObject):

@@ -1,10 +1,10 @@
 from typing import Optional
 
-from decologr import Decologr as log
 from PySide6.QtCore import QSettings
 from PySide6.QtGui import QColor, QPainter, QPen
 from PySide6.QtWidgets import QPushButton
 
+from decologr import Decologr as log
 from jdxi_editor.jdxi.preset.button import JDXiPresetButtonData
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.project import __package_name__

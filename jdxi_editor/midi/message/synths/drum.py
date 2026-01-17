@@ -25,11 +25,11 @@ from jdxi_editor.midi.data.address.address import (
     AddressStartMSB,
     CommandID,
 )
-from jdxi_editor.midi.message.roland import RolandSysEx
+from jdxi_editor.midi.message.roland import JDXiSysEx
 
 
 @dataclass
-class DrumKitMessage(RolandSysEx):
+class DrumKitMessage(JDXiSysEx):
     """Drum Kit parameter message"""
 
     command: int = CommandID.DT1

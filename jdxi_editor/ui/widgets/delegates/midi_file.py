@@ -1,5 +1,11 @@
-from PySide6.QtCore import Qt, QSize
-from PySide6.QtWidgets import QStyledItemDelegate, QStyleOptionButton, QStyle, QWidget, QFileDialog
+from PySide6.QtCore import QSize, Qt
+from PySide6.QtWidgets import (
+    QFileDialog,
+    QStyle,
+    QStyledItemDelegate,
+    QStyleOptionButton,
+    QWidget,
+)
 
 
 class MidiFileDelegate(QStyledItemDelegate):

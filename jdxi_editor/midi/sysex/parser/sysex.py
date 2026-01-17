@@ -16,11 +16,8 @@ from pathlib import Path
 from typing import List, Optional, TextIO, Union
 
 import mido
-from decologr import Decologr as log
-from picomidi import SysExByte
-from picomidi.constant import Midi
-from picomidi.core.bitmask import BitMask
 
+from decologr import Decologr as log
 from jdxi_editor.jdxi.midi.constant import JDXiMidi
 from jdxi_editor.jdxi.midi.device.constant import JDXiSysExIdentity
 from jdxi_editor.jdxi.midi.message.sysex.offset import (
@@ -35,6 +32,9 @@ from jdxi_editor.midi.message.jdxi import JDXiSysexHeader
 from jdxi_editor.midi.sysex.device import DeviceInfo
 from jdxi_editor.midi.sysex.parser.utils import parse_sysex
 from jdxi_editor.project import __package_name__
+from picomidi import SysExByte
+from picomidi.constant import Midi
+from picomidi.core.bitmask import BitMask
 
 
 class JDXiSysExParser:

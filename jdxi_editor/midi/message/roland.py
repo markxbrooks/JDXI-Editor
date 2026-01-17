@@ -27,9 +27,6 @@ from dataclasses import dataclass, field
 from typing import List, Optional, Union
 
 from decologr import Decologr as log
-from picomidi.constant import Midi
-from picomidi.core.bitmask import BitMask
-
 from jdxi_editor.jdxi.midi.constant import JDXiMidi
 from jdxi_editor.jdxi.midi.message.sysex.offset import JDXiSysExMessageLayout
 from jdxi_editor.midi.data.address.address import (
@@ -44,74 +41,23 @@ from jdxi_editor.midi.data.address.sysex import (
     ZERO_BYTE,
     RolandID,
 )
-from jdxi_editor.midi.message.sysex import SysExMessage
-from jdxi_editor.midi.utils.byte import split_16bit_value_to_nibbles
+from picomidi import RolandSysExMessage
+from picomidi.constant import Midi
+from picomidi.core.bitmask import BitMask
+from picomidi.utils.conversion import split_16bit_value_to_nibbles
 
 
 @dataclass
-class RolandSysExMessage(SysExMessage):
-    """Specialized class for Roland JD-Xi SysEx messages."""
+class JDXiSysEx(RolandSysExMessage):
+    """
+    JD-Xi specialized class for Roland SysEx messages.
 
-    manufacturer_id: int = RolandID.ROLAND_ID
-    device_id: int = RolandID.DEVICE_ID
-    model_id: list[int] = field(
-        default_factory=lambda: [
-            ModelID.MODEL_ID_1,
-            ModelID.MODEL_ID_2,
-            ModelID.MODEL_ID_3,
-            ModelID.MODEL_ID_4,
-        ]
-    )
-    command: int = CommandID.DT1
+    Inherits from PicoMidi's generic RolandSysExMessage and adds
+    JD-Xi specific features like address object handling,
+    automatic value conversion, and JD-Xi validation.
+    """
 
-    sysex_address: RolandSysExAddress = field(default_factory=RolandSysExAddress)
-    value: Union[int, List[int]] = Midi.VALUE.ZERO
-    size: int = 1
-
-    # These attributes should not be set in `__init__`
-    synth_type: int = field(init=False, default=None)
-    part: int = field(init=False, default=None)
-
-    dt1_command: int = CommandID.DT1
-    rq1_command: int = CommandID.RQ1
-
-    def __post_init__(self):
-        """Initialize data and resolve address bytes."""
-        self.address = (
-            self.sysex_address.to_list()
-        )  # Assuming this method returns [msb, umb, lmb, lsb]
-
-        if isinstance(self.value, int) and self.size == 4:
-            self.data = split_16bit_value_to_nibbles(self.value)
-        else:
-            self.data = [self.value] if isinstance(self.value, int) else self.value
-
-    def to_message_list(self) -> List[int]:
-        """
-        Convert the SysEx message to a list of integers.
-
-        :return: list
-        """
-        msg = (
-            [Midi.SYSEX.START, self.manufacturer_id, self.device_id]
-            + list(self.model_id)
-            + [self.command]
-            + [self.sysex_address.msb]
-            + [self.sysex_address.umb]
-            + [self.sysex_address.lmb]
-            + [self.sysex_address.lsb]
-            + self.data
-        )
-        msg.append(self.calculate_checksum())
-        msg.append(self.end_of_sysex)
-        return msg
-
-
-@dataclass
-class RolandSysEx(SysExMessage):
-    """Specialized class for Roland JD-Xi SysEx messages."""
-
-    manufacturer_id: int = RolandID.ROLAND_ID
+    # JD-Xi specific defaults
     device_id: int = RolandID.DEVICE_ID
     model_id: List[int] = field(
         default_factory=lambda: [
@@ -122,14 +68,19 @@ class RolandSysEx(SysExMessage):
         ]
     )
     command: int = CommandID.DT1
+
+    # --- JD-Xi specific address handling
     sysex_address: Optional[RolandSysExAddress] = None
     msb: int = Midi.VALUE.ZERO
     umb: int = Midi.VALUE.ZERO
     lmb: int = Midi.VALUE.ZERO
     lsb: int = Midi.VALUE.ZERO
+
+    # --- JD-Xi specific value handling
     value: Union[int, List[int]] = Midi.VALUE.ZERO
     size: int = 1
 
+    # --- JD-Xi specific attributes
     synth_type: Optional[int] = field(init=False, default=None)
     part: Optional[int] = field(init=False, default=None)
 
@@ -137,21 +88,70 @@ class RolandSysEx(SysExMessage):
     rq1_command: int = CommandID.RQ1
 
     def __post_init__(self) -> None:
+        """Initialize JD-Xi specific features, then call parent."""
+        # Convert enum values to integers for parent class (do this first)
+        if hasattr(self.device_id, "value"):
+            self.device_id = self.device_id.value
+        if isinstance(self.model_id, list) and len(self.model_id) > 0:
+            self.model_id = [
+                b.value if hasattr(b, "value") else b for b in self.model_id
+            ]
+        if hasattr(self.command, "value"):
+            self.command = self.command.value
+
+        # Handle sysex_address object (if provided, it overrides msb/umb/lmb/lsb)
         if self.sysex_address:
             self.msb = self.sysex_address.msb
             self.umb = self.sysex_address.umb
             self.lmb = self.sysex_address.lmb
             self.lsb = self.sysex_address.lsb
 
-        self.address: List[int] = [self.msb, self.umb, self.lmb, self.lsb]
-
-        if isinstance(self.value, int) and self.size == 4:
-            self.data: List[int] = split_16bit_value_to_nibbles(self.value)
+        # Build address list from individual bytes (only if address wasn't explicitly set)
+        # If address was passed directly, use it; otherwise build from msb/umb/lmb/lsb
+        if self.address == [0x00, 0x00, 0x00, 0x00]:  # Default value
+            self.address = [self.msb, self.umb, self.lmb, self.lsb]
         else:
-            self.data = [self.value] if isinstance(self.value, int) else self.value
+            # Address was explicitly set, update msb/umb/lmb/lsb to match
+            self.msb, self.umb, self.lmb, self.lsb = self.address
+
+        # Handle value conversion (JD-Xi specific)
+        # Only convert if data wasn't explicitly set and value is provided
+        if not self.data or self.data == []:
+            if isinstance(self.value, int) and self.size == 4:
+                self.data = split_16bit_value_to_nibbles(self.value)
+            elif isinstance(self.value, int):
+                self.data = [self.value]
+            elif isinstance(self.value, list):
+                self.data = self.value
+
+        # Call parent __post_init__ to validate message structure
+        super().__post_init__()
+
+        # JD-Xi specific validation (merged from JDXiSysExOld)
+        # Validate device ID
+        if not (0x00 <= self.device_id <= 0x1F or self.device_id == 0x7F):
+            raise ValueError(f"Invalid device ID: {self.device_id:02X}")
+
+        # Validate model ID matches JD-Xi
+        expected_model_id = [
+            ModelID.MODEL_ID_1,
+            ModelID.MODEL_ID_2,
+            ModelID.MODEL_ID_3,
+            ModelID.MODEL_ID_4,
+        ]
+        if self.model_id != expected_model_id:
+            raise ValueError(f"Invalid model ID: {[f'{x:02X}' for x in self.model_id]}")
+
+        # --- Validate address bytes
+        if not all(ZERO_BYTE <= x <= BitMask.FULL_BYTE for x in self.address):
+            raise ValueError(
+                f"Invalid address bytes: {[f'{x:02X}' for x in self.address]}"
+            )
 
     def from_sysex_address(self, sysex_address: RolandSysExAddress) -> None:
-        """from_sysex_address
+        """
+        Update address from RolandSysExAddress object.
+
         :param sysex_address: RolandSysExAddress
         :return: None
         """
@@ -163,20 +163,82 @@ class RolandSysEx(SysExMessage):
 
     def to_message_list(self) -> List[int]:
         """
-        to_message_list
+        Convert to message list using parent implementation.
+
+        Maintains backward compatibility with existing code that calls to_message_list().
 
         :return: List[int]
         """
-        msg = (
-            [Midi.SYSEX.START, self.manufacturer_id, self.device_id]
-            + list(self.model_id)
-            + [self.command]
-            + self.address
-            + self.data
+        # Use parent's implementation which handles checksum correctly
+        return super().to_list()
+
+    def to_list(self) -> List[int]:
+        """
+        Alias for to_message_list() for compatibility with PicoMidi Message interface.
+
+        :return: List[int]
+        """
+        return self.to_message_list()
+
+    def to_bytes(self) -> bytes:
+        """
+        Convert message to bytes for sending.
+
+        :return: bytes representation of the message
+        """
+        return bytes(self.to_list())
+
+    @classmethod
+    def from_bytes(cls, data: bytes) -> "JDXiSysEx":
+        """
+        Create message from received bytes with JD-Xi specific validation.
+
+        :param data: Raw SysEx message bytes
+        :return: Parsed JDXiSysEx instance
+        :raises ValueError: If message format is invalid or not JD-Xi
+        """
+        if (
+            len(data)
+            < JDXiMidi.SYSEX.PARAMETER.LENGTH.ONE_BYTE  # --- Minimum length: F0 + ID + dev + model(4) + cmd + addr(4) + sum + F7
+            or data[JDXiSysExMessageLayout.START] != START_OF_SYSEX
+            or data[JDXiSysExMessageLayout.ROLAND_ID] != RolandID.ROLAND_ID  # Roland ID
+            or data[
+                JDXiSysExMessageLayout.MODEL_ID.POS1 : JDXiSysExMessageLayout.COMMAND_ID
+            ]
+            != bytes(
+                [
+                    ModelID.MODEL_ID_1,
+                    ModelID.MODEL_ID_2,
+                    ModelID.MODEL_ID_3,
+                    ModelID.MODEL_ID_4,
+                ]
+            )
+        ):  # JD-Xi model ID
+            raise ValueError("Invalid JD-Xi SysEx message")
+
+        device_id = data[JDXiSysExMessageLayout.DEVICE_ID]
+        command = data[JDXiSysExMessageLayout.COMMAND_ID]
+        address = list(
+            data[
+                JDXiSysExMessageLayout.ADDRESS.MSB : JDXiSysExMessageLayout.TONE_NAME.START
+            ]
         )
-        msg.append(self.calculate_checksum())
-        msg.append(self.end_of_sysex)
-        return msg
+        message_data = list(
+            data[
+                JDXiSysExMessageLayout.TONE_NAME.START : JDXiSysExMessageLayout.CHECKSUM
+            ]
+        )  # Everything between address and checksum
+        received_checksum = data[JDXiSysExMessageLayout.CHECKSUM]
+
+        # Create message and verify checksum
+        message = cls(
+            device_id=device_id, command=command, address=address, data=message_data
+        )
+
+        if message.calculate_checksum() != received_checksum:
+            raise ValueError("Invalid checksum")
+
+        return message
 
     def construct_sysex(
         self,
@@ -194,10 +256,10 @@ class RolandSysEx(SysExMessage):
         """
         log.message(f"address: {address} data_bytes: {data_bytes} request: {request}")
 
-        # Handle address fields directly
+        # --- Handle address fields directly
         addr_list = [address.msb, address.umb, address.lmb, address.lsb]
 
-        # Flatten and normalize data_bytes
+        # --- Flatten and normalize data_bytes
         flat_data: List[int] = []
         for db in data_bytes:
             if isinstance(db, list):
@@ -253,118 +315,6 @@ class RolandSysEx(SysExMessage):
         sysex_msg.append(END_OF_SYSEX)
 
         return sysex_msg
-
-
-@dataclass
-class JDXiSysEx(RolandSysEx):
-    """JD-Xi specific SysEx message"""
-
-    model_id: List[int] = field(
-        default_factory=lambda: [
-            ModelID.MODEL_ID_1,
-            ModelID.MODEL_ID_2,
-            ModelID.MODEL_ID_3,
-            ModelID.MODEL_ID_4,
-        ]
-    )  # JD-Xi model ID
-    device_id: int = 0x10  # Default device ID
-    command: int = CommandID.DT1  # Default to DT1 command
-    address: List[int] = field(
-        default_factory=lambda: [0x00, 0x00, 0x00, 0x00]
-    )  # 4-byte address
-    data: List[int] = field(default_factory=list)  # Data bytes
-
-    def __post_init__(self):
-        """Validate message components"""
-        # Validate device ID
-        if not 0x00 <= self.device_id <= 0x1F and self.device_id != 0x7F:
-            raise ValueError(f"Invalid device ID: {self.device_id:02X}")
-
-        # Validate model ID
-        if len(self.model_id) != 4:
-            raise ValueError("Model ID must be 4 bytes")
-        if self.model_id != [
-            ModelID.MODEL_ID_1,
-            ModelID.MODEL_ID_2,
-            ModelID.MODEL_ID_3,
-            ModelID.MODEL_ID_4,
-        ]:
-            raise ValueError(f"Invalid model ID: {[f'{x:02X}' for x in self.model_id]}")
-
-        # Validate address
-        if len(self.address) != 4:
-            raise ValueError("Address must be 4 bytes")
-        if not all(ZERO_BYTE <= x <= BitMask.FULL_BYTE for x in self.address):
-            raise ValueError(
-                f"Invalid address bytes: {[f'{x:02X}' for x in self.address]}"
-            )
-
-    def to_bytes(self) -> bytes:
-        """Convert message to bytes for sending"""
-        msg = [
-            START_OF_SYSEX,  # Start of SysEx
-            RolandID.ROLAND_ID,  # Roland ID
-            self.device_id,  # Device ID
-            *self.model_id,  # Model ID (4 bytes)
-            self.command,  # Command ID
-            *self.address,  # Address (4 bytes)
-            *self.data,  # Data bytes
-            self.calculate_checksum(),  # Checksum
-            END_OF_SYSEX,  # End of SysEx
-        ]
-        return bytes(msg)
-
-    def calculate_checksum(self) -> int:
-        """Calculate Roland checksum for the message"""
-        # Checksum = 128 - (sum of address and data bytes % 128)
-        checksum = sum(self.address) + sum(self.data)
-        return (128 - (checksum % 128)) & BitMask.LOW_7_BITS
-
-    @classmethod
-    def from_bytes(cls, data: bytes):
-        """Create message from received bytes"""
-        if (
-            len(data)
-            < JDXiMidi.SYSEX.PARAMETER.LENGTH.ONE_BYTE  # Minimum length: F0 + ID + dev + model(4) + cmd + addr(4) + sum + F7
-            or data[JDXiSysExMessageLayout.START] != START_OF_SYSEX
-            or data[JDXiSysExMessageLayout.ROLAND_ID] != ModelID.ROLAND_ID  # Roland ID
-            or data[
-                JDXiSysExMessageLayout.MODEL_ID.POS1 : JDXiSysExMessageLayout.COMMAND_ID
-            ]
-            != bytes(
-                [
-                    ModelID.MODEL_ID_1,
-                    ModelID.MODEL_ID_2,
-                    ModelID.MODEL_ID_3,
-                    ModelID.MODEL_ID_4,
-                ]
-            )
-        ):  # JD-Xi model ID
-            raise ValueError("Invalid JD-Xi SysEx message")
-
-        device_id = data[JDXiSysExMessageLayout.DEVICE_ID]
-        command = data[JDXiSysExMessageLayout.COMMAND_ID]
-        address = list(
-            data[
-                JDXiSysExMessageLayout.ADDRESS.MSB : JDXiSysExMessageLayout.TONE_NAME.START
-            ]
-        )
-        message_data = list(
-            data[
-                JDXiSysExMessageLayout.TONE_NAME.START : JDXiSysExMessageLayout.CHECKSUM
-            ]
-        )  # Everything between address and checksum
-        received_checksum = data[JDXiSysExMessageLayout.CHECKSUM]
-
-        # Create message and verify checksum
-        message = cls(
-            device_id=device_id, command=command, address=address, data=message_data
-        )
-
-        if message.calculate_checksum() != received_checksum:
-            raise ValueError("Invalid checksum")
-
-        return message
 
 
 @dataclass
@@ -548,13 +498,13 @@ class ZoneMessage(ParameterMessage):
         """Convert data bytes back to parameter value"""
         param = cls.lsb if hasattr(cls, "param") else 0
 
-        # Parameters that need special conversion
+        # --- Parameters that need special conversion
         if param == 0x19:  # Zone Octave Shift
             return data[0] - 64  # Convert 61-67 to -3/+3
         elif param == 0x03:  # Arpeggio Switch
             return data[0] & 0x01  # Ensure boolean value
 
-        # Default handling for other parameters
+        # --- Default handling for other parameters
         return super().convert_data(data)
 
 
@@ -572,11 +522,11 @@ class ControllerMessage(ParameterMessage):
         :param value:
         :return: List[int]
         """
-        # Parameters that need special conversion
+        # --- Parameters that need special conversion
         if self.lsb == 0x07:  # Arpeggio Octave Range
             return [value + 64]  # Convert -3/+3 to 61-67
 
-        # Default handling for other parameters
+        # --- Default handling for other parameters
         return super().convert_value(value)
 
     @classmethod
@@ -589,11 +539,11 @@ class ControllerMessage(ParameterMessage):
         """
         param = cls.lsb if hasattr(cls, "param") else 0
 
-        # Parameters that need special conversion
+        # --- Parameters that need special conversion
         if param == 0x07:  # Arpeggio Octave Range
             return data[0] - 64  # Convert 61-67 to -3/+3
 
-        # Default handling for other parameters
+        # --- Default handling for other parameters
         return super().convert_data(data)
 
 
@@ -628,11 +578,11 @@ class DigitalToneCommonMessage(ParameterMessage):
         """
         param = cls.lsb if hasattr(cls, "param") else 0
 
-        # Parameters that need special conversion
+        # --- Parameters that need special conversion
         if param == 0x15:  # Octave Shift
             return data[0] - 64  # Convert 61-67 to -3/+3
 
-        # Default handling for other parameters
+        # --- Default handling for other parameters
         return super().convert_data(data)
 
 

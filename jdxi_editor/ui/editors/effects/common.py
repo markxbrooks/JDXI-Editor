@@ -57,10 +57,6 @@ Features:
 
 from typing import Dict, Union
 
-from decologr import Decologr as log
-from jdxi_editor.ui.widgets.editor.helper import create_vlayout_with_hlayout_and_widgets
-from picomidi.constant import Midi
-from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import QEvent, Qt
 from PySide6.QtGui import QShowEvent
 from PySide6.QtWidgets import (
@@ -76,11 +72,10 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from decologr import Decologr as log
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.jdxi.style.icons import IconRegistry
-from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
-from jdxi_editor.ui.widgets.editor.simple_editor_helper import SimpleEditorHelper
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetProgramLMB,
     AddressOffsetSystemUMB,
@@ -99,7 +94,12 @@ from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
 from jdxi_editor.ui.editors.effects.data import EffectsData
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
+from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
+from jdxi_editor.ui.widgets.editor.helper import create_vlayout_with_hlayout_and_widgets
+from jdxi_editor.ui.widgets.editor.simple_editor_helper import SimpleEditorHelper
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
+from picomidi.constant import Midi
+from picomidi.sysex.parameter.address import AddressParameter
 
 
 class EffectsCommonEditor(BasicEditor):
@@ -266,18 +266,18 @@ class EffectsCommonEditor(BasicEditor):
             Effect2Param.EFX2_PARAM_32,
         ]
         self.setWindowTitle("Effects")
-        
+
         # Use EditorBaseWidget for consistent scrollable layout structure
         self.base_widget = EditorBaseWidget(parent=self, analog=False)
         self.base_widget.setup_scrollable_content()
-        
+
         # Use SimpleEditorHelper for standardized title/image/tab setup
         self.editor_helper = SimpleEditorHelper(
             editor=self,
             base_widget=self.base_widget,
             title="Effects",
             image_folder="effects",
-            default_image="effects.png"
+            default_image="effects.png",
         )
 
         self.controls: Dict[
@@ -289,21 +289,25 @@ class EffectsCommonEditor(BasicEditor):
 
         # Get tab widget from helper and add tabs
         self.tabs = self.editor_helper.get_tab_widget()
-        effect1_icon = IconRegistry.get_icon(IconRegistry.DISTORTION, color=JDXiStyle.GREY)
+        effect1_icon = IconRegistry.get_icon(
+            IconRegistry.DISTORTION, color=JDXiStyle.GREY
+        )
         self.tabs.addTab(self._create_effect1_section(), effect1_icon, "Effect 1")
-        effect2_icon = IconRegistry.get_icon(IconRegistry.DISTORTION, color=JDXiStyle.GREY)
+        effect2_icon = IconRegistry.get_icon(
+            IconRegistry.DISTORTION, color=JDXiStyle.GREY
+        )
         self.tabs.addTab(self._create_effect2_section(), effect2_icon, "Effect 2")
         delay_icon = IconRegistry.get_icon(IconRegistry.DELAY, color=JDXiStyle.GREY)
         self.tabs.addTab(self._create_delay_tab(), delay_icon, "Delay")
         reverb_icon = IconRegistry.get_icon(IconRegistry.REVERB, color=JDXiStyle.GREY)
         self.tabs.addTab(self._create_reverb_section(), reverb_icon, "Reverb")
-        
+
         # Add base widget to editor's layout
-        if not hasattr(self, 'main_layout') or self.main_layout is None:
+        if not hasattr(self, "main_layout") or self.main_layout is None:
             self.main_layout = QVBoxLayout(self)
             self.setLayout(self.main_layout)
         self.main_layout.addWidget(self.base_widget)
-        
+
         self.address = RolandSysExAddress(
             AddressStartMSB.TEMPORARY_PROGRAM,
             AddressOffsetSystemUMB.COMMON,
@@ -498,7 +502,7 @@ class EffectsCommonEditor(BasicEditor):
         icon_hlayout = IconRegistry.create_adsr_icons_row()
         container_layout = create_vlayout_with_hlayout_and_widgets(icon_hlayout)
         container.setLayout(container_layout)
-        
+
         widget = QWidget()
         layout = QFormLayout()
         widget.setLayout(layout)
@@ -579,11 +583,11 @@ class EffectsCommonEditor(BasicEditor):
         container = QWidget()
         container_layout = QVBoxLayout()
         container.setLayout(container_layout)
-        
+
         # Icons row (standardized across editor tabs)
         icon_hlayout = IconRegistry.create_adsr_icons_row()
         container_layout.addLayout(icon_hlayout)
-        
+
         widget = QWidget()
         layout = QFormLayout()
         widget.setLayout(layout)
@@ -645,11 +649,11 @@ class EffectsCommonEditor(BasicEditor):
         container = QWidget()
         container_layout = QVBoxLayout()
         container.setLayout(container_layout)
-        
+
         # Icons row (standardized across editor tabs)
         icon_hlayout = IconRegistry.create_adsr_icons_row()
         container_layout.addLayout(icon_hlayout)
-        
+
         widget = QWidget()
         layout = QFormLayout()
         widget.setLayout(layout)
@@ -687,11 +691,11 @@ class EffectsCommonEditor(BasicEditor):
         container = QWidget()
         container_layout = QVBoxLayout()
         container.setLayout(container_layout)
-        
+
         # Icons row (standardized across editor tabs)
         icon_hlayout = IconRegistry.create_adsr_icons_row()
         container_layout.addLayout(icon_hlayout)
-        
+
         widget = QWidget()
         layout = QFormLayout()
         widget.setLayout(layout)

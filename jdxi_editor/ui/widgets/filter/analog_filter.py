@@ -11,20 +11,20 @@ and can communicate with MIDI devices.
 
 from typing import Callable, Optional
 
-from decologr import Decologr as log
-from picomidi.constant import Midi
-from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QGridLayout, QHBoxLayout, QSlider, QVBoxLayout, QWidget
 
+from decologr import Decologr as log
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.parameter.digital import DigitalPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.midi.utils.conversions import midi_value_to_ms, ms_to_midi_value
 from jdxi_editor.ui.widgets.envelope.base import TOOLTIPS, EnvelopeWidgetBase
 from jdxi_editor.ui.widgets.filter.filter_plot import FilterPlot
 from jdxi_editor.ui.widgets.pulse_width.slider_spinbox import PWMSliderSpinbox
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
+from picomidi.constant import Midi
+from picomidi.sysex.parameter.address import AddressParameter
+from picomidi.utils.conversion import midi_value_to_ms, ms_to_midi_value
 
 
 class AnalogFilterWidget(EnvelopeWidgetBase):

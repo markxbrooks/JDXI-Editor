@@ -25,8 +25,8 @@ from jdxi_editor.midi.data.address.address import (
 )
 from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.editor import IconType
+from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 
 
 class DrumCommonSection(SectionBaseWidget):
@@ -54,7 +54,7 @@ class DrumCommonSection(SectionBaseWidget):
         self._create_parameter_combo_box = create_parameter_combo_box
         self.midi_helper = midi_helper
         self.address.lmb = AddressOffsetProgramLMB.COMMON
-        
+
         super().__init__(icon_type=IconType.GENERIC, analog=False)
         self.setup_ui()
 
@@ -73,6 +73,7 @@ class DrumCommonSection(SectionBaseWidget):
         # Icons row (standardized across editor tabs) - Note: Drum sections use scroll areas,
         # so we add icon row to scrolled_layout instead of using get_layout()
         from jdxi_editor.jdxi.style.icons import IconRegistry
+
         icon_hlayout = IconRegistry.create_generic_musical_icon_row()
         scrolled_layout.addLayout(icon_hlayout)
 

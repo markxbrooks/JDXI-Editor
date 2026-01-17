@@ -59,7 +59,6 @@ To use the `DrumEditor`, instantiate it with an optional `MIDIHelper` instance:
 
 from typing import Dict, Optional, Union
 
-from decologr import Decologr as log
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QKeySequence, QShortcut
 from PySide6.QtWidgets import (
@@ -71,11 +70,11 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from decologr import Decologr as log
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.jdxi.preset.widget import InstrumentPresetWidget
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.jdxi.style.icons import IconRegistry
-from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.midi.data.address.address import AddressOffsetProgramLMB
 from jdxi_editor.midi.data.drum.data import JDXiMapPartialDrum
@@ -86,6 +85,7 @@ from jdxi_editor.ui.editors.drum.common import DrumCommonSection
 from jdxi_editor.ui.editors.drum.partial.editor import DrumPartialEditor
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.widgets.dialog.progress import ProgressDialog
+from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
@@ -164,23 +164,31 @@ class DrumCommonEditor(SynthEditor):
 
         instrument_vrow_layout.addWidget(self.instrument_preset)
 
-        drum_kit_presets_icon = IconRegistry.get_icon("mdi.music-note-multiple", color=JDXiStyle.GREY)
+        drum_kit_presets_icon = IconRegistry.get_icon(
+            "mdi.music-note-multiple", color=JDXiStyle.GREY
+        )
         if drum_kit_presets_icon is None:
-            drum_kit_presets_icon = IconRegistry.get_icon(IconRegistry.MUSIC, color=JDXiStyle.GREY)
-        self.presets_parts_tab_widget.addTab(instrument_widget, drum_kit_presets_icon, "Drum Kit Presets")
+            drum_kit_presets_icon = IconRegistry.get_icon(
+                IconRegistry.MUSIC, color=JDXiStyle.GREY
+            )
+        self.presets_parts_tab_widget.addTab(
+            instrument_widget, drum_kit_presets_icon, "Drum Kit Presets"
+        )
 
         # Use EditorBaseWidget for consistent scrollable layout structure
         self.base_widget = EditorBaseWidget(parent=self, analog=False)
         self.base_widget.setup_scrollable_content()
         container_layout = self.base_widget.get_container_layout()
-        
+
         # Add partial_tab_widget to the container
         self.partial_tab_widget.setStyleSheet(JDXiStyle.TABS_DRUMS)
         container_layout.addWidget(self.partial_tab_widget)
-        
+
         # Add the base widget as the second tab (it contains the scroll area)
         drum_kit_parts_icon = IconRegistry.get_icon("mdi.puzzle", color=JDXiStyle.GREY)
-        self.presets_parts_tab_widget.addTab(self.base_widget, drum_kit_parts_icon, "Drum Kit Parts")
+        self.presets_parts_tab_widget.addTab(
+            self.base_widget, drum_kit_parts_icon, "Drum Kit Parts"
+        )
 
         self.presets_parts_tab_widget.setStyleSheet(JDXiStyle.TABS_DRUMS)
         self.partial_tab_widget.setStyleSheet(JDXiStyle.TABS_DRUMS)

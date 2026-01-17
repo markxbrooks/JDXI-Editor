@@ -88,37 +88,59 @@ def add_slider_container(central_widget, midi_helper):
 
     # Create sliders with tooltips
     filter_cutoff_slider = FilterCutoffSlider(midi_helper, label="Cutoff")
-    filter_cutoff_slider.setToolTip("Filter Cutoff: Sets the filter cutoff frequency for all MIDI channels")
+    filter_cutoff_slider.setToolTip(
+        "Filter Cutoff: Sets the filter cutoff frequency for all MIDI channels"
+    )
 
     filter_resonance_slider = FilterResonanceSlider(midi_helper, label="Reson.")
-    filter_resonance_slider.setToolTip("Filter Resonance: Sets the filter resonance (Q) for all MIDI channels")
+    filter_resonance_slider.setToolTip(
+        "Filter Resonance: Sets the filter resonance (Q) for all MIDI channels"
+    )
 
     amp_level_slider = AmpLevelSlider(midi_helper, label="Level")
-    amp_level_slider.setToolTip("Amp Level: Sets the amplifier level for all MIDI channels")
+    amp_level_slider.setToolTip(
+        "Amp Level: Sets the amplifier level for all MIDI channels"
+    )
 
     amp_env_slider = AmpEnvelopeSlider(midi_helper, label="Env")
-    amp_env_slider.setToolTip("Amp Envelope: Sets the amplifier envelope depth for all MIDI channels")
+    amp_env_slider.setToolTip(
+        "Amp Envelope: Sets the amplifier envelope depth for all MIDI channels"
+    )
 
     lfo_rate_slider = LFORateSlider(midi_helper, label="Rate")
-    lfo_rate_slider.setToolTip("LFO Rate: Sets the LFO rate (speed) for all MIDI channels")
+    lfo_rate_slider.setToolTip(
+        "LFO Rate: Sets the LFO rate (speed) for all MIDI channels"
+    )
 
     lfo_pitch_slider = LFOPitchSlider(midi_helper, label="Pitch")
-    lfo_pitch_slider.setToolTip("LFO Pitch Depth: Sets the LFO pitch modulation depth for all MIDI channels")
+    lfo_pitch_slider.setToolTip(
+        "LFO Pitch Depth: Sets the LFO pitch modulation depth for all MIDI channels"
+    )
 
     lfo_filter_slider = LFOFilterDepthSlider(midi_helper, label="Filter")
-    lfo_filter_slider.setToolTip("LFO Filter Depth: Sets the LFO filter modulation depth for all MIDI channels")
+    lfo_filter_slider.setToolTip(
+        "LFO Filter Depth: Sets the LFO filter modulation depth for all MIDI channels"
+    )
 
     lfo_amp_slider = LFOAmpDepthSlider(midi_helper, label="Amp")
-    lfo_amp_slider.setToolTip("LFO Amp Depth: Sets the LFO amplitude modulation depth for all MIDI channels")
+    lfo_amp_slider.setToolTip(
+        "LFO Amp Depth: Sets the LFO amplitude modulation depth for all MIDI channels"
+    )
 
     effect1_slider = Effect1Slider(midi_helper, label="Efx1")
-    effect1_slider.setToolTip("Effect 1: Sets the Effect 1 send level for all MIDI channels")
+    effect1_slider.setToolTip(
+        "Effect 1: Sets the Effect 1 send level for all MIDI channels"
+    )
 
     effect2_slider = Effect2Slider(midi_helper, label="Efx2")
-    effect2_slider.setToolTip("Effect 2: Sets the Effect 2 send level for all MIDI channels")
+    effect2_slider.setToolTip(
+        "Effect 2: Sets the Effect 2 send level for all MIDI channels"
+    )
 
     lfo_shape_slider = LFOShapeSlider(midi_helper, label="LFSh")
-    lfo_shape_slider.setToolTip("LFO Shape: Sets the LFO waveform shape for all MIDI channels")
+    lfo_shape_slider.setToolTip(
+        "LFO Shape: Sets the LFO waveform shape for all MIDI channels"
+    )
 
     delay_slider = DelaySlider(midi_helper, label="Delay")
     delay_slider.setToolTip("Delay: Sets the delay send level for all MIDI channels")

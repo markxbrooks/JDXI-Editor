@@ -36,7 +36,6 @@ Example:
 import re
 from typing import Any, Callable
 
-from decologr import Decologr as log
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QComboBox,
@@ -48,6 +47,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from decologr import Decologr as log
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.midi.data.drum.data import rm_waves
@@ -55,13 +55,13 @@ from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.ui.widgets.combo_box.searchable_filterable import (
     SearchableFilterableComboBox,
 )
-from jdxi_editor.ui.widgets.wmt.envelope import WMTEnvelopeWidget
-from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 from jdxi_editor.ui.widgets.editor.helper import (
     create_adsr_icon,
     create_group_with_form_layout,
     create_scrolled_area_with_layout,
 )
+from jdxi_editor.ui.widgets.wmt.envelope import WMTEnvelopeWidget
+from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
 class DrumWMTSection(QWidget):
@@ -105,9 +105,7 @@ class DrumWMTSection(QWidget):
         """setup UI"""
         self.setMinimumWidth(JDXiDimensions.DRUM_PARTIAL_TAB_MIN_WIDTH)
         # Set size policy to allow vertical expansion
-        self.setSizePolicy(
-            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
-        )
+        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
@@ -193,10 +191,18 @@ class DrumWMTSection(QWidget):
         )
         fxm_icon = IconRegistry.get_icon(IconRegistry.EQUALIZER, color=JDXiStyle.GREY)
         self.wmt_controls_tab_widget.addTab(self._create_fxm_group(p), fxm_icon, "FXM")
-        tuning_icon = IconRegistry.get_icon(IconRegistry.MUSIC_NOTE, color=JDXiStyle.GREY)
-        self.wmt_controls_tab_widget.addTab(self._create_tuning_group(p), tuning_icon, "Tuning")
-        pan_icon = IconRegistry.get_icon(IconRegistry.PAN_HORIZONTAL, color=JDXiStyle.GREY)
-        self.wmt_controls_tab_widget.addTab(self._create_wmt_pan_group(p), pan_icon, "Pan")
+        tuning_icon = IconRegistry.get_icon(
+            IconRegistry.MUSIC_NOTE, color=JDXiStyle.GREY
+        )
+        self.wmt_controls_tab_widget.addTab(
+            self._create_tuning_group(p), tuning_icon, "Tuning"
+        )
+        pan_icon = IconRegistry.get_icon(
+            IconRegistry.PAN_HORIZONTAL, color=JDXiStyle.GREY
+        )
+        self.wmt_controls_tab_widget.addTab(
+            self._create_wmt_pan_group(p), pan_icon, "Pan"
+        )
         adsr_icon = create_adsr_icon()
         self.wmt_controls_tab_widget.addTab(
             self._create_adsr_widget(p), adsr_icon, "ADSR Envelope"
@@ -230,7 +236,7 @@ class DrumWMTSection(QWidget):
             "Layer Tags",
             "Synthesis",
         ]
-        
+
         # Category filter function for wave groups
         def wave_category_filter(wave_name: str, category: str) -> bool:
             """Check if a wave name matches a category."""
@@ -238,18 +244,83 @@ class DrumWMTSection(QWidget):
                 return True
             # Map category to search terms
             category_terms = {
-                "Drum Machines": ["606", "626", "707", "808", "909", "78", "106", "TM-2"],
-                "Genres/Styles": ["Ballad", "Break", "Dance", "DanceHall", "Hip-Hop", "HipHop", "Jazz", "Jungle", "Ragga", "Reggae", "Rock"],
-                "Character": ["Analog", "Bright", "Dry", "Hard", "Lite", "Lo-Bit", "Lo-Fi", "Old", "Plastic", "Power", "Tight", "Turbo", "Vint", "Warm", "Wet", "Wide", "Wild"],
+                "Drum Machines": [
+                    "606",
+                    "626",
+                    "707",
+                    "808",
+                    "909",
+                    "78",
+                    "106",
+                    "TM-2",
+                ],
+                "Genres/Styles": [
+                    "Ballad",
+                    "Break",
+                    "Dance",
+                    "DanceHall",
+                    "Hip-Hop",
+                    "HipHop",
+                    "Jazz",
+                    "Jungle",
+                    "Ragga",
+                    "Reggae",
+                    "Rock",
+                ],
+                "Character": [
+                    "Analog",
+                    "Bright",
+                    "Dry",
+                    "Hard",
+                    "Lite",
+                    "Lo-Bit",
+                    "Lo-Fi",
+                    "Old",
+                    "Plastic",
+                    "Power",
+                    "Tight",
+                    "Turbo",
+                    "Vint",
+                    "Warm",
+                    "Wet",
+                    "Wide",
+                    "Wild",
+                ],
                 "Instruments": ["Kick", "Snare", "Tom", "Clap", "Cymbal", "Crash"],
-                "Percussion": ["Bongo", "Brush", "Brsh", "Conga", "Cowbell", "Piccolo", "Rim", "Rimshot", "Stick", "Cstick", "Swish"],
+                "Percussion": [
+                    "Bongo",
+                    "Brush",
+                    "Brsh",
+                    "Conga",
+                    "Cowbell",
+                    "Piccolo",
+                    "Rim",
+                    "Rimshot",
+                    "Stick",
+                    "Cstick",
+                    "Swish",
+                ],
                 "Hi-Hats": ["CHH", "OHH", "PHH", "C&OHH", "Tip"],
                 "Layer Tags": ["Jazz Rim", "Jazz Snare", "Jz", "HphpJazz"],
-                "Synthesis": ["Dst", "Hush", "Hash", "LD", "MG", "Mix", "PurePhat", "SF", "Sim", "SimV", "Synth", "TY", "WD"],
+                "Synthesis": [
+                    "Dst",
+                    "Hush",
+                    "Hash",
+                    "LD",
+                    "MG",
+                    "Mix",
+                    "PurePhat",
+                    "SF",
+                    "Sim",
+                    "SimV",
+                    "Synth",
+                    "TY",
+                    "WD",
+                ],
             }
             terms = category_terms.get(category, [])
             return any(term.lower() in wave_name.lower() for term in terms)
-        
+
         # --- L Wave Combo Box ---
         l_wave_param = p("WAVE_NUMBER_L")
         l_wave_combo = SearchableFilterableComboBox(
@@ -272,7 +343,7 @@ class DrumWMTSection(QWidget):
         )
         self.l_wave_combos[wmt_index] = l_wave_combo
         self.controls[l_wave_param] = l_wave_combo
-        
+
         # --- R Wave Combo Box ---
         r_wave_param = p("WAVE_NUMBER_R")
         r_wave_combo = SearchableFilterableComboBox(
@@ -294,7 +365,7 @@ class DrumWMTSection(QWidget):
         )
         self.r_wave_combos[wmt_index] = r_wave_combo
         self.controls[r_wave_param] = r_wave_combo
-        
+
         widgets = [l_wave_combo, r_wave_combo]
         group, _ = create_group_with_form_layout(widgets)
         return group
@@ -358,28 +429,26 @@ class DrumWMTSection(QWidget):
     def _on_wave_parameter_changed(self, param: DrumPartialParam, value: int) -> None:
         """
         Handle wave parameter change.
-        
+
         This method is called when a wave combo box value changes.
         It sends the MIDI command with the correct value (original index, not filtered index).
-        
+
         The new SearchableFilterableComboBox widget maintains proper value mapping,
         so the value parameter is already the correct original index.
-        
+
         :param param: The parameter that changed
         :param value: The original value (wave index in rm_waves)
         """
         # Use the parent editor's _on_parameter_changed if available, otherwise use direct MIDI sending
         if self._on_parameter_changed:
             self._on_parameter_changed(param, value, self.address)
-        elif hasattr(self, 'midi_helper') and self.midi_helper and self.address:
+        elif hasattr(self, "midi_helper") and self.midi_helper and self.address:
             try:
                 from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
-                
+
                 sysex_composer = JDXiSysExComposer()
                 sysex_message = sysex_composer.compose_message(
-                    address=self.address,
-                    param=param,
-                    value=value
+                    address=self.address, param=param, value=value
                 )
                 self.midi_helper.send_midi_message(sysex_message)
                 log.debug(f"Sent MIDI for {param.name} with value {value}")

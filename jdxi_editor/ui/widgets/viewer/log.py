@@ -53,7 +53,7 @@ class LogViewer(QMainWindow):
         # Determine log file path (Decologr writes to ~/.{package_name}/logs/{package_name}.log)
         log_dir = Path.home() / f".{__package_name__}" / "logs"
         self.log_file = log_dir / f"{__package_name__}.log"
-        
+
         # Track the last position we read from in the file
         self.last_position = 0
         # Track refresh mode: True = fast (500ms), False = slow (30s)
@@ -71,19 +71,19 @@ class LogViewer(QMainWindow):
 
         # Create button layout
         button_layout = QHBoxLayout()
-        
+
         # Create clear button
         clear_button = QPushButton("Clear Log")
         clear_button.clicked.connect(self.clear_log)
         button_layout.addWidget(clear_button)
-        
+
         # Create refresh mode toggle button
         self.refresh_mode_button = QPushButton("Fast Refresh (500ms)")
         self.refresh_mode_button.setCheckable(True)
         self.refresh_mode_button.setChecked(True)
         self.refresh_mode_button.clicked.connect(self.toggle_refresh_mode)
         button_layout.addWidget(self.refresh_mode_button)
-        
+
         layout.addLayout(button_layout)
 
         # Set central widget
@@ -110,15 +110,19 @@ class LogViewer(QMainWindow):
                     cursor.movePosition(cursor.MoveOperation.End)
                     self.log_text.setTextCursor(cursor)
             except Exception as e:
-                self.log_text.setPlainText(f"Error reading log file: {e}\n\nLog file path: {self.log_file}")
+                self.log_text.setPlainText(
+                    f"Error reading log file: {e}\n\nLog file path: {self.log_file}"
+                )
         else:
-            self.log_text.setPlainText(f"Log file not found.\n\nExpected location: {self.log_file}")
+            self.log_text.setPlainText(
+                f"Log file not found.\n\nExpected location: {self.log_file}"
+            )
 
     def refresh_log_file(self):
         """Read new lines from the log file and append them"""
         if not self.log_file.exists():
             return
-        
+
         try:
             with open(self.log_file, "r", encoding="utf-8") as f:
                 # Seek to last position
@@ -127,7 +131,9 @@ class LogViewer(QMainWindow):
                 new_content = f.read()
                 if new_content:
                     # Append new content
-                    self.log_text.moveCursor(self.log_text.textCursor().MoveOperation.End)
+                    self.log_text.moveCursor(
+                        self.log_text.textCursor().MoveOperation.End
+                    )
                     self.log_text.insertPlainText(new_content)
                     # Update position
                     self.last_position = f.tell()
@@ -142,14 +148,14 @@ class LogViewer(QMainWindow):
     def toggle_refresh_mode(self):
         """Toggle between fast refresh (500ms) and slow refresh (30s)"""
         self.fast_refresh_mode = not self.fast_refresh_mode
-        
+
         if self.fast_refresh_mode:
             self.refresh_timer.setInterval(500)  # 500ms
             self.refresh_mode_button.setText("Fast Refresh (500ms)")
         else:
             self.refresh_timer.setInterval(30000)  # 30 seconds
             self.refresh_mode_button.setText("Slow Refresh (30s)")
-        
+
         # Restart timer with new interval
         self.refresh_timer.start()
 

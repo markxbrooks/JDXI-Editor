@@ -4,8 +4,6 @@ Log ADSR Parameter
 
 import logging
 
-from picomidi.sysex.parameter.address import AddressParameter
-
 from jdxi_editor.globals import logger
 from jdxi_editor.log.emoji import LEVEL_EMOJIS
 from jdxi_editor.midi.data.address.address import (
@@ -13,6 +11,7 @@ from jdxi_editor.midi.data.address.address import (
     AddressOffsetTemporaryToneUMB,
 )
 from jdxi_editor.ui.windows.midi.debugger import parse_sysex_byte
+from picomidi.sysex.parameter.address import AddressParameter
 
 
 def log_adsr_parameter(

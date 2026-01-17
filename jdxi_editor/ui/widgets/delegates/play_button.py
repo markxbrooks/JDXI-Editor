@@ -1,5 +1,5 @@
 from PySide6.QtCore import QSize
-from PySide6.QtWidgets import QStyledItemDelegate, QStyle, QStyleOptionButton, QWidget
+from PySide6.QtWidgets import QStyle, QStyledItemDelegate, QStyleOptionButton, QWidget
 
 
 class PlayButtonDelegate(QStyledItemDelegate):

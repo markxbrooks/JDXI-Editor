@@ -14,9 +14,7 @@ from typing import Optional
 import mido
 import pyaudio
 import qtawesome as qta
-from decologr import Decologr as log
 from mido import MidiFile, bpm2tempo
-from picomidi.constant import Midi
 from PySide6.QtCore import Qt, QThread, QTimer
 from PySide6.QtWidgets import (
     QCheckBox,
@@ -31,6 +29,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from decologr import Decologr as log
 from jdxi_editor.globals import PROFILING
 from jdxi_editor.jdxi.midi.constant import JDXiMidi
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
@@ -67,6 +66,7 @@ from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 from jdxi_editor.ui.widgets.midi.track_viewer import MidiTrackViewer
 from jdxi_editor.ui.widgets.midi.utils import get_total_duration_in_seconds
 from jdxi_editor.ui.windows.jdxi.utils import show_message_box
+from picomidi.constant import Midi
 
 # Expose Qt symbols for tests that patch via jdxi_editor.ui.editors.io.player
 # Tests expect these names to exist at module level
@@ -181,7 +181,7 @@ class MidiFileEditor(SynthEditor):
         self.base_widget = EditorBaseWidget(parent=self, analog=False)
         self.base_widget.setup_scrollable_content()
         container_layout = self.base_widget.get_container_layout()
-        
+
         # Create content widget
         content_widget = QWidget()
         main_layout = QVBoxLayout(content_widget)
@@ -189,12 +189,12 @@ class MidiFileEditor(SynthEditor):
         main_layout.addWidget(self.init_ruler())
         main_layout.addWidget(self.ui.midi_track_viewer)
         main_layout.addWidget(self.init_transport_controls())
-        
+
         # Add content to base widget
         container_layout.addWidget(content_widget)
-        
+
         # Add base widget to editor's layout
-        if not hasattr(self, 'main_layout') or self.main_layout is None:
+        if not hasattr(self, "main_layout") or self.main_layout is None:
             self.main_layout = QVBoxLayout(self)
             self.setLayout(self.main_layout)
         self.main_layout.addWidget(self.base_widget)
@@ -574,36 +574,36 @@ class MidiFileEditor(SynthEditor):
         :param is_muted: bool is the channel muted?
         """
         # Update track viewer's mute state (this will also update track viewer's buttons)
-        if hasattr(self.ui, 'midi_track_viewer') and self.ui.midi_track_viewer:
+        if hasattr(self.ui, "midi_track_viewer") and self.ui.midi_track_viewer:
             self.ui.midi_track_viewer.toggle_channel_mute(channel, is_muted)
             # Sync the track viewer's mute buttons
             if channel in self.ui.midi_track_viewer.mute_buttons:
                 self.ui.midi_track_viewer.mute_buttons[channel].setChecked(is_muted)
-        
+
         # Update player's muted channels state
         self.midi_state.muted_channels = self.get_muted_channels()
-    
+
     def _sync_mute_buttons_from_track_viewer(self) -> None:
         """
         Sync mute channel buttons in the USB file controls with the track viewer's state.
         Called when MIDI file is loaded or track viewer's mute state changes.
         """
-        if not hasattr(self, 'mute_channel_buttons'):
+        if not hasattr(self, "mute_channel_buttons"):
             return
-        
-        if hasattr(self.ui, 'midi_track_viewer') and self.ui.midi_track_viewer:
+
+        if hasattr(self.ui, "midi_track_viewer") and self.ui.midi_track_viewer:
             muted_channels = self.ui.midi_track_viewer.get_muted_channels()
             for channel, btn in self.mute_channel_buttons.items():
                 btn.blockSignals(True)
                 btn.setChecked(channel in muted_channels)
                 btn.blockSignals(False)
-    
+
     def _apply_all_track_changes(self) -> None:
         """
         Apply all Track Name and MIDI Channel changes.
         Calls the track viewer's apply_all_track_changes method.
         """
-        if hasattr(self.ui, 'midi_track_viewer') and self.ui.midi_track_viewer:
+        if hasattr(self.ui, "midi_track_viewer") and self.ui.midi_track_viewer:
             self.ui.midi_track_viewer.apply_all_track_changes()
 
     def generate_auto_wav_filename(self) -> Optional[str]:

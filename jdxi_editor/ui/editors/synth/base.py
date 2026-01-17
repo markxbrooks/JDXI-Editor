@@ -22,10 +22,9 @@ import threading
 from typing import Dict, Optional
 
 import mido
-from decologr import Decologr as log
-from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtWidgets import QWidget
 
+from decologr import Decologr as log
 from jdxi_editor.jdxi.synth.factory import create_synth_data
 from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.log.slider_parameter import log_slider_parameters
@@ -38,6 +37,7 @@ from jdxi_editor.ui.widgets.slider import Slider
 from jdxi_editor.ui.widgets.spin_box.spin_box import SpinBox
 from jdxi_editor.ui.widgets.switch.switch import Switch
 from jdxi_editor.ui.windows.patch.name_editor import PatchNameEditor
+from picomidi.sysex.parameter.address import AddressParameter
 
 
 class SynthBase(QWidget):

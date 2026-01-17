@@ -1,13 +1,12 @@
 from typing import Iterable, List
 
 from decologr import Decologr as log
-from picomidi.constant import Midi
-from picomidi.core.bitmask import BitMask
-
 from jdxi_editor.jdxi.midi.constant import JDXiMidi
 from jdxi_editor.jdxi.midi.message.sysex.offset import JDXiSysExMessageLayout
 from jdxi_editor.midi.data.address.address import CommandID
 from jdxi_editor.midi.message.jdxi import JDXiSysexHeader
+from picomidi.constant import Midi
+from picomidi.core.bitmask import BitMask
 
 
 def validate_raw_sysex_message(message: List[int]) -> bool:

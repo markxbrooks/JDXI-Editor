@@ -16,17 +16,17 @@ Classes:
 Usage Example:
 --------------
     # In a simple editor's __init__:
-    
+
     from jdxi_editor.ui.widgets.editor.simple_editor_helper import SimpleEditorHelper
-    
+
     class MySimpleEditor(BasicEditor):
         def __init__(self, ...):
             super().__init__(midi_helper=midi_helper, parent=parent)
-            
+
             # Setup base widget
             self.base_widget = EditorBaseWidget(parent=self, analog=False)
             self.base_widget.setup_scrollable_content()
-            
+
             # Use helper to setup title/image and tabbed content
             self.editor_helper = SimpleEditorHelper(
                 editor=self,
@@ -35,12 +35,12 @@ Usage Example:
                 image_folder="my_editor",
                 default_image="my_editor.png"
             )
-            
+
             # Create tabs
             self.tab_widget = self.editor_helper.get_tab_widget()
             self.tab_widget.addTab(self._create_section1(), "Section 1")
             self.tab_widget.addTab(self._create_section2(), "Section 2")
-            
+
             # Add base widget to editor's layout
             if not hasattr(self, 'main_layout') or self.main_layout is None:
                 self.main_layout = QVBoxLayout(self)
@@ -69,7 +69,7 @@ from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 class SimpleEditorHelper:
     """
     Helper class for standardizing simple editor setup.
-    
+
     Provides methods to setup title/image headers and tabbed content
     in a consistent way across Effects, Vocal Effects, and Arpeggio editors.
     """
@@ -96,13 +96,13 @@ class SimpleEditorHelper:
         self.title_text = title
         self.image_folder = image_folder
         self.default_image = default_image
-        
+
         # Store references
         self.title_label: Optional[DigitalTitle] = None
         self.image_label: Optional[QLabel] = None
         self.tab_widget: Optional[QTabWidget] = None
         self.rows_layout: Optional[QVBoxLayout] = None
-        
+
         # Setup title/image and tabbed content
         self._setup_title_and_image()
         self._setup_tabbed_content()
@@ -112,20 +112,20 @@ class SimpleEditorHelper:
         # Create title label
         self.title_label = DigitalTitle(self.title_text)
         JDXiThemeManager.apply_instrument_title_label(self.title_label)
-        
+
         # Create image label
         self.image_label = QLabel()
         self.image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        
+
         # Set image folder and default image on editor
         self.editor.instrument_icon_folder = self.image_folder
         self.editor.default_image = self.default_image
-        
+
         # Set image_label on editor so update_instrument_image can access it
         self.editor.image_label = self.image_label
-        
+
         # Update image (if editor has update_instrument_image method)
-        if hasattr(self.editor, 'update_instrument_image'):
+        if hasattr(self.editor, "update_instrument_image"):
             self.editor.update_instrument_image()
 
     def _setup_tabbed_content(self) -> None:
@@ -149,9 +149,9 @@ class SimpleEditorHelper:
         self.tab_widget = QTabWidget()
         JDXiThemeManager.apply_tabs_style(self.tab_widget)
         self.rows_layout.addWidget(self.tab_widget)
-        
+
         main_row_hlayout.addStretch()
-        
+
         # Add centered content to base widget
         self.base_widget.add_centered_content(centered_content)
 

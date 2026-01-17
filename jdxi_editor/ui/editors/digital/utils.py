@@ -5,7 +5,6 @@ This module contains utility functions for handling SysEx data related to digita
 import logging
 
 from decologr import Decologr as log
-
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetTemporaryToneUMB,
     AddressStartMSB,

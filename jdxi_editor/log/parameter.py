@@ -5,7 +5,9 @@ from typing import Any
 
 from jdxi_editor.globals import LOG_PADDING_WIDTH, LOGGING, logger
 from jdxi_editor.log.decorator import decorate_log_message
-from jdxi_editor.midi.io.utils import format_midi_message_to_hex_string
+from picomidi.utils.formatting import (
+    format_message_to_hex_string as format_midi_message_to_hex_string,
+)
 
 
 def log_parameter(

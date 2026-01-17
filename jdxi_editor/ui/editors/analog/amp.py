@@ -6,9 +6,8 @@ This section contains the controls for the amp section of the JD-Xi editor.
 
 from typing import Callable
 
-from jdxi_editor.ui.image.utils import base64_to_pixmap
-from jdxi_editor.ui.image.waveform import generate_waveform_icon
-from picomidi.sysex.parameter.address import AddressParameter
+import qtawesome as qta
+from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
     QGroupBox,
     QHBoxLayout,
@@ -19,25 +18,30 @@ from PySide6.QtWidgets import (
 from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
 from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
-from PySide6.QtGui import QIcon
-import qtawesome as qta
 from jdxi_editor.midi.data.parameter.analog import AnalogParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.image.utils import base64_to_pixmap
+from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
-from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.editor import IconType
-from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets, create_adsr_icon, create_envelope_group
+from jdxi_editor.ui.widgets.editor.helper import (
+    create_adsr_icon,
+    create_envelope_group,
+    create_layout_with_widgets,
+)
+from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
+from picomidi.sysex.parameter.address import AddressParameter
 
 
 class AnalogAmpSection(SectionBaseWidget):
     """Amp section of the JD-Xi editor"""
 
     def __init__(
-            self,
-            midi_helper: MidiIOHelper,
-            address: RolandSysExAddress,
-            controls: dict[AddressParameter, QWidget],
-            create_parameter_slider: Callable
+        self,
+        midi_helper: MidiIOHelper,
+        address: RolandSysExAddress,
+        controls: dict[AddressParameter, QWidget],
+        create_parameter_slider: Callable,
     ):
         """
         Initialize the Amp section of the JD-Xi editor
@@ -67,7 +71,9 @@ class AnalogAmpSection(SectionBaseWidget):
 
         self.analog_amp_tab_widget = QTabWidget()
         controls_icon = IconRegistry.get_icon(IconRegistry.TUNE, color=JDXiStyle.GREY)
-        self.analog_amp_tab_widget.addTab(amp_controls_widget, controls_icon, "Controls")
+        self.analog_amp_tab_widget.addTab(
+            amp_controls_widget, controls_icon, "Controls"
+        )
         adsr_icon = create_adsr_icon()
         self.analog_amp_tab_widget.addTab(amp_adsr_group, adsr_icon, "ADSR")
         JDXiThemeManager.apply_tabs_style(self.analog_amp_tab_widget, analog=True)
@@ -90,9 +96,13 @@ class AnalogAmpSection(SectionBaseWidget):
             vertical=True,
         )
         # Standardized order: Level, KeyFollow, Velocity (matching Filter pattern)
-        level_controls_row_layout = create_layout_with_widgets([self.amp_level,
-                                                                self.amp_level_keyfollow,
-                                                                self.amp_level_velocity_sensitivity])
+        level_controls_row_layout = create_layout_with_widgets(
+            [
+                self.amp_level,
+                self.amp_level_keyfollow,
+                self.amp_level_velocity_sensitivity,
+            ]
+        )
         return level_controls_row_layout
 
     def _create_analog_amp_adsr_group(self) -> QGroupBox:
@@ -107,11 +117,9 @@ class AnalogAmpSection(SectionBaseWidget):
             create_parameter_slider=self._create_parameter_slider,
             address=self.address,
             controls=self.controls,
-            analog=True
+            analog=True,
         )
         # Use standardized envelope group helper (centers icon automatically)
         return create_envelope_group(
-            name="Envelope",
-            adsr_widget=self.amp_env_adsr_widget,
-            analog=True
+            name="Envelope", adsr_widget=self.amp_env_adsr_widget, analog=True
         )

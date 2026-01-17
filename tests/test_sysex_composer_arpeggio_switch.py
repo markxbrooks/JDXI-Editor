@@ -4,7 +4,7 @@ from picomidi.constant import Midi
 from jdxi_editor.midi.data.address.address import RolandSysExAddress, AddressStartMSB, AddressOffsetSystemUMB
 from jdxi_editor.midi.data.address.helpers import apply_address_offset
 from jdxi_editor.midi.data.parameter.program.zone import ProgramZoneParam
-from jdxi_editor.midi.message.roland import RolandSysEx
+from jdxi_editor.midi.message.roland import JDXiSysEx
 from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
 
 """from jdxi_editor import (
@@ -41,7 +41,7 @@ class TestJDXiSysExComposer(unittest.TestCase):
         sysex = self.composer.compose_message(base_address, param, value)
 
         # --- Structured-object assertions ---
-        self.assertIsInstance(sysex, RolandSysEx)
+        self.assertIsInstance(sysex, JDXiSysEx)
         self.assertEqual(
             sysex.sysex_address,
             expected_address,

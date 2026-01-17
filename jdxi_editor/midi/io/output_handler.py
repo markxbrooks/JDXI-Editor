@@ -20,14 +20,11 @@ Example usage:
 import logging
 from typing import Iterable, Optional
 
-from decologr import Decologr as log
-from picomidi.constant import Midi
-from picomidi.core.bitmask import BitMask
 from PySide6.QtCore import Signal
 
+from decologr import Decologr as log
 from jdxi_editor.midi.data.parsers.util import OUTBOUND_MESSAGE_IGNORED_KEYS
 from jdxi_editor.midi.io.controller import MidiIOController
-from jdxi_editor.midi.io.utils import format_midi_message_to_hex_string
 from jdxi_editor.midi.message import (
     ChannelMessage,
     ControlChangeMessage,
@@ -37,6 +34,11 @@ from jdxi_editor.midi.message import (
 )
 from jdxi_editor.midi.sysex.parser.sysex import JDXiSysExParser
 from jdxi_editor.midi.sysex.validation import validate_midi_message
+from picomidi.constant import Midi
+from picomidi.core.bitmask import BitMask
+from picomidi.utils.formatting import (
+    format_message_to_hex_string as format_midi_message_to_hex_string,
+)
 
 
 class MidiOutHandler(MidiIOController):

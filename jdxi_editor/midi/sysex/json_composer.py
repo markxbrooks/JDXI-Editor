@@ -8,7 +8,6 @@ from pathlib import Path
 from typing import Any, Optional, Union
 
 from decologr import Decologr as log
-
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetTemporaryToneUMB,
     RolandSysExAddress,
@@ -126,8 +125,6 @@ class JDXiJSONComposer:
         os.makedirs(temp_folder, exist_ok=True)
 
         # Special handling for DigitalSynthEditor: save Common and Modify separately
-        from picomidi.constant import Midi
-
         from jdxi_editor.midi.data.address.address import (
             AddressOffsetProgramLMB,
             AddressOffsetSuperNATURALLMB,
@@ -143,6 +140,7 @@ class JDXiJSONComposer:
         )
         from jdxi_editor.ui.editors.digital.editor import DigitalSynthEditor
         from jdxi_editor.ui.editors.drum.editor import DrumCommonEditor
+        from picomidi.constant import Midi
 
         if isinstance(editor, DigitalSynthEditor):
             # Separate Common and Modify controls

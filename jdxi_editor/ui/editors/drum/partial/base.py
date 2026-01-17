@@ -53,9 +53,7 @@ from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 class DrumBaseSection(QWidget):
     """Drum Output Section for the JDXI Editor"""
 
-    def __init__(
-        self
-    ):
+    def __init__(self):
         super().__init__()
         self.vlayout = None
         self.scrolled_layout = None

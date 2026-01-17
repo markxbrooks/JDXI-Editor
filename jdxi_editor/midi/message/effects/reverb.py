@@ -23,12 +23,12 @@ from jdxi_editor.midi.data.address.address import (
     AddressStartMSB,
     CommandID,
 )
-from jdxi_editor.midi.message.roland import RolandSysEx
-from jdxi_editor.midi.utils.byte import split_16bit_value_to_nibbles
+from jdxi_editor.midi.message.roland import JDXiSysEx
+from picomidi.utils.conversion import split_16bit_value_to_nibbles
 
 
 @dataclass
-class ReverbMessage(RolandSysEx):
+class ReverbMessage(JDXiSysEx):
     """Program Reverb parameter message"""
 
     command: int = CommandID.DT1

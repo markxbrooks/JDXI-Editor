@@ -4,8 +4,7 @@ Digital Oscillator Section for the JDXI Editor
 
 from typing import Callable
 
-from decologr import Decologr as log
-from picomidi.sysex.parameter.address import AddressParameter
+import qtawesome as qta
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
     QGridLayout,
@@ -16,12 +15,10 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from decologr import Decologr as log
 from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
 from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
-from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
-from jdxi_editor.ui.widgets.editor import IconType
-import qtawesome as qta
 from jdxi_editor.midi.data.digital.oscillator import DigitalOscWave
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParam
 from jdxi_editor.midi.data.pcm.waves import PCM_WAVES_CATEGORIZED
@@ -30,9 +27,14 @@ from jdxi_editor.ui.editors.digital.partial.pwm import PWMWidget
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from jdxi_editor.ui.widgets.button.waveform.waveform import WaveformButton
+from jdxi_editor.ui.widgets.combo_box.searchable_filterable import (
+    SearchableFilterableComboBox,
+)
+from jdxi_editor.ui.widgets.editor import IconType
+from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.pitch.envelope import PitchEnvelopeWidget
-from jdxi_editor.ui.widgets.combo_box.searchable_filterable import SearchableFilterableComboBox
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
+from picomidi.sysex.parameter.address import AddressParameter
 
 
 class DigitalOscillatorSection(SectionBaseWidget):
@@ -58,7 +60,7 @@ class DigitalOscillatorSection(SectionBaseWidget):
         self._create_parameter_combo_box = create_parameter_combo_box
         self.send_midi_parameter = send_midi_parameter
         self.address = address
-        
+
         super().__init__(icon_type=IconType.OSCILLATOR, analog=False)
         self.setup_ui()
         log.parameter(f"initialization complete for", self)
@@ -76,17 +78,25 @@ class DigitalOscillatorSection(SectionBaseWidget):
 
         # --- Tuning and Pitch tab (combines Tuning and Pitch Envelope like Analog) ---
         tuning_pitch_widget = self._create_tuning_pitch_widget()
-        tuning_icon = IconRegistry.get_icon(IconRegistry.MUSIC_NOTE, color=JDXiStyle.GREY)
-        self.oscillator_tab_widget.addTab(tuning_pitch_widget, tuning_icon, "Tuning and Pitch")
+        tuning_icon = IconRegistry.get_icon(
+            IconRegistry.MUSIC_NOTE, color=JDXiStyle.GREY
+        )
+        self.oscillator_tab_widget.addTab(
+            tuning_pitch_widget, tuning_icon, "Tuning and Pitch"
+        )
 
         # --- Pulse Width tab ---
         pw_group = self._create_pw_group()
-        pw_icon = QIcon(base64_to_pixmap(generate_waveform_icon("square", "#FFFFFF", 1.0)))
+        pw_icon = QIcon(
+            base64_to_pixmap(generate_waveform_icon("square", "#FFFFFF", 1.0))
+        )
         self.oscillator_tab_widget.addTab(pw_group, pw_icon, "Pulse Width")
 
         # --- PCM Wave tab (unique to Digital) ---
         pcm_group = self._create_pcm_group()
-        pcm_icon = QIcon(base64_to_pixmap(generate_waveform_icon("pcm", "#FFFFFF", 1.0)))
+        pcm_icon = QIcon(
+            base64_to_pixmap(generate_waveform_icon("pcm", "#FFFFFF", 1.0))
+        )
         self.oscillator_tab_widget.addTab(pcm_group, pcm_icon, "PCM Wave")
 
         layout.addStretch()
@@ -117,7 +127,9 @@ class DigitalOscillatorSection(SectionBaseWidget):
         for wave, icon_base64 in wave_icons.items():
             btn = WaveformButton(wave)
             btn.setStyleSheet(JDXiStyle.BUTTON_RECT)
-            btn.setFixedSize(JDXiDimensions.WAVEFORM_ICON_WIDTH, JDXiDimensions.WAVEFORM_ICON_HEIGHT)
+            btn.setFixedSize(
+                JDXiDimensions.WAVEFORM_ICON_WIDTH, JDXiDimensions.WAVEFORM_ICON_HEIGHT
+            )
             btn.setIcon(QIcon(base64_to_pixmap(icon_base64)))
             btn.clicked.connect(lambda checked, w=wave: self._on_waveform_selected(w))
             self.wave_buttons[wave] = btn
@@ -231,14 +243,14 @@ class DigitalOscillatorSection(SectionBaseWidget):
             "Gain [dB]",
             ["-6", "0", "+6", "+12"],
         )
-        
+
         # Create PCM wave options and values
         pcm_wave_options = [
             f"{w['Wave Number']}: {w['Wave Name']}" for w in PCM_WAVES_CATEGORIZED
         ]
         pcm_wave_values = [w["Wave Number"] for w in PCM_WAVES_CATEGORIZED]
         pcm_categories = sorted(set(w["Category"] for w in PCM_WAVES_CATEGORIZED))
-        
+
         # Category filter function for PCM waves
         def pcm_category_filter(wave_name: str, category: str) -> bool:
             """Check if a wave name matches a category."""
@@ -250,7 +262,7 @@ class DigitalOscillatorSection(SectionBaseWidget):
                 if wave_display == wave_name:
                     return wave["Category"] == category
             return False
-        
+
         # Create SearchableFilterableComboBox for PCM wave selection
         self.pcm_wave_number = SearchableFilterableComboBox(
             label="Number",
@@ -262,15 +274,15 @@ class DigitalOscillatorSection(SectionBaseWidget):
             show_search=True,
             show_category=True,
         )
-        
+
         # Connect valueChanged signal to send MIDI parameter updates
         self.pcm_wave_number.valueChanged.connect(
             lambda v: self.send_midi_parameter(DigitalPartialParam.PCM_WAVE_NUMBER, v)
         )
-        
+
         # Store in controls dict for consistency
         self.controls[DigitalPartialParam.PCM_WAVE_NUMBER] = self.pcm_wave_number
-        
+
         pcm_layout.setColumnStretch(0, 1)  # left side stretches
         pcm_layout.addWidget(self.pcm_wave_gain, 0, 1)
         pcm_layout.addWidget(self.pcm_wave_number, 0, 2, 1, 3)  # Span 3 columns
@@ -308,7 +320,6 @@ class DigitalOscillatorSection(SectionBaseWidget):
         self._update_pw_controls_enabled_state(waveform)
         self._update_pcm_controls_enabled_state(waveform)
         self._update_supersaw_controls_enabled_state(waveform)
-
 
     def _update_pw_controls_enabled_state(self, waveform: DigitalOscWave):
         """Update pulse width controls enabled state based on waveform"""

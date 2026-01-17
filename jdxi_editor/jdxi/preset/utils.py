@@ -1,5 +1,4 @@
 from decologr import Decologr as log
-
 from jdxi_editor.midi.data.programs.digital import DIGITAL_PRESET_LIST
 
 

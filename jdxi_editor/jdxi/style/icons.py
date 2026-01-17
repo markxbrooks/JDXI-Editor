@@ -5,11 +5,10 @@ Provides centralized icon definitions and retrieval with fallback support.
 """
 
 import qtawesome as qta
+from PySide6.QtGui import QIcon, Qt
 from PySide6.QtWidgets import QHBoxLayout, QLabel
 
 from decologr import Decologr as log
-from PySide6.QtGui import QIcon, Qt
-
 from jdxi_editor.jdxi.style import JDXiStyle
 
 
@@ -63,7 +62,7 @@ class IconRegistry:
     REVERB = "mdi.wave"
     MICROPHONE = "mdi.microphone"
     EQUALIZER = "mdi.equalizer"
-    
+
     # Control icons
     TUNE = "mdi.tune"
     CLOCK = "mdi.clock-outline"
@@ -252,7 +251,7 @@ class IconRegistry:
 
     @classmethod
     def get_icon_by_qta_name(cls, name, color, scale_factor=1):
-        """ get icon by qta name"""
+        """get icon by qta name"""
         try:
             return qta.icon(name, color, scale_factor)
         except Exception as ex:

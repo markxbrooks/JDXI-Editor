@@ -39,7 +39,6 @@ Dependencies:
 
 from typing import Optional
 
-from decologr import Decologr as log
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import (
     QComboBox,
@@ -52,6 +51,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from decologr import Decologr as log
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.jdxi.preset.lists import JDXiPresetToneList
 from jdxi_editor.jdxi.style import JDXiStyle
@@ -70,7 +70,10 @@ from jdxi_editor.ui.editors.helpers.program import (
     get_program_by_id,
 )
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
-from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets, create_group_with_layout
+from jdxi_editor.ui.widgets.editor.helper import (
+    create_group_with_layout,
+    create_layout_with_widgets,
+)
 
 
 class PresetEditor(BasicEditor):
@@ -245,7 +248,9 @@ class PresetEditor(BasicEditor):
 
         self.analog_synth_icon = QLabel()
         self.analog_synth_icon.setPixmap(
-            IconRegistry.get_icon(IconRegistry.PIANO, color=JDXiStyle.FOREGROUND).pixmap(40, 40)
+            IconRegistry.get_icon(
+                IconRegistry.PIANO, color=JDXiStyle.FOREGROUND
+            ).pixmap(40, 40)
         )
         self.analog_synth_hlayout.addWidget(self.analog_synth_icon)
 
@@ -283,8 +288,9 @@ class PresetEditor(BasicEditor):
         :return: QGroupBox
         """
         # --- Program controls group
-        preset_group, preset_vlayout = create_group_with_layout(group_name="Load a program",
-                                                                vertical=True)
+        preset_group, preset_vlayout = create_group_with_layout(
+            group_name="Load a program", vertical=True
+        )
         # Synth type selection combo box
         self.digital_preset_type_combo = QComboBox()
         self.digital_preset_type_combo.addItems(
@@ -297,8 +303,7 @@ class PresetEditor(BasicEditor):
         # Search Box
 
         self.search_box = QLineEdit()
-        search_row = create_layout_with_widgets([QLabel("Search:"),
-                                                 self.search_box])
+        search_row = create_layout_with_widgets([QLabel("Search:"), self.search_box])
         self.search_box.setStyleSheet(JDXiStyle.QLINEEDIT)
         self.search_box.setPlaceholderText("Search presets...")
         self.search_box.textChanged.connect(self._populate_presets)
@@ -322,7 +327,9 @@ class PresetEditor(BasicEditor):
         preset_vlayout.addWidget(self.category_combo_box)
         # Load button
         self.load_button = QPushButton(
-            IconRegistry.get_icon(IconRegistry.FOLDER_NOTCH_OPEN, color=JDXiStyle.FOREGROUND),
+            IconRegistry.get_icon(
+                IconRegistry.FOLDER_NOTCH_OPEN, color=JDXiStyle.FOREGROUND
+            ),
             "Load Preset",
         )
         self.load_button.clicked.connect(self.load_preset_by_program_change)

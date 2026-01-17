@@ -31,10 +31,10 @@ preset changes and communicate them to the UI and MIDI engine.
 
 import threading
 
-from decologr import Decologr as log
 from PySide6.QtCore import QObject, Qt, Signal
 from PySide6.QtWidgets import QScrollArea, QVBoxLayout, QWidget
 
+from decologr import Decologr as log
 from jdxi_editor.jdxi.preset.button import JDXiPresetButtonData
 from jdxi_editor.jdxi.preset.utils import get_preset_values
 from jdxi_editor.jdxi.synth.type import JDXiSynth

@@ -20,11 +20,11 @@ VocalEffectMessage
 from dataclasses import dataclass
 
 from jdxi_editor.midi.data.address.address import AddressStartMSB, CommandID
-from jdxi_editor.midi.message.roland import RolandSysEx
+from jdxi_editor.midi.message.roland import JDXiSysEx
 
 
 @dataclass
-class VocalEffectMessage(RolandSysEx):
+class VocalEffectMessage(JDXiSysEx):
     """Program Vocal Effect parameter message"""
 
     command: int = CommandID.DT1

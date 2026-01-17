@@ -16,9 +16,8 @@ import inspect
 from enum import IntEnum
 from typing import Any, Dict, Tuple, Type, Union
 
-from picomidi.sysex.parameter.address import AddressParameter
-
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
+from picomidi.sysex.parameter.address import AddressParameter
 
 
 def apply_address_offset(

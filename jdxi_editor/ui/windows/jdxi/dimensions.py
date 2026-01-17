@@ -13,7 +13,8 @@ Class to store dimensions of a Roland JDXi instrument
 
 class DigitalDimensions:
     """Digital Dimensions"""
-    SPACING = 5 
+
+    SPACING = 5
     MARGIN = 5
     MIN_CONTROL_WIDTH = 20
     MIN_CONTROL_HEIGHT = 14
@@ -21,10 +22,11 @@ class DigitalDimensions:
     MIN_HEIGHT = 300
     WIDTH = 1030
     HEIGHT = 600
-    
+
 
 class AnalogDimensions:
     """Analog Editor Dimensions"""
+
     SPACING = 4
     MARGIN = 5
     MIN_CONTROL_WIDTH = 20
@@ -35,6 +37,7 @@ class JDXiDimensions:
     """
     A class to store dimensions for the JD-Xi editor UI.
     """
+
     ICON_SIZE_SMALL = 0.7
     ICON_WIDTH = 30
     ICON_HEIGHT = 30
@@ -46,7 +49,7 @@ class JDXiDimensions:
     DRUM_WIDTH = 1100
     DRUM_HEIGHT = 800
     ANALOG = AnalogDimensions
-    
+
     WAVEFORM_ICON_WIDTH = 60
     WAVEFORM_ICON_HEIGHT = 30
 
@@ -58,7 +61,7 @@ class JDXiDimensions:
     WIDTH = 1000
 
     MARGIN = 15
-    
+
     ARP_MARGIN = 5
     ARP_SPACING = 20
 

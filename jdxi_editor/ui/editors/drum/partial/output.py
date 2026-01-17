@@ -50,19 +50,22 @@ from PySide6.QtWidgets import (
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.drum.partial.base import DrumBaseSection
-from jdxi_editor.ui.widgets.editor.helper import create_group_with_layout, create_layout_with_widgets, \
-    create_form_layout_with_widgets
+from jdxi_editor.ui.widgets.editor.helper import (
+    create_form_layout_with_widgets,
+    create_group_with_layout,
+    create_layout_with_widgets,
+)
 
 
 class DrumOutputSection(DrumBaseSection):
     """Drum Output Section for the JDXI Editor"""
 
     def __init__(
-            self,
-            controls: dict[DrumPartialParam, QWidget],
-            create_parameter_combo_box: Callable,
-            create_parameter_slider: Callable,
-            midi_helper: MidiIOHelper,
+        self,
+        controls: dict[DrumPartialParam, QWidget],
+        create_parameter_combo_box: Callable,
+        create_parameter_slider: Callable,
+        midi_helper: MidiIOHelper,
     ):
         super().__init__()
         self.controls = controls
@@ -93,11 +96,18 @@ class DrumOutputSection(DrumBaseSection):
             [0, 1, 2, 3, 4],
         )
 
-        output_layout = create_form_layout_with_widgets([partial_chorus_send_level_slider,
-                                                         partial_output_assign_combo, partial_output_level_slider,
-                                                         partial_reverb_send_level_slider])
+        output_layout = create_form_layout_with_widgets(
+            [
+                partial_chorus_send_level_slider,
+                partial_output_assign_combo,
+                partial_output_level_slider,
+                partial_reverb_send_level_slider,
+            ]
+        )
 
-        output_group, _ = create_group_with_layout(group_name="Output", inner_layout=output_layout)
+        output_group, _ = create_group_with_layout(
+            group_name="Output", inner_layout=output_layout
+        )
         main_row_hlayout = create_layout_with_widgets([output_group], vertical=True)
         self.scrolled_layout.addLayout(main_row_hlayout)
         self.vlayout.addStretch()

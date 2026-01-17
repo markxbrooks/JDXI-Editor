@@ -4,10 +4,8 @@ AMP section for the digital partial editor.
 
 from typing import Callable
 
-from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets, \
-    create_vlayout_with_hlayout_and_widgets, create_layout_with_inner_layouts, create_icons_layout, \
-    create_adsr_icon_label, create_centered_adsr_icon_layout, create_envelope_group
-from picomidi.sysex.parameter.address import AddressParameter
+import qtawesome as qta
+from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
     QGroupBox,
     QTabWidget,
@@ -15,21 +13,29 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.parameter.digital.partial import (
     DigitalPartialParam,
 )
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.ui.widgets.adsr.adsr import ADSR
-from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
-from jdxi_editor.ui.widgets.editor import IconType
-from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
-from jdxi_editor.jdxi.style import JDXiStyle
-from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
-from PySide6.QtGui import QIcon
-import qtawesome as qta
+from jdxi_editor.ui.widgets.adsr.adsr import ADSR
+from jdxi_editor.ui.widgets.editor import IconType
+from jdxi_editor.ui.widgets.editor.helper import (
+    create_adsr_icon_label,
+    create_centered_adsr_icon_layout,
+    create_envelope_group,
+    create_icons_layout,
+    create_layout_with_inner_layouts,
+    create_layout_with_widgets,
+    create_vlayout_with_hlayout_and_widgets,
+)
+from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
+from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
+from picomidi.sysex.parameter.address import AddressParameter
 
 
 class DigitalAmpSection(SectionBaseWidget):
@@ -57,8 +63,10 @@ class DigitalAmpSection(SectionBaseWidget):
         self.address = address
         self.controls = controls
         self._create_parameter_slider = create_parameter_slider
-        
-        super().__init__(icon_type=IconType.NONE, analog=False)  # Use NONE since we have custom icons
+
+        super().__init__(
+            icon_type=IconType.NONE, analog=False
+        )  # Use NONE since we have custom icons
         self.setup_ui()
 
     def setup_ui(self):
@@ -79,7 +87,9 @@ class DigitalAmpSection(SectionBaseWidget):
         amp_controls_widget = QWidget()
         amp_controls_widget.setLayout(amp_controls_layout)
         controls_icon = IconRegistry.get_icon(IconRegistry.TUNE, color=JDXiStyle.GREY)
-        self.digital_amp_tab_widget.addTab(amp_controls_widget, controls_icon, "Controls")
+        self.digital_amp_tab_widget.addTab(
+            amp_controls_widget, controls_icon, "Controls"
+        )
 
         # Add ADSR tab
         amp_adsr_group = self._create_amp_adsr_group()
@@ -94,27 +104,29 @@ class DigitalAmpSection(SectionBaseWidget):
         """Create amp controls layout"""
 
         # --- Level and velocity controls row - standardized order: Level, KeyFollow, Velocity
-        controls_row_layout = create_layout_with_widgets([
-            self._create_parameter_slider(
-                DigitalPartialParam.AMP_LEVEL, "Level", vertical=True
-            ),
-            self._create_parameter_slider(
-                DigitalPartialParam.AMP_LEVEL_KEYFOLLOW, "KeyFollow", vertical=True
-            ),
-            self._create_parameter_slider(
-                DigitalPartialParam.AMP_VELOCITY, "Velocity", vertical=True
-            ),
-            self._create_parameter_slider(
-                DigitalPartialParam.LEVEL_AFTERTOUCH,
-                "After-touch Sensitivity",
-                vertical=True,
-            ),
-            self._create_parameter_slider(
-                DigitalPartialParam.CUTOFF_AFTERTOUCH,
-                "After-touch Cutoff",
-                vertical=True,
-            )
-        ])
+        controls_row_layout = create_layout_with_widgets(
+            [
+                self._create_parameter_slider(
+                    DigitalPartialParam.AMP_LEVEL, "Level", vertical=True
+                ),
+                self._create_parameter_slider(
+                    DigitalPartialParam.AMP_LEVEL_KEYFOLLOW, "KeyFollow", vertical=True
+                ),
+                self._create_parameter_slider(
+                    DigitalPartialParam.AMP_VELOCITY, "Velocity", vertical=True
+                ),
+                self._create_parameter_slider(
+                    DigitalPartialParam.LEVEL_AFTERTOUCH,
+                    "After-touch Sensitivity",
+                    vertical=True,
+                ),
+                self._create_parameter_slider(
+                    DigitalPartialParam.CUTOFF_AFTERTOUCH,
+                    "After-touch Cutoff",
+                    vertical=True,
+                ),
+            ]
+        )
 
         # --- Pan slider in a separate row to get left to right
         pan_slider = self._create_parameter_slider(DigitalPartialParam.AMP_PAN, "Pan")
@@ -122,8 +134,9 @@ class DigitalAmpSection(SectionBaseWidget):
         pan_row_layout = create_layout_with_widgets([pan_slider])
 
         # --- Create main layout with list of layouts
-        main_layout = create_layout_with_inner_layouts([controls_row_layout,
-                                                        pan_row_layout])
+        main_layout = create_layout_with_inner_layouts(
+            [controls_row_layout, pan_row_layout]
+        )
         return main_layout
 
     def _create_amp_adsr_group(self) -> QGroupBox:
@@ -147,7 +160,5 @@ class DigitalAmpSection(SectionBaseWidget):
         )
         # Use standardized envelope group helper (centers icon automatically)
         return create_envelope_group(
-            name="Envelope",
-            adsr_widget=self.amp_env_adsr_widget,
-            analog=False
+            name="Envelope", adsr_widget=self.amp_env_adsr_widget, analog=False
         )

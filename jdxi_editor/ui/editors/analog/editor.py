@@ -44,7 +44,7 @@ Example:
 import logging
 from typing import Dict, Optional, Union
 
-from decologr import Decologr as log
+import qtawesome as qta
 from PySide6.QtGui import QKeySequence, QShortcut
 from PySide6.QtWidgets import (
     QGroupBox,
@@ -58,13 +58,12 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from decologr import Decologr as log
 from jdxi_editor.jdxi.preset.helper import create_scroll_container
 from jdxi_editor.jdxi.preset.widget import InstrumentPresetWidget
 from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
-from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.jdxi.synth.type import JDXiSynth
-import qtawesome as qta
 from jdxi_editor.log.midi_info import log_midi_info
 from jdxi_editor.log.slider_parameter import log_slider_parameters
 from jdxi_editor.midi.channel.channel import MidiChannel
@@ -73,10 +72,6 @@ from jdxi_editor.midi.data.control_change.analog import AnalogControlChange, Ana
 from jdxi_editor.midi.data.parameter.analog import AnalogParam
 from jdxi_editor.midi.data.programs.digital import DIGITAL_PRESET_LIST
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.midi.utils.conversions import (
-    midi_value_to_fraction,
-    midi_value_to_ms,
-)
 from jdxi_editor.ui.editors.analog.amp import AnalogAmpSection
 from jdxi_editor.ui.editors.analog.common import AnalogCommonSection
 from jdxi_editor.ui.editors.analog.filter import AnalogFilterSection
@@ -84,19 +79,26 @@ from jdxi_editor.ui.editors.analog.lfo import AnalogLFOSection
 from jdxi_editor.ui.editors.analog.oscillator import AnalogOscillatorSection
 from jdxi_editor.ui.editors.helpers.preset import get_preset_parameter_value
 from jdxi_editor.ui.editors.synth.editor import SynthEditor, log_changes
+from jdxi_editor.ui.widgets.combo_box.searchable_filterable import (
+    SearchableFilterableComboBox,
+)
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
-from jdxi_editor.ui.widgets.combo_box.searchable_filterable import SearchableFilterableComboBox
+from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
+from picomidi.utils.conversion import (
+    midi_value_to_fraction,
+    midi_value_to_ms,
+)
 
 
 class AnalogSynthEditor(SynthEditor):
     """Analog Synth Editor UI."""
 
     def __init__(
-            self,
-            midi_helper: Optional[MidiIOHelper] = None,
-            preset_helper: Optional["JDXiPresetHelper"] = None,
-            parent: Optional[QWidget] = None,
+        self,
+        midi_helper: Optional[MidiIOHelper] = None,
+        preset_helper: Optional["JDXiPresetHelper"] = None,
+        parent: Optional[QWidget] = None,
     ):
         """
         Initialize the AnalogSynthEditor
@@ -194,13 +196,13 @@ class AnalogSynthEditor(SynthEditor):
         # Use EditorBaseWidget for consistent layout structure (harmonized with Digital)
         self.base_widget = EditorBaseWidget(parent=self, analog=True)
         self.base_widget.setup_scrollable_content(spacing=5, margins=(5, 5, 5, 5))
-        
+
         # Add base widget to editor's layout (if editor has a layout)
-        if not hasattr(self, 'main_layout') or self.main_layout is None:
+        if not hasattr(self, "main_layout") or self.main_layout is None:
             self.main_layout = QVBoxLayout(self)
             self.setLayout(self.main_layout)
         self.main_layout.addWidget(self.base_widget)
-        
+
         # Store references for backward compatibility
         self.scroll = self.base_widget.get_scroll_area()
 
@@ -228,11 +230,15 @@ class AnalogSynthEditor(SynthEditor):
         # Create tab widget and add preset as first tab
         self.tab_widget = self.base_widget.create_tab_widget()
         try:
-            presets_icon = IconRegistry.get_icon(IconRegistry.MUSIC_NOTE_MULTIPLE, color=JDXiStyle.GREY)
+            presets_icon = IconRegistry.get_icon(
+                IconRegistry.MUSIC_NOTE_MULTIPLE, color=JDXiStyle.GREY
+            )
             if presets_icon is None or presets_icon.isNull():
                 raise ValueError("Icon is null")
         except:
-            presets_icon = IconRegistry.get_icon(IconRegistry.MUSIC, color=JDXiStyle.GREY)
+            presets_icon = IconRegistry.get_icon(
+                IconRegistry.MUSIC, color=JDXiStyle.GREY
+            )
         self.tab_widget.addTab(self.instrument_preset, presets_icon, "Presets")
 
         # --- Configure sliders
@@ -253,7 +259,8 @@ class AnalogSynthEditor(SynthEditor):
             address=self.address,
         )
         self.tab_widget.addTab(
-            self.oscillator_section, IconRegistry.get_icon(IconRegistry.TRIANGLE_WAVE, color=JDXiStyle.GREY),
+            self.oscillator_section,
+            IconRegistry.get_icon(IconRegistry.TRIANGLE_WAVE, color=JDXiStyle.GREY),
             "Oscillator",
         )
         self.filter_section = AnalogFilterSection(
@@ -266,7 +273,9 @@ class AnalogSynthEditor(SynthEditor):
             address=self.synth_data.address,
         )
         self.tab_widget.addTab(
-            self.filter_section, IconRegistry.get_icon(IconRegistry.FILTER, color=JDXiStyle.GREY), "Filter"
+            self.filter_section,
+            IconRegistry.get_icon(IconRegistry.FILTER, color=JDXiStyle.GREY),
+            "Filter",
         )
         self.amp_section = AnalogAmpSection(
             midi_helper=self.midi_helper,
@@ -275,7 +284,9 @@ class AnalogSynthEditor(SynthEditor):
             controls=self.controls,
         )
         self.tab_widget.addTab(
-            self.amp_section, IconRegistry.get_icon(IconRegistry.AMPLIFIER, color=JDXiStyle.GREY), "Amp"
+            self.amp_section,
+            IconRegistry.get_icon(IconRegistry.AMPLIFIER, color=JDXiStyle.GREY),
+            "Amp",
         )
         self.lfo_section = AnalogLFOSection(
             create_parameter_slider=self._create_parameter_slider,
@@ -285,7 +296,9 @@ class AnalogSynthEditor(SynthEditor):
             lfo_shape_buttons=self.lfo_shape_buttons,
         )
         self.tab_widget.addTab(
-            self.lfo_section, IconRegistry.get_icon(IconRegistry.SINE_WAVE, color=JDXiStyle.GREY), "LFO"
+            self.lfo_section,
+            IconRegistry.get_icon(IconRegistry.SINE_WAVE, color=JDXiStyle.GREY),
+            "LFO",
         )
         self.common_section = AnalogCommonSection(
             create_parameter_slider=self._create_parameter_slider,
@@ -451,11 +464,11 @@ class AnalogSynthEditor(SynthEditor):
                 JDXiThemeManager.apply_button_analog_active(selected_btn)
 
     def update_slider(
-            self,
-            param: AnalogParam,
-            midi_value: int,
-            successes: list = None,
-            failures: list = None,
+        self,
+        param: AnalogParam,
+        midi_value: int,
+        successes: list = None,
+        failures: list = None,
     ) -> None:
         """
         Helper function to update sliders safely.
@@ -478,11 +491,11 @@ class AnalogSynthEditor(SynthEditor):
             failures.append(param.name)
 
     def update_adsr_widget(
-            self,
-            param: AnalogParam,
-            midi_value: int,
-            successes: list = None,
-            failures: list = None,
+        self,
+        param: AnalogParam,
+        midi_value: int,
+        successes: list = None,
+        failures: list = None,
     ) -> None:
         """
         Helper function to update ADSR widgets.
@@ -496,10 +509,10 @@ class AnalogSynthEditor(SynthEditor):
         slider_value = (
             midi_value_to_fraction(midi_value)
             if param
-               in [
-                   AnalogParam.AMP_ENV_SUSTAIN_LEVEL,
-                   AnalogParam.FILTER_ENV_SUSTAIN_LEVEL,
-               ]
+            in [
+                AnalogParam.AMP_ENV_SUSTAIN_LEVEL,
+                AnalogParam.FILTER_ENV_SUSTAIN_LEVEL,
+            ]
             else midi_value_to_ms(midi_value)
         )
 
@@ -512,11 +525,11 @@ class AnalogSynthEditor(SynthEditor):
             failures.append(param.name)
 
     def update_pitch_env_widget(
-            self,
-            parameter: AnalogParam,
-            value: int,
-            successes: list = None,
-            failures: list = None,
+        self,
+        parameter: AnalogParam,
+        value: int,
+        successes: list = None,
+        failures: list = None,
     ) -> None:
         """
         Helper function to update ADSR widgets.
@@ -530,9 +543,9 @@ class AnalogSynthEditor(SynthEditor):
         new_value = (
             midi_value_to_fraction(value)
             if parameter
-               in [
-                   AnalogParam.OSC_PITCH_ENV_DEPTH,
-               ]
+            in [
+                AnalogParam.OSC_PITCH_ENV_DEPTH,
+            ]
             else midi_value_to_ms(value, 10, 1000)
         )
 
@@ -544,11 +557,11 @@ class AnalogSynthEditor(SynthEditor):
             failures.append(parameter.name)
 
     def update_pwm_widget(
-            self,
-            parameter: AnalogParam,
-            value: int,
-            successes: list = None,
-            failures: list = None,
+        self,
+        parameter: AnalogParam,
+        value: int,
+        successes: list = None,
+        failures: list = None,
     ) -> None:
         """
         Helper function to update PWM widgets.
@@ -562,10 +575,10 @@ class AnalogSynthEditor(SynthEditor):
         new_value = (
             midi_value_to_fraction(value)
             if parameter
-               in [
-                   AnalogParam.OSC_PULSE_WIDTH_MOD_DEPTH,
-                   AnalogParam.OSC_PULSE_WIDTH,
-               ]
+            in [
+                AnalogParam.OSC_PULSE_WIDTH_MOD_DEPTH,
+                AnalogParam.OSC_PULSE_WIDTH,
+            ]
             else midi_value_to_ms(value, 10, 1000)
         )
 
@@ -577,7 +590,7 @@ class AnalogSynthEditor(SynthEditor):
             failures.append(parameter.name)
 
     def _update_partial_controls(
-            self, partial_no: int, sysex_data: dict, successes: list, failures: list
+        self, partial_no: int, sysex_data: dict, successes: list, failures: list
     ) -> None:
         """
         Update sliders and combo boxes based on parsed SysEx data.
@@ -600,8 +613,8 @@ class AnalogSynthEditor(SynthEditor):
 
             if param:
                 if (
-                        param_name == "SUB_OSCILLATOR_TYPE"
-                        and param_value in self.sub_osc_type_map
+                    param_name == "SUB_OSCILLATOR_TYPE"
+                    and param_value in self.sub_osc_type_map
                 ):
                     self.oscillator_section.sub_oscillator_type_switch.blockSignals(
                         True
@@ -613,12 +626,12 @@ class AnalogSynthEditor(SynthEditor):
                         False
                     )
                 elif (
-                        param_name == "OSC_WAVEFORM"
-                        and param_value in self.osc_waveform_map
+                    param_name == "OSC_WAVEFORM"
+                    and param_value in self.osc_waveform_map
                 ):
                     self._update_waveform_buttons(param_value)
                 elif (
-                        param_name == "LFO_SHAPE" and param_value in self.lfo_shape_buttons
+                    param_name == "LFO_SHAPE" and param_value in self.lfo_shape_buttons
                 ):
                     self._update_lfo_shape_buttons(param_value)
                 elif param_name == "LFO_TEMPO_SYNC_SWITCH":
@@ -770,25 +783,31 @@ class AnalogSynthEditor(SynthEditor):
         normal_preset_layout.addWidget(self.instrument_selection_label)
 
         # --- Build preset options, values, and categories from preset_list
-        preset_options = [f"{preset['id']} - {preset['name']}" for preset in self.preset_list]
+        preset_options = [
+            f"{preset['id']} - {preset['name']}" for preset in self.preset_list
+        ]
         # --- Convert preset IDs to integers for SearchableFilterableComboBox (e.g., "001" -> 1)
-        preset_values = [int(preset['id']) for preset in self.preset_list]
-        preset_categories = sorted(set(preset["category"] for preset in self.preset_list))
-        
+        preset_values = [int(preset["id"]) for preset in self.preset_list]
+        preset_categories = sorted(
+            set(preset["category"] for preset in self.preset_list)
+        )
+
         # --- Category filter function for presets
         def preset_category_filter(preset_display: str, category: str) -> bool:
             """Check if a preset matches a category."""
             if not category:
                 return True
             # --- Extract preset ID from display string (format: "001 - Preset Name")
-            preset_id_str = preset_display.split(" - ")[0] if " - " in preset_display else None
+            preset_id_str = (
+                preset_display.split(" - ")[0] if " - " in preset_display else None
+            )
             if preset_id_str:
                 # --- Find the preset in the list and check its category
                 for preset in self.preset_list:
                     if preset["id"] == preset_id_str:
                         return preset["category"] == category
             return False
-        
+
         # --- Create SearchableFilterableComboBox for preset selection
         self.instrument_selection_combo = SearchableFilterableComboBox(
             label="",
@@ -801,10 +820,12 @@ class AnalogSynthEditor(SynthEditor):
             show_category=True,
             search_placeholder="Search presets...",
         )
-        
+
         # --- Apply Analog styling
-        JDXiThemeManager.apply_combo_box(self.instrument_selection_combo.combo_box, analog=True)
-        
+        JDXiThemeManager.apply_combo_box(
+            self.instrument_selection_combo.combo_box, analog=True
+        )
+
         # --- Connect signals - use combo_box for currentIndexChanged
         self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
             self.update_instrument_image
@@ -812,54 +833,64 @@ class AnalogSynthEditor(SynthEditor):
         self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
             self.update_instrument_title
         )
-        
+
         # --- Create a load button (SearchableFilterableComboBox doesn't have one built-in)
         load_button = QPushButton("Load")
         load_button.clicked.connect(self.update_instrument_preset)
         # --- Connect valueChanged signal to load preset
         self.instrument_selection_combo.valueChanged.connect(self.load_preset)
-        
+
         # --- Add combo box and load button
         button_layout = QHBoxLayout()
         button_layout.addWidget(self.instrument_selection_combo)
         button_layout.addWidget(load_button)
         normal_preset_layout.addLayout(button_layout)
-        
+
         # --- Store reference to load button for compatibility
         self.instrument_selection_combo.load_button = load_button
         normal_preset_layout.addStretch()
 
         try:
-            analog_presets_icon = qta.icon("mdi.music-note-multiple", color=JDXiStyle.GREY)
+            analog_presets_icon = qta.icon(
+                "mdi.music-note-multiple", color=JDXiStyle.GREY
+            )
             if analog_presets_icon.isNull():
                 raise ValueError("Icon is null")
         except:
-            analog_presets_icon = IconRegistry.get_icon(IconRegistry.MUSIC, color=JDXiStyle.GREY)
+            analog_presets_icon = IconRegistry.get_icon(
+                IconRegistry.MUSIC, color=JDXiStyle.GREY
+            )
         preset_tabs.addTab(normal_preset_widget, analog_presets_icon, "Analog Presets")
 
         # --- === Tab 2: Cheat Presets (Digital Synth presets on Analog channel) ===
         cheat_preset_widget, cheat_preset_layout = create_scroll_container()
 
         # --- Build preset options, values, and categories from DIGITAL_PRESET_LIST
-        preset_options = [f"{preset['id']} - {preset['name']}" for preset in DIGITAL_PRESET_LIST]
+        preset_options = [
+            f"{preset['id']} - {preset['name']}" for preset in DIGITAL_PRESET_LIST
+        ]
         # --- Convert preset IDs to integers for SearchableFilterableComboBox (e.g., "001" -> 1)
-        preset_values = [int(preset['id']) for preset in DIGITAL_PRESET_LIST]
-        preset_categories = sorted(set(preset["category"] for preset in DIGITAL_PRESET_LIST))
-        
+        preset_values = [int(preset["id"]) for preset in DIGITAL_PRESET_LIST]
+        preset_categories = sorted(
+            set(preset["category"] for preset in DIGITAL_PRESET_LIST)
+        )
+
         # --- Category filter function for presets
         def cheat_preset_category_filter(preset_display: str, category: str) -> bool:
             """Check if a preset matches a category."""
             if not category:
                 return True
             # --- Extract preset ID from display string (format: "001 - Preset Name")
-            preset_id_str = preset_display.split(" - ")[0] if " - " in preset_display else None
+            preset_id_str = (
+                preset_display.split(" - ")[0] if " - " in preset_display else None
+            )
             if preset_id_str:
                 # --- Find the preset in the list and check its category
                 for preset in DIGITAL_PRESET_LIST:
                     if preset["id"] == preset_id_str:
                         return preset["category"] == category
             return False
-        
+
         # --- Create SearchableFilterableComboBox for cheat preset selection
         self.cheat_preset_combo_box = SearchableFilterableComboBox(
             label="Preset",
@@ -875,15 +906,19 @@ class AnalogSynthEditor(SynthEditor):
         cheat_preset_layout.addWidget(self.cheat_preset_combo_box)
 
         # --- Load Button
-        self.cheat_load_button = QPushButton(IconRegistry.get_icon(IconRegistry.FOLDER_NOTCH_OPEN,
-                                                                   color=JDXiStyle.FOREGROUND),
-                                             "Load Preset",
-                                             )
+        self.cheat_load_button = QPushButton(
+            IconRegistry.get_icon(
+                IconRegistry.FOLDER_NOTCH_OPEN, color=JDXiStyle.FOREGROUND
+            ),
+            "Load Preset",
+        )
         self.cheat_load_button.clicked.connect(self._load_cheat_preset)
         cheat_preset_layout.addWidget(self.cheat_load_button)
 
         cheat_preset_layout.addStretch()
-        cheat_presets_icon = IconRegistry.get_icon(IconRegistry.CODE_BRACES, color=JDXiStyle.GREY)
+        cheat_presets_icon = IconRegistry.get_icon(
+            IconRegistry.CODE_BRACES, color=JDXiStyle.GREY
+        )
         preset_tabs.addTab(cheat_preset_widget, cheat_presets_icon, "Cheat Presets")
 
         return instrument_preset_group
@@ -899,8 +934,10 @@ class AnalogSynthEditor(SynthEditor):
         # --- Get the current value from SearchableFilterableComboBox
         # --- The value is the preset ID as integer (e.g., 1 for "001")
         preset_id_int = self.cheat_preset_combo_box.value()
-        program_number = str(preset_id_int).zfill(3)  # --- Convert back to 3-digit format
-        
+        program_number = str(preset_id_int).zfill(
+            3
+        )  # --- Convert back to 3-digit format
+
         log.message("=======load_cheat_preset (Cheat Mode)=======")
         log.parameter("combo box program_number", program_number)
 

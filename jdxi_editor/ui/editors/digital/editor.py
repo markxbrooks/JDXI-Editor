@@ -32,8 +32,6 @@ Dependencies:
 import logging
 from typing import Dict, Optional, Union
 
-from decologr import Decologr as log
-from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QKeySequence, QShortcut
 from PySide6.QtWidgets import (
@@ -47,11 +45,11 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from decologr import Decologr as log
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.jdxi.preset.widget import InstrumentPresetWidget
 from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
 from jdxi_editor.jdxi.style.icons import IconRegistry
-from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 from jdxi_editor.jdxi.synth.factory import create_synth_data
 from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.log.slider_parameter import log_slider_parameters
@@ -63,15 +61,17 @@ from jdxi_editor.midi.data.parameter.digital import (
     DigitalPartialParam,
 )
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.midi.utils.conversions import midi_value_to_fraction, midi_value_to_ms
 from jdxi_editor.ui.editors.digital import (
     DigitalCommonSection,
     DigitalPartialEditor,
     DigitalToneModifySection,
 )
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
+from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 from jdxi_editor.ui.widgets.panel.partial import PartialsPanel
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
+from picomidi.sysex.parameter.address import AddressParameter
+from picomidi.utils.conversion import midi_value_to_fraction, midi_value_to_ms
 
 
 class DigitalSynthEditor(SynthEditor):
@@ -160,12 +160,12 @@ class DigitalSynthEditor(SynthEditor):
         # Use EditorBaseWidget for consistent layout structure
         self.base_widget = EditorBaseWidget(parent=self, analog=False)
         self.base_widget.setup_scrollable_content(spacing=5, margins=(5, 5, 5, 5))
-        
+
         # Get container layout for adding content
         container_layout = self.base_widget.get_container_layout()
-        
+
         # Add base widget to editor's layout
-        if not hasattr(self, 'main_layout') or self.main_layout is None:
+        if not hasattr(self, "main_layout") or self.main_layout is None:
             self.main_layout = QVBoxLayout(self)
             self.setLayout(self.main_layout)
         self.main_layout.addWidget(self.base_widget)
@@ -204,21 +204,25 @@ class DigitalSynthEditor(SynthEditor):
 
         instrument_layout.addWidget(self.instrument_preset)
         instrument_layout.setSpacing(5)  # Minimal spacing
-        
+
         # --- Add partials panel directly to container
         container_layout.addWidget(self.partials_panel)
         container_layout.setSpacing(5)  # Minimal spacing instead of stretch
-        
+
         # --- Create partial tab widget
         self.partial_tab_widget = QTabWidget()
         self.partial_tab_widget.setStyleSheet(JDXiStyle.TAB_TITLE)
         instrument_widget.setLayout(instrument_layout)
         try:
-            presets_icon = IconRegistry.get_icon(IconRegistry.MUSIC_NOTE_MULTIPLE, color=JDXiStyle.GREY)
+            presets_icon = IconRegistry.get_icon(
+                IconRegistry.MUSIC_NOTE_MULTIPLE, color=JDXiStyle.GREY
+            )
             if presets_icon is None or presets_icon.isNull():
                 raise ValueError("Icon is null")
         except:
-            presets_icon = IconRegistry.get_icon(IconRegistry.MUSIC, color=JDXiStyle.GREY)
+            presets_icon = IconRegistry.get_icon(
+                IconRegistry.MUSIC, color=JDXiStyle.GREY
+            )
         self.partial_tab_widget.addTab(instrument_widget, presets_icon, "Presets")
         self._create_partial_tab_widget(container_layout, self.midi_helper)
 
@@ -246,7 +250,9 @@ class DigitalSynthEditor(SynthEditor):
                 parent=self,
             )
             self.partial_editors[i] = editor
-            partial_icon = IconRegistry.get_icon(f"mdi.numeric-{i}-circle-outline", color=JDXiStyle.GREY)
+            partial_icon = IconRegistry.get_icon(
+                f"mdi.numeric-{i}-circle-outline", color=JDXiStyle.GREY
+            )
             self.partial_tab_widget.addTab(editor, partial_icon, f"Partial {i}")
         self.common_section = DigitalCommonSection(
             self._create_parameter_slider,
@@ -774,7 +780,9 @@ class DigitalSynthEditor(SynthEditor):
         :param value: int
         :return:
         """
-        log.parameter(f"Updating filter mode buttons for partial {partial_number}", value)
+        log.parameter(
+            f"Updating filter mode buttons for partial {partial_number}", value
+        )
         if partial_number is None:
             return
 
@@ -797,14 +805,18 @@ class DigitalSynthEditor(SynthEditor):
             log.warning("Unknown filter mode value: %s", value)
             return
 
-        log.parameter(f"Filter mode value {value} found, selecting", selected_filter_mode)
+        log.parameter(
+            f"Filter mode value {value} found, selecting", selected_filter_mode
+        )
 
         # Retrieve filter mode buttons for the given partial
         if partial_number not in self.partial_editors:
             log.warning(f"Partial editor {partial_number} not found")
             return
 
-        filter_mode_buttons = self.partial_editors[partial_number].filter_tab.filter_mode_buttons
+        filter_mode_buttons = self.partial_editors[
+            partial_number
+        ].filter_tab.filter_mode_buttons
 
         # Reset all buttons to default style
         for btn in filter_mode_buttons.values():
@@ -855,7 +867,9 @@ class DigitalSynthEditor(SynthEditor):
             log.warning(f"Partial editor {partial_number} not found")
             return
 
-        lfo_shape_buttons = self.partial_editors[partial_number].lfo_tab.lfo_shape_buttons
+        lfo_shape_buttons = self.partial_editors[
+            partial_number
+        ].lfo_tab.lfo_shape_buttons
 
         # Reset all buttons to default style
         for btn in lfo_shape_buttons.values():
@@ -878,7 +892,9 @@ class DigitalSynthEditor(SynthEditor):
         :param value: int
         :return:
         """
-        log.parameter(f"Updating Mod LFO shape buttons for partial {partial_number}", value)
+        log.parameter(
+            f"Updating Mod LFO shape buttons for partial {partial_number}", value
+        )
         if partial_number is None:
             return
 
@@ -899,14 +915,18 @@ class DigitalSynthEditor(SynthEditor):
             log.warning("Unknown Mod LFO shape value: %s", value)
             return
 
-        log.parameter(f"Mod LFO shape value {value} found, selecting", selected_mod_lfo_shape)
+        log.parameter(
+            f"Mod LFO shape value {value} found, selecting", selected_mod_lfo_shape
+        )
 
         # Retrieve Mod LFO shape buttons for the given partial
         if partial_number not in self.partial_editors:
             log.warning(f"Partial editor {partial_number} not found")
             return
 
-        mod_lfo_shape_buttons = self.partial_editors[partial_number].mod_lfo_tab.mod_lfo_shape_buttons
+        mod_lfo_shape_buttons = self.partial_editors[
+            partial_number
+        ].mod_lfo_tab.mod_lfo_shape_buttons
 
         # Reset all buttons to default style
         for btn in mod_lfo_shape_buttons.values():
@@ -919,7 +939,9 @@ class DigitalSynthEditor(SynthEditor):
             selected_btn.setChecked(True)
             selected_btn.setStyleSheet(JDXiStyle.BUTTON_RECT_ACTIVE)
         else:
-            log.warning("Mod LFO shape button not found for: %s", selected_mod_lfo_shape)
+            log.warning(
+                "Mod LFO shape button not found for: %s", selected_mod_lfo_shape
+            )
 
 
 class DigitalSynth2Editor(DigitalSynthEditor):

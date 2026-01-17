@@ -6,9 +6,6 @@ from copy import deepcopy
 
 import mido
 import qtawesome as qta
-from decologr import Decologr as log
-from jdxi_editor.jdxi.style.icons import IconRegistry
-from picomidi.constant import Midi
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QHBoxLayout,
@@ -23,11 +20,14 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from decologr import Decologr as log
 from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.ui.widgets.midi.spin_box.spin_box import MidiSpinBox
 from jdxi_editor.ui.widgets.midi.time_ruler import TimeRulerWidget
 from jdxi_editor.ui.widgets.midi.track import MidiTrackWidget
 from jdxi_editor.ui.widgets.midi.utils import get_first_channel
+from picomidi.constant import Midi
 
 
 class MidiTrackViewer(QWidget):
@@ -480,7 +480,9 @@ class MidiTrackViewer(QWidget):
             button_hlayout = QHBoxLayout()
             label_vlayout.addLayout(button_hlayout)
 
-            apply_icon = IconRegistry.get_icon(IconRegistry.SAVE, color=JDXiStyle.FOREGROUND)
+            apply_icon = IconRegistry.get_icon(
+                IconRegistry.SAVE, color=JDXiStyle.FOREGROUND
+            )
             apply_button = QPushButton()
             apply_button.setIcon(apply_icon)
             apply_button.setToolTip("Apply changes to Track Channel")
@@ -499,7 +501,9 @@ class MidiTrackViewer(QWidget):
             """
             button_hlayout.addWidget(apply_button)
 
-            mute_icon = IconRegistry.get_icon(IconRegistry.MUTE, color=JDXiStyle.FOREGROUND)
+            mute_icon = IconRegistry.get_icon(
+                IconRegistry.MUTE, color=JDXiStyle.FOREGROUND
+            )
             mute_button = QPushButton()
             mute_button.setIcon(mute_icon)
             mute_button.setToolTip("Mute Track")
@@ -513,7 +517,9 @@ class MidiTrackViewer(QWidget):
             )
             button_hlayout.addWidget(mute_button)
 
-            delete_icon = IconRegistry.get_icon(IconRegistry.DELETE, color=JDXiStyle.FOREGROUND)
+            delete_icon = IconRegistry.get_icon(
+                IconRegistry.DELETE, color=JDXiStyle.FOREGROUND
+            )
             delete_button = QPushButton()
             delete_button.setIcon(delete_icon)
             delete_button.setToolTip("Delete Track")

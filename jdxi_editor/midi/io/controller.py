@@ -29,8 +29,9 @@ import time
 from typing import List, Optional, Tuple
 
 import rtmidi
-from decologr import Decologr as log
 from PySide6.QtCore import QObject
+
+from decologr import Decologr as log
 
 
 class MidiIOController(QObject):

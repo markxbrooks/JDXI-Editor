@@ -5,15 +5,14 @@ Effects
 from dataclasses import dataclass
 from enum import Enum
 
-from picomidi.constant import Midi
-from picomidi.core.bitmask import BitMask
-
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetProgramLMB,
     AddressStartMSB,
     CommandID,
 )
-from jdxi_editor.midi.message.roland import RolandSysEx
+from jdxi_editor.midi.message.roland import JDXiSysEx
+from picomidi.constant import Midi
+from picomidi.core.bitmask import BitMask
 
 
 class EffectType(Enum):
@@ -271,7 +270,7 @@ class Effect1(Enum):
 
 
 @dataclass
-class Effect1Message(RolandSysEx):
+class Effect1Message(JDXiSysEx):
     """Program Effect 1 parameter message"""
 
     command: int = CommandID.DT1
@@ -280,6 +279,7 @@ class Effect1Message(RolandSysEx):
     group: int = AddressOffsetProgramLMB.COMMON  # Always 0x00
     lsb: int = 0x00  # Parameter number
     value: int = 0x00  # Parameter value
+    param: int = None
 
     def __post_init__(self):
         """Set up address and data"""
@@ -341,7 +341,7 @@ class Effect2(Enum):
 
 
 @dataclass
-class Effect2Message(RolandSysEx):
+class Effect2Message(JDXiSysEx):
     """Program Effect 2 parameter message"""
 
     command: int = CommandID.DT1

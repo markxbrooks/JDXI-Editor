@@ -5,7 +5,7 @@ LFO section of the digital partial editor.
 from typing import Callable
 
 import qtawesome as qta
-from PySide6.QtCore import Qt, QSize
+from PySide6.QtCore import QSize, Qt
 from PySide6.QtWidgets import (
     QGroupBox,
     QHBoxLayout,
@@ -23,8 +23,8 @@ from jdxi_editor.midi.data.digital.lfo import DigitalLFOShape
 from jdxi_editor.midi.data.parameter.digital.partial import (
     DigitalPartialParam,
 )
-from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.editor import IconType
+from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
@@ -54,7 +54,7 @@ class DigitalLFOSection(SectionBaseWidget):
         self.controls = controls
         self.send_midi_parameter = send_midi_parameter
         self.lfo_shape_buttons = {}  # Dictionary to store LFO shape buttons
-        
+
         super().__init__(icon_type=IconType.ADSR, analog=False)
         self.setup_ui()
 
@@ -65,11 +65,11 @@ class DigitalLFOSection(SectionBaseWidget):
         # Shape and sync controls
         shape_row_layout = QHBoxLayout()
         shape_row_layout.addStretch()
-        
+
         # Add label
         shape_label = QLabel("Shape")
         shape_row_layout.addWidget(shape_label)
-        
+
         # Create buttons for each LFO shape
         lfo_shapes = [
             DigitalLFOShape.TRIANGLE,
@@ -79,7 +79,7 @@ class DigitalLFOSection(SectionBaseWidget):
             DigitalLFOShape.SAMPLE_HOLD,
             DigitalLFOShape.RANDOM,
         ]
-        
+
         # Map LFO shapes to icon names
         shape_icon_map = {
             DigitalLFOShape.TRIANGLE: "mdi.triangle-wave",
@@ -89,7 +89,7 @@ class DigitalLFOSection(SectionBaseWidget):
             DigitalLFOShape.SAMPLE_HOLD: "mdi.waveform",
             DigitalLFOShape.RANDOM: "mdi.wave",
         }
-        
+
         for lfo_shape in lfo_shapes:
             btn = QPushButton(lfo_shape.display_name)
             btn.setCheckable(True)
@@ -99,8 +99,12 @@ class DigitalLFOSection(SectionBaseWidget):
             icon = qta.icon(icon_name, color=JDXiStyle.WHITE, icon_size=0.7)
             btn.setIcon(icon)
             btn.setIconSize(QSize(20, 20))
-            btn.setFixedSize(JDXiDimensions.WAVEFORM_ICON_WIDTH, JDXiDimensions.WAVEFORM_ICON_HEIGHT)
-            btn.clicked.connect(lambda checked, shape=lfo_shape: self._on_lfo_shape_selected(shape))
+            btn.setFixedSize(
+                JDXiDimensions.WAVEFORM_ICON_WIDTH, JDXiDimensions.WAVEFORM_ICON_HEIGHT
+            )
+            btn.clicked.connect(
+                lambda checked, shape=lfo_shape: self._on_lfo_shape_selected(shape)
+            )
             self.lfo_shape_buttons[lfo_shape] = btn
             shape_row_layout.addWidget(btn)
 
@@ -114,11 +118,11 @@ class DigitalLFOSection(SectionBaseWidget):
         switch_row_layout.addWidget(self.lfo_tempo_sync_switch)
         self.lfo_sync_note = self._create_parameter_combo_box(
             DigitalPartialParam.LFO_TEMPO_SYNC_NOTE,
-        "Sync Note",
+            "Sync Note",
             options=["1/1", "1/2", "1/4", "1/8", "1/16"],
         )
         switch_row_layout.addWidget(self.lfo_sync_note)
-    
+
         layout.addLayout(shape_row_layout)
         layout.addLayout(switch_row_layout)
 
@@ -156,7 +160,9 @@ class DigitalLFOSection(SectionBaseWidget):
         rate_fade_layout.addStretch()
 
         rate_fade_icon = IconRegistry.get_icon(IconRegistry.CLOCK, color=JDXiStyle.GREY)
-        lfo_controls_tab_widget.addTab(rate_fade_widget, rate_fade_icon, "Rate and Fade")
+        lfo_controls_tab_widget.addTab(
+            rate_fade_widget, rate_fade_icon, "Rate and Fade"
+        )
 
         # --- Depths Tab ---
         depths_widget = QWidget()
@@ -195,21 +201,23 @@ class DigitalLFOSection(SectionBaseWidget):
     def _on_lfo_shape_selected(self, lfo_shape: DigitalLFOShape):
         """
         Handle LFO shape button clicks
-        
+
         :param lfo_shape: DigitalLFOShape enum value
         """
         # Reset all buttons to default style
         for btn in self.lfo_shape_buttons.values():
             btn.setChecked(False)
             btn.setStyleSheet(JDXiStyle.BUTTON_RECT)
-        
+
         # Apply active style to the selected LFO shape button
         selected_btn = self.lfo_shape_buttons.get(lfo_shape)
         if selected_btn:
             selected_btn.setChecked(True)
             selected_btn.setStyleSheet(JDXiStyle.BUTTON_RECT_ACTIVE)
-        
+
         # Send MIDI message
         if self.send_midi_parameter:
-            if not self.send_midi_parameter(DigitalPartialParam.LFO_SHAPE, lfo_shape.value):
+            if not self.send_midi_parameter(
+                DigitalPartialParam.LFO_SHAPE, lfo_shape.value
+            ):
                 log.warning(f"Failed to set LFO shape to {lfo_shape.name}")

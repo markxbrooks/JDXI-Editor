@@ -46,17 +46,9 @@ from jdxi_editor.project import (
     __project__,
     __version__,
 )
-
-
-def format_midi_message_to_hex_string(message: list) -> str:
-    """
-    format_midi_message_to_hex_string
-
-    :param message: list of bytes
-    :return: str
-    """
-    formatted_message = " ".join([hex(x)[2:].upper().zfill(2) for x in message])
-    return formatted_message
+from picomidi.utils.formatting import (
+    format_message_to_hex_string as format_midi_message_to_hex_string,
+)
 
 
 class Logger:

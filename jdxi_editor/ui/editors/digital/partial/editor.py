@@ -38,13 +38,13 @@ Dependencies:
 
 from typing import Dict, Optional, Union
 
-from decologr import Decologr as log
 from PySide6.QtWidgets import (
     QTabWidget,
     QVBoxLayout,
     QWidget,
 )
 
+from decologr import Decologr as log
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.jdxi.synth.type import JDXiSynth
@@ -159,7 +159,9 @@ class DigitalPartialEditor(PartialEditor):
             self.send_midi_parameter,
         )
         self.tab_widget.addTab(
-            self.filter_tab, IconRegistry.get_icon(IconRegistry.FILTER, color=JDXiStyle.GREY), "Filter"
+            self.filter_tab,
+            IconRegistry.get_icon(IconRegistry.FILTER, color=JDXiStyle.GREY),
+            "Filter",
         )
         self.amp_tab = DigitalAmpSection(
             self._create_parameter_slider,
@@ -169,7 +171,9 @@ class DigitalPartialEditor(PartialEditor):
             self.synth_data.address,
         )
         self.tab_widget.addTab(
-            self.amp_tab, IconRegistry.get_icon(IconRegistry.AMPLIFIER, color=JDXiStyle.GREY), "Amp"
+            self.amp_tab,
+            IconRegistry.get_icon(IconRegistry.AMPLIFIER, color=JDXiStyle.GREY),
+            "Amp",
         )
         self.lfo_tab = DigitalLFOSection(
             self._create_parameter_slider,
@@ -179,7 +183,9 @@ class DigitalPartialEditor(PartialEditor):
             self.send_midi_parameter,
         )
         self.tab_widget.addTab(
-            self.lfo_tab, IconRegistry.get_icon(IconRegistry.SINE_WAVE, color=JDXiStyle.GREY), "LFO"
+            self.lfo_tab,
+            IconRegistry.get_icon(IconRegistry.SINE_WAVE, color=JDXiStyle.GREY),
+            "LFO",
         )
         self.mod_lfo_tab = DigitalModLFOSection(
             self._create_parameter_slider,
@@ -189,7 +195,9 @@ class DigitalPartialEditor(PartialEditor):
             self.send_midi_parameter,
         )
         self.tab_widget.addTab(
-            self.mod_lfo_tab, IconRegistry.get_icon(IconRegistry.WAVEFORM, color=JDXiStyle.GREY), "Mod LFO"
+            self.mod_lfo_tab,
+            IconRegistry.get_icon(IconRegistry.WAVEFORM, color=JDXiStyle.GREY),
+            "Mod LFO",
         )
 
         # --- Add container to scroll area

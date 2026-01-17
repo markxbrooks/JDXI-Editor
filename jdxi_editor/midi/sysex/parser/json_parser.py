@@ -16,7 +16,6 @@ from pathlib import Path
 from typing import Any, Dict, Optional
 
 from decologr import Decologr as log
-
 from jdxi_editor.project import __package_name__
 
 
