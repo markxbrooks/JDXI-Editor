@@ -44,17 +44,12 @@ from picomidi.constant import Midi
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QColor, QFont, QLinearGradient, QPainter, QPainterPath, QPen
 from PySide6.QtWidgets import (
-    QFormLayout,
     QGridLayout,
-    QGroupBox,
     QHBoxLayout,
-    QScrollArea,
-    QVBoxLayout,
-    QWidget, QSizePolicy,
+    QWidget,
 )
 
 from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
-from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions

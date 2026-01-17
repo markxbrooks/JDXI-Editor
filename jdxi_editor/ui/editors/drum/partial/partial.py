@@ -37,10 +37,7 @@ from typing import Callable
 from PySide6.QtWidgets import (
     QFormLayout,
     QGroupBox,
-    QHBoxLayout,
-    QScrollArea,
     QTabWidget,
-    QVBoxLayout,
     QWidget,
 )
 
@@ -48,10 +45,10 @@ from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
+from jdxi_editor.ui.editors.drum.partial.base import DrumBaseSection
 
 
-class DrumPartialSection(QWidget):
+class DrumPartialSection(DrumBaseSection):
     """Drum Partial Section for the JDXI Editor"""
 
     def __init__(
@@ -78,19 +75,10 @@ class DrumPartialSection(QWidget):
 
     def setup_ui(self) -> None:
         """setup UI"""
-        self.setMinimumWidth(JDXiDimensions.DRUM_PARTIAL_TAB_MIN_WIDTH)
-        main_row_hlayout = QHBoxLayout(self)
-        main_row_hlayout.addStretch()
-
-        main_rows_vlayout = QVBoxLayout()
-        main_row_hlayout.addLayout(main_rows_vlayout)
-
-        # Icons row (standardized across editor tabs)
-        icon_hlayout = IconRegistry.create_adsr_icons_row()
-        main_rows_vlayout.addLayout(icon_hlayout)
-
+        # Icons row is already added by DrumBaseSection
+        # Add tab widget to scrolled layout
         self.partial_controls_tab_widget = QTabWidget()
-        main_rows_vlayout.addWidget(self.partial_controls_tab_widget)
+        self.scrolled_layout.addWidget(self.partial_controls_tab_widget)
 
         controls_icon = IconRegistry.get_icon("mdi.tune", color=JDXiStyle.GREY)
         self.partial_controls_tab_widget.addTab(
@@ -110,7 +98,8 @@ class DrumPartialSection(QWidget):
             self._create_partial_modes_group(), modes_icon, "Modes"
         )
 
-        main_row_hlayout.addStretch()
+        # Add stretch to allow proper expansion
+        self.scrolled_layout.addStretch()
 
     def _create_partial_misc_group(self) -> QGroupBox:
         """create partial misc group"""

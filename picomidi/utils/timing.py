@@ -86,3 +86,37 @@ def seconds_to_ticks(seconds: float, ticks_per_beat: int, bpm: float) -> int:
     """
     beats = seconds * (bpm / 60)
     return int(beats * ticks_per_beat)
+
+
+def ticks_to_seconds_with_tempo(
+    ticks: int, tempo: int, ticks_per_beat: int
+) -> float:
+    """
+    Convert MIDI ticks to seconds using tempo in microseconds per quarter note.
+
+    This is the standard MIDI timing calculation used in MIDI files.
+    More precise than BPM-based calculations as it uses exact tempo values
+    from MIDI file tempo meta events.
+
+    :param ticks: Number of MIDI ticks
+    :param tempo: Tempo in microseconds per quarter note (e.g., 500000 for 120 BPM)
+    :param ticks_per_beat: Ticks per quarter note (TPQN, typically 480 or 960)
+    :return: Duration in seconds
+    """
+    return (tempo / 1_000_000.0) * (ticks / ticks_per_beat)
+
+
+def seconds_to_ticks_with_tempo(
+    seconds: float, tempo: int, ticks_per_beat: int
+) -> int:
+    """
+    Convert seconds to MIDI ticks using tempo in microseconds per quarter note.
+
+    Inverse of `ticks_to_seconds_with_tempo()`.
+
+    :param seconds: Duration in seconds
+    :param tempo: Tempo in microseconds per quarter note
+    :param ticks_per_beat: Ticks per quarter note (TPQN)
+    :return: Number of MIDI ticks
+    """
+    return int((seconds * 1_000_000.0 / tempo) * ticks_per_beat)
