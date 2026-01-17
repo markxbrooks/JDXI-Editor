@@ -15,17 +15,17 @@ from PySide6.QtWidgets import (
 )
 
 from decologr import Decologr as log
+from jdxi_editor.jdxi.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.digital.oscillator import DigitalOscWave
+from jdxi_editor.midi.data.parameter.digital.name import DigitalDisplayName
+from jdxi_editor.midi.data.parameter.digital.option import DigitalDisplayOptions
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParam
 from jdxi_editor.midi.data.pcm.waves import PCM_WAVES_CATEGORIZED
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.digital.partial.pwm import PWMWidget
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
-from jdxi_editor.ui.style import JDXiStyle, JDXiThemeManager
-from jdxi_editor.ui.style.dimensions import JDXiDimensions
-from jdxi_editor.ui.style.icons import JDXiIconRegistry
 from jdxi_editor.ui.widgets.button.waveform.waveform import WaveformButton
 from jdxi_editor.ui.widgets.combo_box.searchable_filterable import (
     SearchableFilterableComboBox,
@@ -77,8 +77,8 @@ class DigitalOscillatorSection(SectionBaseWidget):
 
         # --- Tuning and Pitch tab (combines Tuning and Pitch Envelope like Analog) ---
         tuning_pitch_widget = self._create_tuning_pitch_widget()
-        tuning_icon = JDXiIconRegistry.get_icon(
-            JDXiIconRegistry.MUSIC_NOTE, color=JDXiStyle.GREY
+        tuning_icon = JDXi.IconRegistry.get_icon(
+            JDXi.IconRegistry.MUSIC_NOTE, color=JDXi.Style.GREY
         )
         self.oscillator_tab_widget.addTab(
             tuning_pitch_widget, tuning_icon, "Tuning and Pitch"
@@ -125,9 +125,10 @@ class DigitalOscillatorSection(SectionBaseWidget):
 
         for wave, icon_base64 in wave_icons.items():
             btn = WaveformButton(wave)
-            btn.setStyleSheet(JDXiStyle.BUTTON_RECT)
+            btn.setStyleSheet(JDXi.Style.BUTTON_RECT)
             btn.setFixedSize(
-                JDXiDimensions.WAVEFORM_ICON.WIDTH, JDXiDimensions.WAVEFORM_ICON.HEIGHT
+                JDXi.Dimensions.WAVEFORM_ICON.WIDTH,
+                JDXi.Dimensions.WAVEFORM_ICON.HEIGHT,
             )
             btn.setIcon(QIcon(base64_to_pixmap(icon_base64)))
             btn.clicked.connect(lambda checked, w=wave: self._on_waveform_selected(w))
@@ -138,8 +139,8 @@ class DigitalOscillatorSection(SectionBaseWidget):
         top_row.addLayout(wave_layout)
         self.wave_variation_switch = self._create_parameter_switch(
             DigitalPartialParam.OSC_WAVE_VARIATION,
-            "Variation",
-            ["A", "B", "C"],
+            DigitalDisplayName.OSC_WAVE_VARIATION,
+            DigitalDisplayOptions.OSC_WAVE_VARIATION,
         )
         top_row.addWidget(self.wave_variation_switch)
         top_row.addStretch()
@@ -154,7 +155,7 @@ class DigitalOscillatorSection(SectionBaseWidget):
         pitch_layout.addStretch()
         pitch_widget = QWidget()
         pitch_widget.setLayout(pitch_layout)
-        pitch_widget.setMinimumHeight(JDXiDimensions.EDITOR.MINIMUM_HEIGHT)
+        pitch_widget.setMinimumHeight(JDXi.Dimensions.EDITOR.MINIMUM_HEIGHT)
         return pitch_widget
 
     def _create_tuning_group(self) -> QGroupBox:
@@ -165,20 +166,26 @@ class DigitalOscillatorSection(SectionBaseWidget):
         tuning_group.setLayout(tuning_layout)
         tuning_layout.addWidget(
             self._create_parameter_slider(
-                DigitalPartialParam.OSC_PITCH, "Pitch (1/2 tones)", vertical=True
+                DigitalPartialParam.OSC_PITCH,
+                DigitalDisplayName.OSC_PITCH,
+                vertical=True,
             )
         )
         tuning_layout.addWidget(
             self._create_parameter_slider(
-                DigitalPartialParam.OSC_DETUNE, "Detune (cents)", vertical=True
+                DigitalPartialParam.OSC_DETUNE,
+                DigitalDisplayName.OSC_DETUNE,
+                vertical=True,
             )
         )
         self.super_saw_detune = self._create_parameter_slider(
-            DigitalPartialParam.SUPER_SAW_DETUNE, "Super-Saw Detune", vertical=True
+            DigitalPartialParam.SUPER_SAW_DETUNE,
+            DigitalDisplayName.SUPER_SAW_DETUNE,
+            vertical=True,
         )
         tuning_layout.addWidget(self.super_saw_detune)
         tuning_layout.addStretch()
-        JDXiThemeManager.apply_adsr_style(tuning_group)
+        JDXi.ThemeManager.apply_adsr_style(tuning_group)
         return tuning_group
 
     def _create_pitch_env_group(self) -> QGroupBox:
@@ -196,7 +203,7 @@ class DigitalOscillatorSection(SectionBaseWidget):
             controls=self.controls,
             address=self.address,
         )
-        JDXiThemeManager.apply_adsr_style(self.pitch_env_widget)
+        JDXi.ThemeManager.apply_adsr_style(self.pitch_env_widget)
         pitch_env_layout.addWidget(self.pitch_env_widget)
         return pitch_env_group
 
@@ -209,10 +216,10 @@ class DigitalOscillatorSection(SectionBaseWidget):
 
         self.pw_shift_slider = self._create_parameter_slider(
             DigitalPartialParam.OSC_PULSE_WIDTH_SHIFT,
-            "Shift (range of change)",
+            DigitalDisplayName.OSC_PULSE_WIDTH_SHIFT,
             vertical=True,
         )
-        JDXiThemeManager.apply_adsr_style(self.pw_shift_slider)
+        JDXi.ThemeManager.apply_adsr_style(self.pw_shift_slider)
         pwm_widget_layout = QHBoxLayout()
         pwm_widget_layout.addStretch()
         self.pwm_widget = PWMWidget(
@@ -223,8 +230,8 @@ class DigitalOscillatorSection(SectionBaseWidget):
             create_parameter_slider=self._create_parameter_slider,
             controls=self.controls,
         )
-        JDXiThemeManager.apply_adsr_style(self.pwm_widget)
-        self.pwm_widget.setMaximumHeight(JDXiStyle.PWM_WIDGET_HEIGHT)
+        JDXi.ThemeManager.apply_adsr_style(self.pwm_widget)
+        self.pwm_widget.setMaximumHeight(JDXi.Style.PWM_WIDGET_HEIGHT)
         pwm_widget_layout.addWidget(self.pwm_widget)
         pwm_widget_layout.addWidget(self.pw_shift_slider)
         pwm_widget_layout.addStretch()
@@ -239,8 +246,8 @@ class DigitalOscillatorSection(SectionBaseWidget):
         pcm_group.setLayout(pcm_layout)
         self.pcm_wave_gain = self._create_parameter_combo_box(
             DigitalPartialParam.PCM_WAVE_GAIN,
-            "Gain [dB]",
-            ["-6", "0", "+6", "+12"],
+            DigitalDisplayName.PCM_WAVE_GAIN,
+            options=DigitalDisplayOptions.PCM_WAVE_GAIN,
         )
 
         # Create PCM wave options and values
@@ -264,7 +271,7 @@ class DigitalOscillatorSection(SectionBaseWidget):
 
         # Create SearchableFilterableComboBox for PCM wave selection
         self.pcm_wave_number = SearchableFilterableComboBox(
-            label="Number",
+            label=DigitalDisplayName.PCM_WAVE_NUMBER,
             options=pcm_wave_options,
             values=pcm_wave_values,
             categories=pcm_categories,
@@ -293,13 +300,13 @@ class DigitalOscillatorSection(SectionBaseWidget):
         # --- Reset all buttons to default style ---
         for btn in self.wave_buttons.values():
             btn.setChecked(False)
-            btn.setStyleSheet(JDXiStyle.BUTTON_RECT)
+            btn.setStyleSheet(JDXi.Style.BUTTON_RECT)
 
         # --- Apply active style to the selected waveform button ---
         selected_btn = self.wave_buttons.get(waveform)
         if selected_btn:
             selected_btn.setChecked(True)
-            selected_btn.setStyleSheet(JDXiStyle.BUTTON_RECT_ACTIVE)
+            selected_btn.setStyleSheet(JDXi.Style.BUTTON_RECT_ACTIVE)
 
         # --- Send MIDI message ---
         if not self.send_midi_parameter(DigitalPartialParam.OSC_WAVE, waveform.value):

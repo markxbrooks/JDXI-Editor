@@ -62,6 +62,7 @@ def buffer_midi_tracks(
     buffered_messages_list.sort(key=lambda x: x[0])
     return buffered_messages_list
 
+
 def play_buffered(
     buffered_msgs: list,
     midi_out_port: rtmidi.MidiOut,
@@ -102,7 +103,6 @@ def play_buffered(
 
 
 if __name__ == "__main__":
-    import os
 
     import mido
     import rtmidi

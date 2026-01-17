@@ -61,7 +61,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from jdxi_editor.ui.style.theme_manager import JDXiThemeManager
+from jdxi_editor.jdxi.jdxi import JDXi
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 
@@ -111,7 +111,7 @@ class SimpleEditorHelper:
         """Setup title label and image label"""
         # Create title label
         self.title_label = DigitalTitle(self.title_text)
-        JDXiThemeManager.apply_instrument_title_label(self.title_label)
+        JDXi.ThemeManager.apply_instrument_title_label(self.title_label)
 
         # Create image label
         self.image_label = QLabel()
@@ -147,7 +147,7 @@ class SimpleEditorHelper:
 
         # Create tab widget
         self.tab_widget = QTabWidget()
-        JDXiThemeManager.apply_tabs_style(self.tab_widget)
+        JDXi.ThemeManager.apply_tabs_style(self.tab_widget)
         self.rows_layout.addWidget(self.tab_widget)
 
         main_row_hlayout.addStretch()

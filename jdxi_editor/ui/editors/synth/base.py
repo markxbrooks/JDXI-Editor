@@ -55,7 +55,7 @@ class SynthBase(QWidget):
         super().__init__(parent)
         self.preset_type = None
         self.parent = parent
-        # Store all Tone/Preset names for access by Digital Displays
+        # --- Store all Tone/Preset names for access by Digital Displays
         self.tone_names = {
             JDXiSynth.DIGITAL_SYNTH_1: "",
             JDXiSynth.DIGITAL_SYNTH_2: "",
@@ -152,10 +152,10 @@ class SynthBase(QWidget):
         :param parameter_cls: AddressParameter
         Send the characters of the tone name to SysEx parameters.
         """
-        # Ensure the tone name is exactly 12 characters (pad with spaces if shorter)
+        # --- Ensure the tone name is exactly 12 characters (pad with spaces if shorter)
         tone_name = tone_name.ljust(12)[:12]
 
-        # Iterate over characters and send them to corresponding parameters
+        # --- Iterate over characters and send them to corresponding parameters
         for i, char in enumerate(tone_name):
             ascii_value = ord(char)
             param = getattr(parameter_cls, f"TONE_NAME_{i + 1}")
@@ -175,17 +175,17 @@ class SynthBase(QWidget):
         if not address:
             address = self.address
         try:
-            # Ensure value is an integer (handle enums, strings, floats)
+            # --- Ensure value is an integer (handle enums, strings, floats)
             def safe_int(val):
-                # Check for enums FIRST (IntEnum inherits from int, so isinstance check must come after)
+                # --- Check for enums FIRST (IntEnum inherits from int, so isinstance check must come after)
                 if hasattr(val, "value") and not isinstance(
                     val, type
-                ):  # Handle enums (but not enum classes)
+                ):  # --- Handle enums (but not enum classes)
                     enum_val = val.value
-                    # Ensure we get the actual integer value, not the enum
+                    # --- Ensure we get the actual integer value, not the enum
                     if isinstance(enum_val, int) and not hasattr(enum_val, "value"):
                         return enum_val
-                    # If enum_val is still an enum, recurse
+                    # --- If enum_val is still an enum, recurse
                     if hasattr(enum_val, "value"):
                         return safe_int(enum_val)
                     try:
@@ -198,7 +198,7 @@ class SynthBase(QWidget):
                 if isinstance(val, int):
                     return val
                 try:
-                    return int(float(val))  # Handle floats and strings
+                    return int(float(val))  # --- Handle floats and strings
                 except (ValueError, TypeError):
                     log.error(
                         f"Cannot convert value {val} to int for parameter {param.name}"
@@ -224,18 +224,18 @@ class SynthBase(QWidget):
         try:
             controls_data = {}
             for param, widget in self.controls.items():
-                # Get value from widget - all custom widgets have a value() method
-                # (Slider, ComboBox, SpinBox, Switch all implement value())
+                # --- Get value from widget - all custom widgets have a value() method
+                # --- (Slider, ComboBox, SpinBox, Switch all implement value())
                 if hasattr(widget, "value"):
                     controls_data[param.name] = widget.value()
                 elif hasattr(widget, "isChecked") and hasattr(widget, "waveform"):
-                    # Handle waveform buttons (AnalogWaveformButton, etc.)
-                    # Check if this button is checked, and if so, use its waveform value
+                    # --- Handle waveform buttons (AnalogWaveformButton, etc.)
+                    # --- Check if this button is checked, and if so, use its waveform value
                     if widget.isChecked():
                         controls_data[param.name] = widget.waveform.STATUS
-                    # If not checked, don't add it - the checked button will be found by the editor's override
+                    # --- If not checked, don't add it - the checked button will be found by the editor's override
                 elif hasattr(widget, "isChecked"):
-                    # QPushButton or other checkable widgets
+                    # --- QPushButton or other checkable widgets
                     controls_data[param.name] = 1 if widget.isChecked() else 0
                 else:
                     # Fallback for unexpected widget types
@@ -262,7 +262,7 @@ class SynthBase(QWidget):
         :return: None
         """
         try:
-            # Send MIDI message
+            # --- Send MIDI message
             if not address:
                 address = self.address
             if not self.send_midi_parameter(param, display_value, address):
@@ -336,10 +336,29 @@ class SynthBase(QWidget):
         :param param: AddressParameter
         :param label: str label for the combo box
         :param options: list of options to display in the combo box
-        :param values: list of values corresponding to the options
+        :param values: list of values corresponding to the options (or options if options is None)
         :param show_label: bool whether to show the label
         :return: ComboBox
         """
+        # Handle case where values is provided but options is None
+        # --- If values is a list of strings, treat it as options and generate numeric values
+        if options is None and values is not None:
+            if isinstance(values, list) and len(values) > 0:
+                # Check if values contains strings (likely options)
+                if isinstance(values[0], str):
+                    options = values
+                    # Generate numeric values from indices
+                    values = list(range(len(options)))
+                else:
+                    # Values are numeric, generate options from values
+                    options = [str(v) for v in values]
+
+        # --- Ensure options is not None (provide empty list as fallback)
+        if options is None:
+            options = []
+            if values is None:
+                values = []
+
         if hasattr(param, "get_display_value"):
             display_min, display_max = param.get_display_value()
         else:
@@ -380,9 +399,9 @@ class SynthBase(QWidget):
         spin_box = SpinBox(
             label=label, low=display_min, high=display_max, tooltip=tooltip
         )
-        # Connect value changed signal
+        # --- Connect value changed signal
         spin_box.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))
-        # Store control reference
+        # --- Store control reference
         self.controls[param] = spin_box
         return spin_box
 

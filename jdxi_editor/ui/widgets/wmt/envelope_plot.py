@@ -32,7 +32,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QColor, QFont, QLinearGradient, QPainter, QPainterPath, QPen
 from PySide6.QtWidgets import QWidget
 
-from jdxi_editor.ui.style import JDXiStyle
+from jdxi_editor.jdxi.jdxi import JDXi
 from picomidi.constant import Midi
 
 
@@ -55,8 +55,8 @@ class WMTEnvPlot(QWidget):
 
     def __init__(
         self,
-        width: int = JDXiStyle.ADSR_PLOT_WIDTH,
-        height: int = JDXiStyle.ADSR_PLOT_HEIGHT,
+        width: int = JDXi.Style.ADSR_PLOT_WIDTH,
+        height: int = JDXi.Style.ADSR_PLOT_HEIGHT,
         envelope: dict = None,
         parent: QWidget = None,
     ):
@@ -70,10 +70,8 @@ class WMTEnvPlot(QWidget):
         self.setMinimumSize(width, height)
         self.setMaximumHeight(height)
         self.setMaximumWidth(width)
-        # Use dark gray background
-        from jdxi_editor.ui.style.theme_manager import JDXiThemeManager
 
-        JDXiThemeManager.apply_adsr_plot(self)
+        JDXi.ThemeManager.apply_adsr_plot(self)
         # Sample rate for converting times to samples
         self.sample_rate = 256
         self.setMinimumHeight(150)

@@ -47,6 +47,7 @@ from PySide6.QtWidgets import QApplication, QMenu, QMessageBox, QProgressDialog
 
 from decologr import Decologr as log
 from jdxi_editor.jdxi.file.utils import documentation_file_path, os_file_open
+from jdxi_editor.jdxi.jdxi import JDXi
 from jdxi_editor.jdxi.midi.constant import JDXiMidi
 from jdxi_editor.jdxi.preset.button import JDXiPresetButtonData
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
@@ -96,7 +97,6 @@ from jdxi_editor.ui.editors.io.player import MidiFileEditor
 from jdxi_editor.ui.editors.io.preset import PresetEditor
 from jdxi_editor.ui.editors.main import MainEditor
 from jdxi_editor.ui.editors.pattern.pattern import PatternSequenceEditor
-from jdxi_editor.ui.style import JDXiStyle, JDXiThemeManager
 from jdxi_editor.ui.style.factory import generate_sequencer_button_style
 from jdxi_editor.ui.widgets.button import SequencerSquare
 from jdxi_editor.ui.widgets.button.favorite import FavoriteButton
@@ -122,8 +122,8 @@ class JDXiInstrument(JDXiUi):
         self.splash_progress_bar = progress_bar
         self.splash_status_label = status_label
         if platform.system() == "Windows":
-            JDXiThemeManager.apply_transparent(self)
-            JDXiThemeManager.apply_adsr_disabled(self)
+            JDXi.ThemeManager.apply_transparent(self)
+            JDXi.ThemeManager.apply_adsr_disabled(self)
         # Try to auto-connect to JD-Xi
         self.midi_helper.auto_connect_jdxi()
         if (
@@ -428,9 +428,9 @@ class JDXiInstrument(JDXiUi):
         for synth_type, button in self.synth_buttons.items():
             is_selected = synth_type == self.current_synth_type
             button.setStyleSheet(
-                JDXiStyle.BUTTON_ROUND_SELECTED
+                JDXi.Style.BUTTON_ROUND_SELECTED
                 if not is_selected
-                else JDXiStyle.BUTTON_ROUND
+                else JDXi.Style.BUTTON_ROUND
             )
             button.setChecked(is_selected)
 
@@ -744,7 +744,7 @@ class JDXiInstrument(JDXiUi):
             editor.setWindowTitle(title)
 
             tab_index = self.main_editor.editor_tab_widget.addTab(
-                editor, qta.icon(icon, color=JDXiStyle.GREY), title
+                editor, qta.icon(icon, color=JDXi.Style.GREY), title
             )
 
             # Store the tab index for Analog Synth to enable styling

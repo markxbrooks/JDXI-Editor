@@ -19,12 +19,12 @@ from PySide6.QtWidgets import (
 )
 
 from decologr import Decologr as log
+from jdxi_editor.jdxi.jdxi import JDXi
 from jdxi_editor.project import (
     __organization_name__,
     __package_name__,
     __program__,
 )
-from jdxi_editor.ui.style.icons import JDXiIconRegistry
 
 
 def log_settings() -> None:
@@ -84,7 +84,7 @@ class UiPreferencesDialog(QDialog):
         self.log_level_layout = QHBoxLayout(self)
         self.log_icon = QLabel()
         self.log_icon.setPixmap(
-            JDXiIconRegistry.get_icon(JDXiIconRegistry.REPORT).pixmap(self.icon_size)
+            JDXi.IconRegistry.get_icon(JDXi.IconRegistry.REPORT).pixmap(self.icon_size)
         )
         self.log_level_label = QLabel("Log file error reporting level:")
         self.log_level_layout.addWidget(self.log_icon)
@@ -99,7 +99,7 @@ class UiPreferencesDialog(QDialog):
             bool(self.settings.value("logging", type=bool))
         )
         self.logging_icon.setPixmap(
-            JDXiIconRegistry.get_icon(JDXiIconRegistry.REPORT).pixmap(self.icon_size)
+            JDXi.IconRegistry.get_icon(JDXi.IconRegistry.REPORT).pixmap(self.icon_size)
         )
         self.logging_label = QLabel("Logging On or Off:")
         self.logging_layout.addWidget(self.logging_icon)

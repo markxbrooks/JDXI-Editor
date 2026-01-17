@@ -3,7 +3,7 @@ import sys
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
-from jdxi_editor.project import __package_name__, __program__, __version__
+from jdxi_editor.project import __package_name__, __program__
 
 
 def setup_logging(log_level: int = logging.DEBUG) -> logging.Logger:

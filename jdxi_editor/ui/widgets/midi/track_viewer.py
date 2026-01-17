@@ -21,8 +21,7 @@ from PySide6.QtWidgets import (
 )
 
 from decologr import Decologr as log
-from jdxi_editor.ui.style import JDXiStyle
-from jdxi_editor.ui.style.icons import JDXiIconRegistry
+from jdxi_editor.jdxi.jdxi import JDXi
 from jdxi_editor.ui.widgets.midi.spin_box.spin_box import MidiSpinBox
 from jdxi_editor.ui.widgets.midi.time_ruler import TimeRulerWidget
 from jdxi_editor.ui.widgets.midi.track import MidiTrackWidget
@@ -419,9 +418,9 @@ class MidiTrackViewer(QWidget):
             icon_names = {
                 10: "fa5s.drum",
             }
-            colors = {3: JDXiStyle.ACCENT_ANALOG}
+            colors = {3: JDXi.Style.ACCENT_ANALOG}
             color = colors.get(
-                first_channel, JDXiStyle.ACCENT
+                first_channel, JDXi.Style.ACCENT
             )  # Default color if not specified
             icon_name = icon_names.get(
                 first_channel,
@@ -429,17 +428,17 @@ class MidiTrackViewer(QWidget):
             )  # Default icon if not specified
             # Add QLabel for track number and channel
             pixmap = qta.icon(icon_name, color=color).pixmap(
-                JDXiStyle.TRACK_ICON_PIXMAP_SIZE, JDXiStyle.TRACK_ICON_PIXMAP_SIZE
+                JDXi.Style.TRACK_ICON_PIXMAP_SIZE, JDXi.Style.TRACK_ICON_PIXMAP_SIZE
             )
 
             track_number_label = QLabel(f"{i + 1}")
-            track_number_label.setFixedWidth(JDXiStyle.TRACK_BUTTON_WIDTH)
+            track_number_label.setFixedWidth(JDXi.Style.TRACK_BUTTON_WIDTH)
             hlayout.addWidget(track_number_label)
 
             icon_label = QLabel()
             icon_label.setPixmap(pixmap)
             icon_label.setFixedWidth(
-                JDXiStyle.TRACK_ICON_PIXMAP_SIZE
+                JDXi.Style.TRACK_ICON_PIXMAP_SIZE
             )  # Add some padding
             hlayout.addWidget(icon_label)
 
@@ -453,7 +452,7 @@ class MidiTrackViewer(QWidget):
             # Add QLineEdit for track label
             track_name_line_edit = QLineEdit()
             track_name_line_edit.setText(track_name)
-            track_name_line_edit.setFixedWidth(JDXiStyle.TRACK_LABEL_WIDTH)
+            track_name_line_edit.setFixedWidth(JDXi.Style.TRACK_LABEL_WIDTH)
             track_name_line_edit.setToolTip("Track Name")
             track_name_line_edit.setStyleSheet(
                 "QLineEdit { background-color: transparent; border: none; }"
@@ -472,7 +471,7 @@ class MidiTrackViewer(QWidget):
                 "Select MIDI Channel for Track, then click 'Apply' to save changes"
             )
             spin.setValue(first_channel)  # Offset for display
-            spin.setFixedWidth(JDXiStyle.TRACK_SPINBOX_WIDTH)
+            spin.setFixedWidth(JDXi.Style.TRACK_SPINBOX_WIDTH)
             spin.setPrefix("Ch")
             line_label_row.addWidget(spin)
             self._track_channel_spins[i] = spin
@@ -480,13 +479,13 @@ class MidiTrackViewer(QWidget):
             button_hlayout = QHBoxLayout()
             label_vlayout.addLayout(button_hlayout)
 
-            apply_icon = JDXiIconRegistry.get_icon(
-                JDXiIconRegistry.SAVE, color=JDXiStyle.FOREGROUND
+            apply_icon = JDXi.IconRegistry.get_icon(
+                JDXi.IconRegistry.SAVE, color=JDXi.Style.FOREGROUND
             )
             apply_button = QPushButton()
             apply_button.setIcon(apply_icon)
             apply_button.setToolTip("Apply changes to Track Channel")
-            apply_button.setFixedWidth(JDXiStyle.TRACK_SPINBOX_WIDTH)
+            apply_button.setFixedWidth(JDXi.Style.TRACK_SPINBOX_WIDTH)
             apply_button.clicked.connect(self.make_apply_slot(i, spin))
             apply_button.clicked.connect(
                 lambda _, tr=i, le=track_name_line_edit: self.change_track_name(
@@ -501,13 +500,13 @@ class MidiTrackViewer(QWidget):
             """
             button_hlayout.addWidget(apply_button)
 
-            mute_icon = JDXiIconRegistry.get_icon(
-                JDXiIconRegistry.MUTE, color=JDXiStyle.FOREGROUND
+            mute_icon = JDXi.IconRegistry.get_icon(
+                JDXi.IconRegistry.MUTE, color=JDXi.Style.FOREGROUND
             )
             mute_button = QPushButton()
             mute_button.setIcon(mute_icon)
             mute_button.setToolTip("Mute Track")
-            mute_button.setFixedWidth(JDXiStyle.TRACK_BUTTON_WIDTH)
+            mute_button.setFixedWidth(JDXi.Style.TRACK_BUTTON_WIDTH)
             mute_button.setCheckable(True)
             mute_button.clicked.connect(
                 lambda _, tr=i: self.mute_track(tr)
@@ -517,13 +516,13 @@ class MidiTrackViewer(QWidget):
             )
             button_hlayout.addWidget(mute_button)
 
-            delete_icon = JDXiIconRegistry.get_icon(
-                JDXiIconRegistry.DELETE, color=JDXiStyle.FOREGROUND
+            delete_icon = JDXi.IconRegistry.get_icon(
+                JDXi.IconRegistry.DELETE, color=JDXi.Style.FOREGROUND
             )
             delete_button = QPushButton()
             delete_button.setIcon(delete_icon)
             delete_button.setToolTip("Delete Track")
-            delete_button.setFixedWidth(JDXiStyle.TRACK_BUTTON_WIDTH)
+            delete_button.setFixedWidth(JDXi.Style.TRACK_BUTTON_WIDTH)
             delete_button.setCheckable(True)
             delete_button.clicked.connect(
                 lambda _, tr=i: self.delete_track(tr)
@@ -554,13 +553,13 @@ class MidiTrackViewer(QWidget):
         Returns the estimated total width of all controls to the left of the MidiTrackWidget.
         """
         # Fixed widths from layout:
-        # QLabels: JDXiStyle.ICON_PIXMAP_SIZE, JDXiStyle.TRACK_LABEL_WIDTH , QSpinBox: JDXiStyle.TRACK_MUTE_BUTTON_WIDTH, Apply: JDXiStyle.TRACK_MUTE_BUTTON_WIDTH, Mute: JDXiStyle.TRACK_MUTE_BUTTON_WIDTH, Delete: JDXiStyle.TRACK_MUTE_BUTTON_WIDTH + margins (~10)
+        # QLabels: JDXi.Style.ICON_PIXMAP_SIZE, JDXi.Style.TRACK_LABEL_WIDTH , QSpinBox: JDXi.Style.TRACK_MUTE_BUTTON_WIDTH, Apply: JDXi.Style.TRACK_MUTE_BUTTON_WIDTH, Mute: JDXi.Style.TRACK_MUTE_BUTTON_WIDTH, Delete: JDXi.Style.TRACK_MUTE_BUTTON_WIDTH + margins (~10)
         return (
-            JDXiStyle.ICON_PIXMAP_SIZE
-            + JDXiStyle.TRACK_LABEL_WIDTH
-            + (JDXiStyle.TRACK_BUTTON_WIDTH * 4)
+            JDXi.Style.ICON_PIXMAP_SIZE
+            + JDXi.Style.TRACK_LABEL_WIDTH
+            + (JDXi.Style.TRACK_BUTTON_WIDTH * 4)
             + 10
-        )  # = 2JDXiStyle.TRACK_MUTE_BUTTON_WIDTH
+        )  # = 2JDXi.Style.TRACK_MUTE_BUTTON_WIDTH
 
     def clear_layout(self, layout: QLayout) -> None:
         while layout.count():

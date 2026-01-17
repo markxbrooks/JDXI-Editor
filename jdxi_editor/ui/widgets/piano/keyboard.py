@@ -40,12 +40,12 @@ from PySide6.QtWidgets import (
 )
 
 from decologr import Decologr as log
+from jdxi_editor.jdxi.jdxi import JDXi
 from jdxi_editor.midi.data.piano.keyboard import (
     DRUM_LABELS,
     KEYBOARD_BLACK_NOTES,
     KEYBOARD_WHITE_NOTES,
 )
-from jdxi_editor.ui.style import JDXiStyle
 from jdxi_editor.ui.widgets.piano.key import PianoKey
 
 
@@ -86,7 +86,7 @@ class PianoKeyboard(QWidget):
         for text in DRUM_LABELS:
             label = QLabel(text)
             label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            label.setStyleSheet(JDXiStyle.KEYBOARD_DRUM_LABELS)
+            label.setStyleSheet(JDXi.Style.KEYBOARD_DRUM_LABELS)
             labels_layout.addWidget(label)
 
         labels_layout.addStretch()

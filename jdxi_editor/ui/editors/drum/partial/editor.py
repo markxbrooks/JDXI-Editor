@@ -18,6 +18,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from jdxi_editor.jdxi.jdxi import JDXi
 from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.midi.data.address.address import AddressOffsetProgramLMB
 from jdxi_editor.midi.data.parameter.drum.addresses import DRUM_GROUP_MAP
@@ -32,9 +33,6 @@ from jdxi_editor.ui.editors.drum.partial.wmt import DrumWMTSection
 from jdxi_editor.ui.editors.synth.partial import PartialEditor
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
-from jdxi_editor.ui.style import JDXiStyle
-from jdxi_editor.ui.style.dimensions import JDXiDimensions
-from jdxi_editor.ui.style.icons import JDXiIconRegistry
 
 
 class DrumPartialEditor(PartialEditor):
@@ -85,7 +83,7 @@ class DrumPartialEditor(PartialEditor):
         scroll_area.setWidget(scroll_content)
 
         tab_widget = QTabWidget()
-        tab_widget.setMinimumWidth(JDXiDimensions.EDITOR_DRUM.PARTIAL_TAB_MIN_WIDTH)
+        tab_widget.setMinimumWidth(JDXi.Dimensions.EDITOR_DRUM.PARTIAL_TAB_MIN_WIDTH)
         tab_widget.setSizePolicy(
             QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
         )
@@ -95,8 +93,8 @@ class DrumPartialEditor(PartialEditor):
         tab_partial_layout = QVBoxLayout(tab_partial)
         tab_partial_layout.setContentsMargins(0, 0, 0, 0)
         tab_partial_layout.setSpacing(0)
-        partial_icon = JDXiIconRegistry.get_icon(
-            JDXiIconRegistry.CIRCLE_OUTLINE, color=JDXiStyle.GREY
+        partial_icon = JDXi.IconRegistry.get_icon(
+            JDXi.IconRegistry.CIRCLE_OUTLINE, color=JDXi.Style.GREY
         )
         tab_widget.addTab(tab_partial, partial_icon, "Partial")
 
@@ -113,8 +111,8 @@ class DrumPartialEditor(PartialEditor):
         tab_wmt_layout = QVBoxLayout(tab_wmt)
         tab_wmt_layout.setContentsMargins(0, 0, 0, 0)
         tab_wmt_layout.setSpacing(0)
-        wmt_icon = JDXiIconRegistry.get_icon(
-            JDXiIconRegistry.WAVEFORM, color=JDXiStyle.GREY
+        wmt_icon = JDXi.IconRegistry.get_icon(
+            JDXi.IconRegistry.WAVEFORM, color=JDXi.Style.GREY
         )
         tab_widget.addTab(tab_wmt, wmt_icon, "WMT")
 
@@ -151,8 +149,8 @@ class DrumPartialEditor(PartialEditor):
         tab_output_layout = QVBoxLayout(tab_output)
         tab_output_layout.setContentsMargins(0, 0, 0, 0)
         tab_output_layout.setSpacing(0)
-        output_icon = JDXiIconRegistry.get_icon(
-            JDXiIconRegistry.VOLUME_HIGH, color=JDXiStyle.GREY
+        output_icon = JDXi.IconRegistry.get_icon(
+            JDXi.IconRegistry.VOLUME_HIGH, color=JDXi.Style.GREY
         )
         tab_widget.addTab(tab_output, output_icon, "Output")
 
@@ -169,8 +167,8 @@ class DrumPartialEditor(PartialEditor):
         tab_tvf_layout = QVBoxLayout(tab_tvf)
         tab_tvf_layout.setContentsMargins(0, 0, 0, 0)
         tab_tvf_layout.setSpacing(0)
-        tvf_icon = JDXiIconRegistry.get_icon(
-            JDXiIconRegistry.FILTER, color=JDXiStyle.GREY
+        tvf_icon = JDXi.IconRegistry.get_icon(
+            JDXi.IconRegistry.FILTER, color=JDXi.Style.GREY
         )
         tab_widget.addTab(tab_tvf, tvf_icon, "TVF")
 
@@ -187,8 +185,8 @@ class DrumPartialEditor(PartialEditor):
         tab_tva_layout = QVBoxLayout(tab_tva)
         tab_tva_layout.setContentsMargins(0, 0, 0, 0)
         tab_tva_layout.setSpacing(0)
-        tva_icon = JDXiIconRegistry.get_icon(
-            JDXiIconRegistry.AMPLIFIER, color=JDXiStyle.GREY
+        tva_icon = JDXi.IconRegistry.get_icon(
+            JDXi.IconRegistry.AMPLIFIER, color=JDXi.Style.GREY
         )
         tab_widget.addTab(tab_tva, tva_icon, "TVA")
 

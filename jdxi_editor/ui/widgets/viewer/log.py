@@ -37,8 +37,8 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from jdxi_editor.jdxi.jdxi import JDXi
 from jdxi_editor.project import __package_name__
-from jdxi_editor.ui.style import JDXiStyle
 
 
 class LogViewer(QMainWindow):
@@ -48,7 +48,7 @@ class LogViewer(QMainWindow):
         self.setMinimumSize(980, 400)
 
         # Apply dark theme styling
-        self.setStyleSheet(JDXiStyle.LOG_VIEWER)
+        self.setStyleSheet(JDXi.Style.LOG_VIEWER)
 
         # Determine log file path (Decologr writes to ~/.{package_name}/logs/{package_name}.log)
         log_dir = Path.home() / f".{__package_name__}" / "logs"

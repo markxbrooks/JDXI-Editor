@@ -17,10 +17,10 @@ from typing import Callable, Dict, Optional
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QGridLayout, QWidget
 
+from jdxi_editor.jdxi.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
-from jdxi_editor.ui.style import JDXiStyle, JDXiThemeManager
 from jdxi_editor.ui.widgets.adsr.plot import ADSRPlot
 from jdxi_editor.ui.widgets.envelope.base import TOOLTIPS, EnvelopeWidgetBase
 from jdxi_editor.ui.widgets.slider_spinbox.slider_spinbox import AdsrSliderSpinbox
@@ -189,8 +189,8 @@ class ADSR(EnvelopeWidgetBase):
         }
         # Create layout
         self.plot = ADSRPlot(
-            width=JDXiStyle.ADSR_PLOT_WIDTH,
-            height=JDXiStyle.ADSR_PLOT_HEIGHT,
+            width=JDXi.Style.ADSR_PLOT_WIDTH,
+            height=JDXi.Style.ADSR_PLOT_HEIGHT,
             envelope=self.envelope,
             parent=self,
         )
@@ -206,7 +206,7 @@ class ADSR(EnvelopeWidgetBase):
         for control in self._control_widgets:
             control.envelope_changed.connect(self.on_control_changed)
         self.update_controls_from_envelope()
-        JDXiThemeManager.apply_adsr_style(self, analog=analog)
+        JDXi.ThemeManager.apply_adsr_style(self, analog=analog)
 
     def on_control_changed(self, change: dict):
         self.envelope.update(change)

@@ -18,9 +18,9 @@ from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QGridLayout, QSlider, QWidget
 
 from decologr import Decologr as log
+from jdxi_editor.jdxi.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.ui.style import JDXiStyle
 from jdxi_editor.ui.widgets.envelope.base import EnvelopeWidgetBase
 from jdxi_editor.ui.widgets.pitch.envelope_plot import PitchEnvPlot
 from jdxi_editor.ui.widgets.pitch.slider_spinbox import PitchEnvSliderSpinbox
@@ -122,8 +122,8 @@ class PitchEnvelopeWidget(EnvelopeWidgetBase):
             "peak_level": self.depth_control.spinbox,
         }
         self.plot = PitchEnvPlot(
-            width=JDXiStyle.ADSR_PLOT_WIDTH,
-            height=JDXiStyle.ADSR_PLOT_HEIGHT,
+            width=JDXi.Style.ADSR_PLOT_WIDTH,
+            height=JDXi.Style.ADSR_PLOT_HEIGHT,
             envelope=self.envelope,
             parent=self,
         )

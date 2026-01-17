@@ -2,6 +2,7 @@
 Composition of main JDXi components
 """
 
+from jdxi_editor.ui.parameters import UiParameters
 from jdxi_editor.ui.style import (
     JDXiDimensions,
     JDXiIconRegistry,
@@ -17,3 +18,4 @@ class JDXi:
     ThemeManager: JDXiThemeManager = JDXiThemeManager
     IconRegistry: JDXiIconRegistry = JDXiIconRegistry
     Dimensions: JDXiDimensions = JDXiDimensions
+    UI: UiParameters = UiParameters

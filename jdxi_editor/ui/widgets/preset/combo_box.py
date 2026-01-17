@@ -20,7 +20,7 @@ from PySide6.QtWidgets import (
 )
 
 from decologr import Decologr as log
-from jdxi_editor.ui.style import JDXiStyle
+from jdxi_editor.jdxi.jdxi import JDXi
 from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets
 
 
@@ -46,7 +46,7 @@ class PresetComboBox(QWidget):
         # --- Search Box
         self.search_box = QLineEdit()
         search_row = create_layout_with_widgets([QLabel("Search:"), self.search_box])
-        self.search_box.setStyleSheet(JDXiStyle.QLINEEDIT)
+        self.search_box.setStyleSheet(JDXi.Style.QLINEEDIT)
         self.search_box.setPlaceholderText("Search presets...")
         self.search_box.textChanged.connect(self._populate_presets)
         search_row.addWidget(self.search_box)
@@ -71,7 +71,7 @@ class PresetComboBox(QWidget):
         self.load_button.clicked.connect(self._on_load_clicked)
         layout.addWidget(self.load_button)
         self._populate_presets()
-        self.setStyleSheet(JDXiStyle.COMBO_BOX)
+        self.setStyleSheet(JDXi.Style.COMBO_BOX)
 
     def _on_load_clicked(self):
         """Handle load button click."""

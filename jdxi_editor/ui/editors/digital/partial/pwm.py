@@ -15,10 +15,9 @@ from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QGridLayout, QSlider, QWidget
 
 from decologr import Decologr as log
+from jdxi_editor.jdxi.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.ui.style import JDXiThemeManager
-from jdxi_editor.ui.style.dimensions import JDXiDimensions
 from jdxi_editor.ui.widgets.envelope.base import TOOLTIPS, EnvelopeWidgetBase
 from jdxi_editor.ui.widgets.pitch.pwm_plot import PWMPlot
 from jdxi_editor.ui.widgets.pulse_width.slider_spinbox import PWMSliderSpinbox
@@ -103,8 +102,8 @@ class PWMWidget(EnvelopeWidgetBase):
         self.layout.addWidget(self.pulse_width_control, 0, 2)
         self.setLayout(self.layout)
         self.plot = PWMPlot(
-            width=JDXiDimensions.PWM_WIDGET.WIDTH - 20,
-            height=JDXiDimensions.PWM_WIDGET.HEIGHT - 20,
+            width=JDXi.Dimensions.PWM_WIDGET.WIDTH - 20,
+            height=JDXi.Dimensions.PWM_WIDGET.HEIGHT - 20,
             parent=self,
             envelope=self.envelope,
         )
@@ -120,7 +119,7 @@ class PWMWidget(EnvelopeWidgetBase):
         self.mod_depth_control.setValue(
             self.envelope["mod_depth"] * Midi.VALUE.MAX.SEVEN_BIT
         )
-        JDXiThemeManager.apply_adsr_style(self, analog=analog)
+        JDXi.ThemeManager.apply_adsr_style(self, analog=analog)
 
     def on_envelope_changed(self, envelope: dict) -> None:
         """

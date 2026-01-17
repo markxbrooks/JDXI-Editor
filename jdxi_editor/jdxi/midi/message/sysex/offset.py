@@ -13,12 +13,7 @@ from dataclasses import dataclass
 from enum import IntEnum
 from typing import Type, Union
 
-from jdxi_editor.midi.data.address.address import (
-    CommandID,
-    ModelID,
-    RolandID,
-    RolandSysExAddress,
-)
+from jdxi_editor.midi.data.address.address import CommandID, ModelID, RolandID
 from picomidi import SysExByte
 from picomidi.core.parameter.address import ParameterAddress
 

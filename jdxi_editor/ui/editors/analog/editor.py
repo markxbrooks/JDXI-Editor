@@ -68,7 +68,7 @@ from jdxi_editor.log.slider_parameter import log_slider_parameters
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.analog.oscillator import AnalogOscWave
 from jdxi_editor.midi.data.control_change.analog import AnalogControlChange, AnalogRPN
-from jdxi_editor.midi.data.parameter.analog import AnalogParam
+from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
 from jdxi_editor.midi.data.programs.digital import DIGITAL_PRESET_LIST
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.analog.amp import AnalogAmpSection
@@ -129,8 +129,8 @@ class AnalogSynthEditor(SynthEditor):
         self.previous_json_data = None
         self.main_window = parent
 
-        # Initialize mappings as empty dicts/lists early to prevent AttributeError
-        # These will be populated after sections are created
+        # --- Initialize mappings as empty dicts/lists early to prevent AttributeError
+        # --- These will be populated after sections are created
         self.adsr_mapping = {}
         self.pitch_env_mapping = {}
         self.pwm_mapping = []
@@ -149,7 +149,7 @@ class AnalogSynthEditor(SynthEditor):
         self.refresh_shortcut = QShortcut(QKeySequence.StandardKey.Refresh, self)
         self.refresh_shortcut.activated.connect(self.data_request)
 
-        # Define mapping dictionaries
+        # --- Define mapping dictionaries
         self.sub_osc_type_map = {0: 0, 1: 1, 2: 2}
         self.filter_switch_map = {0: 0, 1: 1}
         self.osc_waveform_map = {
@@ -191,20 +191,20 @@ class AnalogSynthEditor(SynthEditor):
         JDXi.ThemeManager.apply_tabs_style(self, analog=True)
         JDXi.ThemeManager.apply_editor_style(self, analog=True)
 
-        # Use EditorBaseWidget for consistent layout structure (harmonized with Digital)
+        # --- Use EditorBaseWidget for consistent layout structure (harmonized with Digital)
         self.base_widget = EditorBaseWidget(parent=self, analog=True)
         self.base_widget.setup_scrollable_content(spacing=5, margins=(5, 5, 5, 5))
 
-        # Add base widget to editor's layout (if editor has a layout)
+        # --- Add base widget to editor's layout (if editor has a layout)
         if not hasattr(self, "main_layout") or self.main_layout is None:
             self.main_layout = QVBoxLayout(self)
             self.setLayout(self.main_layout)
         self.main_layout.addWidget(self.base_widget)
 
-        # Store references for backward compatibility
+        # --- Store references for backward compatibility
         self.scroll = self.base_widget.get_scroll_area()
 
-        # Set up instrument preset widget
+        # --- Set up instrument preset widget
         self.instrument_preset = InstrumentPresetWidget(parent=self)
         self.instrument_preset.setup_header_layout()
         self.instrument_preset.setup()
@@ -225,7 +225,7 @@ class AnalogSynthEditor(SynthEditor):
 
         self.update_instrument_image()
 
-        # Create tab widget and add preset as first tab
+        # --- Create tab widget and add preset as first tab
         self.tab_widget = self.base_widget.create_tab_widget()
         try:
             presets_icon = JDXi.IconRegistry.get_icon(
@@ -325,20 +325,20 @@ class AnalogSynthEditor(SynthEditor):
         }
 
         self.nrpn_parameters = {
-            "Envelope": AnalogRPN.ENVELOPE.value.msb_lsb,  # (0, 124),
-            "LFO Shape": AnalogRPN.LFO_SHAPE.value.msb_lsb,  # (0, 3),
-            "LFO Pitch Depth": AnalogRPN.LFO_PITCH_DEPTH.value.msb_lsb,  # (0, 15),
-            "LFO Filter Depth": AnalogRPN.LFO_FILTER_DEPTH.value.msb_lsb,  # (0, 18),
-            "LFO Amp Depth": AnalogRPN.LFO_AMP_DEPTH.value.msb_lsb,  # (0, 21),
-            "Pulse Width": AnalogRPN.PULSE_WIDTH.value.msb_lsb,  # (0, 37),
+            "Envelope": AnalogRPN.ENVELOPE.value.msb_lsb,  # --- (0, 124),
+            "LFO Shape": AnalogRPN.LFO_SHAPE.value.msb_lsb,  # --- (0, 3),
+            "LFO Pitch Depth": AnalogRPN.LFO_PITCH_DEPTH.value.msb_lsb,  # --- (0, 15),
+            "LFO Filter Depth": AnalogRPN.LFO_FILTER_DEPTH.value.msb_lsb,  # --- (0, 18),
+            "LFO Amp Depth": AnalogRPN.LFO_AMP_DEPTH.value.msb_lsb,  # --- (0, 21),
+            "Pulse Width": AnalogRPN.PULSE_WIDTH.value.msb_lsb,  # --- (0, 37),
         }
 
-        # Reverse lookup map
+        # --- Reverse lookup map
         self.nrpn_map = {v: k for k, v in self.nrpn_parameters.items()}
 
     def update_filter_controls_state(self, mode: int):
         """Update filter controls enabled state based on mode"""
-        enabled = mode != 0  # Enable if not BYPASS
+        enabled = mode != 0  # --- Enable if not BYPASS
         for param in [
             AnalogParam.FILTER_CUTOFF,
             AnalogParam.FILTER_RESONANCE,
@@ -384,12 +384,12 @@ class AnalogSynthEditor(SynthEditor):
             log.warning("Unknown filter mode value: %s", value)
             return
 
-        # Reset all buttons to default style
+        # --- Reset all buttons to default style
         for btn in self.filter_section.filter_mode_buttons.values():
             btn.setChecked(False)
             JDXi.ThemeManager.apply_button_rect_analog(btn)
 
-        # Apply active style to the selected filter mode button
+        # --- Apply active style to the selected filter mode button
         selected_btn = self.filter_section.filter_mode_buttons.get(selected_filter_mode)
         if selected_btn:
             selected_btn.setChecked(True)

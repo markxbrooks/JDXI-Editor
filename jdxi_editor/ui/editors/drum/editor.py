@@ -80,9 +80,6 @@ from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.drum.common import DrumCommonSection
 from jdxi_editor.ui.editors.drum.partial.editor import DrumPartialEditor
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
-from jdxi_editor.ui.style import JDXiStyle
-from jdxi_editor.ui.style.dimensions import JDXiDimensions
-from jdxi_editor.ui.style.icons import JDXiIconRegistry
 from jdxi_editor.ui.widgets.dialog.progress import ProgressDialog
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 
@@ -131,7 +128,7 @@ class DrumCommonEditor(SynthEditor):
         """Setup the UI components for the drum editor."""
         main_layout = QVBoxLayout(self)
         self.setMinimumSize(
-            JDXiDimensions.EDITOR_DRUM.WIDTH, JDXiDimensions.EDITOR_DRUM.HEIGHT
+            JDXi.Dimensions.EDITOR_DRUM.WIDTH, JDXi.Dimensions.EDITOR_DRUM.HEIGHT
         )
         self.presets_parts_tab_widget = QTabWidget()
 
@@ -164,8 +161,8 @@ class DrumCommonEditor(SynthEditor):
 
         instrument_vrow_layout.addWidget(self.instrument_preset)
 
-        drum_kit_presets_icon = JDXiIconRegistry.get_icon(
-            JDXiIconRegistry.MUSIC_NOTES, color=JDXiStyle.GREY
+        drum_kit_presets_icon = JDXi.IconRegistry.get_icon(
+            JDXi.IconRegistry.MUSIC_NOTES, color=JDXi.Style.GREY
         )
         self.presets_parts_tab_widget.addTab(
             instrument_widget, drum_kit_presets_icon, "Drum Kit Presets"
@@ -177,19 +174,19 @@ class DrumCommonEditor(SynthEditor):
         container_layout = self.base_widget.get_container_layout()
 
         # Add partial_tab_widget to the container
-        self.partial_tab_widget.setStyleSheet(JDXiStyle.TABS_DRUMS)
+        self.partial_tab_widget.setStyleSheet(JDXi.Style.TABS_DRUMS)
         container_layout.addWidget(self.partial_tab_widget)
 
         # Add the base widget as the second tab (it contains the scroll area)
-        drum_kit_parts_icon = JDXiIconRegistry.get_icon(
-            "mdi.puzzle", color=JDXiStyle.GREY
+        drum_kit_parts_icon = JDXi.IconRegistry.get_icon(
+            "mdi.puzzle", color=JDXi.Style.GREY
         )
         self.presets_parts_tab_widget.addTab(
             self.base_widget, drum_kit_parts_icon, "Drum Kit Parts"
         )
 
-        self.presets_parts_tab_widget.setStyleSheet(JDXiStyle.TABS_DRUMS)
-        self.partial_tab_widget.setStyleSheet(JDXiStyle.TABS_DRUMS)
+        self.presets_parts_tab_widget.setStyleSheet(JDXi.Style.TABS_DRUMS)
+        self.partial_tab_widget.setStyleSheet(JDXi.Style.TABS_DRUMS)
         self._setup_partial_editors()
         # Create and add the common section
         self.common_section = DrumCommonSection(
@@ -199,7 +196,9 @@ class DrumCommonEditor(SynthEditor):
             midi_helper=self.midi_helper,
             address=self.address,
         )
-        common_icon = JDXiIconRegistry.get_icon("mdi.cog-outline", color=JDXiStyle.GREY)
+        common_icon = JDXi.IconRegistry.get_icon(
+            "mdi.cog-outline", color=JDXi.Style.GREY
+        )
         self.partial_tab_widget.addTab(self.common_section, common_icon, "Common")
 
         self.update_instrument_image()

@@ -29,7 +29,7 @@ from jdxi_editor.midi.data.address.address import (
     AddressOffsetTemporaryToneUMB,
     RolandSysExAddress,
 )
-from jdxi_editor.midi.data.parameter.analog import AnalogParam
+from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
 from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParam
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParam
 from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParam

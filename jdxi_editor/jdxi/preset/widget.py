@@ -13,9 +13,8 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from jdxi_editor.jdxi.jdxi import JDXi
 from jdxi_editor.jdxi.preset.helper import create_scroll_container
-from jdxi_editor.ui.style import JDXiStyle
-from jdxi_editor.ui.style.icons import JDXiIconRegistry
 from jdxi_editor.ui.widgets.combo_box.searchable_filterable import (
     SearchableFilterableComboBox,
 )
@@ -47,7 +46,7 @@ class InstrumentPresetWidget(QWidget):
 
     def add_image_group(self, group: QGroupBox):
         """add image group"""
-        group.setMinimumWidth(JDXiStyle.INSTRUMENT_IMAGE_WIDTH)
+        group.setMinimumWidth(JDXi.Style.INSTRUMENT_IMAGE_WIDTH)
         self.hlayout.addWidget(group)
 
     def add_preset_group(self, group: QGroupBox):
@@ -72,9 +71,9 @@ class InstrumentPresetWidget(QWidget):
         self.instrument_image_label = QLabel()
         self.instrument_image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         instrument_group_layout.addWidget(self.instrument_image_label)
-        instrument_image_group.setStyleSheet(JDXiStyle.INSTRUMENT_IMAGE_LABEL)
-        instrument_image_group.setMinimumWidth(JDXiStyle.INSTRUMENT_IMAGE_WIDTH)
-        instrument_image_group.setMaximumHeight(JDXiStyle.INSTRUMENT_IMAGE_HEIGHT)
+        instrument_image_group.setStyleSheet(JDXi.Style.INSTRUMENT_IMAGE_LABEL)
+        instrument_image_group.setMinimumWidth(JDXi.Style.INSTRUMENT_IMAGE_WIDTH)
+        instrument_image_group.setMaximumHeight(JDXi.Style.INSTRUMENT_IMAGE_HEIGHT)
         return (
             instrument_image_group,
             self.instrument_image_label,
@@ -95,7 +94,7 @@ class InstrumentPresetWidget(QWidget):
 
         # Apply Analog color styling for Analog Synth group box
         if synth_type == "Analog":
-            instrument_preset_group.setStyleSheet(JDXiStyle.GROUP_BOX_ANALOG)
+            instrument_preset_group.setStyleSheet(JDXi.Style.GROUP_BOX_ANALOG)
 
         # For Analog, create tabs; for others, create simple layout
         if synth_type == "Analog":
@@ -107,14 +106,14 @@ class InstrumentPresetWidget(QWidget):
             normal_preset_widget, normal_preset_layout = create_scroll_container()
             self._add_normal_preset_content(normal_preset_layout, synth_type)
             try:
-                analog_presets_icon = JDXiIconRegistry.get_icon(
-                    JDXiIconRegistry.MUSIC_NOTE_MULTIPLE, color=JDXiStyle.GREY
+                analog_presets_icon = JDXi.IconRegistry.get_icon(
+                    JDXi.IconRegistry.MUSIC_NOTE_MULTIPLE, color=JDXi.Style.GREY
                 )
                 if analog_presets_icon is None or analog_presets_icon.isNull():
                     raise ValueError("Icon is null")
             except:
-                analog_presets_icon = JDXiIconRegistry.get_icon(
-                    JDXiIconRegistry.MUSIC, color=JDXiStyle.GREY
+                analog_presets_icon = JDXi.IconRegistry.get_icon(
+                    JDXi.IconRegistry.MUSIC, color=JDXi.Style.GREY
                 )
             preset_tabs.addTab(
                 normal_preset_widget, analog_presets_icon, "Analog Presets"
@@ -123,8 +122,8 @@ class InstrumentPresetWidget(QWidget):
             # === Tab 2: Cheat Presets (Digital Synth presets on Analog channel) ===
             cheat_preset_widget, cheat_preset_layout = create_scroll_container()
             self._add_cheat_preset_content(cheat_preset_layout)
-            cheat_presets_icon = JDXiIconRegistry.get_icon(
-                JDXiIconRegistry.CODE_BRACES, color=JDXiStyle.GREY
+            cheat_presets_icon = JDXi.IconRegistry.get_icon(
+                JDXi.IconRegistry.CODE_BRACES, color=JDXi.Style.GREY
             )
             preset_tabs.addTab(cheat_preset_widget, cheat_presets_icon, "Cheat Presets")
         else:
@@ -136,7 +135,7 @@ class InstrumentPresetWidget(QWidget):
     def _add_normal_preset_content(self, layout: QVBoxLayout, synth_type: str):
         """Add normal preset selection content to the layout."""
         # Add icon row at the top
-        icon_row = JDXiIconRegistry.create_generic_musical_icon_row()
+        icon_row = JDXi.IconRegistry.create_generic_musical_icon_row()
         layout.addLayout(icon_row)
 
         self.instrument_title_label = DigitalTitle()
@@ -195,10 +194,12 @@ class InstrumentPresetWidget(QWidget):
         if synth_type == "Analog":
             # Apply Analog styling to the combo box widget
             self.instrument_selection_combo.combo_box.setStyleSheet(
-                JDXiStyle.COMBO_BOX_ANALOG
+                JDXi.Style.COMBO_BOX_ANALOG
             )
         else:
-            self.instrument_selection_combo.combo_box.setStyleSheet(JDXiStyle.COMBO_BOX)
+            self.instrument_selection_combo.combo_box.setStyleSheet(
+                JDXi.Style.COMBO_BOX
+            )
 
         # Connect signals - use combo_box for currentIndexChanged
         self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
@@ -227,7 +228,7 @@ class InstrumentPresetWidget(QWidget):
         from jdxi_editor.midi.data.programs.digital import DIGITAL_PRESET_LIST
 
         # Add icon row at the top
-        icon_row = JDXiIconRegistry.create_generic_musical_icon_row()
+        icon_row = JDXi.IconRegistry.create_generic_musical_icon_row()
         layout.addLayout(icon_row)
 
         # Build preset options, values, and categories from DIGITAL_PRESET_LIST
@@ -272,8 +273,8 @@ class InstrumentPresetWidget(QWidget):
 
         # Load Button
         self.cheat_load_button = QPushButton(
-            JDXiIconRegistry.get_icon(
-                JDXiIconRegistry.FOLDER_NOTCH_OPEN, color=JDXiStyle.FOREGROUND
+            JDXi.IconRegistry.get_icon(
+                JDXi.IconRegistry.FOLDER_NOTCH_OPEN, color=JDXi.Style.FOREGROUND
             ),
             "Load Preset",
         )

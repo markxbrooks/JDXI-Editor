@@ -2,26 +2,52 @@
 Analog Oscillator Section
 """
 
-from typing import Callable
+from typing import Callable, Literal
 
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QGroupBox, QHBoxLayout, QTabWidget, QVBoxLayout, QWidget
 
+from jdxi_editor.jdxi.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
-from jdxi_editor.midi.data.analog.oscillator import AnalogOscWave, AnalogSubOscType
-from jdxi_editor.midi.data.parameter.analog import AnalogParam
+from jdxi_editor.midi.data.analog.oscillator import AnalogOscWave
+from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
+from jdxi_editor.midi.data.parameter.analog.name import AnalogDisplayName
+from jdxi_editor.midi.data.parameter.analog.option import AnalogDisplayOptions
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.digital.partial.pwm import PWMWidget
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
-from jdxi_editor.ui.style import JDXiStyle, JDXiThemeManager
-from jdxi_editor.ui.style.dimensions import JDXiDimensions
-from jdxi_editor.ui.style.icons import JDXiIconRegistry
 from jdxi_editor.ui.widgets.button.waveform.analog import AnalogWaveformButton
 from jdxi_editor.ui.widgets.editor import IconType
+from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.pitch.envelope import PitchEnvelopeWidget
 from picomidi.sysex.parameter.address import AddressParameter
+
+
+def generate_analog_wave_button(
+    icon_name: str,
+    waveform: Literal[AnalogOscWave.PULSE, AnalogOscWave.TRIANGLE, AnalogOscWave.SAW],
+) -> AnalogWaveformButton:
+    btn = AnalogWaveformButton(waveform)
+    JDXi.ThemeManager.apply_button_rect_analog(btn)
+    icon_base64 = generate_waveform_icon(icon_name, JDXi.Style.WHITE, 0.7)
+    btn.setIcon(QIcon(base64_to_pixmap(icon_base64)))
+    btn.setFixedSize(
+        JDXi.Dimensions.WAVEFORM_ICON.WIDTH,
+        JDXi.Dimensions.WAVEFORM_ICON.HEIGHT,
+    )
+    return btn
+
+
+def generate_analog_waveform_icon_name(waveform: AnalogOscWave) -> str:
+    # --- Set icons
+    icon_name = (
+        "upsaw"
+        if waveform == AnalogOscWave.SAW
+        else "triangle" if waveform == AnalogOscWave.TRIANGLE else "pwsqu"
+    )
+    return icon_name
 
 
 class AnalogOscillatorSection(SectionBaseWidget):
@@ -73,13 +99,13 @@ class AnalogOscillatorSection(SectionBaseWidget):
 
         # --- Tab widget to add pitch and PW controls to ---
         self.oscillator_tab_widget = QTabWidget()
-        JDXiThemeManager.apply_tabs_style(self.oscillator_tab_widget, analog=True)
+        JDXi.ThemeManager.apply_tabs_style(self.oscillator_tab_widget, analog=True)
         layout.addWidget(self.oscillator_tab_widget)
 
         # --- Tuning and Pitch tab (standardized name matching Digital) ---
         tuning_pitch_widget = self._create_tuning_pitch_widget()
-        tuning_icon = JDXiIconRegistry.get_icon(
-            JDXiIconRegistry.MUSIC_NOTE, color=JDXiStyle.GREY
+        tuning_icon = JDXi.IconRegistry.get_icon(
+            JDXi.IconRegistry.MUSIC_NOTE, color=JDXi.Style.GREY
         )
         self.oscillator_tab_widget.addTab(
             tuning_pitch_widget, tuning_icon, "Tuning and Pitch"
@@ -103,7 +129,7 @@ class AnalogOscillatorSection(SectionBaseWidget):
         pitch_layout.addStretch()
         pitch_widget = QWidget()
         pitch_widget.setLayout(pitch_layout)
-        pitch_widget.setMinimumHeight(JDXiDimensions.EDITOR.MINIMUM_HEIGHT)
+        pitch_widget.setMinimumHeight(JDXi.Dimensions.EDITOR.MINIMUM_HEIGHT)
         return pitch_widget
 
     def create_waveform_buttons(self) -> QHBoxLayout:
@@ -112,44 +138,26 @@ class AnalogOscillatorSection(SectionBaseWidget):
 
         :return: QHBoxLayout
         """
-        wave_layout = QHBoxLayout()
-        wave_layout.addStretch()
-
+        wave_layout_widgets = []
         for waveform in [
             AnalogOscWave.SAW,
             AnalogOscWave.TRIANGLE,
             AnalogOscWave.PULSE,
         ]:
-            btn = AnalogWaveformButton(waveform)
-            JDXiThemeManager.apply_button_rect_analog(btn)
-
-            # Set icons
-            icon_name = (
-                "upsaw"
-                if waveform == AnalogOscWave.SAW
-                else "triangle" if waveform == AnalogOscWave.TRIANGLE else "pwsqu"
-            )
-            icon_base64 = generate_waveform_icon(icon_name, "#FFFFFF", 0.7)
-            btn.setIcon(QIcon(base64_to_pixmap(icon_base64)))
-            btn.setFixedSize(
-                JDXiDimensions.WAVEFORM_ICON.WIDTH, JDXiDimensions.WAVEFORM_ICON.HEIGHT
-            )
+            icon_name = generate_analog_waveform_icon_name(waveform)
+            btn = generate_analog_wave_button(icon_name, waveform)
             btn.waveform_selected.connect(self._on_waveform_selected)
             self.wave_buttons[waveform] = btn
             self.controls[AnalogParam.OSC_WAVEFORM] = btn
-            wave_layout.addWidget(btn)
+            wave_layout_widgets.append(btn)
 
         self.sub_oscillator_type_switch = self._create_parameter_switch(
             AnalogParam.SUB_OSCILLATOR_TYPE,
-            "Type",
-            [
-                AnalogSubOscType.OFF.display_name,
-                AnalogSubOscType.OCT_DOWN_1.display_name,
-                AnalogSubOscType.OCT_DOWN_2.display_name,
-            ],
+            AnalogDisplayName.SUB_OSCILLATOR_TYPE,
+            AnalogDisplayOptions.SUB_OSCILLATOR_TYPE,
         )
-        wave_layout.addWidget(self.sub_oscillator_type_switch)
-        wave_layout.addStretch()
+        wave_layout_widgets.append(self.sub_oscillator_type_switch)
+        wave_layout = create_layout_with_widgets(wave_layout_widgets)
         return wave_layout
 
     def _create_tuning_group(self) -> QGroupBox:
@@ -159,21 +167,21 @@ class AnalogOscillatorSection(SectionBaseWidget):
         :return: QGroupBox
         """
         tuning_group = QGroupBox("Tuning")
-        tuning_layout = QHBoxLayout()
+        tuning_layout = create_layout_with_widgets(
+            [
+                self._create_parameter_slider(
+                    AnalogParam.OSC_PITCH_COARSE,
+                    AnalogDisplayName.OSC_PITCH_COARSE,
+                    vertical=True,
+                ),
+                self._create_parameter_slider(
+                    AnalogParam.OSC_PITCH_FINE,
+                    AnalogDisplayName.OSC_PITCH_FINE,
+                    vertical=True,
+                ),
+            ]
+        )
         tuning_group.setLayout(tuning_layout)
-        tuning_layout.addStretch()
-        tuning_layout.addWidget(
-            self._create_parameter_slider(
-                AnalogParam.OSC_PITCH_COARSE, "Coarse (1/2 tones)", vertical=True
-            )
-        )
-        tuning_layout.addWidget(
-            self._create_parameter_slider(
-                AnalogParam.OSC_PITCH_FINE, "Fine (cents)", vertical=True
-            )
-        )
-        tuning_layout.addStretch()
-
         return tuning_group
 
     def _create_pw_group(self) -> QGroupBox:
@@ -197,8 +205,7 @@ class AnalogOscillatorSection(SectionBaseWidget):
             controls=self.controls,
             analog=self.analog,
         )
-        JDXiThemeManager.apply_adsr_style(self.pwm_widget, analog=True)
-        self.pwm_widget.setMaximumHeight(JDXiStyle.PWM_WIDGET_HEIGHT)
+        self.pwm_widget.setMaximumHeight(JDXi.Style.PWM_WIDGET_HEIGHT)
         pw_layout.addWidget(self.pwm_widget)
         pw_layout.addStretch()
 
@@ -224,7 +231,7 @@ class AnalogOscillatorSection(SectionBaseWidget):
             controls=self.controls,
             address=self.address,
         )
-        JDXiThemeManager.apply_adsr_style(self.pitch_env_widget, analog=True)
+        JDXi.ThemeManager.apply_adsr_style(self.pitch_env_widget, analog=True)
 
         env_group = QGroupBox("Envelope")
         env_group.setProperty("adsr", True)
@@ -234,7 +241,7 @@ class AnalogOscillatorSection(SectionBaseWidget):
         pitch_env_row_layout.addWidget(
             self._create_parameter_slider(
                 AnalogParam.OSC_PITCH_ENV_VELOCITY_SENSITIVITY,
-                "Velocity Sensitivity",
+                AnalogDisplayName.OSC_PITCH_ENV_VELOCITY_SENSITIVITY,
                 vertical=True,
             )
         )

@@ -4,13 +4,7 @@ import logging
 
 from PySide6.QtCore import QSettings
 
-from jdxi_editor.project import (
-    __organization_name__,
-    __package_name__,
-    __program__,
-    __project__,
-    __version__,
-)
+from jdxi_editor.project import __organization_name__, __package_name__, __program__
 
 settings = QSettings(__organization_name__, __program__)
 

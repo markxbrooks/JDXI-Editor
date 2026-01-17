@@ -7,7 +7,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QColor, QPainter, QPaintEvent, QPen
 from PySide6.QtWidgets import QWidget
 
-from jdxi_editor.ui.style import JDXiStyle
+from jdxi_editor.jdxi.jdxi import JDXi
 
 
 class TimeRulerWidget(QWidget):
@@ -20,7 +20,7 @@ class TimeRulerWidget(QWidget):
         self.midi_file_cached_total_length = None
         self.midi_file = midi_file
         self.setMinimumHeight(20)
-        self.setMaximumHeight(JDXiStyle.MAX_RULER_HEIGHT)
+        self.setMaximumHeight(JDXi.Style.MAX_RULER_HEIGHT)
         # List of (seconds: float, color: QColor | None, label: str | None)
         self._markers = []
 
@@ -60,7 +60,9 @@ class TimeRulerWidget(QWidget):
             if duration <= 0:
                 continue
             x = int((seconds / duration) * width)
-            pen = QPen(color if isinstance(color, QColor) else QColor(JDXiStyle.ACCENT))
+            pen = QPen(
+                color if isinstance(color, QColor) else QColor(JDXi.Style.ACCENT)
+            )
             pen.setWidth(2)
             painter.setPen(pen)
             # Marker line

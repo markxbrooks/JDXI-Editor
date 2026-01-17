@@ -15,13 +15,13 @@ from PySide6.QtWidgets import (
 )
 
 from decologr import Decologr as log
+from jdxi_editor.jdxi.jdxi import JDXi
 from jdxi_editor.midi.data.digital.lfo import DigitalLFOShape
+from jdxi_editor.midi.data.parameter.digital.name import DigitalDisplayName
+from jdxi_editor.midi.data.parameter.digital.option import DigitalDisplayOptions
 from jdxi_editor.midi.data.parameter.digital.partial import (
     DigitalPartialParam,
 )
-from jdxi_editor.ui.style import JDXiStyle
-from jdxi_editor.ui.style.dimensions import JDXiDimensions
-from jdxi_editor.ui.style.icons import JDXiIconRegistry
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 
@@ -91,14 +91,15 @@ class DigitalLFOSection(SectionBaseWidget):
         for lfo_shape in lfo_shapes:
             btn = QPushButton(lfo_shape.display_name)
             btn.setCheckable(True)
-            btn.setStyleSheet(JDXiStyle.BUTTON_RECT)
+            btn.setStyleSheet(JDXi.Style.BUTTON_RECT)
             # Add icon
             icon_name = shape_icon_map.get(lfo_shape, "mdi.waveform")
-            icon = qta.icon(icon_name, color=JDXiStyle.WHITE, icon_size=0.7)
+            icon = qta.icon(icon_name, color=JDXi.Style.WHITE, icon_size=0.7)
             btn.setIcon(icon)
             btn.setIconSize(QSize(20, 20))
             btn.setFixedSize(
-                JDXiDimensions.WAVEFORM_ICON.WIDTH, JDXiDimensions.WAVEFORM_ICON.HEIGHT
+                JDXi.Dimensions.WAVEFORM_ICON.WIDTH,
+                JDXi.Dimensions.WAVEFORM_ICON.HEIGHT,
             )
             btn.clicked.connect(
                 lambda checked, shape=lfo_shape: self._on_lfo_shape_selected(shape)
@@ -108,16 +109,16 @@ class DigitalLFOSection(SectionBaseWidget):
 
         self.lfo_tempo_sync_switch = self._create_parameter_switch(
             DigitalPartialParam.LFO_TEMPO_SYNC_SWITCH,
-            "Tempo Sync",
-            ["OFF", "ON"],
+            DigitalDisplayName.LFO_TEMPO_SYNC_SWITCH,
+            DigitalDisplayOptions.LFO_TEMPO_SYNC_SWITCH,
         )
         switch_row_layout = QHBoxLayout()
         switch_row_layout.addStretch()
         switch_row_layout.addWidget(self.lfo_tempo_sync_switch)
         self.lfo_sync_note = self._create_parameter_combo_box(
             DigitalPartialParam.LFO_TEMPO_SYNC_NOTE,
-            "Sync Note",
-            options=["1/1", "1/2", "1/4", "1/8", "1/16"],
+            DigitalDisplayName.LFO_TEMPO_SYNC_NOTE,
+            options=DigitalDisplayOptions.LFO_TEMPO_SYNC_NOTE,
         )
         switch_row_layout.addWidget(self.lfo_sync_note)
 
@@ -126,7 +127,9 @@ class DigitalLFOSection(SectionBaseWidget):
 
         # Key trigger switch
         self.lfo_trigger = self._create_parameter_switch(
-            DigitalPartialParam.LFO_KEY_TRIGGER, "Key Trigger", ["OFF", "ON"]
+            DigitalPartialParam.LFO_KEY_TRIGGER,
+            DigitalDisplayName.LFO_KEY_TRIGGER,
+            DigitalDisplayOptions.LFO_KEY_TRIGGER,
         )
         switch_row_layout.addWidget(self.lfo_trigger)
         switch_row_layout.addStretch()
@@ -142,23 +145,25 @@ class DigitalLFOSection(SectionBaseWidget):
         rate_fade_layout = QHBoxLayout()
         rate_fade_layout.addStretch()
         rate_fade_widget.setLayout(rate_fade_layout)
-        rate_fade_widget.setMinimumHeight(JDXiDimensions.EDITOR.MINIMUM_HEIGHT)
+        rate_fade_widget.setMinimumHeight(JDXi.Dimensions.EDITOR.MINIMUM_HEIGHT)
 
         # Rate and fade controls
         rate_fade_layout.addWidget(
             self._create_parameter_slider(
-                DigitalPartialParam.LFO_RATE, "Rate", vertical=True
+                DigitalPartialParam.LFO_RATE, DigitalDisplayName.LFO_RATE, vertical=True
             )
         )
         rate_fade_layout.addWidget(
             self._create_parameter_slider(
-                DigitalPartialParam.LFO_FADE_TIME, "Fade", vertical=True
+                DigitalPartialParam.LFO_FADE_TIME,
+                DigitalDisplayName.LFO_FADE_TIME,
+                vertical=True,
             )
         )
         rate_fade_layout.addStretch()
 
-        rate_fade_icon = JDXiIconRegistry.get_icon(
-            JDXiIconRegistry.CLOCK, color=JDXiStyle.GREY
+        rate_fade_icon = JDXi.IconRegistry.get_icon(
+            JDXi.IconRegistry.CLOCK, color=JDXi.Style.GREY
         )
         lfo_controls_tab_widget.addTab(
             rate_fade_widget, rate_fade_icon, "Rate and Fade"
@@ -169,32 +174,40 @@ class DigitalLFOSection(SectionBaseWidget):
         depths_layout = QHBoxLayout()
         depths_layout.addStretch()
         depths_widget.setLayout(depths_layout)
-        depths_widget.setMinimumHeight(JDXiDimensions.EDITOR.MINIMUM_HEIGHT)
+        depths_widget.setMinimumHeight(JDXi.Dimensions.EDITOR.MINIMUM_HEIGHT)
 
         depths_layout.addWidget(
             self._create_parameter_slider(
-                DigitalPartialParam.LFO_PITCH_DEPTH, "Pitch", vertical=True
+                DigitalPartialParam.LFO_PITCH_DEPTH,
+                DigitalDisplayName.LFO_PITCH_DEPTH,
+                vertical=True,
             )
         )
         depths_layout.addWidget(
             self._create_parameter_slider(
-                DigitalPartialParam.LFO_FILTER_DEPTH, "Filter", vertical=True
+                DigitalPartialParam.LFO_FILTER_DEPTH,
+                DigitalDisplayName.LFO_FILTER_DEPTH,
+                vertical=True,
             )
         )
         depths_layout.addWidget(
             self._create_parameter_slider(
-                DigitalPartialParam.LFO_AMP_DEPTH, "Amp", vertical=True
+                DigitalPartialParam.LFO_AMP_DEPTH,
+                DigitalDisplayName.LFO_AMP_DEPTH,
+                vertical=True,
             )
         )
         depths_layout.addWidget(
             self._create_parameter_slider(
-                DigitalPartialParam.LFO_PAN_DEPTH, "Pan", vertical=True
+                DigitalPartialParam.LFO_PAN_DEPTH,
+                DigitalDisplayName.LFO_PAN_DEPTH,
+                vertical=True,
             )
         )
         depths_layout.addStretch()
 
-        depths_icon = JDXiIconRegistry.get_icon(
-            JDXiIconRegistry.WAVEFORM, color=JDXiStyle.GREY
+        depths_icon = JDXi.IconRegistry.get_icon(
+            JDXi.IconRegistry.WAVEFORM, color=JDXi.Style.GREY
         )
         lfo_controls_tab_widget.addTab(depths_widget, depths_icon, "Depths")
 
@@ -209,13 +222,13 @@ class DigitalLFOSection(SectionBaseWidget):
         # Reset all buttons to default style
         for btn in self.lfo_shape_buttons.values():
             btn.setChecked(False)
-            btn.setStyleSheet(JDXiStyle.BUTTON_RECT)
+            btn.setStyleSheet(JDXi.Style.BUTTON_RECT)
 
         # Apply active style to the selected LFO shape button
         selected_btn = self.lfo_shape_buttons.get(lfo_shape)
         if selected_btn:
             selected_btn.setChecked(True)
-            selected_btn.setStyleSheet(JDXiStyle.BUTTON_RECT_ACTIVE)
+            selected_btn.setStyleSheet(JDXi.Style.BUTTON_RECT_ACTIVE)
 
         # Send MIDI message
         if self.send_midi_parameter:

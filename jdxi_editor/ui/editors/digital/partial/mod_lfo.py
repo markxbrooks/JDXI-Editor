@@ -15,13 +15,13 @@ from PySide6.QtWidgets import (
 )
 
 from decologr import Decologr as log
+from jdxi_editor.jdxi.jdxi import JDXi
 from jdxi_editor.midi.data.digital.lfo import DigitalLFOShape
+from jdxi_editor.midi.data.parameter.digital.name import DigitalDisplayName
+from jdxi_editor.midi.data.parameter.digital.option import DigitalDisplayOptions
 from jdxi_editor.midi.data.parameter.digital.partial import (
     DigitalPartialParam,
 )
-from jdxi_editor.ui.style import JDXiStyle
-from jdxi_editor.ui.style.dimensions import JDXiDimensions
-from jdxi_editor.ui.style.icons import JDXiIconRegistry
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 
@@ -90,14 +90,15 @@ class DigitalModLFOSection(SectionBaseWidget):
         for mod_lfo_shape in mod_lfo_shapes:
             btn = QPushButton(mod_lfo_shape.display_name)
             btn.setCheckable(True)
-            btn.setStyleSheet(JDXiStyle.BUTTON_RECT)
+            btn.setStyleSheet(JDXi.Style.BUTTON_RECT)
             # Add icon
             icon_name = shape_icon_map.get(mod_lfo_shape, "mdi.waveform")
-            icon = qta.icon(icon_name, color=JDXiStyle.WHITE, icon_size=0.7)
+            icon = qta.icon(icon_name, color=JDXi.Style.WHITE, icon_size=0.7)
             btn.setIcon(icon)
             btn.setIconSize(QSize(20, 20))
             btn.setFixedSize(
-                JDXiDimensions.WAVEFORM_ICON.WIDTH, JDXiDimensions.WAVEFORM_ICON.HEIGHT
+                JDXi.Dimensions.WAVEFORM_ICON.WIDTH,
+                JDXi.Dimensions.WAVEFORM_ICON.HEIGHT,
             )
             btn.clicked.connect(
                 lambda checked, shape=mod_lfo_shape: self._on_mod_lfo_shape_selected(
@@ -109,8 +110,8 @@ class DigitalModLFOSection(SectionBaseWidget):
 
         self.mod_lfo_sync = self._create_parameter_combo_box(
             DigitalPartialParam.MOD_LFO_TEMPO_SYNC_SWITCH,
-            "Sync",
-            ["OFF", "ON"],
+            DigitalDisplayName.MOD_LFO_TEMPO_SYNC_SWITCH,
+            options=DigitalDisplayOptions.MOD_LFO_TEMPO_SYNC_SWITCH,
         )
         switch_row_layout = QHBoxLayout()
         switch_row_layout.addStretch()
@@ -118,8 +119,8 @@ class DigitalModLFOSection(SectionBaseWidget):
 
         self.mod_lfo_note = self._create_parameter_combo_box(
             DigitalPartialParam.MOD_LFO_TEMPO_SYNC_NOTE,
-            "Note",
-            ["1/1", "1/2", "1/4", "1/8", "1/16"],
+            DigitalDisplayName.MOD_LFO_TEMPO_SYNC_NOTE,
+            options=DigitalDisplayOptions.MOD_LFO_TEMPO_SYNC_NOTE,
         )
         switch_row_layout.addWidget(self.mod_lfo_note)
         shape_row_layout.addStretch()
@@ -136,23 +137,27 @@ class DigitalModLFOSection(SectionBaseWidget):
         rate_layout = QHBoxLayout()
         rate_layout.addStretch()
         rate_widget.setLayout(rate_layout)
-        rate_widget.setMinimumHeight(JDXiDimensions.EDITOR.MINIMUM_HEIGHT)
+        rate_widget.setMinimumHeight(JDXi.Dimensions.EDITOR.MINIMUM_HEIGHT)
 
         # Rate and Rate Ctrl controls
         rate_layout.addWidget(
             self._create_parameter_slider(
-                DigitalPartialParam.MOD_LFO_RATE, "Rate", vertical=True
+                DigitalPartialParam.MOD_LFO_RATE,
+                DigitalDisplayName.MOD_LFO_RATE,
+                vertical=True,
             )
         )
         rate_layout.addWidget(
             self._create_parameter_slider(
-                DigitalPartialParam.MOD_LFO_RATE_CTRL, "Rate Ctrl", vertical=True
+                DigitalPartialParam.MOD_LFO_RATE_CTRL,
+                DigitalDisplayName.MOD_LFO_RATE_CTRL,
+                vertical=True,
             )
         )
         rate_layout.addStretch()
 
-        rate_icon = JDXiIconRegistry.get_icon(
-            JDXiIconRegistry.CLOCK, color=JDXiStyle.GREY
+        rate_icon = JDXi.IconRegistry.get_icon(
+            JDXi.IconRegistry.CLOCK, color=JDXi.Style.GREY
         )
         mod_lfo_controls_tab_widget.addTab(rate_widget, rate_icon, "Rate and Rate Ctrl")
 
@@ -161,32 +166,40 @@ class DigitalModLFOSection(SectionBaseWidget):
         depths_layout = QHBoxLayout()
         depths_layout.addStretch()
         depths_widget.setLayout(depths_layout)
-        depths_widget.setMinimumHeight(JDXiDimensions.EDITOR.MINIMUM_HEIGHT)
+        depths_widget.setMinimumHeight(JDXi.Dimensions.EDITOR.MINIMUM_HEIGHT)
 
         depths_layout.addWidget(
             self._create_parameter_slider(
-                DigitalPartialParam.MOD_LFO_PITCH_DEPTH, "Pitch", vertical=True
+                DigitalPartialParam.MOD_LFO_PITCH_DEPTH,
+                DigitalDisplayName.MOD_LFO_PITCH_DEPTH,
+                vertical=True,
             )
         )
         depths_layout.addWidget(
             self._create_parameter_slider(
-                DigitalPartialParam.MOD_LFO_FILTER_DEPTH, "Filter", vertical=True
+                DigitalPartialParam.MOD_LFO_FILTER_DEPTH,
+                DigitalDisplayName.MOD_LFO_FILTER_DEPTH,
+                vertical=True,
             )
         )
         depths_layout.addWidget(
             self._create_parameter_slider(
-                DigitalPartialParam.MOD_LFO_AMP_DEPTH, "Amp", vertical=True
+                DigitalPartialParam.MOD_LFO_AMP_DEPTH,
+                DigitalDisplayName.MOD_LFO_AMP_DEPTH,
+                vertical=True,
             )
         )
         depths_layout.addWidget(
             self._create_parameter_slider(
-                DigitalPartialParam.MOD_LFO_PAN, "Pan", vertical=True
+                DigitalPartialParam.MOD_LFO_PAN,
+                DigitalDisplayName.MOD_LFO_PAN,
+                vertical=True,
             )
         )
         depths_layout.addStretch()
 
-        depths_icon = JDXiIconRegistry.get_icon(
-            JDXiIconRegistry.WAVEFORM, color=JDXiStyle.GREY
+        depths_icon = JDXi.IconRegistry.get_icon(
+            JDXi.IconRegistry.WAVEFORM, color=JDXi.Style.GREY
         )
         mod_lfo_controls_tab_widget.addTab(depths_widget, depths_icon, "Depths")
 
@@ -201,13 +214,13 @@ class DigitalModLFOSection(SectionBaseWidget):
         # Reset all buttons to default style
         for btn in self.mod_lfo_shape_buttons.values():
             btn.setChecked(False)
-            btn.setStyleSheet(JDXiStyle.BUTTON_RECT)
+            btn.setStyleSheet(JDXi.Style.BUTTON_RECT)
 
         # Apply active style to the selected Mod LFO shape button
         selected_btn = self.mod_lfo_shape_buttons.get(mod_lfo_shape)
         if selected_btn:
             selected_btn.setChecked(True)
-            selected_btn.setStyleSheet(JDXiStyle.BUTTON_RECT_ACTIVE)
+            selected_btn.setStyleSheet(JDXi.Style.BUTTON_RECT_ACTIVE)
 
         # Send MIDI message
         if self.send_midi_parameter:

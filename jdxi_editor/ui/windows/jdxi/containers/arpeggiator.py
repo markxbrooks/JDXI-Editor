@@ -3,15 +3,14 @@ from typing import Callable
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QGridLayout, QLabel, QWidget
 
-from jdxi_editor.ui.style import JDXiStyle
-from jdxi_editor.ui.style.dimensions import JDXiDimensions
+from jdxi_editor.jdxi.jdxi import JDXi
 from jdxi_editor.ui.widgets.editor.helper import create_button_with_tooltip
 
 
 def _add_header(grid: QGridLayout, text: str, row: int, col: int, span: int):
     """add a header"""
     label = QLabel(text)
-    label.setStyleSheet(JDXiStyle.LABEL)
+    label.setStyleSheet(JDXi.Style.LABEL)
     label.setAlignment(Qt.AlignCenter)
     grid.addWidget(label, row, col, 1, span)
 
@@ -19,7 +18,7 @@ def _add_header(grid: QGridLayout, text: str, row: int, col: int, span: int):
 def _add_label(grid: QGridLayout, text: str, row: int, col: int):
     """add a label"""
     label = QLabel(text)
-    label.setStyleSheet(JDXiStyle.LABEL_SUB)
+    label.setStyleSheet(JDXi.Style.LABEL_SUB)
     label.setAlignment(Qt.AlignCenter)
     grid.addWidget(label, row, col)
 
@@ -29,10 +28,10 @@ def add_octave_and_arp_buttons(container: QWidget, send_octave: Callable):
 
     root = QWidget(container)
     root.setGeometry(
-        JDXiDimensions.OCTAVE.X,
-        JDXiDimensions.OCTAVE.Y,
-        JDXiDimensions.OCTAVE.WIDTH + JDXiDimensions.ARPEGGIATOR.WIDTH,
-        max(JDXiDimensions.OCTAVE.HEIGHT, JDXiDimensions.ARPEGGIATOR.HEIGHT),
+        JDXi.Dimensions.OCTAVE.X,
+        JDXi.Dimensions.OCTAVE.Y,
+        JDXi.Dimensions.OCTAVE.WIDTH + JDXi.Dimensions.ARPEGGIATOR.WIDTH,
+        max(JDXi.Dimensions.OCTAVE.HEIGHT, JDXi.Dimensions.ARPEGGIATOR.HEIGHT),
     )
     root.setStyleSheet("background: transparent;")
 

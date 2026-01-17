@@ -36,7 +36,7 @@ from PySide6.QtGui import (
     QPixmap,
 )
 
-from jdxi_editor.ui.style.dimensions import JDXiDimensions
+from jdxi_editor.jdxi.jdxi import JDXi
 
 
 def draw_instrument_pixmap() -> QPixmap:
@@ -47,8 +47,8 @@ def draw_instrument_pixmap() -> QPixmap:
     :rtype: QPixmap
     """
     # --- Create address black background image with correct aspect ratio
-    jdxi_width = JDXiDimensions.INSTRUMENT.WIDTH
-    jdxi_height = JDXiDimensions.INSTRUMENT.HEIGHT
+    jdxi_width = JDXi.Dimensions.INSTRUMENT.WIDTH
+    jdxi_height = JDXi.Dimensions.INSTRUMENT.HEIGHT
     jdxi_image = QImage(jdxi_width, jdxi_height, QImage.Format_RGB32)  # type: ignore[attr-defined]
     jdxi_image.fill(Qt.black)  # type: ignore[attr-defined]
 
@@ -85,17 +85,17 @@ def draw_sequencer(painter: QPainter) -> None:
     if platform.system() == "Windows":
         # windows has a menu across the top
         sequencer_y = (
-            JDXiDimensions.SEQUENCER.Y_WINDOWS
+            JDXi.Dimensions.SEQUENCER.Y_WINDOWS
         )  # Keep same distance above keyboard
     else:
         sequencer_y = (
-            JDXiDimensions.SEQUENCER.Y_NON_WINDOWS
+            JDXi.Dimensions.SEQUENCER.Y_NON_WINDOWS
         )  # Keep same distance above keyboard
-    sequencer_width = JDXiDimensions.SEQUENCER.WIDTH  # Use roughly half keyboard width
-    sequencer_x = JDXiDimensions.SEQUENCER.X  # Align with right edge of keyboard
+    sequencer_width = JDXi.Dimensions.SEQUENCER.WIDTH  # Use roughly half keyboard width
+    sequencer_x = JDXi.Dimensions.SEQUENCER.X  # Align with right edge of keyboard
     # Calculate step dimensions
-    step_count = JDXiDimensions.SEQUENCER.STEPS
-    step_size = JDXiDimensions.SEQUENCER.STEP_SIZE  # Smaller square size
+    step_count = JDXi.Dimensions.SEQUENCER.STEPS
+    step_size = JDXi.Dimensions.SEQUENCER.STEP_SIZE  # Smaller square size
     total_spacing = sequencer_width - (step_count * step_size)
     step_spacing = total_spacing / (step_count - 1)
     # Draw horizontal measure lines (white)

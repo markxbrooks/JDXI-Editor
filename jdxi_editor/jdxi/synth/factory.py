@@ -19,7 +19,7 @@ from jdxi_editor.midi.data.address.address import (
     AddressOffsetTemporaryToneUMB,
     AddressStartMSB,
 )
-from jdxi_editor.midi.data.parameter.analog import AnalogParam
+from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
 from jdxi_editor.midi.data.parameter.digital import (
     DigitalCommonParam,
     DigitalPartialParam,

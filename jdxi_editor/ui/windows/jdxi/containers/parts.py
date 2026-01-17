@@ -1,9 +1,8 @@
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QButtonGroup, QLabel, QVBoxLayout, QWidget
 
+from jdxi_editor.jdxi.jdxi import JDXi
 from jdxi_editor.jdxi.synth.type import JDXiSynth
-from jdxi_editor.ui.style import JDXiStyle
-from jdxi_editor.ui.style.dimensions import JDXiDimensions
 from jdxi_editor.ui.windows.jdxi.helpers.button_row import create_button_row
 
 
@@ -19,16 +18,16 @@ def create_parts_container(
     """Create the Parts Select container widget"""
     parts_container = QWidget(parent_widget)
     parts_container.setGeometry(
-        JDXiDimensions.PARTS.X,
-        JDXiDimensions.PARTS.Y,
-        JDXiDimensions.PARTS.WIDTH,
-        JDXiDimensions.PARTS.HEIGHT,
+        JDXi.Dimensions.PARTS.X,
+        JDXi.Dimensions.PARTS.Y,
+        JDXi.Dimensions.PARTS.WIDTH,
+        JDXi.Dimensions.PARTS.HEIGHT,
     )
     parts_layout = QVBoxLayout(parts_container)
     parts_layout.setSpacing(3)
 
     parts_label = QLabel("Parts Select")
-    parts_label.setStyleSheet(JDXiStyle.PARTS_SELECT)
+    parts_label.setStyleSheet(JDXi.Style.PARTS_SELECT)
     parts_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
     parts_layout.addWidget(parts_label)
 
@@ -53,7 +52,7 @@ def create_parts_container(
     for row in [digital1_row, digital2_row, drums_row, analog_row, arp_row]:
         parts_layout.addLayout(row)
 
-    parts_container.setStyleSheet(JDXiStyle.TRANSPARENT)
+    parts_container.setStyleSheet(JDXi.Style.TRANSPARENT)
 
     return parts_container, {
         "digital1": digital1_button,

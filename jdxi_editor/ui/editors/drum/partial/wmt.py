@@ -47,9 +47,9 @@ from PySide6.QtWidgets import (
 from decologr import Decologr as log
 from jdxi_editor.jdxi.jdxi import JDXi
 from jdxi_editor.midi.data.drum.data import rm_waves
+from jdxi_editor.midi.data.parameter.drum.name import DrumDisplayName
+from jdxi_editor.midi.data.parameter.drum.option import DrumDisplayOptions
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
-from jdxi_editor.ui.style import JDXiStyle
-from jdxi_editor.ui.style.dimensions import JDXiDimensions
 from jdxi_editor.ui.widgets.combo_box.searchable_filterable import (
     SearchableFilterableComboBox,
 )
@@ -100,7 +100,7 @@ class DrumWMTSection(QWidget):
 
     def setup_ui(self):
         """setup UI"""
-        self.setMinimumWidth(JDXiDimensions.EDITOR_DRUM.PARTIAL_TAB_MIN_WIDTH)
+        self.setMinimumWidth(JDXi.Dimensions.EDITOR_DRUM.PARTIAL_TAB_MIN_WIDTH)
         # Set size policy to allow vertical expansion
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         layout = QVBoxLayout(self)
@@ -130,8 +130,8 @@ class DrumWMTSection(QWidget):
         wmt_velocity_control_combo_row_layout.addStretch()
         wmt_velocity_control_combo = self._create_parameter_switch(
             DrumPartialParam.WMT_VELOCITY_CONTROL,
-            "Velocity control",
-            ["OFF", "ON", "RANDOM"],
+            DrumDisplayName.WMT_VELOCITY_CONTROL,
+            values=DrumDisplayOptions.WMT_VELOCITY_CONTROL,
         )
         wmt_velocity_control_combo_row_layout.addWidget(wmt_velocity_control_combo)
         wmt_velocity_control_combo_row_layout.addStretch()
@@ -179,29 +179,29 @@ class DrumWMTSection(QWidget):
         main_row_hlayout.addWidget(self.wmt_controls_tab_widget)
 
         controls_icon = JDXi.IconRegistry.get_icon(
-            JDXi.IconRegistry.TUNE, color=JDXiStyle.GREY
+            JDXi.IconRegistry.TUNE, color=JDXi.Style.GREY
         )
         self.wmt_controls_tab_widget.addTab(
             self._create_wmt_controls_group(p), controls_icon, "Controls"
         )
         waves_icon = JDXi.IconRegistry.get_icon(
-            JDXi.IconRegistry.WAVEFORM, color=JDXiStyle.GREY
+            JDXi.IconRegistry.WAVEFORM, color=JDXi.Style.GREY
         )
         self.wmt_controls_tab_widget.addTab(
             self._create_wave_combo_group(p, wmt_index), waves_icon, "Waves"
         )
         fxm_icon = JDXi.IconRegistry.get_icon(
-            JDXi.IconRegistry.EQUALIZER, color=JDXiStyle.GREY
+            JDXi.IconRegistry.EQUALIZER, color=JDXi.Style.GREY
         )
         self.wmt_controls_tab_widget.addTab(self._create_fxm_group(p), fxm_icon, "FXM")
         tuning_icon = JDXi.IconRegistry.get_icon(
-            JDXi.IconRegistry.MUSIC_NOTE, color=JDXiStyle.GREY
+            JDXi.IconRegistry.MUSIC_NOTE, color=JDXi.Style.GREY
         )
         self.wmt_controls_tab_widget.addTab(
             self._create_tuning_group(p), tuning_icon, "Tuning"
         )
         pan_icon = JDXi.IconRegistry.get_icon(
-            JDXi.IconRegistry.PAN_HORIZONTAL, color=JDXiStyle.GREY
+            JDXi.IconRegistry.PAN_HORIZONTAL, color=JDXi.Style.GREY
         )
         self.wmt_controls_tab_widget.addTab(
             self._create_wmt_pan_group(p), pan_icon, "Pan"
@@ -214,14 +214,21 @@ class DrumWMTSection(QWidget):
 
     def _create_wmt_controls_group(self, p: Callable[[Any], Any]):
         self.wave_switch = self._create_parameter_switch(
-            p("WAVE_SWITCH"), "Wave Switch", ["OFF", "ON"]
+            p("WAVE_SWITCH"),
+            DrumDisplayName.WMT_WAVE_SWITCH,
+            values=DrumDisplayOptions.WMT_WAVE_SWITCH,
         )
         widgets = [
             self.wave_switch,
             self._create_parameter_combo_box(
-                p("WAVE_GAIN"), "Wave Gain", ["-6", "0", "6", "12"], [0, 1, 2, 3]
+                p("WAVE_GAIN"),
+                DrumDisplayName.WMT_WAVE_GAIN,
+                options=DrumDisplayOptions.WMT_WAVE_GAIN,
+                values=[0, 1, 2, 3],
             ),
-            self._create_parameter_slider(p("WAVE_TEMPO_SYNC"), "Wave Tempo Sync"),
+            self._create_parameter_slider(
+                p("WAVE_TEMPO_SYNC"), DrumDisplayName.WMT_WAVE_TEMPO_SYNC
+            ),
         ]
         group, _ = create_group_with_form_layout(widgets)
         return group
@@ -417,7 +424,7 @@ class DrumWMTSection(QWidget):
             midi_helper=self.midi_helper,
             address=self.address,
         )
-        adsr_widget.setStyleSheet(JDXiStyle.ADSR)
+        adsr_widget.setStyleSheet(JDXi.Style.ADSR)
         return adsr_widget
 
     def _create_tuning_group(self, p: Callable[[Any], Any]):

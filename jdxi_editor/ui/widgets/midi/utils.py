@@ -2,8 +2,6 @@
 Midi Widget Utils
 """
 
-from typing import Any
-
 import mido
 from mido import MidiFile
 from PySide6.QtGui import QColor

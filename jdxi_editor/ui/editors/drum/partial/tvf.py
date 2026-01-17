@@ -58,14 +58,14 @@ from PySide6.QtWidgets import (
 )
 
 from decologr import Decologr as log
+from jdxi_editor.jdxi.jdxi import JDXi
+from jdxi_editor.midi.data.parameter.drum.name import DrumDisplayName
+from jdxi_editor.midi.data.parameter.drum.option import DrumDisplayOptions
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.drum.partial.base import DrumBaseSection
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
-from jdxi_editor.ui.style import JDXiStyle
-from jdxi_editor.ui.style.dimensions import JDXiDimensions
-from jdxi_editor.ui.style.icons import JDXiIconRegistry
 from picomidi.constant import Midi
 
 
@@ -84,8 +84,8 @@ class DrumTVFEnvPlot(QWidget):
 
     def __init__(
         self,
-        width: int = JDXiStyle.ADSR_PLOT_WIDTH,
-        height: int = JDXiStyle.ADSR_PLOT_HEIGHT,
+        width: int = JDXi.Style.ADSR_PLOT_WIDTH,
+        height: int = JDXi.Style.ADSR_PLOT_HEIGHT,
         envelope: dict = None,
         parent: QWidget = None,
     ):
@@ -95,9 +95,8 @@ class DrumTVFEnvPlot(QWidget):
         self.setMinimumSize(width, height)
         self.setMaximumHeight(height)
         self.setMaximumWidth(width)
-        from jdxi_editor.ui.style.theme_manager import JDXiThemeManager
 
-        JDXiThemeManager.apply_adsr_plot(self)
+        JDXi.ThemeManager.apply_adsr_plot(self)
         self.sample_rate = 256
         self.setMinimumHeight(150)
 
@@ -129,7 +128,7 @@ class DrumTVFEnvPlot(QWidget):
             axis_pen = QPen(QColor("white"), 1)
             grid_pen = QPen(Qt.GlobalColor.darkGray, 1)
             grid_pen.setStyle(Qt.PenStyle.DashLine)
-            point_pen = QPen(QColor("orange"), JDXiDimensions.CHART.POINT_SIZE)
+            point_pen = QPen(QColor("orange"), JDXi.Dimensions.CHART.POINT_SIZE)
             painter.setFont(QFont("JD LCD Rounded", 10))
 
             depth = self.envelope.get("depth", 64) - 64  # -63 to +63
@@ -337,7 +336,7 @@ class DrumTVFSection(DrumBaseSection):
         self.tvf_tab_widget = QTabWidget()
 
         # --- Basic TVF controls and envelope controls ---
-        controls_icon = JDXiIconRegistry.get_icon("mdi.tune", color=JDXiStyle.GREY)
+        controls_icon = JDXi.IconRegistry.get_icon("mdi.tune", color=JDXi.Style.GREY)
         self.tvf_tab_widget.addTab(
             self._create_tvf_basic_group(), controls_icon, "Controls"
         )
@@ -360,13 +359,13 @@ class DrumTVFSection(DrumBaseSection):
         envelope_slider_layout = QGridLayout()
         envelope_group.setLayout(envelope_group_layout)
 
-        envelope_group.setStyleSheet(JDXiStyle.ADSR)
+        envelope_group.setStyleSheet(JDXi.Style.ADSR)
 
         #  --- Create sliders and connect them ---
         row = 0
         depth_param = DrumPartialParam.TVF_ENV_DEPTH
         self.depth_slider = self._create_parameter_slider(
-            depth_param, "Depth", vertical=True
+            depth_param, DrumDisplayName.TVF_DEPTH, vertical=True
         )
         self.controls[depth_param] = self.depth_slider
         envelope_slider_layout.addWidget(self.depth_slider, row, 0)
@@ -376,7 +375,7 @@ class DrumTVFSection(DrumBaseSection):
 
         v_sens_param = DrumPartialParam.TVF_ENV_VELOCITY_SENS
         self.v_sens_slider = self._create_parameter_slider(
-            v_sens_param, "V-Sens", vertical=True
+            v_sens_param, DrumDisplayName.TVF_V_SENS, vertical=True
         )
         self.controls[v_sens_param] = self.v_sens_slider
         envelope_slider_layout.addWidget(self.v_sens_slider, row, 1)
@@ -386,7 +385,7 @@ class DrumTVFSection(DrumBaseSection):
 
         t1_v_sens_param = DrumPartialParam.TVF_ENV_TIME_1_VELOCITY_SENS
         self.t1_v_sens_slider = self._create_parameter_slider(
-            t1_v_sens_param, "T1 V-Sens", vertical=True
+            t1_v_sens_param, DrumDisplayName.TVF_T1_V_SENS, vertical=True
         )
         self.controls[t1_v_sens_param] = self.t1_v_sens_slider
         envelope_slider_layout.addWidget(self.t1_v_sens_slider, row, 2)
@@ -396,7 +395,7 @@ class DrumTVFSection(DrumBaseSection):
 
         t4_v_sens_param = DrumPartialParam.TVF_ENV_TIME_4_VELOCITY_SENS
         self.t4_v_sens_slider = self._create_parameter_slider(
-            t4_v_sens_param, "T4 V-Sens", vertical=True
+            t4_v_sens_param, DrumDisplayName.TVF_T4_V_SENS, vertical=True
         )
         self.controls[t4_v_sens_param] = self.t4_v_sens_slider
         envelope_slider_layout.addWidget(self.t4_v_sens_slider, row, 3)
@@ -408,7 +407,7 @@ class DrumTVFSection(DrumBaseSection):
         #  --- Time controls  ---
         time_1_param = DrumPartialParam.TVF_ENV_TIME_1
         self.time_1_slider = self._create_parameter_slider(
-            time_1_param, "Time 1", vertical=True
+            time_1_param, DrumDisplayName.TVF_TIME_1, vertical=True
         )
         self.controls[time_1_param] = self.time_1_slider
         envelope_slider_layout.addWidget(self.time_1_slider, row, 0)
@@ -418,7 +417,7 @@ class DrumTVFSection(DrumBaseSection):
 
         time_2_param = DrumPartialParam.TVF_ENV_TIME_2
         self.time_2_slider = self._create_parameter_slider(
-            time_2_param, "Time 2", vertical=True
+            time_2_param, DrumDisplayName.TVF_TIME_2, vertical=True
         )
         self.controls[time_2_param] = self.time_2_slider
         envelope_slider_layout.addWidget(self.time_2_slider, row, 1)
@@ -428,7 +427,7 @@ class DrumTVFSection(DrumBaseSection):
 
         time_3_param = DrumPartialParam.TVF_ENV_TIME_3
         self.time_3_slider = self._create_parameter_slider(
-            time_3_param, "Time 3", vertical=True
+            time_3_param, DrumDisplayName.TVF_TIME_3, vertical=True
         )
         self.controls[time_3_param] = self.time_3_slider
         envelope_slider_layout.addWidget(self.time_3_slider, row, 2)
@@ -438,7 +437,7 @@ class DrumTVFSection(DrumBaseSection):
 
         time_4_param = DrumPartialParam.TVF_ENV_TIME_4
         self.time_4_slider = self._create_parameter_slider(
-            time_4_param, "Time 4", vertical=True
+            time_4_param, DrumDisplayName.TVF_TIME_4, vertical=True
         )
         self.controls[time_4_param] = self.time_4_slider
         envelope_slider_layout.addWidget(self.time_4_slider, row, 3)
@@ -450,7 +449,7 @@ class DrumTVFSection(DrumBaseSection):
         #  --- Level controls ---
         level_0_param = DrumPartialParam.TVF_ENV_LEVEL_0
         self.level_0_slider = self._create_parameter_slider(
-            level_0_param, "Level 0", vertical=True
+            level_0_param, DrumDisplayName.TVF_LEVEL_0, vertical=True
         )
         self.controls[level_0_param] = self.level_0_slider
         envelope_slider_layout.addWidget(self.level_0_slider, row, 0)
@@ -460,7 +459,7 @@ class DrumTVFSection(DrumBaseSection):
 
         level_1_param = DrumPartialParam.TVF_ENV_LEVEL_1
         self.level_1_slider = self._create_parameter_slider(
-            level_1_param, "Level 1", vertical=True
+            level_1_param, DrumDisplayName.TVF_LEVEL_1, vertical=True
         )
         self.controls[level_1_param] = self.level_1_slider
         envelope_slider_layout.addWidget(self.level_1_slider, row, 1)
@@ -470,7 +469,7 @@ class DrumTVFSection(DrumBaseSection):
 
         level_2_param = DrumPartialParam.TVF_ENV_LEVEL_2
         self.level_2_slider = self._create_parameter_slider(
-            level_2_param, "Level 2", vertical=True
+            level_2_param, DrumDisplayName.TVF_LEVEL_2, vertical=True
         )
         self.controls[level_2_param] = self.level_2_slider
         envelope_slider_layout.addWidget(self.level_2_slider, row, 2)
@@ -480,7 +479,7 @@ class DrumTVFSection(DrumBaseSection):
 
         level_3_param = DrumPartialParam.TVF_ENV_LEVEL_3
         self.level_3_slider = self._create_parameter_slider(
-            level_3_param, "Level 3", vertical=True
+            level_3_param, DrumDisplayName.TVF_LEVEL_3, vertical=True
         )
         self.controls[level_3_param] = self.level_3_slider
         envelope_slider_layout.addWidget(self.level_3_slider, row, 3)
@@ -490,7 +489,7 @@ class DrumTVFSection(DrumBaseSection):
 
         level_4_param = DrumPartialParam.TVF_ENV_LEVEL_4
         self.level_4_slider = self._create_parameter_slider(
-            level_4_param, "Level 4", vertical=True
+            level_4_param, DrumDisplayName.TVF_LEVEL_4, vertical=True
         )
         self.controls[level_4_param] = self.level_4_slider
         envelope_slider_layout.addWidget(self.level_4_slider, row, 4)
@@ -516,38 +515,38 @@ class DrumTVFSection(DrumBaseSection):
 
         tvf_filter_type_combo = self._create_parameter_combo_box(
             DrumPartialParam.TVF_FILTER_TYPE,
-            "Filter Type",
-            ["OFF", "LPF", "BPF", "HPF", "PKG", "LPF2", "LPF3"],
-            [0, 1, 2, 3, 4, 5, 6],
+            DrumDisplayName.TVF_FILTER_TYPE,
+            options=DrumDisplayOptions.TVF_FILTER_TYPE,
+            values=[0, 1, 2, 3, 4, 5, 6],
         )
         basic_tvf_layout.addRow(tvf_filter_type_combo)
 
         tvf_cutoff_frequency_slider = self._create_parameter_slider(
-            DrumPartialParam.TVF_CUTOFF_FREQUENCY, "Cutoff"
+            DrumPartialParam.TVF_CUTOFF_FREQUENCY, DrumDisplayName.TVF_CUTOFF_FREQUENCY
         )
         basic_tvf_layout.addRow(tvf_cutoff_frequency_slider)
 
         tvf_cutoff_velocity_curve_spin = self._create_parameter_combo_box(
             DrumPartialParam.TVF_CUTOFF_VELOCITY_CURVE,
-            "Cutoff Velocity Curve",
-            ["FIXED", "1", "2", "3", "4", "5", "6", "7"],
-            [0, 1, 2, 3, 4, 5, 6, 7],
+            DrumDisplayName.TVF_CUTOFF_VELOCITY_CURVE,
+            options=DrumDisplayOptions.TVF_CUTOFF_VELOCITY_CURVE,
+            values=[0, 1, 2, 3, 4, 5, 6, 7],
         )
         basic_tvf_layout.addRow(tvf_cutoff_velocity_curve_spin)
 
         tvf_env_velocity_curve_type_spin = self._create_parameter_combo_box(
             DrumPartialParam.TVF_ENV_VELOCITY_CURVE_TYPE,
-            "Env Velocity Curve Type",
-            ["FIXED", "1", "2", "3", "4", "5", "6", "7"],
-            [0, 1, 2, 3, 4, 5, 6, 7],
+            DrumDisplayName.TVF_ENV_VELOCITY_CURVE_TYPE,
+            options=DrumDisplayOptions.TVF_ENV_VELOCITY_CURVE_TYPE,
+            values=[0, 1, 2, 3, 4, 5, 6, 7],
         )
         basic_tvf_layout.addRow(tvf_env_velocity_curve_type_spin)
         return basic_tvf_group
 
     def _create_tvf_plot(self):
         self.plot = DrumTVFEnvPlot(
-            width=JDXiStyle.ADSR_PLOT_WIDTH,
-            height=JDXiStyle.ADSR_PLOT_HEIGHT,
+            width=JDXi.Style.ADSR_PLOT_WIDTH,
+            height=JDXi.Style.ADSR_PLOT_HEIGHT,
             envelope=self.envelope,
             parent=self,
         )

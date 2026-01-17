@@ -15,9 +15,9 @@ def send_nrpn(self, channel, msb, lsb, value):
 import threading
 
 from decologr import Decologr as log
+from jdxi_editor.jdxi.jdxi import JDXi
 from jdxi_editor.midi.io.delay import send_with_delay
 from jdxi_editor.midi.sysex.request.midi_requests import MidiRequests
-from jdxi_editor.ui.style import JDXiStyle, JDXiThemeManager
 from jdxi_editor.ui.widgets.slider import Slider
 
 
@@ -78,9 +78,9 @@ class NRPNSlider(Slider):
         :param value: int
         """
         if value == 0:
-            self.setStyleSheet(JDXiStyle.ADSR_DISABLED)
+            self.setStyleSheet(JDXi.Style.ADSR_DISABLED)
         else:
-            JDXiThemeManager.apply_adsr_style(self, analog=False)
+            JDXi.ThemeManager.apply_adsr_style(self, analog=False)
 
     def data_request(self) -> None:
         """

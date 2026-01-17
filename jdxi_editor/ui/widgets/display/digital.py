@@ -37,11 +37,11 @@ from PySide6.QtGui import QColor, QFont, QLinearGradient, QPainter, QPaintEvent,
 from PySide6.QtWidgets import QSizePolicy, QWidget
 
 from decologr import Decologr as log
+from jdxi_editor.jdxi.jdxi import JDXi
 from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
 from jdxi_editor.midi.data.programs.digital import DIGITAL_PRESET_LIST
 from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
-from jdxi_editor.ui.style.dimensions import JDXiDimensions
 
 
 class DigitalDisplayBase(QWidget):
@@ -133,7 +133,7 @@ class DigitalTitle(DigitalDisplayBase):
     ):
         super().__init__(digital_font_family, parent)
         self.setMinimumSize(
-            JDXiDimensions.DIGITAL_TITLE.WIDTH, JDXiDimensions.DIGITAL_TITLE.HEIGHT
+            JDXi.Dimensions.DIGITAL_TITLE.WIDTH, JDXi.Dimensions.DIGITAL_TITLE.HEIGHT
         )
         self.show_upper_text = show_upper_text
         self.set_tone_name(tone_name)
@@ -192,7 +192,7 @@ class DigitalDisplay(DigitalDisplayBase):
         self.margin = 10  # Default margin for display elements
 
         self.setMinimumSize(
-            JDXiDimensions.LED.WIDTH, JDXiDimensions.LED.HEIGHT
+            JDXi.Dimensions.LED.WIDTH, JDXi.Dimensions.LED.HEIGHT
         )  # Set size matching display
         self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
 

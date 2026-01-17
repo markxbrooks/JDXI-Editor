@@ -10,7 +10,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from jdxi_editor.ui.style import JDXiStyle
+from jdxi_editor.jdxi.jdxi import JDXi
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 
 
@@ -35,7 +35,7 @@ class ProgressDialog(QDialog):
         layout = QVBoxLayout()
         self.label = DigitalTitle(message)
         self.progress_bar = QProgressBar()
-        self.progress_bar.setStyleSheet(JDXiStyle.PROGRESS_BAR)
+        self.progress_bar.setStyleSheet(JDXi.Style.PROGRESS_BAR)
         self.progress_bar.setMaximum(maximum)
         layout.addWidget(self.label)
         layout.addWidget(self.progress_bar)

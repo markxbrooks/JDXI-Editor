@@ -40,11 +40,12 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from jdxi_editor.jdxi.jdxi import JDXi
+from jdxi_editor.midi.data.parameter.drum.name import DrumDisplayName
+from jdxi_editor.midi.data.parameter.drum.option import DrumDisplayOptions
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.drum.partial.base import DrumBaseSection
-from jdxi_editor.ui.style import JDXiStyle
-from jdxi_editor.ui.style.icons import JDXiIconRegistry
 from jdxi_editor.ui.widgets.editor.helper import (
     create_group_with_form_layout,
     create_group_with_layout,
@@ -83,25 +84,27 @@ class DrumPartialSection(DrumBaseSection):
         self.partial_controls_tab_widget = QTabWidget()
         self.scrolled_layout.addWidget(self.partial_controls_tab_widget)
 
-        controls_icon = JDXiIconRegistry.get_icon("mdi.tune", color=JDXiStyle.GREY)
+        controls_icon = JDXi.IconRegistry.get_icon("mdi.tune", color=JDXi.Style.GREY)
         self.partial_controls_tab_widget.addTab(
             self._create_pitch_controls_group(), controls_icon, "Controls"
         )
 
-        pan_icon = JDXiIconRegistry.get_icon("mdi.pan-horizontal", color=JDXiStyle.GREY)
+        pan_icon = JDXi.IconRegistry.get_icon(
+            "mdi.pan-horizontal", color=JDXi.Style.GREY
+        )
         self.partial_controls_tab_widget.addTab(
             self._create_partial_pan_group(), pan_icon, "Pan"
         )
 
-        misc_icon = JDXiIconRegistry.get_icon(
-            "mdi.dots-horizontal", color=JDXiStyle.GREY
+        misc_icon = JDXi.IconRegistry.get_icon(
+            "mdi.dots-horizontal", color=JDXi.Style.GREY
         )
         self.partial_controls_tab_widget.addTab(
             self._create_partial_misc_group(), misc_icon, "Misc"
         )
 
-        modes_icon = JDXiIconRegistry.get_icon(
-            "mdi.toggle-switch", color=JDXiStyle.GREY
+        modes_icon = JDXi.IconRegistry.get_icon(
+            "mdi.toggle-switch", color=JDXi.Style.GREY
         )
         self.partial_controls_tab_widget.addTab(
             self._create_partial_modes_group(), modes_icon, "Modes"
@@ -115,27 +118,28 @@ class DrumPartialSection(DrumBaseSection):
         widgets = [
             self._create_parameter_combo_box(
                 DrumPartialParam.PARTIAL_ENV_MODE,
-                "Partial Env Mode",
-                ["NO-SUS", "SUSTAIN"],
-                [0, 1],
+                DrumDisplayName.PARTIAL_ENV_MODE,
+                options=DrumDisplayOptions.PARTIAL_ENV_MODE,
+                values=[0, 1],
             ),
             self._create_parameter_slider(
-                DrumPartialParam.PARTIAL_PITCH_BEND_RANGE, "Pitch Bend Range"
+                DrumPartialParam.PARTIAL_PITCH_BEND_RANGE,
+                DrumDisplayName.PARTIAL_PITCH_BEND_RANGE,
             ),
             self._create_parameter_combo_box(
                 DrumPartialParam.ASSIGN_TYPE,
-                "Assign Type",
-                ["MULTI", "SINGLE"],
-                [0, 1],
+                DrumDisplayName.ASSIGN_TYPE,
+                options=DrumDisplayOptions.ASSIGN_TYPE,
+                values=[0, 1],
             ),
             self._create_parameter_combo_box(
                 DrumPartialParam.MUTE_GROUP,
-                "Mute Group",
-                ["OFF"] + [str(i) for i in range(1, 31)],
-                list(range(0, 31)),
+                DrumDisplayName.MUTE_GROUP,
+                options=DrumDisplayOptions.MUTE_GROUP,
+                values=list(range(0, 31)),
             ),
             self._create_parameter_slider(
-                DrumPartialParam.PARTIAL_LEVEL, "Partial Level"
+                DrumPartialParam.PARTIAL_LEVEL, DrumDisplayName.PARTIAL_LEVEL
             ),
         ]
         group, _ = create_group_with_form_layout(widgets, group_name="Misc")
@@ -146,21 +150,21 @@ class DrumPartialSection(DrumBaseSection):
         widgets = [
             self._create_parameter_combo_box(
                 DrumPartialParam.PARTIAL_RECEIVE_EXPRESSION,
-                "Receive Expression",
-                ["OFF", "ON"],
-                [0, 1],
+                DrumDisplayName.PARTIAL_RECEIVE_EXPRESSION,
+                options=DrumDisplayOptions.PARTIAL_RECEIVE_EXPRESSION,
+                values=[0, 1],
             ),
             self._create_parameter_combo_box(
                 DrumPartialParam.PARTIAL_RECEIVE_HOLD_1,
-                "Receive Hold-1",
-                ["OFF", "ON"],
-                [0, 1],
+                DrumDisplayName.PARTIAL_RECEIVE_HOLD_1,
+                options=DrumDisplayOptions.PARTIAL_RECEIVE_HOLD_1,
+                values=[0, 1],
             ),
             self._create_parameter_combo_box(
                 DrumPartialParam.ONE_SHOT_MODE,
-                "One Shot Mode",
-                ["OFF", "ON"],
-                [0, 1],
+                DrumDisplayName.ONE_SHOT_MODE,
+                options=DrumDisplayOptions.ONE_SHOT_MODE,
+                values=[0, 1],
             ),
         ]
         group, _ = create_group_with_form_layout(widgets, group_name="Modes")
@@ -169,14 +173,16 @@ class DrumPartialSection(DrumBaseSection):
     def _create_partial_pan_group(self) -> QGroupBox:
         """create partial pan group"""
         widgets = [
-            self._create_parameter_slider(DrumPartialParam.PARTIAL_PAN, "Partial Pan"),
+            self._create_parameter_slider(
+                DrumPartialParam.PARTIAL_PAN, DrumDisplayName.PARTIAL_PAN
+            ),
             self._create_parameter_slider(
                 DrumPartialParam.PARTIAL_RANDOM_PAN_DEPTH,
-                "Partial Random Pan Depth",
+                DrumDisplayName.PARTIAL_RANDOM_PAN_DEPTH,
             ),
             self._create_parameter_slider(
                 DrumPartialParam.PARTIAL_ALTERNATE_PAN_DEPTH,
-                "Partial Alternate Pan Depth",
+                DrumDisplayName.PARTIAL_ALTERNATE_PAN_DEPTH,
             ),
         ]
         group, _ = create_group_with_form_layout(widgets, group_name="Pan")
@@ -188,15 +194,17 @@ class DrumPartialSection(DrumBaseSection):
         widgets = [
             self._create_parameter_slider(
                 DrumPartialParam.PARTIAL_COARSE_TUNE,
-                "Partial Coarse Tune",
+                DrumDisplayName.PARTIAL_COARSE_TUNE,
                 vertical=True,
             ),
             self._create_parameter_slider(
-                DrumPartialParam.PARTIAL_FINE_TUNE, "Partial Fine Tune", vertical=True
+                DrumPartialParam.PARTIAL_FINE_TUNE,
+                DrumDisplayName.PARTIAL_FINE_TUNE,
+                vertical=True,
             ),
             self._create_parameter_slider(
                 DrumPartialParam.PARTIAL_RANDOM_PITCH_DEPTH,
-                "Partial Random Pitch Depth",
+                DrumDisplayName.PARTIAL_RANDOM_PITCH_DEPTH,
                 vertical=True,
             ),
         ]
@@ -207,5 +215,5 @@ class DrumPartialSection(DrumBaseSection):
         for widget in widgets:
             inner_layout.addWidget(widget)
         inner_layout.addStretch()
-        group.setStyleSheet(JDXiStyle.ADSR)
+        group.setStyleSheet(JDXi.Style.ADSR)
         return group

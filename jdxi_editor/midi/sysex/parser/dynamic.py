@@ -11,7 +11,10 @@ from jdxi_editor.midi.data.address.address import (
     AddressOffsetTemporaryToneUMB as TemporaryToneUMB,
 )
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
-from jdxi_editor.midi.map.parameter_address import PARAMETER_ADDRESS_NAME_MAP
+from jdxi_editor.midi.map.parameter_address import (
+    PARAMETER_ADDRESS_NAME_MAP,
+    JDXiMapParameterAddress,
+)
 from jdxi_editor.midi.sysex.parser.tone_mapper import (
     get_drum_tone,
     get_synth_tone,
@@ -46,7 +49,7 @@ def dynamic_map_resolver(data: bytes) -> Dict[str, str]:
             )
 
         # Resolve parameter class dynamically
-        parameter_cls = PARAMETER_ADDRESS_NAME_MAP.get(
+        parameter_cls = JDXiMapParameterAddress.MAP.get(
             (temporary_area, synth_tone), DrumPartialParam  # Default fallback
         )
 

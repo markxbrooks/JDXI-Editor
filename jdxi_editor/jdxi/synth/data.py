@@ -15,7 +15,7 @@ from jdxi_editor.midi.data.address.address import (
     AddressOffsetProgramLMB,
     RolandSysExAddress,
 )
-from jdxi_editor.midi.data.parameter.analog import AnalogParam
+from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
 from jdxi_editor.midi.data.parameter.digital import DigitalCommonParam
 from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParam
 from picomidi.constant import Midi

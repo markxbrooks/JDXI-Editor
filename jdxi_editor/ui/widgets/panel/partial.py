@@ -6,8 +6,8 @@ import qtawesome as qta
 from PySide6.QtGui import Qt
 from PySide6.QtWidgets import QGroupBox, QHBoxLayout, QLabel, QVBoxLayout, QWidget
 
+from jdxi_editor.jdxi.jdxi import JDXi
 from jdxi_editor.midi.data.digital.partial import DigitalPartial
-from jdxi_editor.ui.style import JDXiStyle
 from jdxi_editor.ui.widgets.switch.partial import PartialSwitch
 
 
@@ -37,10 +37,10 @@ class PartialsPanel(QWidget):
             group_layout = QHBoxLayout()
             partial_icon = QLabel()
             qta_icon = qta.icon(
-                f"mdi.numeric-{partial}-circle-outline", color=JDXiStyle.GREY
+                f"mdi.numeric-{partial}-circle-outline", color=JDXi.Style.GREY
             )
             partial_icon_pixmap = qta_icon.pixmap(
-                JDXiStyle.ICON_SIZE, JDXiStyle.ICON_SIZE
+                JDXi.Style.ICON_SIZE, JDXi.Style.ICON_SIZE
             )  # Set the desired size
             partial_icon.setPixmap(partial_icon_pixmap)
             group_layout.addWidget(partial_icon)
@@ -55,4 +55,4 @@ class PartialsPanel(QWidget):
         layout.addLayout(partial_layout)
         partial_layout.addStretch()
         # Style
-        self.setStyleSheet(JDXiStyle.PARTIALS_PANEL)
+        self.setStyleSheet(JDXi.Style.PARTIALS_PANEL)

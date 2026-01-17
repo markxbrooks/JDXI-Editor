@@ -45,6 +45,7 @@ from PySide6.QtWidgets import (
 )
 
 from decologr import Decologr as log
+from jdxi_editor.jdxi.jdxi import JDXi
 from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.midi.data.address.address import AddressOffsetSuperNATURALLMB
 from jdxi_editor.midi.data.digital.oscillator import DigitalOscWave
@@ -58,8 +59,6 @@ from jdxi_editor.ui.editors.digital.partial.lfo import DigitalLFOSection
 from jdxi_editor.ui.editors.digital.partial.mod_lfo import DigitalModLFOSection
 from jdxi_editor.ui.editors.digital.partial.oscillator import DigitalOscillatorSection
 from jdxi_editor.ui.editors.synth.partial import PartialEditor
-from jdxi_editor.ui.style import JDXiStyle
-from jdxi_editor.ui.style.icons import JDXiIconRegistry
 
 
 class DigitalPartialEditor(PartialEditor):
@@ -146,8 +145,8 @@ class DigitalPartialEditor(PartialEditor):
         )
         self.tab_widget.addTab(
             self.oscillator_tab,
-            JDXiIconRegistry.get_icon(
-                JDXiIconRegistry.TRIANGLE_WAVE, color=JDXiStyle.GREY
+            JDXi.IconRegistry.get_icon(
+                JDXi.IconRegistry.TRIANGLE_WAVE, color=JDXi.Style.GREY
             ),
             "Oscillator",
         )
@@ -162,7 +161,7 @@ class DigitalPartialEditor(PartialEditor):
         )
         self.tab_widget.addTab(
             self.filter_tab,
-            JDXiIconRegistry.get_icon(JDXiIconRegistry.FILTER, color=JDXiStyle.GREY),
+            JDXi.IconRegistry.get_icon(JDXi.IconRegistry.FILTER, color=JDXi.Style.GREY),
             "Filter",
         )
         self.amp_tab = DigitalAmpSection(
@@ -174,7 +173,9 @@ class DigitalPartialEditor(PartialEditor):
         )
         self.tab_widget.addTab(
             self.amp_tab,
-            JDXiIconRegistry.get_icon(JDXiIconRegistry.AMPLIFIER, color=JDXiStyle.GREY),
+            JDXi.IconRegistry.get_icon(
+                JDXi.IconRegistry.AMPLIFIER, color=JDXi.Style.GREY
+            ),
             "Amp",
         )
         self.lfo_tab = DigitalLFOSection(
@@ -186,7 +187,9 @@ class DigitalPartialEditor(PartialEditor):
         )
         self.tab_widget.addTab(
             self.lfo_tab,
-            JDXiIconRegistry.get_icon(JDXiIconRegistry.SINE_WAVE, color=JDXiStyle.GREY),
+            JDXi.IconRegistry.get_icon(
+                JDXi.IconRegistry.SINE_WAVE, color=JDXi.Style.GREY
+            ),
             "LFO",
         )
         self.mod_lfo_tab = DigitalModLFOSection(
@@ -198,7 +201,9 @@ class DigitalPartialEditor(PartialEditor):
         )
         self.tab_widget.addTab(
             self.mod_lfo_tab,
-            JDXiIconRegistry.get_icon(JDXiIconRegistry.WAVEFORM, color=JDXiStyle.GREY),
+            JDXi.IconRegistry.get_icon(
+                JDXi.IconRegistry.WAVEFORM, color=JDXi.Style.GREY
+            ),
             "Mod LFO",
         )
 
@@ -241,13 +246,13 @@ class DigitalPartialEditor(PartialEditor):
         # --- Reset all buttons to default style
         for btn in self.oscillator_tab.wave_buttons.values():
             btn.setChecked(False)
-            btn.setStyleSheet(JDXiStyle.BUTTON_RECT)
+            btn.setStyleSheet(JDXi.Style.BUTTON_RECT)
 
         # --- Apply active style to the selected waveform button
         selected_btn = self.oscillator_tab.wave_buttons.get(waveform)
         if selected_btn:
             selected_btn.setChecked(True)
-            selected_btn.setStyleSheet(JDXiStyle.BUTTON_RECT_ACTIVE)
+            selected_btn.setStyleSheet(JDXi.Style.BUTTON_RECT_ACTIVE)
 
         # --- Send MIDI message
         if not self.send_midi_parameter(DigitalPartialParam.OSC_WAVE, waveform.value):

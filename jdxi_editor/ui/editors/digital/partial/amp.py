@@ -12,16 +12,15 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from jdxi_editor.jdxi.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
+from jdxi_editor.midi.data.parameter.digital.name import DigitalDisplayName
 from jdxi_editor.midi.data.parameter.digital.partial import (
     DigitalPartialParam,
 )
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
-from jdxi_editor.ui.style import JDXiStyle
-from jdxi_editor.ui.style.dimensions import JDXiDimensions
-from jdxi_editor.ui.style.icons import JDXiIconRegistry
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (
@@ -68,7 +67,7 @@ class DigitalAmpSection(SectionBaseWidget):
     def setup_ui(self):
         """Setup the amplifier section UI."""
         amp_section_layout = self.get_layout(margins=(5, 15, 5, 5), spacing=5)
-        self.setMinimumHeight(JDXiDimensions.EDITOR.MINIMUM_HEIGHT)
+        self.setMinimumHeight(JDXi.Dimensions.EDITOR.MINIMUM_HEIGHT)
 
         # Custom icons layout (kept for Digital Amp's unique icon set)
         icons_hlayout = create_icons_layout()
@@ -82,8 +81,8 @@ class DigitalAmpSection(SectionBaseWidget):
         amp_controls_layout = self._create_amp_controls_layout()
         amp_controls_widget = QWidget()
         amp_controls_widget.setLayout(amp_controls_layout)
-        controls_icon = JDXiIconRegistry.get_icon(
-            JDXiIconRegistry.TUNE, color=JDXiStyle.GREY
+        controls_icon = JDXi.IconRegistry.get_icon(
+            JDXi.IconRegistry.TUNE, color=JDXi.Style.GREY
         )
         self.digital_amp_tab_widget.addTab(
             amp_controls_widget, controls_icon, "Controls"
@@ -95,7 +94,7 @@ class DigitalAmpSection(SectionBaseWidget):
         adsr_icon = QIcon(base64_to_pixmap(adsr_icon_base64))
         self.digital_amp_tab_widget.addTab(amp_adsr_group, adsr_icon, "ADSR")
 
-        amp_section_layout.addSpacing(JDXiDimensions.EDITOR_DIGITAL.SPACING)
+        amp_section_layout.addSpacing(JDXi.Dimensions.EDITOR_DIGITAL.SPACING)
         amp_section_layout.addStretch()
 
     def _create_amp_controls_layout(self) -> QVBoxLayout:
@@ -105,29 +104,37 @@ class DigitalAmpSection(SectionBaseWidget):
         controls_row_layout = create_layout_with_widgets(
             [
                 self._create_parameter_slider(
-                    DigitalPartialParam.AMP_LEVEL, "Level", vertical=True
+                    DigitalPartialParam.AMP_LEVEL,
+                    DigitalDisplayName.AMP_LEVEL,
+                    vertical=True,
                 ),
                 self._create_parameter_slider(
-                    DigitalPartialParam.AMP_LEVEL_KEYFOLLOW, "KeyFollow", vertical=True
+                    DigitalPartialParam.AMP_LEVEL_KEYFOLLOW,
+                    DigitalDisplayName.AMP_LEVEL_KEYFOLLOW,
+                    vertical=True,
                 ),
                 self._create_parameter_slider(
-                    DigitalPartialParam.AMP_VELOCITY, "Velocity", vertical=True
+                    DigitalPartialParam.AMP_VELOCITY,
+                    DigitalDisplayName.AMP_VELOCITY,
+                    vertical=True,
                 ),
                 self._create_parameter_slider(
                     DigitalPartialParam.LEVEL_AFTERTOUCH,
-                    "After-touch Sensitivity",
+                    DigitalDisplayName.LEVEL_AFTERTOUCH,
                     vertical=True,
                 ),
                 self._create_parameter_slider(
                     DigitalPartialParam.CUTOFF_AFTERTOUCH,
-                    "After-touch Cutoff",
+                    DigitalDisplayName.CUTOFF_AFTERTOUCH,
                     vertical=True,
                 ),
             ]
         )
 
         # --- Pan slider in a separate row to get left to right
-        pan_slider = self._create_parameter_slider(DigitalPartialParam.AMP_PAN, "Pan")
+        pan_slider = self._create_parameter_slider(
+            DigitalPartialParam.AMP_PAN, DigitalDisplayName.AMP_PAN
+        )
         pan_slider.setValue(0)
         pan_row_layout = create_layout_with_widgets([pan_slider])
 

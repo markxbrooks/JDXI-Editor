@@ -46,11 +46,10 @@ from PySide6.QtWidgets import (
 )
 
 from decologr import Decologr as log
+from jdxi_editor.jdxi.jdxi import JDXi
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.drum.partial.base import DrumBaseSection
-from jdxi_editor.ui.style import JDXiStyle, JDXiThemeManager
-from jdxi_editor.ui.style.dimensions import JDXiDimensions
 from jdxi_editor.ui.widgets.editor.helper import create_group_and_grid_layout
 from picomidi.constant import Midi
 
@@ -70,8 +69,8 @@ class DrumPitchEnvPlot(QWidget):
 
     def __init__(
         self,
-        width: int = JDXiStyle.ADSR_PLOT_WIDTH,
-        height: int = JDXiStyle.ADSR_PLOT_HEIGHT,
+        width: int = JDXi.Style.ADSR_PLOT_WIDTH,
+        height: int = JDXi.Style.ADSR_PLOT_HEIGHT,
         envelope: dict = None,
         parent: QWidget = None,
     ):
@@ -81,9 +80,7 @@ class DrumPitchEnvPlot(QWidget):
         self.setMinimumSize(width, height)
         self.setMaximumHeight(height)
         self.setMaximumWidth(width)
-        from jdxi_editor.ui.style.theme_manager import JDXiThemeManager
-
-        JDXiThemeManager.apply_adsr_plot(self)
+        JDXi.ThemeManager.apply_adsr_plot(self)
         self.sample_rate = 256
         self.setMinimumHeight(150)
 
@@ -115,7 +112,7 @@ class DrumPitchEnvPlot(QWidget):
             axis_pen = QPen(QColor("white"), 1)
             grid_pen = QPen(Qt.GlobalColor.darkGray, 1)
             grid_pen.setStyle(Qt.PenStyle.DashLine)
-            point_pen = QPen(QColor("orange"), JDXiDimensions.CHART.POINT_SIZE)
+            point_pen = QPen(QColor("orange"), JDXi.Dimensions.CHART.POINT_SIZE)
             painter.setFont(QFont("JD LCD Rounded", 10))
 
             depth = self.envelope.get("depth", 64) - 64
@@ -308,7 +305,7 @@ class DrumPitchEnvSection(DrumBaseSection):
         controls_group, controls_layout = create_group_and_grid_layout(
             group_name="Pitch Envelope Controls"
         )
-        JDXiThemeManager.apply_adsr_style(controls_group)
+        JDXi.ThemeManager.apply_adsr_style(controls_group)
         main_layout.addWidget(controls_group)
         self.create_sliders(controls_layout)
 
@@ -319,8 +316,8 @@ class DrumPitchEnvSection(DrumBaseSection):
     def setup_plot(self):
         # Right side: Envelope plot
         self.plot = DrumPitchEnvPlot(
-            width=JDXiStyle.ADSR_PLOT_WIDTH,
-            height=JDXiStyle.ADSR_PLOT_HEIGHT,
+            width=JDXi.Style.ADSR_PLOT_WIDTH,
+            height=JDXi.Style.ADSR_PLOT_HEIGHT,
             envelope=self.envelope,
             parent=self,
         )

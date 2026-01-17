@@ -19,11 +19,13 @@ from typing import Callable
 
 from PySide6.QtWidgets import QFormLayout, QGroupBox, QScrollArea, QVBoxLayout, QWidget
 
+from jdxi_editor.jdxi.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetProgramLMB,
     RolandSysExAddress,
 )
 from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParam
+from jdxi_editor.midi.data.parameter.drum.name import DrumDisplayName
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
@@ -72,9 +74,8 @@ class DrumCommonSection(SectionBaseWidget):
 
         # Icons row (standardized across editor tabs) - Note: Drum sections use scroll areas,
         # so we add icon row to scrolled_layout instead of using get_layout()
-        from jdxi_editor.ui.style.icons import JDXiIconRegistry
 
-        icon_hlayout = JDXiIconRegistry.create_generic_musical_icon_row()
+        icon_hlayout = JDXi.IconRegistry.create_generic_musical_icon_row()
         scrolled_layout.addLayout(icon_hlayout)
 
         # Common controls
@@ -84,7 +85,7 @@ class DrumCommonSection(SectionBaseWidget):
         # Kit Level control
         self.address.lmb = AddressOffsetProgramLMB.COMMON
         kit_level_slider = self._create_parameter_slider(
-            DrumCommonParam.KIT_LEVEL, "Kit Level"
+            DrumCommonParam.KIT_LEVEL, DrumDisplayName.KIT_LEVEL
         )
         common_layout.addRow("Kit Level:", kit_level_slider)
 

@@ -53,15 +53,15 @@ class SystemCommonMessage(JDXiSysEx):
         # Extract the actual address byte from lsb (handle tuple, enum, or int)
         if isinstance(self.lsb, tuple) and len(self.lsb) > 0:
             lsb_addr = self.lsb[0]  # AddressParameter tuple: (address, min, max)
-        elif hasattr(self.lsb, 'address'):
+        elif hasattr(self.lsb, "address"):
             lsb_addr = self.lsb.address
         else:
             lsb_addr = self.lsb
-        
+
         if lsb_addr == 0x00 and isinstance(self.value, int):  # MASTER_TUNE parameter
             # Convert 16-bit value to 4 nibbles (4-bit values, 0-15 each)
             self.data = split_16bit_value_to_nibbles(self.value)
             self.size = 4
-        
+
         # Call parent __post_init__ which will validate the message structure
         super().__post_init__()  # Set address and data from RolandSysEx

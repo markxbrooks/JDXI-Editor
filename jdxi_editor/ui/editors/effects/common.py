@@ -65,6 +65,7 @@ from PySide6.QtWidgets import (
 )
 
 from decologr import Decologr as log
+from jdxi_editor.jdxi.jdxi import JDXi
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetProgramLMB,
@@ -83,8 +84,6 @@ from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
 from jdxi_editor.ui.editors.effects.data import EffectsData
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
-from jdxi_editor.ui.style import JDXiStyle
-from jdxi_editor.ui.style.icons import JDXiIconRegistry
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 from jdxi_editor.ui.widgets.editor.helper import create_vlayout_with_hlayout_and_widgets
 from jdxi_editor.ui.widgets.editor.simple_editor_helper import SimpleEditorHelper
@@ -279,20 +278,20 @@ class EffectsCommonEditor(BasicEditor):
 
         # Get tab widget from helper and add tabs
         self.tabs = self.editor_helper.get_tab_widget()
-        effect1_icon = JDXiIconRegistry.get_icon(
-            JDXiIconRegistry.DISTORTION, color=JDXiStyle.GREY
+        effect1_icon = JDXi.IconRegistry.get_icon(
+            JDXi.IconRegistry.DISTORTION, color=JDXi.Style.GREY
         )
         self.tabs.addTab(self._create_effect1_section(), effect1_icon, "Effect 1")
-        effect2_icon = JDXiIconRegistry.get_icon(
-            JDXiIconRegistry.DISTORTION, color=JDXiStyle.GREY
+        effect2_icon = JDXi.IconRegistry.get_icon(
+            JDXi.IconRegistry.DISTORTION, color=JDXi.Style.GREY
         )
         self.tabs.addTab(self._create_effect2_section(), effect2_icon, "Effect 2")
-        delay_icon = JDXiIconRegistry.get_icon(
-            JDXiIconRegistry.DELAY, color=JDXiStyle.GREY
+        delay_icon = JDXi.IconRegistry.get_icon(
+            JDXi.IconRegistry.DELAY, color=JDXi.Style.GREY
         )
         self.tabs.addTab(self._create_delay_tab(), delay_icon, "Delay")
-        reverb_icon = JDXiIconRegistry.get_icon(
-            JDXiIconRegistry.REVERB, color=JDXiStyle.GREY
+        reverb_icon = JDXi.IconRegistry.get_icon(
+            JDXi.IconRegistry.REVERB, color=JDXi.Style.GREY
         )
         self.tabs.addTab(self._create_reverb_section(), reverb_icon, "Reverb")
 
@@ -493,7 +492,7 @@ class EffectsCommonEditor(BasicEditor):
         """Create Effect 1 section"""
         container = QWidget()
         # Icons row (standardized across editor tabs)
-        icon_hlayout = JDXiIconRegistry.create_adsr_icons_row()
+        icon_hlayout = JDXi.IconRegistry.create_adsr_icons_row()
         container_layout = create_vlayout_with_hlayout_and_widgets(icon_hlayout)
         container.setLayout(container_layout)
 
@@ -579,7 +578,7 @@ class EffectsCommonEditor(BasicEditor):
         container.setLayout(container_layout)
 
         # Icons row (standardized across editor tabs)
-        icon_hlayout = JDXiIconRegistry.create_adsr_icons_row()
+        icon_hlayout = JDXi.IconRegistry.create_adsr_icons_row()
         container_layout.addLayout(icon_hlayout)
 
         widget = QWidget()
@@ -645,7 +644,7 @@ class EffectsCommonEditor(BasicEditor):
         container.setLayout(container_layout)
 
         # Icons row (standardized across editor tabs)
-        icon_hlayout = JDXiIconRegistry.create_adsr_icons_row()
+        icon_hlayout = JDXi.IconRegistry.create_adsr_icons_row()
         container_layout.addLayout(icon_hlayout)
 
         widget = QWidget()
@@ -687,7 +686,7 @@ class EffectsCommonEditor(BasicEditor):
         container.setLayout(container_layout)
 
         # Icons row (standardized across editor tabs)
-        icon_hlayout = JDXiIconRegistry.create_adsr_icons_row()
+        icon_hlayout = JDXi.IconRegistry.create_adsr_icons_row()
         container_layout.addLayout(icon_hlayout)
 
         widget = QWidget()

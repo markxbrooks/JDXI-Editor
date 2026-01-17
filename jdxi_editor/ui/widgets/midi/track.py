@@ -10,7 +10,7 @@ from PySide6.QtWidgets import (
 )
 
 from decologr import Decologr as log
-from jdxi_editor.ui.style import JDXiStyle
+from jdxi_editor.jdxi.jdxi import JDXi
 from jdxi_editor.ui.widgets.midi.colors import MIDI_CHANNEL_COLORS
 from jdxi_editor.ui.widgets.midi.utils import generate_track_colors, get_first_channel
 
@@ -43,7 +43,7 @@ class MidiTrackWidget(QWidget):
         self.color = generate_track_colors(track_number)
         self.muted = False
         self.total_length = total_length
-        self.setMinimumHeight(JDXiStyle.TRACK_HEIGHT_MINIMUM)  # Adjust as needed
+        self.setMinimumHeight(JDXi.Style.TRACK_HEIGHT_MINIMUM)  # Adjust as needed
         self.track_data = None  # Dict: {rects: [...], label: str, channels: set}
         self.muted_channels = set()  # Set of muted channels
         self.muted_tracks = set()  # Set of muted channels

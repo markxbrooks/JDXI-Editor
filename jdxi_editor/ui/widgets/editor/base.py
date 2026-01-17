@@ -69,8 +69,8 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from jdxi_editor.jdxi.jdxi import JDXi
 from jdxi_editor.jdxi.preset.helper import create_scroll_container
-from jdxi_editor.ui.style.theme_manager import JDXiThemeManager
 
 
 class EditorBaseWidget(QWidget):
@@ -179,7 +179,7 @@ class EditorBaseWidget(QWidget):
         """
         if self.tab_widget is None:
             self.tab_widget = QTabWidget()
-            JDXiThemeManager.apply_tabs_style(self.tab_widget, analog=self.analog)
+            JDXi.ThemeManager.apply_tabs_style(self.tab_widget, analog=self.analog)
 
             # Ensure container layout exists
             if self.container_layout is None:

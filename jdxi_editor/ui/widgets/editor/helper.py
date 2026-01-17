@@ -19,10 +19,9 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from jdxi_editor.jdxi.jdxi import JDXi
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
-from jdxi_editor.ui.style import JDXiStyle
-from jdxi_editor.ui.style.dimensions import JDXiDimensions
 
 
 def create_layout_with_widgets(
@@ -119,8 +118,8 @@ def create_icons_layout() -> QHBoxLayout:
         "mdi6.volume-plus",
         "mdi.waveform",
     ]:
-        icon_pixmap = qta.icon(icon, color=JDXiStyle.GREY).pixmap(
-            JDXiDimensions.ICON.WIDTH, JDXiDimensions.ICON.HEIGHT
+        icon_pixmap = qta.icon(icon, color=JDXi.Style.GREY).pixmap(
+            JDXi.Dimensions.ICON.WIDTH, JDXi.Dimensions.ICON.HEIGHT
         )
         icon_label = create_icon_label_with_pixmap(icon_pixmap)
         icons_hlayout.addWidget(icon_label)
@@ -130,7 +129,7 @@ def create_icons_layout() -> QHBoxLayout:
 def create_adsr_icon_pixmap() -> QPixmap:
     """Generate the ADSR waveform pixmap"""
     icon_base64 = generate_waveform_icon(
-        waveform="adsr", foreground_color=JDXiStyle.WHITE, icon_scale=2.0
+        waveform="adsr", foreground_color=JDXi.Style.WHITE, icon_scale=2.0
     )
     pixmap = base64_to_pixmap(icon_base64)
     return pixmap
@@ -160,11 +159,10 @@ def create_group_adsr_with_hlayout(
     controls_group = QGroupBox(name)
     controls_group.setLayout(hlayout)
     if analog:
-        from jdxi_editor.ui.style.theme_manager import JDXiThemeManager
 
-        JDXiThemeManager.apply_adsr_style(controls_group, analog=True)
+        JDXi.ThemeManager.apply_adsr_style(controls_group, analog=True)
     else:
-        controls_group.setStyleSheet(JDXiStyle.ADSR)
+        controls_group.setStyleSheet(JDXi.Style.ADSR)
     return controls_group
 
 
@@ -192,21 +190,20 @@ def create_envelope_group(
     if icon_layout is None:
         icon_layout = create_centered_adsr_icon_layout()
 
-    # Create vertical layout: icon layout on top (centered), ADSR widget below
+    # --- Create vertical layout: icon layout on top (centered), ADSR widget below
     env_layout = QVBoxLayout()
     env_layout.addLayout(icon_layout)  # Centered icon at top
     if adsr_widget:
         env_layout.addWidget(adsr_widget)  # ADSR widget below icon
-    env_layout.addStretch()  # Stretch at bottom for spacing
+    env_layout.addStretch()  # --- Stretch at bottom for spacing
 
     env_group.setLayout(env_layout)
 
     if analog:
-        from jdxi_editor.ui.style.theme_manager import JDXiThemeManager
 
-        JDXiThemeManager.apply_adsr_style(env_group, analog=True)
+        JDXi.ThemeManager.apply_adsr_style(env_group, analog=True)
     else:
-        env_group.setStyleSheet(JDXiStyle.ADSR)
+        env_group.setStyleSheet(JDXi.Style.ADSR)
 
     return env_group
 
@@ -216,7 +213,7 @@ def create_button_with_tooltip(tooltip: str) -> QPushButton:
     button = QPushButton()
     button.setFixedSize(30, 30)
     button.setCheckable(True)
-    button.setStyleSheet(JDXiStyle.BUTTON_ROUND)
+    button.setStyleSheet(JDXi.Style.BUTTON_ROUND)
     button.setToolTip(tooltip)
     return button
 

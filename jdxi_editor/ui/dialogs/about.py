@@ -16,9 +16,9 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from jdxi_editor.jdxi.jdxi import JDXi
 from jdxi_editor.project import __package_name__, __program__, __version__
 from jdxi_editor.resources import resource_path
-from jdxi_editor.ui.style import JDXiStyle
 
 
 class UiAboutDialog(QDialog):
@@ -36,7 +36,7 @@ class UiAboutDialog(QDialog):
         """
         self.resize(508, 300)
         self.setWindowTitle(f"about {__program__}")
-        self.setStyleSheet(JDXiStyle.SPLASH_SCREEN + JDXiStyle.CREDITS_LABEL_STYLE)
+        self.setStyleSheet(JDXi.Style.SPLASH_SCREEN + JDXi.Style.CREDITS_LABEL_STYLE)
         main_layout = QVBoxLayout(self)
         group_box_layout = QVBoxLayout()
         group_box = QGroupBox(__program__)
@@ -83,7 +83,7 @@ class UiAboutDialog(QDialog):
             "This app is not affiliated with, endorsed by, or sponsored by Roland Corporation in any way<br>"
             "All product names, trademarks, and logos are the property of their respective owners.<br>"
         )
-        credits_label.setStyleSheet(JDXiStyle.CREDITS_LABEL_STYLE)
+        credits_label.setStyleSheet(JDXi.Style.CREDITS_LABEL_STYLE)
         credits_label.setOpenExternalLinks(True)
         credits_label.setAlignment(Qt.AlignCenter)
         divider = QLabel("<hr>")

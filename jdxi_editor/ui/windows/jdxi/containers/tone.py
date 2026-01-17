@@ -2,7 +2,6 @@ from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QPushButton, QVBoxLayout, QWidget
 
 from jdxi_editor.jdxi.jdxi import JDXi
-from jdxi_editor.ui.style import JDXiStyle
 from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets
 
 
@@ -17,13 +16,13 @@ def add_tone_container(
         JDXi.Dimensions.TONE.WIDTH,
         JDXi.Dimensions.TONE.HEIGHT,
     )
-    tone_container.setStyleSheet(JDXiStyle.TRANSPARENT)
+    tone_container.setStyleSheet(JDXi.Style.TRANSPARENT)
     tone_container_layout = QVBoxLayout(tone_container)
     tone_container_layout.setSpacing(3)
     tone_label_layout = QHBoxLayout()
     tone_label = QLabel("Tone")
     tone_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-    tone_label.setStyleSheet(JDXiStyle.TRANSPARENT)
+    tone_label.setStyleSheet(JDXi.Style.TRANSPARENT)
     tone_label_layout.addWidget(tone_label)
     tone_container_layout.addLayout(tone_label_layout)
     tone_layout = QHBoxLayout()

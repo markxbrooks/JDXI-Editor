@@ -21,7 +21,6 @@ from PySide6.QtWidgets import (
 
 from jdxi_editor.jdxi.jdxi import JDXi
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.ui.style import JDXiStyle
 from jdxi_editor.ui.style.factory import (
     generate_sequencer_button_style,
     toggle_button_style,
@@ -95,7 +94,7 @@ def add_sequencer_container(
     sequencer_container_layout = QHBoxLayout(sequencer_container)
     sequencer_label = QLabel("Sequencer")
     sequencer_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-    sequencer_label.setStyleSheet(JDXiStyle.TRANSPARENT)
+    sequencer_label.setStyleSheet(JDXi.Style.TRANSPARENT)
     sequencer_layout = QHBoxLayout()
     # --- favorites_button_row, favorite_button = create_favorite_button_row()
     sequencer, sequencer_buttons = create_sequencer_buttons_row(
@@ -138,7 +137,7 @@ def add_favorite_button_container(central_widget):
     favorite_button.setFixedSize(30, 30)
     favorite_button.setCheckable(True)
     # --- Style the button with brighter hover/border_pressed/selected  states
-    favorite_button.setStyleSheet(JDXiStyle.BUTTON_ROUND)
+    favorite_button.setStyleSheet(JDXi.Style.BUTTON_ROUND)
     favorite_button.setToolTip("Favorite: Mark current settings as a favorite")
     row.addLayout(favourite_button_column)
     favourite_button_column.addWidget(favourite_button_label)

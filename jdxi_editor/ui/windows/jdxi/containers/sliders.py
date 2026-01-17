@@ -5,8 +5,7 @@ Slider container
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout, QWidget
 
-from jdxi_editor.ui.style import JDXiStyle
-from jdxi_editor.ui.style.dimensions import JDXiDimensions
+from jdxi_editor.jdxi.jdxi import JDXi
 from jdxi_editor.ui.widgets.midi.slider.amp import AmpEnvelopeSlider, AmpLevelSlider
 from jdxi_editor.ui.widgets.midi.slider.effects import (
     DelaySlider,
@@ -29,10 +28,10 @@ def add_slider_container(central_widget, midi_helper):
     """ad slider container"""
     slider_container = QWidget(central_widget)
     slider_container.setGeometry(
-        JDXiDimensions.SLIDER.X,
-        JDXiDimensions.SLIDER.Y,
-        JDXiDimensions.SLIDER.CONTAINER.WIDTH,
-        JDXiDimensions.SLIDER.CONTAINER.HEIGHT,
+        JDXi.Dimensions.SLIDER.X,
+        JDXi.Dimensions.SLIDER.Y,
+        JDXi.Dimensions.SLIDER.CONTAINER.WIDTH,
+        JDXi.Dimensions.SLIDER.CONTAINER.HEIGHT,
     )
 
     main_layout = QVBoxLayout(slider_container)
@@ -44,8 +43,8 @@ def add_slider_container(central_widget, midi_helper):
     slider_row_layout.setContentsMargins(0, 0, 0, 0)
     slider_row_layout.setSpacing(3)
 
-    slider_height = JDXiDimensions.SLIDER.HEIGHT
-    slider_style = JDXiStyle.ADSR_DISABLED
+    slider_height = JDXi.Dimensions.SLIDER.HEIGHT
+    slider_style = JDXi.Style.ADSR_DISABLED
 
     def create_slider_with_label(label_text, slider_widget):
         """create a slider with a label"""
@@ -186,5 +185,5 @@ def add_slider_container(central_widget, midi_helper):
     )
 
     # Add to main layout
-    slider_row_container.setStyleSheet(JDXiStyle.ADSR_DISABLED)
+    slider_row_container.setStyleSheet(JDXi.Style.ADSR_DISABLED)
     main_layout.addWidget(slider_row_container)

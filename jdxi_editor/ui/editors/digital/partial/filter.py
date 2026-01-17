@@ -14,15 +14,14 @@ from PySide6.QtWidgets import (
 )
 
 from decologr import Decologr as log
+from jdxi_editor.jdxi.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.digital.filter import DigitalFilterMode
+from jdxi_editor.midi.data.parameter.digital.name import DigitalDisplayName
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
-from jdxi_editor.ui.style import JDXiStyle
-from jdxi_editor.ui.style.dimensions import JDXiDimensions
-from jdxi_editor.ui.style.icons import JDXiIconRegistry
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (
@@ -73,7 +72,7 @@ class DigitalFilterSection(SectionBaseWidget):
 
     def setup_ui(self):
         """Set up the UI for the filter section."""
-        self.setMinimumHeight(JDXiDimensions.EDITOR.MINIMUM_HEIGHT)
+        self.setMinimumHeight(JDXi.Dimensions.EDITOR.MINIMUM_HEIGHT)
 
         # --- Filter mode and slope
         filter_mode_row = self._create_filter_controls_row()
@@ -83,8 +82,8 @@ class DigitalFilterSection(SectionBaseWidget):
 
         # --- Add Controls tab
         controls_group = self._create_filter_controls_group()
-        controls_icon = JDXiIconRegistry.get_icon(
-            JDXiIconRegistry.TUNE, color=JDXiStyle.GREY
+        controls_icon = JDXi.IconRegistry.get_icon(
+            JDXi.IconRegistry.TUNE, color=JDXi.Style.GREY
         )
         self.digital_filter_tab_widget.addTab(controls_group, controls_icon, "Controls")
 
@@ -138,9 +137,10 @@ class DigitalFilterSection(SectionBaseWidget):
             filter_icon = QIcon(base64_to_pixmap(filter_icon_base64))
             # Add waveform icon (let Qt handle icon sizing automatically, like oscillator buttons)
             btn.setIcon(filter_icon)
-            btn.setStyleSheet(JDXiStyle.BUTTON_RECT)
+            btn.setStyleSheet(JDXi.Style.BUTTON_RECT)
             btn.setFixedSize(
-                JDXiDimensions.WAVEFORM_ICON.WIDTH, JDXiDimensions.WAVEFORM_ICON.HEIGHT
+                JDXi.Dimensions.WAVEFORM_ICON.WIDTH,
+                JDXi.Dimensions.WAVEFORM_ICON.HEIGHT,
             )
             btn.clicked.connect(
                 lambda checked, mode=filter_mode: self._on_filter_mode_selected(mode)
@@ -165,14 +165,18 @@ class DigitalFilterSection(SectionBaseWidget):
         filter_controls_list = [
             self.filter_widget,
             self._create_parameter_slider(
-                DigitalPartialParam.FILTER_RESONANCE, "Resonance", vertical=True
+                DigitalPartialParam.FILTER_RESONANCE,
+                DigitalDisplayName.FILTER_RESONANCE,
+                vertical=True,
             ),
             self._create_parameter_slider(
-                DigitalPartialParam.FILTER_CUTOFF_KEYFOLLOW, "KeyFollow", vertical=True
+                DigitalPartialParam.FILTER_CUTOFF_KEYFOLLOW,
+                DigitalDisplayName.FILTER_CUTOFF_KEYFOLLOW,
+                vertical=True,
             ),
             self._create_parameter_slider(
                 DigitalPartialParam.FILTER_ENV_VELOCITY_SENSITIVITY,
-                "Velocity",
+                DigitalDisplayName.FILTER_ENV_VELOCITY_SENSITIVITY,
                 vertical=True,
             ),
         ]
@@ -216,13 +220,13 @@ class DigitalFilterSection(SectionBaseWidget):
         # Reset all buttons to default style
         for btn in self.filter_mode_buttons.values():
             btn.setChecked(False)
-            btn.setStyleSheet(JDXiStyle.BUTTON_RECT)
+            btn.setStyleSheet(JDXi.Style.BUTTON_RECT)
 
         # Apply active style to the selected filter mode button
         selected_btn = self.filter_mode_buttons.get(filter_mode)
         if selected_btn:
             selected_btn.setChecked(True)
-            selected_btn.setStyleSheet(JDXiStyle.BUTTON_RECT_ACTIVE)
+            selected_btn.setStyleSheet(JDXi.Style.BUTTON_RECT_ACTIVE)
 
         # Update filter controls state
         self.update_filter_controls_state(filter_mode.value)

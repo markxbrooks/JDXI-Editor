@@ -14,7 +14,7 @@ def send_nrpn(self, channel, msb, lsb, value):
 """
 
 from decologr import Decologr as log
-from jdxi_editor.ui.style import JDXiStyle, JDXiThemeManager
+from jdxi_editor.jdxi.jdxi import JDXi
 from jdxi_editor.ui.widgets.slider import Slider
 
 
@@ -64,7 +64,7 @@ class ControlChangeSlider(Slider):
         self.valueChanged.connect(self.on_valueChanged)
         self.setTickPosition(self.TickPosition.NoTicks)
         self.nrpn_map = nrpn_map
-        self.setStyleSheet(JDXiStyle.ADSR_DISABLED)
+        self.setStyleSheet(JDXi.Style.ADSR_DISABLED)
 
     def update_style(self, value: int) -> None:
         """Update the style of the slider.
@@ -72,9 +72,9 @@ class ControlChangeSlider(Slider):
         :param value: int
         """
         if value == 0:
-            self.setStyleSheet(JDXiStyle.ADSR_DISABLED)
+            self.setStyleSheet(JDXi.Style.ADSR_DISABLED)
         else:
-            JDXiThemeManager.apply_adsr_style(self, analog=False)
+            JDXi.ThemeManager.apply_adsr_style(self, analog=False)
 
     def on_valueChanged(self, value: int):
         """
@@ -82,7 +82,7 @@ class ControlChangeSlider(Slider):
 
         :param value: int
         """
-        self.setStyleSheet(JDXiStyle.ADSR_DISABLED)
+        self.setStyleSheet(JDXi.Style.ADSR_DISABLED)
         log.message(f"filter value: {value} for cutoff slider")
 
         if self.min_value <= value <= self.max_value:

@@ -45,8 +45,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from jdxi_editor.ui.style.dimensions import JDXiDimensions
-from jdxi_editor.ui.style.icons import JDXiIconRegistry
+from jdxi_editor.jdxi.jdxi import JDXi
 from jdxi_editor.ui.widgets.editor.helper import create_scrolled_area_with_layout
 
 
@@ -57,7 +56,7 @@ class DrumBaseSection(QWidget):
         super().__init__()
         self.vlayout = None
         self.scrolled_layout = None
-        self.setMinimumWidth(JDXiDimensions.EDITOR_DRUM.PARTIAL_TAB_MIN_WIDTH)
+        self.setMinimumWidth(JDXi.Dimensions.EDITOR_DRUM.PARTIAL_TAB_MIN_WIDTH)
         self.vlayout, self.scrolled_layout = self.setup_scrolled_layout_with_icons()
         self.vlayout.setContentsMargins(0, 0, 0, 0)
         self.vlayout.setSpacing(0)
@@ -70,6 +69,6 @@ class DrumBaseSection(QWidget):
         layout.addWidget(scroll_area)
 
         # --- Icons row (standardized across editor tabs)
-        icon_hlayout = JDXiIconRegistry.create_adsr_icons_row()
+        icon_hlayout = JDXi.IconRegistry.create_adsr_icons_row()
         scrolled_layout.addLayout(icon_hlayout)
         return layout, scrolled_layout

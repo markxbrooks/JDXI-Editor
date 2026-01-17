@@ -44,8 +44,8 @@ from PySide6.QtWidgets import (
 )
 
 from decologr import Decologr as log
+from jdxi_editor.jdxi.jdxi import JDXi
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.ui.style import JDXiStyle
 
 # In-app FluidSynth defaults
 HW_PORT_HINT = "Roland JDXi"  # adjust if your port name differs
@@ -57,7 +57,7 @@ class MIDIConfigDialog(QDialog):
         super().__init__(parent)
         self.setWindowTitle("MIDI Configuration")
         self.setMinimumSize(300, 300)
-        self.setStyleSheet(JDXiStyle.EDITOR)
+        self.setStyleSheet(JDXi.Style.EDITOR)
         self.midi_helper = midi_helper
         self.input_ports = midi_helper.get_input_ports()
         self.output_ports = midi_helper.get_output_ports()
@@ -103,9 +103,9 @@ class MIDIConfigDialog(QDialog):
         icons_hlayout = QHBoxLayout()
         for icon in ["mdi6.midi-port"]:
             icon_label = QLabel()
-            icon = qta.icon(icon, color=JDXiStyle.FOREGROUND)
+            icon = qta.icon(icon, color=JDXi.Style.FOREGROUND)
             pixmap = icon.pixmap(
-                JDXiStyle.ICON_SIZE, JDXiStyle.ICON_SIZE
+                JDXi.Style.ICON_SIZE, JDXi.Style.ICON_SIZE
             )  # Set the desired size
             icon_label.setPixmap(pixmap)
             icon_label.setAlignment(Qt.AlignHCenter)
@@ -127,9 +127,9 @@ class MIDIConfigDialog(QDialog):
         icons_hlayout = QHBoxLayout()
         for icon in ["mdi6.midi-port"]:
             icon_label = QLabel()
-            icon = qta.icon(icon, color=JDXiStyle.FOREGROUND)
+            icon = qta.icon(icon, color=JDXi.Style.FOREGROUND)
             pixmap = icon.pixmap(
-                JDXiStyle.ICON_SIZE, JDXiStyle.ICON_SIZE
+                JDXi.Style.ICON_SIZE, JDXi.Style.ICON_SIZE
             )  # Set the desired size
             icon_label.setPixmap(pixmap)
             icon_label.setAlignment(Qt.AlignHCenter)

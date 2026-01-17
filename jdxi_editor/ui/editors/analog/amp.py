@@ -13,11 +13,10 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from jdxi_editor.jdxi.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
-from jdxi_editor.midi.data.parameter.analog import AnalogParam
+from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.ui.style import JDXiStyle, JDXiThemeManager
-from jdxi_editor.ui.style.icons import JDXiIconRegistry
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (
@@ -66,15 +65,15 @@ class AnalogAmpSection(SectionBaseWidget):
         amp_adsr_group = self._create_analog_amp_adsr_group()
 
         self.analog_amp_tab_widget = QTabWidget()
-        controls_icon = JDXiIconRegistry.get_icon(
-            JDXiIconRegistry.TUNE, color=JDXiStyle.GREY
+        controls_icon = JDXi.IconRegistry.get_icon(
+            JDXi.IconRegistry.TUNE, color=JDXi.Style.GREY
         )
         self.analog_amp_tab_widget.addTab(
             amp_controls_widget, controls_icon, "Controls"
         )
         adsr_icon = create_adsr_icon()
         self.analog_amp_tab_widget.addTab(amp_adsr_group, adsr_icon, "ADSR")
-        JDXiThemeManager.apply_tabs_style(self.analog_amp_tab_widget, analog=True)
+        JDXi.ThemeManager.apply_tabs_style(self.analog_amp_tab_widget, analog=True)
 
         self.main_rows_layout = self.create_main_rows_layout()
         self.main_rows_layout.addWidget(self.analog_amp_tab_widget)

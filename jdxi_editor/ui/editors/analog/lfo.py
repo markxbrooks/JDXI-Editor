@@ -17,11 +17,12 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from jdxi_editor.midi.data.parameter.analog import AnalogParam
-from jdxi_editor.ui.style import JDXiStyle, JDXiThemeManager
-from jdxi_editor.ui.style.dimensions import JDXiDimensions
-from jdxi_editor.ui.style.icons import JDXiIconRegistry
+from jdxi_editor.jdxi.jdxi import JDXi
+from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
+from jdxi_editor.midi.data.parameter.analog.name import AnalogDisplayName
+from jdxi_editor.midi.data.parameter.analog.option import AnalogDisplayOptions
 from jdxi_editor.ui.widgets.editor import IconType
+from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 
 
@@ -41,6 +42,7 @@ class AnalogLFOSection(SectionBaseWidget):
         self._create_parameter_combo_box = create_parameter_combo_box
         self._on_lfo_shape_changed = on_lfo_shape_changed
         self.lfo_shape_buttons = lfo_shape_buttons
+        self.display_names = AnalogDisplayName
 
         super().__init__(icon_type=IconType.ADSR, analog=True)
         self.setup_ui()
@@ -68,18 +70,18 @@ class AnalogLFOSection(SectionBaseWidget):
 
         # Create tab widget for organizing controls
         self.lfo_controls_tab_widget = QTabWidget()
-        JDXiThemeManager.apply_tabs_style(self.lfo_controls_tab_widget, analog=True)
+        JDXi.ThemeManager.apply_tabs_style(self.lfo_controls_tab_widget, analog=True)
         main_rows_vlayout.addWidget(self.lfo_controls_tab_widget)
 
         # --- Fade and Rate Controls Tab ---
         fade_rate_controls_row_layout = self._create_lfo_fade_rate_controls_row_layout()
         fade_rate_controls_row_widget = QWidget()
         fade_rate_controls_row_widget.setMinimumHeight(
-            JDXiDimensions.EDITOR.MINIMUM_HEIGHT
+            JDXi.Dimensions.EDITOR.MINIMUM_HEIGHT
         )
         fade_rate_controls_row_widget.setLayout(fade_rate_controls_row_layout)
-        fade_rate_icon = JDXiIconRegistry.get_icon(
-            JDXiIconRegistry.CLOCK, color=JDXiStyle.GREY
+        fade_rate_icon = JDXi.IconRegistry.get_icon(
+            JDXi.IconRegistry.CLOCK, color=JDXi.Style.GREY
         )
         self.lfo_controls_tab_widget.addTab(
             fade_rate_controls_row_widget, fade_rate_icon, "Fade and Rate Controls"
@@ -88,10 +90,12 @@ class AnalogLFOSection(SectionBaseWidget):
         # --- Depth Controls Tab ---
         depth_controls_row_layout = self._create_lfo_depth_controls()
         depth_controls_row_widget = QWidget()
-        depth_controls_row_widget.setMinimumHeight(JDXiDimensions.EDITOR.MINIMUM_HEIGHT)
+        depth_controls_row_widget.setMinimumHeight(
+            JDXi.Dimensions.EDITOR.MINIMUM_HEIGHT
+        )
         depth_controls_row_widget.setLayout(depth_controls_row_layout)
-        depth_icon = JDXiIconRegistry.get_icon(
-            JDXiIconRegistry.WAVEFORM, color=JDXiStyle.GREY
+        depth_icon = JDXi.IconRegistry.get_icon(
+            JDXi.IconRegistry.WAVEFORM, color=JDXi.Style.GREY
         )
         self.lfo_controls_tab_widget.addTab(
             depth_controls_row_widget, depth_icon, "Depth Controls"
@@ -104,7 +108,7 @@ class AnalogLFOSection(SectionBaseWidget):
     # ------------------------------------------------------------------
     def _create_shape_row(self) -> QHBoxLayout:
         shape_layout = QHBoxLayout()
-        shape_layout.setSpacing(JDXiDimensions.ANALOG.SPACING)
+        shape_layout.setSpacing(JDXi.Dimensions.ANALOG.SPACING)
 
         shape_layout.addWidget(QLabel("Shape"))
 
@@ -125,14 +129,15 @@ class AnalogLFOSection(SectionBaseWidget):
             btn.setCheckable(True)
             btn.setProperty("value", value)
             # Use qta.icon directly with icon_size parameter (like the old implementation)
-            icon = qta.icon(icon_name, color=JDXiStyle.WHITE, icon_size=0.7)
+            icon = qta.icon(icon_name, color=JDXi.Style.WHITE, icon_size=0.7)
             btn.setIcon(icon)
             btn.setIconSize(QSize(20, 20))  # Set explicit icon size for proper display
-            JDXiThemeManager.apply_button_rect_analog(btn)
+            JDXi.ThemeManager.apply_button_rect_analog(btn)
 
             # Use same dimensions as oscillator waveform buttons for consistency
             btn.setFixedSize(
-                JDXiDimensions.WAVEFORM_ICON.WIDTH, JDXiDimensions.WAVEFORM_ICON.HEIGHT
+                JDXi.Dimensions.WAVEFORM_ICON.WIDTH,
+                JDXi.Dimensions.WAVEFORM_ICON.HEIGHT,
             )
 
             btn.clicked.connect(lambda _, v=value: self._on_lfo_shape_changed(v))
@@ -148,15 +153,24 @@ class AnalogLFOSection(SectionBaseWidget):
     # ------------------------------------------------------------------
     def _create_lfo_depth_controls(self) -> QHBoxLayout:
         layout = QHBoxLayout()
-        layout.setSpacing(JDXiDimensions.ANALOG.SPACING)
+        layout.setSpacing(JDXi.Dimensions.ANALOG.SPACING)
 
         controls = [
-            (AnalogParam.LFO_PITCH_DEPTH, "Pitch Depth"),
-            (AnalogParam.LFO_PITCH_MODULATION_CONTROL, "Pitch Modulation"),
-            (AnalogParam.LFO_FILTER_DEPTH, "Filter Depth"),
-            (AnalogParam.LFO_FILTER_MODULATION_CONTROL, "Filter Modulation"),
-            (AnalogParam.LFO_AMP_DEPTH, "Amp Depth"),
-            (AnalogParam.LFO_AMP_MODULATION_CONTROL, "Amp Modulation"),
+            (AnalogParam.LFO_PITCH_DEPTH, AnalogDisplayName.LFO_PITCH_DEPTH),
+            (
+                AnalogParam.LFO_PITCH_MODULATION_CONTROL,
+                AnalogDisplayName.LFO_PITCH_MODULATION_CONTROL,
+            ),
+            (AnalogParam.LFO_FILTER_DEPTH, AnalogDisplayName.LFO_FILTER_DEPTH),
+            (
+                AnalogParam.LFO_FILTER_MODULATION_CONTROL,
+                AnalogDisplayName.LFO_FILTER_MODULATION_CONTROL,
+            ),
+            (AnalogParam.LFO_AMP_DEPTH, AnalogDisplayName.LFO_AMP_DEPTH),
+            (
+                AnalogParam.LFO_AMP_MODULATION_CONTROL,
+                AnalogDisplayName.LFO_AMP_MODULATION_CONTROL,
+            ),
         ]
 
         for address, label in controls:
@@ -171,12 +185,15 @@ class AnalogLFOSection(SectionBaseWidget):
     # ------------------------------------------------------------------
     def _create_lfo_fade_rate_controls_row_layout(self) -> QHBoxLayout:
         layout = QHBoxLayout()
-        layout.setSpacing(JDXiDimensions.ANALOG.SPACING)
+        layout.setSpacing(JDXi.Dimensions.ANALOG.SPACING)
 
         controls = [
-            (AnalogParam.LFO_RATE, "Rate"),
-            (AnalogParam.LFO_RATE_MODULATION_CONTROL, "Rate Modulation"),
-            (AnalogParam.LFO_FADE_TIME, "Fade Time"),
+            (AnalogParam.LFO_RATE, AnalogDisplayName.LFO_RATE),
+            (
+                AnalogParam.LFO_RATE_MODULATION_CONTROL,
+                AnalogDisplayName.LFO_RATE_MODULATION_CONTROL,
+            ),
+            (AnalogParam.LFO_FADE_TIME, AnalogDisplayName.LFO_FADE_TIME),
         ]
 
         for address, label in controls:
@@ -191,28 +208,28 @@ class AnalogLFOSection(SectionBaseWidget):
     # ------------------------------------------------------------------
     def _create_tempo_sync_controls(self) -> QHBoxLayout:
         layout = QHBoxLayout()
-        layout.setSpacing(JDXiDimensions.ANALOG.SPACING)
+        layout.setSpacing(JDXi.Dimensions.ANALOG.SPACING)
 
         layout.addStretch()
 
         self.lfo_sync_switch = self._create_parameter_switch(
             AnalogParam.LFO_TEMPO_SYNC_SWITCH,
-            "Tempo Sync",
-            ["OFF", "ON"],
+            AnalogDisplayName.LFO_TEMPO_SYNC_SWITCH,
+            AnalogDisplayOptions.LFO_TEMPO_SYNC_SWITCH,
         )
         layout.addWidget(self.lfo_sync_switch)
 
         self.lfo_sync_note = self._create_parameter_combo_box(
             AnalogParam.LFO_TEMPO_SYNC_NOTE,
-            "Sync Note",
-            options=["1/1", "1/2", "1/4", "1/8", "1/16"],
+            AnalogDisplayName.LFO_TEMPO_SYNC_NOTE,
+            options=AnalogDisplayOptions.LFO_TEMPO_SYNC_NOTE,
         )
         layout.addWidget(self.lfo_sync_note)
 
         self.key_trigger_switch = self._create_parameter_switch(
             AnalogParam.LFO_KEY_TRIGGER,
-            "Key Trigger",
-            ["OFF", "ON"],
+            AnalogDisplayName.LFO_KEY_TRIGGER,
+            AnalogDisplayOptions.LFO_KEY_TRIGGER,
         )
         layout.addWidget(self.key_trigger_switch)
 
@@ -246,7 +263,7 @@ class AnalogLFOSectionOld(QWidget):
         self._create_parameter_combo_box = create_parameter_combo_box
         self._on_lfo_shape_changed = on_lfo_shape_changed
         self.lfo_shape_buttons = lfo_shape_buttons
-        JDXiThemeManager.apply_adsr_style(self, analog=True)
+        JDXi.ThemeManager.apply_adsr_style(self, analog=True)
         self.setup_ui()
 
     def setup_ui(self):
@@ -271,8 +288,8 @@ class AnalogLFOSectionOld(QWidget):
             btn = QPushButton(name)
             btn.setCheckable(True)
             btn.setProperty("value", value)
-            btn.setIcon(qta.icon(icon_name, color=JDXiStyle.WHITE, icon_size=0.7))
-            JDXiThemeManager.apply_button_rect_analog(btn)
+            btn.setIcon(qta.icon(icon_name, color=JDXi.Style.WHITE, icon_size=0.7))
+            JDXi.ThemeManager.apply_button_rect_analog(btn)
             btn.setIconSize(QSize(20, 20))
             btn.setFixedSize(60, 30)
             btn.setToolTip(name)
@@ -285,112 +302,136 @@ class AnalogLFOSectionOld(QWidget):
         main_rows_vlayout.addLayout(shape_row_layout)
 
         # --- Add Tempo Sync Controls ---
-        sync_row_layout = self._create_tempo_sync_controls()
+        sync_row_layout = self._create_lfo_sync_controls()
 
         main_rows_vlayout.addLayout(sync_row_layout)
 
         self.lfo_controls_tab_widget = QTabWidget()
-        JDXiThemeManager.apply_tabs_style(self.lfo_controls_tab_widget, analog=True)
+        JDXi.ThemeManager.apply_tabs_style(self.lfo_controls_tab_widget, analog=True)
         main_rows_vlayout.addWidget(self.lfo_controls_tab_widget)
 
         # ---LFO Rate and Fade Time ---
-        fade_rate_controls_row_layout = self._create_lfo_fade_rate_controls_row_layout()
-        fade_rate_controls_row_widget = QWidget()
-        fade_rate_controls_row_widget.setMinimumHeight(
-            JDXiDimensions.EDITOR.MINIMUM_HEIGHT
+        fade_rate_controls_row_layout = self._create_lfo_timing_controls()
+        timing_controls_row_widget = QWidget()
+        timing_controls_row_widget.setMinimumHeight(
+            JDXi.Dimensions.EDITOR.MINIMUM_HEIGHT
         )
-        fade_rate_controls_row_widget.setLayout(fade_rate_controls_row_layout)
+        timing_controls_row_widget.setLayout(fade_rate_controls_row_layout)
 
         self.lfo_controls_tab_widget.addTab(
-            fade_rate_controls_row_widget, "Fade and Rate Controls"
+            timing_controls_row_widget, "Timing Controls"
         )
 
-        # --- Depth controls ---
-        depth_controls_row_layout = self._create_lfo_depth_controls()
-        depth_controls_row_widget = QWidget()
-        depth_controls_row_widget.setMinimumHeight(JDXiDimensions.EDITOR.MINIMUM_HEIGHT)
-        depth_controls_row_widget.setLayout(depth_controls_row_layout)
-        depth_icon = JDXiIconRegistry.get_icon(
-            JDXiIconRegistry.WAVEFORM, color=JDXiStyle.GREY
+        # --- Modulation Controls ---
+        destination_modulation_controls_row_layout = (
+            self._create_lfo_destination_modulation_controls()
+        )
+        modulation_controls_row_widget = QWidget()
+        modulation_controls_row_widget.setMinimumHeight(
+            JDXi.Dimensions.EDITOR.MINIMUM_HEIGHT
+        )
+        modulation_controls_row_widget.setLayout(
+            destination_modulation_controls_row_layout
+        )
+        depth_icon = JDXi.IconRegistry.get_icon(
+            JDXi.IconRegistry.WAVEFORM, color=JDXi.Style.GREY
         )
         self.lfo_controls_tab_widget.addTab(
-            depth_controls_row_widget, depth_icon, "Depth Controls"
+            modulation_controls_row_widget,
+            depth_icon,
+            "Destination Modulation Controls",
         )
         main_rows_vlayout.addStretch()
 
-    def _create_lfo_depth_controls(self) -> QHBoxLayout:
-        depth_controls_row_layout = QHBoxLayout()
+    def _create_lfo_destination_modulation_controls(self) -> QHBoxLayout:
         self.lfo_pitch = self._create_parameter_slider(
-            AnalogParam.LFO_PITCH_DEPTH, "Pitch Depth", vertical=True
+            AnalogParam.LFO_PITCH_DEPTH,
+            AnalogDisplayName.LFO_PITCH_DEPTH,
+            vertical=True,
         )
         self.lfo_pitch_modulation = self._create_parameter_slider(
-            AnalogParam.LFO_PITCH_MODULATION_CONTROL, "Pitch Modulation", vertical=True
+            AnalogParam.LFO_PITCH_MODULATION_CONTROL,
+            AnalogDisplayName.LFO_PITCH_MODULATION_CONTROL,
+            vertical=True,
         )
         self.lfo_filter = self._create_parameter_slider(
-            AnalogParam.LFO_FILTER_DEPTH, "Filter Depth", vertical=True
+            AnalogParam.LFO_FILTER_DEPTH,
+            AnalogDisplayName.LFO_FILTER_DEPTH,
+            vertical=True,
         )
         self.lfo_filter_modulation = self._create_parameter_slider(
             AnalogParam.LFO_FILTER_MODULATION_CONTROL,
-            "Filter Modulation",
+            AnalogDisplayName.LFO_FILTER_MODULATION_CONTROL,
             vertical=True,
         )
         self.lfo_amp = self._create_parameter_slider(
-            AnalogParam.LFO_AMP_DEPTH, "Amp Depth", vertical=True
+            AnalogParam.LFO_AMP_DEPTH, AnalogDisplayName.LFO_AMP_DEPTH, vertical=True
         )
         self.lfo_amp_modulation = self._create_parameter_slider(
-            AnalogParam.LFO_AMP_MODULATION_CONTROL, "AMP Modulation", vertical=True
+            AnalogParam.LFO_AMP_MODULATION_CONTROL,
+            AnalogDisplayName.LFO_AMP_MODULATION_CONTROL,
+            vertical=True,
         )
 
-        # depth_controls_row_layout.addStretch()
-        depth_controls_row_layout.addWidget(self.lfo_pitch)
-        depth_controls_row_layout.addWidget(self.lfo_pitch_modulation)
-        depth_controls_row_layout.addWidget(self.lfo_filter)
-        depth_controls_row_layout.addWidget(self.lfo_filter_modulation)
-        depth_controls_row_layout.addWidget(self.lfo_amp)
-        depth_controls_row_layout.addWidget(self.lfo_amp_modulation)
-        # depth_controls_row_layout.addStretch()
-        return depth_controls_row_layout
+        mod_controls_row_layout = create_layout_with_widgets(
+            [
+                self.lfo_pitch,
+                self.lfo_pitch_modulation,
+                self.lfo_filter,
+                self.lfo_filter_modulation,
+                self.lfo_amp,
+                self.lfo_amp_modulation,
+            ]
+        )
+        return mod_controls_row_layout
 
-    def _create_lfo_fade_rate_controls_row_layout(self) -> QHBoxLayout:
+    def _create_lfo_timing_controls(self) -> QHBoxLayout:
         """create lfo fate rate layout"""
         self.lfo_rate = self._create_parameter_slider(
-            AnalogParam.LFO_RATE, "Rate", vertical=True
+            AnalogParam.LFO_RATE, AnalogDisplayName.LFO_RATE, vertical=True
         )
         self.lfo_rate_modulation = self._create_parameter_slider(
-            AnalogParam.LFO_RATE_MODULATION_CONTROL, "Rate Modulation", vertical=True
+            AnalogParam.LFO_RATE_MODULATION_CONTROL,
+            AnalogDisplayName.LFO_RATE_MODULATION_CONTROL,
+            vertical=True,
         )
         self.lfo_fade = self._create_parameter_slider(
-            AnalogParam.LFO_FADE_TIME, "Fade Time", vertical=True
+            AnalogParam.LFO_FADE_TIME, AnalogDisplayName.LFO_FADE_TIME, vertical=True
         )
 
         fade_rate_controls_row_layout = QHBoxLayout()
-
-        # Add all controls to layout
-        # fade_rate_controls_row_layout.addStretch()
         fade_rate_controls_row_layout.addWidget(self.lfo_rate)
         fade_rate_controls_row_layout.addWidget(self.lfo_rate_modulation)
         fade_rate_controls_row_layout.addWidget(self.lfo_fade)
-        # fade_rate_controls_row_layout.addStretch()
         return fade_rate_controls_row_layout
 
-    def _create_tempo_sync_controls(self) -> QHBoxLayout:
-        # Tempo Sync controls
-        sync_row_layout = QHBoxLayout()
-        # sync_row_layout.addStretch()
+    def _create_lfo_sync_controls(self) -> QHBoxLayout:
+        """LFO Sync controls"""
+        # --- LFO Sync Switch
         self.lfo_sync_switch = self._create_parameter_switch(
-            AnalogParam.LFO_TEMPO_SYNC_SWITCH, "Tempo Sync", ["OFF", "ON"]
+            AnalogParam.LFO_TEMPO_SYNC_SWITCH,
+            AnalogDisplayName.LFO_TEMPO_SYNC_SWITCH,
+            AnalogDisplayOptions.LFO_TEMPO_SYNC_SWITCH,
         )
-        sync_row_layout.addWidget(self.lfo_sync_switch)
+        # --- LFO Sync Note
         self.lfo_sync_note = self._create_parameter_combo_box(
             AnalogParam.LFO_TEMPO_SYNC_NOTE,
-            "Sync Note",
-            options=["1/1", "1/2", "1/4", "1/8", "1/16"],
+            AnalogDisplayName.LFO_TEMPO_SYNC_NOTE,
+            options=AnalogDisplayOptions.LFO_TEMPO_SYNC_NOTE,
         )
-        sync_row_layout.addWidget(self.lfo_sync_note)
         # Key Trigger switch
         self.key_trigger_switch = self._create_parameter_switch(
-            AnalogParam.LFO_KEY_TRIGGER, "Key Trigger", ["OFF", "ON"]
+            AnalogParam.LFO_KEY_TRIGGER,
+            AnalogDisplayName.LFO_KEY_TRIGGER,
+            AnalogDisplayOptions.LFO_KEY_TRIGGER,
         )
-        sync_row_layout.addWidget(self.key_trigger_switch)
-        # sync_row_layout.addStretch()
+
+        sync_row_layout = create_layout_with_widgets(
+            widget_list=[
+                self.lfo_sync_switch,
+                self.lfo_sync_note,
+                self.key_trigger_switch,
+            ],
+            vertical=False,
+        )
         return sync_row_layout

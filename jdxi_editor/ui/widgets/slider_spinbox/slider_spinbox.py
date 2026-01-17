@@ -2,7 +2,7 @@
 Slider Spinbox Widget for Roland JD-Xi
 """
 
-from typing import Callable, Optional
+from typing import Callable
 
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QDoubleSpinBox, QSpinBox, QVBoxLayout, QWidget

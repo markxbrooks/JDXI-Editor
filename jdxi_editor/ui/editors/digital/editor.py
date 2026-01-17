@@ -42,6 +42,7 @@ from PySide6.QtWidgets import (
 )
 
 from decologr import Decologr as log
+from jdxi_editor.jdxi.jdxi import JDXi
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.jdxi.preset.widget import InstrumentPresetWidget
 from jdxi_editor.jdxi.synth.factory import create_synth_data
@@ -61,8 +62,6 @@ from jdxi_editor.ui.editors.digital import (
     DigitalToneModifySection,
 )
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
-from jdxi_editor.ui.style import JDXiStyle, JDXiThemeManager
-from jdxi_editor.ui.style.icons import JDXiIconRegistry
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 from jdxi_editor.ui.widgets.panel.partial import PartialsPanel
 from picomidi.sysex.parameter.address import AddressParameter
@@ -147,10 +146,9 @@ class DigitalSynthEditor(SynthEditor):
         """set up user interface"""
         self.setMinimumSize(850, 300)
         self.resize(1030, 600)
-        from jdxi_editor.ui.style.theme_manager import JDXiThemeManager
 
-        JDXiThemeManager.apply_tabs_style(self)
-        JDXiThemeManager.apply_editor_style(self)
+        JDXi.ThemeManager.apply_tabs_style(self)
+        JDXi.ThemeManager.apply_editor_style(self)
 
         # Use EditorBaseWidget for consistent layout structure
         self.base_widget = EditorBaseWidget(parent=self, analog=False)
@@ -172,7 +170,7 @@ class DigitalSynthEditor(SynthEditor):
 
         # Partials panel only
         self.partials_panel = PartialsPanel()
-        JDXiThemeManager.apply_tabs_style(self.partials_panel)
+        JDXi.ThemeManager.apply_tabs_style(self.partials_panel)
 
         for switch in self.partials_panel.switches.values():
             switch.stateChanged.connect(self._on_partial_state_changed)
@@ -206,17 +204,17 @@ class DigitalSynthEditor(SynthEditor):
 
         # --- Create partial tab widget
         self.partial_tab_widget = QTabWidget()
-        self.partial_tab_widget.setStyleSheet(JDXiStyle.TAB_TITLE)
+        self.partial_tab_widget.setStyleSheet(JDXi.Style.TAB_TITLE)
         instrument_widget.setLayout(instrument_layout)
         try:
-            presets_icon = JDXiIconRegistry.get_icon(
-                JDXiIconRegistry.MUSIC_NOTE_MULTIPLE, color=JDXiStyle.GREY
+            presets_icon = JDXi.IconRegistry.get_icon(
+                JDXi.IconRegistry.MUSIC_NOTE_MULTIPLE, color=JDXi.Style.GREY
             )
             if presets_icon is None or presets_icon.isNull():
                 raise ValueError("Icon is null")
         except:
-            presets_icon = JDXiIconRegistry.get_icon(
-                JDXiIconRegistry.MUSIC, color=JDXiStyle.GREY
+            presets_icon = JDXi.IconRegistry.get_icon(
+                JDXi.IconRegistry.MUSIC, color=JDXi.Style.GREY
             )
         self.partial_tab_widget.addTab(instrument_widget, presets_icon, "Presets")
         self._create_partial_tab_widget(container_layout, self.midi_helper)
@@ -232,8 +230,8 @@ class DigitalSynthEditor(SynthEditor):
         :return: None
         """
 
-        JDXiThemeManager.apply_tabs_style(self.partial_tab_widget)
-        JDXiThemeManager.apply_editor_style(self.partial_tab_widget)
+        JDXi.ThemeManager.apply_tabs_style(self.partial_tab_widget)
+        JDXi.ThemeManager.apply_editor_style(self.partial_tab_widget)
         self.partial_editors = {}
         # --- Create editor for each partial
         for i in range(1, 4):
@@ -245,8 +243,8 @@ class DigitalSynthEditor(SynthEditor):
                 parent=self,
             )
             self.partial_editors[i] = editor
-            partial_icon = JDXiIconRegistry.get_icon(
-                f"mdi.numeric-{i}-circle-outline", color=JDXiStyle.GREY
+            partial_icon = JDXi.IconRegistry.get_icon(
+                f"mdi.numeric-{i}-circle-outline", color=JDXi.Style.GREY
             )
             self.partial_tab_widget.addTab(editor, partial_icon, f"Partial {i}")
         self.common_section = DigitalCommonSection(
@@ -255,7 +253,9 @@ class DigitalSynthEditor(SynthEditor):
             self._create_parameter_combo_box,
             self.controls,
         )
-        common_icon = JDXiIconRegistry.get_icon("mdi.cog-outline", color=JDXiStyle.GREY)
+        common_icon = JDXi.IconRegistry.get_icon(
+            "mdi.cog-outline", color=JDXi.Style.GREY
+        )
         self.partial_tab_widget.addTab(self.common_section, common_icon, "Common")
         self.tone_modify_section = DigitalToneModifySection(
             self._create_parameter_slider,
@@ -263,8 +263,8 @@ class DigitalSynthEditor(SynthEditor):
             self._create_parameter_switch,
             self.controls,
         )
-        misc_icon = JDXiIconRegistry.get_icon(
-            "mdi.dots-horizontal", color=JDXiStyle.GREY
+        misc_icon = JDXi.IconRegistry.get_icon(
+            "mdi.dots-horizontal", color=JDXi.Style.GREY
         )
         self.partial_tab_widget.addTab(self.tone_modify_section, misc_icon, "Misc")
         container_layout.addWidget(self.partial_tab_widget)
@@ -759,13 +759,13 @@ class DigitalSynthEditor(SynthEditor):
         # Reset all buttons to default style
         for btn in wave_buttons.values():
             btn.setChecked(False)
-            btn.setStyleSheet(JDXiStyle.BUTTON_RECT)
+            btn.setStyleSheet(JDXi.Style.BUTTON_RECT)
 
         # Apply active style to the selected waveform button
         selected_btn = wave_buttons.get(selected_waveform)
         if selected_btn:
             selected_btn.setChecked(True)
-            selected_btn.setStyleSheet(JDXiStyle.BUTTON_RECT)
+            selected_btn.setStyleSheet(JDXi.Style.BUTTON_RECT)
         else:
             log.warning("Waveform button not found for: %s", selected_waveform)
 
@@ -818,13 +818,13 @@ class DigitalSynthEditor(SynthEditor):
         # Reset all buttons to default style
         for btn in filter_mode_buttons.values():
             btn.setChecked(False)
-            btn.setStyleSheet(JDXiStyle.BUTTON_RECT)
+            btn.setStyleSheet(JDXi.Style.BUTTON_RECT)
 
         # Apply active style to the selected filter mode button
         selected_btn = filter_mode_buttons.get(selected_filter_mode)
         if selected_btn:
             selected_btn.setChecked(True)
-            selected_btn.setStyleSheet(JDXiStyle.BUTTON_RECT_ACTIVE)
+            selected_btn.setStyleSheet(JDXi.Style.BUTTON_RECT_ACTIVE)
         else:
             log.warning("Filter mode button not found for: %s", selected_filter_mode)
 
@@ -871,13 +871,13 @@ class DigitalSynthEditor(SynthEditor):
         # Reset all buttons to default style
         for btn in lfo_shape_buttons.values():
             btn.setChecked(False)
-            btn.setStyleSheet(JDXiStyle.BUTTON_RECT)
+            btn.setStyleSheet(JDXi.Style.BUTTON_RECT)
 
         # Apply active style to the selected LFO shape button
         selected_btn = lfo_shape_buttons.get(selected_lfo_shape)
         if selected_btn:
             selected_btn.setChecked(True)
-            selected_btn.setStyleSheet(JDXiStyle.BUTTON_RECT_ACTIVE)
+            selected_btn.setStyleSheet(JDXi.Style.BUTTON_RECT_ACTIVE)
         else:
             log.warning("LFO shape button not found for: %s", selected_lfo_shape)
 
@@ -928,13 +928,13 @@ class DigitalSynthEditor(SynthEditor):
         # Reset all buttons to default style
         for btn in mod_lfo_shape_buttons.values():
             btn.setChecked(False)
-            btn.setStyleSheet(JDXiStyle.BUTTON_RECT)
+            btn.setStyleSheet(JDXi.Style.BUTTON_RECT)
 
         # Apply active style to the selected Mod LFO shape button
         selected_btn = mod_lfo_shape_buttons.get(selected_mod_lfo_shape)
         if selected_btn:
             selected_btn.setChecked(True)
-            selected_btn.setStyleSheet(JDXiStyle.BUTTON_RECT_ACTIVE)
+            selected_btn.setStyleSheet(JDXi.Style.BUTTON_RECT_ACTIVE)
         else:
             log.warning(
                 "Mod LFO shape button not found for: %s", selected_mod_lfo_shape

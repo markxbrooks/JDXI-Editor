@@ -41,10 +41,10 @@ import os
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
 
+from jdxi_editor.jdxi.jdxi import JDXi
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.resources import resource_path
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
-from jdxi_editor.ui.style.dimensions import JDXiDimensions
 
 
 class BasicEditor(SynthEditor):
@@ -54,15 +54,15 @@ class BasicEditor(SynthEditor):
         super().__init__(midi_helper=midi_helper, parent=parent)
         self.default_image = None
         self.image_label = None
-        self.setMinimumWidth(JDXiDimensions.EDITOR_BASIC.WIDTH)
-        self.setMinimumHeight(JDXiDimensions.EDITOR_BASIC.HEIGHT)
+        self.setMinimumWidth(JDXi.Dimensions.EDITOR_BASIC.WIDTH)
+        self.setMinimumHeight(JDXi.Dimensions.EDITOR_BASIC.HEIGHT)
 
     def load_and_set_image(self, image_path: str, secondary_image_path: str = None):
         """Helper function to load and set the image on the label."""
         if os.path.exists(image_path):
             pixmap = QPixmap(image_path)
             scaled_pixmap = pixmap.scaledToHeight(
-                JDXiDimensions.EDITOR_BASIC.IMAGE_HEIGHT,
+                JDXi.Dimensions.EDITOR_BASIC.IMAGE_HEIGHT,
                 Qt.TransformationMode.SmoothTransformation,
             )  # Resize to 150px height
             self.image_label.setPixmap(scaled_pixmap)

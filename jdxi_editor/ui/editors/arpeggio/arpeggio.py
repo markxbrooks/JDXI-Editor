@@ -44,9 +44,8 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from jdxi_editor.jdxi.jdxi import JDXi
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
-from jdxi_editor.midi.data.address.address import ZERO_BYTE, RolandSysExAddress
-from jdxi_editor.midi.data.address.arpeggio import ArpeggioAddress
 from jdxi_editor.midi.data.arpeggio.arpeggio import (
     ArpeggioDuration,
     ArpeggioGrid,
@@ -60,8 +59,8 @@ from jdxi_editor.midi.data.arpeggio.data import (
 from jdxi_editor.midi.data.parameter.arpeggio import ArpeggioParam
 from jdxi_editor.midi.data.parameter.program.zone import ProgramZoneParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.editors.address.factory import create_arp_address
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
-from jdxi_editor.ui.style.icons import JDXiIconRegistry
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 from jdxi_editor.ui.widgets.editor.simple_editor_helper import SimpleEditorHelper
 from picomidi.sysex.parameter.address import AddressParameter
@@ -87,12 +86,7 @@ class ArpeggioEditor(BasicEditor):
         self.setWindowTitle("Arpeggio Editor")
         self.midi_helper = midi_helper
         self.preset_helper = preset_helper
-        self.address = RolandSysExAddress(
-            msb=ArpeggioAddress.TEMPORARY_PROGRAM,
-            umb=ArpeggioAddress.ARP_PART,
-            lmb=ArpeggioAddress.ARP_GROUP,
-            lsb=ZERO_BYTE,
-        )
+        self.address = create_arp_address()
         self.partial_number = 0
         self.controls: Dict[AddressParameter, QWidget] = {}
 
@@ -131,7 +125,7 @@ class ArpeggioEditor(BasicEditor):
             return row
 
         # --- Icons row (standardized across editor tabs)
-        icon_hlayout = JDXiIconRegistry.create_generic_musical_icon_row()
+        icon_hlayout = JDXi.IconRegistry.create_generic_musical_icon_row()
         # Add on-off switch
         common_button = self._create_parameter_switch(
             ProgramZoneParam.ARPEGGIO_SWITCH,

@@ -43,10 +43,11 @@ Example:
 from typing import Callable
 
 from PySide6.QtWidgets import (
-    QFormLayout,
     QWidget,
 )
 
+from jdxi_editor.midi.data.parameter.drum.name import DrumDisplayName
+from jdxi_editor.midi.data.parameter.drum.option import DrumDisplayOptions
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.drum.partial.base import DrumBaseSection
@@ -78,22 +79,24 @@ class DrumOutputSection(DrumBaseSection):
         """setup UI"""
         # --- Create sliders
         partial_output_level_slider = self._create_parameter_slider(
-            DrumPartialParam.PARTIAL_OUTPUT_LEVEL, "Output Level"
+            DrumPartialParam.PARTIAL_OUTPUT_LEVEL, DrumDisplayName.PARTIAL_OUTPUT_LEVEL
         )
 
         partial_chorus_send_level_slider = self._create_parameter_slider(
-            DrumPartialParam.PARTIAL_CHORUS_SEND_LEVEL, "Chorus Send Level"
+            DrumPartialParam.PARTIAL_CHORUS_SEND_LEVEL,
+            DrumDisplayName.PARTIAL_CHORUS_SEND_LEVEL,
         )
 
         partial_reverb_send_level_slider = self._create_parameter_slider(
-            DrumPartialParam.PARTIAL_REVERB_SEND_LEVEL, "Reverb Send Level"
+            DrumPartialParam.PARTIAL_REVERB_SEND_LEVEL,
+            DrumDisplayName.PARTIAL_REVERB_SEND_LEVEL,
         )
 
         partial_output_assign_combo = self._create_parameter_combo_box(
             DrumPartialParam.PARTIAL_OUTPUT_ASSIGN,
-            "Output Assign",
-            ["EFX1", "EFX2", "DLY", "REV", "DIR"],
-            [0, 1, 2, 3, 4],
+            DrumDisplayName.PARTIAL_OUTPUT_ASSIGN,
+            options=DrumDisplayOptions.PARTIAL_OUTPUT_ASSIGN,
+            values=[0, 1, 2, 3, 4],
         )
 
         output_layout = create_form_layout_with_widgets(

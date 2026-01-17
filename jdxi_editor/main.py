@@ -194,7 +194,7 @@ def setup_splash_screen(
     # --- Title and Image row (side by side)
     title_image_row = QHBoxLayout()
     title_image_row.setSpacing(20)
-    
+
     # --- Title (left side)
     title = DigitalTitle(
         __program__,
@@ -204,7 +204,7 @@ def setup_splash_screen(
     title.setStyleSheet(JDXi.Style.INSTRUMENT_TITLE_LABEL)
     title_image_row.addWidget(title)
     title_image_row.addStretch()  # Push image to the right
-    
+
     # --- Image (right side)
     image_path = resource_path(os.path.join("resources", "jdxi_cartoon_600.png"))
     pixmap = QPixmap(image_path).scaled(
@@ -215,7 +215,7 @@ def setup_splash_screen(
     )
     logo = create_icon_label_with_pixmap(pixmap)
     title_image_row.addWidget(logo)
-    
+
     card_layout.addLayout(title_image_row)
 
     # --- Subtitle

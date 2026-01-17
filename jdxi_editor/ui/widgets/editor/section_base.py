@@ -37,9 +37,7 @@ from typing import Literal, Optional
 
 from PySide6.QtWidgets import QVBoxLayout, QWidget
 
-from jdxi_editor.ui.style.dimensions import JDXiDimensions
-from jdxi_editor.ui.style.icons import JDXiIconRegistry
-from jdxi_editor.ui.style.theme_manager import JDXiThemeManager
+from jdxi_editor.jdxi.jdxi import JDXi
 from jdxi_editor.ui.widgets.editor.icon_type import IconType
 
 
@@ -97,7 +95,7 @@ class SectionBaseWidget(QWidget):
                 self._layout.setSpacing(spacing)
 
             # Apply styling
-            JDXiThemeManager.apply_adsr_style(self, analog=self.analog)
+            JDXi.ThemeManager.apply_adsr_style(self, analog=self.analog)
 
             # Add icon row if not disabled
             if self.icon_type != IconType.NONE and not self._icon_added:
@@ -112,11 +110,11 @@ class SectionBaseWidget(QWidget):
             return
 
         if self.icon_type == IconType.ADSR:
-            icon_hlayout = JDXiIconRegistry.create_adsr_icons_row()
+            icon_hlayout = JDXi.IconRegistry.create_adsr_icons_row()
         elif self.icon_type == IconType.OSCILLATOR:
-            icon_hlayout = JDXiIconRegistry.create_oscillator_icons_row()
+            icon_hlayout = JDXi.IconRegistry.create_oscillator_icons_row()
         elif self.icon_type == IconType.GENERIC:
-            icon_hlayout = JDXiIconRegistry.create_generic_musical_icon_row()
+            icon_hlayout = JDXi.IconRegistry.create_generic_musical_icon_row()
         else:
             return  # IconType.NONE or unknown
 
@@ -149,8 +147,8 @@ class SectionBaseWidget(QWidget):
     def create_main_rows_layout(self):
         """create main rows layout"""
         layout = self.get_layout(
-            margins=JDXiDimensions.EDITOR_DIGITAL.MARGINS,
-            spacing=JDXiDimensions.EDITOR_DIGITAL.SPACING,
+            margins=JDXi.Dimensions.EDITOR_DIGITAL.MARGINS,
+            spacing=JDXi.Dimensions.EDITOR_DIGITAL.SPACING,
         )
-        layout.addSpacing(JDXiDimensions.EDITOR_DIGITAL.SPACING)
+        layout.addSpacing(JDXi.Dimensions.EDITOR_DIGITAL.SPACING)
         return layout

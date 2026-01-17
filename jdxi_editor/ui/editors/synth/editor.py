@@ -30,6 +30,7 @@ from PySide6.QtGui import QKeySequence, QPixmap, QShortcut, QShowEvent
 from PySide6.QtWidgets import QGroupBox, QLabel, QPushButton, QVBoxLayout, QWidget
 
 from decologr import Decologr as log
+from jdxi_editor.jdxi.jdxi import JDXi
 from jdxi_editor.jdxi.preset.lists import JDXiPresetToneList
 from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.log.midi_info import log_midi_info
@@ -53,7 +54,6 @@ from jdxi_editor.ui.editors.digital.utils import (
 )
 from jdxi_editor.ui.editors.helpers.preset import get_preset_parameter_value
 from jdxi_editor.ui.editors.synth.base import SynthBase
-from jdxi_editor.ui.style import JDXiStyle, JDXiThemeManager
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 from jdxi_editor.ui.widgets.preset.combo_box import PresetComboBox
 
@@ -135,9 +135,8 @@ class SynthEditor(SynthBase):
         self.setWindowFlags(Qt.WindowType.Tool)
 
         # Apply common style
-        from jdxi_editor.ui.style.theme_manager import JDXiThemeManager
 
-        JDXiThemeManager.apply_editor_style(self)
+        JDXi.ThemeManager.apply_editor_style(self)
 
         # Add keyboard shortcuts
         self.refresh_shortcut = QShortcut(QKeySequence.StandardKey.Refresh, self)
@@ -263,11 +262,11 @@ class SynthEditor(SynthBase):
         instrument_title_group_layout.addWidget(self.instrument_selection_label)
         self.instrument_selection_combo = PresetComboBox(self.preset_list)
         if synth_type == "Analog":
-            JDXiThemeManager.apply_combo_box(
+            JDXi.ThemeManager.apply_combo_box(
                 self.instrument_selection_combo, analog=True
             )
         else:
-            JDXiThemeManager.apply_combo_box(self.instrument_selection_combo)
+            JDXi.ThemeManager.apply_combo_box(self.instrument_selection_combo)
         self.instrument_selection_combo.combo_box.setEditable(True)
         self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
             self.update_instrument_image
@@ -600,8 +599,8 @@ class SynthEditor(SynthBase):
 
         # --- Scale maintaining aspect ratio, fitting within width and height constraints
         scaled_pixmap = pixmap.scaled(
-            JDXiStyle.INSTRUMENT_IMAGE_WIDTH,
-            JDXiStyle.INSTRUMENT_IMAGE_HEIGHT,
+            JDXi.Style.INSTRUMENT_IMAGE_WIDTH,
+            JDXi.Style.INSTRUMENT_IMAGE_HEIGHT,
             Qt.AspectRatioMode.KeepAspectRatio,
             Qt.TransformationMode.SmoothTransformation,
         )
@@ -609,7 +608,7 @@ class SynthEditor(SynthBase):
         if image_label:
             image_label.setPixmap(scaled_pixmap)
             image_label.setScaledContents(False)  # Don't stretch, maintain aspect ratio
-            image_label.setStyleSheet(JDXiStyle.INSTRUMENT_IMAGE_LABEL)
+            image_label.setStyleSheet(JDXi.Style.INSTRUMENT_IMAGE_LABEL)
             log.debug(f"Successfully loaded image: {file_to_load}")
         else:
             log.error("Instrument image label not found - cannot set image")

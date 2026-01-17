@@ -56,6 +56,7 @@ from PySide6.QtWidgets import (
 )
 
 from decologr import Decologr as log
+from jdxi_editor.jdxi.jdxi import JDXi
 from jdxi_editor.jdxi.midi.message.sysex.offset import JDXiSysExMessageLayout
 from jdxi_editor.midi.data.address.address import CommandID
 from jdxi_editor.midi.io.helper import MidiIOHelper
@@ -137,9 +138,8 @@ class MIDIDebugger(QMainWindow):
         # Set window properties
         self.setWindowTitle("MIDI Debugger")
         self.setMinimumSize(800, 600)
-        from jdxi_editor.ui.style.theme_manager import JDXiThemeManager
 
-        JDXiThemeManager.apply_debugger_window(self)
+        JDXi.ThemeManager.apply_debugger_window(self)
 
         # Create central widget
         central = QWidget()

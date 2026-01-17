@@ -22,7 +22,7 @@ Usage Example:
 
 """
 
-from enum import Enum, auto
+from enum import Enum
 
 OSC_WAVE_SAW = 0x00  # Sawtooth
 OSC_WAVE_SQUARE = 0x01  # Square

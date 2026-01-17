@@ -52,6 +52,7 @@ from PySide6.QtWidgets import (
 )
 
 from decologr import Decologr as log
+from jdxi_editor.jdxi.jdxi import JDXi
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.jdxi.preset.lists import JDXiPresetToneList
 from jdxi_editor.jdxi.synth.type import JDXiSynth
@@ -68,8 +69,6 @@ from jdxi_editor.ui.editors.helpers.program import (
     get_program_by_id,
 )
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
-from jdxi_editor.ui.style import JDXiStyle
-from jdxi_editor.ui.style.icons import JDXiIconRegistry
 from jdxi_editor.ui.widgets.editor.helper import (
     create_group_with_layout,
     create_layout_with_widgets,
@@ -134,7 +133,7 @@ class PresetEditor(BasicEditor):
         main_vlayout = QVBoxLayout()
         # self.setCentralWidget(center_widget)
         self.setLayout(main_vlayout)
-        self.setStyleSheet(JDXiStyle.EDITOR)
+        self.setStyleSheet(JDXi.Style.EDITOR)
 
         self.title_label = QLabel("Presets:")
         self.title_label.setStyleSheet(
@@ -162,8 +161,8 @@ class PresetEditor(BasicEditor):
 
         self.digital_synth_1_icon = QLabel()
         self.digital_synth_1_icon.setPixmap(
-            JDXiIconRegistry.get_icon_pixmap(
-                JDXiIconRegistry.PIANO, color=JDXiStyle.FOREGROUND, size=40
+            JDXi.IconRegistry.get_icon_pixmap(
+                JDXi.IconRegistry.PIANO, color=JDXi.Style.FOREGROUND, size=40
             )
         )
         self.digital_synth_1_hlayout.addWidget(self.digital_synth_1_icon)
@@ -174,7 +173,7 @@ class PresetEditor(BasicEditor):
             f"""
                 font-size: 16px;
                 font-weight: bold;
-                color: {JDXiStyle.ACCENT};
+                color: {JDXi.Style.ACCENT};
             """
         )
         self.digital_synth_1_current_label = QLabel("Current Tone:")
@@ -183,7 +182,7 @@ class PresetEditor(BasicEditor):
             f"""
                 font-size: 16px;
                 font-weight: bold;
-                color: {JDXiStyle.ACCENT};
+                color: {JDXi.Style.ACCENT};
             """
         )
         self.digital_synth_2_hlayout = QHBoxLayout()
@@ -191,8 +190,8 @@ class PresetEditor(BasicEditor):
 
         self.digital_synth_2_icon = QLabel()
         self.digital_synth_2_icon.setPixmap(
-            JDXiIconRegistry.get_icon_pixmap(
-                JDXiIconRegistry.PIANO, color=JDXiStyle.FOREGROUND, size=40
+            JDXi.IconRegistry.get_icon_pixmap(
+                JDXi.IconRegistry.PIANO, color=JDXi.Style.FOREGROUND, size=40
             )
         )
         self.digital_synth_2_hlayout.addWidget(self.digital_synth_2_icon)
@@ -203,7 +202,7 @@ class PresetEditor(BasicEditor):
             f"""
                 font-size: 16px;
                 font-weight: bold;
-                color: {JDXiStyle.ACCENT};
+                color: {JDXi.Style.ACCENT};
             """
         )
         self.digital_synth_2_current_label = QLabel("Current Tone:")
@@ -212,7 +211,7 @@ class PresetEditor(BasicEditor):
             f"""
                 font-size: 16px;
                 font-weight: bold;  
-                color: {JDXiStyle.ACCENT};
+                color: {JDXi.Style.ACCENT};
             """
         )
         self.drum_kit_hlayout = QHBoxLayout()
@@ -220,8 +219,8 @@ class PresetEditor(BasicEditor):
 
         self.drum_kit_icon = QLabel()
         self.drum_kit_icon.setPixmap(
-            JDXiIconRegistry.get_icon_pixmap(
-                JDXiIconRegistry.DRUM, color=JDXiStyle.FOREGROUND, size=40
+            JDXi.IconRegistry.get_icon_pixmap(
+                JDXi.IconRegistry.DRUM, color=JDXi.Style.FOREGROUND, size=40
             )
         )
         self.drum_kit_hlayout.addWidget(self.drum_kit_icon)
@@ -232,7 +231,7 @@ class PresetEditor(BasicEditor):
             f"""
                 font-size: 16px;
                 font-weight: bold;
-                color: {JDXiStyle.ACCENT};
+                color: {JDXi.Style.ACCENT};
             """
         )
         self.drum_kit_current_label = QLabel("Current Tone:")
@@ -241,15 +240,15 @@ class PresetEditor(BasicEditor):
             f"""
                 font-size: 16px;
                 font-weight: bold;
-                color: {JDXiStyle.ACCENT};
+                color: {JDXi.Style.ACCENT};
             """
         )
         self.analog_synth_hlayout = QHBoxLayout()
 
         self.analog_synth_icon = QLabel()
         self.analog_synth_icon.setPixmap(
-            JDXiIconRegistry.get_icon(
-                JDXiIconRegistry.PIANO, color=JDXiStyle.FOREGROUND
+            JDXi.IconRegistry.get_icon(
+                JDXi.IconRegistry.PIANO, color=JDXi.Style.FOREGROUND
             ).pixmap(40, 40)
         )
         self.analog_synth_hlayout.addWidget(self.analog_synth_icon)
@@ -262,7 +261,7 @@ class PresetEditor(BasicEditor):
             f"""
                 font-size: 16px;
                 font-weight: bold;
-                color: {JDXiStyle.ACCENT_ANALOG};
+                color: {JDXi.Style.ACCENT_ANALOG};
             """
         )
         self.analog_synth_current_label = QLabel("Current Tone:")
@@ -271,7 +270,7 @@ class PresetEditor(BasicEditor):
             f"""
                 font-size: 16px;
                 font-weight: bold;
-                color: {JDXiStyle.ACCENT_ANALOG};
+                color: {JDXi.Style.ACCENT_ANALOG};
             """
         )
         self._populate_presets()
@@ -304,7 +303,7 @@ class PresetEditor(BasicEditor):
 
         self.search_box = QLineEdit()
         search_row = create_layout_with_widgets([QLabel("Search:"), self.search_box])
-        self.search_box.setStyleSheet(JDXiStyle.QLINEEDIT)
+        self.search_box.setStyleSheet(JDXi.Style.QLINEEDIT)
         self.search_box.setPlaceholderText("Search presets...")
         self.search_box.textChanged.connect(self._populate_presets)
         search_row.addWidget(self.search_box)
@@ -327,8 +326,8 @@ class PresetEditor(BasicEditor):
         preset_vlayout.addWidget(self.category_combo_box)
         # Load button
         self.load_button = QPushButton(
-            JDXiIconRegistry.get_icon(
-                JDXiIconRegistry.FOLDER_NOTCH_OPEN, color=JDXiStyle.FOREGROUND
+            JDXi.IconRegistry.get_icon(
+                JDXi.IconRegistry.FOLDER_NOTCH_OPEN, color=JDXi.Style.FOREGROUND
             ),
             "Load Preset",
         )

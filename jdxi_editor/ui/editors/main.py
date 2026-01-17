@@ -13,8 +13,8 @@ Methods:
 
 from PySide6.QtWidgets import QMainWindow, QTabWidget
 
+from jdxi_editor.jdxi.jdxi import JDXi
 from jdxi_editor.project import __program__, __version__
-from jdxi_editor.ui.style import JDXiStyle
 
 
 class MainEditor(QMainWindow):
@@ -33,8 +33,8 @@ class MainEditor(QMainWindow):
         self.editor_tab_widget = QTabWidget()
         self.editor_tab_widget.setTabsClosable(False)
         self.setCentralWidget(self.editor_tab_widget)  # if this is a QMainWindow
-        self.editor_tab_widget.setStyleSheet(JDXiStyle.TABS_MAIN_EDITOR)
-        self.setStyleSheet(JDXiStyle.EDITOR)
+        self.editor_tab_widget.setStyleSheet(JDXi.Style.TABS_MAIN_EDITOR)
+        self.setStyleSheet(JDXi.Style.EDITOR)
         self.setWindowTitle(f"{__program__} - {__version__}")
         # Hide status bar to maximize editor space
         self.statusBar().hide()

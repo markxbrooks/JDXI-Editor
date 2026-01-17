@@ -21,8 +21,6 @@ Example usage:
 from dataclasses import dataclass, field
 from typing import Any, Dict, Optional
 
-from jdxi_editor.ui.editors.synth.base import SynthBase
-
 
 @dataclass
 class EditorConfig:

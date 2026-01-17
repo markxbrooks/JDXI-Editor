@@ -40,13 +40,13 @@ from PySide6.QtWidgets import (
 )
 
 from decologr import Decologr as log
+from jdxi_editor.jdxi.jdxi import JDXi
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.json_composer import JDXiJSONComposer
 from jdxi_editor.project import __package_name__
 from jdxi_editor.ui.editors import ProgramEditor
 from jdxi_editor.ui.editors.io.player import MidiFileEditor
 from jdxi_editor.ui.editors.pattern.pattern import PatternSequenceEditor
-from jdxi_editor.ui.style import JDXiStyle
 
 
 def zip_directory(folder_path, zip_path):
@@ -77,7 +77,7 @@ class PatchManager(QMainWindow):
         self.setMinimumSize(400, 200)
 
         # Apply dark theme styling
-        self.setStyleSheet(JDXiStyle.PATCH_MANAGER)
+        self.setStyleSheet(JDXi.Style.PATCH_MANAGER)
 
         # Create central widget and layout
         main_widget = QWidget()

@@ -15,10 +15,10 @@ from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QHBoxLayout, QSlider, QVBoxLayout, QWidget
 
 from decologr import Decologr as log
+from jdxi_editor.jdxi.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.parameter.digital import DigitalPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.ui.style.dimensions import JDXiDimensions
 from jdxi_editor.ui.widgets.envelope.base import EnvelopeWidgetBase
 from jdxi_editor.ui.widgets.filter.filter_plot import FilterPlot
 from jdxi_editor.ui.widgets.pulse_width.slider_spinbox import PWMSliderSpinbox
@@ -87,8 +87,8 @@ class FilterWidget(EnvelopeWidgetBase):
         self.setLayout(self.horizontal_layout)
         self.filter_mode = "lpf"  # Default filter mode
         self.plot = FilterPlot(
-            width=JDXiDimensions.PWM_WIDGET.WIDTH - 20,
-            height=JDXiDimensions.PWM_WIDGET.HEIGHT - 20,
+            width=JDXi.Dimensions.PWM_WIDGET.WIDTH - 20,
+            height=JDXi.Dimensions.PWM_WIDGET.HEIGHT - 20,
             parent=self,
             envelope=self.envelope,
             filter_mode=self.filter_mode,

@@ -1,3 +1,7 @@
+"""
+JDXi Parameter Address Map
+"""
+
 from __future__ import annotations
 
 from jdxi_editor.midi.data.address.address import AddressOffsetProgramLMB
@@ -9,7 +13,7 @@ from jdxi_editor.midi.data.address.address import (
     AddressOffsetTemporaryToneUMB as TemporaryToneUMB,
 )
 from jdxi_editor.midi.data.address.address import AddressStartMSB as AreaMSB
-from jdxi_editor.midi.data.parameter.analog import AnalogParam
+from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
 from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParam
 from jdxi_editor.midi.data.parameter.digital.modify import DigitalModifyParam
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParam
