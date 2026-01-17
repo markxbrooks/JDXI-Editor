@@ -31,37 +31,123 @@ class AnalogDimensions:
     MARGIN = 5
     MIN_CONTROL_WIDTH = 20
     MIN_CONTROL_HEIGHT = 14
+    
+    
+class IconDimensions:
+    """Icon Dimensions"""
+    SIZE_SMALL = 0.7
+    WIDTH = 30
+    HEIGHT = 30
 
+
+class DigitalFilterDimensions:
+    """Digital Filter Dimensions"""
+    SPACING = 5
+    MARGINS = (5, 15, 5, 5)
+    
+    
+class BasicEditorDimensions:
+    """Basic Editor Dimensions"""
+    IMAGE_HEIGHT = 150
+    WIDTH = 550
+    HEIGHT = 550
+    
+class DrumEditorDimensions:
+    """Drum Editor Dimensions"""
+    WIDTH = 1100
+    HEIGHT = 800
+    
+    
+class WaveformIconDimensions:
+    """Waveform Icon Dimensions"""
+    WIDTH = 60
+    HEIGHT = 30
+    
+
+class SplashScreenSimensions:
+    """Splash screen dimensions"""
+    HEIGHT = 540
+    WIDTH = 850
+    
+
+class ChartDimensions:
+    """Chart Dimensions"""
+    POINT_SIZE = 2
+    
+    
+class InstrumentDimensions:
+    """Instrument Dimensions"""
+    MARGIN = 15
+    HEIGHT = 400
+    WIDTH = 1000
+    
+    
+class EditorDimensions:
+    """EditorDimensions"""
+    EDITOR_MINIMUM_HEIGHT = 250
+    
+    
+class ArpDimensions:
+    """ArpDimensions"""
+    ARP_MARGIN = 5
+    ARP_SPACING = 20
+    
+    
+class LedDisplayDimensions:
+    """LED display area (enlarged for 2 rows)"""
+    DISPLAY_WIDTH = 210
+    DISPLAY_HEIGHT = 70
+    DISPLAY_X = MARGIN + 20
+    DISPLAY_Y = MARGIN + 35
+    
 
 class JDXiDimensions:
     """
     A class to store dimensions for the JD-Xi editor UI.
     """
+    INSTRUMENT: InstrumentDimensions = InstrumentDimensions
+    MARGIN = 15
+    
+    HEIGHT = 400
+    WIDTH = 1000
+    
+    ICON: IconDimensions = IconDimensions
 
     ICON_SIZE_SMALL = 0.7
     ICON_WIDTH = 30
     ICON_HEIGHT = 30
+    
+    WAVEFORM_ICON: WaveformIconDimensions = WaveformIconDimensions
+    WAVEFORM_ICON_WIDTH = 60
+    WAVEFORM_ICON_HEIGHT = 30
+    
+    DIGITAL_FILTER: DigitalFilterDimensions = DigitalFilterDimensions
+    
     DIGITAL_FILTER_SPACING = 5
     DIGITAL_FILTER_MARGINS = (5, 15, 5, 5)
+    
+    BASIC_EDITOR: BasicEditorDimensions = BasicEditorDimensions
     BASIC_EDITOR_IMAGE_HEIGHT = 150
     BASIC_EDITOR_WIDTH = 550
     BASIC_EDITOR_HEIGHT = 550
+    
+    DRUM: DrumEditorDimensions = DrumEditorDimensions
     DRUM_WIDTH = 1100
     DRUM_HEIGHT = 800
+    
     ANALOG = AnalogDimensions
 
-    WAVEFORM_ICON_WIDTH = 60
-    WAVEFORM_ICON_HEIGHT = 30
-
+    SPLASH: SplashScreenSimensions = SplashScreenSimensions
     SPLASH_HEIGHT = 540
     SPLASH_WIDTH = 850
+    
+    CHART: ChartDimensions = ChartDimensions
     CHART_POINT_SIZE = 2
+    
+    EDITOR: EditorDimensions = EditorDimensions
     EDITOR_MINIMUM_HEIGHT = 250
-    HEIGHT = 400
-    WIDTH = 1000
 
-    MARGIN = 15
-
+    ARP: ArpDimensions = ArpDimensions
     ARP_MARGIN = 5
     ARP_SPACING = 20
 
