@@ -98,12 +98,8 @@ class AnalogFilterSection(SectionBaseWidget):
 
     def _create_filter_controls_row(self) -> QHBoxLayout:
         """Filter controls row with individual buttons"""
-        filter_row = QHBoxLayout()
-        filter_row.addStretch()
-        
         # Add label
         filter_label = QLabel("Filter")
-        filter_row.addWidget(filter_label)
         
         # Create buttons for each filter mode
         filter_modes = [
@@ -117,6 +113,7 @@ class AnalogFilterSection(SectionBaseWidget):
             AnalogFilterType.LPF: "ri.filter-3-fill",  # Filter icon for LPF
         }
         
+        widgets = [filter_label]
         for filter_mode in filter_modes:
             btn = QPushButton(filter_mode.name)
             btn.setCheckable(True)
@@ -129,10 +126,9 @@ class AnalogFilterSection(SectionBaseWidget):
             btn.setFixedSize(JDXiDimensions.WAVEFORM_ICON_WIDTH, JDXiDimensions.WAVEFORM_ICON_HEIGHT)
             btn.clicked.connect(lambda checked, mode=filter_mode: self._on_filter_mode_selected(mode))
             self.filter_mode_buttons[filter_mode] = btn
-            filter_row.addWidget(btn)
+            widgets.append(btn)
         
-        filter_row.addStretch()
-        return filter_row
+        return create_layout_with_widgets(widgets, vertical=False)
 
     def _on_filter_mode_selected(self, filter_mode: AnalogFilterType):
         """

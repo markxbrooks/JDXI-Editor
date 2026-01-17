@@ -96,12 +96,8 @@ class DigitalFilterSection(SectionBaseWidget):
 
     def _create_filter_controls_row(self) -> QHBoxLayout:
         """Filter mode controls row with individual buttons"""
-        filter_mode_row = QHBoxLayout()
-        filter_mode_row.addStretch()
-        
         # Add label
         mode_label = QLabel("Mode")
-        filter_mode_row.addWidget(mode_label)
         
         # Create buttons for each filter mode
         filter_modes = [
@@ -128,6 +124,7 @@ class DigitalFilterSection(SectionBaseWidget):
             DigitalFilterMode.LPF4: "lpf_filter",
         }
         
+        widgets = [mode_label]
         for filter_mode in filter_modes:
             btn = QPushButton(filter_mode.display_name)
             btn.setCheckable(True)
@@ -141,10 +138,9 @@ class DigitalFilterSection(SectionBaseWidget):
             btn.setFixedSize(JDXiDimensions.WAVEFORM_ICON_WIDTH, JDXiDimensions.WAVEFORM_ICON_HEIGHT)
             btn.clicked.connect(lambda checked, mode=filter_mode: self._on_filter_mode_selected(mode))
             self.filter_mode_buttons[filter_mode] = btn
-            filter_mode_row.addWidget(btn)
+            widgets.append(btn)
         
-        filter_mode_row.addStretch()
-        return filter_mode_row
+        return create_layout_with_widgets(widgets, vertical=False)
 
     def _create_filter_controls_group(self) -> QGroupBox:
         """Create filter controls group"""

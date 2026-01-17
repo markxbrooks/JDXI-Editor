@@ -40,10 +40,8 @@ from decologr import Decologr as log
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QComboBox,
-    QFormLayout,
     QGroupBox,
     QHBoxLayout,
-    QScrollArea,
     QSizePolicy,
     QTabWidget,
     QVBoxLayout,
@@ -59,7 +57,11 @@ from jdxi_editor.ui.widgets.combo_box.searchable_filterable import (
 )
 from jdxi_editor.ui.widgets.wmt.envelope import WMTEnvelopeWidget
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
-from jdxi_editor.ui.widgets.editor.helper import create_adsr_icon
+from jdxi_editor.ui.widgets.editor.helper import (
+    create_adsr_icon,
+    create_group_with_form_layout,
+    create_scrolled_area_with_layout,
+)
 
 
 class DrumWMTSection(QWidget):
@@ -110,23 +112,13 @@ class DrumWMTSection(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
 
-        scroll_area = QScrollArea()
-        scroll_area.setWidgetResizable(True)
-        scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        scroll_area.setSizePolicy(
-            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
-        )
-        layout.addWidget(scroll_area)
-
-        scrolled_widget = QWidget()
+        scroll_area, scrolled_layout = create_scrolled_area_with_layout()
+        scrolled_widget = scroll_area.widget()
         scrolled_widget.setSizePolicy(
             QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
         )
-        scrolled_layout = QVBoxLayout(scrolled_widget)
         scrolled_layout.setContentsMargins(0, 0, 0, 0)
-
-        scroll_area.setWidget(scrolled_widget)
+        layout.addWidget(scroll_area)
 
         # Icons row (standardized across editor tabs)
         icon_hlayout = IconRegistry.create_adsr_icons_row()
@@ -212,29 +204,21 @@ class DrumWMTSection(QWidget):
         return main_row_hlayout
 
     def _create_wmt_controls_group(self, p: Callable[[Any], Any]):
-        wmt_controls_group = QGroupBox()
-        form_layout = QFormLayout()
-        wmt_controls_group.setLayout(form_layout)
         self.wave_switch = self._create_parameter_switch(
             p("WAVE_SWITCH"), "Wave Switch", ["OFF", "ON"]
         )
-        form_layout.addWidget(self.wave_switch)
-        form_layout.addRow(
+        widgets = [
+            self.wave_switch,
             self._create_parameter_combo_box(
                 p("WAVE_GAIN"), "Wave Gain", ["-6", "0", "6", "12"], [0, 1, 2, 3]
-            )
-        )
-        form_layout.addRow(
-            self._create_parameter_slider(p("WAVE_TEMPO_SYNC"), "Wave Tempo Sync")
-        )
-        return wmt_controls_group
+            ),
+            self._create_parameter_slider(p("WAVE_TEMPO_SYNC"), "Wave Tempo Sync"),
+        ]
+        group, _ = create_group_with_form_layout(widgets)
+        return group
 
     def _create_wave_combo_group(self, p: Callable[[Any], Any], wmt_index: int):
         """create wave combo using SearchableFilterableComboBox"""
-        wmt_wave_group = QGroupBox()
-        form_layout = QFormLayout()
-        wmt_wave_group.setLayout(form_layout)
-        
         # Extract categories from rm_wave_groups (non-empty, non-indented items)
         rm_wave_categories = [
             "Drum Machines",
@@ -288,7 +272,6 @@ class DrumWMTSection(QWidget):
         )
         self.l_wave_combos[wmt_index] = l_wave_combo
         self.controls[l_wave_param] = l_wave_combo
-        form_layout.addRow(l_wave_combo)
         
         # --- R Wave Combo Box ---
         r_wave_param = p("WAVE_NUMBER_R")
@@ -311,53 +294,42 @@ class DrumWMTSection(QWidget):
         )
         self.r_wave_combos[wmt_index] = r_wave_combo
         self.controls[r_wave_param] = r_wave_combo
-        form_layout.addRow(r_wave_combo)
         
-        return wmt_wave_group
+        widgets = [l_wave_combo, r_wave_combo]
+        group, _ = create_group_with_form_layout(widgets)
+        return group
 
     def _create_fxm_group(self, p: Callable[[Any], Any]):
         """create fxm group"""
-        wmt_fxm_group = QGroupBox("FXM")
-        form_layout = QFormLayout()
-        wmt_fxm_group.setLayout(form_layout)
-        form_layout.addRow(
+        widgets = [
             self._create_parameter_combo_box(
                 p("WAVE_FXM_SWITCH"), "Wave FXM Switch", ["OFF", "ON"], [0, 1]
-            )
-        )  # If this is correct — maybe it’s a typo?
-        form_layout.addRow(
-            self._create_parameter_slider(p("WAVE_FXM_COLOR"), "Wave FXM Color")
-        )
-        form_layout.addRow(
-            self._create_parameter_slider(p("WAVE_FXM_DEPTH"), "Wave FXM Depth")
-        )
-        return wmt_fxm_group
+            ),
+            self._create_parameter_slider(p("WAVE_FXM_COLOR"), "Wave FXM Color"),
+            self._create_parameter_slider(p("WAVE_FXM_DEPTH"), "Wave FXM Depth"),
+        ]
+        group, _ = create_group_with_form_layout(widgets, group_name="FXM")
+        return group
 
     def _create_wmt_pan_group(self, p: Callable[[Any], Any]):
         """create wmt pan"""
-        wmt_pan_group = QGroupBox("Pan")
-        form_layout = QFormLayout()
-        wmt_pan_group.setLayout(form_layout)
-        form_layout.addRow(self._create_parameter_slider(p("WAVE_PAN"), "Wave Pan"))
-
-        # More combo boxes
-        form_layout.addRow(
+        widgets = [
+            self._create_parameter_slider(p("WAVE_PAN"), "Wave Pan"),
             self._create_parameter_combo_box(
                 p("WAVE_RANDOM_PAN_SWITCH"),
                 "Wave Random Pan Switch",
                 ["OFF", "ON"],
                 [0, 1],
-            )
-        )
-        form_layout.addRow(
+            ),
             self._create_parameter_combo_box(
                 p("WAVE_ALTERNATE_PAN_SWITCH"),
                 "Wave Alternate Pan Switch",
                 ["OFF", "ON", "REVERSE"],
                 [0, 1, 2],
-            )
-        )
-        return wmt_pan_group
+            ),
+        ]
+        group, _ = create_group_with_form_layout(widgets, group_name="Pan")
+        return group
 
     def _create_adsr_widget(self, p: Callable[[Any], Any]) -> WMTEnvelopeWidget:
         adsr_widget = WMTEnvelopeWidget(
@@ -376,16 +348,12 @@ class DrumWMTSection(QWidget):
 
     def _create_tuning_group(self, p: Callable[[Any], Any]):
         """Tuning Group"""
-        tuning_group = QGroupBox("Tuning")
-        form_layout = QFormLayout()
-        tuning_group.setLayout(form_layout)
-        form_layout.addRow(
-            self._create_parameter_slider(p("WAVE_COARSE_TUNE"), "Wave Coarse Tune")
-        )
-        form_layout.addRow(
-            self._create_parameter_slider(p("WAVE_FINE_TUNE"), "Wave Fine Tune")
-        )
-        return tuning_group
+        widgets = [
+            self._create_parameter_slider(p("WAVE_COARSE_TUNE"), "Wave Coarse Tune"),
+            self._create_parameter_slider(p("WAVE_FINE_TUNE"), "Wave Fine Tune"),
+        ]
+        group, _ = create_group_with_form_layout(widgets, group_name="Tuning")
+        return group
 
     def _on_wave_parameter_changed(self, param: DrumPartialParam, value: int) -> None:
         """

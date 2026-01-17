@@ -25,6 +25,22 @@ def create_layout_with_widgets(widget_list: list,
     return layout
 
 
+def create_left_aligned_row(widget_list: list) -> QHBoxLayout:
+    """
+    Create a left-aligned horizontal layout (stretch only on the right).
+    
+    Useful for rows where widgets should be left-aligned rather than centered.
+    
+    :param widget_list: List of widgets to add to the layout
+    :return: QHBoxLayout with widgets left-aligned
+    """
+    row = QHBoxLayout()
+    for widget in widget_list:
+        row.addWidget(widget)
+    row.addStretch()  # Only add stretch on the right for left alignment
+    return row
+
+
 def create_layout_with_inner_layouts(inner_layouts: list,
                                      vertical: bool = True) -> QVBoxLayout:
     """create layout with a list of inner layouts"""
@@ -205,3 +221,22 @@ def create_group_and_grid_layout(group_name: str) -> tuple[QGroupBox, QGridLayou
     layout = QGridLayout()
     group.setLayout(layout)
     return group, layout
+
+
+def create_group_with_form_layout(
+    widgets: list, 
+    group_name: str = None
+) -> tuple[QGroupBox, QFormLayout]:
+    """
+    Create a group box with form layout and add widgets in one call.
+    
+    This combines create_group_with_layout() and create_form_layout_with_widgets()
+    for convenience when creating form-based groups.
+    
+    :param widgets: List of widgets to add as rows to the form layout
+    :param group_name: Optional name for the group box
+    :return: Tuple of (QGroupBox, QFormLayout)
+    """
+    form_layout = create_form_layout_with_widgets(widgets)
+    group, _ = create_group_with_layout(group_name, inner_layout=form_layout)
+    return group, form_layout
