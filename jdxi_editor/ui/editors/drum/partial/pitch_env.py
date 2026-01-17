@@ -46,12 +46,12 @@ from PySide6.QtWidgets import (
 )
 
 from decologr import Decologr as log
-from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.drum.partial.base import DrumBaseSection
+from jdxi_editor.ui.style import JDXiStyle, JDXiThemeManager
+from jdxi_editor.ui.style.dimensions import JDXiDimensions
 from jdxi_editor.ui.widgets.editor.helper import create_group_and_grid_layout
-from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 from picomidi.constant import Midi
 
 
@@ -81,7 +81,7 @@ class DrumPitchEnvPlot(QWidget):
         self.setMinimumSize(width, height)
         self.setMaximumHeight(height)
         self.setMaximumWidth(width)
-        from jdxi_editor.jdxi.style.theme_manager import JDXiThemeManager
+        from jdxi_editor.ui.style.theme_manager import JDXiThemeManager
 
         JDXiThemeManager.apply_adsr_plot(self)
         self.sample_rate = 256
@@ -115,7 +115,7 @@ class DrumPitchEnvPlot(QWidget):
             axis_pen = QPen(QColor("white"), 1)
             grid_pen = QPen(Qt.GlobalColor.darkGray, 1)
             grid_pen.setStyle(Qt.PenStyle.DashLine)
-            point_pen = QPen(QColor("orange"), JDXiDimensions.CHART_POINT_SIZE)
+            point_pen = QPen(QColor("orange"), JDXiDimensions.CHART.POINT_SIZE)
             painter.setFont(QFont("JD LCD Rounded", 10))
 
             depth = self.envelope.get("depth", 64) - 64

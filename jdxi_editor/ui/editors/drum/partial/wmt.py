@@ -33,12 +33,9 @@ Example:
     editor.show()
 """
 
-import re
 from typing import Any, Callable
 
-from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
-    QComboBox,
     QGroupBox,
     QHBoxLayout,
     QSizePolicy,
@@ -48,10 +45,11 @@ from PySide6.QtWidgets import (
 )
 
 from decologr import Decologr as log
-from jdxi_editor.jdxi.style import JDXiStyle
-from jdxi_editor.jdxi.style.icons import IconRegistry
+from jdxi_editor.jdxi.jdxi import JDXi
 from jdxi_editor.midi.data.drum.data import rm_waves
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
+from jdxi_editor.ui.style import JDXiStyle
+from jdxi_editor.ui.style.dimensions import JDXiDimensions
 from jdxi_editor.ui.widgets.combo_box.searchable_filterable import (
     SearchableFilterableComboBox,
 )
@@ -61,7 +59,6 @@ from jdxi_editor.ui.widgets.editor.helper import (
     create_scrolled_area_with_layout,
 )
 from jdxi_editor.ui.widgets.wmt.envelope import WMTEnvelopeWidget
-from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
 class DrumWMTSection(QWidget):
@@ -103,7 +100,7 @@ class DrumWMTSection(QWidget):
 
     def setup_ui(self):
         """setup UI"""
-        self.setMinimumWidth(JDXiDimensions.DRUM_PARTIAL_TAB_MIN_WIDTH)
+        self.setMinimumWidth(JDXiDimensions.EDITOR_DRUM.PARTIAL_TAB_MIN_WIDTH)
         # Set size policy to allow vertical expansion
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         layout = QVBoxLayout(self)
@@ -119,7 +116,7 @@ class DrumWMTSection(QWidget):
         layout.addWidget(scroll_area)
 
         # Icons row (standardized across editor tabs)
-        icon_hlayout = IconRegistry.create_adsr_icons_row()
+        icon_hlayout = JDXi.IconRegistry.create_adsr_icons_row()
         scrolled_layout.addLayout(icon_hlayout)
 
         # WMT Group
@@ -181,24 +178,30 @@ class DrumWMTSection(QWidget):
         self.wmt_controls_tab_widget = QTabWidget()
         main_row_hlayout.addWidget(self.wmt_controls_tab_widget)
 
-        controls_icon = IconRegistry.get_icon(IconRegistry.TUNE, color=JDXiStyle.GREY)
+        controls_icon = JDXi.IconRegistry.get_icon(
+            JDXi.IconRegistry.TUNE, color=JDXiStyle.GREY
+        )
         self.wmt_controls_tab_widget.addTab(
             self._create_wmt_controls_group(p), controls_icon, "Controls"
         )
-        waves_icon = IconRegistry.get_icon(IconRegistry.WAVEFORM, color=JDXiStyle.GREY)
+        waves_icon = JDXi.IconRegistry.get_icon(
+            JDXi.IconRegistry.WAVEFORM, color=JDXiStyle.GREY
+        )
         self.wmt_controls_tab_widget.addTab(
             self._create_wave_combo_group(p, wmt_index), waves_icon, "Waves"
         )
-        fxm_icon = IconRegistry.get_icon(IconRegistry.EQUALIZER, color=JDXiStyle.GREY)
+        fxm_icon = JDXi.IconRegistry.get_icon(
+            JDXi.IconRegistry.EQUALIZER, color=JDXiStyle.GREY
+        )
         self.wmt_controls_tab_widget.addTab(self._create_fxm_group(p), fxm_icon, "FXM")
-        tuning_icon = IconRegistry.get_icon(
-            IconRegistry.MUSIC_NOTE, color=JDXiStyle.GREY
+        tuning_icon = JDXi.IconRegistry.get_icon(
+            JDXi.IconRegistry.MUSIC_NOTE, color=JDXiStyle.GREY
         )
         self.wmt_controls_tab_widget.addTab(
             self._create_tuning_group(p), tuning_icon, "Tuning"
         )
-        pan_icon = IconRegistry.get_icon(
-            IconRegistry.PAN_HORIZONTAL, color=JDXiStyle.GREY
+        pan_icon = JDXi.IconRegistry.get_icon(
+            JDXi.IconRegistry.PAN_HORIZONTAL, color=JDXiStyle.GREY
         )
         self.wmt_controls_tab_widget.addTab(
             self._create_wmt_pan_group(p), pan_icon, "Pan"

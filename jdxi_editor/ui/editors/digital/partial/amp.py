@@ -4,7 +4,6 @@ AMP section for the digital partial editor.
 
 from typing import Callable
 
-import qtawesome as qta
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
     QGroupBox,
@@ -13,8 +12,6 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from jdxi_editor.jdxi.style import JDXiStyle
-from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.parameter.digital.partial import (
     DigitalPartialParam,
@@ -22,19 +19,18 @@ from jdxi_editor.midi.data.parameter.digital.partial import (
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
+from jdxi_editor.ui.style import JDXiStyle
+from jdxi_editor.ui.style.dimensions import JDXiDimensions
+from jdxi_editor.ui.style.icons import JDXiIconRegistry
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (
-    create_adsr_icon_label,
-    create_centered_adsr_icon_layout,
     create_envelope_group,
     create_icons_layout,
     create_layout_with_inner_layouts,
     create_layout_with_widgets,
-    create_vlayout_with_hlayout_and_widgets,
 )
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
-from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 from picomidi.sysex.parameter.address import AddressParameter
 
 
@@ -72,7 +68,7 @@ class DigitalAmpSection(SectionBaseWidget):
     def setup_ui(self):
         """Setup the amplifier section UI."""
         amp_section_layout = self.get_layout(margins=(5, 15, 5, 5), spacing=5)
-        self.setMinimumHeight(JDXiDimensions.EDITOR_MINIMUM_HEIGHT)
+        self.setMinimumHeight(JDXiDimensions.EDITOR.MINIMUM_HEIGHT)
 
         # Custom icons layout (kept for Digital Amp's unique icon set)
         icons_hlayout = create_icons_layout()
@@ -86,7 +82,9 @@ class DigitalAmpSection(SectionBaseWidget):
         amp_controls_layout = self._create_amp_controls_layout()
         amp_controls_widget = QWidget()
         amp_controls_widget.setLayout(amp_controls_layout)
-        controls_icon = IconRegistry.get_icon(IconRegistry.TUNE, color=JDXiStyle.GREY)
+        controls_icon = JDXiIconRegistry.get_icon(
+            JDXiIconRegistry.TUNE, color=JDXiStyle.GREY
+        )
         self.digital_amp_tab_widget.addTab(
             amp_controls_widget, controls_icon, "Controls"
         )
@@ -97,7 +95,7 @@ class DigitalAmpSection(SectionBaseWidget):
         adsr_icon = QIcon(base64_to_pixmap(adsr_icon_base64))
         self.digital_amp_tab_widget.addTab(amp_adsr_group, adsr_icon, "ADSR")
 
-        amp_section_layout.addSpacing(JDXiDimensions.DIGITAL_FILTER_SPACING)
+        amp_section_layout.addSpacing(JDXiDimensions.EDITOR_DIGITAL.SPACING)
         amp_section_layout.addStretch()
 
     def _create_amp_controls_layout(self) -> QVBoxLayout:

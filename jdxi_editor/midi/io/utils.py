@@ -97,7 +97,11 @@ def mido_message_data_to_byte_list(message: mido.Message) -> bytes:
     :param message: mido.Message
     :return: bytes
     """
-    hex_string = " ".join(f"{byte:02X}" for byte in message.data)
+    # Safely convert to int for formatting
+    hex_string = " ".join(
+        f"{int(byte) if not isinstance(byte, int) else byte:02X}"
+        for byte in message.data
+    )
 
     message_byte_list = bytes(
         [Midi.SYSEX.START]

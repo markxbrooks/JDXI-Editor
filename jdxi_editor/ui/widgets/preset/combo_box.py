@@ -20,7 +20,7 @@ from PySide6.QtWidgets import (
 )
 
 from decologr import Decologr as log
-from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.ui.style import JDXiStyle
 from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets
 
 

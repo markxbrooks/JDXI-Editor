@@ -3,9 +3,9 @@ from typing import Callable
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QGridLayout, QLabel, QWidget
 
-from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.ui.style import JDXiStyle
+from jdxi_editor.ui.style.dimensions import JDXiDimensions
 from jdxi_editor.ui.widgets.editor.helper import create_button_with_tooltip
-from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
 def _add_header(grid: QGridLayout, text: str, row: int, col: int, span: int):
@@ -29,10 +29,10 @@ def add_octave_and_arp_buttons(container: QWidget, send_octave: Callable):
 
     root = QWidget(container)
     root.setGeometry(
-        JDXiDimensions.OCTAVE_X,
-        JDXiDimensions.OCTAVE_Y,
-        JDXiDimensions.OCTAVE_WIDTH + JDXiDimensions.ARPEGGIATOR_WIDTH,
-        max(JDXiDimensions.OCTAVE_HEIGHT, JDXiDimensions.ARPEGGIATOR_HEIGHT),
+        JDXiDimensions.OCTAVE.X,
+        JDXiDimensions.OCTAVE.Y,
+        JDXiDimensions.OCTAVE.WIDTH + JDXiDimensions.ARPEGGIATOR.WIDTH,
+        max(JDXiDimensions.OCTAVE.HEIGHT, JDXiDimensions.ARPEGGIATOR.HEIGHT),
     )
     root.setStyleSheet("background: transparent;")
 

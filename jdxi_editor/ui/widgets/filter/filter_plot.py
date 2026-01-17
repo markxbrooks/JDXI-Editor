@@ -30,7 +30,6 @@ Customization:
 import numpy as np
 from PySide6.QtCore import QPointF, Qt
 from PySide6.QtGui import (
-    QBrush,
     QColor,
     QFont,
     QLinearGradient,
@@ -40,9 +39,8 @@ from PySide6.QtGui import (
 )
 from PySide6.QtWidgets import QWidget
 
-from jdxi_editor.jdxi.midi.constant import JDXiMidi
-from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.ui.constant import JDXiUI
+from jdxi_editor.ui.style import JDXiStyle
 
 
 def generate_filter_plot(
@@ -193,7 +191,7 @@ class FilterPlot(QWidget):
         self.setMaximumHeight(height)
         self.setMaximumWidth(width)
         # Use dark gray background
-        from jdxi_editor.jdxi.style.theme_manager import JDXiThemeManager
+        from jdxi_editor.ui.style.theme_manager import JDXiThemeManager
 
         JDXiThemeManager.apply_adsr_plot(self)
         # Sample rate for converting times to samples

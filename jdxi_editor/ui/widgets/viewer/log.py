@@ -37,8 +37,8 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.project import __package_name__
+from jdxi_editor.ui.style import JDXiStyle
 
 
 class LogViewer(QMainWindow):

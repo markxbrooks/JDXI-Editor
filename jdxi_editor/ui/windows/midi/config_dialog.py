@@ -44,8 +44,8 @@ from PySide6.QtWidgets import (
 )
 
 from decologr import Decologr as log
-from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.style import JDXiStyle
 
 # In-app FluidSynth defaults
 HW_PORT_HINT = "Roland JDXi"  # adjust if your port name differs

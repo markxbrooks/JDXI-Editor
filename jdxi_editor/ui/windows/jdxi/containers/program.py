@@ -5,18 +5,18 @@ Program container for instrument UI
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QPushButton, QVBoxLayout, QWidget
 
-from jdxi_editor.jdxi.style import JDXiStyle
-from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
+from jdxi_editor.ui.style import JDXiStyle
+from jdxi_editor.ui.style.dimensions import JDXiDimensions
 
 
 def add_program_container(central_widget, create_program_buttons_row):
     """add program container"""
     program_container = QWidget(central_widget)
     program_container.setGeometry(
-        JDXiDimensions.PROGRAM_X,
-        JDXiDimensions.PROGRAM_Y,
-        JDXiDimensions.PROGRAM_WIDTH,
-        JDXiDimensions.PROGRAM_HEIGHT,
+        JDXiDimensions.PROGRAM.X,
+        JDXiDimensions.PROGRAM.Y,
+        JDXiDimensions.PROGRAM.WIDTH,
+        JDXiDimensions.PROGRAM.HEIGHT,
     )
     program_container_layout = QVBoxLayout(program_container)
     program_container_layout.setSpacing(4)

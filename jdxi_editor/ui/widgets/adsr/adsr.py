@@ -17,10 +17,10 @@ from typing import Callable, Dict, Optional
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QGridLayout, QWidget
 
-from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
+from jdxi_editor.ui.style import JDXiStyle, JDXiThemeManager
 from jdxi_editor.ui.widgets.adsr.plot import ADSRPlot
 from jdxi_editor.ui.widgets.envelope.base import TOOLTIPS, EnvelopeWidgetBase
 from jdxi_editor.ui.widgets.slider_spinbox.slider_spinbox import AdsrSliderSpinbox

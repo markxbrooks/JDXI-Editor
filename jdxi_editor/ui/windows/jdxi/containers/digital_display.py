@@ -4,8 +4,8 @@ create digital display container
 
 from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget
 
+from jdxi_editor.ui.style.dimensions import JDXiDimensions
 from jdxi_editor.ui.widgets.display.digital import DigitalDisplay
-from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
 def add_digital_display(central_widget, parent):
@@ -14,10 +14,10 @@ def add_digital_display(central_widget, parent):
 
     digital_display_container = QWidget(central_widget)
     digital_display_container.setGeometry(
-        JDXiDimensions.DISPLAY_X,
-        JDXiDimensions.DISPLAY_Y,
-        JDXiDimensions.DISPLAY_WIDTH,
-        JDXiDimensions.DISPLAY_HEIGHT,
+        JDXiDimensions.LED.X,
+        JDXiDimensions.LED.Y,
+        JDXiDimensions.LED.WIDTH,
+        JDXiDimensions.LED.HEIGHT,
     )
     digital_display_layout = QHBoxLayout()
     digital_display_container.setLayout(digital_display_layout)

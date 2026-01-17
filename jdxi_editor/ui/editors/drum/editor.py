@@ -59,22 +59,18 @@ To use the `DrumEditor`, instantiate it with an optional `MIDIHelper` instance:
 
 from typing import Dict, Optional, Union
 
-from PySide6.QtCore import Qt
 from PySide6.QtGui import QKeySequence, QShortcut
 from PySide6.QtWidgets import (
     QGroupBox,
-    QHBoxLayout,
-    QScrollArea,
     QTabWidget,
     QVBoxLayout,
     QWidget,
 )
 
 from decologr import Decologr as log
+from jdxi_editor.jdxi.jdxi import JDXi
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.jdxi.preset.widget import InstrumentPresetWidget
-from jdxi_editor.jdxi.style import JDXiStyle
-from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.midi.data.address.address import AddressOffsetProgramLMB
 from jdxi_editor.midi.data.drum.data import JDXiMapPartialDrum
@@ -84,9 +80,11 @@ from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.drum.common import DrumCommonSection
 from jdxi_editor.ui.editors.drum.partial.editor import DrumPartialEditor
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
+from jdxi_editor.ui.style import JDXiStyle
+from jdxi_editor.ui.style.dimensions import JDXiDimensions
+from jdxi_editor.ui.style.icons import JDXiIconRegistry
 from jdxi_editor.ui.widgets.dialog.progress import ProgressDialog
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
-from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
 class DrumCommonEditor(SynthEditor):
@@ -132,7 +130,9 @@ class DrumCommonEditor(SynthEditor):
     def setup_ui(self) -> None:
         """Setup the UI components for the drum editor."""
         main_layout = QVBoxLayout(self)
-        self.setMinimumSize(JDXiDimensions.DRUM_WIDTH, JDXiDimensions.DRUM_HEIGHT)
+        self.setMinimumSize(
+            JDXiDimensions.EDITOR_DRUM.WIDTH, JDXiDimensions.EDITOR_DRUM.HEIGHT
+        )
         self.presets_parts_tab_widget = QTabWidget()
 
         main_layout.addWidget(self.presets_parts_tab_widget)
@@ -157,20 +157,16 @@ class DrumCommonEditor(SynthEditor):
             self.instrument_group_layout,
         ) = self.instrument_preset.create_instrument_image_group()
         self.address.lmb = AddressOffsetProgramLMB.COMMON
-        self.instrument_image_group.setMinimumWidth(JDXiStyle.INSTRUMENT_IMAGE_WIDTH)
+        self.instrument_image_group.setMinimumWidth(JDXi.Style.INSTRUMENT_IMAGE_WIDTH)
         self.instrument_preset.add_image_group(self.instrument_image_group)
         self.instrument_preset.add_stretch()
         self.update_instrument_image()
 
         instrument_vrow_layout.addWidget(self.instrument_preset)
 
-        drum_kit_presets_icon = IconRegistry.get_icon(
-            "mdi.music-note-multiple", color=JDXiStyle.GREY
+        drum_kit_presets_icon = JDXiIconRegistry.get_icon(
+            JDXiIconRegistry.MUSIC_NOTES, color=JDXiStyle.GREY
         )
-        if drum_kit_presets_icon is None:
-            drum_kit_presets_icon = IconRegistry.get_icon(
-                IconRegistry.MUSIC, color=JDXiStyle.GREY
-            )
         self.presets_parts_tab_widget.addTab(
             instrument_widget, drum_kit_presets_icon, "Drum Kit Presets"
         )
@@ -185,7 +181,9 @@ class DrumCommonEditor(SynthEditor):
         container_layout.addWidget(self.partial_tab_widget)
 
         # Add the base widget as the second tab (it contains the scroll area)
-        drum_kit_parts_icon = IconRegistry.get_icon("mdi.puzzle", color=JDXiStyle.GREY)
+        drum_kit_parts_icon = JDXiIconRegistry.get_icon(
+            "mdi.puzzle", color=JDXiStyle.GREY
+        )
         self.presets_parts_tab_widget.addTab(
             self.base_widget, drum_kit_parts_icon, "Drum Kit Parts"
         )
@@ -201,7 +199,7 @@ class DrumCommonEditor(SynthEditor):
             midi_helper=self.midi_helper,
             address=self.address,
         )
-        common_icon = IconRegistry.get_icon("mdi.cog-outline", color=JDXiStyle.GREY)
+        common_icon = JDXiIconRegistry.get_icon("mdi.cog-outline", color=JDXiStyle.GREY)
         self.partial_tab_widget.addTab(self.common_section, common_icon, "Common")
 
         self.update_instrument_image()

@@ -11,10 +11,10 @@ from decologr import Decologr as log
 from jdxi_editor.jdxi.preset.button import JDXiPresetButtonData
 from jdxi_editor.jdxi.preset.data import JDXiPresetData
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
-from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.project import __package_name__
+from jdxi_editor.ui.style import JDXiStyle
 
 
 class FavoriteButton(QPushButton):

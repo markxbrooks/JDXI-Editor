@@ -1,19 +1,25 @@
+"""
+title.py
+
+Add a title container to the instrument
+"""
+
 from PySide6.QtGui import QFont
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QWidget
 
-from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.project import __program__
-from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
+from jdxi_editor.ui.style import JDXiStyle
+from jdxi_editor.ui.style.dimensions import JDXiDimensions
 
 
 def add_title_container(central_widget):
     """add container for main title"""
     title_container = QWidget(central_widget)
     title_container.setGeometry(
-        JDXiDimensions.TITLE_X,
-        JDXiDimensions.TITLE_Y,
-        JDXiDimensions.TITLE_WIDTH,
-        JDXiDimensions.TITLE_HEIGHT,
+        JDXiDimensions.TITLE.X,
+        JDXiDimensions.TITLE.Y,
+        JDXiDimensions.TITLE.WIDTH,
+        JDXiDimensions.TITLE.HEIGHT,
     )
     title_container.setStyleSheet(JDXiStyle.TRANSPARENT_WHITE)
     title_layout = QHBoxLayout()

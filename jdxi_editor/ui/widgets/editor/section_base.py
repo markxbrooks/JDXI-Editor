@@ -37,10 +37,10 @@ from typing import Literal, Optional
 
 from PySide6.QtWidgets import QVBoxLayout, QWidget
 
-from jdxi_editor.jdxi.style.icons import IconRegistry
-from jdxi_editor.jdxi.style.theme_manager import JDXiThemeManager
+from jdxi_editor.ui.style.dimensions import JDXiDimensions
+from jdxi_editor.ui.style.icons import JDXiIconRegistry
+from jdxi_editor.ui.style.theme_manager import JDXiThemeManager
 from jdxi_editor.ui.widgets.editor.icon_type import IconType
-from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
 class SectionBaseWidget(QWidget):
@@ -112,11 +112,11 @@ class SectionBaseWidget(QWidget):
             return
 
         if self.icon_type == IconType.ADSR:
-            icon_hlayout = IconRegistry.create_adsr_icons_row()
+            icon_hlayout = JDXiIconRegistry.create_adsr_icons_row()
         elif self.icon_type == IconType.OSCILLATOR:
-            icon_hlayout = IconRegistry.create_oscillator_icons_row()
+            icon_hlayout = JDXiIconRegistry.create_oscillator_icons_row()
         elif self.icon_type == IconType.GENERIC:
-            icon_hlayout = IconRegistry.create_generic_musical_icon_row()
+            icon_hlayout = JDXiIconRegistry.create_generic_musical_icon_row()
         else:
             return  # IconType.NONE or unknown
 
@@ -149,8 +149,8 @@ class SectionBaseWidget(QWidget):
     def create_main_rows_layout(self):
         """create main rows layout"""
         layout = self.get_layout(
-            margins=JDXiDimensions.DIGITAL_FILTER_MARGINS,
-            spacing=JDXiDimensions.DIGITAL_FILTER_SPACING,
+            margins=JDXiDimensions.EDITOR_DIGITAL.MARGINS,
+            spacing=JDXiDimensions.EDITOR_DIGITAL.SPACING,
         )
-        layout.addSpacing(JDXiDimensions.DIGITAL_FILTER_SPACING)
+        layout.addSpacing(JDXiDimensions.EDITOR_DIGITAL.SPACING)
         return layout

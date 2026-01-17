@@ -36,7 +36,7 @@ from PySide6.QtGui import (
     QPixmap,
 )
 
-from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
+from jdxi_editor.ui.style.dimensions import JDXiDimensions
 
 
 def draw_instrument_pixmap() -> QPixmap:
@@ -46,9 +46,9 @@ def draw_instrument_pixmap() -> QPixmap:
     :return: QPixmap representation of the JD-Xi interface.
     :rtype: QPixmap
     """
-    # Create address black background image with correct aspect ratio
-    jdxi_width = JDXiDimensions.WIDTH
-    jdxi_height = JDXiDimensions.HEIGHT
+    # --- Create address black background image with correct aspect ratio
+    jdxi_width = JDXiDimensions.INSTRUMENT.WIDTH
+    jdxi_height = JDXiDimensions.INSTRUMENT.HEIGHT
     jdxi_image = QImage(jdxi_width, jdxi_height, QImage.Format_RGB32)  # type: ignore[attr-defined]
     jdxi_image.fill(Qt.black)  # type: ignore[attr-defined]
 
@@ -56,7 +56,7 @@ def draw_instrument_pixmap() -> QPixmap:
     painter = QPainter(pixmap)
     painter.setRenderHint(QPainter.Antialiasing)  # type: ignore[attr-defined]
 
-    # draw the background
+    # --- draw the background
     gradient = QLinearGradient(0, 0, 0, jdxi_height)
     gradient.setColorAt(0, QColor(30, 30, 30))
     gradient.setColorAt(1, QColor(0, 0, 0))
@@ -85,17 +85,17 @@ def draw_sequencer(painter: QPainter) -> None:
     if platform.system() == "Windows":
         # windows has a menu across the top
         sequencer_y = (
-            JDXiDimensions.SEQUENCER_Y_WINDOWS
+            JDXiDimensions.SEQUENCER.Y_WINDOWS
         )  # Keep same distance above keyboard
     else:
         sequencer_y = (
-            JDXiDimensions.SEQUENCER_Y_NON_WINDOWS
+            JDXiDimensions.SEQUENCER.Y_NON_WINDOWS
         )  # Keep same distance above keyboard
-    sequencer_width = JDXiDimensions.SEQUENCER_WIDTH  # Use roughly half keyboard width
-    sequencer_x = JDXiDimensions.SEQUENCER_X  # Align with right edge of keyboard
+    sequencer_width = JDXiDimensions.SEQUENCER.WIDTH  # Use roughly half keyboard width
+    sequencer_x = JDXiDimensions.SEQUENCER.X  # Align with right edge of keyboard
     # Calculate step dimensions
-    step_count = JDXiDimensions.SEQUENCER_STEPS
-    step_size = JDXiDimensions.SEQUENCER_STEP_SIZE  # Smaller square size
+    step_count = JDXiDimensions.SEQUENCER.STEPS
+    step_size = JDXiDimensions.SEQUENCER.STEP_SIZE  # Smaller square size
     total_spacing = sequencer_width - (step_count * step_size)
     step_spacing = total_spacing / (step_count - 1)
     # Draw horizontal measure lines (white)

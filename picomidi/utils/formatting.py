@@ -101,7 +101,19 @@ def format_message_to_hex_string(message: Iterable[int]) -> str:
     :param message: Iterable of integers (byte values)
     :return: Space-separated hex string (e.g., "F0 41 10 00 00 00 0E F7")
     """
-    return " ".join(f"{x:02X}" for x in message)
+    # Safely convert to int for formatting (handles strings, enums, floats, etc.)
+    def safe_int(val):
+        if isinstance(val, int):
+            return val
+        if hasattr(val, 'value'):  # Handle enums
+            enum_val = val.value
+            return int(enum_val) if not isinstance(enum_val, int) else enum_val
+        try:
+            return int(float(val))  # Handle floats and strings
+        except (ValueError, TypeError):
+            return 0
+    
+    return " ".join(f"{safe_int(x):02X}" for x in message)
 
 
 def int_to_hex(value: int) -> str:

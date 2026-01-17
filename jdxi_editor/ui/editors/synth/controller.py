@@ -3,7 +3,6 @@ from typing import Dict, Optional
 from PySide6.QtCore import QObject
 
 from decologr import Decologr as log
-from jdxi_editor.midi.data.digital.partial import DigitalPartial
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParam
 from picomidi.sysex.parameter.address import AddressParameter
 

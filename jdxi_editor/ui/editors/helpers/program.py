@@ -42,7 +42,6 @@ Usage Example:
 """
 
 import json
-import logging
 from typing import Dict, List, Optional
 
 from decologr import Decologr as log

@@ -4,12 +4,9 @@ Analog Oscillator Section
 
 from typing import Callable
 
-import qtawesome as qta
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QGroupBox, QHBoxLayout, QTabWidget, QVBoxLayout, QWidget
 
-from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
-from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.analog.oscillator import AnalogOscWave, AnalogSubOscType
 from jdxi_editor.midi.data.parameter.analog import AnalogParam
@@ -17,11 +14,13 @@ from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.digital.partial.pwm import PWMWidget
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
+from jdxi_editor.ui.style import JDXiStyle, JDXiThemeManager
+from jdxi_editor.ui.style.dimensions import JDXiDimensions
+from jdxi_editor.ui.style.icons import JDXiIconRegistry
 from jdxi_editor.ui.widgets.button.waveform.analog import AnalogWaveformButton
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.pitch.envelope import PitchEnvelopeWidget
-from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 from picomidi.sysex.parameter.address import AddressParameter
 
 
@@ -79,8 +78,8 @@ class AnalogOscillatorSection(SectionBaseWidget):
 
         # --- Tuning and Pitch tab (standardized name matching Digital) ---
         tuning_pitch_widget = self._create_tuning_pitch_widget()
-        tuning_icon = IconRegistry.get_icon(
-            IconRegistry.MUSIC_NOTE, color=JDXiStyle.GREY
+        tuning_icon = JDXiIconRegistry.get_icon(
+            JDXiIconRegistry.MUSIC_NOTE, color=JDXiStyle.GREY
         )
         self.oscillator_tab_widget.addTab(
             tuning_pitch_widget, tuning_icon, "Tuning and Pitch"
@@ -104,7 +103,7 @@ class AnalogOscillatorSection(SectionBaseWidget):
         pitch_layout.addStretch()
         pitch_widget = QWidget()
         pitch_widget.setLayout(pitch_layout)
-        pitch_widget.setMinimumHeight(JDXiDimensions.EDITOR_MINIMUM_HEIGHT)
+        pitch_widget.setMinimumHeight(JDXiDimensions.EDITOR.MINIMUM_HEIGHT)
         return pitch_widget
 
     def create_waveform_buttons(self) -> QHBoxLayout:
@@ -133,7 +132,7 @@ class AnalogOscillatorSection(SectionBaseWidget):
             icon_base64 = generate_waveform_icon(icon_name, "#FFFFFF", 0.7)
             btn.setIcon(QIcon(base64_to_pixmap(icon_base64)))
             btn.setFixedSize(
-                JDXiDimensions.WAVEFORM_ICON_WIDTH, JDXiDimensions.WAVEFORM_ICON_HEIGHT
+                JDXiDimensions.WAVEFORM_ICON.WIDTH, JDXiDimensions.WAVEFORM_ICON.HEIGHT
             )
             btn.waveform_selected.connect(self._on_waveform_selected)
             self.wave_buttons[waveform] = btn

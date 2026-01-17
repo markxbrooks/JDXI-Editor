@@ -175,8 +175,39 @@ class SynthBase(QWidget):
         if not address:
             address = self.address
         try:
+            # Ensure value is an integer (handle enums, strings, floats)
+            def safe_int(val):
+                # Check for enums FIRST (IntEnum inherits from int, so isinstance check must come after)
+                if hasattr(val, "value") and not isinstance(
+                    val, type
+                ):  # Handle enums (but not enum classes)
+                    enum_val = val.value
+                    # Ensure we get the actual integer value, not the enum
+                    if isinstance(enum_val, int) and not hasattr(enum_val, "value"):
+                        return enum_val
+                    # If enum_val is still an enum, recurse
+                    if hasattr(enum_val, "value"):
+                        return safe_int(enum_val)
+                    try:
+                        return int(float(enum_val))  # Handle string enum values
+                    except (ValueError, TypeError):
+                        log.error(
+                            f"Cannot convert enum value {enum_val} to int for parameter {param.name}"
+                        )
+                        return 0
+                if isinstance(val, int):
+                    return val
+                try:
+                    return int(float(val))  # Handle floats and strings
+                except (ValueError, TypeError):
+                    log.error(
+                        f"Cannot convert value {val} to int for parameter {param.name}"
+                    )
+                    return 0
+
+            midi_value = safe_int(value)
             sysex_message = self.sysex_composer.compose_message(
-                address=address, param=param, value=value
+                address=address, param=param, value=midi_value
             )
             result = self._midi_helper.send_midi_message(sysex_message)
             return bool(result)

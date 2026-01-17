@@ -20,7 +20,6 @@ from typing import Optional
 
 from PySide6.QtWidgets import QMainWindow, QTextEdit, QVBoxLayout, QWidget
 
-from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.theme import ThemeManager
 

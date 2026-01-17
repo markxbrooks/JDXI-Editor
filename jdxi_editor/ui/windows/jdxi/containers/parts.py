@@ -1,9 +1,9 @@
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QButtonGroup, QLabel, QVBoxLayout, QWidget
 
-from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.jdxi.synth.type import JDXiSynth
-from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
+from jdxi_editor.ui.style import JDXiStyle
+from jdxi_editor.ui.style.dimensions import JDXiDimensions
 from jdxi_editor.ui.windows.jdxi.helpers.button_row import create_button_row
 
 
@@ -19,10 +19,10 @@ def create_parts_container(
     """Create the Parts Select container widget"""
     parts_container = QWidget(parent_widget)
     parts_container.setGeometry(
-        JDXiDimensions.PARTS_X,
-        JDXiDimensions.PARTS_Y,
-        JDXiDimensions.PARTS_WIDTH,
-        JDXiDimensions.PARTS_HEIGHT,
+        JDXiDimensions.PARTS.X,
+        JDXiDimensions.PARTS.Y,
+        JDXiDimensions.PARTS.WIDTH,
+        JDXiDimensions.PARTS.HEIGHT,
     )
     parts_layout = QVBoxLayout(parts_container)
     parts_layout.setSpacing(3)

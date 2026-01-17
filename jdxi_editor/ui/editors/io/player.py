@@ -13,7 +13,6 @@ from typing import Optional
 
 import mido
 import pyaudio
-import qtawesome as qta
 from mido import MidiFile, bpm2tempo
 from PySide6.QtCore import Qt, QThread, QTimer
 from PySide6.QtWidgets import (
@@ -31,10 +30,7 @@ from PySide6.QtWidgets import (
 
 from decologr import Decologr as log
 from jdxi_editor.globals import PROFILING
-from jdxi_editor.jdxi.midi.constant import JDXiMidi
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
-from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
-from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetProgramLMB,
@@ -61,6 +57,8 @@ from jdxi_editor.ui.editors.io.playback_worker import MidiPlaybackWorker
 from jdxi_editor.ui.editors.io.ui_midi_player import UiMidi
 from jdxi_editor.ui.editors.io.utils import format_time, tempo2bpm
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
+from jdxi_editor.ui.style import JDXiStyle, JDXiThemeManager
+from jdxi_editor.ui.style.icons import JDXiIconRegistry
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 from jdxi_editor.ui.widgets.midi.track_viewer import MidiTrackViewer
@@ -234,17 +232,21 @@ class MidiFileEditor(SynthEditor):
         """
         layout = QHBoxLayout()
 
-        from jdxi_editor.jdxi.style.icons import IconRegistry
+        from jdxi_editor.ui.style.icons import JDXiIconRegistry
 
         self.ui.load_button = QPushButton(
-            IconRegistry.get_icon(IconRegistry.MIDI_PORT, color=JDXiStyle.FOREGROUND),
+            JDXiIconRegistry.get_icon(
+                JDXiIconRegistry.MIDI_PORT, color=JDXiStyle.FOREGROUND
+            ),
             "Load MIDI File",
         )
         self.ui.load_button.clicked.connect(self.midi_load_file)
         layout.addWidget(self.ui.load_button)
 
         self.ui.save_button = QPushButton(
-            IconRegistry.get_icon(IconRegistry.MIDI_PORT, color=JDXiStyle.FOREGROUND),
+            JDXiIconRegistry.get_icon(
+                JDXiIconRegistry.MIDI_PORT, color=JDXiStyle.FOREGROUND
+            ),
             "Save MIDI File",
         )
         self.ui.save_button.clicked.connect(self.midi_save_file)
@@ -253,7 +255,7 @@ class MidiFileEditor(SynthEditor):
         layout.addWidget(QLabel("Suppress MIDI Events:"))
 
         self.ui.midi_suppress_program_changes_checkbox = QCheckBox("Program Changes")
-        from jdxi_editor.jdxi.style.theme_manager import JDXiThemeManager
+        from jdxi_editor.ui.style.theme_manager import JDXiThemeManager
 
         JDXiThemeManager.apply_partial_switch(
             self.ui.midi_suppress_program_changes_checkbox
@@ -308,7 +310,7 @@ class MidiFileEditor(SynthEditor):
 
         # Insert button
         self.ui.automation_insert_button = QPushButton(
-            IconRegistry.get_icon(IconRegistry.ADD, color=JDXiStyle.FOREGROUND),
+            JDXiIconRegistry.get_icon(JDXiIconRegistry.ADD, color=JDXiStyle.FOREGROUND),
             "Insert Program Change Here",
         )
         self.ui.automation_insert_button.clicked.connect(
@@ -689,19 +691,27 @@ class MidiFileEditor(SynthEditor):
         layout = QHBoxLayout(group)
 
         self.ui.play_button = QPushButton(
-            IconRegistry.get_icon(IconRegistry.PLAY, color=JDXiStyle.FOREGROUND), "Play"
+            JDXiIconRegistry.get_icon(
+                JDXiIconRegistry.PLAY, color=JDXiStyle.FOREGROUND
+            ),
+            "Play",
         )
         self.ui.play_button.clicked.connect(self.midi_playback_start)
         layout.addWidget(self.ui.play_button)
 
         self.ui.stop_button = QPushButton(
-            IconRegistry.get_icon(IconRegistry.STOP, color=JDXiStyle.FOREGROUND), "Stop"
+            JDXiIconRegistry.get_icon(
+                JDXiIconRegistry.STOP, color=JDXiStyle.FOREGROUND
+            ),
+            "Stop",
         )
         self.ui.stop_button.clicked.connect(self.midi_stop_playback)
         layout.addWidget(self.ui.stop_button)
 
         self.ui.pause_button = QPushButton(
-            IconRegistry.get_icon(IconRegistry.PAUSE, color=JDXiStyle.FOREGROUND),
+            JDXiIconRegistry.get_icon(
+                JDXiIconRegistry.PAUSE, color=JDXiStyle.FOREGROUND
+            ),
             "Pause",
         )
         self.ui.pause_button.clicked.connect(self.midi_playback_pause_toggle)

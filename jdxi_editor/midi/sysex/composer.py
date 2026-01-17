@@ -77,6 +77,32 @@ class JDXiSysExComposer:
                 else param.validate_value(value)
             )
 
+            # Ensure midi_value is an integer (handle enums, strings, floats)
+            def safe_int(val):
+                # Check for enums FIRST (IntEnum inherits from int, so isinstance check must come after)
+                if hasattr(val, "value") and not isinstance(
+                    val, type
+                ):  # Handle enums (but not enum classes)
+                    enum_val = val.value
+                    # Ensure we get the actual integer value, not the enum
+                    if isinstance(enum_val, int) and not hasattr(enum_val, "value"):
+                        return enum_val
+                    # If enum_val is still an enum, recurse
+                    if hasattr(enum_val, "value"):
+                        return safe_int(enum_val)
+                    try:
+                        return int(float(enum_val))  # Handle string enum values
+                    except (ValueError, TypeError):
+                        return 0
+                if isinstance(val, int):
+                    return val
+                try:
+                    return int(float(val))  # Handle floats and strings
+                except (ValueError, TypeError):
+                    return 0
+
+            midi_value = safe_int(midi_value)
+
             # Determine size (1 byte or 4 nibble-based)
             size = getattr(param, "get_nibbled_size", lambda: 1)()
             if size == 1:
@@ -105,7 +131,24 @@ class JDXiSysExComposer:
                 return None
 
             # Build and store the SysEx message
-            sysex_message = JDXiSysEx(sysex_address=adjusted_address, value=data_bytes)
+            # Ensure data_bytes is always a list of integers
+            if isinstance(data_bytes, int):
+                data_bytes_list = [data_bytes]
+            elif isinstance(data_bytes, list):
+                data_bytes_list = [safe_int(b) for b in data_bytes]
+            else:
+                # Fallback: try to convert to list
+                try:
+                    data_bytes_list = [safe_int(data_bytes)]
+                except (ValueError, TypeError):
+                    log.error(
+                        f"Cannot convert data_bytes {data_bytes} to list of integers"
+                    )
+                    return None
+
+            sysex_message = JDXiSysEx(
+                sysex_address=adjusted_address, value=data_bytes_list
+            )
             self.sysex_message = sysex_message
 
             # Validate the message

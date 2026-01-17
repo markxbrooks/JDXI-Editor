@@ -162,7 +162,10 @@ class Logger:
             if isinstance(param, dict):
                 return ", ".join(f"{k}={v}" for k, v in param.items())
             if isinstance(param, (bytes, bytearray)):
-                return " ".join(f"0x{b:02X}" for b in param)
+                # Safely convert to int for formatting
+                return " ".join(
+                    f"0x{int(b) if not isinstance(b, int) else b:02X}" for b in param
+                )
             return str(param)
 
         type_name = type(parameter).__name__

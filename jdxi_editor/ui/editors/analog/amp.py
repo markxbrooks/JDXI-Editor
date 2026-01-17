@@ -6,8 +6,6 @@ This section contains the controls for the amp section of the JD-Xi editor.
 
 from typing import Callable
 
-import qtawesome as qta
-from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
     QGroupBox,
     QHBoxLayout,
@@ -15,13 +13,11 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
-from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.parameter.analog import AnalogParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.ui.image.utils import base64_to_pixmap
-from jdxi_editor.ui.image.waveform import generate_waveform_icon
+from jdxi_editor.ui.style import JDXiStyle, JDXiThemeManager
+from jdxi_editor.ui.style.icons import JDXiIconRegistry
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (
@@ -70,7 +66,9 @@ class AnalogAmpSection(SectionBaseWidget):
         amp_adsr_group = self._create_analog_amp_adsr_group()
 
         self.analog_amp_tab_widget = QTabWidget()
-        controls_icon = IconRegistry.get_icon(IconRegistry.TUNE, color=JDXiStyle.GREY)
+        controls_icon = JDXiIconRegistry.get_icon(
+            JDXiIconRegistry.TUNE, color=JDXiStyle.GREY
+        )
         self.analog_amp_tab_widget.addTab(
             amp_controls_widget, controls_icon, "Controls"
         )

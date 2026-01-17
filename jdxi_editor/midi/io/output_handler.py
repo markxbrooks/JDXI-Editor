@@ -68,7 +68,34 @@ class MidiOutHandler(MidiIOController):
                     log.message("MIDI message validation failed.")
                     return False
 
-                formatted_message = format_midi_message_to_hex_string(message)
+                # Ensure message is a list of integers before formatting
+                def safe_int(val):
+                    # Check for enums FIRST (IntEnum inherits from int, so isinstance check must come after)
+                    if hasattr(val, "value") and not isinstance(
+                        val, type
+                    ):  # Handle enums (but not enum classes)
+                        enum_val = val.value
+                        # Ensure we get the actual integer value, not the enum
+                        if isinstance(enum_val, int) and not hasattr(enum_val, "value"):
+                            return enum_val
+                        # If enum_val is still an enum, recurse
+                        if hasattr(enum_val, "value"):
+                            return safe_int(enum_val)
+                        try:
+                            return int(float(enum_val))  # Handle string enum values
+                        except (ValueError, TypeError):
+                            return 0
+                    if isinstance(val, int):
+                        return val
+                    try:
+                        return int(float(val))  # Handle floats and strings
+                    except (ValueError, TypeError):
+                        return 0
+
+                message_list_for_formatting = [safe_int(x) for x in message]
+                formatted_message = format_midi_message_to_hex_string(
+                    message_list_for_formatting
+                )
 
                 if not self.midi_out.is_port_open():
                     log.message("MIDI output port is not open.")

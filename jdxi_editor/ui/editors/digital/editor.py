@@ -29,17 +29,13 @@ Dependencies:
 
 """
 
-import logging
 from typing import Dict, Optional, Union
 
-from PySide6.QtCore import Qt, Signal
+from PySide6.QtCore import Signal
 from PySide6.QtGui import QKeySequence, QShortcut
 from PySide6.QtWidgets import (
     QGroupBox,
-    QHBoxLayout,
     QLabel,
-    QScrollArea,
-    QSplitter,
     QTabWidget,
     QVBoxLayout,
     QWidget,
@@ -48,8 +44,6 @@ from PySide6.QtWidgets import (
 from decologr import Decologr as log
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.jdxi.preset.widget import InstrumentPresetWidget
-from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
-from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.jdxi.synth.factory import create_synth_data
 from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.log.slider_parameter import log_slider_parameters
@@ -67,9 +61,10 @@ from jdxi_editor.ui.editors.digital import (
     DigitalToneModifySection,
 )
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
+from jdxi_editor.ui.style import JDXiStyle, JDXiThemeManager
+from jdxi_editor.ui.style.icons import JDXiIconRegistry
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 from jdxi_editor.ui.widgets.panel.partial import PartialsPanel
-from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 from picomidi.sysex.parameter.address import AddressParameter
 from picomidi.utils.conversion import midi_value_to_fraction, midi_value_to_ms
 
@@ -152,7 +147,7 @@ class DigitalSynthEditor(SynthEditor):
         """set up user interface"""
         self.setMinimumSize(850, 300)
         self.resize(1030, 600)
-        from jdxi_editor.jdxi.style.theme_manager import JDXiThemeManager
+        from jdxi_editor.ui.style.theme_manager import JDXiThemeManager
 
         JDXiThemeManager.apply_tabs_style(self)
         JDXiThemeManager.apply_editor_style(self)
@@ -214,14 +209,14 @@ class DigitalSynthEditor(SynthEditor):
         self.partial_tab_widget.setStyleSheet(JDXiStyle.TAB_TITLE)
         instrument_widget.setLayout(instrument_layout)
         try:
-            presets_icon = IconRegistry.get_icon(
-                IconRegistry.MUSIC_NOTE_MULTIPLE, color=JDXiStyle.GREY
+            presets_icon = JDXiIconRegistry.get_icon(
+                JDXiIconRegistry.MUSIC_NOTE_MULTIPLE, color=JDXiStyle.GREY
             )
             if presets_icon is None or presets_icon.isNull():
                 raise ValueError("Icon is null")
         except:
-            presets_icon = IconRegistry.get_icon(
-                IconRegistry.MUSIC, color=JDXiStyle.GREY
+            presets_icon = JDXiIconRegistry.get_icon(
+                JDXiIconRegistry.MUSIC, color=JDXiStyle.GREY
             )
         self.partial_tab_widget.addTab(instrument_widget, presets_icon, "Presets")
         self._create_partial_tab_widget(container_layout, self.midi_helper)
@@ -250,7 +245,7 @@ class DigitalSynthEditor(SynthEditor):
                 parent=self,
             )
             self.partial_editors[i] = editor
-            partial_icon = IconRegistry.get_icon(
+            partial_icon = JDXiIconRegistry.get_icon(
                 f"mdi.numeric-{i}-circle-outline", color=JDXiStyle.GREY
             )
             self.partial_tab_widget.addTab(editor, partial_icon, f"Partial {i}")
@@ -260,7 +255,7 @@ class DigitalSynthEditor(SynthEditor):
             self._create_parameter_combo_box,
             self.controls,
         )
-        common_icon = IconRegistry.get_icon("mdi.cog-outline", color=JDXiStyle.GREY)
+        common_icon = JDXiIconRegistry.get_icon("mdi.cog-outline", color=JDXiStyle.GREY)
         self.partial_tab_widget.addTab(self.common_section, common_icon, "Common")
         self.tone_modify_section = DigitalToneModifySection(
             self._create_parameter_slider,
@@ -268,7 +263,9 @@ class DigitalSynthEditor(SynthEditor):
             self._create_parameter_switch,
             self.controls,
         )
-        misc_icon = IconRegistry.get_icon("mdi.dots-horizontal", color=JDXiStyle.GREY)
+        misc_icon = JDXiIconRegistry.get_icon(
+            "mdi.dots-horizontal", color=JDXiStyle.GREY
+        )
         self.partial_tab_widget.addTab(self.tone_modify_section, misc_icon, "Misc")
         container_layout.addWidget(self.partial_tab_widget)
 

@@ -61,7 +61,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from jdxi_editor.jdxi.style.theme_manager import JDXiThemeManager
+from jdxi_editor.ui.style.theme_manager import JDXiThemeManager
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 

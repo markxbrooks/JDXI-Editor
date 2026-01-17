@@ -18,9 +18,9 @@ from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QGridLayout, QSlider, QWidget
 
 from decologr import Decologr as log
-from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.style import JDXiStyle
 from jdxi_editor.ui.widgets.envelope.base import EnvelopeWidgetBase
 from jdxi_editor.ui.widgets.pitch.slider_spinbox import PitchEnvSliderSpinbox
 from jdxi_editor.ui.widgets.wmt.envelope_plot import WMTEnvPlot

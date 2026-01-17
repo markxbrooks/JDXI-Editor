@@ -54,8 +54,6 @@ from PySide6.QtWidgets import (
 from decologr import Decologr as log
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.jdxi.preset.lists import JDXiPresetToneList
-from jdxi_editor.jdxi.style import JDXiStyle
-from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.log.midi_info import log_midi_info
 from jdxi_editor.midi.channel.channel import MidiChannel
@@ -70,6 +68,8 @@ from jdxi_editor.ui.editors.helpers.program import (
     get_program_by_id,
 )
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
+from jdxi_editor.ui.style import JDXiStyle
+from jdxi_editor.ui.style.icons import JDXiIconRegistry
 from jdxi_editor.ui.widgets.editor.helper import (
     create_group_with_layout,
     create_layout_with_widgets,
@@ -162,8 +162,8 @@ class PresetEditor(BasicEditor):
 
         self.digital_synth_1_icon = QLabel()
         self.digital_synth_1_icon.setPixmap(
-            IconRegistry.get_icon_pixmap(
-                IconRegistry.PIANO, color=JDXiStyle.FOREGROUND, size=40
+            JDXiIconRegistry.get_icon_pixmap(
+                JDXiIconRegistry.PIANO, color=JDXiStyle.FOREGROUND, size=40
             )
         )
         self.digital_synth_1_hlayout.addWidget(self.digital_synth_1_icon)
@@ -191,8 +191,8 @@ class PresetEditor(BasicEditor):
 
         self.digital_synth_2_icon = QLabel()
         self.digital_synth_2_icon.setPixmap(
-            IconRegistry.get_icon_pixmap(
-                IconRegistry.PIANO, color=JDXiStyle.FOREGROUND, size=40
+            JDXiIconRegistry.get_icon_pixmap(
+                JDXiIconRegistry.PIANO, color=JDXiStyle.FOREGROUND, size=40
             )
         )
         self.digital_synth_2_hlayout.addWidget(self.digital_synth_2_icon)
@@ -220,8 +220,8 @@ class PresetEditor(BasicEditor):
 
         self.drum_kit_icon = QLabel()
         self.drum_kit_icon.setPixmap(
-            IconRegistry.get_icon_pixmap(
-                IconRegistry.DRUM, color=JDXiStyle.FOREGROUND, size=40
+            JDXiIconRegistry.get_icon_pixmap(
+                JDXiIconRegistry.DRUM, color=JDXiStyle.FOREGROUND, size=40
             )
         )
         self.drum_kit_hlayout.addWidget(self.drum_kit_icon)
@@ -248,8 +248,8 @@ class PresetEditor(BasicEditor):
 
         self.analog_synth_icon = QLabel()
         self.analog_synth_icon.setPixmap(
-            IconRegistry.get_icon(
-                IconRegistry.PIANO, color=JDXiStyle.FOREGROUND
+            JDXiIconRegistry.get_icon(
+                JDXiIconRegistry.PIANO, color=JDXiStyle.FOREGROUND
             ).pixmap(40, 40)
         )
         self.analog_synth_hlayout.addWidget(self.analog_synth_icon)
@@ -327,8 +327,8 @@ class PresetEditor(BasicEditor):
         preset_vlayout.addWidget(self.category_combo_box)
         # Load button
         self.load_button = QPushButton(
-            IconRegistry.get_icon(
-                IconRegistry.FOLDER_NOTCH_OPEN, color=JDXiStyle.FOREGROUND
+            JDXiIconRegistry.get_icon(
+                JDXiIconRegistry.FOLDER_NOTCH_OPEN, color=JDXiStyle.FOREGROUND
             ),
             "Load Preset",
         )

@@ -6,7 +6,6 @@ from typing import Callable
 
 import qtawesome as qta
 from PySide6.QtCore import QSize
-from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
     QGroupBox,
     QHBoxLayout,
@@ -16,15 +15,13 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from decologr import Decologr as log
-from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
-from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.analog.filter import AnalogFilterType
 from jdxi_editor.midi.data.parameter.analog import AnalogParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.ui.image.utils import base64_to_pixmap
-from jdxi_editor.ui.image.waveform import generate_waveform_icon
+from jdxi_editor.ui.style import JDXiStyle, JDXiThemeManager
+from jdxi_editor.ui.style.dimensions import JDXiDimensions
+from jdxi_editor.ui.style.icons import JDXiIconRegistry
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (
@@ -34,7 +31,6 @@ from jdxi_editor.ui.widgets.editor.helper import (
 )
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.filter.analog_filter import AnalogFilterWidget
-from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 from picomidi.sysex.parameter.address import AddressParameter
 
 
@@ -88,7 +84,9 @@ class AnalogFilterSection(SectionBaseWidget):
         layout.addLayout(filter_row)
         layout.addWidget(self.analog_filter_tab_widget)
         # --- Filter Controls ---
-        controls_icon = IconRegistry.get_icon(IconRegistry.TUNE, color=JDXiStyle.GREY)
+        controls_icon = JDXiIconRegistry.get_icon(
+            JDXiIconRegistry.TUNE, color=JDXiStyle.GREY
+        )
         self.analog_filter_tab_widget.addTab(
             self._create_filter_controls_group(), controls_icon, "Controls"
         )
@@ -126,13 +124,13 @@ class AnalogFilterSection(SectionBaseWidget):
             icon = qta.icon(
                 icon_name,
                 color=JDXiStyle.WHITE,
-                icon_size=JDXiDimensions.ICON_SIZE_SMALL,
+                icon_size=JDXiDimensions.ICON.SIZE_SMALL,
             )
             btn.setIcon(icon)
             btn.setIconSize(QSize(20, 20))
             JDXiThemeManager.apply_button_rect_analog(btn)
             btn.setFixedSize(
-                JDXiDimensions.WAVEFORM_ICON_WIDTH, JDXiDimensions.WAVEFORM_ICON_HEIGHT
+                JDXiDimensions.WAVEFORM_ICON.WIDTH, JDXiDimensions.WAVEFORM_ICON.HEIGHT
             )
             btn.clicked.connect(
                 lambda checked, mode=filter_mode: self._on_filter_mode_selected(mode)

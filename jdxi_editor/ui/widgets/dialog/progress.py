@@ -5,13 +5,12 @@ Progress Dialog
 from PySide6.QtWidgets import (
     QApplication,
     QDialog,
-    QLabel,
     QProgressBar,
     QVBoxLayout,
     QWidget,
 )
 
-from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.ui.style import JDXiStyle
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 
 

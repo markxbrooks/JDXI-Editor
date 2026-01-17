@@ -48,4 +48,17 @@ class MidiMessage:
 
     def to_hex_string(self) -> str:
         """Convert message to a formatted hexadecimal string."""
-        return " ".join(f"{x:02X}" for x in self.to_message_list())
+
+        # Safely convert to int for formatting (handles strings, enums, floats, etc.)
+        def safe_int(val):
+            if isinstance(val, int):
+                return val
+            if hasattr(val, "value"):  # Handle enums
+                enum_val = val.value
+                return int(enum_val) if not isinstance(enum_val, int) else enum_val
+            try:
+                return int(float(val))  # Handle floats and strings
+            except (ValueError, TypeError):
+                return 0
+
+        return " ".join(f"{safe_int(x):02X}" for x in self.to_message_list())

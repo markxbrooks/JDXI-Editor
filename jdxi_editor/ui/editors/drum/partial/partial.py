@@ -40,11 +40,11 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from jdxi_editor.jdxi.style import JDXiStyle
-from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.drum.partial.base import DrumBaseSection
+from jdxi_editor.ui.style import JDXiStyle
+from jdxi_editor.ui.style.icons import JDXiIconRegistry
 from jdxi_editor.ui.widgets.editor.helper import (
     create_group_with_form_layout,
     create_group_with_layout,
@@ -83,22 +83,26 @@ class DrumPartialSection(DrumBaseSection):
         self.partial_controls_tab_widget = QTabWidget()
         self.scrolled_layout.addWidget(self.partial_controls_tab_widget)
 
-        controls_icon = IconRegistry.get_icon("mdi.tune", color=JDXiStyle.GREY)
+        controls_icon = JDXiIconRegistry.get_icon("mdi.tune", color=JDXiStyle.GREY)
         self.partial_controls_tab_widget.addTab(
             self._create_pitch_controls_group(), controls_icon, "Controls"
         )
 
-        pan_icon = IconRegistry.get_icon("mdi.pan-horizontal", color=JDXiStyle.GREY)
+        pan_icon = JDXiIconRegistry.get_icon("mdi.pan-horizontal", color=JDXiStyle.GREY)
         self.partial_controls_tab_widget.addTab(
             self._create_partial_pan_group(), pan_icon, "Pan"
         )
 
-        misc_icon = IconRegistry.get_icon("mdi.dots-horizontal", color=JDXiStyle.GREY)
+        misc_icon = JDXiIconRegistry.get_icon(
+            "mdi.dots-horizontal", color=JDXiStyle.GREY
+        )
         self.partial_controls_tab_widget.addTab(
             self._create_partial_misc_group(), misc_icon, "Misc"
         )
 
-        modes_icon = IconRegistry.get_icon("mdi.toggle-switch", color=JDXiStyle.GREY)
+        modes_icon = JDXiIconRegistry.get_icon(
+            "mdi.toggle-switch", color=JDXiStyle.GREY
+        )
         self.partial_controls_tab_widget.addTab(
             self._create_partial_modes_group(), modes_icon, "Modes"
         )

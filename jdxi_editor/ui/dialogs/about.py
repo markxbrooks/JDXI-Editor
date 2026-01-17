@@ -16,9 +16,9 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.project import __package_name__, __program__, __version__
 from jdxi_editor.resources import resource_path
+from jdxi_editor.ui.style import JDXiStyle
 
 
 class UiAboutDialog(QDialog):

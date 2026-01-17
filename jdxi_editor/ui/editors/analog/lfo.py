@@ -17,12 +17,12 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
-from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.midi.data.parameter.analog import AnalogParam
+from jdxi_editor.ui.style import JDXiStyle, JDXiThemeManager
+from jdxi_editor.ui.style.dimensions import JDXiDimensions
+from jdxi_editor.ui.style.icons import JDXiIconRegistry
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
-from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
 class AnalogLFOSection(SectionBaseWidget):
@@ -75,10 +75,12 @@ class AnalogLFOSection(SectionBaseWidget):
         fade_rate_controls_row_layout = self._create_lfo_fade_rate_controls_row_layout()
         fade_rate_controls_row_widget = QWidget()
         fade_rate_controls_row_widget.setMinimumHeight(
-            JDXiDimensions.EDITOR_MINIMUM_HEIGHT
+            JDXiDimensions.EDITOR.MINIMUM_HEIGHT
         )
         fade_rate_controls_row_widget.setLayout(fade_rate_controls_row_layout)
-        fade_rate_icon = IconRegistry.get_icon(IconRegistry.CLOCK, color=JDXiStyle.GREY)
+        fade_rate_icon = JDXiIconRegistry.get_icon(
+            JDXiIconRegistry.CLOCK, color=JDXiStyle.GREY
+        )
         self.lfo_controls_tab_widget.addTab(
             fade_rate_controls_row_widget, fade_rate_icon, "Fade and Rate Controls"
         )
@@ -86,9 +88,11 @@ class AnalogLFOSection(SectionBaseWidget):
         # --- Depth Controls Tab ---
         depth_controls_row_layout = self._create_lfo_depth_controls()
         depth_controls_row_widget = QWidget()
-        depth_controls_row_widget.setMinimumHeight(JDXiDimensions.EDITOR_MINIMUM_HEIGHT)
+        depth_controls_row_widget.setMinimumHeight(JDXiDimensions.EDITOR.MINIMUM_HEIGHT)
         depth_controls_row_widget.setLayout(depth_controls_row_layout)
-        depth_icon = IconRegistry.get_icon(IconRegistry.WAVEFORM, color=JDXiStyle.GREY)
+        depth_icon = JDXiIconRegistry.get_icon(
+            JDXiIconRegistry.WAVEFORM, color=JDXiStyle.GREY
+        )
         self.lfo_controls_tab_widget.addTab(
             depth_controls_row_widget, depth_icon, "Depth Controls"
         )
@@ -128,7 +132,7 @@ class AnalogLFOSection(SectionBaseWidget):
 
             # Use same dimensions as oscillator waveform buttons for consistency
             btn.setFixedSize(
-                JDXiDimensions.WAVEFORM_ICON_WIDTH, JDXiDimensions.WAVEFORM_ICON_HEIGHT
+                JDXiDimensions.WAVEFORM_ICON.WIDTH, JDXiDimensions.WAVEFORM_ICON.HEIGHT
             )
 
             btn.clicked.connect(lambda _, v=value: self._on_lfo_shape_changed(v))
@@ -293,7 +297,7 @@ class AnalogLFOSectionOld(QWidget):
         fade_rate_controls_row_layout = self._create_lfo_fade_rate_controls_row_layout()
         fade_rate_controls_row_widget = QWidget()
         fade_rate_controls_row_widget.setMinimumHeight(
-            JDXiDimensions.EDITOR_MINIMUM_HEIGHT
+            JDXiDimensions.EDITOR.MINIMUM_HEIGHT
         )
         fade_rate_controls_row_widget.setLayout(fade_rate_controls_row_layout)
 
@@ -304,9 +308,11 @@ class AnalogLFOSectionOld(QWidget):
         # --- Depth controls ---
         depth_controls_row_layout = self._create_lfo_depth_controls()
         depth_controls_row_widget = QWidget()
-        depth_controls_row_widget.setMinimumHeight(JDXiDimensions.EDITOR_MINIMUM_HEIGHT)
+        depth_controls_row_widget.setMinimumHeight(JDXiDimensions.EDITOR.MINIMUM_HEIGHT)
         depth_controls_row_widget.setLayout(depth_controls_row_layout)
-        depth_icon = IconRegistry.get_icon(IconRegistry.WAVEFORM, color=JDXiStyle.GREY)
+        depth_icon = JDXiIconRegistry.get_icon(
+            JDXiIconRegistry.WAVEFORM, color=JDXiStyle.GREY
+        )
         self.lfo_controls_tab_widget.addTab(
             depth_controls_row_widget, depth_icon, "Depth Controls"
         )

@@ -21,8 +21,8 @@ from PySide6.QtWidgets import (
 )
 
 from decologr import Decologr as log
-from jdxi_editor.jdxi.style import JDXiStyle
-from jdxi_editor.jdxi.style.icons import IconRegistry
+from jdxi_editor.ui.style import JDXiStyle
+from jdxi_editor.ui.style.icons import JDXiIconRegistry
 from jdxi_editor.ui.widgets.midi.spin_box.spin_box import MidiSpinBox
 from jdxi_editor.ui.widgets.midi.time_ruler import TimeRulerWidget
 from jdxi_editor.ui.widgets.midi.track import MidiTrackWidget
@@ -480,8 +480,8 @@ class MidiTrackViewer(QWidget):
             button_hlayout = QHBoxLayout()
             label_vlayout.addLayout(button_hlayout)
 
-            apply_icon = IconRegistry.get_icon(
-                IconRegistry.SAVE, color=JDXiStyle.FOREGROUND
+            apply_icon = JDXiIconRegistry.get_icon(
+                JDXiIconRegistry.SAVE, color=JDXiStyle.FOREGROUND
             )
             apply_button = QPushButton()
             apply_button.setIcon(apply_icon)
@@ -501,8 +501,8 @@ class MidiTrackViewer(QWidget):
             """
             button_hlayout.addWidget(apply_button)
 
-            mute_icon = IconRegistry.get_icon(
-                IconRegistry.MUTE, color=JDXiStyle.FOREGROUND
+            mute_icon = JDXiIconRegistry.get_icon(
+                JDXiIconRegistry.MUTE, color=JDXiStyle.FOREGROUND
             )
             mute_button = QPushButton()
             mute_button.setIcon(mute_icon)
@@ -517,8 +517,8 @@ class MidiTrackViewer(QWidget):
             )
             button_hlayout.addWidget(mute_button)
 
-            delete_icon = IconRegistry.get_icon(
-                IconRegistry.DELETE, color=JDXiStyle.FOREGROUND
+            delete_icon = JDXiIconRegistry.get_icon(
+                JDXiIconRegistry.DELETE, color=JDXiStyle.FOREGROUND
             )
             delete_button = QPushButton()
             delete_button.setIcon(delete_icon)

@@ -41,7 +41,7 @@ import threading
 from typing import Optional, Union
 
 import qtawesome as qta
-from PySide6.QtCore import QSettings, Qt, QTimer, Signal
+from PySide6.QtCore import QSettings, Qt, QTimer
 from PySide6.QtGui import QAction, QCloseEvent, QKeySequence, QMouseEvent, QShortcut
 from PySide6.QtWidgets import QApplication, QMenu, QMessageBox, QProgressDialog
 
@@ -52,8 +52,6 @@ from jdxi_editor.jdxi.preset.button import JDXiPresetButtonData
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.jdxi.preset.lists import JDXiPresetToneList
 from jdxi_editor.jdxi.program.program import JDXiProgram
-from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
-from jdxi_editor.jdxi.style.factory import generate_sequencer_button_style
 from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.address.address import (
@@ -98,6 +96,8 @@ from jdxi_editor.ui.editors.io.player import MidiFileEditor
 from jdxi_editor.ui.editors.io.preset import PresetEditor
 from jdxi_editor.ui.editors.main import MainEditor
 from jdxi_editor.ui.editors.pattern.pattern import PatternSequenceEditor
+from jdxi_editor.ui.style import JDXiStyle, JDXiThemeManager
+from jdxi_editor.ui.style.factory import generate_sequencer_button_style
 from jdxi_editor.ui.widgets.button import SequencerSquare
 from jdxi_editor.ui.widgets.button.favorite import FavoriteButton
 from jdxi_editor.ui.widgets.viewer.log import LogViewer

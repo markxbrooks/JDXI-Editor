@@ -89,15 +89,30 @@ class JDXiSysEx(RolandSysExMessage):
 
     def __post_init__(self) -> None:
         """Initialize JD-Xi specific features, then call parent."""
-        # Convert enum values to integers for parent class (do this first)
-        if hasattr(self.device_id, "value"):
-            self.device_id = self.device_id.value
+
+        # Helper function to safely convert to int (handles enums, strings, etc.)
+        def safe_int(value):
+            if isinstance(value, int):
+                return value
+            # Handle enums - extract the actual value
+            if hasattr(value, "value"):
+                enum_value = value.value
+                if isinstance(enum_value, int):
+                    return enum_value
+                try:
+                    return int(enum_value)
+                except (ValueError, TypeError):
+                    return 0
+            try:
+                return int(float(value))  # Handle floats and strings
+            except (ValueError, TypeError):
+                return 0
+
+        # Convert enum values to integers for parent class (do this first, BEFORE parent validation)
+        self.device_id = safe_int(self.device_id)
         if isinstance(self.model_id, list) and len(self.model_id) > 0:
-            self.model_id = [
-                b.value if hasattr(b, "value") else b for b in self.model_id
-            ]
-        if hasattr(self.command, "value"):
-            self.command = self.command.value
+            self.model_id = [safe_int(b) for b in self.model_id]
+        self.command = safe_int(self.command)
 
         # Handle sysex_address object (if provided, it overrides msb/umb/lmb/lsb)
         if self.sysex_address:
@@ -109,43 +124,76 @@ class JDXiSysEx(RolandSysExMessage):
         # Build address list from individual bytes (only if address wasn't explicitly set)
         # If address was passed directly, use it; otherwise build from msb/umb/lmb/lsb
         if self.address == [0x00, 0x00, 0x00, 0x00]:  # Default value
-            self.address = [self.msb, self.umb, self.lmb, self.lsb]
+            # Ensure all address bytes are integers
+            self.address = [
+                safe_int(self.msb),
+                safe_int(self.umb),
+                safe_int(self.lmb),
+                safe_int(self.lsb),
+            ]
         else:
-            # Address was explicitly set, update msb/umb/lmb/lsb to match
+            # Address was explicitly set, ensure all bytes are integers and update msb/umb/lmb/lsb
+            self.address = [safe_int(b) for b in self.address]
             self.msb, self.umb, self.lmb, self.lsb = self.address
 
         # Handle value conversion (JD-Xi specific)
+        # IMPORTANT: Convert data to integers BEFORE parent __post_init__ runs
         # Only convert if data wasn't explicitly set and value is provided
         if not self.data or self.data == []:
             if isinstance(self.value, int) and self.size == 4:
-                self.data = split_16bit_value_to_nibbles(self.value)
+                self.data = split_16bit_value_to_nibbles(safe_int(self.value))
             elif isinstance(self.value, int):
-                self.data = [self.value]
+                self.data = [safe_int(self.value)]
             elif isinstance(self.value, list):
-                self.data = self.value
+                # Ensure all values in the list are integers
+                self.data = [safe_int(v) for v in self.value]
+            else:
+                # Handle string, float, or other types
+                try:
+                    val_int = safe_int(self.value)
+                    self.data = (
+                        [val_int]
+                        if self.size == 1
+                        else split_16bit_value_to_nibbles(val_int)
+                    )
+                except (ValueError, TypeError):
+                    self.data = [0]  # Fallback to 0
+
+        # Ensure all data bytes are integers (in case data was set explicitly)
+        # This MUST happen before parent __post_init__ runs
+        if self.data:
+            self.data = [safe_int(b) for b in self.data]
 
         # Call parent __post_init__ to validate message structure
+        # At this point, self.address and self.data are guaranteed to be lists of integers
         super().__post_init__()
 
         # JD-Xi specific validation (merged from JDXiSysExOld)
-        # Validate device ID
-        if not (0x00 <= self.device_id <= 0x1F or self.device_id == 0x7F):
-            raise ValueError(f"Invalid device ID: {self.device_id:02X}")
+        # Validate device ID (ensure it's an integer for formatting)
+        device_id_int = safe_int(self.device_id)
+        if not (0x00 <= device_id_int <= 0x1F or device_id_int == 0x7F):
+            raise ValueError(f"Invalid device ID: {device_id_int:02X}")
 
-        # Validate model ID matches JD-Xi
+        # Validate model ID matches JD-Xi (ensure all values are integers)
         expected_model_id = [
             ModelID.MODEL_ID_1,
             ModelID.MODEL_ID_2,
             ModelID.MODEL_ID_3,
             ModelID.MODEL_ID_4,
         ]
-        if self.model_id != expected_model_id:
-            raise ValueError(f"Invalid model ID: {[f'{x:02X}' for x in self.model_id]}")
-
-        # --- Validate address bytes
-        if not all(ZERO_BYTE <= x <= BitMask.FULL_BYTE for x in self.address):
+        # Convert both to integers for comparison and formatting
+        model_id_ints = [safe_int(x) for x in self.model_id]
+        expected_model_id_ints = [safe_int(x) for x in expected_model_id]
+        if model_id_ints != expected_model_id_ints:
             raise ValueError(
-                f"Invalid address bytes: {[f'{x:02X}' for x in self.address]}"
+                f"Invalid model ID: {[f'{safe_int(x):02X}' for x in model_id_ints]}"
+            )
+
+        # --- Validate address bytes (ensure all values are integers)
+        address_ints = [safe_int(x) for x in self.address]
+        if not all(ZERO_BYTE <= x <= BitMask.FULL_BYTE for x in address_ints):
+            raise ValueError(
+                f"Invalid address bytes: {[f'{safe_int(x):02X}' for x in address_ints]}"
             )
 
     def from_sysex_address(self, sysex_address: RolandSysExAddress) -> None:

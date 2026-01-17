@@ -11,7 +11,7 @@ from PySide6.QtCore import QObject
 from PySide6.QtWidgets import QApplication, QWidget
 
 from decologr import Decologr as log
-from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.ui.style import JDXiStyle
 
 # Optional imports for theme detection
 try:

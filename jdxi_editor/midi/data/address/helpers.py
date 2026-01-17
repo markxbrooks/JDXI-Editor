@@ -44,7 +44,8 @@ def address_to_hex_string(address: Tuple[int, int, int, int]) -> str:
     :param address: Tuple[int, int, int, int]
     :return: str
     """
-    return " ".join(f"{b:02X}" for b in address)
+    # Safely convert to int for formatting
+    return " ".join(f"{int(b) if not isinstance(b, int) else b:02X}" for b in address)
 
 
 def parse_sysex_address_json(

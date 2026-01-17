@@ -40,13 +40,13 @@ from PySide6.QtWidgets import (
 )
 
 from decologr import Decologr as log
-from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.json_composer import JDXiJSONComposer
 from jdxi_editor.project import __package_name__
 from jdxi_editor.ui.editors import ProgramEditor
 from jdxi_editor.ui.editors.io.player import MidiFileEditor
 from jdxi_editor.ui.editors.pattern.pattern import PatternSequenceEditor
+from jdxi_editor.ui.style import JDXiStyle
 
 
 def zip_directory(folder_path, zip_path):

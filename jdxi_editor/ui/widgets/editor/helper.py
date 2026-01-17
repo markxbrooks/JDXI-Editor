@@ -19,10 +19,10 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
-from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
+from jdxi_editor.ui.style import JDXiStyle
+from jdxi_editor.ui.style.dimensions import JDXiDimensions
 
 
 def create_layout_with_widgets(
@@ -120,7 +120,7 @@ def create_icons_layout() -> QHBoxLayout:
         "mdi.waveform",
     ]:
         icon_pixmap = qta.icon(icon, color=JDXiStyle.GREY).pixmap(
-            JDXiDimensions.ICON_WIDTH, JDXiDimensions.ICON_HEIGHT
+            JDXiDimensions.ICON.WIDTH, JDXiDimensions.ICON.HEIGHT
         )
         icon_label = create_icon_label_with_pixmap(icon_pixmap)
         icons_hlayout.addWidget(icon_label)
@@ -160,7 +160,7 @@ def create_group_adsr_with_hlayout(
     controls_group = QGroupBox(name)
     controls_group.setLayout(hlayout)
     if analog:
-        from jdxi_editor.jdxi.style.theme_manager import JDXiThemeManager
+        from jdxi_editor.ui.style.theme_manager import JDXiThemeManager
 
         JDXiThemeManager.apply_adsr_style(controls_group, analog=True)
     else:
@@ -202,7 +202,7 @@ def create_envelope_group(
     env_group.setLayout(env_layout)
 
     if analog:
-        from jdxi_editor.jdxi.style.theme_manager import JDXiThemeManager
+        from jdxi_editor.ui.style.theme_manager import JDXiThemeManager
 
         JDXiThemeManager.apply_adsr_style(env_group, analog=True)
     else:

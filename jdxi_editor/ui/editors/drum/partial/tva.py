@@ -47,17 +47,10 @@ from PySide6.QtGui import (
 )
 from PySide6.QtWidgets import (
     QGridLayout,
-    QGroupBox,
-    QHBoxLayout,
-    QScrollArea,
-    QSizePolicy,
-    QVBoxLayout,
     QWidget,
 )
 
 from decologr import Decologr as log
-from jdxi_editor.jdxi.style import JDXiStyle
-from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.drum.partial.base import DrumBaseSection
@@ -65,11 +58,12 @@ from jdxi_editor.ui.editors.drum.partial.tvf import (
     midi_to_cutoff_level,
     midi_to_time_normalized,
 )
+from jdxi_editor.ui.style import JDXiStyle
+from jdxi_editor.ui.style.dimensions import JDXiDimensions
 from jdxi_editor.ui.widgets.editor.helper import (
     create_group_with_layout,
     create_layout_with_widgets,
 )
-from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
 class DrumTVAEnvPlot(QWidget):
@@ -88,7 +82,7 @@ class DrumTVAEnvPlot(QWidget):
         self.setMinimumSize(width, height)
         self.setMaximumHeight(height)
         self.setMaximumWidth(width)
-        from jdxi_editor.jdxi.style.theme_manager import JDXiThemeManager
+        from jdxi_editor.ui.style.theme_manager import JDXiThemeManager
 
         JDXiThemeManager.apply_adsr_plot(self)
         self.sample_rate = 256
@@ -122,7 +116,7 @@ class DrumTVAEnvPlot(QWidget):
             axis_pen = QPen(QColor("white"), 1)
             grid_pen = QPen(Qt.GlobalColor.darkGray, 1)
             grid_pen.setStyle(Qt.PenStyle.DashLine)
-            point_pen = QPen(QColor("orange"), JDXiDimensions.CHART_POINT_SIZE)
+            point_pen = QPen(QColor("orange"), JDXiDimensions.CHART.POINT_SIZE)
             painter.setFont(QFont("JD LCD Rounded", 10))
 
             depth = self.envelope.get("depth", 64) - 64  # -63 to +63

@@ -26,7 +26,7 @@ from jdxi_editor.jdxi.midi.message.sysex.offset import (
     JDXIProgramChangeOffset,
     JDXiSysExMessageLayout,
 )
-from jdxi_editor.midi.data.address.address import ModelID, RolandID
+from jdxi_editor.midi.data.address.address import RolandID
 from jdxi_editor.midi.io.utils import nibble_data
 from jdxi_editor.midi.message.jdxi import JDXiSysexHeader
 from jdxi_editor.midi.sysex.device import DeviceInfo

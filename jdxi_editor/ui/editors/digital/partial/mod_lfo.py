@@ -7,25 +7,23 @@ from typing import Callable
 import qtawesome as qta
 from PySide6.QtCore import QSize
 from PySide6.QtWidgets import (
-    QGroupBox,
     QHBoxLayout,
     QLabel,
     QPushButton,
     QTabWidget,
-    QVBoxLayout,
     QWidget,
 )
 
 from decologr import Decologr as log
-from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
-from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.midi.data.digital.lfo import DigitalLFOShape
 from jdxi_editor.midi.data.parameter.digital.partial import (
     DigitalPartialParam,
 )
+from jdxi_editor.ui.style import JDXiStyle
+from jdxi_editor.ui.style.dimensions import JDXiDimensions
+from jdxi_editor.ui.style.icons import JDXiIconRegistry
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
-from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
 class DigitalModLFOSection(SectionBaseWidget):
@@ -99,7 +97,7 @@ class DigitalModLFOSection(SectionBaseWidget):
             btn.setIcon(icon)
             btn.setIconSize(QSize(20, 20))
             btn.setFixedSize(
-                JDXiDimensions.WAVEFORM_ICON_WIDTH, JDXiDimensions.WAVEFORM_ICON_HEIGHT
+                JDXiDimensions.WAVEFORM_ICON.WIDTH, JDXiDimensions.WAVEFORM_ICON.HEIGHT
             )
             btn.clicked.connect(
                 lambda checked, shape=mod_lfo_shape: self._on_mod_lfo_shape_selected(
@@ -138,7 +136,7 @@ class DigitalModLFOSection(SectionBaseWidget):
         rate_layout = QHBoxLayout()
         rate_layout.addStretch()
         rate_widget.setLayout(rate_layout)
-        rate_widget.setMinimumHeight(JDXiDimensions.EDITOR_MINIMUM_HEIGHT)
+        rate_widget.setMinimumHeight(JDXiDimensions.EDITOR.MINIMUM_HEIGHT)
 
         # Rate and Rate Ctrl controls
         rate_layout.addWidget(
@@ -153,7 +151,9 @@ class DigitalModLFOSection(SectionBaseWidget):
         )
         rate_layout.addStretch()
 
-        rate_icon = IconRegistry.get_icon(IconRegistry.CLOCK, color=JDXiStyle.GREY)
+        rate_icon = JDXiIconRegistry.get_icon(
+            JDXiIconRegistry.CLOCK, color=JDXiStyle.GREY
+        )
         mod_lfo_controls_tab_widget.addTab(rate_widget, rate_icon, "Rate and Rate Ctrl")
 
         # --- Depths Tab ---
@@ -161,7 +161,7 @@ class DigitalModLFOSection(SectionBaseWidget):
         depths_layout = QHBoxLayout()
         depths_layout.addStretch()
         depths_widget.setLayout(depths_layout)
-        depths_widget.setMinimumHeight(JDXiDimensions.EDITOR_MINIMUM_HEIGHT)
+        depths_widget.setMinimumHeight(JDXiDimensions.EDITOR.MINIMUM_HEIGHT)
 
         depths_layout.addWidget(
             self._create_parameter_slider(
@@ -185,7 +185,9 @@ class DigitalModLFOSection(SectionBaseWidget):
         )
         depths_layout.addStretch()
 
-        depths_icon = IconRegistry.get_icon(IconRegistry.WAVEFORM, color=JDXiStyle.GREY)
+        depths_icon = JDXiIconRegistry.get_icon(
+            JDXiIconRegistry.WAVEFORM, color=JDXiStyle.GREY
+        )
         mod_lfo_controls_tab_widget.addTab(depths_widget, depths_icon, "Depths")
 
         mod_lfo_layout.addStretch()

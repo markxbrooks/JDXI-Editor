@@ -23,7 +23,7 @@ Dependencies:
 import json
 import os
 import re
-from typing import Any, Optional
+from typing import Optional
 
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QKeySequence, QPixmap, QShortcut, QShowEvent
@@ -31,7 +31,6 @@ from PySide6.QtWidgets import QGroupBox, QLabel, QPushButton, QVBoxLayout, QWidg
 
 from decologr import Decologr as log
 from jdxi_editor.jdxi.preset.lists import JDXiPresetToneList
-from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
 from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.log.midi_info import log_midi_info
 from jdxi_editor.midi.channel.channel import MidiChannel
@@ -54,6 +53,7 @@ from jdxi_editor.ui.editors.digital.utils import (
 )
 from jdxi_editor.ui.editors.helpers.preset import get_preset_parameter_value
 from jdxi_editor.ui.editors.synth.base import SynthBase
+from jdxi_editor.ui.style import JDXiStyle, JDXiThemeManager
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 from jdxi_editor.ui.widgets.preset.combo_box import PresetComboBox
 
@@ -135,7 +135,7 @@ class SynthEditor(SynthBase):
         self.setWindowFlags(Qt.WindowType.Tool)
 
         # Apply common style
-        from jdxi_editor.jdxi.style.theme_manager import JDXiThemeManager
+        from jdxi_editor.ui.style.theme_manager import JDXiThemeManager
 
         JDXiThemeManager.apply_editor_style(self)
 

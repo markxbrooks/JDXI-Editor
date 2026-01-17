@@ -145,17 +145,22 @@ class PitchEnvSliderSpinbox(QWidget):
         :return: int
         """
         param_type = self.param.get_envelope_param_type()
-        if param_type in ["peak_level", "sustain_level" "mod_depth", "depth"]:
+        if param_type in ["peak_level", "sustain_level", "mod_depth", "depth"]:
             converted_value = int(value * Midi.VALUE.MAX.SEVEN_BIT)
         elif param_type in [
             "attack_time",
             "decay_time",
-            "release_time" "fade_lower",
+            "release_time",
+            "fade_lower",
             "fade_upper",
             "range_lower",
             "range_upper",
         ]:
-            converted_value = int(ms_to_midi_value(value, min_time=10, max_time=5000))
+            # Ensure value is a number, not a string
+            value_num = float(value) if not isinstance(value, (int, float)) else value
+            converted_value = int(
+                ms_to_midi_value(value_num, min_time=10, max_time=5000)
+            )
         else:
             converted_value = 64
         log.message(f"convert_from_envelope: {value} -> {converted_value}")

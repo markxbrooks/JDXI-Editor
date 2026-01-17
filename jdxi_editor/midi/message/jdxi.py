@@ -50,13 +50,26 @@ class JDXiSysexHeader:
 
         :return: list[int] Header bytes as a list [RolandID, DeviceID, ModelID1-4]
         """
+
+        # Helper to safely convert enum to int
+        def safe_int(val):
+            if isinstance(val, int):
+                return val
+            if hasattr(val, "value"):  # Handle enums
+                enum_val = val.value
+                return int(enum_val) if not isinstance(enum_val, int) else enum_val
+            try:
+                return int(float(val))  # Handle floats and strings
+            except (ValueError, TypeError):
+                return 0
+
         return [
-            cls.ID.ROLAND_ID,
-            cls.ID.DEVICE_ID,
-            cls.MODEL.MODEL_ID_1,
-            cls.MODEL.MODEL_ID_2,
-            cls.MODEL.MODEL_ID_3,
-            cls.MODEL.MODEL_ID_4,
+            safe_int(cls.ID.ROLAND_ID),
+            safe_int(cls.ID.DEVICE_ID),
+            safe_int(cls.MODEL.MODEL_ID_1),
+            safe_int(cls.MODEL.MODEL_ID_2),
+            safe_int(cls.MODEL.MODEL_ID_3),
+            safe_int(cls.MODEL.MODEL_ID_4),
         ]
 
     @classmethod

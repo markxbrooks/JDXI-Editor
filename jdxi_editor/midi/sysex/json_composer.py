@@ -52,8 +52,14 @@ class JDXiJSONComposer:
                     f"Skipping invalid editor: {editor}, has no get_controls_as_dict method"
                 )
                 return None
-            # Convert address to hex string without spaces
-            address_hex = "".join([f"{x:02x}" for x in editor.address.to_bytes()])
+            # --- Convert address to hex string without spaces (safely convert to int)
+            address_bytes = editor.address.to_bytes()
+            address_hex = "".join(
+                [
+                    f"{int(x) if not isinstance(x, int) else x:02x}"
+                    for x in address_bytes
+                ]
+            )
             synth_tone_byte = address_hex[4:6]
             editor_data["ADDRESS"] = address_hex
 

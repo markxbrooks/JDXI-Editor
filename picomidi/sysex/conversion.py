@@ -31,7 +31,29 @@ def bytes_to_hex(byte_list: List[int], prefix: str = "F0") -> str:
     :param prefix: Optional prefix (default is "F0" for SysEx messages)
     :return: Formatted hex string
     """
-    hex_bytes = " ".join(f"{int(byte):02X}" for byte in byte_list)
+    # Safely convert to int for formatting (handles strings, enums, floats, etc.)
+    def safe_int(val):
+        # Check for enums FIRST (IntEnum inherits from int, so isinstance check must come after)
+        if hasattr(val, 'value') and not isinstance(val, type):  # Handle enums (but not enum classes)
+            enum_val = val.value
+            # Ensure we get the actual integer value, not the enum
+            if isinstance(enum_val, int) and not hasattr(enum_val, 'value'):
+                return enum_val
+            # If enum_val is still an enum, recurse
+            if hasattr(enum_val, 'value'):
+                return safe_int(enum_val)
+            try:
+                return int(float(enum_val))  # Handle string enum values
+            except (ValueError, TypeError):
+                return 0
+        if isinstance(val, int):
+            return val
+        try:
+            return int(float(val))  # Handle floats and strings
+        except (ValueError, TypeError):
+            return 0
+    
+    hex_bytes = " ".join(f"{safe_int(byte):02X}" for byte in byte_list)
     return f"{prefix} {hex_bytes}" if prefix else hex_bytes
 
 

@@ -4,9 +4,8 @@ Digital Tone Modify Section
 
 from typing import Callable
 
-from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QHBoxLayout
 
-from jdxi_editor.jdxi.style import JDXiThemeManager
 from jdxi_editor.midi.data.lfo.lfo import LFOSyncNote
 from jdxi_editor.midi.data.parameter.digital.modify import DigitalModifyParam
 from jdxi_editor.ui.widgets.editor import IconType

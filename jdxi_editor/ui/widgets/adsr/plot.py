@@ -42,7 +42,6 @@ from PySide6.QtGui import (
 from PySide6.QtWidgets import QWidget
 
 from decologr import Decologr as log
-from jdxi_editor.jdxi.style import JDXiStyle
 
 
 class ADSRPlot(QWidget):
@@ -71,7 +70,7 @@ class ADSRPlot(QWidget):
         self.setMaximumHeight(height)
         self.setMaximumWidth(width)
         # Use dark gray background
-        from jdxi_editor.jdxi.style.theme_manager import JDXiThemeManager
+        from jdxi_editor.ui.style.theme_manager import JDXiThemeManager
 
         JDXiThemeManager.apply_adsr_plot(self)
         # Sample rate for converting times to samples

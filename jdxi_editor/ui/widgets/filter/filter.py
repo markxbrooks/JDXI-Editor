@@ -12,16 +12,16 @@ and can communicate with MIDI devices.
 from typing import Callable, Optional
 
 from PySide6.QtCore import Signal
-from PySide6.QtWidgets import QGridLayout, QHBoxLayout, QSlider, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QHBoxLayout, QSlider, QVBoxLayout, QWidget
 
 from decologr import Decologr as log
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.parameter.digital import DigitalPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.ui.widgets.envelope.base import TOOLTIPS, EnvelopeWidgetBase
+from jdxi_editor.ui.style.dimensions import JDXiDimensions
+from jdxi_editor.ui.widgets.envelope.base import EnvelopeWidgetBase
 from jdxi_editor.ui.widgets.filter.filter_plot import FilterPlot
 from jdxi_editor.ui.widgets.pulse_width.slider_spinbox import PWMSliderSpinbox
-from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 from picomidi.constant import Midi
 from picomidi.sysex.parameter.address import AddressParameter
 from picomidi.utils.conversion import midi_value_to_ms, ms_to_midi_value
@@ -87,8 +87,8 @@ class FilterWidget(EnvelopeWidgetBase):
         self.setLayout(self.horizontal_layout)
         self.filter_mode = "lpf"  # Default filter mode
         self.plot = FilterPlot(
-            width=JDXiDimensions.PWM_WIDGET_WIDTH - 20,
-            height=JDXiDimensions.PWM_WIDGET_HEIGHT - 20,
+            width=JDXiDimensions.PWM_WIDGET.WIDTH - 20,
+            height=JDXiDimensions.PWM_WIDGET.HEIGHT - 20,
             parent=self,
             envelope=self.envelope,
             filter_mode=self.filter_mode,

@@ -40,12 +40,12 @@ from PySide6.QtWidgets import (
 )
 
 from decologr import Decologr as log
-from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.midi.data.piano.keyboard import (
     DRUM_LABELS,
     KEYBOARD_BLACK_NOTES,
     KEYBOARD_WHITE_NOTES,
 )
+from jdxi_editor.ui.style import JDXiStyle
 from jdxi_editor.ui.widgets.piano.key import PianoKey
 
 

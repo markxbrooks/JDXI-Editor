@@ -63,16 +63,30 @@ class RolandSysExMessage(Message):
 
         :raises ValueError: If message structure is invalid
         """
-        # Validate manufacturer ID
-        if self.manufacturer_id != 0x41:
+        # Helper to safely convert to int for validation and formatting
+        def safe_int_for_validation(val):
+            if isinstance(val, int):
+                return val
+            if hasattr(val, 'value'):  # Handle enums
+                enum_val = val.value
+                return int(enum_val) if not isinstance(enum_val, int) else enum_val
+            try:
+                return int(float(val))  # Handle floats and strings
+            except (ValueError, TypeError):
+                return 0
+        
+        # Validate manufacturer ID (safely convert for formatting)
+        manufacturer_id_int = safe_int_for_validation(self.manufacturer_id)
+        if manufacturer_id_int != 0x41:
             raise ValueError(
-                f"Roland manufacturer ID must be 0x41, got 0x{self.manufacturer_id:02X}"
+                f"Roland manufacturer ID must be 0x41, got 0x{manufacturer_id_int:02X}"
             )
 
-        # Validate device ID (0x10-0x1F or 0x7F for all devices)
-        if not (0x10 <= self.device_id <= 0x1F or self.device_id == 0x7F):
+        # Validate device ID (0x10-0x1F or 0x7F for all devices) - safely convert for comparison and formatting
+        device_id_int = safe_int_for_validation(self.device_id)
+        if not (0x10 <= device_id_int <= 0x1F or device_id_int == 0x7F):
             raise ValueError(
-                f"Device ID must be 0x10-0x1F or 0x7F, got 0x{self.device_id:02X}"
+                f"Device ID must be 0x10-0x1F or 0x7F, got 0x{device_id_int:02X}"
             )
 
         # Validate model ID (must be 4 bytes)
@@ -80,20 +94,69 @@ class RolandSysExMessage(Message):
             raise ValueError(
                 f"Model ID must be exactly 4 bytes, got {len(self.model_id)} bytes"
             )
-        if any(not (0 <= byte <= 0x7F) for byte in self.model_id):
+        # Safely validate and convert model ID bytes
+        def safe_validate_byte(byte):
+            if isinstance(byte, int):
+                return 0 <= byte <= 0x7F
+            try:
+                byte_int = int(float(byte)) if not isinstance(byte, int) else byte
+                return 0 <= byte_int <= 0x7F
+            except (ValueError, TypeError):
+                return False
+        
+        if any(not safe_validate_byte(byte) for byte in self.model_id):
             raise ValueError("Model ID bytes must be 0-127 (7-bit safe)")
+        
+        # Convert model ID bytes to integers if they aren't already
+        self.model_id = [
+            int(float(b)) if not isinstance(b, int) else b
+            for b in self.model_id
+        ]
 
         # Validate address (must be 4 bytes)
         if len(self.address) != 4:
             raise ValueError(
                 f"Address must be exactly 4 bytes, got {len(self.address)} bytes"
             )
-        if any(not (0 <= byte <= 0x7F) for byte in self.address):
+        # Safely validate and convert address bytes
+        def safe_validate_byte(byte):
+            if isinstance(byte, int):
+                return 0 <= byte <= 0x7F
+            try:
+                byte_int = int(float(byte)) if not isinstance(byte, int) else byte
+                return 0 <= byte_int <= 0x7F
+            except (ValueError, TypeError):
+                return False
+        
+        if any(not safe_validate_byte(byte) for byte in self.address):
             raise ValueError("Address bytes must be 0-127 (7-bit safe)")
+        
+        # Convert address bytes to integers if they aren't already
+        self.address = [
+            int(float(b)) if not isinstance(b, int) else b
+            for b in self.address
+        ]
 
         # Validate data bytes (must be 7-bit safe)
-        if any(not (0 <= byte <= 0x7F) for byte in self.data):
+        # Safely convert and validate each byte
+        def safe_validate_byte(byte):
+            if isinstance(byte, int):
+                return 0 <= byte <= 0x7F
+            # Try to convert to int for validation
+            try:
+                byte_int = int(float(byte)) if not isinstance(byte, int) else byte
+                return 0 <= byte_int <= 0x7F
+            except (ValueError, TypeError):
+                return False
+        
+        if any(not safe_validate_byte(byte) for byte in self.data):
             raise ValueError("Data bytes must be 0-127 (7-bit safe)")
+        
+        # Convert data bytes to integers if they aren't already
+        self.data = [
+            int(float(b)) if not isinstance(b, int) else b
+            for b in self.data
+        ]
 
         # Validate command
         if not (0 <= self.command <= 0x7F):
@@ -108,7 +171,20 @@ class RolandSysExMessage(Message):
 
         :return: Checksum value (0-127)
         """
-        checksum_data = self.address + self.data
+        # Helper to safely convert to int
+        def safe_int(val):
+            if isinstance(val, int):
+                return val
+            if hasattr(val, 'value'):  # Handle enums
+                enum_val = val.value
+                return int(enum_val) if not isinstance(enum_val, int) else enum_val
+            try:
+                return int(float(val))  # Handle floats and strings
+            except (ValueError, TypeError):
+                return 0
+        
+        # Ensure all values are integers before calculating checksum
+        checksum_data = [safe_int(b) for b in (self.address + self.data)]
         return calculate_checksum(checksum_data)
 
     def to_list(self) -> List[int]:
@@ -119,15 +195,27 @@ class RolandSysExMessage(Message):
 
         :return: List of byte values (0-255)
         """
+        # Helper to safely convert to int
+        def safe_int(val):
+            if isinstance(val, int):
+                return val
+            if hasattr(val, 'value'):  # Handle enums
+                enum_val = val.value
+                return int(enum_val) if not isinstance(enum_val, int) else enum_val
+            try:
+                return int(float(val))  # Handle floats and strings
+            except (ValueError, TypeError):
+                return 0
+        
         msg = [
             Midi.SYSEX.START,  # F0
-            self.manufacturer_id,  # 0x41 (Roland)
-            self.device_id,
+            safe_int(self.manufacturer_id),  # 0x41 (Roland)
+            safe_int(self.device_id),
         ]
-        msg.extend(self.model_id)  # 4 bytes
-        msg.append(self.command)
-        msg.extend(self.address)  # 4 bytes
-        msg.extend(self.data)
+        msg.extend([safe_int(b) for b in self.model_id])  # 4 bytes
+        msg.append(safe_int(self.command))
+        msg.extend([safe_int(b) for b in self.address])  # 4 bytes
+        msg.extend([safe_int(b) for b in self.data])  # Ensure all data bytes are integers
         msg.append(self.calculate_checksum())
         msg.append(Midi.SYSEX.END)  # F7
         return msg

@@ -77,7 +77,7 @@ Attributes:
 
 import platform
 
-from jdxi_editor.jdxi.style.factory import (
+from jdxi_editor.ui.style.factory import (
     generate_button_style,
     generate_editor_style,
     generate_tab_style,
@@ -926,7 +926,7 @@ class JDXiStyle:
         }}
     """
 
-    STATUS_INDICATOR_INACTIVE = f"""
+    STATUS_INDICATOR_INACTIVE = """
         QLabel {{
             background-color: #333333;
             border: 1px solid #666666;

@@ -23,20 +23,15 @@ Dependencies:
 
 from typing import Dict, Optional
 
-from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QGroupBox,
     QHBoxLayout,
     QLabel,
-    QScrollArea,
-    QTabWidget,
     QVBoxLayout,
     QWidget,
 )
 
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
-from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
-from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.midi.data.address.address import (
     ZERO_BYTE,
     AddressOffsetProgramLMB,
@@ -58,6 +53,8 @@ from jdxi_editor.midi.data.vocal_effects.vocal import (
 )
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
+from jdxi_editor.ui.style import JDXiStyle, JDXiThemeManager
+from jdxi_editor.ui.style.icons import JDXiIconRegistry
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 from jdxi_editor.ui.widgets.editor.simple_editor_helper import SimpleEditorHelper
 from picomidi.sysex.parameter.address import AddressParameter
@@ -81,7 +78,7 @@ class VocalFXEditor(BasicEditor):
             AddressOffsetProgramLMB.VOCAL_EFFECT,
             ZERO_BYTE,
         )
-        from jdxi_editor.jdxi.style.theme_manager import JDXiThemeManager
+        from jdxi_editor.ui.style.theme_manager import JDXiThemeManager
 
         JDXiThemeManager.apply_editor_style(self)
 
@@ -102,20 +99,22 @@ class VocalFXEditor(BasicEditor):
 
         # Get tab widget from helper and add tabs
         self.tab_widget = self.editor_helper.get_tab_widget()
-        common_icon = IconRegistry.get_icon(
-            IconRegistry.COG_OUTLINE, color=JDXiStyle.GREY
+        common_icon = JDXiIconRegistry.get_icon(
+            JDXiIconRegistry.COG_OUTLINE, color=JDXiStyle.GREY
         )
         self.tab_widget.addTab(self._create_common_section(), common_icon, "Common")
-        vocal_fx_icon = IconRegistry.get_icon(
-            IconRegistry.MICROPHONE, color=JDXiStyle.GREY
+        vocal_fx_icon = JDXiIconRegistry.get_icon(
+            JDXiIconRegistry.MICROPHONE, color=JDXiStyle.GREY
         )
         self.tab_widget.addTab(
             self._create_vocal_effect_section(), vocal_fx_icon, "Vocal FX"
         )
-        mixer_icon = IconRegistry.get_icon(IconRegistry.EQUALIZER, color=JDXiStyle.GREY)
+        mixer_icon = JDXiIconRegistry.get_icon(
+            JDXiIconRegistry.EQUALIZER, color=JDXiStyle.GREY
+        )
         self.tab_widget.addTab(self._create_mixer_section(), mixer_icon, "Mixer")
-        auto_pitch_icon = IconRegistry.get_icon(
-            IconRegistry.MUSIC_NOTE, color=JDXiStyle.GREY
+        auto_pitch_icon = JDXiIconRegistry.get_icon(
+            JDXiIconRegistry.MUSIC_NOTE, color=JDXiStyle.GREY
         )
         self.tab_widget.addTab(
             self._create_auto_pitch_section(), auto_pitch_icon, "Auto Pitch"
@@ -138,7 +137,7 @@ class VocalFXEditor(BasicEditor):
         common_section.setLayout(layout)
 
         # Icons row (standardized across editor tabs)
-        icon_hlayout = IconRegistry.create_generic_musical_icon_row()
+        icon_hlayout = JDXiIconRegistry.create_generic_musical_icon_row()
         layout.addLayout(icon_hlayout)
 
         self.program_tempo = self._create_parameter_slider(
@@ -193,7 +192,7 @@ class VocalFXEditor(BasicEditor):
         vocal_effect_section.setLayout(layout)
 
         # Icons row (standardized across editor tabs)
-        icon_hlayout = IconRegistry.create_adsr_icons_row()
+        icon_hlayout = JDXiIconRegistry.create_adsr_icons_row()
         layout.addLayout(icon_hlayout)
 
         # Add vocoder switch
@@ -274,7 +273,7 @@ class VocalFXEditor(BasicEditor):
         mixer_section.setLayout(layout)
 
         # Icons row (standardized across editor tabs)
-        icon_hlayout = IconRegistry.create_adsr_icons_row()
+        icon_hlayout = JDXiIconRegistry.create_adsr_icons_row()
         layout.addLayout(icon_hlayout)
 
         # Level and Pan
@@ -324,7 +323,7 @@ class VocalFXEditor(BasicEditor):
         auto_pitch_section.setLayout(layout)
 
         # Icons row (standardized across editor tabs)
-        icon_hlayout = IconRegistry.create_adsr_icons_row()
+        icon_hlayout = JDXiIconRegistry.create_adsr_icons_row()
         layout.addLayout(icon_hlayout)
 
         self.pitch_switch = self._create_parameter_switch(

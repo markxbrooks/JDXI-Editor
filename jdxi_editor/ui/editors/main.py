@@ -13,8 +13,8 @@ Methods:
 
 from PySide6.QtWidgets import QMainWindow, QTabWidget
 
-from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.project import __program__, __version__
+from jdxi_editor.ui.style import JDXiStyle
 
 
 class MainEditor(QMainWindow):

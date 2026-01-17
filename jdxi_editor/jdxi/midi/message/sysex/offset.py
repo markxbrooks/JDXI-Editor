@@ -27,7 +27,7 @@ from picomidi.core.parameter.address import ParameterAddress
 class FieldSpec:
     offset: Union[int, type]  # int or OffsetEnum
     length: int | None
-    parser: Type | None
+    parser: Type | int | None
 
 
 class JDXIControlChangeOffset(IntEnum):

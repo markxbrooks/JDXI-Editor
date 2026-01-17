@@ -9,10 +9,10 @@ from PySide6.QtGui import QIcon, Qt
 from PySide6.QtWidgets import QHBoxLayout, QLabel
 
 from decologr import Decologr as log
-from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.ui.style.jdxi import JDXiStyle
 
 
-class IconRegistry:
+class JDXiIconRegistry:
     """Centralized icon definitions and retrieval"""
 
     # Action icons
@@ -43,6 +43,7 @@ class IconRegistry:
     # MIDI icons
     MIDI_PORT = "mdi.midi-port"
     MUSIC = "mdi.file-music-outline"
+    MUSIC_NOTES = "ph.music-notes-fill"
     KEYBOARD = "mdi6.keyboard-settings-outline"
 
     # Playback icons
@@ -164,7 +165,7 @@ class IconRegistry:
         :param fallback: Fallback icon if primary fails
         :return: QPixmap or None if all fail
         """
-        icon = IconRegistry.get_icon(icon_name, color=color, fallback=fallback)
+        icon = JDXiIconRegistry.get_icon(icon_name, color=color, fallback=fallback)
         if icon is None:
             return None
 
@@ -186,7 +187,7 @@ class IconRegistry:
         :param fallback: Fallback icon if primary fails
         :return: QIcon (may be empty if all fail)
         """
-        icon = IconRegistry.get_icon(icon_name, color=color, fallback=fallback)
+        icon = JDXiIconRegistry.get_icon(icon_name, color=color, fallback=fallback)
         if icon is None:
             # Return empty icon
             return qta.icon("")

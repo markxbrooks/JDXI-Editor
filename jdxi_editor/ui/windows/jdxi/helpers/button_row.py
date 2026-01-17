@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QPushButton, QVBoxLayout
 
-from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.ui.style import JDXiStyle
 
 
 def create_button_row(text, slot, vertical=False, spacing=10):

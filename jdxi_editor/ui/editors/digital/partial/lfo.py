@@ -5,27 +5,25 @@ LFO section of the digital partial editor.
 from typing import Callable
 
 import qtawesome as qta
-from PySide6.QtCore import QSize, Qt
+from PySide6.QtCore import QSize
 from PySide6.QtWidgets import (
-    QGroupBox,
     QHBoxLayout,
     QLabel,
     QPushButton,
     QTabWidget,
-    QVBoxLayout,
     QWidget,
 )
 
 from decologr import Decologr as log
-from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
-from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.midi.data.digital.lfo import DigitalLFOShape
 from jdxi_editor.midi.data.parameter.digital.partial import (
     DigitalPartialParam,
 )
+from jdxi_editor.ui.style import JDXiStyle
+from jdxi_editor.ui.style.dimensions import JDXiDimensions
+from jdxi_editor.ui.style.icons import JDXiIconRegistry
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
-from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
 class DigitalLFOSection(SectionBaseWidget):
@@ -100,7 +98,7 @@ class DigitalLFOSection(SectionBaseWidget):
             btn.setIcon(icon)
             btn.setIconSize(QSize(20, 20))
             btn.setFixedSize(
-                JDXiDimensions.WAVEFORM_ICON_WIDTH, JDXiDimensions.WAVEFORM_ICON_HEIGHT
+                JDXiDimensions.WAVEFORM_ICON.WIDTH, JDXiDimensions.WAVEFORM_ICON.HEIGHT
             )
             btn.clicked.connect(
                 lambda checked, shape=lfo_shape: self._on_lfo_shape_selected(shape)
@@ -144,7 +142,7 @@ class DigitalLFOSection(SectionBaseWidget):
         rate_fade_layout = QHBoxLayout()
         rate_fade_layout.addStretch()
         rate_fade_widget.setLayout(rate_fade_layout)
-        rate_fade_widget.setMinimumHeight(JDXiDimensions.EDITOR_MINIMUM_HEIGHT)
+        rate_fade_widget.setMinimumHeight(JDXiDimensions.EDITOR.MINIMUM_HEIGHT)
 
         # Rate and fade controls
         rate_fade_layout.addWidget(
@@ -159,7 +157,9 @@ class DigitalLFOSection(SectionBaseWidget):
         )
         rate_fade_layout.addStretch()
 
-        rate_fade_icon = IconRegistry.get_icon(IconRegistry.CLOCK, color=JDXiStyle.GREY)
+        rate_fade_icon = JDXiIconRegistry.get_icon(
+            JDXiIconRegistry.CLOCK, color=JDXiStyle.GREY
+        )
         lfo_controls_tab_widget.addTab(
             rate_fade_widget, rate_fade_icon, "Rate and Fade"
         )
@@ -169,7 +169,7 @@ class DigitalLFOSection(SectionBaseWidget):
         depths_layout = QHBoxLayout()
         depths_layout.addStretch()
         depths_widget.setLayout(depths_layout)
-        depths_widget.setMinimumHeight(JDXiDimensions.EDITOR_MINIMUM_HEIGHT)
+        depths_widget.setMinimumHeight(JDXiDimensions.EDITOR.MINIMUM_HEIGHT)
 
         depths_layout.addWidget(
             self._create_parameter_slider(
@@ -193,7 +193,9 @@ class DigitalLFOSection(SectionBaseWidget):
         )
         depths_layout.addStretch()
 
-        depths_icon = IconRegistry.get_icon(IconRegistry.WAVEFORM, color=JDXiStyle.GREY)
+        depths_icon = JDXiIconRegistry.get_icon(
+            JDXiIconRegistry.WAVEFORM, color=JDXiStyle.GREY
+        )
         lfo_controls_tab_widget.addTab(depths_widget, depths_icon, "Depths")
 
         layout.addStretch()

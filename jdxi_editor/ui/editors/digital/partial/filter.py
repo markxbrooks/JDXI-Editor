@@ -4,7 +4,6 @@ Digital Filter Section for the JDXI Editor
 
 from typing import Callable
 
-from PySide6.QtCore import QSize
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
     QGroupBox,
@@ -12,18 +11,18 @@ from PySide6.QtWidgets import (
     QLabel,
     QPushButton,
     QTabWidget,
-    QVBoxLayout,
 )
 
 from decologr import Decologr as log
-from jdxi_editor.jdxi.style import JDXiStyle
-from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.digital.filter import DigitalFilterMode
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
+from jdxi_editor.ui.style import JDXiStyle
+from jdxi_editor.ui.style.dimensions import JDXiDimensions
+from jdxi_editor.ui.style.icons import JDXiIconRegistry
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (
@@ -34,7 +33,6 @@ from jdxi_editor.ui.widgets.editor.helper import (
 )
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.filter.filter import FilterWidget
-from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
 class DigitalFilterSection(SectionBaseWidget):
@@ -75,7 +73,7 @@ class DigitalFilterSection(SectionBaseWidget):
 
     def setup_ui(self):
         """Set up the UI for the filter section."""
-        self.setMinimumHeight(JDXiDimensions.EDITOR_MINIMUM_HEIGHT)
+        self.setMinimumHeight(JDXiDimensions.EDITOR.MINIMUM_HEIGHT)
 
         # --- Filter mode and slope
         filter_mode_row = self._create_filter_controls_row()
@@ -85,7 +83,9 @@ class DigitalFilterSection(SectionBaseWidget):
 
         # --- Add Controls tab
         controls_group = self._create_filter_controls_group()
-        controls_icon = IconRegistry.get_icon(IconRegistry.TUNE, color=JDXiStyle.GREY)
+        controls_icon = JDXiIconRegistry.get_icon(
+            JDXiIconRegistry.TUNE, color=JDXiStyle.GREY
+        )
         self.digital_filter_tab_widget.addTab(controls_group, controls_icon, "Controls")
 
         # --- Add ADSR tab
@@ -140,7 +140,7 @@ class DigitalFilterSection(SectionBaseWidget):
             btn.setIcon(filter_icon)
             btn.setStyleSheet(JDXiStyle.BUTTON_RECT)
             btn.setFixedSize(
-                JDXiDimensions.WAVEFORM_ICON_WIDTH, JDXiDimensions.WAVEFORM_ICON_HEIGHT
+                JDXiDimensions.WAVEFORM_ICON.WIDTH, JDXiDimensions.WAVEFORM_ICON.HEIGHT
             )
             btn.clicked.connect(
                 lambda checked, mode=filter_mode: self._on_filter_mode_selected(mode)

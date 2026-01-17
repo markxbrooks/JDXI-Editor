@@ -4,9 +4,6 @@ Common Section
 
 from typing import Callable
 
-from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget
-
-from jdxi_editor.jdxi.style import JDXiThemeManager
 from jdxi_editor.midi.data.parameter.analog import AnalogParam
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets

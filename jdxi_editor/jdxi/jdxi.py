@@ -1,14 +1,19 @@
 """
-Composition of main JDXi components 
+Composition of main JDXi components
 """
 
-from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
-from jdxi_editor.jdxi.style.icons import IconRegistry
-from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
+from jdxi_editor.ui.style import (
+    JDXiDimensions,
+    JDXiIconRegistry,
+    JDXiStyle,
+    JDXiThemeManager,
+)
+
 
 class JDXi:
     """Composition of main JDXI UI components as a single, immutable container."""
-    STYLE: JDXiStyle = JDXiStyle 
-    THEME: JDXiThemeManager = JDXiThemeManager
-    ICONS: IconRegistry = IconRegistry
-    DIMENSIONS: JDXiDimensions = JDXiDimensions
+
+    Style: JDXiStyle = JDXiStyle
+    ThemeManager: JDXiThemeManager = JDXiThemeManager
+    IconRegistry: JDXiIconRegistry = JDXiIconRegistry
+    Dimensions: JDXiDimensions = JDXiDimensions

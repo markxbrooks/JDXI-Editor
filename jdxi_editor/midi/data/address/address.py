@@ -133,10 +133,14 @@ class Address(SysExByte):
         return cls.get_parameter_by_address(address[0])
 
     def __repr__(self) -> str:
-        return f"<{self.__class__.__name__}.{self.name}: 0x{self.value:02X}>"
+        # Safely convert value to int for formatting
+        value_int = int(self.value) if not isinstance(self.value, int) else self.value
+        return f"<{self.__class__.__name__}.{self.name}: 0x{value_int:02X}>"
 
     def __str__(self) -> str:
-        return f"{self.__class__.__name__}.{self.name}: 0x{self.value:02X}"
+        # Safely convert value to int for formatting
+        value_int = int(self.value) if not isinstance(self.value, int) else self.value
+        return f"{self.__class__.__name__}.{self.name}: 0x{value_int:02X}"
 
 
 class RolandSysExAddress:
@@ -214,9 +218,36 @@ class RolandSysExAddress:
 
         :return: str The string representation
         """
+
+        # Safely convert to int for formatting (handles enums, strings, etc.)
+        def safe_int(value):
+            # Handle enums first - extract the actual value
+            if hasattr(value, "value"):
+                enum_value = value.value
+                if isinstance(enum_value, int):
+                    return enum_value
+                # If enum value is a string, try to convert it
+                try:
+                    return int(enum_value)
+                except (ValueError, TypeError):
+                    return 0
+            # Already an int
+            if isinstance(value, int):
+                return value
+            # Try to convert to int
+            try:
+                return int(value)
+            except (ValueError, TypeError):
+                return 0  # Fallback to 0 if conversion fails
+
+        msb_int = safe_int(self.msb)
+        umb_int = safe_int(self.umb)
+        lmb_int = safe_int(self.lmb)
+        lsb_int = safe_int(self.lsb)
+        # Ensure we're formatting actual integers, not enums
         return (
-            f"<{self.__class__.__name__}(msb=0x{int(self.msb):02X}, umb=0x{int(self.umb):02X}, "
-            f"lmb=0x{int(self.lmb):02X}, lsb=0x{int(self.lsb):02X})>"
+            f"<{self.__class__.__name__}(msb=0x{int(msb_int):02X}, umb=0x{int(umb_int):02X}, "
+            f"lmb=0x{int(lmb_int):02X}, lsb=0x{int(lsb_int):02X})>"
         )
 
     def __str__(self) -> str:
@@ -225,7 +256,34 @@ class RolandSysExAddress:
 
         :return: str The string representation
         """
-        return f"0x{int(self.msb):02X} 0x{int(self.umb):02X} 0x{int(self.lmb):02X} 0x{int(self.lsb):02X}"
+
+        # Safely convert to int for formatting (handles enums, strings, etc.)
+        def safe_int(value):
+            # Handle enums first - extract the actual value
+            if hasattr(value, "value"):
+                enum_value = value.value
+                if isinstance(enum_value, int):
+                    return enum_value
+                # If enum value is a string, try to convert it
+                try:
+                    return int(enum_value)
+                except (ValueError, TypeError):
+                    return 0
+            # Already an int
+            if isinstance(value, int):
+                return value
+            # Try to convert to int
+            try:
+                return int(value)
+            except (ValueError, TypeError):
+                return 0  # Fallback to 0 if conversion fails
+
+        msb_int = safe_int(self.msb)
+        umb_int = safe_int(self.umb)
+        lmb_int = safe_int(self.lmb)
+        lsb_int = safe_int(self.lsb)
+        # Ensure we're formatting actual integers, not enums
+        return f"0x{int(msb_int):02X} 0x{int(umb_int):02X} 0x{int(lmb_int):02X} 0x{int(lsb_int):02X}"
 
     def __eq__(self, other: object) -> bool:
         """

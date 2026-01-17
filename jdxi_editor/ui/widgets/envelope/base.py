@@ -8,7 +8,7 @@ from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.widgets.slider import Slider
 from picomidi.sysex.parameter.address import AddressParameter
-from picomidi.utils.conversion import midi_value_to_ms, ms_to_midi_value
+from picomidi.utils.conversion import midi_value_to_ms
 
 TOOLTIPS = {
     "attack_time": "Time taken for the pitch to reach peak after note-on.",

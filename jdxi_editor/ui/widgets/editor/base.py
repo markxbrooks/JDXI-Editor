@@ -70,7 +70,7 @@ from PySide6.QtWidgets import (
 )
 
 from jdxi_editor.jdxi.preset.helper import create_scroll_container
-from jdxi_editor.jdxi.style.theme_manager import JDXiThemeManager
+from jdxi_editor.ui.style.theme_manager import JDXiThemeManager
 
 
 class EditorBaseWidget(QWidget):

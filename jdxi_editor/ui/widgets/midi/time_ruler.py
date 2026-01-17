@@ -7,7 +7,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QColor, QPainter, QPaintEvent, QPen
 from PySide6.QtWidgets import QWidget
 
-from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.ui.style import JDXiStyle
 
 
 class TimeRulerWidget(QWidget):

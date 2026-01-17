@@ -60,8 +60,6 @@ from decologr import Decologr as log
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.jdxi.preset.lists import JDXiPresetToneList
 from jdxi_editor.jdxi.program.program import JDXiProgram
-from jdxi_editor.jdxi.style import JDXiStyle, JDXiThemeManager
-from jdxi_editor.jdxi.style.icons import IconRegistry
 from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.log.midi_info import log_midi_info
 from jdxi_editor.midi.channel.channel import MidiChannel
@@ -91,6 +89,8 @@ from jdxi_editor.ui.editors.helpers.program import (
 )
 from jdxi_editor.ui.editors.io.helper import create_placeholder_icon
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
+from jdxi_editor.ui.style import JDXiStyle, JDXiThemeManager
+from jdxi_editor.ui.style.icons import JDXiIconRegistry
 from jdxi_editor.ui.widgets.combo_box.searchable_filterable import (
     SearchableFilterableComboBox,
 )
@@ -177,7 +177,7 @@ class ProgramEditor(BasicEditor):
         # --- Use EditorBaseWidget for Programs/Presets tab
         self.base_widget = EditorBaseWidget(parent=self, analog=False)
         self.base_widget.setup_scrollable_content()
-        container_layout = self.base_widget.get_container_layout()
+        # container_layout = self.base_widget.get_container_layout()
 
         # Create centered content widget
         centered_content = QWidget()
@@ -202,14 +202,14 @@ class ProgramEditor(BasicEditor):
 
         # Add Programs/Presets tab to main tab widget (base widget contains the scroll area)
         try:
-            programs_presets_icon = IconRegistry.get_icon(
-                IconRegistry.MUSIC_NOTE_MULTIPLE, color=JDXiStyle.GREY
+            programs_presets_icon = JDXiIconRegistry.get_icon(
+                JDXiIconRegistry.MUSIC_NOTE_MULTIPLE, color=JDXiStyle.GREY
             )
             if programs_presets_icon is None or programs_presets_icon.isNull():
                 raise ValueError("Icon is null")
         except:
-            programs_presets_icon = IconRegistry.get_icon(
-                IconRegistry.MUSIC, color=JDXiStyle.GREY
+            programs_presets_icon = JDXiIconRegistry.get_icon(
+                JDXiIconRegistry.MUSIC, color=JDXiStyle.GREY
             )
         self.main_tab_widget.addTab(
             self.base_widget, programs_presets_icon, "Programs & Presets"
@@ -219,7 +219,7 @@ class ProgramEditor(BasicEditor):
         try:
             log.message("🔨 Creating User Programs tab for main window...")
             user_programs_widget = self._create_user_programs_tab()
-            user_programs_icon = IconRegistry.get_icon(
+            user_programs_icon = JDXiIconRegistry.get_icon(
                 "mdi.account-music", color=JDXiStyle.GREY
             )
             self.main_tab_widget.addTab(
@@ -252,7 +252,7 @@ class ProgramEditor(BasicEditor):
         try:
             log.message("🔨 Creating Playlist tab for main window...")
             playlist_widget = self._create_playlist_tab()
-            playlist_icon = IconRegistry.get_icon(
+            playlist_icon = JDXiIconRegistry.get_icon(
                 "mdi.playlist-music", color=JDXiStyle.GREY
             )
             self.main_tab_widget.addTab(playlist_widget, playlist_icon, "Playlist")
@@ -278,7 +278,7 @@ class ProgramEditor(BasicEditor):
         try:
             log.message("🔨 Creating Playlist Editor tab for main window...")
             playlist_editor_widget = self._create_playlist_editor_tab()
-            playlist_editor_icon = IconRegistry.get_icon(
+            playlist_editor_icon = JDXiIconRegistry.get_icon(
                 "mdi.playlist-edit", color=JDXiStyle.GREY
             )
             self.main_tab_widget.addTab(
@@ -322,14 +322,14 @@ class ProgramEditor(BasicEditor):
         try:
             import qtawesome as qta
 
-            presets_icon = IconRegistry.get_icon(
-                IconRegistry.MUSIC_NOTE_MULTIPLE, color=JDXiStyle.GREY
+            presets_icon = JDXiIconRegistry.get_icon(
+                JDXiIconRegistry.MUSIC_NOTE_MULTIPLE, color=JDXiStyle.GREY
             )
             if presets_icon.isNull():
                 raise ValueError("Icon is null")
         except:
-            presets_icon = IconRegistry.get_icon(
-                IconRegistry.MUSIC, color=JDXiStyle.GREY
+            presets_icon = JDXiIconRegistry.get_icon(
+                JDXiIconRegistry.MUSIC, color=JDXiStyle.GREY
             )
         self.program_preset_tab_widget.addTab(preset_group, presets_icon, "Presets")
         program_preset_hlayout.addStretch()
@@ -375,7 +375,7 @@ class ProgramEditor(BasicEditor):
         # Add icon row at the top (centered with stretch on both sides)
         icon_row_container = QHBoxLayout()
         icon_row_container.addStretch()
-        icon_row = IconRegistry.create_generic_musical_icon_row()
+        icon_row = JDXiIconRegistry.create_generic_musical_icon_row()
         # Transfer all items from icon_row to icon_row_container
         while icon_row.count() > 0:
             item = icon_row.takeAt(0)
@@ -422,8 +422,8 @@ class ProgramEditor(BasicEditor):
 
         # Load button
         self.load_button = QPushButton(
-            IconRegistry.get_icon(
-                IconRegistry.FOLDER_NOTCH_OPEN, color=JDXiStyle.FOREGROUND
+            JDXiIconRegistry.get_icon(
+                JDXiIconRegistry.FOLDER_NOTCH_OPEN, color=JDXiStyle.FOREGROUND
             ),
             "Load Preset",
         )
@@ -493,10 +493,16 @@ class ProgramEditor(BasicEditor):
         transport_group = QGroupBox("Transport")
         transport_layout = QHBoxLayout()
         self.start_button = QPushButton(
-            IconRegistry.get_icon(IconRegistry.PLAY, color=JDXiStyle.FOREGROUND), "Play"
+            JDXiIconRegistry.get_icon(
+                JDXiIconRegistry.PLAY, color=JDXiStyle.FOREGROUND
+            ),
+            "Play",
         )
         self.stop_button = QPushButton(
-            IconRegistry.get_icon(IconRegistry.STOP, color=JDXiStyle.FOREGROUND), "Stop"
+            JDXiIconRegistry.get_icon(
+                JDXiIconRegistry.STOP, color=JDXiStyle.FOREGROUND
+            ),
+            "Stop",
         )
         self.start_button.clicked.connect(self.start_playback)
         self.stop_button.clicked.connect(self.stop_playback)
@@ -530,16 +536,16 @@ class ProgramEditor(BasicEditor):
         program_widget.setLayout(program_vlayout)
 
         # Add icon row at the top of Programs tab
-        icon_row = IconRegistry.create_generic_musical_icon_row()
+        icon_row = JDXiIconRegistry.create_generic_musical_icon_row()
         program_vlayout.addLayout(icon_row)
 
         program_layout.addWidget(self.program_preset_tab_widget)
-        programs_icon = IconRegistry.get_icon(
+        programs_icon = JDXiIconRegistry.get_icon(
             "mdi.music-box-multiple", color=JDXiStyle.GREY
         )
         if programs_icon is None:
-            programs_icon = IconRegistry.get_icon(
-                IconRegistry.MUSIC, color=JDXiStyle.GREY
+            programs_icon = JDXiIconRegistry.get_icon(
+                JDXiIconRegistry.MUSIC, color=JDXiStyle.GREY
             )
         self.program_preset_tab_widget.addTab(program_widget, programs_icon, "Programs")
         log.message(
@@ -573,8 +579,8 @@ class ProgramEditor(BasicEditor):
         self._program_list_data = []
         # Load button
         self.load_button = QPushButton(
-            IconRegistry.get_icon(
-                IconRegistry.FOLDER_NOTCH_OPEN, color=JDXiStyle.FOREGROUND
+            JDXiIconRegistry.get_icon(
+                JDXiIconRegistry.FOLDER_NOTCH_OPEN, color=JDXiStyle.FOREGROUND
             ),
             "Load Program",
         )
@@ -788,18 +794,18 @@ class ProgramEditor(BasicEditor):
 
         self.master_level_icon = QLabel()
         self.master_level_icon.setPixmap(
-            IconRegistry.get_icon(IconRegistry.KEYBOARD).pixmap(40, 40)
+            JDXiIconRegistry.get_icon(JDXiIconRegistry.KEYBOARD).pixmap(40, 40)
         )
         self.master_level_title = QLabel("Master Level")
-        from jdxi_editor.jdxi.style.theme_manager import JDXiThemeManager
+        from jdxi_editor.ui.style.theme_manager import JDXiThemeManager
 
         JDXiThemeManager.apply_mixer_label(self.master_level_title)
         self.master_level_current_label = QLabel("Current Program")
         JDXiThemeManager.apply_mixer_label(self.master_level_current_label)
         self.digital_synth_1_icon = QLabel()
         self.digital_synth_1_icon.setPixmap(
-            IconRegistry.get_icon_pixmap(
-                IconRegistry.PIANO, color=JDXiStyle.FOREGROUND, size=40
+            JDXiIconRegistry.get_icon_pixmap(
+                JDXiIconRegistry.PIANO, color=JDXiStyle.FOREGROUND, size=40
             )
         )
         self.digital_synth_1_title = QLabel("Digital Synth 1")
@@ -808,8 +814,8 @@ class ProgramEditor(BasicEditor):
         JDXiThemeManager.apply_mixer_label(self.digital_synth_1_current_label)
         self.digital_synth_2_icon = QLabel()
         self.digital_synth_2_icon.setPixmap(
-            IconRegistry.get_icon_pixmap(
-                IconRegistry.PIANO, color=JDXiStyle.FOREGROUND, size=40
+            JDXiIconRegistry.get_icon_pixmap(
+                JDXiIconRegistry.PIANO, color=JDXiStyle.FOREGROUND, size=40
             )
         )
 
@@ -819,8 +825,8 @@ class ProgramEditor(BasicEditor):
         JDXiThemeManager.apply_mixer_label(self.digital_synth_2_current_label)
         self.drum_kit_icon = QLabel()
         self.drum_kit_icon.setPixmap(
-            IconRegistry.get_icon_pixmap(
-                IconRegistry.DRUM, color=JDXiStyle.FOREGROUND, size=40
+            JDXiIconRegistry.get_icon_pixmap(
+                JDXiIconRegistry.DRUM, color=JDXiStyle.FOREGROUND, size=40
             )
         )
         self.drum_kit_title = QLabel("Drums")
@@ -829,8 +835,8 @@ class ProgramEditor(BasicEditor):
         JDXiThemeManager.apply_mixer_label(self.drum_kit_current_label)
         self.analog_synth_icon = QLabel()
         self.analog_synth_icon.setPixmap(
-            IconRegistry.get_icon_pixmap(
-                IconRegistry.PIANO, color=JDXiStyle.FOREGROUND, size=40
+            JDXiIconRegistry.get_icon_pixmap(
+                JDXiIconRegistry.PIANO, color=JDXiStyle.FOREGROUND, size=40
             )
         )
         self.analog_synth_title = QLabel("Analog Synth")
@@ -1138,7 +1144,7 @@ class ProgramEditor(BasicEditor):
         log.message("✅ Created widget and layout")
 
         # --- Add icon row at the top
-        icon_row = IconRegistry.create_generic_musical_icon_row()
+        icon_row = JDXiIconRegistry.create_generic_musical_icon_row()
         layout.addLayout(icon_row)
 
         # --- Search box
@@ -1230,7 +1236,9 @@ class ProgramEditor(BasicEditor):
         button_layout = QHBoxLayout()
         button_layout.addStretch()
         self.save_user_programs_button = QPushButton(
-            IconRegistry.get_icon(IconRegistry.FLOPPY_DISK, color=JDXiStyle.FOREGROUND),
+            JDXiIconRegistry.get_icon(
+                JDXiIconRegistry.FLOPPY_DISK, color=JDXiStyle.FOREGROUND
+            ),
             "Save Changes",
         )
         self.save_user_programs_button.clicked.connect(self._save_user_programs_changes)
@@ -1461,27 +1469,33 @@ class ProgramEditor(BasicEditor):
         log.message("✅ Created playlist widget and layout")
 
         # --- Add icon row at the top
-        icon_row = IconRegistry.create_generic_musical_icon_row()
+        icon_row = JDXiIconRegistry.create_generic_musical_icon_row()
         layout.addLayout(icon_row)
 
         # --- Button layout for create/delete actions
         button_layout = QHBoxLayout()
         self.create_playlist_button = QPushButton(
-            IconRegistry.get_icon(IconRegistry.PLUS_CIRCLE, color=JDXiStyle.FOREGROUND),
+            JDXiIconRegistry.get_icon(
+                JDXiIconRegistry.PLUS_CIRCLE, color=JDXiStyle.FOREGROUND
+            ),
             "New Playlist",
         )
         self.create_playlist_button.clicked.connect(self._create_new_playlist)
         button_layout.addWidget(self.create_playlist_button)
 
         self.delete_playlist_button = QPushButton(
-            IconRegistry.get_icon(IconRegistry.TRASH_FILL, color=JDXiStyle.FOREGROUND),
+            JDXiIconRegistry.get_icon(
+                JDXiIconRegistry.TRASH_FILL, color=JDXiStyle.FOREGROUND
+            ),
             "Delete Playlist",
         )
         self.delete_playlist_button.clicked.connect(self._delete_selected_playlist)
         button_layout.addWidget(self.delete_playlist_button)
 
         self.refresh_playlist_button = QPushButton(
-            IconRegistry.get_icon(IconRegistry.REFRESH, color=JDXiStyle.FOREGROUND),
+            JDXiIconRegistry.get_icon(
+                JDXiIconRegistry.REFRESH, color=JDXiStyle.FOREGROUND
+            ),
             "Refresh Playlist",
         )
         self.refresh_playlist_button.clicked.connect(self._refresh_playlists)
@@ -1778,7 +1792,7 @@ class ProgramEditor(BasicEditor):
         log.message("✅ Created playlist editor widget and layout")
 
         # Add icon row at the top
-        icon_row = IconRegistry.create_generic_musical_icon_row()
+        icon_row = JDXiIconRegistry.create_generic_musical_icon_row()
         layout.addLayout(icon_row)
 
         # Playlist selection
@@ -1795,7 +1809,7 @@ class ProgramEditor(BasicEditor):
         # Add/Delete buttons
         button_layout = QHBoxLayout()
         self.add_to_playlist_button = QPushButton(
-            IconRegistry.get_icon(IconRegistry.PLUS_CIRCLE),
+            JDXiIconRegistry.get_icon(JDXiIconRegistry.PLUS_CIRCLE),
             "Add to Playlist",
         )
         self.add_to_playlist_button.clicked.connect(self._add_program_to_playlist)
@@ -1805,7 +1819,9 @@ class ProgramEditor(BasicEditor):
         button_layout.addWidget(self.add_to_playlist_button)
 
         self.delete_from_playlist_button = QPushButton(
-            IconRegistry.get_icon(IconRegistry.TRASH_FILL, color=JDXiStyle.FOREGROUND),
+            JDXiIconRegistry.get_icon(
+                JDXiIconRegistry.TRASH_FILL, color=JDXiStyle.FOREGROUND
+            ),
             "Delete from Playlist",
         )
         self.delete_from_playlist_button.clicked.connect(
@@ -1878,7 +1894,7 @@ class ProgramEditor(BasicEditor):
         # Populate playlist combo box
         self._populate_playlist_editor_combo()
 
-        log.message(f"✅ Returning Playlist Editor tab widget")
+        log.message("✅ Returning Playlist Editor tab widget")
         return widget
 
     def _populate_playlist_editor_combo(self) -> None:

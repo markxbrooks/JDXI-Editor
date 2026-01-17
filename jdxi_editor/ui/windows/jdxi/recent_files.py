@@ -6,7 +6,7 @@ Manages a list of recently opened MIDI files, persisting them to disk.
 
 import json
 from pathlib import Path
-from typing import List, Optional
+from typing import List
 
 from decologr import Decologr as log
 from jdxi_editor.project import __package_name__
