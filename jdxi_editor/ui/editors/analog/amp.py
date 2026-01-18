@@ -82,14 +82,14 @@ class AnalogAmpSection(SectionBaseWidget):
     def _create_analog_amp_level_controls(self) -> QHBoxLayout:
         """Level controls - standardized order: Level, KeyFollow, Velocity"""
         self.amp_level = self._create_parameter_slider(
-            AnalogParam.AMP_LEVEL, "Level", vertical=True
+            AnalogParam.AMP_LEVEL, AnalogDisplayName.AMP_LEVEL, vertical=True
         )
         self.amp_level_keyfollow = self._create_parameter_slider(
-            AnalogParam.AMP_LEVEL_KEYFOLLOW, "KeyFollow", vertical=True
+            AnalogParam.AMP_LEVEL_KEYFOLLOW, AnalogDisplayName.AMP_LEVEL_KEYFOLLOW, vertical=True
         )
         self.amp_level_velocity_sensitivity = self._create_parameter_slider(
             AnalogParam.AMP_LEVEL_VELOCITY_SENSITIVITY,
-            "Velocity",
+            AnalogDisplayName.AMP_LEVEL_VELOCITY_SENSITIVITY,
             vertical=True,
         )
         # Standardized order: Level, KeyFollow, Velocity (matching Filter pattern)
