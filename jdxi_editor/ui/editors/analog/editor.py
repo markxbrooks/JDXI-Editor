@@ -182,14 +182,15 @@ class AnalogSynthEditor(SynthEditor):
     def setup_ui(self):
         """Set up the Analog Synth Editor UI."""
         self.setMinimumSize(
-            JDXi.Dimensions.EDITOR_ANALOG.MIN_WIDTH,
-            JDXi.Dimensions.EDITOR_ANALOG.MIN_HEIGHT,
+            JDXi.UI.Dimensions.EDITOR_ANALOG.MIN_WIDTH,
+            JDXi.UI.Dimensions.EDITOR_ANALOG.MIN_HEIGHT,
         )
         self.resize(
-            JDXi.Dimensions.EDITOR_ANALOG.WIDTH, JDXi.Dimensions.EDITOR_ANALOG.HEIGHT
+            JDXi.UI.Dimensions.EDITOR_ANALOG.WIDTH,
+            JDXi.UI.Dimensions.EDITOR_ANALOG.HEIGHT,
         )
-        JDXi.ThemeManager.apply_tabs_style(self, analog=True)
-        JDXi.ThemeManager.apply_editor_style(self, analog=True)
+        JDXi.UI.ThemeManager.apply_tabs_style(self, analog=True)
+        JDXi.UI.ThemeManager.apply_editor_style(self, analog=True)
 
         # --- Use EditorBaseWidget for consistent layout structure (harmonized with Digital)
         self.base_widget = EditorBaseWidget(parent=self, analog=True)
@@ -228,14 +229,14 @@ class AnalogSynthEditor(SynthEditor):
         # --- Create tab widget and add preset as first tab
         self.tab_widget = self.base_widget.create_tab_widget()
         try:
-            presets_icon = JDXi.IconRegistry.get_icon(
-                JDXi.IconRegistry.MUSIC_NOTE_MULTIPLE, color=JDXi.Style.GREY
+            presets_icon = JDXi.UI.IconRegistry.get_icon(
+                JDXi.UI.IconRegistry.MUSIC_NOTE_MULTIPLE, color=JDXi.UI.Style.GREY
             )
             if presets_icon is None or presets_icon.isNull():
                 raise ValueError("Icon is null")
         except:
-            presets_icon = JDXi.IconRegistry.get_icon(
-                JDXi.IconRegistry.MUSIC, color=JDXi.Style.GREY
+            presets_icon = JDXi.UI.IconRegistry.get_icon(
+                JDXi.UI.IconRegistry.MUSIC, color=JDXi.UI.Style.GREY
             )
         self.tab_widget.addTab(self.instrument_preset, presets_icon, "Presets")
 
@@ -258,8 +259,8 @@ class AnalogSynthEditor(SynthEditor):
         )
         self.tab_widget.addTab(
             self.oscillator_section,
-            JDXi.IconRegistry.get_icon(
-                JDXi.IconRegistry.TRIANGLE_WAVE, color=JDXi.Style.GREY
+            JDXi.UI.IconRegistry.get_icon(
+                JDXi.UI.IconRegistry.TRIANGLE_WAVE, color=JDXi.UI.Style.GREY
             ),
             "Oscillator",
         )
@@ -274,7 +275,9 @@ class AnalogSynthEditor(SynthEditor):
         )
         self.tab_widget.addTab(
             self.filter_section,
-            JDXi.IconRegistry.get_icon(JDXi.IconRegistry.FILTER, color=JDXi.Style.GREY),
+            JDXi.UI.IconRegistry.get_icon(
+                JDXi.UI.IconRegistry.FILTER, color=JDXi.UI.Style.GREY
+            ),
             "Filter",
         )
         self.amp_section = AnalogAmpSection(
@@ -285,8 +288,8 @@ class AnalogSynthEditor(SynthEditor):
         )
         self.tab_widget.addTab(
             self.amp_section,
-            JDXi.IconRegistry.get_icon(
-                JDXi.IconRegistry.AMPLIFIER, color=JDXi.Style.GREY
+            JDXi.UI.IconRegistry.get_icon(
+                JDXi.UI.IconRegistry.AMPLIFIER, color=JDXi.UI.Style.GREY
             ),
             "Amp",
         )
@@ -299,8 +302,8 @@ class AnalogSynthEditor(SynthEditor):
         )
         self.tab_widget.addTab(
             self.lfo_section,
-            JDXi.IconRegistry.get_icon(
-                JDXi.IconRegistry.SINE_WAVE, color=JDXi.Style.GREY
+            JDXi.UI.IconRegistry.get_icon(
+                JDXi.UI.IconRegistry.SINE_WAVE, color=JDXi.UI.Style.GREY
             ),
             "LFO",
         )
@@ -310,8 +313,8 @@ class AnalogSynthEditor(SynthEditor):
             create_parameter_combo_box=self._create_parameter_combo_box,
             controls=self.controls,
         )
-        common_icon = JDXi.IconRegistry.get_icon(
-            "mdi.cog-outline", color=JDXi.Style.GREY
+        common_icon = JDXi.UI.IconRegistry.get_icon(
+            "mdi.cog-outline", color=JDXi.UI.Style.GREY
         )
         self.tab_widget.addTab(self.common_section, common_icon, "Common")
 
@@ -387,13 +390,13 @@ class AnalogSynthEditor(SynthEditor):
         # --- Reset all buttons to default style
         for btn in self.filter_section.filter_mode_buttons.values():
             btn.setChecked(False)
-            JDXi.ThemeManager.apply_button_rect_analog(btn)
+            JDXi.UI.ThemeManager.apply_button_rect_analog(btn)
 
         # --- Apply active style to the selected filter mode button
         selected_btn = self.filter_section.filter_mode_buttons.get(selected_filter_mode)
         if selected_btn:
             selected_btn.setChecked(True)
-            JDXi.ThemeManager.apply_button_analog_active(selected_btn)
+            JDXi.UI.ThemeManager.apply_button_analog_active(selected_btn)
         else:
             log.warning("Filter mode button not found for: %s", selected_filter_mode)
 
@@ -414,13 +417,13 @@ class AnalogSynthEditor(SynthEditor):
 
             for btn in self.wave_buttons.values():
                 btn.setChecked(False)
-                JDXi.ThemeManager.apply_button_rect_analog(btn)
+                JDXi.UI.ThemeManager.apply_button_rect_analog(btn)
 
             # --- Apply active style to the selected waveform button
             selected_btn = self.wave_buttons.get(waveform)
             if selected_btn:
                 selected_btn.setChecked(True)
-                JDXi.ThemeManager.apply_button_analog_active(selected_btn)
+                JDXi.UI.ThemeManager.apply_button_analog_active(selected_btn)
             self._update_pw_controls_state(waveform)
 
     def get_controls_as_dict(self):
@@ -461,13 +464,13 @@ class AnalogSynthEditor(SynthEditor):
             # --- Reset all buttons to default style ---
             for btn in self.lfo_shape_buttons.values():
                 btn.setChecked(False)
-                JDXi.ThemeManager.apply_button_rect_analog(btn)
+                JDXi.UI.ThemeManager.apply_button_rect_analog(btn)
 
             # --- Apply active style to the selected button ---
             selected_btn = self.lfo_shape_buttons.get(value)
             if selected_btn:
                 selected_btn.setChecked(True)
-                JDXi.ThemeManager.apply_button_analog_active(selected_btn)
+                JDXi.UI.ThemeManager.apply_button_analog_active(selected_btn)
 
     def update_slider(
         self,
@@ -707,13 +710,13 @@ class AnalogSynthEditor(SynthEditor):
         # --- Reset all buttons to default style
         for btn in wave_buttons.values():
             btn.setChecked(False)
-            JDXi.ThemeManager.apply_button_rect_analog(btn)
+            JDXi.UI.ThemeManager.apply_button_rect_analog(btn)
 
         # --- Apply active style to the selected waveform button
         selected_btn = wave_buttons.get(selected_waveform)
         if selected_btn:
             selected_btn.setChecked(True)
-            JDXi.ThemeManager.apply_button_analog_active(selected_btn)
+            JDXi.UI.ThemeManager.apply_button_analog_active(selected_btn)
 
     def _update_lfo_shape_buttons(self, value: int):
         """
@@ -725,13 +728,13 @@ class AnalogSynthEditor(SynthEditor):
         # --- Reset all buttons to default style
         for btn in self.lfo_shape_buttons.values():
             btn.setChecked(False)
-            JDXi.ThemeManager.apply_button_rect_analog(btn)
+            JDXi.UI.ThemeManager.apply_button_rect_analog(btn)
 
         # --- Apply active style to the selected button
         selected_btn = self.lfo_shape_buttons.get(value)
         if selected_btn:
             selected_btn.setChecked(True)
-            JDXi.ThemeManager.apply_button_analog_active(selected_btn)
+            JDXi.UI.ThemeManager.apply_button_analog_active(selected_btn)
         else:
             log.message(f"Unknown LFO shape value: {value}", level=logging.WARNING)
 
@@ -766,7 +769,7 @@ class AnalogSynthEditor(SynthEditor):
 
         # --- Create tabbed widget inside the group box
         preset_tabs = QTabWidget()
-        JDXi.ThemeManager.apply_tabs_style(preset_tabs, analog=True)
+        JDXi.UI.ThemeManager.apply_tabs_style(preset_tabs, analog=True)
         instrument_title_group_layout.addWidget(preset_tabs)
 
         # --- === Tab 1: Normal Analog Presets ===
@@ -828,7 +831,7 @@ class AnalogSynthEditor(SynthEditor):
         )
 
         # --- Apply Analog styling
-        JDXi.ThemeManager.apply_combo_box(
+        JDXi.UI.ThemeManager.apply_combo_box(
             self.instrument_selection_combo.combo_box, analog=True
         )
 
@@ -858,13 +861,13 @@ class AnalogSynthEditor(SynthEditor):
 
         try:
             analog_presets_icon = qta.icon(
-                "mdi.music-note-multiple", color=JDXi.Style.GREY
+                "mdi.music-note-multiple", color=JDXi.UI.Style.GREY
             )
             if analog_presets_icon.isNull():
                 raise ValueError("Icon is null")
         except:
-            analog_presets_icon = JDXi.IconRegistry.get_icon(
-                JDXi.IconRegistry.MUSIC, color=JDXi.Style.GREY
+            analog_presets_icon = JDXi.UI.IconRegistry.get_icon(
+                JDXi.UI.IconRegistry.MUSIC, color=JDXi.UI.Style.GREY
             )
         preset_tabs.addTab(normal_preset_widget, analog_presets_icon, "Analog Presets")
 
@@ -913,8 +916,8 @@ class AnalogSynthEditor(SynthEditor):
 
         # --- Load Button
         self.cheat_load_button = QPushButton(
-            JDXi.IconRegistry.get_icon(
-                JDXi.IconRegistry.FOLDER_NOTCH_OPEN, color=JDXi.Style.FOREGROUND
+            JDXi.UI.IconRegistry.get_icon(
+                JDXi.UI.IconRegistry.FOLDER_NOTCH_OPEN, color=JDXi.UI.Style.FOREGROUND
             ),
             "Load Preset",
         )
@@ -922,8 +925,8 @@ class AnalogSynthEditor(SynthEditor):
         cheat_preset_layout.addWidget(self.cheat_load_button)
 
         cheat_preset_layout.addStretch()
-        cheat_presets_icon = JDXi.IconRegistry.get_icon(
-            JDXi.IconRegistry.CODE_BRACES, color=JDXi.Style.GREY
+        cheat_presets_icon = JDXi.UI.IconRegistry.get_icon(
+            JDXi.UI.IconRegistry.CODE_BRACES, color=JDXi.UI.Style.GREY
         )
         preset_tabs.addTab(cheat_preset_widget, cheat_presets_icon, "Cheat Presets")
 

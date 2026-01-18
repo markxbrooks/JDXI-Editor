@@ -158,7 +158,7 @@ class SearchableFilterableComboBox(QWidget):
             if show_search:
                 filter_row.addWidget(QLabel(search_label))
                 self.search_box = QLineEdit()
-                self.search_box.setStyleSheet(JDXi.Style.QLINEEDIT)
+                self.search_box.setStyleSheet(JDXi.UI.Style.QLINEEDIT)
                 self.search_box.setPlaceholderText(search_placeholder)
                 self.search_box.textChanged.connect(self._on_search_changed)
                 filter_row.addWidget(self.search_box)

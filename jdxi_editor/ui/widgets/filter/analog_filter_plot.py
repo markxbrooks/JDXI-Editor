@@ -62,11 +62,13 @@ def generate_filter_plot(
     slope_samples = max(1, slope_samples)
 
     # Create the sustain plateau first
-    sustain = np.full(sustain_samples, JDXiUI.FILTER_PLOT_DEPTH, dtype=np.float32)
+    sustain = np.full(
+        sustain_samples, JDXi.UI.Constants.FILTER_PLOT_DEPTH, dtype=np.float32
+    )
 
     # Now create slope descending to zero
     slope_vals = np.linspace(
-        JDXiUI.FILTER_PLOT_DEPTH,
+        JDXi.UI.Constants.FILTER_PLOT_DEPTH,
         0,
         slope_samples,
         endpoint=False,
@@ -89,8 +91,8 @@ def generate_filter_plot(
 class AnalogFilterPlot(QWidget):
     def __init__(
         self,
-        width: int = JDXi.Style.ADSR_PLOT_WIDTH,
-        height: int = JDXi.Style.ADSR_PLOT_HEIGHT,
+        width: int = JDXi.UI.Style.ADSR_PLOT_WIDTH,
+        height: int = JDXi.UI.Style.ADSR_PLOT_HEIGHT,
         envelope: dict = None,
         parent: QWidget = None,
     ):
@@ -105,10 +107,10 @@ class AnalogFilterPlot(QWidget):
         self.setMaximumHeight(height)
         self.setMaximumWidth(width)
         # Use dark gray background
-        JDXi.ThemeManager.apply_adsr_plot(self)
+        JDXi.UI.ThemeManager.apply_adsr_plot(self)
         # Sample rate for converting times to samples
         self.sample_rate = 256
-        self.setMinimumHeight(JDXi.Style.ADSR_PLOT_HEIGHT)
+        self.setMinimumHeight(JDXi.UI.Style.ADSR_PLOT_HEIGHT)
         self.attack_x = 0.1
         self.decay_x = 0.3
         self.peak_level = 0.5

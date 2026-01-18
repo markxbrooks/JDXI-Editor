@@ -72,7 +72,7 @@ class ADSRPlot(QWidget):
         self.setMaximumWidth(width)
         # Use dark gray background
 
-        JDXi.ThemeManager.apply_adsr_plot(self)
+        JDXi.UI.ThemeManager.apply_adsr_plot(self)
         # Sample rate for converting times to samples
         self.sample_rate = 256
         self.setMinimumHeight(150)

@@ -136,7 +136,7 @@ class SynthEditor(SynthBase):
 
         # Apply common style
 
-        JDXi.ThemeManager.apply_editor_style(self)
+        JDXi.UI.ThemeManager.apply_editor_style(self)
 
         # Add keyboard shortcuts
         self.refresh_shortcut = QShortcut(QKeySequence.StandardKey.Refresh, self)
@@ -262,11 +262,11 @@ class SynthEditor(SynthBase):
         instrument_title_group_layout.addWidget(self.instrument_selection_label)
         self.instrument_selection_combo = PresetComboBox(self.preset_list)
         if synth_type == "Analog":
-            JDXi.ThemeManager.apply_combo_box(
+            JDXi.UI.ThemeManager.apply_combo_box(
                 self.instrument_selection_combo, analog=True
             )
         else:
-            JDXi.ThemeManager.apply_combo_box(self.instrument_selection_combo)
+            JDXi.UI.ThemeManager.apply_combo_box(self.instrument_selection_combo)
         self.instrument_selection_combo.combo_box.setEditable(True)
         self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
             self.update_instrument_image
@@ -599,8 +599,8 @@ class SynthEditor(SynthBase):
 
         # --- Scale maintaining aspect ratio, fitting within width and height constraints
         scaled_pixmap = pixmap.scaled(
-            JDXi.Style.INSTRUMENT_IMAGE_WIDTH,
-            JDXi.Style.INSTRUMENT_IMAGE_HEIGHT,
+            JDXi.UI.Style.INSTRUMENT_IMAGE_WIDTH,
+            JDXi.UI.Style.INSTRUMENT_IMAGE_HEIGHT,
             Qt.AspectRatioMode.KeepAspectRatio,
             Qt.TransformationMode.SmoothTransformation,
         )
@@ -608,7 +608,7 @@ class SynthEditor(SynthBase):
         if image_label:
             image_label.setPixmap(scaled_pixmap)
             image_label.setScaledContents(False)  # Don't stretch, maintain aspect ratio
-            image_label.setStyleSheet(JDXi.Style.INSTRUMENT_IMAGE_LABEL)
+            image_label.setStyleSheet(JDXi.UI.Style.INSTRUMENT_IMAGE_LABEL)
             log.debug(f"Successfully loaded image: {file_to_load}")
         else:
             log.error("Instrument image label not found - cannot set image")

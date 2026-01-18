@@ -133,7 +133,8 @@ class DigitalTitle(DigitalDisplayBase):
     ):
         super().__init__(digital_font_family, parent)
         self.setMinimumSize(
-            JDXi.Dimensions.DIGITAL_TITLE.WIDTH, JDXi.Dimensions.DIGITAL_TITLE.HEIGHT
+            JDXi.UI.Dimensions.DIGITAL_TITLE.WIDTH,
+            JDXi.UI.Dimensions.DIGITAL_TITLE.HEIGHT,
         )
         self.show_upper_text = show_upper_text
         self.set_tone_name(tone_name)
@@ -192,7 +193,7 @@ class DigitalDisplay(DigitalDisplayBase):
         self.margin = 10  # Default margin for display elements
 
         self.setMinimumSize(
-            JDXi.Dimensions.LED.WIDTH, JDXi.Dimensions.LED.HEIGHT
+            JDXi.UI.Dimensions.LED.WIDTH, JDXi.UI.Dimensions.LED.HEIGHT
         )  # Set size matching display
         self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
 

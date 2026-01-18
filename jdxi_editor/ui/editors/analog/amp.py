@@ -65,15 +65,15 @@ class AnalogAmpSection(SectionBaseWidget):
         amp_adsr_group = self._create_analog_amp_adsr_group()
 
         self.analog_amp_tab_widget = QTabWidget()
-        controls_icon = JDXi.IconRegistry.get_icon(
-            JDXi.IconRegistry.TUNE, color=JDXi.Style.GREY
+        controls_icon = JDXi.UI.IconRegistry.get_icon(
+            JDXi.UI.IconRegistry.TUNE, color=JDXi.UI.Style.GREY
         )
         self.analog_amp_tab_widget.addTab(
             amp_controls_widget, controls_icon, "Controls"
         )
         adsr_icon = create_adsr_icon()
         self.analog_amp_tab_widget.addTab(amp_adsr_group, adsr_icon, "ADSR")
-        JDXi.ThemeManager.apply_tabs_style(self.analog_amp_tab_widget, analog=True)
+        JDXi.UI.ThemeManager.apply_tabs_style(self.analog_amp_tab_widget, analog=True)
 
         self.main_rows_layout = self.create_main_rows_layout()
         self.main_rows_layout.addWidget(self.analog_amp_tab_widget)

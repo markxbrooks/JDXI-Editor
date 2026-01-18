@@ -12,7 +12,7 @@ def build_wheel_label_row():
 
     for text in ["Pitch", "Mod"]:
         label = QLabel(text)
-        label.setStyleSheet(JDXi.Style.TRANSPARENT)
+        label.setStyleSheet(JDXi.UI.Style.TRANSPARENT)
         label_layout.addWidget(label)
         label_layout.addStretch()
 

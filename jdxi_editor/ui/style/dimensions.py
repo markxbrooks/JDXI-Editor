@@ -5,14 +5,55 @@ Class to store dimensions of a Roland JDXi instrument
 
 # Example usage:
 ----------------
->>> print(JDXi.Dimensions.INSTRUMENT.HEIGHT)
+>>> print(JDXiDimensions.INSTRUMENT.HEIGHT)
 400
->>> print(JDXi.Dimensions.INSTRUMENT.WIDTH)
+>>> print(JDXiDimensions.INSTRUMENT.WIDTH)
 1000
 """
 
+from dataclasses import dataclass
+from typing import Optional
 
-class DigitalDimensions:
+
+class ControlMetrics:
+    MIN_WIDTH = 20
+    MIN_HEIGHT = 14
+
+
+@dataclass(frozen=True)
+class Margins:
+    left: int
+    top: int
+    right: int
+    bottom: int
+
+    def __iter__(self):
+        """Make Margins iterable so it can be unpacked with *margins."""
+        return iter((self.left, self.top, self.right, self.bottom))
+
+
+class Dimensions:
+    X: int = 0
+    Y: int = 0
+    WIDTH: int = 0
+    HEIGHT: int = 0
+
+    MARGIN: int = 0
+    SPACING: int = 0
+
+    MIN_WIDTH: Optional[int] = None
+    MIN_HEIGHT: Optional[int] = None
+
+    @classmethod
+    def right(cls) -> int:
+        return cls.X + cls.WIDTH
+
+    @classmethod
+    def bottom(cls) -> int:
+        return cls.Y + cls.HEIGHT
+
+
+class DigitalDimensions(Dimensions):
     """Digital Dimensions"""
 
     SPACING = 5
@@ -25,7 +66,7 @@ class DigitalDimensions:
     HEIGHT = 600
 
 
-class AnalogDimensions:
+class AnalogDimensions(Dimensions):
     """Analog Editor Dimensions"""
 
     SPACING = 4
@@ -34,7 +75,7 @@ class AnalogDimensions:
     MIN_CONTROL_HEIGHT = 14
 
 
-class IconDimensions:
+class IconDimensions(Dimensions):
     """Icon Dimensions"""
 
     SIZE_SMALL = 0.7
@@ -42,14 +83,14 @@ class IconDimensions:
     HEIGHT = 30
 
 
-class DigitalEditorDimensions:
+class DigitalEditorDimensions(Dimensions):
     """Digital Filter Dimensions"""
 
     SPACING = 5
-    MARGINS = (5, 15, 5, 5)
+    MARGINS = Margins(5, 15, 5, 5)
 
 
-class BasicEditorDimensions:
+class BasicEditorDimensions(Dimensions):
     """Basic Editor Dimensions"""
 
     IMAGE_HEIGHT = 150
@@ -57,7 +98,7 @@ class BasicEditorDimensions:
     HEIGHT = 550
 
 
-class DrumEditorDimensions:
+class DrumEditorDimensions(Dimensions):
     """Drum Editor Dimensions"""
 
     WIDTH = 1100
@@ -67,14 +108,14 @@ class DrumEditorDimensions:
     )
 
 
-class WaveformIconDimensions:
+class WaveformIconDimensions(Dimensions):
     """Waveform Icon Dimensions"""
 
     WIDTH = 60
     HEIGHT = 30
 
 
-class SplashScreenDimensions:
+class SplashScreenDimensions(Dimensions):
     """Splash screen dimensions"""
 
     HEIGHT = 540
@@ -83,13 +124,13 @@ class SplashScreenDimensions:
     IMAGE_HEIGHT = 220
 
 
-class ChartDimensions:
-    """Chart Dimensions"""
+class ChartMetrics:
+    """Chart Metrics"""
 
     POINT_SIZE = 2
 
 
-class InstrumentDimensions:
+class InstrumentDimensions(Dimensions):
     """Instrument Dimensions"""
 
     MARGIN = 15
@@ -97,13 +138,13 @@ class InstrumentDimensions:
     WIDTH = 1000
 
 
-class EditorDimensions:
+class EditorDimensions(Dimensions):
     """EditorDimensions"""
 
     MINIMUM_HEIGHT = 250
 
 
-class ArpDimensions:
+class ArpDimensions(Dimensions):
     """ArpDimensions"""
 
     MARGIN = 5
@@ -114,7 +155,7 @@ class ArpDimensions:
     HEIGHT = 100
 
 
-class AnalogEditorDimensions:
+class AnalogEditorDimensions(EditorDimensions):
     """Analog Editor Dimensions"""
 
     MIN_WIDTH = 330
@@ -123,7 +164,7 @@ class AnalogEditorDimensions:
     HEIGHT = 600
 
 
-class LEDDisplayDimensions:
+class LEDDisplayDimensions(Dimensions):
     """LED display area (enlarged for 2 rows)"""
 
     WIDTH = 210
@@ -132,7 +173,7 @@ class LEDDisplayDimensions:
     Y = InstrumentDimensions.MARGIN + 35
 
 
-class DigitalTitleDimensions:
+class DigitalTitleDimensions(Dimensions):
     """
     Digital Title Dimensions
     LED title area (enlarged for 2 rows)"""
@@ -141,7 +182,7 @@ class DigitalTitleDimensions:
     HEIGHT = 70
 
 
-class PWMWidgetDimensions:
+class PWMWidgetDimensions(Dimensions):
     """PWM Widget Dimensions"""
 
     X = 100
@@ -150,7 +191,7 @@ class PWMWidgetDimensions:
     HEIGHT = 500
 
 
-class TitleDimensions:
+class TitleDimensions(Dimensions):
     """Title above display (moved down)"""
 
     X = InstrumentDimensions.MARGIN + 20
@@ -159,7 +200,7 @@ class TitleDimensions:
     HEIGHT = 50
 
 
-class KeyboardDimensions:
+class KeyboardDimensions(Dimensions):
     """Keyboard Dimensions"""
 
     # Keyboard
@@ -167,7 +208,7 @@ class KeyboardDimensions:
     WIDTH = 800
 
 
-class SequencerGridDimensions:
+class SequencerGridDimensions(Dimensions):
     """Sequencer Grid Dimensions"""
 
     # --- Sequencer grid
@@ -175,7 +216,7 @@ class SequencerGridDimensions:
     HEIGHT = 30
 
 
-class SequencerContainerDimensions:
+class SequencerContainerDimensions(Dimensions):
     """Sequencer container"""
 
     X = InstrumentDimensions.MARGIN + 520
@@ -184,7 +225,7 @@ class SequencerContainerDimensions:
     HEIGHT = 80
 
 
-class SequencerDimensions:
+class SequencerDimensions(Dimensions):
     """Sequencer Dimensions"""
 
     # --- Sequencer steps
@@ -206,14 +247,14 @@ class SequencerDimensions:
     CONTAINER: SequencerContainerDimensions = SequencerContainerDimensions
 
 
-class SliderContainerDimensions:
+class SliderContainerDimensions(Dimensions):
     """Slider Container Dimensions"""
 
     WIDTH = 360
     HEIGHT = 120 + 20  # Height = SliderDimensions Height
 
 
-class SliderDimensions:
+class SliderDimensions(Dimensions):
     """Slider Dimensions"""
 
     X = 515
@@ -222,16 +263,16 @@ class SliderDimensions:
     CONTAINER: SliderContainerDimensions = SliderContainerDimensions
 
 
-class PartsDimensions:
+class PartsDimensions(Dimensions):
     """Parts container"""
 
-    X = LEDDisplayDimensions.X + LEDDisplayDimensions.WIDTH + 10
+    X = LEDDisplayDimensions.right() + 10
     Y = InstrumentDimensions.MARGIN
     WIDTH = 180
     HEIGHT = 220
 
 
-class EffectsButtonDimensions:
+class EffectsButtonDimensions(Dimensions):
     """Effects Button Dimensions"""
 
     X = 910
@@ -240,7 +281,7 @@ class EffectsButtonDimensions:
     HEIGHT = 120
 
 
-class ToneButtonDimensions:
+class ToneButtonDimensions(Dimensions):
     """Tone button dimensions"""
 
     X = 385
@@ -249,7 +290,7 @@ class ToneButtonDimensions:
     HEIGHT = 80
 
 
-class ProgramButtonDimensions:
+class ProgramButtonDimensions(Dimensions):
     """Program buttons"""
 
     X = 385
@@ -258,7 +299,7 @@ class ProgramButtonDimensions:
     HEIGHT = 80
 
 
-class OctaveButtonDimensions:
+class OctaveButtonDimensions(Dimensions):
     """Octave Button Dimensions"""
 
     X = InstrumentDimensions.MARGIN + 10
@@ -267,7 +308,7 @@ class OctaveButtonDimensions:
     HEIGHT = 100
 
 
-class JDXiDimensions:
+class JDXiDimensions(Dimensions):
     """
     A class to store dimensions for the JD-Xi editor UI.
     """
@@ -291,7 +332,7 @@ class JDXiDimensions:
 
     # --- Widgets
     PWM_WIDGET: PWMWidgetDimensions = PWMWidgetDimensions
-    CHART: ChartDimensions = ChartDimensions
+    CHART: ChartMetrics = ChartMetrics
     LED: LEDDisplayDimensions = LEDDisplayDimensions
     DIGITAL_TITLE: DigitalTitleDimensions = DigitalTitleDimensions
     TITLE: TitleDimensions = TitleDimensions

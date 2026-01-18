@@ -75,7 +75,7 @@ from jdxi_editor.ui.windows.jdxi.containers import (
 )
 
 
-class JDXiUi(QMainWindow):
+class JDXiWindow(QMainWindow):
     """JD-Xi UI setup, with as little as possible functionality, which is to be super-classed"""
 
     def __init__(self):
@@ -104,7 +104,7 @@ class JDXiUi(QMainWindow):
         self.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.FramelessWindowHint)
         self.setWindowTitle(__program__)
         self.setMinimumSize(
-            JDXi.Dimensions.INSTRUMENT.WIDTH, JDXi.Dimensions.INSTRUMENT.HEIGHT
+            JDXi.UI.Dimensions.INSTRUMENT.WIDTH, JDXi.UI.Dimensions.INSTRUMENT.HEIGHT
         )
 
         # --- Initialize MIDI helper
@@ -234,7 +234,7 @@ class JDXiUi(QMainWindow):
         file_menu.addSeparator()
 
         load_program_action = QAction(
-            JDXi.IconRegistry.get_icon(JDXi.IconRegistry.FOLDER_OPENED),
+            JDXi.UI.IconRegistry.get_icon(JDXi.UI.IconRegistry.FOLDER_OPENED),
             "Load Program...",
             self,
         )
@@ -379,14 +379,16 @@ class JDXiUi(QMainWindow):
         self.help_menu.addAction(about_help_action)
 
         preferences_action = QAction(
-            JDXi.IconRegistry.get_icon(JDXi.IconRegistry.SETTINGS), "Preferences", self
+            JDXi.UI.IconRegistry.get_icon(JDXi.UI.IconRegistry.SETTINGS),
+            "Preferences",
+            self,
         )
         preferences_action.setStatusTip("Show the Preferences window")
         preferences_action.triggered.connect(self.on_preferences)
         self.help_menu.addAction(preferences_action)
 
         documentation_action = QAction(
-            JDXi.IconRegistry.get_icon(JDXi.IconRegistry.HELP_RHOMBUS),
+            JDXi.UI.IconRegistry.get_icon(JDXi.UI.IconRegistry.HELP_RHOMBUS),
             "Documentation",
             self,
         )
@@ -404,7 +406,7 @@ class JDXiUi(QMainWindow):
         """Create status bar with MIDI indicators"""
         status_bar = self.statusBar()
 
-        JDXi.ThemeManager.apply_transparent(status_bar)
+        JDXi.UI.ThemeManager.apply_transparent(status_bar)
 
         midi_indicator_container = QWidget()
         midi_indicator_container.setLayout(self._build_status_layout())

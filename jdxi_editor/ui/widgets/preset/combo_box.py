@@ -46,7 +46,7 @@ class PresetComboBox(QWidget):
         # --- Search Box
         self.search_box = QLineEdit()
         search_row = create_layout_with_widgets([QLabel("Search:"), self.search_box])
-        self.search_box.setStyleSheet(JDXi.Style.QLINEEDIT)
+        self.search_box.setStyleSheet(JDXi.UI.Style.QLINEEDIT)
         self.search_box.setPlaceholderText("Search presets...")
         self.search_box.textChanged.connect(self._populate_presets)
         search_row.addWidget(self.search_box)
@@ -71,7 +71,7 @@ class PresetComboBox(QWidget):
         self.load_button.clicked.connect(self._on_load_clicked)
         layout.addWidget(self.load_button)
         self._populate_presets()
-        self.setStyleSheet(JDXi.Style.COMBO_BOX)
+        self.setStyleSheet(JDXi.UI.Style.COMBO_BOX)
 
     def _on_load_clicked(self):
         """Handle load button click."""

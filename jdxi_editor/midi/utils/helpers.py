@@ -15,13 +15,15 @@ def on_usb_recording_finished(output_file: str):
     """
     # Ensure output_file is a string
     if not isinstance(output_file, str):
-        log.error(f"Recording finished, but output_file is not a string: {type(output_file)} - {output_file}")
+        log.error(
+            f"Recording finished, but output_file is not a string: {type(output_file)} - {output_file}"
+        )
         return
-    
+
     if not output_file:
         log.error("Recording finished, but no output file path provided.")
         return
-        
+
     if not os.path.exists(output_file):
         log.error(f"Recording finished, but output file does not exist: {output_file}")
         return

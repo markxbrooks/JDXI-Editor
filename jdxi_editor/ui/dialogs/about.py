@@ -36,7 +36,9 @@ class UiAboutDialog(QDialog):
         """
         self.resize(508, 300)
         self.setWindowTitle(f"about {__program__}")
-        self.setStyleSheet(JDXi.Style.SPLASH_SCREEN + JDXi.Style.CREDITS_LABEL_STYLE)
+        self.setStyleSheet(
+            JDXi.UI.Style.SPLASH_SCREEN + JDXi.UI.Style.CREDITS_LABEL_STYLE
+        )
         main_layout = QVBoxLayout(self)
         group_box_layout = QVBoxLayout()
         group_box = QGroupBox(__program__)
@@ -83,7 +85,7 @@ class UiAboutDialog(QDialog):
             "This app is not affiliated with, endorsed by, or sponsored by Roland Corporation in any way<br>"
             "All product names, trademarks, and logos are the property of their respective owners.<br>"
         )
-        credits_label.setStyleSheet(JDXi.Style.CREDITS_LABEL_STYLE)
+        credits_label.setStyleSheet(JDXi.UI.Style.CREDITS_LABEL_STYLE)
         credits_label.setOpenExternalLinks(True)
         credits_label.setAlignment(Qt.AlignCenter)
         divider = QLabel("<hr>")

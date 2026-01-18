@@ -100,7 +100,7 @@ class DrumWMTSection(QWidget):
 
     def setup_ui(self):
         """setup UI"""
-        self.setMinimumWidth(JDXi.Dimensions.EDITOR_DRUM.PARTIAL_TAB_MIN_WIDTH)
+        self.setMinimumWidth(JDXi.UI.Dimensions.EDITOR_DRUM.PARTIAL_TAB_MIN_WIDTH)
         # Set size policy to allow vertical expansion
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         layout = QVBoxLayout(self)
@@ -116,7 +116,7 @@ class DrumWMTSection(QWidget):
         layout.addWidget(scroll_area)
 
         # Icons row (standardized across editor tabs)
-        icon_hlayout = JDXi.IconRegistry.create_adsr_icons_row()
+        icon_hlayout = JDXi.UI.IconRegistry.create_adsr_icons_row()
         scrolled_layout.addLayout(icon_hlayout)
 
         # WMT Group
@@ -178,30 +178,30 @@ class DrumWMTSection(QWidget):
         self.wmt_controls_tab_widget = QTabWidget()
         main_row_hlayout.addWidget(self.wmt_controls_tab_widget)
 
-        controls_icon = JDXi.IconRegistry.get_icon(
-            JDXi.IconRegistry.TUNE, color=JDXi.Style.GREY
+        controls_icon = JDXi.UI.IconRegistry.get_icon(
+            JDXi.UI.IconRegistry.TUNE, color=JDXi.UI.Style.GREY
         )
         self.wmt_controls_tab_widget.addTab(
             self._create_wmt_controls_group(p), controls_icon, "Controls"
         )
-        waves_icon = JDXi.IconRegistry.get_icon(
-            JDXi.IconRegistry.WAVEFORM, color=JDXi.Style.GREY
+        waves_icon = JDXi.UI.IconRegistry.get_icon(
+            JDXi.UI.IconRegistry.WAVEFORM, color=JDXi.UI.Style.GREY
         )
         self.wmt_controls_tab_widget.addTab(
             self._create_wave_combo_group(p, wmt_index), waves_icon, "Waves"
         )
-        fxm_icon = JDXi.IconRegistry.get_icon(
-            JDXi.IconRegistry.EQUALIZER, color=JDXi.Style.GREY
+        fxm_icon = JDXi.UI.IconRegistry.get_icon(
+            JDXi.UI.IconRegistry.EQUALIZER, color=JDXi.UI.Style.GREY
         )
         self.wmt_controls_tab_widget.addTab(self._create_fxm_group(p), fxm_icon, "FXM")
-        tuning_icon = JDXi.IconRegistry.get_icon(
-            JDXi.IconRegistry.MUSIC_NOTE, color=JDXi.Style.GREY
+        tuning_icon = JDXi.UI.IconRegistry.get_icon(
+            JDXi.UI.IconRegistry.MUSIC_NOTE, color=JDXi.UI.Style.GREY
         )
         self.wmt_controls_tab_widget.addTab(
             self._create_tuning_group(p), tuning_icon, "Tuning"
         )
-        pan_icon = JDXi.IconRegistry.get_icon(
-            JDXi.IconRegistry.PAN_HORIZONTAL, color=JDXi.Style.GREY
+        pan_icon = JDXi.UI.IconRegistry.get_icon(
+            JDXi.UI.IconRegistry.PAN_HORIZONTAL, color=JDXi.UI.Style.GREY
         )
         self.wmt_controls_tab_widget.addTab(
             self._create_wmt_pan_group(p), pan_icon, "Pan"
@@ -424,7 +424,7 @@ class DrumWMTSection(QWidget):
             midi_helper=self.midi_helper,
             address=self.address,
         )
-        adsr_widget.setStyleSheet(JDXi.Style.ADSR)
+        adsr_widget.setStyleSheet(JDXi.UI.Style.ADSR)
         return adsr_widget
 
     def _create_tuning_group(self, p: Callable[[Any], Any]):

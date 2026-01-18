@@ -18,16 +18,16 @@ def create_parts_container(
     """Create the Parts Select container widget"""
     parts_container = QWidget(parent_widget)
     parts_container.setGeometry(
-        JDXi.Dimensions.PARTS.X,
-        JDXi.Dimensions.PARTS.Y,
-        JDXi.Dimensions.PARTS.WIDTH,
-        JDXi.Dimensions.PARTS.HEIGHT,
+        JDXi.UI.Dimensions.PARTS.X,
+        JDXi.UI.Dimensions.PARTS.Y,
+        JDXi.UI.Dimensions.PARTS.WIDTH,
+        JDXi.UI.Dimensions.PARTS.HEIGHT,
     )
     parts_layout = QVBoxLayout(parts_container)
     parts_layout.setSpacing(3)
 
     parts_label = QLabel("Parts Select")
-    parts_label.setStyleSheet(JDXi.Style.PARTS_SELECT)
+    parts_label.setStyleSheet(JDXi.UI.Style.PARTS_SELECT)
     parts_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
     parts_layout.addWidget(parts_label)
 
@@ -52,7 +52,7 @@ def create_parts_container(
     for row in [digital1_row, digital2_row, drums_row, analog_row, arp_row]:
         parts_layout.addLayout(row)
 
-    parts_container.setStyleSheet(JDXi.Style.TRANSPARENT)
+    parts_container.setStyleSheet(JDXi.UI.Style.TRANSPARENT)
 
     return parts_container, {
         "digital1": digital1_button,

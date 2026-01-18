@@ -125,7 +125,7 @@ class ArpeggioEditor(BasicEditor):
             return row
 
         # --- Icons row (standardized across editor tabs)
-        icon_hlayout = JDXi.IconRegistry.create_generic_musical_icon_row()
+        icon_hlayout = JDXi.UI.IconRegistry.create_generic_musical_icon_row()
         # Add on-off switch
         common_button = self._create_parameter_switch(
             ProgramZoneParam.ARPEGGIO_SWITCH,

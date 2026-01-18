@@ -11,18 +11,18 @@ def add_tone_container(
     """For tone buttons"""
     tone_container = QWidget(central_widget)
     tone_container.setGeometry(
-        JDXi.Dimensions.TONE.X,
-        JDXi.Dimensions.TONE.Y,
-        JDXi.Dimensions.TONE.WIDTH,
-        JDXi.Dimensions.TONE.HEIGHT,
+        JDXi.UI.Dimensions.TONE.X,
+        JDXi.UI.Dimensions.TONE.Y,
+        JDXi.UI.Dimensions.TONE.WIDTH,
+        JDXi.UI.Dimensions.TONE.HEIGHT,
     )
-    tone_container.setStyleSheet(JDXi.Style.TRANSPARENT)
+    tone_container.setStyleSheet(JDXi.UI.Style.TRANSPARENT)
     tone_container_layout = QVBoxLayout(tone_container)
     tone_container_layout.setSpacing(3)
     tone_label_layout = QHBoxLayout()
     tone_label = QLabel("Tone")
     tone_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-    tone_label.setStyleSheet(JDXi.Style.TRANSPARENT)
+    tone_label.setStyleSheet(JDXi.UI.Style.TRANSPARENT)
     tone_label_layout.addWidget(tone_label)
     tone_container_layout.addLayout(tone_label_layout)
     tone_layout = QHBoxLayout()
@@ -45,12 +45,12 @@ def create_tone_buttons_row(previous_tone, next_tone):
 
     # --- Create tone up button
     tone_up_button.setFixedSize(tone_button_diameter, tone_button_diameter)
-    tone_up_button.setStyleSheet(JDXi.Style.BUTTON_ROUND_SMALL)
+    tone_up_button.setStyleSheet(JDXi.UI.Style.BUTTON_ROUND_SMALL)
     tone_up_button.setToolTip("Tone Up: Navigate to the next preset/tone")
 
     # --- Create tone down button
     tone_down_button.setFixedSize(tone_button_diameter, tone_button_diameter)
-    tone_down_button.setStyleSheet(JDXi.Style.BUTTON_ROUND_SMALL)
+    tone_down_button.setStyleSheet(JDXi.UI.Style.BUTTON_ROUND_SMALL)
     tone_down_button.setToolTip("Tone Down: Navigate to the previous preset/tone")
 
     # --- Connect buttons to functions

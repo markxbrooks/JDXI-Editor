@@ -84,8 +84,8 @@ class DrumTVFEnvPlot(QWidget):
 
     def __init__(
         self,
-        width: int = JDXi.Style.ADSR_PLOT_WIDTH,
-        height: int = JDXi.Style.ADSR_PLOT_HEIGHT,
+        width: int = JDXi.UI.Style.ADSR_PLOT_WIDTH,
+        height: int = JDXi.UI.Style.ADSR_PLOT_HEIGHT,
         envelope: dict = None,
         parent: QWidget = None,
     ):
@@ -96,7 +96,7 @@ class DrumTVFEnvPlot(QWidget):
         self.setMaximumHeight(height)
         self.setMaximumWidth(width)
 
-        JDXi.ThemeManager.apply_adsr_plot(self)
+        JDXi.UI.ThemeManager.apply_adsr_plot(self)
         self.sample_rate = 256
         self.setMinimumHeight(150)
 
@@ -128,7 +128,7 @@ class DrumTVFEnvPlot(QWidget):
             axis_pen = QPen(QColor("white"), 1)
             grid_pen = QPen(Qt.GlobalColor.darkGray, 1)
             grid_pen.setStyle(Qt.PenStyle.DashLine)
-            point_pen = QPen(QColor("orange"), JDXi.Dimensions.CHART.POINT_SIZE)
+            point_pen = QPen(QColor("orange"), JDXi.UI.Dimensions.CHART.POINT_SIZE)
             painter.setFont(QFont("JD LCD Rounded", 10))
 
             depth = self.envelope.get("depth", 64) - 64  # -63 to +63
@@ -336,7 +336,9 @@ class DrumTVFSection(DrumBaseSection):
         self.tvf_tab_widget = QTabWidget()
 
         # --- Basic TVF controls and envelope controls ---
-        controls_icon = JDXi.IconRegistry.get_icon("mdi.tune", color=JDXi.Style.GREY)
+        controls_icon = JDXi.UI.IconRegistry.get_icon(
+            "mdi.tune", color=JDXi.UI.Style.GREY
+        )
         self.tvf_tab_widget.addTab(
             self._create_tvf_basic_group(), controls_icon, "Controls"
         )
@@ -359,7 +361,7 @@ class DrumTVFSection(DrumBaseSection):
         envelope_slider_layout = QGridLayout()
         envelope_group.setLayout(envelope_group_layout)
 
-        envelope_group.setStyleSheet(JDXi.Style.ADSR)
+        envelope_group.setStyleSheet(JDXi.UI.Style.ADSR)
 
         #  --- Create sliders and connect them ---
         row = 0
@@ -545,8 +547,8 @@ class DrumTVFSection(DrumBaseSection):
 
     def _create_tvf_plot(self):
         self.plot = DrumTVFEnvPlot(
-            width=JDXi.Style.ADSR_PLOT_WIDTH,
-            height=JDXi.Style.ADSR_PLOT_HEIGHT,
+            width=JDXi.UI.Style.ADSR_PLOT_WIDTH,
+            height=JDXi.UI.Style.ADSR_PLOT_HEIGHT,
             envelope=self.envelope,
             parent=self,
         )

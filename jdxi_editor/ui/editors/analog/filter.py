@@ -75,15 +75,17 @@ class AnalogFilterSection(SectionBaseWidget):
         layout = self.get_layout()
 
         self.analog_filter_tab_widget = QTabWidget()
-        JDXi.ThemeManager.apply_tabs_style(self.analog_filter_tab_widget, analog=True)
+        JDXi.UI.ThemeManager.apply_tabs_style(
+            self.analog_filter_tab_widget, analog=True
+        )
 
         # --- Filter Selection Buttons ---
         filter_row = self._create_filter_controls_row()
         layout.addLayout(filter_row)
         layout.addWidget(self.analog_filter_tab_widget)
         # --- Filter Controls ---
-        controls_icon = JDXi.IconRegistry.get_icon(
-            JDXi.IconRegistry.TUNE, color=JDXi.Style.GREY
+        controls_icon = JDXi.UI.IconRegistry.get_icon(
+            JDXi.UI.IconRegistry.TUNE, color=JDXi.UI.Style.GREY
         )
         self.analog_filter_tab_widget.addTab(
             self._create_filter_controls_group(), controls_icon, "Controls"
@@ -93,7 +95,7 @@ class AnalogFilterSection(SectionBaseWidget):
         self.analog_filter_tab_widget.addTab(
             self._create_filter_adsr_env_group(), adsr_icon, "ADSR"
         )
-        layout.addSpacing(JDXi.Style.SPACING)
+        layout.addSpacing(JDXi.UI.Style.SPACING)
         layout.addStretch()
 
     def _create_filter_controls_row(self) -> QHBoxLayout:
@@ -121,15 +123,15 @@ class AnalogFilterSection(SectionBaseWidget):
             icon_name = filter_icon_map.get(filter_mode, "ri.filter-3-fill")
             icon = qta.icon(
                 icon_name,
-                color=JDXi.Style.WHITE,
-                icon_size=JDXi.Dimensions.ICON.SIZE_SMALL,
+                color=JDXi.UI.Style.WHITE,
+                icon_size=JDXi.UI.Dimensions.ICON.SIZE_SMALL,
             )
             btn.setIcon(icon)
             btn.setIconSize(QSize(20, 20))
-            JDXi.ThemeManager.apply_button_rect_analog(btn)
+            JDXi.UI.ThemeManager.apply_button_rect_analog(btn)
             btn.setFixedSize(
-                JDXi.Dimensions.WAVEFORM_ICON.WIDTH,
-                JDXi.Dimensions.WAVEFORM_ICON.HEIGHT,
+                JDXi.UI.Dimensions.WAVEFORM_ICON.WIDTH,
+                JDXi.UI.Dimensions.WAVEFORM_ICON.HEIGHT,
             )
             btn.clicked.connect(
                 lambda checked, mode=filter_mode: self._on_filter_mode_selected(mode)
@@ -148,13 +150,13 @@ class AnalogFilterSection(SectionBaseWidget):
         # Reset all buttons to default style
         for btn in self.filter_mode_buttons.values():
             btn.setChecked(False)
-            JDXi.ThemeManager.apply_button_rect_analog(btn)
+            JDXi.UI.ThemeManager.apply_button_rect_analog(btn)
 
         # Apply active style to the selected filter mode button
         selected_btn = self.filter_mode_buttons.get(filter_mode)
         if selected_btn:
             selected_btn.setChecked(True)
-            JDXi.ThemeManager.apply_button_analog_active(selected_btn)
+            JDXi.UI.ThemeManager.apply_button_analog_active(selected_btn)
 
         # Send MIDI message via SysEx (analog synth uses SysEx, not control changes)
         if self.midi_helper and self.address:

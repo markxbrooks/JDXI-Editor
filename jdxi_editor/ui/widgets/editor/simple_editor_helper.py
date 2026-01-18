@@ -111,7 +111,7 @@ class SimpleEditorHelper:
         """Setup title label and image label"""
         # Create title label
         self.title_label = DigitalTitle(self.title_text)
-        JDXi.ThemeManager.apply_instrument_title_label(self.title_label)
+        JDXi.UI.ThemeManager.apply_instrument_title_label(self.title_label)
 
         # Create image label
         self.image_label = QLabel()
@@ -147,7 +147,7 @@ class SimpleEditorHelper:
 
         # Create tab widget
         self.tab_widget = QTabWidget()
-        JDXi.ThemeManager.apply_tabs_style(self.tab_widget)
+        JDXi.UI.ThemeManager.apply_tabs_style(self.tab_widget)
         self.rows_layout.addWidget(self.tab_widget)
 
         main_row_hlayout.addStretch()

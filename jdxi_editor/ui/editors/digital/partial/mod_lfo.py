@@ -90,15 +90,15 @@ class DigitalModLFOSection(SectionBaseWidget):
         for mod_lfo_shape in mod_lfo_shapes:
             btn = QPushButton(mod_lfo_shape.display_name)
             btn.setCheckable(True)
-            btn.setStyleSheet(JDXi.Style.BUTTON_RECT)
+            btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
             # Add icon
             icon_name = shape_icon_map.get(mod_lfo_shape, "mdi.waveform")
-            icon = qta.icon(icon_name, color=JDXi.Style.WHITE, icon_size=0.7)
+            icon = qta.icon(icon_name, color=JDXi.UI.Style.WHITE, icon_size=0.7)
             btn.setIcon(icon)
             btn.setIconSize(QSize(20, 20))
             btn.setFixedSize(
-                JDXi.Dimensions.WAVEFORM_ICON.WIDTH,
-                JDXi.Dimensions.WAVEFORM_ICON.HEIGHT,
+                JDXi.UI.Dimensions.WAVEFORM_ICON.WIDTH,
+                JDXi.UI.Dimensions.WAVEFORM_ICON.HEIGHT,
             )
             btn.clicked.connect(
                 lambda checked, shape=mod_lfo_shape: self._on_mod_lfo_shape_selected(
@@ -137,7 +137,7 @@ class DigitalModLFOSection(SectionBaseWidget):
         rate_layout = QHBoxLayout()
         rate_layout.addStretch()
         rate_widget.setLayout(rate_layout)
-        rate_widget.setMinimumHeight(JDXi.Dimensions.EDITOR.MINIMUM_HEIGHT)
+        rate_widget.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MINIMUM_HEIGHT)
 
         # Rate and Rate Ctrl controls
         rate_layout.addWidget(
@@ -156,8 +156,8 @@ class DigitalModLFOSection(SectionBaseWidget):
         )
         rate_layout.addStretch()
 
-        rate_icon = JDXi.IconRegistry.get_icon(
-            JDXi.IconRegistry.CLOCK, color=JDXi.Style.GREY
+        rate_icon = JDXi.UI.IconRegistry.get_icon(
+            JDXi.UI.IconRegistry.CLOCK, color=JDXi.UI.Style.GREY
         )
         mod_lfo_controls_tab_widget.addTab(rate_widget, rate_icon, "Rate and Rate Ctrl")
 
@@ -166,7 +166,7 @@ class DigitalModLFOSection(SectionBaseWidget):
         depths_layout = QHBoxLayout()
         depths_layout.addStretch()
         depths_widget.setLayout(depths_layout)
-        depths_widget.setMinimumHeight(JDXi.Dimensions.EDITOR.MINIMUM_HEIGHT)
+        depths_widget.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MINIMUM_HEIGHT)
 
         depths_layout.addWidget(
             self._create_parameter_slider(
@@ -198,8 +198,8 @@ class DigitalModLFOSection(SectionBaseWidget):
         )
         depths_layout.addStretch()
 
-        depths_icon = JDXi.IconRegistry.get_icon(
-            JDXi.IconRegistry.WAVEFORM, color=JDXi.Style.GREY
+        depths_icon = JDXi.UI.IconRegistry.get_icon(
+            JDXi.UI.IconRegistry.WAVEFORM, color=JDXi.UI.Style.GREY
         )
         mod_lfo_controls_tab_widget.addTab(depths_widget, depths_icon, "Depths")
 
@@ -214,13 +214,13 @@ class DigitalModLFOSection(SectionBaseWidget):
         # Reset all buttons to default style
         for btn in self.mod_lfo_shape_buttons.values():
             btn.setChecked(False)
-            btn.setStyleSheet(JDXi.Style.BUTTON_RECT)
+            btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
 
         # Apply active style to the selected Mod LFO shape button
         selected_btn = self.mod_lfo_shape_buttons.get(mod_lfo_shape)
         if selected_btn:
             selected_btn.setChecked(True)
-            selected_btn.setStyleSheet(JDXi.Style.BUTTON_RECT_ACTIVE)
+            selected_btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT_ACTIVE)
 
         # Send MIDI message
         if self.send_midi_parameter:

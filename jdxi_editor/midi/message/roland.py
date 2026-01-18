@@ -27,7 +27,7 @@ from dataclasses import dataclass, field
 from typing import List, Optional, Union
 
 from decologr import Decologr as log
-from jdxi_editor.jdxi.midi.constant import JDXiMidi
+from jdxi_editor.jdxi.jdxi import JDXi
 from jdxi_editor.jdxi.midi.message.sysex.offset import JDXiSysExMessageLayout
 from jdxi_editor.midi.data.address.address import (
     AddressStartMSB,
@@ -247,7 +247,7 @@ class JDXiSysEx(RolandSysExMessage):
         """
         if (
             len(data)
-            < JDXiMidi.SYSEX.PARAMETER.LENGTH.ONE_BYTE  # --- Minimum length: F0 + ID + dev + model(4) + cmd + addr(4) + sum + F7
+            < JDXi.Midi.SYSEX.PARAMETER.LENGTH.ONE_BYTE  # --- Minimum length: F0 + ID + dev + model(4) + cmd + addr(4) + sum + F7
             or data[JDXiSysExMessageLayout.START] != START_OF_SYSEX
             or data[JDXiSysExMessageLayout.ROLAND_ID] != RolandID.ROLAND_ID  # Roland ID
             or data[

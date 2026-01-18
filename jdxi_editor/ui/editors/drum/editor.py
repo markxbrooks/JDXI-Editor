@@ -128,7 +128,7 @@ class DrumCommonEditor(SynthEditor):
         """Setup the UI components for the drum editor."""
         main_layout = QVBoxLayout(self)
         self.setMinimumSize(
-            JDXi.Dimensions.EDITOR_DRUM.WIDTH, JDXi.Dimensions.EDITOR_DRUM.HEIGHT
+            JDXi.UI.Dimensions.EDITOR_DRUM.WIDTH, JDXi.UI.Dimensions.EDITOR_DRUM.HEIGHT
         )
         self.presets_parts_tab_widget = QTabWidget()
 
@@ -154,15 +154,17 @@ class DrumCommonEditor(SynthEditor):
             self.instrument_group_layout,
         ) = self.instrument_preset.create_instrument_image_group()
         self.address.lmb = AddressOffsetProgramLMB.COMMON
-        self.instrument_image_group.setMinimumWidth(JDXi.Style.INSTRUMENT_IMAGE_WIDTH)
+        self.instrument_image_group.setMinimumWidth(
+            JDXi.UI.Style.INSTRUMENT_IMAGE_WIDTH
+        )
         self.instrument_preset.add_image_group(self.instrument_image_group)
         self.instrument_preset.add_stretch()
         self.update_instrument_image()
 
         instrument_vrow_layout.addWidget(self.instrument_preset)
 
-        drum_kit_presets_icon = JDXi.IconRegistry.get_icon(
-            JDXi.IconRegistry.MUSIC_NOTES, color=JDXi.Style.GREY
+        drum_kit_presets_icon = JDXi.UI.IconRegistry.get_icon(
+            JDXi.UI.IconRegistry.MUSIC_NOTES, color=JDXi.UI.Style.GREY
         )
         self.presets_parts_tab_widget.addTab(
             instrument_widget, drum_kit_presets_icon, "Drum Kit Presets"
@@ -174,19 +176,19 @@ class DrumCommonEditor(SynthEditor):
         container_layout = self.base_widget.get_container_layout()
 
         # Add partial_tab_widget to the container
-        self.partial_tab_widget.setStyleSheet(JDXi.Style.TABS_DRUMS)
+        self.partial_tab_widget.setStyleSheet(JDXi.UI.Style.TABS_DRUMS)
         container_layout.addWidget(self.partial_tab_widget)
 
         # Add the base widget as the second tab (it contains the scroll area)
-        drum_kit_parts_icon = JDXi.IconRegistry.get_icon(
-            "mdi.puzzle", color=JDXi.Style.GREY
+        drum_kit_parts_icon = JDXi.UI.IconRegistry.get_icon(
+            "mdi.puzzle", color=JDXi.UI.Style.GREY
         )
         self.presets_parts_tab_widget.addTab(
             self.base_widget, drum_kit_parts_icon, "Drum Kit Parts"
         )
 
-        self.presets_parts_tab_widget.setStyleSheet(JDXi.Style.TABS_DRUMS)
-        self.partial_tab_widget.setStyleSheet(JDXi.Style.TABS_DRUMS)
+        self.presets_parts_tab_widget.setStyleSheet(JDXi.UI.Style.TABS_DRUMS)
+        self.partial_tab_widget.setStyleSheet(JDXi.UI.Style.TABS_DRUMS)
         self._setup_partial_editors()
         # Create and add the common section
         self.common_section = DrumCommonSection(
@@ -196,26 +198,24 @@ class DrumCommonEditor(SynthEditor):
             midi_helper=self.midi_helper,
             address=self.address,
         )
-        common_icon = JDXi.IconRegistry.get_icon(
-            "mdi.cog-outline", color=JDXi.Style.GREY
+        common_icon = JDXi.UI.IconRegistry.get_icon(
+            "mdi.cog-outline", color=JDXi.UI.Style.GREY
         )
         self.partial_tab_widget.addTab(self.common_section, common_icon, "Common")
 
         # Create and add the mixer tab
         from jdxi_editor.ui.editors.drum.mixer import DrumKitMixer
-        
+
         mixer_widget = DrumKitMixer(midi_helper=self.midi_helper, parent=self)
-        mixer_icon = JDXi.IconRegistry.get_icon(
-            "ei.adjust-alt", color=JDXi.Style.GREY
+        mixer_icon = JDXi.UI.IconRegistry.get_icon(
+            "ei.adjust-alt", color=JDXi.UI.Style.GREY
         )
         if mixer_icon is None or mixer_icon.isNull():
             # Fallback icon if mixer icon not available
-            mixer_icon = JDXi.IconRegistry.get_icon(
-                "ph.sliders-bold", color=JDXi.Style.GREY
+            mixer_icon = JDXi.UI.IconRegistry.get_icon(
+                "ph.sliders-bold", color=JDXi.UI.Style.GREY
             )
-        self.presets_parts_tab_widget.addTab(
-            mixer_widget, mixer_icon, "Drum Kit Mixer"
-        )
+        self.presets_parts_tab_widget.addTab(mixer_widget, mixer_icon, "Drum Kit Mixer")
 
         self.update_instrument_image()
         self.partial_tab_widget.currentChanged.connect(self.update_partial_number)

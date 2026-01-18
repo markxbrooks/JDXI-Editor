@@ -28,7 +28,7 @@ import mido
 from PySide6.QtCore import Signal
 
 from decologr import Decologr as log
-from jdxi_editor.jdxi.midi.constant import JDXiMidi
+from jdxi_editor.jdxi.jdxi import JDXi
 from jdxi_editor.jdxi.midi.message.sysex.offset import JDXiSysExIdentityLayout
 from jdxi_editor.jdxi.preset.button import JDXiPresetButtonData
 from jdxi_editor.jdxi.preset.incoming_data import IncomingPresetData
@@ -293,7 +293,7 @@ class MidiInHandler(MidiIOController):
             )  # account for lack of status byte
             if (
                 message.data[mido_sub_id_byte_offset]
-                == JDXiMidi.SYSEX.IDENTITY.CONST.SUB2_IDENTITY_REPLY
+                == JDXi.Midi.SYSEX.IDENTITY.CONST.SUB2_IDENTITY_REPLY
             ):
                 self.sysex_parser.parse_identity_request(message)
                 return
@@ -354,8 +354,8 @@ class MidiInHandler(MidiIOController):
             f"Control Change - Channel: {channel}, Control: {control}, Value: {value}"
         )
         if value in [
-            JDXiMidi.CC.BANK_SELECT.LSB.BANK_E_AND_F,
-            JDXiMidi.CC.BANK_SELECT.LSB.BANK_G_AND_H,
+            JDXi.Midi.CC.BANK_SELECT.LSB.BANK_E_AND_F,
+            JDXi.Midi.CC.BANK_SELECT.LSB.BANK_G_AND_H,
         ]:
             log.parameter("control", control)  # Bank Select LSB 00 or 01
             log.parameter("value", value)  # Bank Select LSB 00 or 01
@@ -483,12 +483,14 @@ class MidiInHandler(MidiIOController):
             msb = data.msb  # data.msb or 85
             lsb = data.lsb  # data.lsb or 0
             prefix = None
-            
+
             # Guard against None values
             if msb is None or lsb is None:
-                log.message(f"❌ Missing MSB or LSB (msb={msb}, lsb={lsb}); cannot auto-add program")
+                log.message(
+                    f"❌ Missing MSB or LSB (msb={msb}, lsb={lsb}); cannot auto-add program"
+                )
                 return
-            
+
             index_in_bank = program_number % 64
 
             # === User Banks ===

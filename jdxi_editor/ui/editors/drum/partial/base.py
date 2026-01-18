@@ -56,7 +56,7 @@ class DrumBaseSection(QWidget):
         super().__init__()
         self.vlayout = None
         self.scrolled_layout = None
-        self.setMinimumWidth(JDXi.Dimensions.EDITOR_DRUM.PARTIAL_TAB_MIN_WIDTH)
+        self.setMinimumWidth(JDXi.UI.Dimensions.EDITOR_DRUM.PARTIAL_TAB_MIN_WIDTH)
         self.vlayout, self.scrolled_layout = self.setup_scrolled_layout_with_icons()
         self.vlayout.setContentsMargins(0, 0, 0, 0)
         self.vlayout.setSpacing(0)
@@ -69,6 +69,6 @@ class DrumBaseSection(QWidget):
         layout.addWidget(scroll_area)
 
         # --- Icons row (standardized across editor tabs)
-        icon_hlayout = JDXi.IconRegistry.create_adsr_icons_row()
+        icon_hlayout = JDXi.UI.IconRegistry.create_adsr_icons_row()
         scrolled_layout.addLayout(icon_hlayout)
         return layout, scrolled_layout

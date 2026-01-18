@@ -139,7 +139,7 @@ class MIDIDebugger(QMainWindow):
         self.setWindowTitle("MIDI Debugger")
         self.setMinimumSize(800, 600)
 
-        JDXi.ThemeManager.apply_debugger_window(self)
+        JDXi.UI.ThemeManager.apply_debugger_window(self)
 
         # Create central widget
         central = QWidget()

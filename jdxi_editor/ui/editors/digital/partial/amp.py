@@ -67,7 +67,7 @@ class DigitalAmpSection(SectionBaseWidget):
     def setup_ui(self):
         """Setup the amplifier section UI."""
         amp_section_layout = self.get_layout(margins=(5, 15, 5, 5), spacing=5)
-        self.setMinimumHeight(JDXi.Dimensions.EDITOR.MINIMUM_HEIGHT)
+        self.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MINIMUM_HEIGHT)
 
         # Custom icons layout (kept for Digital Amp's unique icon set)
         icons_hlayout = create_icons_layout()
@@ -81,8 +81,8 @@ class DigitalAmpSection(SectionBaseWidget):
         amp_controls_layout = self._create_amp_controls_layout()
         amp_controls_widget = QWidget()
         amp_controls_widget.setLayout(amp_controls_layout)
-        controls_icon = JDXi.IconRegistry.get_icon(
-            JDXi.IconRegistry.TUNE, color=JDXi.Style.GREY
+        controls_icon = JDXi.UI.IconRegistry.get_icon(
+            JDXi.UI.IconRegistry.TUNE, color=JDXi.UI.Style.GREY
         )
         self.digital_amp_tab_widget.addTab(
             amp_controls_widget, controls_icon, "Controls"
@@ -94,7 +94,7 @@ class DigitalAmpSection(SectionBaseWidget):
         adsr_icon = QIcon(base64_to_pixmap(adsr_icon_base64))
         self.digital_amp_tab_widget.addTab(amp_adsr_group, adsr_icon, "ADSR")
 
-        amp_section_layout.addSpacing(JDXi.Dimensions.EDITOR_DIGITAL.SPACING)
+        amp_section_layout.addSpacing(JDXi.UI.Dimensions.EDITOR_DIGITAL.SPACING)
         amp_section_layout.addStretch()
 
     def _create_amp_controls_layout(self) -> QVBoxLayout:

@@ -153,7 +153,7 @@ class FavoriteButton(QPushButton):
             elif self.preset.type == JDXiSynth.DRUM_KIT:
                 color = "#00FF00"  # Green for drums
             else:
-                color = JDXi.Style.GREY  # Gray for unknown types
+                color = JDXi.UI.Style.GREY  # Gray for unknown types
 
             # Set text to preset name
             # Get just the preset name without the number prefix
@@ -164,7 +164,7 @@ class FavoriteButton(QPushButton):
 
             text = f"FAV {self.slot_num + 1}\n{preset_display_name}"
         else:
-            color = JDXi.Style.GREY  # Gray for empty slot
+            color = JDXi.UI.Style.GREY  # Gray for empty slot
             text = f"FAV {self.slot_num + 1}"
 
         # Create gradient background

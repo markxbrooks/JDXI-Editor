@@ -43,7 +43,7 @@ class MidiTrackWidget(QWidget):
         self.color = generate_track_colors(track_number)
         self.muted = False
         self.total_length = total_length
-        self.setMinimumHeight(JDXi.Style.TRACK_HEIGHT_MINIMUM)  # Adjust as needed
+        self.setMinimumHeight(JDXi.UI.Style.TRACK_HEIGHT_MINIMUM)  # Adjust as needed
         self.track_data = None  # Dict: {rects: [...], label: str, channels: set}
         self.muted_channels = set()  # Set of muted channels
         self.muted_tracks = set()  # Set of muted channels

@@ -48,7 +48,6 @@ from PySide6.QtWidgets import QApplication, QMenu, QMessageBox, QProgressDialog
 from decologr import Decologr as log
 from jdxi_editor.jdxi.file.utils import documentation_file_path, os_file_open
 from jdxi_editor.jdxi.jdxi import JDXi
-from jdxi_editor.jdxi.midi.constant import JDXiMidi
 from jdxi_editor.jdxi.preset.button import JDXiPresetButtonData
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.jdxi.preset.lists import JDXiPresetToneList
@@ -102,7 +101,7 @@ from jdxi_editor.ui.widgets.button import SequencerSquare
 from jdxi_editor.ui.widgets.button.favorite import FavoriteButton
 from jdxi_editor.ui.widgets.viewer.log import LogViewer
 from jdxi_editor.ui.windows.jdxi.recent_files import RecentFilesManager
-from jdxi_editor.ui.windows.jdxi.ui import JDXiUi
+from jdxi_editor.ui.windows.jdxi.ui import JDXiWindow
 from jdxi_editor.ui.windows.jdxi.utils import show_message_box
 from jdxi_editor.ui.windows.midi.config_dialog import MIDIConfigDialog
 from jdxi_editor.ui.windows.midi.debugger import MIDIDebugger
@@ -111,7 +110,7 @@ from jdxi_editor.ui.windows.patch.manager import PatchManager
 from picomidi.constant import Midi
 
 
-class JDXiInstrument(JDXiUi):
+class JDXiInstrument(JDXiWindow):
     """
     class JDXiInstrument
     """
@@ -122,8 +121,8 @@ class JDXiInstrument(JDXiUi):
         self.splash_progress_bar = progress_bar
         self.splash_status_label = status_label
         if platform.system() == "Windows":
-            JDXi.ThemeManager.apply_transparent(self)
-            JDXi.ThemeManager.apply_adsr_disabled(self)
+            JDXi.UI.ThemeManager.apply_transparent(self)
+            JDXi.UI.ThemeManager.apply_adsr_disabled(self)
         # Try to auto-connect to JD-Xi
         self.midi_helper.auto_connect_jdxi()
         if (
@@ -428,9 +427,9 @@ class JDXiInstrument(JDXiUi):
         for synth_type, button in self.synth_buttons.items():
             is_selected = synth_type == self.current_synth_type
             button.setStyleSheet(
-                JDXi.Style.BUTTON_ROUND_SELECTED
+                JDXi.UI.Style.BUTTON_ROUND_SELECTED
                 if not is_selected
-                else JDXi.Style.BUTTON_ROUND
+                else JDXi.UI.Style.BUTTON_ROUND
             )
             button.setChecked(is_selected)
 
@@ -744,7 +743,7 @@ class JDXiInstrument(JDXiUi):
             editor.setWindowTitle(title)
 
             tab_index = self.main_editor.editor_tab_widget.addTab(
-                editor, qta.icon(icon, color=JDXi.Style.GREY), title
+                editor, qta.icon(icon, color=JDXi.UI.Style.GREY), title
             )
 
             # Store the tab index for Analog Synth to enable styling
@@ -1555,7 +1554,7 @@ class JDXiInstrument(JDXiUi):
                 name=data.program_name,
                 genre=genre,
                 pc=program_number,
-                msb=data.msb if data.msb is not None else JDXiMidi.CC.BANK_SELECT.MSB,
+                msb=data.msb if data.msb is not None else JDXi.Midi.CC.BANK_SELECT.MSB,
                 lsb=(
                     data.lsb
                     if data.lsb is not None
@@ -1707,7 +1706,7 @@ class JDXiInstrument(JDXiUi):
         self.octave_up.setChecked(self.current_octave > 0)
         self._update_display()
         log.message(
-            f"Updated octave to: {self.current_octave} (value: {hex(JDXiMidi.SYSEX.OCTAVE.CENTER_VALUE + self.current_octave)})"
+            f"Updated octave to: {self.current_octave} (value: {hex(JDXi.Midi.SYSEX.OCTAVE.CENTER_VALUE + self.current_octave)})"
         )
 
     def _midi_init_ports(

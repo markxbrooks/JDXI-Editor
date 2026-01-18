@@ -41,8 +41,8 @@ def create_sequencer_buttons_row(
         QRect(
             1,
             1,
-            JDXi.Dimensions.SEQUENCER.GRID.WIDTH,
-            JDXi.Dimensions.SEQUENCER.GRID.HEIGHT,
+            JDXi.UI.Dimensions.SEQUENCER.GRID.WIDTH,
+            JDXi.UI.Dimensions.SEQUENCER.GRID.HEIGHT,
         )
     )
     grid.setHorizontalSpacing(3)
@@ -50,7 +50,8 @@ def create_sequencer_buttons_row(
     for i in range(16):
         button = SequencerSquare(i, midi_helper)
         button.setFixedSize(
-            JDXi.Dimensions.SEQUENCER.SQUARE_SIZE, JDXi.Dimensions.SEQUENCER.SQUARE_SIZE
+            JDXi.UI.Dimensions.SEQUENCER.SQUARE_SIZE,
+            JDXi.UI.Dimensions.SEQUENCER.SQUARE_SIZE,
         )
         button.setCheckable(True)
         button.setChecked(False)
@@ -86,15 +87,15 @@ def add_sequencer_container(
     # --- Beginning of sequencer section
     sequencer_container = QWidget(central_widget)
     sequencer_container.setGeometry(
-        JDXi.Dimensions.SEQUENCER.CONTAINER.X,
-        JDXi.Dimensions.SEQUENCER.CONTAINER.Y,
-        JDXi.Dimensions.SEQUENCER.CONTAINER.WIDTH,
-        JDXi.Dimensions.SEQUENCER.CONTAINER.HEIGHT,
+        JDXi.UI.Dimensions.SEQUENCER.CONTAINER.X,
+        JDXi.UI.Dimensions.SEQUENCER.CONTAINER.Y,
+        JDXi.UI.Dimensions.SEQUENCER.CONTAINER.WIDTH,
+        JDXi.UI.Dimensions.SEQUENCER.CONTAINER.HEIGHT,
     )
     sequencer_container_layout = QHBoxLayout(sequencer_container)
     sequencer_label = QLabel("Sequencer")
     sequencer_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-    sequencer_label.setStyleSheet(JDXi.Style.TRANSPARENT)
+    sequencer_label.setStyleSheet(JDXi.UI.Style.TRANSPARENT)
     sequencer_layout = QHBoxLayout()
     # --- favorites_button_row, favorite_button = create_favorite_button_row()
     sequencer, sequencer_buttons = create_sequencer_buttons_row(
@@ -112,8 +113,8 @@ def add_favorite_button_container(central_widget):
     """Create a circular button to set and unset favorites"""
     favourites_button_container = QWidget(central_widget)
     favourites_button_container.setGeometry(
-        JDXi.Dimensions.SEQUENCER.CONTAINER.X - 50,
-        JDXi.Dimensions.SEQUENCER.CONTAINER.Y,
+        JDXi.UI.Dimensions.SEQUENCER.CONTAINER.X - 50,
+        JDXi.UI.Dimensions.SEQUENCER.CONTAINER.Y,
         100,
         200,
     )
@@ -137,7 +138,7 @@ def add_favorite_button_container(central_widget):
     favorite_button.setFixedSize(30, 30)
     favorite_button.setCheckable(True)
     # --- Style the button with brighter hover/border_pressed/selected  states
-    favorite_button.setStyleSheet(JDXi.Style.BUTTON_ROUND)
+    favorite_button.setStyleSheet(JDXi.UI.Style.BUTTON_ROUND)
     favorite_button.setToolTip("Favorite: Mark current settings as a favorite")
     row.addLayout(favourite_button_column)
     favourite_button_column.addWidget(favourite_button_label)

@@ -162,8 +162,8 @@ class WMTEnvelopeWidget(EnvelopeWidgetBase):
             "fade_upper": self.fade_upper_control.spinbox,
         }
         self.plot = WMTEnvPlot(
-            width=JDXi.Style.ADSR_PLOT_WIDTH,
-            height=JDXi.Style.ADSR_PLOT_HEIGHT,
+            width=JDXi.UI.Style.ADSR_PLOT_WIDTH,
+            height=JDXi.UI.Style.ADSR_PLOT_HEIGHT,
             envelope=self.envelope,
             parent=self,
         )

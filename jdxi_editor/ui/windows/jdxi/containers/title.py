@@ -15,12 +15,12 @@ def add_title_container(central_widget):
     """add container for main title"""
     title_container = QWidget(central_widget)
     title_container.setGeometry(
-        JDXi.Dimensions.TITLE.X,
-        JDXi.Dimensions.TITLE.Y,
-        JDXi.Dimensions.TITLE.WIDTH,
-        JDXi.Dimensions.TITLE.HEIGHT,
+        JDXi.UI.Dimensions.TITLE.X,
+        JDXi.UI.Dimensions.TITLE.Y,
+        JDXi.UI.Dimensions.TITLE.WIDTH,
+        JDXi.UI.Dimensions.TITLE.HEIGHT,
     )
-    title_container.setStyleSheet(JDXi.Style.TRANSPARENT_WHITE)
+    title_container.setStyleSheet(JDXi.UI.Style.TRANSPARENT_WHITE)
     title_layout = QHBoxLayout()
     title_container.setLayout(title_layout)
     title_label = QLabel(__program__)

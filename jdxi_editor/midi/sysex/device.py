@@ -44,7 +44,7 @@ Dependencies:
 from dataclasses import dataclass
 from typing import List, Optional
 
-from jdxi_editor.jdxi.midi.constant import JDXiMidi
+from jdxi_editor.jdxi.jdxi import JDXi
 from picomidi.constant import Midi
 
 
@@ -95,36 +95,36 @@ class DeviceInfo:
         try:
             if (
                 len(data)
-                < JDXiMidi.SYSEX.IDENTITY.LAYOUT.expected_length()  # Minimum length check
-                or data[JDXiMidi.SYSEX.IDENTITY.LAYOUT.START]
+                < JDXi.Midi.SYSEX.IDENTITY.LAYOUT.expected_length()  # Minimum length check
+                or data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.START]
                 != Midi.SYSEX.START  # SysEx Start
-                or data[JDXiMidi.SYSEX.IDENTITY.LAYOUT.ID.NUMBER]
-                != JDXiMidi.SYSEX.IDENTITY.CONST.NUMBER  # 0x7E  # Universal Non-Realtime
-                or data[JDXiMidi.SYSEX.IDENTITY.LAYOUT.ID.SUB1]
-                != JDXiMidi.SYSEX.IDENTITY.CONST.SUB1_GENERAL_INFORMATION  # 0x06 General Info
-                or data[JDXiMidi.SYSEX.IDENTITY.LAYOUT.ID.SUB2]
-                != JDXiMidi.SYSEX.IDENTITY.CONST.SUB2_IDENTITY_REPLY  # 0x02 Identity Reply
+                or data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.ID.NUMBER]
+                != JDXi.Midi.SYSEX.IDENTITY.CONST.NUMBER  # 0x7E  # Universal Non-Realtime
+                or data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.ID.SUB1]
+                != JDXi.Midi.SYSEX.IDENTITY.CONST.SUB1_GENERAL_INFORMATION  # 0x06 General Info
+                or data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.ID.SUB2]
+                != JDXi.Midi.SYSEX.IDENTITY.CONST.SUB2_IDENTITY_REPLY  # 0x02 Identity Reply
             ):
                 return None  # Invalid Identity Reply
 
             return cls(
-                device_id=data[JDXiMidi.SYSEX.IDENTITY.LAYOUT.ID.DEVICE],
+                device_id=data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.ID.DEVICE],
                 manufacturer=[
-                    data[JDXiMidi.SYSEX.IDENTITY.LAYOUT.ID.ROLAND]
+                    data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.ID.ROLAND]
                 ],  # Manufacturer ID (Roland = 0x41)
                 family=[
-                    data[JDXiMidi.SYSEX.IDENTITY.LAYOUT.DEVICE.FAMILY_CODE_1],
-                    data[JDXiMidi.SYSEX.IDENTITY.LAYOUT.DEVICE.FAMILY_CODE_2],
+                    data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.DEVICE.FAMILY_CODE_1],
+                    data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.DEVICE.FAMILY_CODE_2],
                 ],  # Family Code (JD-Xi = [0x0E, 0x03])
                 model=[
-                    data[JDXiMidi.SYSEX.IDENTITY.LAYOUT.DEVICE.FAMILY_NUMBER_CODE_1],
-                    data[JDXiMidi.SYSEX.IDENTITY.LAYOUT.DEVICE.FAMILY_NUMBER_CODE_2],
+                    data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.DEVICE.FAMILY_NUMBER_CODE_1],
+                    data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.DEVICE.FAMILY_NUMBER_CODE_2],
                 ],  # Model Number
                 version=[
-                    data[JDXiMidi.SYSEX.IDENTITY.LAYOUT.SOFTWARE.REVISION_1],
-                    data[JDXiMidi.SYSEX.IDENTITY.LAYOUT.SOFTWARE.REVISION_2],
-                    data[JDXiMidi.SYSEX.IDENTITY.LAYOUT.SOFTWARE.REVISION_3],
-                    data[JDXiMidi.SYSEX.IDENTITY.LAYOUT.SOFTWARE.REVISION_4],
+                    data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.SOFTWARE.REVISION_1],
+                    data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.SOFTWARE.REVISION_2],
+                    data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.SOFTWARE.REVISION_3],
+                    data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.SOFTWARE.REVISION_4],
                 ],  # Firmware Version
             )
         except Exception:

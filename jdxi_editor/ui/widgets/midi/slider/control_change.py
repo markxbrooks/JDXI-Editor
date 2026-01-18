@@ -64,7 +64,7 @@ class ControlChangeSlider(Slider):
         self.valueChanged.connect(self.on_valueChanged)
         self.setTickPosition(self.TickPosition.NoTicks)
         self.nrpn_map = nrpn_map
-        self.setStyleSheet(JDXi.Style.ADSR_DISABLED)
+        self.setStyleSheet(JDXi.UI.Style.ADSR_DISABLED)
 
     def update_style(self, value: int) -> None:
         """Update the style of the slider.
@@ -72,9 +72,9 @@ class ControlChangeSlider(Slider):
         :param value: int
         """
         if value == 0:
-            self.setStyleSheet(JDXi.Style.ADSR_DISABLED)
+            self.setStyleSheet(JDXi.UI.Style.ADSR_DISABLED)
         else:
-            JDXi.ThemeManager.apply_adsr_style(self, analog=False)
+            JDXi.UI.ThemeManager.apply_adsr_style(self, analog=False)
 
     def on_valueChanged(self, value: int):
         """
@@ -82,7 +82,7 @@ class ControlChangeSlider(Slider):
 
         :param value: int
         """
-        self.setStyleSheet(JDXi.Style.ADSR_DISABLED)
+        self.setStyleSheet(JDXi.UI.Style.ADSR_DISABLED)
         log.message(f"filter value: {value} for cutoff slider")
 
         if self.min_value <= value <= self.max_value:

@@ -67,7 +67,7 @@ class VocalFXEditor(BasicEditor):
         self.preset_helper = preset_helper
         self.address = create_vocal_fx_address()
 
-        JDXi.ThemeManager.apply_editor_style(self)
+        JDXi.UI.ThemeManager.apply_editor_style(self)
 
         # Use EditorBaseWidget for consistent scrollable layout structure
         self.base_widget = EditorBaseWidget(parent=self, analog=False)
@@ -86,22 +86,22 @@ class VocalFXEditor(BasicEditor):
 
         # Get tab widget from helper and add tabs
         self.tab_widget = self.editor_helper.get_tab_widget()
-        common_icon = JDXi.IconRegistry.get_icon(
-            JDXi.IconRegistry.COG_OUTLINE, color=JDXi.Style.GREY
+        common_icon = JDXi.UI.IconRegistry.get_icon(
+            JDXi.UI.IconRegistry.COG_OUTLINE, color=JDXi.UI.Style.GREY
         )
         self.tab_widget.addTab(self._create_common_section(), common_icon, "Common")
-        vocal_fx_icon = JDXi.IconRegistry.get_icon(
-            JDXi.IconRegistry.MICROPHONE, color=JDXi.Style.GREY
+        vocal_fx_icon = JDXi.UI.IconRegistry.get_icon(
+            JDXi.UI.IconRegistry.MICROPHONE, color=JDXi.UI.Style.GREY
         )
         self.tab_widget.addTab(
             self._create_vocal_effect_section(), vocal_fx_icon, "Vocal FX"
         )
-        mixer_icon = JDXi.IconRegistry.get_icon(
-            JDXi.IconRegistry.EQUALIZER, color=JDXi.Style.GREY
+        mixer_icon = JDXi.UI.IconRegistry.get_icon(
+            JDXi.UI.IconRegistry.EQUALIZER, color=JDXi.UI.Style.GREY
         )
         self.tab_widget.addTab(self._create_mixer_section(), mixer_icon, "Mixer")
-        auto_pitch_icon = JDXi.IconRegistry.get_icon(
-            JDXi.IconRegistry.MUSIC_NOTE, color=JDXi.Style.GREY
+        auto_pitch_icon = JDXi.UI.IconRegistry.get_icon(
+            JDXi.UI.IconRegistry.MUSIC_NOTE, color=JDXi.UI.Style.GREY
         )
         self.tab_widget.addTab(
             self._create_auto_pitch_section(), auto_pitch_icon, "Auto Pitch"
@@ -124,7 +124,7 @@ class VocalFXEditor(BasicEditor):
         common_section.setLayout(layout)
 
         # Icons row (standardized across editor tabs)
-        icon_hlayout = JDXi.IconRegistry.create_generic_musical_icon_row()
+        icon_hlayout = JDXi.UI.IconRegistry.create_generic_musical_icon_row()
         layout.addLayout(icon_hlayout)
 
         self.program_tempo = self._create_parameter_slider(
@@ -179,7 +179,7 @@ class VocalFXEditor(BasicEditor):
         vocal_effect_section.setLayout(layout)
 
         # Icons row (standardized across editor tabs)
-        icon_hlayout = JDXi.IconRegistry.create_adsr_icons_row()
+        icon_hlayout = JDXi.UI.IconRegistry.create_adsr_icons_row()
         layout.addLayout(icon_hlayout)
 
         # Add vocoder switch
@@ -245,7 +245,7 @@ class VocalFXEditor(BasicEditor):
         vocoder_layout.addLayout(hpf_row)
 
         layout.addWidget(vocoder_group)
-        JDXi.ThemeManager.apply_adsr_style(vocoder_group)
+        JDXi.UI.ThemeManager.apply_adsr_style(vocoder_group)
         layout.addStretch()
         return vocal_effect_section
 
@@ -260,7 +260,7 @@ class VocalFXEditor(BasicEditor):
         mixer_section.setLayout(layout)
 
         # Icons row (standardized across editor tabs)
-        icon_hlayout = JDXi.IconRegistry.create_adsr_icons_row()
+        icon_hlayout = JDXi.UI.IconRegistry.create_adsr_icons_row()
         layout.addLayout(icon_hlayout)
 
         # Level and Pan
@@ -310,7 +310,7 @@ class VocalFXEditor(BasicEditor):
         auto_pitch_section.setLayout(layout)
 
         # Icons row (standardized across editor tabs)
-        icon_hlayout = JDXi.IconRegistry.create_adsr_icons_row()
+        icon_hlayout = JDXi.UI.IconRegistry.create_adsr_icons_row()
         layout.addLayout(icon_hlayout)
 
         self.pitch_switch = self._create_parameter_switch(

@@ -87,8 +87,8 @@ class FilterWidget(EnvelopeWidgetBase):
         self.setLayout(self.horizontal_layout)
         self.filter_mode = "lpf"  # Default filter mode
         self.plot = FilterPlot(
-            width=JDXi.Dimensions.PWM_WIDGET.WIDTH - 20,
-            height=JDXi.Dimensions.PWM_WIDGET.HEIGHT - 20,
+            width=JDXi.UI.Dimensions.PWM_WIDGET.WIDTH - 20,
+            height=JDXi.UI.Dimensions.PWM_WIDGET.HEIGHT - 20,
             parent=self,
             envelope=self.envelope,
             filter_mode=self.filter_mode,

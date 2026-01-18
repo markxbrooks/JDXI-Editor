@@ -64,7 +64,7 @@ class PartialSwitch(QWidget):
         layout.addWidget(self.select_check)
 
         # Style
-        self.setStyleSheet(JDXi.Style.PARTIAL_SWITCH)
+        self.setStyleSheet(JDXi.UI.Style.PARTIAL_SWITCH)
 
     def _on_state_changed(self, _):
         """Handle checkbox state changes"""

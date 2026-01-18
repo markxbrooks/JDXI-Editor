@@ -3,7 +3,7 @@ JDXi UI constants
 """
 
 
-class JDXiUI:
+class JDXiUIConstants:
     """JDXi UI related constants"""
 
     TIMER_INTERVAL = 10

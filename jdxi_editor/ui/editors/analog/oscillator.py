@@ -30,12 +30,12 @@ def generate_analog_wave_button(
     waveform: Literal[AnalogOscWave.PULSE, AnalogOscWave.TRIANGLE, AnalogOscWave.SAW],
 ) -> AnalogWaveformButton:
     btn = AnalogWaveformButton(waveform)
-    JDXi.ThemeManager.apply_button_rect_analog(btn)
-    icon_base64 = generate_waveform_icon(icon_name, JDXi.Style.WHITE, 0.7)
+    JDXi.UI.ThemeManager.apply_button_rect_analog(btn)
+    icon_base64 = generate_waveform_icon(icon_name, JDXi.UI.Style.WHITE, 0.7)
     btn.setIcon(QIcon(base64_to_pixmap(icon_base64)))
     btn.setFixedSize(
-        JDXi.Dimensions.WAVEFORM_ICON.WIDTH,
-        JDXi.Dimensions.WAVEFORM_ICON.HEIGHT,
+        JDXi.UI.Dimensions.WAVEFORM_ICON.WIDTH,
+        JDXi.UI.Dimensions.WAVEFORM_ICON.HEIGHT,
     )
     return btn
 
@@ -99,13 +99,13 @@ class AnalogOscillatorSection(SectionBaseWidget):
 
         # --- Tab widget to add pitch and PW controls to ---
         self.oscillator_tab_widget = QTabWidget()
-        JDXi.ThemeManager.apply_tabs_style(self.oscillator_tab_widget, analog=True)
+        JDXi.UI.ThemeManager.apply_tabs_style(self.oscillator_tab_widget, analog=True)
         layout.addWidget(self.oscillator_tab_widget)
 
         # --- Tuning and Pitch tab (standardized name matching Digital) ---
         tuning_pitch_widget = self._create_tuning_pitch_widget()
-        tuning_icon = JDXi.IconRegistry.get_icon(
-            JDXi.IconRegistry.MUSIC_NOTE, color=JDXi.Style.GREY
+        tuning_icon = JDXi.UI.IconRegistry.get_icon(
+            JDXi.UI.IconRegistry.MUSIC_NOTE, color=JDXi.UI.Style.GREY
         )
         self.oscillator_tab_widget.addTab(
             tuning_pitch_widget, tuning_icon, "Tuning and Pitch"
@@ -129,7 +129,7 @@ class AnalogOscillatorSection(SectionBaseWidget):
         pitch_layout.addStretch()
         pitch_widget = QWidget()
         pitch_widget.setLayout(pitch_layout)
-        pitch_widget.setMinimumHeight(JDXi.Dimensions.EDITOR.MINIMUM_HEIGHT)
+        pitch_widget.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MINIMUM_HEIGHT)
         return pitch_widget
 
     def create_waveform_buttons(self) -> QHBoxLayout:
@@ -205,7 +205,7 @@ class AnalogOscillatorSection(SectionBaseWidget):
             controls=self.controls,
             analog=self.analog,
         )
-        self.pwm_widget.setMaximumHeight(JDXi.Style.PWM_WIDGET_HEIGHT)
+        self.pwm_widget.setMaximumHeight(JDXi.UI.Style.PWM_WIDGET_HEIGHT)
         pw_layout.addWidget(self.pwm_widget)
         pw_layout.addStretch()
 
@@ -231,7 +231,7 @@ class AnalogOscillatorSection(SectionBaseWidget):
             controls=self.controls,
             address=self.address,
         )
-        JDXi.ThemeManager.apply_adsr_style(self.pitch_env_widget, analog=True)
+        JDXi.UI.ThemeManager.apply_adsr_style(self.pitch_env_widget, analog=True)
 
         env_group = QGroupBox("Envelope")
         env_group.setProperty("adsr", True)

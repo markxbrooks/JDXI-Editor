@@ -118,8 +118,8 @@ def create_icons_layout() -> QHBoxLayout:
         "mdi6.volume-plus",
         "mdi.waveform",
     ]:
-        icon_pixmap = qta.icon(icon, color=JDXi.Style.GREY).pixmap(
-            JDXi.Dimensions.ICON.WIDTH, JDXi.Dimensions.ICON.HEIGHT
+        icon_pixmap = qta.icon(icon, color=JDXi.UI.Style.GREY).pixmap(
+            JDXi.UI.Dimensions.ICON.WIDTH, JDXi.UI.Dimensions.ICON.HEIGHT
         )
         icon_label = create_icon_label_with_pixmap(icon_pixmap)
         icons_hlayout.addWidget(icon_label)
@@ -129,7 +129,7 @@ def create_icons_layout() -> QHBoxLayout:
 def create_adsr_icon_pixmap() -> QPixmap:
     """Generate the ADSR waveform pixmap"""
     icon_base64 = generate_waveform_icon(
-        waveform="adsr", foreground_color=JDXi.Style.WHITE, icon_scale=2.0
+        waveform="adsr", foreground_color=JDXi.UI.Style.WHITE, icon_scale=2.0
     )
     pixmap = base64_to_pixmap(icon_base64)
     return pixmap
@@ -160,9 +160,9 @@ def create_group_adsr_with_hlayout(
     controls_group.setLayout(hlayout)
     if analog:
 
-        JDXi.ThemeManager.apply_adsr_style(controls_group, analog=True)
+        JDXi.UI.ThemeManager.apply_adsr_style(controls_group, analog=True)
     else:
-        controls_group.setStyleSheet(JDXi.Style.ADSR)
+        controls_group.setStyleSheet(JDXi.UI.Style.ADSR)
     return controls_group
 
 
@@ -201,9 +201,9 @@ def create_envelope_group(
 
     if analog:
 
-        JDXi.ThemeManager.apply_adsr_style(env_group, analog=True)
+        JDXi.UI.ThemeManager.apply_adsr_style(env_group, analog=True)
     else:
-        env_group.setStyleSheet(JDXi.Style.ADSR)
+        env_group.setStyleSheet(JDXi.UI.Style.ADSR)
 
     return env_group
 
@@ -213,7 +213,7 @@ def create_button_with_tooltip(tooltip: str) -> QPushButton:
     button = QPushButton()
     button.setFixedSize(30, 30)
     button.setCheckable(True)
-    button.setStyleSheet(JDXi.Style.BUTTON_ROUND)
+    button.setStyleSheet(JDXi.UI.Style.BUTTON_ROUND)
     button.setToolTip(tooltip)
     return button
 

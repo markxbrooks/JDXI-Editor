@@ -65,8 +65,8 @@ def generate_square_wave(
 class PWMPlot(QWidget):
     def __init__(
         self,
-        width: int = JDXi.Style.ADSR_PLOT_WIDTH,
-        height: int = JDXi.Style.ADSR_PLOT_HEIGHT,
+        width: int = JDXi.UI.Style.ADSR_PLOT_WIDTH,
+        height: int = JDXi.UI.Style.ADSR_PLOT_HEIGHT,
         envelope: dict = None,
         parent: QWidget = None,
     ):
@@ -82,10 +82,10 @@ class PWMPlot(QWidget):
         self.setMaximumWidth(width)
         # Use dark gray background
 
-        JDXi.ThemeManager.apply_adsr_plot(self)
+        JDXi.UI.ThemeManager.apply_adsr_plot(self)
         # Sample rate for converting times to samples
         self.sample_rate = 256
-        self.setMinimumHeight(JDXi.Style.ADSR_PLOT_HEIGHT)
+        self.setMinimumHeight(JDXi.UI.Style.ADSR_PLOT_HEIGHT)
         self.attack_x = 0.1
         self.decay_x = 0.3
         self.peak_level = 0.5

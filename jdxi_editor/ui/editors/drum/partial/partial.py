@@ -84,27 +84,29 @@ class DrumPartialSection(DrumBaseSection):
         self.partial_controls_tab_widget = QTabWidget()
         self.scrolled_layout.addWidget(self.partial_controls_tab_widget)
 
-        controls_icon = JDXi.IconRegistry.get_icon("mdi.tune", color=JDXi.Style.GREY)
+        controls_icon = JDXi.UI.IconRegistry.get_icon(
+            "mdi.tune", color=JDXi.UI.Style.GREY
+        )
         self.partial_controls_tab_widget.addTab(
             self._create_pitch_controls_group(), controls_icon, "Controls"
         )
 
-        pan_icon = JDXi.IconRegistry.get_icon(
-            "mdi.pan-horizontal", color=JDXi.Style.GREY
+        pan_icon = JDXi.UI.IconRegistry.get_icon(
+            "mdi.pan-horizontal", color=JDXi.UI.Style.GREY
         )
         self.partial_controls_tab_widget.addTab(
             self._create_partial_pan_group(), pan_icon, "Pan"
         )
 
-        misc_icon = JDXi.IconRegistry.get_icon(
-            "mdi.dots-horizontal", color=JDXi.Style.GREY
+        misc_icon = JDXi.UI.IconRegistry.get_icon(
+            "mdi.dots-horizontal", color=JDXi.UI.Style.GREY
         )
         self.partial_controls_tab_widget.addTab(
             self._create_partial_misc_group(), misc_icon, "Misc"
         )
 
-        modes_icon = JDXi.IconRegistry.get_icon(
-            "mdi.toggle-switch", color=JDXi.Style.GREY
+        modes_icon = JDXi.UI.IconRegistry.get_icon(
+            "mdi.toggle-switch", color=JDXi.UI.Style.GREY
         )
         self.partial_controls_tab_widget.addTab(
             self._create_partial_modes_group(), modes_icon, "Modes"
@@ -215,5 +217,5 @@ class DrumPartialSection(DrumBaseSection):
         for widget in widgets:
             inner_layout.addWidget(widget)
         inner_layout.addStretch()
-        group.setStyleSheet(JDXi.Style.ADSR)
+        group.setStyleSheet(JDXi.UI.Style.ADSR)
         return group

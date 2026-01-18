@@ -17,7 +17,7 @@ from typing import List, Optional, TextIO, Union
 import mido
 
 from decologr import Decologr as log
-from jdxi_editor.jdxi.midi.constant import JDXiMidi
+from jdxi_editor.jdxi.jdxi import JDXi
 from jdxi_editor.jdxi.midi.device.constant import JDXiSysExIdentity
 from jdxi_editor.jdxi.midi.message.sysex.offset import (
     FieldSpec,
@@ -119,7 +119,7 @@ class JDXiSysExParser:
 
         :return: dict Parsed parameter data
         """
-        if len(self.sysex_data) <= JDXiMidi.SYSEX.PARAMETER.LAYOUT.ADDRESS.LSB:
+        if len(self.sysex_data) <= JDXi.Midi.SYSEX.PARAMETER.LAYOUT.ADDRESS.LSB:
             raise ValueError("Invalid SysEx message: too short")
 
         if not self._verify_header():
@@ -128,7 +128,7 @@ class JDXiSysExParser:
             log.info("Correct JD-Xi header found")
 
         # Determine if short or long message and parse accordingly
-        if len(self.sysex_data) < JDXiMidi.SYSEX.PARAMETER.LENGTH.FOUR_BYTE:
+        if len(self.sysex_data) < JDXi.Midi.SYSEX.PARAMETER.LENGTH.FOUR_BYTE:
             self.sysex_dict = self._parse_short_parameter_message()
         else:
             self.sysex_dict = self._parse_long_parameter_message()
@@ -163,18 +163,18 @@ class JDXiSysExParser:
     def _is_identity_sysex(self) -> bool:
         data = self.sysex_data
         return (
-            len(data) >= JDXiMidi.SYSEX.IDENTITY.LAYOUT.expected_length()
-            and data[JDXiMidi.SYSEX.IDENTITY.LAYOUT.START] == SysExByte.START
-            and data[JDXiMidi.SYSEX.IDENTITY.LAYOUT.ID.NUMBER]
+            len(data) >= JDXi.Midi.SYSEX.IDENTITY.LAYOUT.expected_length()
+            and data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.START] == SysExByte.START
+            and data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.ID.NUMBER]
             in (JDXiSysExIdentity.NUMBER, JDXiSysExIdentity.DEVICE)
-            and data[JDXiMidi.SYSEX.IDENTITY.LAYOUT.ID.SUB1]
+            and data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.ID.SUB1]
             == JDXiSysExIdentity.SUB1_GENERAL_INFORMATION
-            and data[JDXiMidi.SYSEX.IDENTITY.LAYOUT.ID.SUB2]
+            and data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.ID.SUB2]
             in (
                 JDXiSysExIdentity.SUB2_IDENTITY_REQUEST,
                 JDXiSysExIdentity.SUB2_IDENTITY_REPLY,
             )
-            and data[JDXiMidi.SYSEX.IDENTITY.LAYOUT.END] == SysExByte.END
+            and data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.END] == SysExByte.END
         )
 
     def _is_valid_sysex(self) -> bool:
@@ -211,15 +211,16 @@ class JDXiSysExParser:
         # Check if it's a JD-Xi identity message
         # Universal identity requests (F0 7E 7F 06 01 F7) are only 6 bytes
         # JD-Xi identity replies are longer and have Roland ID at position 5
-        if len(self.sysex_data) >= JDXiMidi.SYSEX.IDENTITY.LAYOUT.expected_length():
+        if len(self.sysex_data) >= JDXi.Midi.SYSEX.IDENTITY.LAYOUT.expected_length():
             # Check if it matches the identity message structure
             if (
-                self.sysex_data[JDXiMidi.SYSEX.IDENTITY.LAYOUT.START] == SysExByte.START
-                and self.sysex_data[JDXiMidi.SYSEX.IDENTITY.LAYOUT.ID.NUMBER]
+                self.sysex_data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.START]
+                == SysExByte.START
+                and self.sysex_data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.ID.NUMBER]
                 in (JDXiSysExIdentity.NUMBER, JDXiSysExIdentity.DEVICE)
-                and self.sysex_data[JDXiMidi.SYSEX.IDENTITY.LAYOUT.ID.SUB1]
+                and self.sysex_data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.ID.SUB1]
                 == JDXiSysExIdentity.SUB1_GENERAL_INFORMATION
-                and self.sysex_data[JDXiMidi.SYSEX.IDENTITY.LAYOUT.ID.SUB2]
+                and self.sysex_data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.ID.SUB2]
                 in (
                     JDXiSysExIdentity.SUB2_IDENTITY_REQUEST,
                     JDXiSysExIdentity.SUB2_IDENTITY_REPLY,
@@ -227,12 +228,12 @@ class JDXiSysExParser:
             ):
                 # If it's an identity reply (SUB2 == 0x02), check for Roland ID
                 if (
-                    self.sysex_data[JDXiMidi.SYSEX.IDENTITY.LAYOUT.ID.SUB2]
+                    self.sysex_data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.ID.SUB2]
                     == JDXiSysExIdentity.SUB2_IDENTITY_REPLY
                 ):
-                    if len(self.sysex_data) > JDXiMidi.SYSEX.IDENTITY.LAYOUT.ID.ROLAND:
+                    if len(self.sysex_data) > JDXi.Midi.SYSEX.IDENTITY.LAYOUT.ID.ROLAND:
                         if (
-                            self.sysex_data[JDXiMidi.SYSEX.IDENTITY.LAYOUT.ID.ROLAND]
+                            self.sysex_data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.ID.ROLAND]
                             == RolandID.ROLAND_ID
                         ):
                             return True
@@ -462,16 +463,16 @@ class JDXiSysExParser:
 
         parsed = {
             "type": "identity",
-            "manufacturer_id": data[JDXiMidi.SYSEX.IDENTITY.LAYOUT.ID.ROLAND],
+            "manufacturer_id": data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.ID.ROLAND],
             "device_family": tuple(
                 data[
-                    JDXiMidi.SYSEX.IDENTITY.LAYOUT.DEVICE.FAMILY_CODE_1 : JDXiMidi.SYSEX.IDENTITY.LAYOUT.DEVICE.FAMILY_NUMBER_CODE_2
+                    JDXi.Midi.SYSEX.IDENTITY.LAYOUT.DEVICE.FAMILY_CODE_1 : JDXi.Midi.SYSEX.IDENTITY.LAYOUT.DEVICE.FAMILY_NUMBER_CODE_2
                     + 1
                 ]
             ),
             "software_revision": tuple(
                 data[
-                    JDXiMidi.SYSEX.IDENTITY.LAYOUT.SOFTWARE.REVISION_1 : JDXiMidi.SYSEX.IDENTITY.LAYOUT.SOFTWARE.REVISION_4
+                    JDXi.Midi.SYSEX.IDENTITY.LAYOUT.SOFTWARE.REVISION_1 : JDXi.Midi.SYSEX.IDENTITY.LAYOUT.SOFTWARE.REVISION_4
                     + 1
                 ]
             ),

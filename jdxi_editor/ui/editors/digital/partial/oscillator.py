@@ -77,8 +77,8 @@ class DigitalOscillatorSection(SectionBaseWidget):
 
         # --- Tuning and Pitch tab (combines Tuning and Pitch Envelope like Analog) ---
         tuning_pitch_widget = self._create_tuning_pitch_widget()
-        tuning_icon = JDXi.IconRegistry.get_icon(
-            JDXi.IconRegistry.MUSIC_NOTE, color=JDXi.Style.GREY
+        tuning_icon = JDXi.UI.IconRegistry.get_icon(
+            JDXi.UI.IconRegistry.MUSIC_NOTE, color=JDXi.UI.Style.GREY
         )
         self.oscillator_tab_widget.addTab(
             tuning_pitch_widget, tuning_icon, "Tuning and Pitch"
@@ -125,10 +125,10 @@ class DigitalOscillatorSection(SectionBaseWidget):
 
         for wave, icon_base64 in wave_icons.items():
             btn = WaveformButton(wave)
-            btn.setStyleSheet(JDXi.Style.BUTTON_RECT)
+            btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
             btn.setFixedSize(
-                JDXi.Dimensions.WAVEFORM_ICON.WIDTH,
-                JDXi.Dimensions.WAVEFORM_ICON.HEIGHT,
+                JDXi.UI.Dimensions.WAVEFORM_ICON.WIDTH,
+                JDXi.UI.Dimensions.WAVEFORM_ICON.HEIGHT,
             )
             btn.setIcon(QIcon(base64_to_pixmap(icon_base64)))
             btn.clicked.connect(lambda checked, w=wave: self._on_waveform_selected(w))
@@ -155,7 +155,7 @@ class DigitalOscillatorSection(SectionBaseWidget):
         pitch_layout.addStretch()
         pitch_widget = QWidget()
         pitch_widget.setLayout(pitch_layout)
-        pitch_widget.setMinimumHeight(JDXi.Dimensions.EDITOR.MINIMUM_HEIGHT)
+        pitch_widget.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MINIMUM_HEIGHT)
         return pitch_widget
 
     def _create_tuning_group(self) -> QGroupBox:
@@ -185,7 +185,7 @@ class DigitalOscillatorSection(SectionBaseWidget):
         )
         tuning_layout.addWidget(self.super_saw_detune)
         tuning_layout.addStretch()
-        JDXi.ThemeManager.apply_adsr_style(tuning_group)
+        JDXi.UI.ThemeManager.apply_adsr_style(tuning_group)
         return tuning_group
 
     def _create_pitch_env_group(self) -> QGroupBox:
@@ -203,7 +203,7 @@ class DigitalOscillatorSection(SectionBaseWidget):
             controls=self.controls,
             address=self.address,
         )
-        JDXi.ThemeManager.apply_adsr_style(self.pitch_env_widget)
+        JDXi.UI.ThemeManager.apply_adsr_style(self.pitch_env_widget)
         pitch_env_layout.addWidget(self.pitch_env_widget)
         return pitch_env_group
 
@@ -219,7 +219,7 @@ class DigitalOscillatorSection(SectionBaseWidget):
             DigitalDisplayName.OSC_PULSE_WIDTH_SHIFT,
             vertical=True,
         )
-        JDXi.ThemeManager.apply_adsr_style(self.pw_shift_slider)
+        JDXi.UI.ThemeManager.apply_adsr_style(self.pw_shift_slider)
         pwm_widget_layout = QHBoxLayout()
         pwm_widget_layout.addStretch()
         self.pwm_widget = PWMWidget(
@@ -230,8 +230,8 @@ class DigitalOscillatorSection(SectionBaseWidget):
             create_parameter_slider=self._create_parameter_slider,
             controls=self.controls,
         )
-        JDXi.ThemeManager.apply_adsr_style(self.pwm_widget)
-        self.pwm_widget.setMaximumHeight(JDXi.Style.PWM_WIDGET_HEIGHT)
+        JDXi.UI.ThemeManager.apply_adsr_style(self.pwm_widget)
+        self.pwm_widget.setMaximumHeight(JDXi.UI.Style.PWM_WIDGET_HEIGHT)
         pwm_widget_layout.addWidget(self.pwm_widget)
         pwm_widget_layout.addWidget(self.pw_shift_slider)
         pwm_widget_layout.addStretch()
@@ -300,13 +300,13 @@ class DigitalOscillatorSection(SectionBaseWidget):
         # --- Reset all buttons to default style ---
         for btn in self.wave_buttons.values():
             btn.setChecked(False)
-            btn.setStyleSheet(JDXi.Style.BUTTON_RECT)
+            btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
 
         # --- Apply active style to the selected waveform button ---
         selected_btn = self.wave_buttons.get(waveform)
         if selected_btn:
             selected_btn.setChecked(True)
-            selected_btn.setStyleSheet(JDXi.Style.BUTTON_RECT_ACTIVE)
+            selected_btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT_ACTIVE)
 
         # --- Send MIDI message ---
         if not self.send_midi_parameter(DigitalPartialParam.OSC_WAVE, waveform.value):

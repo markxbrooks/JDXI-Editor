@@ -1,7 +1,7 @@
 from typing import Iterable, List
 
 from decologr import Decologr as log
-from jdxi_editor.jdxi.midi.constant import JDXiMidi
+from jdxi_editor.jdxi.jdxi import JDXi
 from jdxi_editor.jdxi.midi.message.sysex.offset import JDXiSysExMessageLayout
 from jdxi_editor.midi.data.address.address import CommandID
 from jdxi_editor.midi.message.jdxi import JDXiSysexHeader
@@ -14,8 +14,8 @@ def validate_raw_sysex_message(message: List[int]) -> bool:
     try:
         # Check length
         if len(message) not in [
-            JDXiMidi.SYSEX.PARAMETER.LENGTH.ONE_BYTE,
-            JDXiMidi.SYSEX.PARAMETER.LENGTH.FOUR_BYTE,
+            JDXi.Midi.SYSEX.PARAMETER.LENGTH.ONE_BYTE,
+            JDXi.Midi.SYSEX.PARAMETER.LENGTH.FOUR_BYTE,
         ]:
             log.message(f"Invalid SysEx length: {len(message)}")
             return False

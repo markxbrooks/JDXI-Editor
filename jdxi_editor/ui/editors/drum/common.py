@@ -75,7 +75,7 @@ class DrumCommonSection(SectionBaseWidget):
         # Icons row (standardized across editor tabs) - Note: Drum sections use scroll areas,
         # so we add icon row to scrolled_layout instead of using get_layout()
 
-        icon_hlayout = JDXi.IconRegistry.create_generic_musical_icon_row()
+        icon_hlayout = JDXi.UI.IconRegistry.create_generic_musical_icon_row()
         scrolled_layout.addLayout(icon_hlayout)
 
         # Common controls

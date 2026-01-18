@@ -54,15 +54,15 @@ class BasicEditor(SynthEditor):
         super().__init__(midi_helper=midi_helper, parent=parent)
         self.default_image = None
         self.image_label = None
-        self.setMinimumWidth(JDXi.Dimensions.EDITOR_BASIC.WIDTH)
-        self.setMinimumHeight(JDXi.Dimensions.EDITOR_BASIC.HEIGHT)
+        self.setMinimumWidth(JDXi.UI.Dimensions.EDITOR_BASIC.WIDTH)
+        self.setMinimumHeight(JDXi.UI.Dimensions.EDITOR_BASIC.HEIGHT)
 
     def load_and_set_image(self, image_path: str, secondary_image_path: str = None):
         """Helper function to load and set the image on the label."""
         if os.path.exists(image_path):
             pixmap = QPixmap(image_path)
             scaled_pixmap = pixmap.scaledToHeight(
-                JDXi.Dimensions.EDITOR_BASIC.IMAGE_HEIGHT,
+                JDXi.UI.Dimensions.EDITOR_BASIC.IMAGE_HEIGHT,
                 Qt.TransformationMode.SmoothTransformation,
             )  # Resize to 150px height
             self.image_label.setPixmap(scaled_pixmap)

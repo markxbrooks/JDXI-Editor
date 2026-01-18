@@ -35,7 +35,7 @@ class ProgressDialog(QDialog):
         layout = QVBoxLayout()
         self.label = DigitalTitle(message)
         self.progress_bar = QProgressBar()
-        self.progress_bar.setStyleSheet(JDXi.Style.PROGRESS_BAR)
+        self.progress_bar.setStyleSheet(JDXi.UI.Style.PROGRESS_BAR)
         self.progress_bar.setMaximum(maximum)
         layout.addWidget(self.label)
         layout.addWidget(self.progress_bar)

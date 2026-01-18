@@ -14,9 +14,9 @@ def create_button_row(text, slot, vertical=False, spacing=10):
     # Add label with color based on text
     label = QLabel(text)
     if text == "Analog Synth":
-        label.setStyleSheet(JDXi.Style.LABEL_ANALOG_SYNTH_PART)
+        label.setStyleSheet(JDXi.UI.Style.LABEL_ANALOG_SYNTH_PART)
     else:
-        label.setStyleSheet(JDXi.Style.LABEL_SYNTH_PART)
+        label.setStyleSheet(JDXi.UI.Style.LABEL_SYNTH_PART)
     row.addWidget(label)
 
     # Add spacer to push button to right
@@ -29,7 +29,7 @@ def create_button_row(text, slot, vertical=False, spacing=10):
     button.clicked.connect(slot)
 
     # Style the button with brighter hover/border_pressed/selected  states
-    button.setStyleSheet(JDXi.Style.BUTTON_ROUND)
+    button.setStyleSheet(JDXi.UI.Style.BUTTON_ROUND)
 
     # Add tooltip based on button text
     tooltip_map = {

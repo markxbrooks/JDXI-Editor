@@ -37,10 +37,10 @@ class PartialsPanel(QWidget):
             group_layout = QHBoxLayout()
             partial_icon = QLabel()
             qta_icon = qta.icon(
-                f"mdi.numeric-{partial}-circle-outline", color=JDXi.Style.GREY
+                f"mdi.numeric-{partial}-circle-outline", color=JDXi.UI.Style.GREY
             )
             partial_icon_pixmap = qta_icon.pixmap(
-                JDXi.Style.ICON_SIZE, JDXi.Style.ICON_SIZE
+                JDXi.UI.Style.ICON_SIZE, JDXi.UI.Style.ICON_SIZE
             )  # Set the desired size
             partial_icon.setPixmap(partial_icon_pixmap)
             group_layout.addWidget(partial_icon)
@@ -55,4 +55,4 @@ class PartialsPanel(QWidget):
         layout.addLayout(partial_layout)
         partial_layout.addStretch()
         # Style
-        self.setStyleSheet(JDXi.Style.PARTIALS_PANEL)
+        self.setStyleSheet(JDXi.UI.Style.PARTIALS_PANEL)

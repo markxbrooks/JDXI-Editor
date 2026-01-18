@@ -86,7 +86,7 @@ class PianoKeyboard(QWidget):
         for text in DRUM_LABELS:
             label = QLabel(text)
             label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            label.setStyleSheet(JDXi.Style.KEYBOARD_DRUM_LABELS)
+            label.setStyleSheet(JDXi.UI.Style.KEYBOARD_DRUM_LABELS)
             labels_layout.addWidget(label)
 
         labels_layout.addStretch()

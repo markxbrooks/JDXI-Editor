@@ -20,7 +20,7 @@ class TimeRulerWidget(QWidget):
         self.midi_file_cached_total_length = None
         self.midi_file = midi_file
         self.setMinimumHeight(20)
-        self.setMaximumHeight(JDXi.Style.MAX_RULER_HEIGHT)
+        self.setMaximumHeight(JDXi.UI.Style.MAX_RULER_HEIGHT)
         # List of (seconds: float, color: QColor | None, label: str | None)
         self._markers = []
 
@@ -61,7 +61,7 @@ class TimeRulerWidget(QWidget):
                 continue
             x = int((seconds / duration) * width)
             pen = QPen(
-                color if isinstance(color, QColor) else QColor(JDXi.Style.ACCENT)
+                color if isinstance(color, QColor) else QColor(JDXi.UI.Style.ACCENT)
             )
             pen.setWidth(2)
             painter.setPen(pen)

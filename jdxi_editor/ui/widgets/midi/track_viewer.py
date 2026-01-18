@@ -22,10 +22,10 @@ from PySide6.QtWidgets import (
 
 from decologr import Decologr as log
 from jdxi_editor.jdxi.jdxi import JDXi
+from jdxi_editor.ui.widgets.midi.draggable_track_row import DraggableTrackRow
 from jdxi_editor.ui.widgets.midi.spin_box.spin_box import MidiSpinBox
 from jdxi_editor.ui.widgets.midi.time_ruler import TimeRulerWidget
 from jdxi_editor.ui.widgets.midi.track import MidiTrackWidget
-from jdxi_editor.ui.widgets.midi.draggable_track_row import DraggableTrackRow
 from jdxi_editor.ui.widgets.midi.utils import get_first_channel
 from picomidi.constant import Midi
 
@@ -422,9 +422,9 @@ class MidiTrackViewer(QWidget):
             icon_names = {
                 10: "fa5s.drum",
             }
-            colors = {3: JDXi.Style.ACCENT_ANALOG}
+            colors = {3: JDXi.UI.Style.ACCENT_ANALOG}
             color = colors.get(
-                first_channel, JDXi.Style.ACCENT
+                first_channel, JDXi.UI.Style.ACCENT
             )  # Default color if not specified
             icon_name = icon_names.get(
                 first_channel,
@@ -432,17 +432,18 @@ class MidiTrackViewer(QWidget):
             )  # Default icon if not specified
             # Add QLabel for track number and channel
             pixmap = qta.icon(icon_name, color=color).pixmap(
-                JDXi.Style.TRACK_ICON_PIXMAP_SIZE, JDXi.Style.TRACK_ICON_PIXMAP_SIZE
+                JDXi.UI.Style.TRACK_ICON_PIXMAP_SIZE,
+                JDXi.UI.Style.TRACK_ICON_PIXMAP_SIZE,
             )
 
             track_number_label = QLabel(f"{i + 1}")
-            track_number_label.setFixedWidth(JDXi.Style.TRACK_BUTTON_WIDTH)
+            track_number_label.setFixedWidth(JDXi.UI.Style.TRACK_BUTTON_WIDTH)
             hlayout.addWidget(track_number_label)
 
             icon_label = QLabel()
             icon_label.setPixmap(pixmap)
             icon_label.setFixedWidth(
-                JDXi.Style.TRACK_ICON_PIXMAP_SIZE
+                JDXi.UI.Style.TRACK_ICON_PIXMAP_SIZE
             )  # Add some padding
             hlayout.addWidget(icon_label)
 
@@ -456,7 +457,7 @@ class MidiTrackViewer(QWidget):
             # Add QLineEdit for track label
             track_name_line_edit = QLineEdit()
             track_name_line_edit.setText(track_name)
-            track_name_line_edit.setFixedWidth(JDXi.Style.TRACK_LABEL_WIDTH)
+            track_name_line_edit.setFixedWidth(JDXi.UI.Style.TRACK_LABEL_WIDTH)
             track_name_line_edit.setToolTip("Track Name")
             track_name_line_edit.setStyleSheet(
                 "QLineEdit { background-color: transparent; border: none; }"
@@ -475,7 +476,7 @@ class MidiTrackViewer(QWidget):
                 "Select MIDI Channel for Track, then click 'Apply' to save changes"
             )
             spin.setValue(first_channel)  # Offset for display
-            spin.setFixedWidth(JDXi.Style.TRACK_SPINBOX_WIDTH)
+            spin.setFixedWidth(JDXi.UI.Style.TRACK_SPINBOX_WIDTH)
             spin.setPrefix("Ch")
             line_label_row.addWidget(spin)
             self._track_channel_spins[i] = spin
@@ -483,13 +484,13 @@ class MidiTrackViewer(QWidget):
             button_hlayout = QHBoxLayout()
             label_vlayout.addLayout(button_hlayout)
 
-            apply_icon = JDXi.IconRegistry.get_icon(
-                JDXi.IconRegistry.SAVE, color=JDXi.Style.FOREGROUND
+            apply_icon = JDXi.UI.IconRegistry.get_icon(
+                JDXi.UI.IconRegistry.SAVE, color=JDXi.UI.Style.FOREGROUND
             )
             apply_button = QPushButton()
             apply_button.setIcon(apply_icon)
             apply_button.setToolTip("Apply changes to Track Channel")
-            apply_button.setFixedWidth(JDXi.Style.TRACK_SPINBOX_WIDTH)
+            apply_button.setFixedWidth(JDXi.UI.Style.TRACK_SPINBOX_WIDTH)
             apply_button.clicked.connect(self.make_apply_slot(i, spin))
             apply_button.clicked.connect(
                 lambda _, tr=i, le=track_name_line_edit: self.change_track_name(
@@ -504,13 +505,13 @@ class MidiTrackViewer(QWidget):
             """
             button_hlayout.addWidget(apply_button)
 
-            mute_icon = JDXi.IconRegistry.get_icon(
-                JDXi.IconRegistry.MUTE, color=JDXi.Style.FOREGROUND
+            mute_icon = JDXi.UI.IconRegistry.get_icon(
+                JDXi.UI.IconRegistry.MUTE, color=JDXi.UI.Style.FOREGROUND
             )
             mute_button = QPushButton()
             mute_button.setIcon(mute_icon)
             mute_button.setToolTip("Mute Track")
-            mute_button.setFixedWidth(JDXi.Style.TRACK_BUTTON_WIDTH)
+            mute_button.setFixedWidth(JDXi.UI.Style.TRACK_BUTTON_WIDTH)
             mute_button.setCheckable(True)
             mute_button.clicked.connect(
                 lambda _, tr=i: self.mute_track(tr)
@@ -520,13 +521,13 @@ class MidiTrackViewer(QWidget):
             )
             button_hlayout.addWidget(mute_button)
 
-            delete_icon = JDXi.IconRegistry.get_icon(
-                JDXi.IconRegistry.DELETE, color=JDXi.Style.FOREGROUND
+            delete_icon = JDXi.UI.IconRegistry.get_icon(
+                JDXi.UI.IconRegistry.DELETE, color=JDXi.UI.Style.FOREGROUND
             )
             delete_button = QPushButton()
             delete_button.setIcon(delete_icon)
             delete_button.setToolTip("Delete Track")
-            delete_button.setFixedWidth(JDXi.Style.TRACK_BUTTON_WIDTH)
+            delete_button.setFixedWidth(JDXi.UI.Style.TRACK_BUTTON_WIDTH)
             delete_button.setCheckable(True)
             delete_button.clicked.connect(
                 lambda _, tr=i: self.delete_track(tr)
@@ -563,9 +564,9 @@ class MidiTrackViewer(QWidget):
         # Fixed widths from layout:
         # QLabels: JDXi.Style.ICON_PIXMAP_SIZE, JDXi.Style.TRACK_LABEL_WIDTH , QSpinBox: JDXi.Style.TRACK_MUTE_BUTTON_WIDTH, Apply: JDXi.Style.TRACK_MUTE_BUTTON_WIDTH, Mute: JDXi.Style.TRACK_MUTE_BUTTON_WIDTH, Delete: JDXi.Style.TRACK_MUTE_BUTTON_WIDTH + margins (~10)
         return (
-            JDXi.Style.ICON_PIXMAP_SIZE
-            + JDXi.Style.TRACK_LABEL_WIDTH
-            + (JDXi.Style.TRACK_BUTTON_WIDTH * 4)
+            JDXi.UI.Style.ICON_PIXMAP_SIZE
+            + JDXi.UI.Style.TRACK_LABEL_WIDTH
+            + (JDXi.UI.Style.TRACK_BUTTON_WIDTH * 4)
             + 10
         )  # = 2JDXi.Style.TRACK_MUTE_BUTTON_WIDTH
 
@@ -643,55 +644,55 @@ class MidiTrackViewer(QWidget):
 
     def get_muted_tracks(self):
         return self.muted_tracks
-    
+
     def move_track(self, from_index: int, to_index: int) -> None:
         """
         Move a track from one position to another in the MIDI file.
-        
+
         :param from_index: Source track index
         :param to_index: Target track index
         """
         if not self.midi_file:
             return
-        
+
         if from_index == to_index:
             return
-        
+
         if not (0 <= from_index < len(self.midi_file.tracks)):
             log.warning(f"Invalid from_index: {from_index}")
             return
-        
+
         if not (0 <= to_index < len(self.midi_file.tracks)):
             log.warning(f"Invalid to_index: {to_index}")
             return
-        
+
         log.message(f"Moving track {from_index + 1} to position {to_index + 1}")
-        
+
         # Reorder tracks in MIDI file
         tracks = list(self.midi_file.tracks)
         track_to_move = tracks.pop(from_index)
         tracks.insert(to_index, track_to_move)
-        
+
         # Create new MIDI file with reordered tracks
         new_midi = mido.MidiFile()
         new_midi.ticks_per_beat = self.midi_file.ticks_per_beat
         new_midi.tracks = tracks
-        
+
         # Update the MIDI file and refresh the UI
         self.midi_file = new_midi
-        
+
         # Rebuild the track mappings to reflect new order
         # We need to preserve the track name edits and channel spins, but remap them
         old_name_edits = self._track_name_edits.copy()
         old_channel_spins = self._track_channel_spins.copy()
         old_track_widgets = self.midi_track_widgets.copy()
-        
+
         # Clear current mappings
         self._track_name_edits.clear()
         self._track_channel_spins.clear()
         self.midi_track_widgets.clear()
         self._draggable_rows.clear()
-        
+
         # Remap: the track that was at from_index is now at to_index
         # All tracks between from_index and to_index shift
         for i in range(len(tracks)):
@@ -710,7 +711,7 @@ class MidiTrackViewer(QWidget):
                     old_idx = i + 1
                 else:
                     old_idx = i
-            
+
             # Copy mappings from old index to new index
             if old_idx in old_name_edits:
                 self._track_name_edits[i] = old_name_edits[old_idx]
@@ -718,8 +719,8 @@ class MidiTrackViewer(QWidget):
                 self._track_channel_spins[i] = old_channel_spins[old_idx]
             if old_idx in old_track_widgets:
                 self.midi_track_widgets[i] = old_track_widgets[old_idx]
-        
+
         # Refresh the UI
         self.set_midi_file(new_midi)
-        
+
         log.message(f"Track moved successfully")

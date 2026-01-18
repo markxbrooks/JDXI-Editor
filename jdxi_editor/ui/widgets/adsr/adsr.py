@@ -189,8 +189,8 @@ class ADSR(EnvelopeWidgetBase):
         }
         # Create layout
         self.plot = ADSRPlot(
-            width=JDXi.Style.ADSR_PLOT_WIDTH,
-            height=JDXi.Style.ADSR_PLOT_HEIGHT,
+            width=JDXi.UI.Style.ADSR_PLOT_WIDTH,
+            height=JDXi.UI.Style.ADSR_PLOT_HEIGHT,
             envelope=self.envelope,
             parent=self,
         )
@@ -206,7 +206,7 @@ class ADSR(EnvelopeWidgetBase):
         for control in self._control_widgets:
             control.envelope_changed.connect(self.on_control_changed)
         self.update_controls_from_envelope()
-        JDXi.ThemeManager.apply_adsr_style(self, analog=analog)
+        JDXi.UI.ThemeManager.apply_adsr_style(self, analog=analog)
 
     def on_control_changed(self, change: dict):
         self.envelope.update(change)

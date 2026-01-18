@@ -151,13 +151,15 @@ def setup_splash_screen(
         screen_geometry = screen.availableGeometry()
         screen_center = screen_geometry.center()
         splash.move(
-            int(screen_center.x() - JDXi.Dimensions.SPLASH.WIDTH / 2),
-            int(screen_center.y() - JDXi.Dimensions.SPLASH.HEIGHT / 2),
+            int(screen_center.x() - JDXi.UI.Dimensions.SPLASH.WIDTH / 2),
+            int(screen_center.y() - JDXi.UI.Dimensions.SPLASH.HEIGHT / 2),
         )
     splash.setWindowFlags(
         Qt.SplashScreen | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint
     )
-    splash.setFixedSize(JDXi.Dimensions.SPLASH.WIDTH, JDXi.Dimensions.SPLASH.HEIGHT)
+    splash.setFixedSize(
+        JDXi.UI.Dimensions.SPLASH.WIDTH, JDXi.UI.Dimensions.SPLASH.HEIGHT
+    )
 
     splash.setStyleSheet(
         """
@@ -198,18 +200,18 @@ def setup_splash_screen(
     # --- Title (left side)
     title = DigitalTitle(
         __program__,
-        digital_font_family=JDXi.Style.FONT_FAMILY_MONOSPACE,
+        digital_font_family=JDXi.UI.Style.FONT_FAMILY_MONOSPACE,
         show_upper_text=False,
     )
-    title.setStyleSheet(JDXi.Style.INSTRUMENT_TITLE_LABEL)
+    title.setStyleSheet(JDXi.UI.Style.INSTRUMENT_TITLE_LABEL)
     title_image_row.addWidget(title)
     title_image_row.addStretch()  # Push image to the right
 
     # --- Image (right side)
     image_path = resource_path(os.path.join("resources", "jdxi_cartoon_600.png"))
     pixmap = QPixmap(image_path).scaled(
-        JDXi.Dimensions.SPLASH.IMAGE_WIDTH,
-        JDXi.Dimensions.SPLASH.IMAGE_HEIGHT,
+        JDXi.UI.Dimensions.SPLASH.IMAGE_WIDTH,
+        JDXi.UI.Dimensions.SPLASH.IMAGE_HEIGHT,
         Qt.KeepAspectRatio,
         Qt.SmoothTransformation,
     )
@@ -221,20 +223,20 @@ def setup_splash_screen(
     # --- Subtitle
     subtitle = QLabel("An editor & toolkit for the Roland JD-Xi instrument")
     card_layout.addWidget(subtitle)
-    subtitle.setStyleSheet(JDXi.Style.INSTRUMENT_SUBTITLE_LABEL)
+    subtitle.setStyleSheet(JDXi.UI.Style.INSTRUMENT_SUBTITLE_LABEL)
 
     # --- Progress bar
     progress_bar = QProgressBar()
     progress_bar.setRange(0, 100)
     progress_bar.setValue(0)
     progress_bar.setFixedWidth(420)
-    progress_bar.setStyleSheet(JDXi.Style.PROGRESS_BAR)
+    progress_bar.setStyleSheet(JDXi.UI.Style.PROGRESS_BAR)
     progress_row = create_layout_with_widgets([progress_bar])
     card_layout.addLayout(progress_row)
 
     # --- Rotating status label (enlarged)
     status_label = DigitalTitle(
-        "Starting...", digital_font_family=JDXi.Style.FONT_FAMILY_MONOSPACE
+        "Starting...", digital_font_family=JDXi.UI.Style.FONT_FAMILY_MONOSPACE
     )
     status_label.setObjectName("StatusLabel")
     # Style is applied via ObjectName in the stylesheet (font-size: 18px)

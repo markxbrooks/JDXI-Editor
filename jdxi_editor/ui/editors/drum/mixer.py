@@ -14,9 +14,10 @@ from decologr import Decologr as log
 from jdxi_editor.jdxi.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetProgramLMB,
-    AddressStartMSB,
     AddressOffsetSystemUMB,
-    RolandSysExAddress, AddressOffsetTemporaryToneUMB,
+    AddressOffsetTemporaryToneUMB,
+    AddressStartMSB,
+    RolandSysExAddress,
 )
 from jdxi_editor.midi.data.drum.data import DRUM_ADDRESSES, DRUM_PARTIAL_NAMES
 from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParam
@@ -48,7 +49,7 @@ class DrumKitMixer(QWidget):
         self.midi_helper = midi_helper
         self.mixer_sliders: Dict[str, Slider] = {}
         self.partial_addresses: Dict[int, RolandSysExAddress] = {}
-        
+
         # Base address for drum kit common area
         # Base address for drum kit common area (stored for reference, not currently used)
         # Match the address used by the editor (TEMPORARY_TONE, not TEMPORARY_PROGRAM)
@@ -58,7 +59,7 @@ class DrumKitMixer(QWidget):
             AddressOffsetProgramLMB.COMMON,
             0x00,
         )
-        
+
         self.setup_ui()
 
     def setup_ui(self) -> None:
@@ -70,7 +71,7 @@ class DrumKitMixer(QWidget):
 
         # Title
         title_label = DigitalTitle("Drum Kit Mixer")
-        self.setStyleSheet(JDXi.Style.ADSR)
+        self.setStyleSheet(JDXi.UI.Style.ADSR)
         main_layout.addWidget(title_label)
 
         # Scroll area for sliders
@@ -91,34 +92,32 @@ class DrumKitMixer(QWidget):
         # Create 36 partial sliders
         # Use DRUM_PARTIAL_NAMES[1:] to skip "COM" and get the 36 partials
         partial_names = DRUM_PARTIAL_NAMES[1:]  # Skip COM, get 36 partials
-        
+
         # Arrange sliders in a grid: 6 columns
         # Master slider already added at row 0, col 0
         # Then add 36 partials starting at row 0, col 1
         row = 0
         col = 1  # Start after master slider
-        
+
         for idx, partial_name in enumerate(partial_names, start=1):
             # Calculate grid position
             if col >= 6:  # 6 columns
                 col = 0
                 row += 1
-            
+
             # Create slider for this partial
             # Each slider takes 3 rows: label, slider (spanning 2 rows)
             slider_row = row * 3
             self._create_partial_slider(
                 sliders_layout, slider_row, col, partial_name, idx
             )
-            
+
             col += 1
 
         scroll_area.setWidget(sliders_widget)
         main_layout.addWidget(scroll_area)
 
-    def _create_master_slider(
-        self, layout: QGridLayout, row: int, col: int
-    ) -> None:
+    def _create_master_slider(self, layout: QGridLayout, row: int, col: int) -> None:
         """Create the master (Kit Level) slider."""
         # Use common address for master level
         # Match the address used by the editor (TEMPORARY_TONE, not TEMPORARY_PROGRAM)
@@ -138,14 +137,12 @@ class DrumKitMixer(QWidget):
             show_value_label=True,
             tooltip="Master level for the entire drum kit",
         )
-        
+
         # Connect slider to send MIDI messages
-        slider.valueChanged.connect(
-            lambda v: self._on_master_level_changed(v, address)
-        )
-        
+        slider.valueChanged.connect(lambda v: self._on_master_level_changed(v, address))
+
         self.mixer_sliders["Master"] = slider
-        
+
         # Add slider and label to layout
         label = QLabel("Master")
         label.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -153,7 +150,7 @@ class DrumKitMixer(QWidget):
             f"""
             QLabel {{
                 font-size: 12px;
-                color: {JDXi.Style.FOREGROUND};
+                color: {JDXi.UI.Style.FOREGROUND};
                 padding: 2px;
             }}
         """
@@ -187,13 +184,13 @@ class DrumKitMixer(QWidget):
 
         # Get the LMB for this partial from AddressOffsetDrumKitLMB
         from jdxi_editor.midi.data.address.address import AddressOffsetDrumKitLMB
-        
+
         # Map partial_index (1-36) to DRUM_KIT_PART_X
         lmb_attr = f"DRUM_KIT_PART_{partial_index}"
         if not hasattr(AddressOffsetDrumKitLMB, lmb_attr):
             log.warning(f"No LMB found for partial {partial_index}")
             return
-        
+
         lmb_value = getattr(AddressOffsetDrumKitLMB, lmb_attr)
 
         # Create address for this partial
@@ -204,7 +201,7 @@ class DrumKitMixer(QWidget):
             AddressOffsetProgramLMB(lmb_value),
             0x00,
         )
-        
+
         self.partial_addresses[partial_index] = address
 
         # Create slider
@@ -217,16 +214,16 @@ class DrumKitMixer(QWidget):
             show_value_label=True,
             tooltip=f"Level for {partial_name}",
         )
-        
+
         # Connect slider to send MIDI messages
         slider.valueChanged.connect(
             lambda v, addr=address, pidx=partial_index: self._on_partial_level_changed(
                 v, addr, pidx
             )
         )
-        
+
         self.mixer_sliders[partial_name] = slider
-        
+
         # Add slider and label to layout
         label = QLabel(partial_name)
         label.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -234,7 +231,7 @@ class DrumKitMixer(QWidget):
             f"""
             QLabel {{
                 font-size: 11px;
-                color: {JDXi.Style.FOREGROUND};
+                color: {JDXi.UI.Style.FOREGROUND};
                 padding: 2px;
             }}
         """
@@ -243,9 +240,7 @@ class DrumKitMixer(QWidget):
         layout.addWidget(label, row, col)
         layout.addWidget(slider, row + 1, col, 2, 1)  # Sliders span 2 rows
 
-    def _on_master_level_changed(
-        self, value: int, address: RolandSysExAddress
-    ) -> None:
+    def _on_master_level_changed(self, value: int, address: RolandSysExAddress) -> None:
         """Handle master level change."""
         if not self.midi_helper:
             return
@@ -283,15 +278,13 @@ class DrumKitMixer(QWidget):
                 address.lmb,
                 0x0E,  # PARTIAL_LEVEL offset
             )
-            
+
             message = composer.compose_message(
                 address=partial_address,
                 param=DrumPartialParam.PARTIAL_LEVEL,
                 value=value,
             )
             self.midi_helper.send_midi_message(message)
-            log.message(
-                f"Partial {partial_index} level changed to {value}"
-            )
+            log.message(f"Partial {partial_index} level changed to {value}")
         except Exception as ex:
             log.error(f"Error setting partial {partial_index} level: {ex}")

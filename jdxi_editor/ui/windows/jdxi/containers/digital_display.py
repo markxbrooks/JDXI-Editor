@@ -14,10 +14,10 @@ def add_digital_display(central_widget, parent):
 
     digital_display_container = QWidget(central_widget)
     digital_display_container.setGeometry(
-        JDXi.Dimensions.LED.X,
-        JDXi.Dimensions.LED.Y,
-        JDXi.Dimensions.LED.WIDTH,
-        JDXi.Dimensions.LED.HEIGHT,
+        JDXi.UI.Dimensions.LED.X,
+        JDXi.UI.Dimensions.LED.Y,
+        JDXi.UI.Dimensions.LED.WIDTH,
+        JDXi.UI.Dimensions.LED.HEIGHT,
     )
     digital_display_layout = QHBoxLayout()
     digital_display_container.setLayout(digital_display_layout)

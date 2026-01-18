@@ -40,7 +40,6 @@ from PySide6.QtGui import (
 from PySide6.QtWidgets import QWidget
 
 from jdxi_editor.jdxi.jdxi import JDXi
-from jdxi_editor.ui.constant import JDXiUI
 
 
 def generate_filter_plot(
@@ -68,7 +67,9 @@ def generate_filter_plot(
 
     if filter_mode == "bypass":
         # Bypass: flat line at full amplitude
-        envelope = np.full(total_samples, JDXiUI.FILTER_PLOT_DEPTH, dtype=np.float32)
+        envelope = np.full(
+            total_samples, JDXi.UI.Constants.FILTER_PLOT_DEPTH, dtype=np.float32
+        )
         return envelope
 
     # Calculate slope steepness based on slope parameter
@@ -86,11 +87,13 @@ def generate_filter_plot(
     if filter_mode == "lpf":
         # Low-pass filter: full amplitude up to cutoff, then rolloff
         # Create the passband (full amplitude up to cutoff)
-        passband = np.full(cutoff_samples, JDXiUI.FILTER_PLOT_DEPTH, dtype=np.float32)
+        passband = np.full(
+            cutoff_samples, JDXi.UI.Constants.FILTER_PLOT_DEPTH, dtype=np.float32
+        )
 
         # Create transition rolloff
         rolloff = np.linspace(
-            JDXiUI.FILTER_PLOT_DEPTH,
+            JDXi.UI.Constants.FILTER_PLOT_DEPTH,
             0,
             transition_samples,
             endpoint=False,
@@ -105,7 +108,7 @@ def generate_filter_plot(
         # Create transition rolloff from 0 to cutoff
         rolloff = np.linspace(
             0,
-            JDXiUI.FILTER_PLOT_DEPTH,
+            JDXi.UI.Constants.FILTER_PLOT_DEPTH,
             cutoff_samples,
             endpoint=False,
             dtype=np.float32,
@@ -113,7 +116,7 @@ def generate_filter_plot(
 
         # Create the passband (full amplitude after cutoff)
         passband = np.full(
-            transition_samples, JDXiUI.FILTER_PLOT_DEPTH, dtype=np.float32
+            transition_samples, JDXi.UI.Constants.FILTER_PLOT_DEPTH, dtype=np.float32
         )
 
         # Combine together
@@ -125,7 +128,7 @@ def generate_filter_plot(
         low_rolloff_samples = int(cutoff_samples * 0.3)
         low_rolloff = np.linspace(
             0,
-            JDXiUI.FILTER_PLOT_DEPTH,
+            JDXi.UI.Constants.FILTER_PLOT_DEPTH,
             low_rolloff_samples,
             endpoint=False,
             dtype=np.float32,
@@ -133,12 +136,14 @@ def generate_filter_plot(
 
         # Passband (middle section)
         passband_samples = int(cutoff_samples * 0.4)
-        passband = np.full(passband_samples, JDXiUI.FILTER_PLOT_DEPTH, dtype=np.float32)
+        passband = np.full(
+            passband_samples, JDXi.UI.Constants.FILTER_PLOT_DEPTH, dtype=np.float32
+        )
 
         # High rolloff (after passband)
         high_rolloff_samples = int(transition_samples * 0.5)
         high_rolloff = np.linspace(
-            JDXiUI.FILTER_PLOT_DEPTH,
+            JDXi.UI.Constants.FILTER_PLOT_DEPTH,
             0,
             high_rolloff_samples,
             endpoint=False,
@@ -150,9 +155,11 @@ def generate_filter_plot(
 
     else:
         # Default to LPF if unknown mode
-        passband = np.full(cutoff_samples, JDXiUI.FILTER_PLOT_DEPTH, dtype=np.float32)
+        passband = np.full(
+            cutoff_samples, JDXi.UI.Constants.FILTER_PLOT_DEPTH, dtype=np.float32
+        )
         rolloff = np.linspace(
-            JDXiUI.FILTER_PLOT_DEPTH,
+            JDXi.UI.Constants.FILTER_PLOT_DEPTH,
             0,
             transition_samples,
             endpoint=False,
@@ -173,8 +180,8 @@ def generate_filter_plot(
 class FilterPlot(QWidget):
     def __init__(
         self,
-        width: int = JDXi.Style.ADSR_PLOT_WIDTH,
-        height: int = JDXi.Style.ADSR_PLOT_HEIGHT,
+        width: int = JDXi.UI.Style.ADSR_PLOT_WIDTH,
+        height: int = JDXi.UI.Style.ADSR_PLOT_HEIGHT,
         envelope: dict = None,
         parent: QWidget = None,
         filter_mode: str = "lpf",
@@ -192,10 +199,10 @@ class FilterPlot(QWidget):
         self.setMaximumWidth(width)
         # Use dark gray background
 
-        JDXi.ThemeManager.apply_adsr_plot(self)
+        JDXi.UI.ThemeManager.apply_adsr_plot(self)
         # Sample rate for converting times to samples
         self.sample_rate = 256
-        self.setMinimumHeight(JDXi.Style.ADSR_PLOT_HEIGHT)
+        self.setMinimumHeight(JDXi.UI.Style.ADSR_PLOT_HEIGHT)
         self.attack_x = 0.1
         self.decay_x = 0.3
         self.peak_level = 0.5

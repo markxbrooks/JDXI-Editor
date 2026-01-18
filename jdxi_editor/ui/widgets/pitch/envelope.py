@@ -122,8 +122,8 @@ class PitchEnvelopeWidget(EnvelopeWidgetBase):
             "peak_level": self.depth_control.spinbox,
         }
         self.plot = PitchEnvPlot(
-            width=JDXi.Style.ADSR_PLOT_WIDTH,
-            height=JDXi.Style.ADSR_PLOT_HEIGHT,
+            width=JDXi.UI.Style.ADSR_PLOT_WIDTH,
+            height=JDXi.UI.Style.ADSR_PLOT_HEIGHT,
             envelope=self.envelope,
             parent=self,
         )

@@ -35,4 +35,4 @@ class AnalogWaveformButton(WaveformButton):
 
         # Style
         self.setMinimumWidth(60)
-        self.setStyleSheet(JDXi.Style.BUTTON_WAVEFORM_ANALOG)
+        self.setStyleSheet(JDXi.UI.Style.BUTTON_WAVEFORM_ANALOG)

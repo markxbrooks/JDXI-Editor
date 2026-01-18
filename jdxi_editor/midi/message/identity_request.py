@@ -27,7 +27,7 @@ Usage Example:
 from dataclasses import dataclass
 from typing import List
 
-from jdxi_editor.jdxi.midi.constant import JDXiMidi
+from jdxi_editor.jdxi.jdxi import JDXi
 from jdxi_editor.midi.message.midi import MidiMessage
 from picomidi.constant import Midi
 
@@ -46,9 +46,9 @@ class IdentityRequestMessage(MidiMessage):
         """
         return [
             Midi.SYSEX.START,
-            JDXiMidi.SYSEX.IDENTITY.CONST.NUMBER,
-            JDXiMidi.SYSEX.IDENTITY.CONST.DEVICE,
-            JDXiMidi.SYSEX.IDENTITY.CONST.SUB1_GENERAL_INFORMATION,
-            JDXiMidi.SYSEX.IDENTITY.CONST.SUB2_IDENTITY_REQUEST,
+            JDXi.Midi.SYSEX.IDENTITY.CONST.NUMBER,
+            JDXi.Midi.SYSEX.IDENTITY.CONST.DEVICE,
+            JDXi.Midi.SYSEX.IDENTITY.CONST.SUB1_GENERAL_INFORMATION,
+            JDXi.Midi.SYSEX.IDENTITY.CONST.SUB2_IDENTITY_REQUEST,
             Midi.SYSEX.END,
         ]

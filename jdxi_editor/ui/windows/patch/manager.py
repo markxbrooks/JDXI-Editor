@@ -77,7 +77,7 @@ class PatchManager(QMainWindow):
         self.setMinimumSize(400, 200)
 
         # Apply dark theme styling
-        self.setStyleSheet(JDXi.Style.PATCH_MANAGER)
+        self.setStyleSheet(JDXi.UI.Style.PATCH_MANAGER)
 
         # Create central widget and layout
         main_widget = QWidget()

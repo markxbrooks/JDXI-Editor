@@ -102,8 +102,8 @@ class PWMWidget(EnvelopeWidgetBase):
         self.layout.addWidget(self.pulse_width_control, 0, 2)
         self.setLayout(self.layout)
         self.plot = PWMPlot(
-            width=JDXi.Dimensions.PWM_WIDGET.WIDTH - 20,
-            height=JDXi.Dimensions.PWM_WIDGET.HEIGHT - 20,
+            width=JDXi.UI.Dimensions.PWM_WIDGET.WIDTH - 20,
+            height=JDXi.UI.Dimensions.PWM_WIDGET.HEIGHT - 20,
             parent=self,
             envelope=self.envelope,
         )
@@ -119,7 +119,7 @@ class PWMWidget(EnvelopeWidgetBase):
         self.mod_depth_control.setValue(
             self.envelope["mod_depth"] * Midi.VALUE.MAX.SEVEN_BIT
         )
-        JDXi.ThemeManager.apply_adsr_style(self, analog=analog)
+        JDXi.UI.ThemeManager.apply_adsr_style(self, analog=analog)
 
     def on_envelope_changed(self, envelope: dict) -> None:
         """

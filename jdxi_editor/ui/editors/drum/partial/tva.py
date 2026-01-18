@@ -72,8 +72,8 @@ class DrumTVAEnvPlot(QWidget):
 
     def __init__(
         self,
-        width: int = JDXi.Style.ADSR_PLOT_WIDTH,
-        height: int = JDXi.Style.ADSR_PLOT_HEIGHT,
+        width: int = JDXi.UI.Style.ADSR_PLOT_WIDTH,
+        height: int = JDXi.UI.Style.ADSR_PLOT_HEIGHT,
         envelope: dict = None,
         parent: QWidget = None,
     ):
@@ -84,7 +84,7 @@ class DrumTVAEnvPlot(QWidget):
         self.setMaximumHeight(height)
         self.setMaximumWidth(width)
 
-        JDXi.ThemeManager.apply_adsr_plot(self)
+        JDXi.UI.ThemeManager.apply_adsr_plot(self)
         self.sample_rate = 256
         self.setMinimumHeight(150)
 
@@ -116,7 +116,7 @@ class DrumTVAEnvPlot(QWidget):
             axis_pen = QPen(QColor("white"), 1)
             grid_pen = QPen(Qt.GlobalColor.darkGray, 1)
             grid_pen.setStyle(Qt.PenStyle.DashLine)
-            point_pen = QPen(QColor("orange"), JDXi.Dimensions.CHART.POINT_SIZE)
+            point_pen = QPen(QColor("orange"), JDXi.UI.Dimensions.CHART.POINT_SIZE)
             painter.setFont(QFont("JD LCD Rounded", 10))
 
             depth = self.envelope.get("depth", 64) - 64  # -63 to +63
@@ -344,7 +344,7 @@ class DrumTVASection(DrumBaseSection):
         tva_group, _ = create_group_with_layout(
             group_name="TVA",
             inner_layout=envelope_slider_layout,
-            style_sheet=JDXi.Style.ADSR,
+            style_sheet=JDXi.UI.Style.ADSR,
         )
 
         # --- Add TVA Velocity Sensitivity controls
@@ -455,8 +455,8 @@ class DrumTVASection(DrumBaseSection):
 
     def _create_tva_plot(self):
         plot = DrumTVAEnvPlot(
-            width=JDXi.Style.ADSR_PLOT_WIDTH,
-            height=JDXi.Style.ADSR_PLOT_HEIGHT,
+            width=JDXi.UI.Style.ADSR_PLOT_WIDTH,
+            height=JDXi.UI.Style.ADSR_PLOT_HEIGHT,
             envelope=self.envelope,
             parent=self,
         )

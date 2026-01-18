@@ -48,7 +48,7 @@ class LogViewer(QMainWindow):
         self.setMinimumSize(980, 400)
 
         # Apply dark theme styling
-        self.setStyleSheet(JDXi.Style.LOG_VIEWER)
+        self.setStyleSheet(JDXi.UI.Style.LOG_VIEWER)
 
         # Determine log file path (Decologr writes to ~/.{package_name}/logs/{package_name}.log)
         log_dir = Path.home() / f".{__package_name__}" / "logs"
