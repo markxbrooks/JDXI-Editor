@@ -483,6 +483,12 @@ class MidiInHandler(MidiIOController):
             msb = data.msb  # data.msb or 85
             lsb = data.lsb  # data.lsb or 0
             prefix = None
+            
+            # Guard against None values
+            if msb is None or lsb is None:
+                log.message(f"❌ Missing MSB or LSB (msb={msb}, lsb={lsb}); cannot auto-add program")
+                return
+            
             index_in_bank = program_number % 64
 
             # === User Banks ===

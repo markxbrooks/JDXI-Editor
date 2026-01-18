@@ -36,9 +36,20 @@ class WavRecordingThread(QThread):
     def run(self):
         try:
             self.record()
-            self.recording_finished.emit(self.output_file)
+            # Ensure output_file is a string before emitting
+            if isinstance(self.output_file, str) and self.output_file:
+                self.recording_finished.emit(self.output_file)
+            else:
+                self.recording_error.emit(
+                    f"Recording completed but output_file is invalid: {type(self.output_file)} - {self.output_file}"
+                )
         except Exception as e:
-            self.recording_error.emit(str(e))
+            # Ensure exception is converted to string safely
+            try:
+                error_msg = str(e) if e else "Unknown error"
+            except Exception:
+                error_msg = f"Error occurred: {type(e).__name__}"
+            self.recording_error.emit(error_msg)
 
     def record(self):
         """
@@ -48,7 +59,8 @@ class WavRecordingThread(QThread):
         try:
             index = self.recorder.input_device_index
             info = self.recorder.p.get_device_info_by_index(index)
-            log.message(info)
+            # Log device info as formatted string, not as dict
+            log.message(f"Device info: {info.get('name', 'Unknown')} (index: {index})")
             log.message(f"Max input channels ={info['maxInputChannels']}")
 
             # The rate might be supported:
@@ -71,10 +83,20 @@ class WavRecordingThread(QThread):
                 )
             except Exception as ex:
                 log.error(f"⚠️ Stream open failed: {ex}")
-                self.recording_error.emit(str(ex))
+                # Ensure exception is converted to string safely
+                try:
+                    error_msg = str(ex) if ex else "Stream open failed"
+                except Exception:
+                    error_msg = f"Stream open failed: {type(ex).__name__}"
+                self.recording_error.emit(error_msg)
                 return
         except Exception as ex:
-            self.recording_error.emit(str(ex))
+            # Ensure exception is converted to string safely
+            try:
+                error_msg = str(ex) if ex else "Unknown error during recording"
+            except Exception:
+                error_msg = f"Error during recording: {type(ex).__name__}"
+            self.recording_error.emit(error_msg)
             return
 
         self.running = True
@@ -93,7 +115,12 @@ class WavRecordingThread(QThread):
                 data = stream.read(self.recorder.frames_per_buffer)
                 frames.append(data)
         except Exception as ex:
-            self.recording_error.emit(str(ex))
+            # Ensure exception is converted to string safely
+            try:
+                error_msg = str(ex) if ex else "Unknown error during recording"
+            except Exception:
+                error_msg = f"Error during recording: {type(ex).__name__}"
+            self.recording_error.emit(error_msg)
         finally:
             stream.stop_stream()
             stream.close()
@@ -111,11 +138,22 @@ class WavRecordingThread(QThread):
                 f.setframerate(self.recorder.rate)
                 f.writeframes(b"".join(frames))
         except Exception as ex:
-            self.recording_error.emit(str(ex))
+            # Ensure exception is converted to string safely
+            try:
+                error_msg = str(ex) if ex else "Unknown error during recording"
+            except Exception:
+                error_msg = f"Error during recording: {type(ex).__name__}"
+            self.recording_error.emit(error_msg)
             return
 
-        self.recording_finished.emit(self.output_file)
-        log.message(f"File successfully saved to {self.output_file}")
+        # Ensure output_file is a string before emitting
+        if isinstance(self.output_file, str) and self.output_file:
+            self.recording_finished.emit(self.output_file)
+            log.message(f"File successfully saved to {self.output_file}")
+        else:
+            error_msg = f"Recording completed but output_file is invalid: {type(self.output_file)} - {self.output_file}"
+            log.error(error_msg)
+            self.recording_error.emit(error_msg)
 
     def record_old(self):
         """
@@ -132,7 +170,12 @@ class WavRecordingThread(QThread):
                 frames_per_buffer=self.recorder.frames_per_buffer,
             )
         except Exception as ex:
-            self.recording_error.emit(str(ex))
+            # Ensure exception is converted to string safely
+            try:
+                error_msg = str(ex) if ex else "Unknown error during recording"
+            except Exception:
+                error_msg = f"Error during recording: {type(ex).__name__}"
+            self.recording_error.emit(error_msg)
             return
         self.running = True
         frames = []
@@ -150,7 +193,12 @@ class WavRecordingThread(QThread):
                 data = stream.read(self.recorder.frames_per_buffer)
                 frames.append(data)
         except Exception as ex:
-            self.recording_error.emit(str(ex))
+            # Ensure exception is converted to string safely
+            try:
+                error_msg = str(ex) if ex else "Unknown error during recording"
+            except Exception:
+                error_msg = f"Error during recording: {type(ex).__name__}"
+            self.recording_error.emit(error_msg)
         finally:
             stream.stop_stream()
             stream.close()
@@ -168,11 +216,22 @@ class WavRecordingThread(QThread):
                 f.setframerate(self.recorder.rate)
                 f.writeframes(b"".join(frames))
         except Exception as ex:
-            self.recording_error.emit(str(ex))
+            # Ensure exception is converted to string safely
+            try:
+                error_msg = str(ex) if ex else "Unknown error during recording"
+            except Exception:
+                error_msg = f"Error during recording: {type(ex).__name__}"
+            self.recording_error.emit(error_msg)
             return
 
-        self.recording_finished.emit(self.output_file)
-        log.message(f"File successfully saved to {self.output_file}")
+        # Ensure output_file is a string before emitting
+        if isinstance(self.output_file, str) and self.output_file:
+            self.recording_finished.emit(self.output_file)
+            log.message(f"File successfully saved to {self.output_file}")
+        else:
+            error_msg = f"Recording completed but output_file is invalid: {type(self.output_file)} - {self.output_file}"
+            log.error(error_msg)
+            self.recording_error.emit(error_msg)
 
         self.recorder.p.terminate()
 

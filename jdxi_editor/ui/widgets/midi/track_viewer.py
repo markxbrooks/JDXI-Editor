@@ -25,6 +25,7 @@ from jdxi_editor.jdxi.jdxi import JDXi
 from jdxi_editor.ui.widgets.midi.spin_box.spin_box import MidiSpinBox
 from jdxi_editor.ui.widgets.midi.time_ruler import TimeRulerWidget
 from jdxi_editor.ui.widgets.midi.track import MidiTrackWidget
+from jdxi_editor.ui.widgets.midi.draggable_track_row import DraggableTrackRow
 from jdxi_editor.ui.widgets.midi.utils import get_first_channel
 from picomidi.constant import Midi
 
@@ -42,6 +43,7 @@ class MidiTrackViewer(QWidget):
         self.ruler = TimeRulerWidget()
         self.midi_track_widgets = {}  # MidiTrackWidget()
         self.muted_tracks: set[int] = set()  # To track muted tracks
+        self._draggable_rows = {}
 
         # To track muted channels
         self.muted_channels: set[int] = set()
@@ -131,6 +133,7 @@ class MidiTrackViewer(QWidget):
         self.muted_tracks.clear()
         self._track_name_edits.clear()
         self._track_channel_spins.clear()
+        self._draggable_rows.clear()
 
         # Remove track widgets
         for track_key, track_widget in self.midi_track_widgets.copy().items():
@@ -406,6 +409,7 @@ class MidiTrackViewer(QWidget):
             self.clear_layout(self.channel_controls_vlayout)
 
         self.midi_track_widgets = {}
+        self._draggable_rows = {}
         # Create each track widget and add it to the layout
         for i, track in enumerate(midi_file.tracks):
             hlayout = QHBoxLayout()
@@ -535,7 +539,11 @@ class MidiTrackViewer(QWidget):
             )  # Initialize the dictionary
             hlayout.addWidget(self.midi_track_widgets[i])
 
-            self.channel_controls_vlayout.addLayout(hlayout)
+            # Wrap the layout in a draggable row widget
+            draggable_row = DraggableTrackRow(i, hlayout, self.scroll_content)
+            draggable_row.track_moved.connect(self.move_track)
+            self._draggable_rows[i] = draggable_row
+            self.channel_controls_vlayout.addWidget(draggable_row)
 
         # Global Apply button
         apply_all_layout = QHBoxLayout()
@@ -564,9 +572,10 @@ class MidiTrackViewer(QWidget):
     def clear_layout(self, layout: QLayout) -> None:
         while layout.count():
             item = layout.takeAt(0)
-            if item.widget():
-                item.widget().setParent(None)
-                item.widget().deleteLater()
+            widget = item.widget()
+            if widget:
+                widget.setParent(None)
+                widget.deleteLater()
             elif item.layout():
                 self.clear_layout(item.layout())
 
@@ -634,3 +643,83 @@ class MidiTrackViewer(QWidget):
 
     def get_muted_tracks(self):
         return self.muted_tracks
+    
+    def move_track(self, from_index: int, to_index: int) -> None:
+        """
+        Move a track from one position to another in the MIDI file.
+        
+        :param from_index: Source track index
+        :param to_index: Target track index
+        """
+        if not self.midi_file:
+            return
+        
+        if from_index == to_index:
+            return
+        
+        if not (0 <= from_index < len(self.midi_file.tracks)):
+            log.warning(f"Invalid from_index: {from_index}")
+            return
+        
+        if not (0 <= to_index < len(self.midi_file.tracks)):
+            log.warning(f"Invalid to_index: {to_index}")
+            return
+        
+        log.message(f"Moving track {from_index + 1} to position {to_index + 1}")
+        
+        # Reorder tracks in MIDI file
+        tracks = list(self.midi_file.tracks)
+        track_to_move = tracks.pop(from_index)
+        tracks.insert(to_index, track_to_move)
+        
+        # Create new MIDI file with reordered tracks
+        new_midi = mido.MidiFile()
+        new_midi.ticks_per_beat = self.midi_file.ticks_per_beat
+        new_midi.tracks = tracks
+        
+        # Update the MIDI file and refresh the UI
+        self.midi_file = new_midi
+        
+        # Rebuild the track mappings to reflect new order
+        # We need to preserve the track name edits and channel spins, but remap them
+        old_name_edits = self._track_name_edits.copy()
+        old_channel_spins = self._track_channel_spins.copy()
+        old_track_widgets = self.midi_track_widgets.copy()
+        
+        # Clear current mappings
+        self._track_name_edits.clear()
+        self._track_channel_spins.clear()
+        self.midi_track_widgets.clear()
+        self._draggable_rows.clear()
+        
+        # Remap: the track that was at from_index is now at to_index
+        # All tracks between from_index and to_index shift
+        for i in range(len(tracks)):
+            if i == to_index:
+                # This is the moved track
+                old_idx = from_index
+            elif from_index < to_index:
+                # Moving down: tracks between from_index and to_index shift up
+                if from_index < i <= to_index:
+                    old_idx = i - 1
+                else:
+                    old_idx = i
+            else:
+                # Moving up: tracks between to_index and from_index shift down
+                if to_index <= i < from_index:
+                    old_idx = i + 1
+                else:
+                    old_idx = i
+            
+            # Copy mappings from old index to new index
+            if old_idx in old_name_edits:
+                self._track_name_edits[i] = old_name_edits[old_idx]
+            if old_idx in old_channel_spins:
+                self._track_channel_spins[i] = old_channel_spins[old_idx]
+            if old_idx in old_track_widgets:
+                self.midi_track_widgets[i] = old_track_widgets[old_idx]
+        
+        # Refresh the UI
+        self.set_midi_file(new_midi)
+        
+        log.message(f"Track moved successfully")

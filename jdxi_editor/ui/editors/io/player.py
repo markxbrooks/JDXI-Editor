@@ -60,9 +60,13 @@ from jdxi_editor.ui.editors.io.utils import format_time, tempo2bpm
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
+from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets
 from jdxi_editor.ui.widgets.midi.track_viewer import MidiTrackViewer
 from jdxi_editor.ui.widgets.midi.utils import get_total_duration_in_seconds
 from jdxi_editor.ui.windows.jdxi.utils import show_message_box
+from PySide6.QtWidgets import QMessageBox
+from jdxi_editor.midi.utils.drum_detection import detect_drum_tracks
+from jdxi_editor.midi.utils.track_classification import classify_tracks
 from picomidi.constant import Midi
 
 # Expose Qt symbols for tests that patch via jdxi_editor.ui.editors.io.player
@@ -158,23 +162,67 @@ class MidiFileEditor(SynthEditor):
         """
         Initialize the UI for the MidiPlayer.
         """
-        # Top horizontal layout: file title and right-hand controls
+        # --- Top horizontal layout: file title and right-hand controls
         header_layout = QHBoxLayout()
+        
+        # Create vertical layout for title and drum detection button
+        title_vlayout = QVBoxLayout()
+        title_vlayout.setContentsMargins(0, 0, 0, 0)
+        title_vlayout.setSpacing(5)
+        
         self.ui.digital_title_file_name = DigitalTitle(
             "No file loaded", show_upper_text=True
         )
-        header_layout.addWidget(self.ui.digital_title_file_name)
+        title_vlayout.addWidget(self.ui.digital_title_file_name)
+        
+        # Add classification buttons in a horizontal layout
+        classification_hlayout = QHBoxLayout()
+        classification_hlayout.setSpacing(5)
+        
+        # Drum detection button
+        self.ui.detect_drums_button = QPushButton(
+            JDXi.IconRegistry.get_icon(
+                JDXi.IconRegistry.DRUM, color=JDXi.Style.FOREGROUND
+            ),
+            "Detect Drums"
+        )
+        self.ui.detect_drums_button.setToolTip(
+            "Analyze MIDI file and assign Channel 10 to detected drum tracks"
+        )
+        self.ui.detect_drums_button.clicked.connect(self.detect_and_assign_drum_tracks)
+        classification_hlayout.addWidget(self.ui.detect_drums_button)
+        
+        # Classify other tracks button
+        self.ui.classify_tracks_button = QPushButton(
+            JDXi.IconRegistry.get_icon(
+                JDXi.IconRegistry.MUSIC_NOTES, color=JDXi.Style.FOREGROUND
+            ),
+            "Classify Tracks"
+        )
+        self.ui.classify_tracks_button.setToolTip(
+            "Classify non-drum tracks into Bass (Ch 1), Keys/Guitars (Ch 2), and Strings (Ch 3)"
+        )
+        self.ui.classify_tracks_button.clicked.connect(self.classify_and_assign_tracks)
+        classification_hlayout.addWidget(self.ui.classify_tracks_button)
+        
+        title_vlayout.addLayout(classification_hlayout)
+        
+        # Add title layout to header
+        title_widget = QWidget()
+        title_widget.setLayout(title_vlayout)
+        header_layout.addWidget(title_widget)
 
         right_panel_layout = QVBoxLayout()
         header_layout.addLayout(right_panel_layout)
 
-        # Modular control sections
+        # --- Modular control sections
         right_panel_layout.addLayout(self.init_midi_file_controls())
         right_panel_layout.addLayout(self.init_automation_controls())
         right_panel_layout.addLayout(self.init_usb_port_controls())
         right_panel_layout.addLayout(self.init_usb_file_controls())
+        right_panel_layout.addLayout(self.init_mute_controls())
 
-        # Use EditorBaseWidget for consistent scrollable layout structure
+        # --- Use EditorBaseWidget for consistent scrollable layout structure
         self.base_widget = EditorBaseWidget(parent=self, analog=False)
         self.base_widget.setup_scrollable_content()
         container_layout = self.base_widget.get_container_layout()
@@ -277,6 +325,192 @@ class MidiFileEditor(SynthEditor):
         layout.addWidget(self.ui.midi_suppress_control_changes_checkbox)
 
         return layout
+
+    def detect_and_assign_drum_tracks(self) -> None:
+        """
+        Detect drum tracks in the loaded MIDI file and assign Channel 10 (1-based) to them.
+        
+        This analyzes all tracks using heuristics and automatically sets the channel
+        spinboxes for tracks identified as drum tracks.
+        """
+        if not self.midi_state.file:
+            show_message_box(
+                "No MIDI File Loaded",
+                "Please load a MIDI file first before detecting drum tracks.",
+                QMessageBox.Warning,
+            )
+            return
+        
+        try:
+            # Detect drum tracks (returns list of (track_index, analysis_dict) tuples)
+            drum_tracks = detect_drum_tracks(self.midi_state.file, min_score=70.0)
+            
+            if not drum_tracks:
+                show_message_box(
+                    "No Drum Tracks Found",
+                    "No tracks were identified as drum tracks with high confidence (score >= 70).\n\n"
+                    "Try lowering the threshold or manually assign channels.",
+                    QMessageBox.Information,
+                )
+                return
+            
+            # Update the channel spinboxes for detected drum tracks
+            # Channel 10 (1-based) = Channel 9 (0-based)
+            drum_channel_display = 10  # 1-based display channel
+            drum_channel_binary = 9    # 0-based binary channel
+            
+            updated_tracks = []
+            for track_index, analysis in drum_tracks:
+                if track_index in self.ui.midi_track_viewer._track_channel_spins:
+                    spin = self.ui.midi_track_viewer._track_channel_spins[track_index]
+                    spin.setValue(drum_channel_display)
+                    track_name = analysis.get("track_name") or f"Track {track_index + 1}"
+                    updated_tracks.append(f"Track {track_index + 1} ({track_name}) - Score: {analysis['score']:.1f}")
+            
+            # Show success message
+            tracks_list = "\n".join(f"  • {t}" for t in updated_tracks)
+            show_message_box(
+                "Drum Tracks Detected",
+                f"Found {len(updated_tracks)} drum track(s) and set them to Channel 10:\n\n{tracks_list}\n\n"
+                "Click 'Apply All Track Changes' to save the changes.",
+                QMessageBox.Information,
+            )
+            
+            log.message(f"🎵 Detected {len(updated_tracks)} drum track(s) and set to Channel 10")
+            
+        except Exception as ex:
+            log.error(f"❌ Error detecting drum tracks: {ex}")
+            import traceback
+            log.error(traceback.format_exc())
+            show_message_box(
+                "Error",
+                f"An error occurred while detecting drum tracks:\n\n{ex}",
+                QMessageBox.Critical,
+            )
+
+    def classify_and_assign_tracks(self) -> None:
+        """
+        Classify non-drum tracks into Bass, Keys/Guitars, and Strings, then assign
+        them to appropriate channels:
+        - Bass -> Channel 1 (Digital Synth 1)
+        - Keys/Guitars -> Channel 2 (Digital Synth 2)
+        - Strings -> Channel 3 (Analog Synth)
+        """
+        if not self.midi_state.file:
+            show_message_box(
+                "No MIDI File Loaded",
+                "Please load a MIDI file first before classifying tracks.",
+                QMessageBox.Warning,
+            )
+            return
+        
+        try:
+            # First, detect drum tracks to exclude them
+            drum_tracks = detect_drum_tracks(self.midi_state.file, min_score=70.0)
+            drum_track_indices = [idx for idx, _ in drum_tracks]
+            
+            # Classify remaining tracks
+            classifications = classify_tracks(
+                self.midi_state.file,
+                exclude_drum_tracks=drum_track_indices,
+                min_score=30.0
+            )
+            
+            # Channel assignments (1-based display channels)
+            channel_assignments = {
+                "bass": 1,  # Digital Synth 1
+                "keys_guitars": 2,  # Digital Synth 2
+                "strings": 3,  # Analog Synth
+            }
+            
+            # Update channel spinboxes
+            updated_tracks = {
+                "bass": [],
+                "keys_guitars": [],
+                "strings": [],
+                "unclassified": [],
+            }
+            
+            for category, tracks in classifications.items():
+                if category == "unclassified":
+                    continue
+                    
+                channel = channel_assignments[category]
+                for track_index, analysis in tracks:
+                    if track_index in self.ui.midi_track_viewer._track_channel_spins:
+                        spin = self.ui.midi_track_viewer._track_channel_spins[track_index]
+                        spin.setValue(channel)
+                        track_name = analysis.get("track_name") or f"Track {track_index + 1}"
+                        score = analysis["scores"][category]
+                        updated_tracks[category].append(
+                            f"Track {track_index + 1} ({track_name}) - Score: {score:.1f}"
+                        )
+            
+            # Handle unclassified tracks
+            for track_index, analysis in classifications["unclassified"]:
+                track_name = analysis.get("track_name") or f"Track {track_index + 1}"
+                scores = analysis["scores"]
+                max_score = max(scores.values())
+                max_category = max(scores.items(), key=lambda x: x[1])[0]
+                updated_tracks["unclassified"].append(
+                    f"Track {track_index + 1} ({track_name}) - Best: {max_category} ({max_score:.1f})"
+                )
+            
+            # Build result message
+            total_classified = sum(len(tracks) for cat, tracks in updated_tracks.items() if cat != "unclassified")
+            
+            if total_classified == 0:
+                show_message_box(
+                    "No Tracks Classified",
+                    "No tracks were classified with sufficient confidence (score >= 30).\n\n"
+                    "Tracks may need manual assignment.",
+                    QMessageBox.Information,
+                )
+                return
+            
+            message_parts = [f"Classified {total_classified} track(s):\n"]
+            
+            if updated_tracks["bass"]:
+                message_parts.append(f"\n🎸 Bass (Channel 1 - Digital Synth 1):")
+                for track in updated_tracks["bass"]:
+                    message_parts.append(f"  • {track}")
+            
+            if updated_tracks["keys_guitars"]:
+                message_parts.append(f"\n🎹 Keys/Guitars (Channel 2 - Digital Synth 2):")
+                for track in updated_tracks["keys_guitars"]:
+                    message_parts.append(f"  • {track}")
+            
+            if updated_tracks["strings"]:
+                message_parts.append(f"\n🎻 Strings (Channel 3 - Analog Synth):")
+                for track in updated_tracks["strings"]:
+                    message_parts.append(f"  • {track}")
+            
+            if updated_tracks["unclassified"]:
+                message_parts.append(f"\n❓ Unclassified ({len(updated_tracks['unclassified'])} track(s)):")
+                for track in updated_tracks["unclassified"][:5]:  # Limit to first 5
+                    message_parts.append(f"  • {track}")
+                if len(updated_tracks["unclassified"]) > 5:
+                    message_parts.append(f"  ... and {len(updated_tracks['unclassified']) - 5} more")
+            
+            message_parts.append("\n\nClick 'Apply All Track Changes' to save the changes.")
+            
+            show_message_box(
+                "Tracks Classified",
+                "\n".join(message_parts),
+                QMessageBox.Information,
+            )
+            
+            log.message(f"🎵 Classified {total_classified} track(s) into Bass, Keys/Guitars, and Strings")
+            
+        except Exception as ex:
+            log.error(f"❌ Error classifying tracks: {ex}")
+            import traceback
+            log.error(traceback.format_exc())
+            show_message_box(
+                "Error",
+                f"An error occurred while classifying tracks:\n\n{ex}",
+                QMessageBox.Critical,
+            )
 
     def init_automation_controls(self) -> QHBoxLayout:
         """
@@ -480,7 +714,7 @@ class MidiFileEditor(SynthEditor):
                 rebuilt.append(nm_copy)
                 first = False
 
-        # Write back
+        # --- Write back
         track.clear()
         for m in rebuilt:
             track.append(m)
@@ -489,7 +723,7 @@ class MidiFileEditor(SynthEditor):
         """
         init_usb_port_controls
 
-        :return:
+        :return: QHBoxLayout
         """
         layout = QHBoxLayout()
         layout.addWidget(QLabel("USB Port for recording"))
@@ -503,7 +737,6 @@ class MidiFileEditor(SynthEditor):
             self.usb_populate_devices
         )
         layout.addWidget(self.ui.usb_port_refresh_devices_button)
-
         return layout
 
     def init_usb_file_controls(self) -> QHBoxLayout:
@@ -512,13 +745,8 @@ class MidiFileEditor(SynthEditor):
 
         :return: QHBoxLayout
         """
-        layout = QHBoxLayout()
-        layout.addWidget(QLabel("USB file to save recording"))
-
         self.ui.usb_file_select = QPushButton("No File Selected")
         self.ui.usb_file_select.clicked.connect(self.usb_select_recording_file)
-        layout.addWidget(self.ui.usb_file_select)
-
         self.ui.usb_file_record_checkbox = QCheckBox("Save USB recording to file")
         JDXi.ThemeManager.apply_partial_switch(self.ui.usb_file_record_checkbox)
         self.ui.usb_file_record_checkbox.setChecked(
@@ -527,22 +755,31 @@ class MidiFileEditor(SynthEditor):
         self.ui.usb_file_record_checkbox.stateChanged.connect(
             self.on_usb_save_recording_toggled
         )
-        layout.addWidget(self.ui.usb_file_record_checkbox)
-
-        # Auto generate filename based on current date and time and Midi file
+        # --- Auto generate filename based on current date and time and Midi file
         self.ui.usb_file_auto_generate_checkbox = QCheckBox(
-            "Auto generate .Wav filename based on date, time and Midi file"
+            "Generate .Wav filename based on date, time and Midi file"
         )
         JDXi.ThemeManager.apply_partial_switch(self.ui.usb_file_auto_generate_checkbox)
         self.ui.usb_file_auto_generate_checkbox.setChecked(False)
         self.ui.usb_file_auto_generate_checkbox.stateChanged.connect(
             self.on_usb_file_auto_generate_toggled
         )
-        layout.addWidget(self.ui.usb_file_auto_generate_checkbox)
 
-        # Add Mute Channels section
-        layout.addWidget(QLabel("Mute Channels:"))
-        # Create mute buttons for channels 1-16
+        layout_widgets: list[QWidget] = [QLabel("USB file to save recording"),
+                                         self.ui.usb_file_select,
+                                         self.ui.usb_file_record_checkbox,
+                                         self.ui.usb_file_auto_generate_checkbox]
+        layout = create_layout_with_widgets(layout_widgets)
+        return layout
+
+    def init_mute_controls(self) -> QHBoxLayout:
+        """
+        init_usb_file_controls
+
+        :return: QHBoxLayout
+        """
+        layout_widgets: list[QWidget] = [QLabel("Mute Channels:")]
+        # --- Create mute buttons for channels 1-16
         self.mute_channel_buttons = {}
         for ch in range(1, 17):
             btn = QPushButton(f"{ch}")
@@ -555,14 +792,14 @@ class MidiFileEditor(SynthEditor):
                 "QPushButton:checked { background-color: #cc0000; color: white; }"
             )
             self.mute_channel_buttons[ch] = btn
-            layout.addWidget(btn)
+            layout_widgets.append(btn)
 
-        # Add "Apply All Track Changes" button
+        # --- Add "Apply All Track Changes" button
         apply_all_btn = QPushButton("Apply All Track Changes")
         apply_all_btn.setToolTip("Apply all Track Name and MIDI Channel changes")
         apply_all_btn.clicked.connect(self._apply_all_track_changes)
-        layout.addWidget(apply_all_btn)
-
+        layout_widgets.append(apply_all_btn)
+        layout = create_layout_with_widgets(layout_widgets)
         return layout
 
     def _toggle_channel_mute(self, channel: int, is_muted: bool) -> None:
@@ -878,10 +1115,20 @@ class MidiFileEditor(SynthEditor):
                 self.update_auto_wav_filename()
 
             if not self.ui.usb_file_output_name:
-                log.message("No output file selected.")
+                log.warning("⚠️ No output file selected for WAV recording. Please select a file or enable auto-generate.")
+                show_message_box(
+                    "No Output File",
+                    "Please select a WAV output file or enable auto-generate filename.",
+                    QMessageBox.Icon.Warning
+                )
                 return
 
+            log.message(f"🎙️ Starting WAV recording to: {self.ui.usb_file_output_name}")
+            log.message(f"🎙️ Recording duration: {self.midi_state.file_duration_seconds} seconds")
+            
             selected_index = self.ui.usb_port_select_combo.currentIndex()
+            log.message(f"🎙️ Using USB input device index: {selected_index}")
+            
             start_recording(
                 self.usb_recorder,
                 self.midi_state.file_duration_seconds,
@@ -890,7 +1137,9 @@ class MidiFileEditor(SynthEditor):
                 selected_index,
             )
         except Exception as ex:
-            log.error(f"Error {ex} occurred starting recording")
+            log.error(f"❌ Error {ex} occurred starting recording")
+            import traceback
+            log.error(traceback.format_exc())
             show_message_box(
                 "Error Saving File", f"Error {ex} occurred starting recording"
             )

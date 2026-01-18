@@ -201,6 +201,22 @@ class DrumCommonEditor(SynthEditor):
         )
         self.partial_tab_widget.addTab(self.common_section, common_icon, "Common")
 
+        # Create and add the mixer tab
+        from jdxi_editor.ui.editors.drum.mixer import DrumKitMixer
+        
+        mixer_widget = DrumKitMixer(midi_helper=self.midi_helper, parent=self)
+        mixer_icon = JDXi.IconRegistry.get_icon(
+            "ei.adjust-alt", color=JDXi.Style.GREY
+        )
+        if mixer_icon is None or mixer_icon.isNull():
+            # Fallback icon if mixer icon not available
+            mixer_icon = JDXi.IconRegistry.get_icon(
+                "ph.sliders-bold", color=JDXi.Style.GREY
+            )
+        self.presets_parts_tab_widget.addTab(
+            mixer_widget, mixer_icon, "Drum Kit Mixer"
+        )
+
         self.update_instrument_image()
         self.partial_tab_widget.currentChanged.connect(self.update_partial_number)
         self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)

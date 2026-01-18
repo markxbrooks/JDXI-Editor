@@ -13,8 +13,17 @@ def on_usb_recording_finished(output_file: str):
     :param output_file: str
     :return: None
     """
+    # Ensure output_file is a string
+    if not isinstance(output_file, str):
+        log.error(f"Recording finished, but output_file is not a string: {type(output_file)} - {output_file}")
+        return
+    
+    if not output_file:
+        log.error("Recording finished, but no output file path provided.")
+        return
+        
     if not os.path.exists(output_file):
-        log.error("Recording finished, but no output file returned.")
+        log.error(f"Recording finished, but output file does not exist: {output_file}")
         return
     log.message(f"Recording finished. File successfully saved to {output_file}")
 
@@ -26,7 +35,12 @@ def on_usb_recording_error(message: str):
     :param message: str
     :return: None
     """
-    log.error(f"Error during recording: {message}")
+    # Ensure message is a string
+    if not isinstance(message, str):
+        error_str = str(message) if message is not None else "Unknown error"
+        log.error(f"Error during recording: {error_str} (type: {type(message)})")
+    else:
+        log.error(f"Error during recording: {message}")
 
 
 def start_recording(
