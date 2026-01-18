@@ -960,6 +960,69 @@ class DigitalSynth2Editor(DigitalSynthEditor):
             parent=parent,
         )
 
+class MyHandler:
+    def __init__(self, partial_no):
+        self.partial_no = partial_no
+        self._build_registry()
+
+    def _build_registry(self):
+        self._registry = {
+            DigitalPartialParam.OSC_WAVE: self._wave_handler,
+            DigitalPartialParam.FILTER_MODE_SWITCH: self._filter_mode_handler,
+            DigitalPartialParam.LFO_SHAPE: self._lfo_shape_handler,
+            DigitalPartialParam.MOD_LFO_SHAPE: self._mod_lfo_shape_handler,
+        }
+
+    def _wave_handler(self, param_value, successes, failures):
+        self._update_waveform_buttons(self.partial_no, param_value)
+
+    def _filter_mode_handler(self, param_value, successes, failures):
+        self._update_filter_mode_buttons(self.partial_no, param_value)
+        self._update_filter_state(self.partial_no, value=param_value)
+
+    def _lfo_shape_handler(self, param_value, successes, failures):
+        self._update_lfo_shape_buttons(self.partial_no, param_value)
+
+    def _mod_lfo_shape_handler(self, param_value, successes, failures):
+        self._update_mod_lfo_shape_buttons(self.partial_no, param_value)
+
+    def handle(self, param, param_value, successes, failures):
+        func = self._registry.get(param)
+        if func:
+            func(param_value, successes, failures)
+            return True
+        return False
+
+    def process_sysex_data(self, sysex_data):
+        failures = []
+        successes = []
+        handler = MyHandler(self.partial_no)
+    
+        for param_name, param_value in sysex_data.items():
+            param = DigitalPartialParam.get_by_name(param_name)
+            if not param:
+                failures.append(param_name)
+                continue
+            if not handler.handle(param, param_value, successes, failures):
+                if param in self.adsr_parameters:
+                    self._update_partial_adsr_widgets(
+                        self.partial_no, param, param_value, successes, failures
+                    )
+                elif param in self.pitch_env_parameters:
+                    self._update_partial_pitch_env_widgets(
+                        self.partial_no, param, param_value, successes, failures
+                    )
+                elif param in self.pwm_parameters:
+                    self._update_pulse_width_widgets(
+                        self.partial_no, param, param_value, successes, failures
+                    )
+                else:
+                    self._update_partial_slider(
+                        self.partial_no, param, param_value, successes, failures
+                    )
+    
+        return successes, failures
+
 
 class DigitalSynth3Editor(DigitalSynthEditor):
     """class for Digital Synth Editor containing 3 partials"""
