@@ -1,6 +1,10 @@
 class AnalogDisplayName:
     """Analog UI Display Names"""
     
+    # Widgets
+    CONTROLS = "Controls"
+    ADSR = "ADSR"
+    
     # Amp Parameters 
     AMP_LEVEL = "Level"
     AMP_LEVEL_KEYFOLLOW = "Keyfollow"
