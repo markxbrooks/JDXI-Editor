@@ -10,7 +10,13 @@ class AnalogDisplayName:
     AMP_LEVEL_KEYFOLLOW = "Keyfollow"
     AMP_LEVEL_VELOCITY_SENSITIVITY = "Velocity"
     
+    # --- Common Controls
     OCTAVE_SHIFT = "Octave shift"
+    LEGATO_SWITCH = "Legato"
+    PORTAMENTO_SWITCH = "Portamento"
+    PITCH_BEND_UP = "Pitch Bend Up"
+    PITCH_BEND_DOWN = "Pitch Bend Down"
+    PORTAMENTO_TIME = "Portamento Time"
 
     # LFO Parameters
     LFO_TEMPO_SYNC_NOTE = "Sync Note"
