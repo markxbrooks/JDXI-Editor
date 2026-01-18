@@ -70,10 +70,10 @@ class AnalogAmpSection(SectionBaseWidget):
             JDXi.UI.IconRegistry.TUNE, color=JDXi.UI.Style.GREY
         )
         self.analog_amp_tab_widget.addTab(
-            amp_controls_widget, controls_icon, "Controls"
+            amp_controls_widget, controls_icon, AnalogDisplayName.CONTROLS
         )
         adsr_icon = create_adsr_icon()
-        self.analog_amp_tab_widget.addTab(amp_adsr_group, adsr_icon, "ADSR")
+        self.analog_amp_tab_widget.addTab(amp_adsr_group, adsr_icon, AnalogDisplayName.ADSR)
         JDXi.UI.ThemeManager.apply_tabs_style(self.analog_amp_tab_widget, analog=True)
 
         self.main_rows_layout = self.create_main_rows_layout()
