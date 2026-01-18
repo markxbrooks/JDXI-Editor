@@ -793,12 +793,12 @@ class AnalogSynthEditor(SynthEditor):
 
         # --- Build preset options, values, and categories from preset_list
         preset_options = [
-            f"{preset['id']} - {preset['name']}" for preset in self.preset_list
+            f"{preset['id']} - {preset['name']}" for preset in self.preset_preset_list
         ]
         # --- Convert preset IDs to integers for SearchableFilterableComboBox (e.g., "001" -> 1)
-        preset_values = [int(preset["id"]) for preset in self.preset_list]
+        preset_values = [int(preset["id"]) for preset in self.preset_preset_list]
         preset_categories = sorted(
-            set(preset["category"] for preset in self.preset_list)
+            set(preset["category"] for preset in self.preset_preset_list)
         )
 
         # --- Category filter function for presets
@@ -812,7 +812,7 @@ class AnalogSynthEditor(SynthEditor):
             )
             if preset_id_str:
                 # --- Find the preset in the list and check its category
-                for preset in self.preset_list:
+                for preset in self.preset_preset_list:
                     if preset["id"] == preset_id_str:
                         return preset["category"] == category
             return False

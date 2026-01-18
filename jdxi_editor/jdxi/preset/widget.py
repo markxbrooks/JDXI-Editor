@@ -134,6 +134,10 @@ class InstrumentPresetWidget(QWidget):
 
     def _add_normal_preset_content(self, layout: QVBoxLayout, synth_type: str):
         """Add normal preset selection content to the layout."""
+        from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
+        from jdxi_editor.midi.data.programs.digital import DIGITAL_PRESET_LIST
+        from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
+
         # Add icon row at the top
         icon_row = JDXi.UI.IconRegistry.create_generic_musical_icon_row()
         layout.addLayout(icon_row)
@@ -151,14 +155,25 @@ class InstrumentPresetWidget(QWidget):
         self.instrument_selection_label = QLabel(f"Select a {synth_type} synth:")
         layout.addWidget(self.instrument_selection_label)
 
+        # Determine the correct preset list based on synth_type
+        if synth_type == "Analog":
+            preset_list = ANALOG_PRESET_LIST
+        elif synth_type == "Digital":
+            preset_list = DIGITAL_PRESET_LIST
+        elif synth_type == "Drums":
+            preset_list = DRUM_KIT_LIST
+        else:
+            # Default to digital preset list if synth_type is unknown
+            preset_list = DIGITAL_PRESET_LIST
+
         # Build preset options, values, and categories from preset_list
         preset_options = [
-            f"{preset['id']} - {preset['name']}" for preset in self.parent.preset_list
+            f"{preset['id']} - {preset['name']}" for preset in preset_list
         ]
         # Convert preset IDs to integers for SearchableFilterableComboBox (e.g., "001" -> 1)
-        preset_values = [int(preset["id"]) for preset in self.parent.preset_list]
+        preset_values = [int(preset["id"]) for preset in preset_list]
         preset_categories = sorted(
-            set(preset["category"] for preset in self.parent.preset_list)
+            set(preset["category"] for preset in preset_list)
         )
 
         # Category filter function for presets
@@ -172,7 +187,7 @@ class InstrumentPresetWidget(QWidget):
             )
             if preset_id_str:
                 # Find the preset in the list and check its category
-                for preset in self.parent.preset_list:
+                for preset in preset_list:
                     if preset["id"] == preset_id_str:
                         return preset["category"] == category
             return False

@@ -27,6 +27,7 @@ Each simple editor manually sets up:
 - Adding centered content to base widget
 
 **Example (Effects Editor):**
+
 ```python
 # ~50 lines of boilerplate
 self.base_widget = EditorBaseWidget(parent=self, analog=False)
@@ -39,8 +40,8 @@ self.main_layout.addWidget(self.base_widget)
 
 self.title_label = DigitalTitle("Effects")
 JDXiThemeManager.apply_instrument_title_label(self.title_label)
-self.image_label = QLabel()
-self.image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+self.preset_image_label = QLabel()
+self.preset_image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 self.default_image = "effects.png"
 self.instrument_icon_folder = "effects"
 self.update_instrument_image()
@@ -49,7 +50,7 @@ title_group_box = QGroupBox()
 title_group_layout = QHBoxLayout()
 title_group_box.setLayout(title_group_layout)
 title_group_layout.addWidget(self.title_label)
-title_group_layout.addWidget(self.image_label)
+title_group_layout.addWidget(self.preset_image_label)
 
 centered_content = QWidget()
 main_row_hlayout = QHBoxLayout(centered_content)

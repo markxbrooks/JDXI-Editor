@@ -53,7 +53,7 @@ class BasicEditor(SynthEditor):
     def __init__(self, midi_helper: MidiIOHelper, parent=None):
         super().__init__(midi_helper=midi_helper, parent=parent)
         self.default_image = None
-        self.image_label = None
+        self.preset_image_label = None
         self.setMinimumWidth(JDXi.UI.Dimensions.EDITOR_BASIC.WIDTH)
         self.setMinimumHeight(JDXi.UI.Dimensions.EDITOR_BASIC.HEIGHT)
 
@@ -65,7 +65,9 @@ class BasicEditor(SynthEditor):
                 JDXi.UI.Dimensions.EDITOR_BASIC.IMAGE_HEIGHT,
                 Qt.TransformationMode.SmoothTransformation,
             )  # Resize to 150px height
-            self.image_label.setPixmap(scaled_pixmap)
+            # Only set pixmap if preset_image_label exists (some editors may not use it)
+            if self.preset_image_label is not None:
+                self.preset_image_label.setPixmap(scaled_pixmap)
             return True
         return False
 
@@ -78,4 +80,6 @@ class BasicEditor(SynthEditor):
         )
         if not image_loaded:
             if not self.load_and_set_image(default_image_path):
-                self.image_label.clear()  # Clear label if default image is also missing
+                # Only clear if preset_image_label exists (some editors may not use it)
+                if self.preset_image_label is not None:
+                    self.preset_image_label.clear()  # Clear label if default image is also missing

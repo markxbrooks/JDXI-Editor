@@ -89,6 +89,7 @@ from jdxi_editor.ui.editors.helpers.program import (
     get_program_by_id,
 )
 from jdxi_editor.ui.editors.io.helper import create_placeholder_icon
+from jdxi_editor.ui.editors.io.preset_widget import PresetWidget
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
 from jdxi_editor.ui.widgets.combo_box.searchable_filterable import (
     SearchableFilterableComboBox,
@@ -142,16 +143,16 @@ class ProgramEditor(BasicEditor):
         self.program_number_combo_box = None
         self.program_name = ""
         self.bank_combo_box = None
-        self.load_button = None
+        # self.preset.load_button = None
         self.save_button = None
-        self.image_label = None
+       #  self.preset.image_label = None
         self.title_label = None
         self.bank_label = None
         self.program_label = None
         self.genre_combo_box = None
+        self.preset: PresetWidget = PresetWidget(parent=self)
         self.preset_type = None
         self.programs = {}  # Maps program names to numbers
-        self.preset_list = None
         self._actual_preset_list = (
             DIGITAL_PRESET_LIST  # Default preset list for combo box
         )
@@ -309,15 +310,15 @@ class ProgramEditor(BasicEditor):
 
         program_preset_hlayout = QHBoxLayout()
         program_preset_hlayout.addStretch()
-        # scrolled_area_container_layout.addLayout(program_preset_hlayout)
 
         program_group = self._create_program_selection_box()
         program_preset_hlayout.addStretch()
         program_preset_hlayout.addWidget(program_group)
 
         program_preset_hlayout.addStretch()
-
-        preset_group = self._create_preset_selection_widget()
+        
+        # Create PresetWidget and add it to the tab widget
+        # Note: self.preset was already initialized in __init__, but we need to add it to the UI
         try:
             presets_icon = JDXi.UI.IconRegistry.get_icon(
                 JDXi.UI.IconRegistry.MUSIC_NOTE_MULTIPLE, color=JDXi.UI.Style.GREY
@@ -328,14 +329,15 @@ class ProgramEditor(BasicEditor):
             presets_icon = JDXi.UI.IconRegistry.get_icon(
                 JDXi.UI.IconRegistry.MUSIC, color=JDXi.UI.Style.GREY
             )
-        self.program_preset_tab_widget.addTab(preset_group, presets_icon, "Presets")
+        self.program_preset_tab_widget.addTab(self.preset, presets_icon, "Presets")
+        log.message(
+            f"📑 Added 'Presets' tab to program_preset_tab_widget (total tabs: {self.program_preset_tab_widget.count()})"
+        )
         program_preset_hlayout.addStretch()
 
         self.title_left_vlayout.addLayout(program_preset_hlayout)
         self.title_left_vlayout.addStretch()
 
-        transport_group = self._create_transport_group()
-        # scrolled_area_container_layout.addWidget(transport_group)
         self.populate_programs()
 
         mixer_section = self._create_mixer_section()
@@ -354,162 +356,9 @@ class ProgramEditor(BasicEditor):
         )
         self.update_instrument_image()
 
-    def _create_preset_selection_widget(self) -> QWidget:
-        """
-        create_preset_selection_widget
-
-        :return: QWidget
-        """
-        # Program controls group
-        preset_widget = QWidget()
-        preset_vlayout = QVBoxLayout()
-        preset_vlayout.setContentsMargins(
-            JDXi.UI.Style.PADDING,
-            JDXi.UI.Style.PADDING,
-            JDXi.UI.Style.PADDING,
-            JDXi.UI.Style.PADDING,
-        )
-        preset_vlayout.setSpacing(JDXi.UI.Style.SPACING)
-        preset_widget.setLayout(preset_vlayout)
-
-        # Add icon row at the top (centered with stretch on both sides)
-        icon_row_container = QHBoxLayout()
-        icon_row_container.addStretch()
-        icon_row = JDXi.UI.IconRegistry.create_generic_musical_icon_row()
-        # Transfer all items from icon_row to icon_row_container
-        while icon_row.count() > 0:
-            item = icon_row.takeAt(0)
-            if item.widget():
-                icon_row_container.addWidget(item.widget())
-            elif item.spacerItem():
-                icon_row_container.addItem(item.spacerItem())
-        icon_row_container.addStretch()
-        preset_vlayout.addLayout(icon_row_container)
-        preset_vlayout.addSpacing(10)  # Add spacing after icon row
-
-        self.image_label = QLabel()
-        self.image_label.setAlignment(
-            Qt.AlignmentFlag.AlignVCenter
-        )  # Center align the image
-        preset_vlayout.addWidget(self.image_label)
-        # Synth type selection combo box
-        self.digital_preset_type_combo = QComboBox()
-        self.digital_preset_type_combo.addItems(
-            ["Digital Synth 1", "Digital Synth 2", "Drums", "Analog Synth"]
-        )
-        self.digital_preset_type_combo.currentIndexChanged.connect(
-            self.on_preset_type_changed
-        )
-        preset_vlayout.addWidget(self.digital_preset_type_combo)
-
-        # Create SearchableFilterableComboBox for preset selection
-        # Initialize with empty data - will be populated when preset type is selected
-        self.preset_combo_box = SearchableFilterableComboBox(
-            label="Preset",
-            options=[],
-            values=[],
-            categories=[],
-            show_label=True,
-            show_search=True,
-            show_category=True,
-            search_placeholder="Search presets...",
-        )
-        preset_vlayout.addWidget(self.preset_combo_box)
-
-        # Initialize the combo box with default preset type (Digital Synth 1)
-        # This will be called again when preset type changes, but we need initial population
-        QTimer.singleShot(0, self._update_preset_combo_box)
-
-        # Load button
-        self.load_button = QPushButton(
-            JDXi.UI.IconRegistry.get_icon(
-                JDXi.UI.IconRegistry.FOLDER_NOTCH_OPEN, color=JDXi.UI.Style.FOREGROUND
-            ),
-            "Load Preset",
-        )
-        self.load_button.clicked.connect(lambda: self.load_preset_by_program_change())
-        preset_vlayout.addWidget(self.load_button)
-
-        # Connect combo box valueChanged to load preset directly (optional)
-        # self.preset_combo_box.valueChanged.connect(self.load_preset_by_program_change)
-        return preset_widget
-
-    def load_preset_by_program_change(self, preset_id: str = None) -> None:
-        """
-        Load a preset by program change.
-
-        :param preset_id: str Optional preset ID (if None, gets from combo box)
-        """
-        # Get preset ID from combo box value if not provided
-        if preset_id is None:
-            # Get the current value from SearchableFilterableComboBox
-            # The value is the preset ID as integer (e.g., 1 for "001")
-            preset_id_int = self.preset_combo_box.value()
-            preset_id = str(preset_id_int).zfill(3)  # Convert back to 3-digit format
-
-        program_number = str(preset_id).zfill(3)  # Ensure 3-digit format
-        log.message("=======load_preset_by_program_change=======")
-        log.parameter("preset_id", preset_id)
-        log.parameter("program_number", program_number)
-
-        # Get MSB, LSB, PC values from the preset using get_preset_parameter_value
-        msb = get_preset_parameter_value("msb", program_number, self.preset_list)
-        lsb = get_preset_parameter_value("lsb", program_number, self.preset_list)
-        pc = get_preset_parameter_value("pc", program_number, self.preset_list)
-
-        if None in [msb, lsb, pc]:
-            log.message(
-                f"Could not retrieve preset parameters for program {program_number}"
-            )
-            return
-
-        log.message("retrieved msb, lsb, pc :")
-        log.parameter("combo box msb", msb)
-        log.parameter("combo box lsb", lsb)
-        log.parameter("combo box pc", pc)
-        log_midi_info(msb, lsb, pc)
-
-        # Send bank select and program change
-        # Note: PC is 0-based in MIDI, so subtract 1
-        self.midi_helper.send_bank_select_and_program_change(
-            self.midi_channel,  # MIDI channel
-            msb,  # MSB is already correct
-            lsb,  # LSB is already correct
-            pc - 1,  # Convert 1-based PC to 0-based
-        )
-        self.data_request()
-
     def on_category_changed(self, _: int) -> None:
         """Handle category selection change - no longer needed, handled by SearchableFilterableComboBox."""
         pass
-
-    def _create_transport_group(self) -> QGroupBox:
-        """
-        _create_transport_group
-
-        :return: QGroupBox
-        Transport controls area
-        """
-        transport_group = QGroupBox("Transport")
-        transport_layout = QHBoxLayout()
-        self.start_button = QPushButton(
-            JDXi.UI.IconRegistry.get_icon(
-                JDXi.UI.IconRegistry.PLAY, color=JDXi.UI.Style.FOREGROUND
-            ),
-            "Play",
-        )
-        self.stop_button = QPushButton(
-            JDXi.UI.IconRegistry.get_icon(
-                JDXi.UI.IconRegistry.STOP, color=JDXi.UI.Style.FOREGROUND
-            ),
-            "Stop",
-        )
-        self.start_button.clicked.connect(self.start_playback)
-        self.stop_button.clicked.connect(self.stop_playback)
-        transport_layout.addWidget(self.start_button)
-        transport_layout.addWidget(self.stop_button)
-        transport_group.setLayout(transport_layout)
-        return transport_group
 
     def _create_program_selection_box(self) -> QGroupBox:
         """
@@ -578,14 +427,14 @@ class ProgramEditor(BasicEditor):
         # Store reference to actual program list for use in filtering
         self._program_list_data = []
         # Load button
-        self.load_button = QPushButton(
+        self.preset.load_button = QPushButton(
             JDXi.UI.IconRegistry.get_icon(
                 JDXi.UI.IconRegistry.FOLDER_NOTCH_OPEN, color=JDXi.UI.Style.FOREGROUND
             ),
             "Load Program",
         )
-        self.load_button.clicked.connect(self.load_program)
-        program_vlayout.addWidget(self.load_button)
+        self.preset.load_button.clicked.connect(self.load_program)
+        program_vlayout.addWidget(self.preset.load_button)
         return program_group
 
     def edit_program_name(self):
@@ -607,11 +456,17 @@ class ProgramEditor(BasicEditor):
 
         :param index: int
         Handle preset type selection change
+        Note: This delegates to PresetWidget's on_preset_type_changed, but also
+        updates ProgramEditor's internal state.
         """
-        preset_type = self.digital_preset_type_combo.currentText()
+        preset_type = self.preset.digital_preset_type_combo.currentText()
         log.message(f"preset_type: {preset_type}")
+        # Update ProgramEditor's channel and preset lists
         self.set_channel_and_preset_lists(preset_type)
-        self._update_preset_combo_box()
+        # PresetWidget handles its own combo box update via its on_preset_type_changed
+        # But we also need to update ProgramEditor's combo box if it exists
+        if hasattr(self, '_update_preset_combo_box'):
+            self._update_preset_combo_box()
 
     def set_channel_and_preset_lists(self, preset_type: str) -> None:
         """
@@ -622,89 +477,27 @@ class ProgramEditor(BasicEditor):
         """
         if preset_type == "Digital Synth 1":
             self.midi_channel = MidiChannel.DIGITAL_SYNTH_1
-            self.preset_list = JDXiPresetToneList.DIGITAL_PROGRAM_CHANGE
+            self.preset.preset_list = JDXiPresetToneList.DIGITAL_PROGRAM_CHANGE
         elif preset_type == "Digital Synth 2":
             self.midi_channel = MidiChannel.DIGITAL_SYNTH_2
-            self.preset_list = JDXiPresetToneList.DIGITAL_PROGRAM_CHANGE
+            self.preset.preset_list = JDXiPresetToneList.DIGITAL_PROGRAM_CHANGE
         elif preset_type == "Drums":
             self.midi_channel = MidiChannel.DRUM_KIT
-            self.preset_list = JDXiPresetToneList.DRUM_PROGRAM_CHANGE
+            self.preset.preset_list = JDXiPresetToneList.DRUM_PROGRAM_CHANGE
         elif preset_type == "Analog Synth":
             self.midi_channel = MidiChannel.ANALOG_SYNTH
-            self.preset_list = JDXiPresetToneList.ANALOG_PROGRAM_CHANGE
+            self.preset.preset_list = JDXiPresetToneList.ANALOG_PROGRAM_CHANGE
 
     def _update_preset_combo_box(self) -> None:
         """
         Update the SearchableFilterableComboBox with current preset list.
         Called when preset type changes.
+        Note: This method is now handled by PresetWidget._update_preset_combo_box(),
+        but kept here for backward compatibility if needed.
         """
-        preset_type = self.digital_preset_type_combo.currentText()
-        if preset_type in ["Digital Synth 1", "Digital Synth 2"]:
-            preset_list = DIGITAL_PRESET_LIST
-        elif preset_type == "Drums":
-            preset_list = DRUM_KIT_LIST
-        elif preset_type == "Analog Synth":
-            preset_list = ANALOG_PRESET_LIST
-        else:
-            preset_list = DIGITAL_PRESET_LIST  # Default to digital synth 1
-
-        # Store the actual preset list for use in load_preset_by_program_change
-        # Note: self.preset_list is still set to JDXiPresetToneList enum in set_channel_and_preset_lists
-        # for use with get_preset_parameter_value, but we also need the actual list for the combo box
-        self._actual_preset_list = preset_list
-
-        # Build options, values, and categories
-        preset_options = [
-            f"{preset['id']} - {preset['name']}" for preset in self._actual_preset_list
-        ]
-        # Convert preset IDs to integers for SearchableFilterableComboBox (e.g., "001" -> 1)
-        preset_values = [int(preset["id"]) for preset in self._actual_preset_list]
-        preset_categories = sorted(
-            set(preset["category"] for preset in self._actual_preset_list)
-        )
-
-        # Category filter function for presets
-        def preset_category_filter(preset_display: str, category: str) -> bool:
-            """Check if a preset matches a category."""
-            if not category:
-                return True
-            # Extract preset ID from display string (format: "001 - Preset Name")
-            preset_id_str = (
-                preset_display.split(" - ")[0] if " - " in preset_display else None
-            )
-            if preset_id_str:
-                # Find the preset in the list and check its category
-                for preset in self._actual_preset_list:
-                    if preset["id"] == preset_id_str:
-                        return preset["category"] == category
-            return False
-
-        # Update the combo box by recreating it (since SearchableFilterableComboBox doesn't have update methods)
-        # Get parent widget and layout
-        preset_widget = self.digital_preset_type_combo.parent()
-        preset_vlayout = preset_widget.layout() if preset_widget else None
-
-        if preset_vlayout:
-            # Remove old combo box from layout
-            preset_vlayout.removeWidget(self.preset_combo_box)
-            self.preset_combo_box.deleteLater()
-
-            # Create new combo box with updated data
-            self.preset_combo_box = SearchableFilterableComboBox(
-                label="Preset",
-                options=preset_options,
-                values=preset_values,
-                categories=preset_categories,
-                category_filter_func=preset_category_filter,
-                show_label=True,
-                show_search=True,
-                show_category=True,
-                search_placeholder="Search presets...",
-            )
-
-            # Insert after digital_preset_type_combo
-            index = preset_vlayout.indexOf(self.digital_preset_type_combo)
-            preset_vlayout.insertWidget(index + 1, self.preset_combo_box)
+        # Delegate to PresetWidget's method
+        if hasattr(self.preset, '_update_preset_combo_box'):
+            self.preset._update_preset_combo_box()
 
     def _populate_programs(self, search_text: str = "") -> None:
         """
@@ -739,7 +532,7 @@ class ProgramEditor(BasicEditor):
                 f"{program_id} - {program_name}", index
             )
             self.programs[program_name] = index
-        self.preset_combo_box.setCurrentIndex(
+        self.preset.preset_combo_box.setCurrentIndex(
             0
         )  # Select "No Category Selected" as default
 

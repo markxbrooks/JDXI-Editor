@@ -99,7 +99,7 @@ class SynthEditor(SynthBase):
         super().__init__(midi_helper, parent)  # Dict of JDXiSynth Types
         self.partial_map = SYNTH_PARTIAL_MAP
         self.sysex_current_data = None
-        self.preset_list = None
+        self.preset_preset_list = None
         self.programs = None
         self.midi_helper = MidiIOHelper()
         self.midi_helper.midi_program_changed.connect(self._handle_program_change)
@@ -260,7 +260,7 @@ class SynthEditor(SynthBase):
         instrument_title_group_layout.addWidget(self.read_request_button)
         self.instrument_selection_label = QLabel(f"Select a {synth_type} synth:")
         instrument_title_group_layout.addWidget(self.instrument_selection_label)
-        self.instrument_selection_combo = PresetComboBox(self.preset_list)
+        self.instrument_selection_combo = PresetComboBox(self.preset_preset_list)
         if synth_type == "Analog":
             JDXi.UI.ThemeManager.apply_combo_box(
                 self.instrument_selection_combo, analog=True
@@ -486,9 +486,9 @@ class SynthEditor(SynthBase):
         log.message(f"combo box program_number : {program_number}")
 
         # --- Get MSB, LSB, PC values from the preset using get_preset_parameter_value
-        msb = get_preset_parameter_value("msb", program_number, self.preset_list)
-        lsb = get_preset_parameter_value("lsb", program_number, self.preset_list)
-        pc = get_preset_parameter_value("pc", program_number, self.preset_list)
+        msb = get_preset_parameter_value("msb", program_number, self.preset_preset_list)
+        lsb = get_preset_parameter_value("lsb", program_number, self.preset_preset_list)
+        pc = get_preset_parameter_value("pc", program_number, self.preset_preset_list)
 
         if None in [msb, lsb, pc]:
             log.message(
