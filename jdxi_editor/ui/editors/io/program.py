@@ -815,21 +815,35 @@ class ProgramEditor(BasicEditor):
             self.program_group_widget.load_program()
 
     def update_current_synths(self, program_details: JDXiProgram) -> None:
-        """Update the current synth label.
-        :param program_details: dict
+        """Update the current synth labels in the mixer widget.
+        :param program_details: JDXiProgram
         :return: None
         """
+        if not self.mixer_widget:
+            log.warning("Mixer widget not available, cannot update synth labels")
+            return
+        
         try:
-            self.digital_synth_1_current_label.setText(program_details.digital_1)
-            self.digital_synth_2_current_label.setText(program_details.digital_2)
-            self.drum_kit_current_label.setText(program_details.drums)
-            self.analog_synth_current_label.setText(program_details.analog)
-        except KeyError:
-            log.message(f"Program details missing required keys: {program_details}")
-            self.digital_synth_1_current_label.setText("Unknown")
-            self.digital_synth_2_current_label.setText("Unknown")
-            self.drum_kit_current_label.setText("Unknown")
-            self.analog_synth_current_label.setText("Unknown")
+            if self.mixer_widget.digital_synth_1_current_label:
+                self.mixer_widget.digital_synth_1_current_label.setText(program_details.digital_1)
+            if self.mixer_widget.digital_synth_2_current_label:
+                self.mixer_widget.digital_synth_2_current_label.setText(program_details.digital_2)
+            if self.mixer_widget.drum_kit_current_label:
+                self.mixer_widget.drum_kit_current_label.setText(program_details.drums)
+            if self.mixer_widget.analog_synth_current_label:
+                self.mixer_widget.analog_synth_current_label.setText(program_details.analog)
+        except (AttributeError, KeyError) as e:
+            log.message(f"Error updating synth labels: {e}")
+            log.message(f"Program details: {program_details}")
+            # Set fallback values if labels exist
+            if self.mixer_widget.digital_synth_1_current_label:
+                self.mixer_widget.digital_synth_1_current_label.setText("Unknown")
+            if self.mixer_widget.digital_synth_2_current_label:
+                self.mixer_widget.digital_synth_2_current_label.setText("Unknown")
+            if self.mixer_widget.drum_kit_current_label:
+                self.mixer_widget.drum_kit_current_label.setText("Unknown")
+            if self.mixer_widget.analog_synth_current_label:
+                self.mixer_widget.analog_synth_current_label.setText("Unknown")
 
     def load_preset(self, program_number: int) -> None:
         """

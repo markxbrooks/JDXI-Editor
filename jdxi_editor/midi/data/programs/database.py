@@ -12,6 +12,7 @@ from typing import Dict, List, Optional
 
 from decologr import Decologr as log
 from jdxi_editor.jdxi.program.program import JDXiProgram
+from jdxi_editor.midi.data.programs.playlist_orm import PlaylistORM
 
 
 class ProgramDatabase:
@@ -32,6 +33,8 @@ class ProgramDatabase:
 
         self.db_path = db_path
         self._init_database()
+        # Initialize ORM for playlists
+        self.playlist_orm = PlaylistORM(db_path=db_path)
 
     def _init_database(self) -> None:
         """Initialize the database schema if it doesn't exist."""
@@ -289,7 +292,7 @@ class ProgramDatabase:
             drums=row["drums"],
         )
 
-    # Playlist management methods
+    # Playlist management methods (using ORM)
     def create_playlist(self, name: str, description: str = None) -> Optional[int]:
         """
         Create a new playlist.
@@ -298,25 +301,7 @@ class ProgramDatabase:
         :param description: Optional description
         :return: Playlist ID if successful, None otherwise
         """
-        try:
-            with self._get_connection() as conn:
-                cursor = conn.execute(
-                    """
-                    INSERT INTO playlists (name, description)
-                    VALUES (?, ?)
-                """,
-                    (name, description),
-                )
-                conn.commit()
-                playlist_id = cursor.lastrowid
-                log.info(f"✅ Created playlist: {name} (ID: {playlist_id})")
-                return playlist_id
-        except sqlite3.IntegrityError as e:
-            log.error(f"❌ Playlist '{name}' already exists: {e}")
-            return None
-        except Exception as e:
-            log.error(f"❌ Failed to create playlist '{name}': {e}")
-            return None
+        return self.playlist_orm.create_playlist(name, description)
 
     def get_all_playlists(self) -> List[Dict]:
         """
@@ -324,44 +309,7 @@ class ProgramDatabase:
 
         :return: List of playlist dictionaries
         """
-        try:
-            with self._get_connection() as conn:
-                rows = conn.execute(
-                    """
-                    SELECT id, name, description, created_at, updated_at
-                    FROM playlists
-                    ORDER BY name
-                """
-                ).fetchall()
-                return [
-                    {
-                        "id": row["id"],
-                        "name": row["name"],
-                        "description": row["description"],
-                        "created_at": row["created_at"],
-                        "updated_at": row["updated_at"],
-                        "program_count": self._get_playlist_program_count(row["id"]),
-                    }
-                    for row in rows
-                ]
-        except Exception as e:
-            log.error(f"Error loading playlists: {e}")
-            return []
-
-    def _get_playlist_program_count(self, playlist_id: int) -> int:
-        """Get the number of programs in a playlist."""
-        try:
-            with self._get_connection() as conn:
-                count = conn.execute(
-                    """
-                    SELECT COUNT(*) FROM playlist_items WHERE playlist_id = ?
-                """,
-                    (playlist_id,),
-                ).fetchone()[0]
-                return count
-        except Exception as e:
-            log.error(f"Error getting playlist program count: {e}")
-            return 0
+        return self.playlist_orm.get_all_playlists()
 
     def get_playlist_by_id(self, playlist_id: int) -> Optional[Dict]:
         """
@@ -370,28 +318,7 @@ class ProgramDatabase:
         :param playlist_id: Playlist ID
         :return: Playlist dictionary if found, None otherwise
         """
-        try:
-            with self._get_connection() as conn:
-                row = conn.execute(
-                    """
-                    SELECT id, name, description, created_at, updated_at
-                    FROM playlists
-                    WHERE id = ?
-                """,
-                    (playlist_id,),
-                ).fetchone()
-                if row:
-                    return {
-                        "id": row["id"],
-                        "name": row["name"],
-                        "description": row["description"],
-                        "created_at": row["created_at"],
-                        "updated_at": row["updated_at"],
-                    }
-                return None
-        except Exception as e:
-            log.error(f"Error getting playlist {playlist_id}: {e}")
-            return None
+        return self.playlist_orm.get_playlist_by_id(playlist_id)
 
     def update_playlist(
         self, playlist_id: int, name: str = None, description: str = None
@@ -404,37 +331,7 @@ class ProgramDatabase:
         :param description: New description (optional)
         :return: True if successful, False otherwise
         """
-        try:
-            with self._get_connection() as conn:
-                updates = []
-                params = []
-                if name is not None:
-                    updates.append("name = ?")
-                    params.append(name)
-                if description is not None:
-                    updates.append("description = ?")
-                    params.append(description)
-
-                if not updates:
-                    return False
-
-                updates.append("updated_at = CURRENT_TIMESTAMP")
-                params.append(playlist_id)
-
-                conn.execute(
-                    f"""
-                    UPDATE playlists
-                    SET {', '.join(updates)}
-                    WHERE id = ?
-                """,
-                    params,
-                )
-                conn.commit()
-                log.info(f"✅ Updated playlist {playlist_id}")
-                return True
-        except Exception as e:
-            log.error(f"❌ Failed to update playlist {playlist_id}: {e}")
-            return False
+        return self.playlist_orm.update_playlist(playlist_id, name, description)
 
     def delete_playlist(self, playlist_id: int) -> bool:
         """
@@ -443,15 +340,7 @@ class ProgramDatabase:
         :param playlist_id: Playlist ID
         :return: True if successful, False otherwise
         """
-        try:
-            with self._get_connection() as conn:
-                conn.execute("DELETE FROM playlists WHERE id = ?", (playlist_id,))
-                conn.commit()
-                log.info(f"✅ Deleted playlist {playlist_id}")
-                return True
-        except Exception as e:
-            log.error(f"❌ Failed to delete playlist {playlist_id}: {e}")
-            return False
+        return self.playlist_orm.delete_playlist(playlist_id)
 
     def add_program_to_playlist(
         self, playlist_id: int, program_id: str, position: int = None
@@ -464,40 +353,7 @@ class ProgramDatabase:
         :param position: Position in playlist (optional, will append if not provided)
         :return: True if successful, False otherwise
         """
-        try:
-            with self._get_connection() as conn:
-                # If position not provided, get the next position
-                if position is None:
-                    max_pos = conn.execute(
-                        """
-                        SELECT MAX(position) FROM playlist_items WHERE playlist_id = ?
-                    """,
-                        (playlist_id,),
-                    ).fetchone()[0]
-                    position = (max_pos or 0) + 1
-
-                conn.execute(
-                    """
-                    INSERT INTO playlist_items (playlist_id, program_id, position)
-                    VALUES (?, ?, ?)
-                """,
-                    (playlist_id, program_id, position),
-                )
-                conn.commit()
-                log.info(
-                    f"✅ Added program {program_id} to playlist {playlist_id} at position {position}"
-                )
-                return True
-        except sqlite3.IntegrityError:
-            log.warning(
-                f"⚠️ Program {program_id} already in playlist {playlist_id} at position {position}"
-            )
-            return False
-        except Exception as e:
-            log.error(
-                f"❌ Failed to add program {program_id} to playlist {playlist_id}: {e}"
-            )
-            return False
+        return self.playlist_orm.add_program_to_playlist(playlist_id, program_id, position)
 
     def remove_program_from_playlist(self, playlist_id: int, program_id: str) -> bool:
         """
@@ -507,23 +363,7 @@ class ProgramDatabase:
         :param program_id: Program ID
         :return: True if successful, False otherwise
         """
-        try:
-            with self._get_connection() as conn:
-                conn.execute(
-                    """
-                    DELETE FROM playlist_items
-                    WHERE playlist_id = ? AND program_id = ?
-                """,
-                    (playlist_id, program_id),
-                )
-                conn.commit()
-                log.info(f"✅ Removed program {program_id} from playlist {playlist_id}")
-                return True
-        except Exception as e:
-            log.error(
-                f"❌ Failed to remove program {program_id} from playlist {playlist_id}: {e}"
-            )
-            return False
+        return self.playlist_orm.remove_program_from_playlist(playlist_id, program_id)
 
     def get_playlist_programs(self, playlist_id: int) -> List[Dict]:
         """
@@ -532,37 +372,9 @@ class ProgramDatabase:
         :param playlist_id: Playlist ID
         :return: List of dictionaries with 'program' (JDXiProgram) and 'midi_file_path' (str)
         """
-        try:
-            with self._get_connection() as conn:
-                rows = conn.execute(
-                    """
-                    SELECT pi.program_id, pi.position, pi.midi_file_path, pi.cheat_preset_id
-                    FROM playlist_items pi
-                    WHERE pi.playlist_id = ?
-                    ORDER BY pi.position
-                """,
-                    (playlist_id,),
-                ).fetchall()
-
-                result = []
-                for row in rows:
-                    program = self.get_program_by_id(row["program_id"])
-                    if program:
-                        # sqlite3.Row doesn't have .get(), use dictionary access
-                        # NULL values in SQLite become None in Python
-                        result.append(
-                            {
-                                "program": program,
-                                "midi_file_path": row["midi_file_path"],
-                                "cheat_preset_id": row[
-                                    "cheat_preset_id"
-                                ],  # Will be None if NULL in DB
-                            }
-                        )
-                return result
-        except Exception as e:
-            log.error(f"Error loading programs for playlist {playlist_id}: {e}")
-            return []
+        return self.playlist_orm.get_playlist_programs(
+            playlist_id, get_program_func=self.get_program_by_id
+        )
 
     def update_playlist_item_midi_file(
         self, playlist_id: int, program_id: str, midi_file_path: str
@@ -575,30 +387,9 @@ class ProgramDatabase:
         :param midi_file_path: Path to MIDI file (or None to clear)
         :return: True if successful, False otherwise
         """
-        try:
-            with self._get_connection() as conn:
-                conn.execute(
-                    """
-                    UPDATE playlist_items
-                    SET midi_file_path = ?
-                    WHERE playlist_id = ? AND program_id = ?
-                """,
-                    (
-                        midi_file_path if midi_file_path else None,
-                        playlist_id,
-                        program_id,
-                    ),
-                )
-                conn.commit()
-                log.info(
-                    f"✅ Updated MIDI file for playlist {playlist_id}, program {program_id}"
-                )
-                return True
-        except Exception as e:
-            log.error(
-                f"❌ Failed to update MIDI file for playlist {playlist_id}, program {program_id}: {e}"
-            )
-            return False
+        return self.playlist_orm.update_playlist_item_midi_file(
+            playlist_id, program_id, midi_file_path if midi_file_path else None
+        )
 
     def update_playlist_item_cheat_preset(
         self, playlist_id: int, program_id: str, cheat_preset_id: Optional[str] = None
@@ -611,30 +402,9 @@ class ProgramDatabase:
         :param cheat_preset_id: Cheat preset ID (e.g., "113") or None to clear
         :return: True if updated, False otherwise
         """
-        try:
-            with self._get_connection() as conn:
-                conn.execute(
-                    """
-                    UPDATE playlist_items
-                    SET cheat_preset_id = ?
-                    WHERE playlist_id = ? AND program_id = ?
-                """,
-                    (
-                        cheat_preset_id if cheat_preset_id else None,
-                        playlist_id,
-                        program_id,
-                    ),
-                )
-                conn.commit()
-                log.info(
-                    f"✅ Updated cheat preset for playlist {playlist_id}, program {program_id}: {cheat_preset_id}"
-                )
-                return True
-        except Exception as e:
-            log.error(
-                f"❌ Failed to update cheat preset for playlist {playlist_id}, program {program_id}: {e}"
-            )
-            return False
+        return self.playlist_orm.update_playlist_item_cheat_preset(
+            playlist_id, program_id, cheat_preset_id
+        )
 
     def migrate_from_json(self, json_file: Path) -> int:
         """

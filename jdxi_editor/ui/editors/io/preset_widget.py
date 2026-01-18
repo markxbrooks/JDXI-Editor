@@ -158,14 +158,21 @@ class PresetWidget(QWidget):
         # Send bank select and program change
         # Note: PC is 0-based in MIDI, so subtract 1
         # Use PresetWidget's midi_channel if set, otherwise fall back to parent's
-        midi_channel = self.midi_channel if self.midi_channel is not None else self.parent.midi_channel
-        self.parent.midi_helper.send_bank_select_and_program_change(
+        # Access ProgramEditor through ProgramGroupWidget.parent
+        program_editor = getattr(self.parent, 'parent', None) if self.parent else None
+        if not program_editor or not hasattr(program_editor, 'midi_helper'):
+            log.error("Cannot access midi_helper: ProgramEditor not found in parent chain")
+            return
+        
+        midi_channel = self.midi_channel if self.midi_channel is not None else getattr(self.parent, 'midi_channel', None)
+        program_editor.midi_helper.send_bank_select_and_program_change(
             midi_channel,  # MIDI channel
             msb,  # MSB is already correct
             lsb,  # LSB is already correct
             pc - 1,  # Convert 1-based PC to 0-based
         )
-        self.parent.data_request()
+        if hasattr(program_editor, 'data_request'):
+            program_editor.data_request()
 
     def on_preset_type_changed(self, index: int) -> None:
         """
@@ -179,9 +186,10 @@ class PresetWidget(QWidget):
         # Update PresetWidget's own state
         self.set_channel_and_preset_lists(preset_type)
         self._update_preset_combo_box()
-        # Also notify parent ProgramEditor to keep it in sync
-        if hasattr(self.parent, 'set_channel_and_preset_lists'):
-            self.parent.set_channel_and_preset_lists(preset_type)
+        # Also notify ProgramEditor to keep it in sync (access through ProgramGroupWidget.parent)
+        program_editor = getattr(self.parent, 'parent', None) if self.parent else None
+        if program_editor and hasattr(program_editor, 'set_channel_and_preset_lists'):
+            program_editor.set_channel_and_preset_lists(preset_type)
 
     def set_channel_and_preset_lists(self, preset_type: str) -> None:
         """

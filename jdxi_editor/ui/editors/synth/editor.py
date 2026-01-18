@@ -485,7 +485,29 @@ class SynthEditor(SynthBase):
         program_number = preset_name[:3]
         log.message(f"combo box program_number : {program_number}")
 
+        # --- Determine preset list if not already set
+        if self.preset_preset_list is None:
+            from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
+            from jdxi_editor.midi.data.programs.digital import DIGITAL_PRESET_LIST
+            from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
+            
+            # Determine preset list based on preset_type
+            if self.preset_type == JDXiSynth.DIGITAL_SYNTH_1 or self.preset_type == JDXiSynth.DIGITAL_SYNTH_2:
+                self.preset_preset_list = DIGITAL_PRESET_LIST
+            elif self.preset_type == JDXiSynth.ANALOG_SYNTH:
+                self.preset_preset_list = ANALOG_PRESET_LIST
+            elif self.preset_type == JDXiSynth.DRUM_KIT:
+                self.preset_preset_list = DRUM_KIT_LIST
+            else:
+                # Default to digital preset list
+                self.preset_preset_list = DIGITAL_PRESET_LIST
+                log.warning(f"Unknown preset_type {self.preset_type}, defaulting to DIGITAL_PRESET_LIST")
+
         # --- Get MSB, LSB, PC values from the preset using get_preset_parameter_value
+        if self.preset_preset_list is None:
+            log.error("preset_preset_list is still None after initialization")
+            return
+        
         msb = get_preset_parameter_value("msb", program_number, self.preset_preset_list)
         lsb = get_preset_parameter_value("lsb", program_number, self.preset_preset_list)
         pc = get_preset_parameter_value("pc", program_number, self.preset_preset_list)
