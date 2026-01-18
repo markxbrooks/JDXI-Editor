@@ -20,6 +20,4 @@ class JDXiUI:
     IconRegistry: JDXiIconRegistry = JDXiIconRegistry
     Dimensions: JDXiDimensions = JDXiDimensions
     Parameters: UiParameters = UiParameters
-
-    # UI Constants
     Constants: JDXiUIConstants = JDXiUIConstants
