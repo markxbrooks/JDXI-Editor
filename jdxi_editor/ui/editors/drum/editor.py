@@ -170,7 +170,7 @@ class DrumCommonEditor(SynthEditor):
             instrument_widget, drum_kit_presets_icon, "Drum Kit Presets"
         )
 
-        # Use EditorBaseWidget for consistent scrollable layout structure
+        # --- Use EditorBaseWidget for consistent scrollable layout structure
         self.base_widget = EditorBaseWidget(parent=self, analog=False)
         self.base_widget.setup_scrollable_content()
         container_layout = self.base_widget.get_container_layout()

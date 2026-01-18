@@ -25,14 +25,16 @@ from jdxi_editor.ui.image.waveform import generate_waveform_icon
 
 
 def create_layout_with_widgets(
-    widget_list: list, vertical: bool = False
+    widget_list: list, vertical: bool = False, top_stretch: bool = True, bottom_stretch: bool = True
 ) -> QHBoxLayout:
     """create a row from a list of widgets (centered with stretches)"""
     layout = create_layout(vertical=vertical)
-    layout.addStretch()
+    if top_stretch:
+        layout.addStretch()
     for widget in widget_list:
         layout.addWidget(widget)
-    layout.addStretch()
+    if bottom_stretch:
+        layout.addStretch()
     return layout
 
 
@@ -85,10 +87,12 @@ def create_group_with_layout(
     return group, inner_layout
 
 
-def create_vlayout_with_hlayout_and_widgets(
-    inner_layout: QHBoxLayout | QVBoxLayout, widgets: list = None, vertical: bool = True
+def create_layout_with_inner_layout_and_widgets(
+    inner_layout: QHBoxLayout | QVBoxLayout | None = None, widgets: list = None, vertical: bool = True
 ) -> QVBoxLayout:
     """create vbox layout with horizontal layout and widgets below it"""
+    if inner_layout is None:
+        inner_layout = create_layout(vertical=vertical)
     layout = create_layout(vertical=vertical)
     layout.addLayout(inner_layout)
     if widgets:

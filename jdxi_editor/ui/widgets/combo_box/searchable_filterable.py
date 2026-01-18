@@ -50,7 +50,7 @@ class SearchableFilterableComboBox(QWidget):
 
     valueChanged = Signal(
         int
-    )  # Emitted when selected value changes (original value, not filtered index)
+    )  # --- Emitted when selected value changes (original value, not filtered index)
 
     def __init__(
         self,
@@ -66,7 +66,7 @@ class SearchableFilterableComboBox(QWidget):
         show_category: bool = True,
         show_bank: bool = False,
         search_placeholder: str = "Search...",
-        category_label: str = "Group:",
+        category_label: str = "Category:",
         bank_label: str = "Bank:",
         search_label: str = "Search:",
         parent: Optional[QWidget] = None,
@@ -97,7 +97,7 @@ class SearchableFilterableComboBox(QWidget):
         """
         super().__init__(parent)
 
-        # Store original data
+        # --- Store original data
         self._full_options = options.copy() if options else []
         self._full_values = (
             values.copy() if values else list(range(len(self._full_options)))
@@ -109,73 +109,79 @@ class SearchableFilterableComboBox(QWidget):
         self._banks = banks or []
         self._bank_filter_func = bank_filter_func or self._default_bank_filter
 
-        # Mapping from filtered combo box index to original value index
+        # --- Mapping from filtered combo box index to original value index
         self._filtered_to_original: List[int] = []
 
-        # Current filter state
+        # --- Current filter state
         self._current_search_text = ""
         self._current_category = ""
         self._current_bank = ""
 
-        # Layout
+        # --- Layout
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(4)
 
-        # Main label
+        # --- Main label
         self.label_widget = QLabel(label)
         if show_label:
             layout.addWidget(self.label_widget)
         else:
             self.label_widget.hide()
 
-        # Search, category, and bank row
+        # --- Search, category, and bank row
         if show_search or show_category or show_bank:
             filter_row = QHBoxLayout()
+            bank_row = QHBoxLayout()
+            category_row = QHBoxLayout()
+            search_row = QHBoxLayout()
 
             if show_bank and self._banks:
-                filter_row.addWidget(QLabel(bank_label))
+                bank_row.addWidget(QLabel(bank_label))
                 self.bank_combo = QComboBox()
                 self.bank_combo.addItem("All Banks")
                 self.bank_combo.addItems(sorted(set(self._banks)))
                 self.bank_combo.currentTextChanged.connect(self._on_bank_changed)
-                filter_row.addWidget(self.bank_combo)
+                bank_row.addWidget(self.bank_combo)
             else:
                 self.bank_combo = None
 
             if show_category and self._categories:
-                filter_row.addWidget(QLabel(category_label))
+                category_row.addWidget(QLabel(category_label))
                 self.category_combo = QComboBox()
                 self.category_combo.addItem("All Categories")
                 self.category_combo.addItems(sorted(set(self._categories)))
                 self.category_combo.currentTextChanged.connect(
                     self._on_category_changed
                 )
-                filter_row.addWidget(self.category_combo)
+                category_row.addWidget(self.category_combo)
             else:
                 self.category_combo = None
 
             if show_search:
-                filter_row.addWidget(QLabel(search_label))
+                search_row.addWidget(QLabel(search_label))
                 self.search_box = QLineEdit()
                 self.search_box.setStyleSheet(JDXi.UI.Style.QLINEEDIT)
                 self.search_box.setPlaceholderText(search_placeholder)
                 self.search_box.textChanged.connect(self._on_search_changed)
-                filter_row.addWidget(self.search_box)
+                search_row.addWidget(self.search_box)
             else:
                 self.search_box = None
 
             filter_row.addStretch()
             layout.addLayout(filter_row)
+            layout.addLayout(category_row)
+            layout.addLayout(bank_row)
+            layout.addLayout(search_row)
 
-        # Main combo box
+        # --- Main combo box
         self.combo_box = QComboBox()
-        self.combo_box.setMaximumWidth(350)
-        self.combo_box.setMaximumHeight(25)
+        self.combo_box.setMaximumWidth(JDXi.UI.Dimensions.COMBO.WIDTH)
+        self.combo_box.setMaximumHeight(JDXi.UI.Dimensions.COMBO.HEIGHT)
         self.combo_box.currentIndexChanged.connect(self._on_combo_index_changed)
         layout.addWidget(self.combo_box)
 
-        # Initial population
+        # --- Initial population
         self._populate_combo()
 
     def _default_category_filter(self, option: str, category: str) -> bool:
@@ -199,7 +205,7 @@ class SearchableFilterableComboBox(QWidget):
         """
         if not bank:
             return True
-        # Check if bank letter appears at the start of the option (format: "A01 - Program Name")
+        # --- Check if bank letter appears at the start of the option (format: "A01 - Program Name")
         return option.startswith(bank.upper()) or option.startswith(bank.lower())
 
     def _on_search_changed(self, text: str) -> None:
@@ -222,11 +228,11 @@ class SearchableFilterableComboBox(QWidget):
         # Block signals during population to prevent spurious valueChanged emissions
         self.combo_box.blockSignals(True)
 
-        # Clear existing items and mapping
+        # --- Clear existing items and mapping
         self.combo_box.clear()
         self._filtered_to_original.clear()
 
-        # Filter options
+        # --- Filter options
         filtered_options = []
         for i, option in enumerate(self._full_options):
             # Apply search filter
@@ -234,28 +240,28 @@ class SearchableFilterableComboBox(QWidget):
                 if not re.search(self._current_search_text, option, re.IGNORECASE):
                     continue
 
-            # Apply bank filter
+            # --- Apply bank filter
             if self._current_bank:
                 if not self._bank_filter_func(option, self._current_bank):
                     continue
 
-            # Apply category filter
+            # --- Apply category filter
             if self._current_category:
                 if not self._category_filter_func(option, self._current_category):
                     continue
 
-            # Option passes all filters
+            # --- Option passes all filters
             filtered_options.append(option)
             self._filtered_to_original.append(i)
 
-        # Add filtered items to combo box
+        # --- Add filtered items to combo box
         for option in filtered_options:
             self.combo_box.addItem(option)
 
-        # Restore signals
+        # --- Restore signals
         self.combo_box.blockSignals(False)
 
-        # Log for debugging
+        # --- Log for debugging
         if filtered_options:
             log.debug(
                 f"Populated combo box with {len(filtered_options)} items "
@@ -299,10 +305,10 @@ class SearchableFilterableComboBox(QWidget):
             log.warning(f"Value {value} not found in full values list")
             return
 
-        # Find original index
+        # --- Find original index
         original_index = self._full_values.index(value)
 
-        # Find position in filtered list
+        # --- Find position in filtered list
         if original_index in self._filtered_to_original:
             filtered_index = self._filtered_to_original.index(original_index)
             self.combo_box.blockSignals(True)
@@ -331,9 +337,9 @@ class SearchableFilterableComboBox(QWidget):
         if self.search_box:
             self.search_box.clear()
         if self.category_combo:
-            self.category_combo.setCurrentIndex(0)  # "All Categories"
+            self.category_combo.setCurrentIndex(0)  # --- "All Categories"
         if self.bank_combo:
-            self.bank_combo.setCurrentIndex(0)  # "All Banks"
+            self.bank_combo.setCurrentIndex(0)  # --- "All Banks"
         self._current_search_text = ""
         self._current_category = ""
         self._current_bank = ""
@@ -362,7 +368,7 @@ class SearchableFilterableComboBox(QWidget):
         """Set the main label text."""
         self.label_widget.setText(label)
 
-    # Compatibility methods for ComboBox interface
+    # --- Compatibility methods for ComboBox interface
     @property
     def options(self) -> List[str]:
         """Get the full options list (for compatibility)."""

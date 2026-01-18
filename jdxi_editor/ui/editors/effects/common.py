@@ -85,7 +85,7 @@ from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
 from jdxi_editor.ui.editors.effects.data import EffectsData
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
-from jdxi_editor.ui.widgets.editor.helper import create_vlayout_with_hlayout_and_widgets
+from jdxi_editor.ui.widgets.editor.helper import create_layout_with_inner_layout_and_widgets
 from jdxi_editor.ui.widgets.editor.simple_editor_helper import SimpleEditorHelper
 from picomidi.constant import Midi
 from picomidi.sysex.parameter.address import AddressParameter
@@ -493,13 +493,13 @@ class EffectsCommonEditor(BasicEditor):
         container = QWidget()
         # Icons row (standardized across editor tabs)
         icon_hlayout = JDXi.UI.IconRegistry.create_adsr_icons_row()
-        container_layout = create_vlayout_with_hlayout_and_widgets(icon_hlayout)
-        container.setLayout(container_layout)
 
         widget = QWidget()
-        layout = QFormLayout()
-        widget.setLayout(layout)
-        container_layout.addWidget(widget)
+        form_layout = QFormLayout()
+        widget.setLayout(form_layout)
+
+        container_layout = create_layout_with_inner_layout_and_widgets(icon_hlayout, widgets=[widget])
+        container.setLayout(container_layout)
 
         # Create address combo box for EFX1 preset_type
         self.efx1_type = self._create_parameter_combo_box(
@@ -508,32 +508,32 @@ class EffectsCommonEditor(BasicEditor):
             EffectsData.efx1_types,
             EffectsData.efx1_type_values,
         )
-        layout.addRow(self.efx1_type)
+        form_layout.addRow(self.efx1_type)
 
         # Create sliders for EFX1 parameters
         self.efx1_level = self._create_parameter_slider(
             Effect1Param.EFX1_LEVEL, "EFX1 Level (0-127)"
         )
-        layout.addRow(self.efx1_level)
+        form_layout.addRow(self.efx1_level)
 
         self.efx1_delay_send_level = self._create_parameter_slider(
             Effect1Param.EFX1_DELAY_SEND_LEVEL,
             "EFX1 Delay Send Level (0-127)",
         )
-        layout.addRow(self.efx1_delay_send_level)
+        form_layout.addRow(self.efx1_delay_send_level)
 
         self.efx1_reverb_send_level = self._create_parameter_slider(
             Effect1Param.EFX1_REVERB_SEND_LEVEL,
             "EFX1 Reverb Send Level (0-127)",
         )
-        layout.addRow(self.efx1_reverb_send_level)
+        form_layout.addRow(self.efx1_reverb_send_level)
 
         self.efx1_output_assign = self._create_parameter_switch(
             Effect1Param.EFX1_OUTPUT_ASSIGN,
             "Output Assign",
             EffectsData.output_assignments,
         )
-        layout.addRow(self.efx1_output_assign)
+        form_layout.addRow(self.efx1_output_assign)
 
         # Create sliders for EFX1 parameters
         for param in self.EFX1_PARAMETERS:
@@ -563,7 +563,7 @@ class EffectsCommonEditor(BasicEditor):
                     )
                 else:
                     control = self._create_parameter_slider(param, param.display_name)
-                layout.addRow(control)
+                form_layout.addRow(control)
                 self.controls[param] = control
             else:
                 log.warning(f"Parameter {param.name} already exists in controls.")

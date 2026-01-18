@@ -237,50 +237,6 @@ class SynthEditor(SynthBase):
             )
         self.data_request()
 
-    def create_instrument_preset_group(self, synth_type: str = "Analog") -> QGroupBox:
-        """
-        Create the instrument preset group box.
-
-        :param synth_type: str
-        :return: QGroupBox
-        """
-        instrument_preset_group = QGroupBox(f"{synth_type} Synth")
-        instrument_title_group_layout = QVBoxLayout(instrument_preset_group)
-        instrument_title_group_layout.setSpacing(3)  # Reduced spacing
-        instrument_title_group_layout.setContentsMargins(5, 5, 5, 5)  # Reduced margins
-        self.instrument_title_label = DigitalTitle()
-        instrument_title_group_layout.addWidget(self.instrument_title_label)
-        # --- Update_tone_name
-        self.edit_tone_name_button = QPushButton("Edit tone name")
-        self.edit_tone_name_button.clicked.connect(self.edit_tone_name)
-        instrument_title_group_layout.addWidget(self.edit_tone_name_button)
-        # --- Read request button
-        self.read_request_button = QPushButton("Send Read Request to Synth")
-        self.read_request_button.clicked.connect(self.data_request)
-        instrument_title_group_layout.addWidget(self.read_request_button)
-        self.instrument_selection_label = QLabel(f"Select a {synth_type} synth:")
-        instrument_title_group_layout.addWidget(self.instrument_selection_label)
-        self.instrument_selection_combo = PresetComboBox(self.preset_preset_list)
-        if synth_type == "Analog":
-            JDXi.UI.ThemeManager.apply_combo_box(
-                self.instrument_selection_combo, analog=True
-            )
-        else:
-            JDXi.UI.ThemeManager.apply_combo_box(self.instrument_selection_combo)
-        self.instrument_selection_combo.combo_box.setEditable(True)
-        self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
-            self.update_instrument_image
-        )
-        self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
-            self.update_instrument_title
-        )
-        self.instrument_selection_combo.load_button.clicked.connect(
-            self.update_instrument_preset
-        )
-        self.instrument_selection_combo.preset_loaded.connect(self.load_preset)
-        instrument_title_group_layout.addWidget(self.instrument_selection_combo)
-        return instrument_preset_group
-
     def get_controls_as_dict(self):
         """
         Get the current values of self.controls as a dictionary.

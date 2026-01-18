@@ -1368,7 +1368,6 @@ class JDXiStyle:
             font-size: 12px;
             color: #FFFFFF;
             background: #1a1a1a;
-            font-weight: bold;
         }}
     """
 

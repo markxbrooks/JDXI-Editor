@@ -11,6 +11,7 @@ from PySide6.QtWidgets import (
     QTabWidget,
     QVBoxLayout,
     QWidget,
+    QFormLayout
 )
 
 from jdxi_editor.jdxi.jdxi import JDXi
@@ -19,6 +20,7 @@ from jdxi_editor.ui.widgets.combo_box.searchable_filterable import (
     SearchableFilterableComboBox,
 )
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
+from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets
 
 if TYPE_CHECKING:
     from jdxi_editor.ui.editors.synth.editor import SynthEditor
@@ -57,6 +59,14 @@ class InstrumentPresetWidget(QWidget):
         """set up the widget - creates the main vertical layout"""
         if self.layout is None:
             self.layout = QVBoxLayout()
+            # Set proper margins and spacing to match PresetWidget
+            self.layout.setContentsMargins(
+                JDXi.UI.Style.PADDING,
+                JDXi.UI.Style.PADDING,
+                JDXi.UI.Style.PADDING,
+                JDXi.UI.Style.PADDING,
+            )
+            self.layout.setSpacing(JDXi.UI.Style.SPACING)
             self.setLayout(self.layout)
             # Add stretch at top for vertical centering
             self.layout.addStretch()
@@ -138,12 +148,24 @@ class InstrumentPresetWidget(QWidget):
         from jdxi_editor.midi.data.programs.digital import DIGITAL_PRESET_LIST
         from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
 
-        # Add icon row at the top
+        # Add icon row at the top (centered with stretch on both sides, matching PresetWidget)
+        icon_row_container = QHBoxLayout()
+        icon_row_container.addStretch()
         icon_row = JDXi.UI.IconRegistry.create_generic_musical_icon_row()
-        layout.addLayout(icon_row)
-
+        # Transfer all items from icon_row to icon_row_container
+        while icon_row.count() > 0:
+            item = icon_row.takeAt(0)
+            if item.widget():
+                icon_row_container.addWidget(item.widget())
+            elif item.spacerItem():
+                icon_row_container.addItem(item.spacerItem())
+        icon_row_container.addStretch()
+        layout.addLayout(icon_row_container)
+        layout.addSpacing(10)  # Add spacing after icon row, matching PresetWidget
+        
         self.instrument_title_label = DigitalTitle()
         layout.addWidget(self.instrument_title_label)
+        
         # --- Update_tone_name
         self.edit_tone_name_button = QPushButton("Edit tone name")
         self.edit_tone_name_button.clicked.connect(self.parent.edit_tone_name)
@@ -224,15 +246,14 @@ class InstrumentPresetWidget(QWidget):
             self.parent.update_instrument_title
         )
 
-        # Create a load button (SearchableFilterableComboBox doesn't have one built-in)
+        # --- Create a load button (SearchableFilterableComboBox doesn't have one built-in)
         load_button = QPushButton("Load")
         load_button.clicked.connect(self._on_load_preset)
 
-        # Add load button next to combo box
-        button_layout = QHBoxLayout()
-        button_layout.addWidget(self.instrument_selection_combo)
-        button_layout.addWidget(load_button)
-        layout.addLayout(button_layout)
+        selection_layout = create_layout_with_widgets([self.instrument_selection_combo, load_button],
+                                                      vertical=True)
+
+        layout.addLayout(selection_layout)
 
         # Store reference to load button for compatibility
         self.instrument_selection_combo.load_button = load_button
@@ -242,9 +263,20 @@ class InstrumentPresetWidget(QWidget):
         """Add cheat preset content to the layout (Analog only)."""
         from jdxi_editor.midi.data.programs.digital import DIGITAL_PRESET_LIST
 
-        # Add icon row at the top
+        # Add icon row at the top (centered with stretch on both sides, matching PresetWidget)
+        icon_row_container = QHBoxLayout()
+        icon_row_container.addStretch()
         icon_row = JDXi.UI.IconRegistry.create_generic_musical_icon_row()
-        layout.addLayout(icon_row)
+        # Transfer all items from icon_row to icon_row_container
+        while icon_row.count() > 0:
+            item = icon_row.takeAt(0)
+            if item.widget():
+                icon_row_container.addWidget(item.widget())
+            elif item.spacerItem():
+                icon_row_container.addItem(item.spacerItem())
+        icon_row_container.addStretch()
+        layout.addLayout(icon_row_container)
+        layout.addSpacing(10)  # Add spacing after icon row, matching PresetWidget
 
         # Build preset options, values, and categories from DIGITAL_PRESET_LIST
         preset_options = [
@@ -367,6 +399,8 @@ class InstrumentPresetWidget(QWidget):
         if self.layout is None:
             self.setup()
         self.hlayout = QHBoxLayout()
+        # Set proper spacing on horizontal layout
+        self.hlayout.setSpacing(JDXi.UI.Style.SPACING)
         self.hlayout.addStretch()
         # Add the horizontal layout to the vertical layout
         self.layout.addLayout(self.hlayout)

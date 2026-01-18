@@ -75,6 +75,12 @@ class AnalogDimensions(Dimensions):
     MIN_CONTROL_HEIGHT = 14
 
 
+class ComboBoxDimensions(Dimensions):
+    """Combo Box Dimensions"""
+    WIDTH = 325
+    HEIGHT = 25
+
+
 class IconDimensions(Dimensions):
     """Icon Dimensions"""
 
@@ -315,6 +321,7 @@ class JDXiDimensions(Dimensions):
 
     # --- Icons
     ICON: IconDimensions = IconDimensions
+    COMBO: ComboBoxDimensions = ComboBoxDimensions
     WAVEFORM_ICON: WaveformIconDimensions = WaveformIconDimensions
 
     # --- Splash screen
