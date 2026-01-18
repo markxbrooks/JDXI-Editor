@@ -5,6 +5,9 @@ Common Section
 from typing import Callable
 
 from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
+from jdxi_editor.midi.data.parameter.analog.name import AnalogDisplayName
+from jdxi_editor.midi.data.parameter.analog.option import AnalogDisplayOptions
+from jdxi_editor.midi.data.parameter.analog.values import AnalogDisplayValues
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
