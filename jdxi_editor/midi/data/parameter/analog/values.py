@@ -1,3 +1,7 @@
+"""
+AnalogDisplayValues
+"""
+
 
 class AnalogDisplayValues:
     """Analog Display Values e.g for combo boxes"""
