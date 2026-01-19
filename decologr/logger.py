@@ -45,7 +45,7 @@ import sys
 from datetime import datetime
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Optional, Dict
 
 try:
     import numpy as np
@@ -1425,4 +1425,28 @@ def log_exception(exception: Exception, message: str, stacklevel: int = 4, use_r
             log_exception(ex, "Error initializing scheduler database")
     """
     Decologr.error(message, exception=exception, stacklevel=stacklevel, use_rich_traceback=use_rich_traceback)
+
+
+def log_json(data: Dict[str, Any], silent: bool = False) -> None:
+    """
+    Helper function to log JSON data as address single line.
+
+    :param silent: bool
+    :param data: Dict
+    :return: None
+    """
+    # --- Ensure `data` is address dictionary, if it's address string, try parsing it as JSON
+    if isinstance(data, str):
+        try:
+            data = json.loads(data)
+        except json.JSONDecodeError:
+            Decologr.message("Invalid JSON string provided.")
+            return
+
+    # --- Serialize the JSON into address single line string (compact form)
+    compact_json = json.dumps(data)
+
+    # --- Log the JSON in address single line
+    if not silent:
+        Decologr.message(compact_json, stacklevel=2)
 

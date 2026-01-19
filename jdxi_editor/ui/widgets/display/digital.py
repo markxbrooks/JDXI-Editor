@@ -348,24 +348,26 @@ class DigitalDisplay(DigitalDisplayBase):
         if synth_type == JDXiSynth.DIGITAL_SYNTH_1:
             tone_name = digital1_tone_name
             tone_number = get_preset_list_number_by_name(
-                tone_name, JDXi.UI.Preset.Digital
+                tone_name, JDXi.UI.Preset.Digital.PROGRAM_CHANGE
             )
             active_synth = "D1"
         elif synth_type == JDXiSynth.DIGITAL_SYNTH_2:
             tone_name = digital2_tone_name
             active_synth = "D2"
             tone_number = get_preset_list_number_by_name(
-                tone_name, JDXi.UI.Preset.Digital
+                tone_name, JDXi.UI.Preset.Digital.PROGRAM_CHANGE
             )
         elif synth_type == JDXiSynth.DRUM_KIT:
             tone_name = drums_tone_name
             active_synth = "DR"
-            tone_number = get_preset_list_number_by_name(tone_name, JDXi.UI.Preset.Drum)
+            tone_number = get_preset_list_number_by_name(
+                tone_name, JDXi.UI.Preset.Drum.PROGRAM_CHANGE
+            )
         elif synth_type == JDXiSynth.ANALOG_SYNTH:
             tone_name = analog_tone_name
             active_synth = "AN"
             tone_number = get_preset_list_number_by_name(
-                tone_name, JDXi.UI.Preset.Analog
+                tone_name, JDXi.UI.Preset.Analog.PROGRAM_CHANGE
             )
         else:
             active_synth = "D1"

@@ -1,3 +1,7 @@
+"""
+Log Debug info
+"""
+
 from decologr import Decologr as log
 
 

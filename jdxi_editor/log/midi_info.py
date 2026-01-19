@@ -1,3 +1,7 @@
+"""
+Log Midi Info
+"""
+
 from decologr import Decologr as log
 
 

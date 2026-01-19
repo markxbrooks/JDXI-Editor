@@ -36,6 +36,7 @@ from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.program.program import JDXiProgram
 from jdxi_editor.ui.editors.helpers.program import calculate_midi_values
+from jdxi_editor.ui.widgets.combo_box import SearchableFilterableComboBox
 from jdxi_editor.ui.widgets.delegates.midi_file import MidiFileDelegate
 from jdxi_editor.ui.widgets.delegates.play_button import PlayButtonDelegate
 from jdxi_editor.ui.widgets.editor.helper import transfer_layout_items
@@ -67,6 +68,7 @@ class PlaylistEditorWidget(QWidget):
         :param get_parent_instrument: Optional callback to get parent instrument for MidiFileEditor
         """
         super().__init__(parent)
+        self.playlist_id = None
         self.midi_helper = midi_helper
         self.channel = channel
         self.on_program_loaded_callback = on_program_loaded
@@ -78,10 +80,13 @@ class PlaylistEditorWidget(QWidget):
         self._playlist_midi_editor = None
 
         # UI components
-        self.playlist_editor_combo: Optional[QComboBox] = None
+        self.playlist_editor_combo: Optional[SearchableFilterableComboBox] = None
         self.add_to_playlist_button: Optional[QPushButton] = None
         self.delete_from_playlist_button: Optional[QPushButton] = None
         self.playlist_programs_table: Optional[QTableWidget] = None
+
+        # Mapping of combo box values to playlist IDs
+        self._playlist_value_to_id: dict = {0: None}
 
         self.setup_ui()
 
@@ -97,15 +102,25 @@ class PlaylistEditorWidget(QWidget):
         layout.addLayout(icon_row_container)
 
         # Playlist selection
-        playlist_select_layout = QHBoxLayout()
-        playlist_select_layout.addWidget(QLabel("Select Playlist:"))
-        self.playlist_editor_combo = QComboBox()
-        self.playlist_editor_combo.currentIndexChanged.connect(
-            self._on_playlist_changed
+        self.playlist_select_layout = QHBoxLayout()
+        self.playlist_select_layout.addWidget(QLabel("Select Playlist:"))
+        # Initialize with empty options - will be populated by populate_playlist_combo()
+        self.playlist_editor_combo = SearchableFilterableComboBox(
+            label="",
+            options=["-- Select a Playlist --"],
+            values=[0],  # Use 0 as placeholder value for "no selection"
+            categories=None,
+            category_filter_func=None,
+            show_label=False,
+            show_search=True,
+            show_category=False,
+            search_placeholder="Search playlists...",
         )
-        playlist_select_layout.addWidget(self.playlist_editor_combo)
-        playlist_select_layout.addStretch()
-        layout.addLayout(playlist_select_layout)
+        # Connect to valueChanged signal (emits the value, not the index)
+        self.playlist_editor_combo.valueChanged.connect(self._on_playlist_value_changed)
+        self.playlist_select_layout.addWidget(self.playlist_editor_combo)
+        self.playlist_select_layout.addStretch()
+        layout.addLayout(self.playlist_select_layout)
 
         # Add/Delete buttons
         button_layout = QHBoxLayout()
@@ -213,13 +228,63 @@ class PlaylistEditorWidget(QWidget):
             db = get_database()
             playlists = db.get_all_playlists()
 
-            self.playlist_editor_combo.clear()
-            self.playlist_editor_combo.addItem("-- Select a Playlist --", None)
+            # Build options and values lists for SearchableFilterableComboBox
+            playlist_options = ["-- Select a Playlist --"]
+            playlist_values = [0]  # 0 = no selection
+            # Store mapping of value to playlist_id for lookup
+            self._playlist_value_to_id = {0: None}
+
             for playlist in playlists:
-                self.playlist_editor_combo.addItem(
-                    f"{playlist['name']} ({playlist.get('program_count', 0)} programs)",
-                    playlist["id"],
+                playlist_id = playlist["id"]
+                display_text = (
+                    f"{playlist['name']} ({playlist.get('program_count', 0)} programs)"
                 )
+                # Use playlist_id as value (but ensure it's an int)
+                value = (
+                    int(playlist_id)
+                    if isinstance(playlist_id, (int, str))
+                    else len(playlist_options)
+                )
+                playlist_options.append(display_text)
+                playlist_values.append(value)
+                self._playlist_value_to_id[value] = playlist_id
+
+            # Recreate the combo box with new data
+            # Use the stored playlist_select_layout reference
+            if hasattr(self, "playlist_select_layout") and self.playlist_select_layout:
+                # Find the combo box in the layout
+                combo_index = -1
+                for i in range(self.playlist_select_layout.count()):
+                    item = self.playlist_select_layout.itemAt(i)
+                    if item and item.widget() == self.playlist_editor_combo:
+                        combo_index = i
+                        break
+
+                if combo_index >= 0:
+                    # Remove old combo box
+                    self.playlist_select_layout.removeWidget(self.playlist_editor_combo)
+                    self.playlist_editor_combo.deleteLater()
+
+                    # Create new combo box with updated data
+                    self.playlist_editor_combo = SearchableFilterableComboBox(
+                        label="",
+                        options=playlist_options,
+                        values=playlist_values,
+                        categories=None,
+                        category_filter_func=None,
+                        show_label=False,
+                        show_search=True,
+                        show_category=False,
+                        search_placeholder="Search playlists...",
+                    )
+                    # Reconnect signal
+                    self.playlist_editor_combo.valueChanged.connect(
+                        self._on_playlist_value_changed
+                    )
+                    # Re-insert into layout at same position
+                    self.playlist_select_layout.insertWidget(
+                        combo_index, self.playlist_editor_combo
+                    )
         except Exception as e:
             log.error(f"Error populating playlist editor combo: {e}")
 
@@ -229,19 +294,25 @@ class PlaylistEditorWidget(QWidget):
             return
 
         selected_rows = self.playlist_programs_table.selectionModel().selectedRows()
-        playlist_id = self.playlist_editor_combo.currentData()
+        # Get current value and map to playlist_id
+        current_value = self.playlist_editor_combo.value()
+        playlist_id = self._playlist_value_to_id.get(current_value)
 
         # Enable delete button only if playlist is selected and rows are selected
         self.delete_from_playlist_button.setEnabled(
             playlist_id is not None and len(selected_rows) > 0
         )
 
-    def _on_playlist_changed(self, index: int) -> None:
-        """Handle playlist selection change in the editor."""
+    def _on_playlist_value_changed(self, value: int) -> None:
+        """Handle playlist selection change in the editor.
+
+        :param value: The value from the combo box (mapped to playlist_id)
+        """
         if not self.playlist_editor_combo:
             return
 
-        playlist_id = self.playlist_editor_combo.itemData(index)
+        # Map value to playlist_id
+        playlist_id = self._playlist_value_to_id.get(value)
         if playlist_id:
             self.populate_playlist_programs_table(playlist_id)
             # Enable add button when playlist is selected
@@ -326,9 +397,8 @@ class PlaylistEditorWidget(QWidget):
             cheat_preset_combo = QComboBox()
             cheat_preset_combo.addItem("None", None)  # No cheat preset
             # Add Digital Synth presets
-            from jdxi_editor.ui.programs import DIGITAL_PRESET_LIST
 
-            for preset in DIGITAL_PRESET_LIST:
+            for preset in JDXi.UI.Preset.Digital.LIST:
                 preset_id = preset["id"]
                 preset_name = preset["name"]
                 cheat_preset_combo.addItem(f"{preset_id} - {preset_name}", preset_id)
@@ -441,25 +511,32 @@ class PlaylistEditorWidget(QWidget):
             return
 
         # Check if a playlist is selected
-        playlist_id = self.playlist_editor_combo.currentData()
+        current_value = self.playlist_editor_combo.value()
+        playlist_id = self._playlist_value_to_id.get(current_value)
         if not playlist_id:
             QMessageBox.information(
                 self, "No Playlist Selected", "Please select a playlist first."
             )
             return
+        self.show_select_programs_dialog(playlist_id=playlist_id)
 
-        # Show a dialog to select programs from User Programs table
+    def show_select_programs_dialog(self, playlist_id: int):
+        """Show a dialog to select programs from User Programs table"""
         dialog = QDialog(self)
         dialog.setWindowTitle("Add Programs to Playlist")
         dialog_layout = QVBoxLayout(dialog)
 
-        # Get playlist name
-        playlist_name = self.playlist_editor_combo.currentText().split(" (")[0]
-        dialog_layout.addWidget(QLabel(f"Select programs to add to '{playlist_name}':"))
-
-        # Create list widget with all user programs
-        program_list = QListWidget()
-        program_list.setSelectionMode(QListWidget.SelectionMode.ExtendedSelection)
+        # Get playlist name from combo box text
+        playlist_text = self.playlist_editor_combo.combo_box.currentText()
+        playlist_name = (
+            playlist_text.split(" (")[0] if " (" in playlist_text else playlist_text
+        )
+        dialog_layout.addWidget(
+            QLabel(f"Select a program to add to '{playlist_name}':")
+        )
+        program_options = []
+        program_values = []
+        program_value_to_id = {}  # Map combo box values to program IDs
 
         try:
             from jdxi_editor.ui.programs.database import get_database
@@ -467,22 +544,44 @@ class PlaylistEditorWidget(QWidget):
             db = get_database()
             all_programs = db.get_all_programs()
 
-            # Get programs already in playlist
+            # --- Get programs already in playlist
             existing_programs = db.get_playlist_programs(playlist_id)
             existing_program_ids = {item["program"].id for item in existing_programs}
 
-            # Add programs that aren't already in the playlist
-            for program in all_programs:
+            # --- Add programs that aren't already in the playlist
+            for idx, program in enumerate(all_programs):
                 if program.id not in existing_program_ids:
-                    program_list.addItem(f"{program.id} - {program.name}")
-                    # Store program ID in item data
-                    item = program_list.item(program_list.count() - 1)
-                    item.setData(Qt.ItemDataRole.UserRole, program.id)
+                    display_text = f"{program.id} - {program.name}"
+                    program_options.append(display_text)
+                    # Use index as value (0-based)
+                    value = len(program_values)
+                    program_values.append(value)
+                    program_value_to_id[value] = program.id
         except Exception as e:
             log.error(f"Error loading programs for playlist: {e}")
             QMessageBox.warning(self, "Error", f"Failed to load programs: {e}")
             return
 
+        if not program_options:
+            QMessageBox.information(
+                self,
+                "No Programs Available",
+                "All programs are already in this playlist.",
+            )
+            return
+
+        # Create combo box with all available programs
+        program_list = SearchableFilterableComboBox(
+            label="",
+            options=program_options,
+            values=program_values,
+            categories=None,
+            category_filter_func=None,
+            show_label=False,
+            show_search=True,
+            show_category=False,
+            search_placeholder="Search programs...",
+        )
         dialog_layout.addWidget(program_list)
 
         # Add buttons
@@ -494,36 +593,40 @@ class PlaylistEditorWidget(QWidget):
         dialog_layout.addWidget(button_box)
 
         if dialog.exec() == QDialog.DialogCode.Accepted:
-            selected_items = program_list.selectedItems()
-            if not selected_items:
+            # Get selected value from combo box
+            selected_value = program_list.value()
+            program_id = program_value_to_id.get(selected_value)
+
+            if not program_id:
                 QMessageBox.information(
-                    self, "No Selection", "Please select at least one program to add."
+                    self, "No Selection", "Please select a program to add."
                 )
                 return
 
-            # Add selected programs to playlist
+            # --- Add selected program to playlist
             from jdxi_editor.ui.programs.database import get_database
 
             db = get_database()
             added_count = 0
-
-            for item in selected_items:
-                program_id = item.data(Qt.ItemDataRole.UserRole)
-                if db.add_program_to_playlist(playlist_id, program_id):
-                    added_count += 1
+            if db.add_program_to_playlist(playlist_id, program_id):
+                added_count = 1
 
             if added_count > 0:
                 log.message(f"✅ Added {added_count} program(s) to playlist")
-                # Refresh the table
+                # --- Refresh the table
                 self.populate_playlist_programs_table(playlist_id)
                 # Refresh combo to update program count
                 self.populate_playlist_combo()
                 if self.on_refresh_playlist_combo_callback:
                     self.on_refresh_playlist_combo_callback()
-                # Restore selection
-                index = self.playlist_editor_combo.findData(playlist_id)
-                if index >= 0:
-                    self.playlist_editor_combo.setCurrentIndex(index)
+                # --- Restore selection by finding the value that maps to playlist_id
+                value_to_select = None
+                for value, pid in self._playlist_value_to_id.items():
+                    if pid == playlist_id:
+                        value_to_select = value
+                        break
+                if value_to_select is not None:
+                    self.playlist_editor_combo.setValue(value_to_select)
                 self.playlist_programs_changed.emit()
             else:
                 QMessageBox.warning(
@@ -535,15 +638,16 @@ class PlaylistEditorWidget(QWidget):
         if not self.playlist_editor_combo or not self.playlist_programs_table:
             return
 
-        # Check if a playlist is selected
-        playlist_id = self.playlist_editor_combo.currentData()
+        # --- Check if a playlist is selected
+        current_value = self.playlist_editor_combo.value()
+        playlist_id = self._playlist_value_to_id.get(current_value)
         if not playlist_id:
             QMessageBox.information(
                 self, "No Playlist Selected", "Please select a playlist first."
             )
             return
 
-        # Get selected rows
+        # --- Get selected rows
         selected_rows = self.playlist_programs_table.selectionModel().selectedRows()
         if not selected_rows:
             QMessageBox.information(
@@ -551,7 +655,7 @@ class PlaylistEditorWidget(QWidget):
             )
             return
 
-        # Confirm deletion
+        # --- Confirm deletion
         reply = QMessageBox.question(
             self,
             "Delete Programs",
@@ -585,10 +689,14 @@ class PlaylistEditorWidget(QWidget):
                 self.populate_playlist_combo()
                 if self.on_refresh_playlist_combo_callback:
                     self.on_refresh_playlist_combo_callback()
-                # Restore selection
-                index = self.playlist_editor_combo.findData(playlist_id)
-                if index >= 0:
-                    self.playlist_editor_combo.setCurrentIndex(index)
+                # Restore selection by finding the value that maps to playlist_id
+                value_to_select = None
+                for value, pid in self._playlist_value_to_id.items():
+                    if pid == playlist_id:
+                        value_to_select = value
+                        break
+                if value_to_select is not None:
+                    self.playlist_editor_combo.setValue(value_to_select)
                 self.playlist_programs_changed.emit()
             else:
                 QMessageBox.warning(
@@ -878,9 +986,30 @@ class PlaylistEditorWidget(QWidget):
                     )
                     if existing_editor:
                         # Already open, just raise it
+                        # Ensure window is in normal state (not minimized)
+                        from PySide6.QtCore import Qt
+                        from PySide6.QtWidgets import QApplication
+
+                        window_state = existing_editor.windowState()
+                        if window_state & Qt.WindowState.WindowMinimized:
+                            existing_editor.setWindowState(
+                                window_state & ~Qt.WindowState.WindowMinimized
+                            )
+
+                        # Make sure the window is visible and on top
+                        existing_editor.showNormal()  # Restore if minimized
                         existing_editor.show()
                         existing_editor.raise_()
                         existing_editor.activateWindow()
+
+                        # On macOS, also activate the application
+                        app = QApplication.instance()
+                        if app:
+                            app.setActiveWindow(existing_editor)
+
+                        # Load the program from the double-clicked row
+                        row = item.row()
+                        self._load_program_from_table(row)
                         log.message("✅ Raised existing Program Editor window")
                     else:
                         # Not open, show it via parent
@@ -997,14 +1126,13 @@ class PlaylistEditorWidget(QWidget):
             f"🎹 Loading cheat preset {preset_id} on Analog Synth channel (Ch3)"
         )
 
-        # Get preset parameters from DIGITAL_PRESET_LIST
+        # Get preset parameters from JDXi.UI.Preset.Digital.LIST
         from jdxi_editor.log.midi_info import log_midi_info
         from jdxi_editor.midi.channel.channel import MidiChannel
-        from jdxi_editor.ui.programs import DIGITAL_PRESET_LIST
 
-        # Find preset in DIGITAL_PRESET_LIST
+        # Find preset in JDXi.UI.Preset.Digital.LIST
         preset = None
-        for p in DIGITAL_PRESET_LIST:
+        for p in JDXi.UI.Preset.Digital.LIST:
             if str(p["id"]) == str(
                 preset_id
             ):  # Compare as strings to handle any type mismatches
@@ -1012,9 +1140,11 @@ class PlaylistEditorWidget(QWidget):
                 break
 
         if not preset:
-            log.warning(f"⚠️ Cheat preset {preset_id} not found in DIGITAL_PRESET_LIST")
+            log.warning(
+                f"⚠️ Cheat preset {preset_id} not found in JDXi.UI.Preset.Digital.LIST"
+            )
             log.message(
-                f"🔍 Available preset IDs (first 10): {[p['id'] for p in DIGITAL_PRESET_LIST[:10]]}"
+                f"🔍 Available preset IDs (first 10): {[p['id'] for p in JDXi.UI.Preset.Digital.LIST[:10]]}"
             )
             return
 

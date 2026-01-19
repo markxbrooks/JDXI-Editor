@@ -4,8 +4,6 @@ Synth Factory
 
 from typing import Union
 
-from PySide6.QtCore import QSettings
-
 from decologr import Decologr as log
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.address.address import (
@@ -23,12 +21,11 @@ from jdxi_editor.midi.data.parameter.drum.addresses import DRUM_GROUP_MAP
 from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParam
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.sysex.request.midi_requests import MidiRequests
-from jdxi_editor.project import __organization_name__, __program__
 from jdxi_editor.synth.analog import AnalogSynthData
 from jdxi_editor.synth.digital import DigitalSynthData
 from jdxi_editor.synth.drum import DrumSynthData
 from jdxi_editor.synth.type import JDXiSynth
-from jdxi_editor.ui.preset.tone.lists import JDXiPresetToneList
+from jdxi_editor.ui.preset.tone.lists import JDXiUIPreset
 
 
 def create_synth_data(
@@ -41,17 +38,14 @@ def create_synth_data(
     :param partial_number: int
     :return: JDXISynthData
     """
-    settings = QSettings(__organization_name__, __program__)
-
-    analog_cheat_mode = settings.value("analog_cheat_mode", type=bool)
 
     if synth_type == JDXiSynth.DRUM_KIT:
         address_lmb = DRUM_GROUP_MAP.get(partial_number)
         return DrumSynthData(
             midi_requests=MidiRequests.DRUMS_BD1_RIM_BD2_CLAP_BD3,
             midi_channel=MidiChannel.DRUM_KIT,
-            presets=JDXiPresetToneList.Drum.ENUMERATED,
-            preset_list=JDXiPresetToneList.Drum.PROGRAM_CHANGE,
+            presets=JDXiUIPreset.Drum.ENUMERATED,
+            preset_list=JDXiUIPreset.Drum.PROGRAM_CHANGE,
             preset_type=synth_type,
             instrument_icon_folder="drum_kits",
             instrument_default_image="drums.png",
@@ -65,7 +59,7 @@ def create_synth_data(
             partial_parameters=DrumPartialParam,
         )
 
-    elif synth_type in [JDXiSynth.DIGITAL_SYNTH_1, JDXiSynth.DIGITAL_SYNTH_2]:
+    if synth_type in [JDXiSynth.DIGITAL_SYNTH_1, JDXiSynth.DIGITAL_SYNTH_2]:
         address_lmb = AddressOffsetSuperNATURALLMB.digital_partial_offset(
             partial_number
         )
@@ -79,16 +73,11 @@ def create_synth_data(
         elif synth_type == JDXiSynth.DIGITAL_SYNTH_2:
             synth_number = 2
             digital_partial_address_umb = AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_2
-            if analog_cheat_mode:
-                # Cheat mode for JDXi Digital Synth 2
-                midi_channel = MidiChannel.ANALOG_SYNTH
-            else:
-                midi_channel = MidiChannel.DIGITAL_SYNTH_2
-
+            midi_channel = MidiChannel.DIGITAL_SYNTH_2
             midi_requests = MidiRequests.DIGITAL2
 
         else:
-            # Default to Synth 1
+            # --- Default to Synth 1
             synth_type = JDXiSynth.DIGITAL_SYNTH_1
             synth_number = 1
             digital_partial_address_umb = AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_1
@@ -98,8 +87,8 @@ def create_synth_data(
         return DigitalSynthData(
             midi_requests=midi_requests,
             midi_channel=midi_channel,
-            presets=JDXiPresetToneList.Digital.ENUMERATED,
-            preset_list=JDXiPresetToneList.Digital.PROGRAM_CHANGE,
+            presets=JDXiUIPreset.Digital.ENUMERATED,
+            preset_list=JDXiUIPreset.Digital.PROGRAM_CHANGE,
             preset_type=synth_type,
             instrument_icon_folder="digital_synths",
             instrument_default_image="jdxi_vector.png",
@@ -118,8 +107,8 @@ def create_synth_data(
         return AnalogSynthData(
             midi_requests=[MidiRequests.PROGRAM_COMMON, MidiRequests.ANALOG],
             midi_channel=MidiChannel.ANALOG_SYNTH,
-            presets=JDXiPresetToneList.Analog.ENUMERATED,
-            preset_list=JDXiPresetToneList.Analog.PROGRAM_CHANGE,
+            presets=JDXiUIPreset.Analog.ENUMERATED,
+            preset_list=JDXiUIPreset.Analog.PROGRAM_CHANGE,
             preset_type=synth_type,
             instrument_icon_folder="analog_synths",
             instrument_default_image="analog.png",

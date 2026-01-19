@@ -7,7 +7,7 @@ from jdxi_editor.ui.preset.tone.digital.list import JDXiPresetToneListDigital
 from jdxi_editor.ui.preset.tone.drum.list import JDXiPresetToneListDrum
 
 
-class JDXiPresetToneList:
+class JDXiUIPreset:
     """JDXi Preset 'Tone' lists for each of the 3 parts; Analog, Digital and Drums"""
 
     Analog: JDXiPresetToneListAnalog = JDXiPresetToneListAnalog

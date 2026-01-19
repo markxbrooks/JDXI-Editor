@@ -76,7 +76,7 @@ from jdxi_editor.ui.editors.io.program_group_widget import ProgramGroupWidget
 from jdxi_editor.ui.editors.io.user_programs_widget import UserProgramsWidget
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper
-from jdxi_editor.ui.preset.tone.lists import JDXiPresetToneList
+from jdxi_editor.ui.preset.tone.lists import JDXiUIPreset
 from jdxi_editor.ui.programs.programs import JDXiUIProgramList
 from jdxi_editor.ui.widgets.combo_box.searchable_filterable import (
     SearchableFilterableComboBox,
@@ -134,7 +134,7 @@ class ProgramEditor(BasicEditor):
         self.preset_type = None
         self.programs = {}  # Maps program names to numbers
         self._actual_preset_list = (
-            JDXi.UI.Preset.Digital  # Default preset list for combo box
+            JDXi.UI.Preset.Digital.PROGRAM_CHANGE  # Default preset list for combo box
         )
         # Initialize widget references before setup_ui() to prevent AttributeError
         # if callbacks are triggered during widget creation
@@ -407,22 +407,22 @@ class ProgramEditor(BasicEditor):
         if preset_type == "Digital Synth 1":
             self.midi_channel = MidiChannel.DIGITAL_SYNTH_1
             self.program_group_widget.preset.preset_list = (
-                JDXiPresetToneList.Digital.PROGRAM_CHANGE
+                JDXiUIPreset.Digital.PROGRAM_CHANGE
             )
         elif preset_type == "Digital Synth 2":
             self.midi_channel = MidiChannel.DIGITAL_SYNTH_2
             self.program_group_widget.preset.preset_list = (
-                JDXiPresetToneList.Digital.PROGRAM_CHANGE
+                JDXiUIPreset.Digital.PROGRAM_CHANGE
             )
         elif preset_type == "Drums":
             self.midi_channel = MidiChannel.DRUM_KIT
             self.program_group_widget.preset.preset_list = (
-                JDXiPresetToneList.Drum.PROGRAM_CHANGE
+                JDXiUIPreset.Drum.PROGRAM_CHANGE
             )
         elif preset_type == "Analog Synth":
             self.midi_channel = MidiChannel.ANALOG_SYNTH
             self.program_group_widget.preset.preset_list = (
-                JDXiPresetToneList.Analog.PROGRAM_CHANGE
+                JDXiUIPreset.Analog.PROGRAM_CHANGE
             )
 
     def _update_preset_combo_box(self) -> None:

@@ -6,7 +6,7 @@ playlists and their associated programs in the JD-Xi Editor.
 """
 
 from datetime import datetime
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 from sqlalchemy import (
     Column,

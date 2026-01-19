@@ -18,8 +18,8 @@ from decologr import log_exception
 from jdxi_editor.core.db.base import Base
 from jdxi_editor.core.db.pragma import Pragma
 
-# Import models to ensure they're registered with Base
-from jdxi_editor.core.db.schema.playlists import PlayList, PlaylistItem  # noqa: E402
+# --- Import models to ensure they're registered with Base
+from jdxi_editor.core.db.schema.playlists import PlaylistItem  # noqa: E402
 
 
 class DatabaseSession:

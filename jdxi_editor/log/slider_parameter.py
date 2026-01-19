@@ -5,8 +5,8 @@ Log Slider Parameters
 import logging
 from typing import Union
 
+from decologr import decorate_log_message
 from jdxi_editor.globals import LOGGING, logger
-from jdxi_editor.log.decorator import decorate_log_message
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetDrumKitLMB,
     AddressOffsetProgramLMB,

@@ -4,8 +4,8 @@ Log ADSR Parameter
 
 import logging
 
+from decologr.logger import LEVEL_EMOJIS
 from jdxi_editor.globals import logger
-from jdxi_editor.log.emoji import LEVEL_EMOJIS
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetSuperNATURALLMB,
     AddressOffsetTemporaryToneUMB,

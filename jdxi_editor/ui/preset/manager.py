@@ -1,7 +1,7 @@
 from decologr import Decologr as log
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.synth.type import JDXiSynth
-from jdxi_editor.ui.preset.tone.lists import JDXiPresetToneList
+from jdxi_editor.ui.preset.tone.lists import JDXiUIPreset
 
 
 class JDXiPresetManager:
@@ -25,16 +25,16 @@ class JDXiPresetManager:
             JDXiSynth.DRUM_KIT: "Init Tone",
         }
         self.preset_channel_map = {
-            MidiChannel.ANALOG_SYNTH: JDXiPresetToneList.Analog.ENUMERATED,
-            MidiChannel.DIGITAL_SYNTH_1: JDXiPresetToneList.Digital.ENUMERATED,
-            MidiChannel.DIGITAL_SYNTH_2: JDXiPresetToneList.Digital.ENUMERATED,
-            MidiChannel.DRUM_KIT: JDXiPresetToneList.Drum.ENUMERATED,
+            MidiChannel.ANALOG_SYNTH: JDXiUIPreset.Analog.ENUMERATED,
+            MidiChannel.DIGITAL_SYNTH_1: JDXiUIPreset.Digital.ENUMERATED,
+            MidiChannel.DIGITAL_SYNTH_2: JDXiUIPreset.Digital.ENUMERATED,
+            MidiChannel.DRUM_KIT: JDXiUIPreset.Drum.ENUMERATED,
         }
         self.preset_synth_map = {
-            JDXiSynth.ANALOG_SYNTH: JDXiPresetToneList.Analog.ENUMERATED,
-            JDXiSynth.DIGITAL_SYNTH_1: JDXiPresetToneList.Digital.ENUMERATED,
-            JDXiSynth.DIGITAL_SYNTH_2: JDXiPresetToneList.Digital.ENUMERATED,
-            JDXiSynth.DRUM_KIT: JDXiPresetToneList.Drum.ENUMERATED,
+            JDXiSynth.ANALOG_SYNTH: JDXiUIPreset.Analog.ENUMERATED,
+            JDXiSynth.DIGITAL_SYNTH_1: JDXiUIPreset.Digital.ENUMERATED,
+            JDXiSynth.DIGITAL_SYNTH_2: JDXiUIPreset.Digital.ENUMERATED,
+            JDXiSynth.DRUM_KIT: JDXiUIPreset.Drum.ENUMERATED,
         }
 
     def get_preset_name_by_type_and_index(
@@ -49,7 +49,7 @@ class JDXiPresetManager:
         """
         try:
             presets = self.preset_synth_map.get(
-                synth_type, JDXiPresetToneList.Digital.ENUMERATED
+                synth_type, JDXiUIPreset.Digital.ENUMERATED
             )
             preset_name = presets[preset_index]
             log.message(f"preset_name: {preset_name}")
@@ -57,28 +57,24 @@ class JDXiPresetManager:
         except IndexError:
             return "Index Error for current preset"
 
-    def get_presets_for_synth(self, synth: JDXiSynth) -> JDXiPresetToneList:
+    def get_presets_for_synth(self, synth: JDXiSynth) -> JDXiUIPreset:
         """
         Get the available presets for the given synth type.
 
         :param synth: JDXISynth The type of synth
         :return: JDXIPresets The available presets
         """
-        presets = self.preset_synth_map.get(
-            synth, JDXiPresetToneList.Digital.ENUMERATED
-        )
+        presets = self.preset_synth_map.get(synth, JDXiUIPreset.Digital.ENUMERATED)
         return presets
 
-    def get_presets_for_channel(self, channel: MidiChannel) -> JDXiPresetToneList:
+    def get_presets_for_channel(self, channel: MidiChannel) -> JDXiUIPreset:
         """
         Get the available presets for the given channel.
 
         :param channel: MidiChannel The MIDI channel
         :return: JDXIPresets The available presets
         """
-        presets = self.preset_channel_map.get(
-            channel, JDXiPresetToneList.Digital.ENUMERATED
-        )
+        presets = self.preset_channel_map.get(channel, JDXiUIPreset.Digital.ENUMERATED)
         return presets
 
     def set_current_preset_name(self, preset_name: str):

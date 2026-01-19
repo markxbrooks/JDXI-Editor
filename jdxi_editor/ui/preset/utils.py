@@ -1,8 +1,16 @@
+"""
+Get preset Values
+
+Example:
+>>> get_preset_values(preset_index=1)
+(95, 64, 1)
+"""
+
 from decologr import Decologr as log
-from jdxi_editor.ui.programs.digital import DIGITAL_PRESET_LIST
+from jdxi_editor.core.jdxi import JDXi
 
 
-def get_preset_values(preset_index, preset_list=DIGITAL_PRESET_LIST):
+def get_preset_values(preset_index: int, preset_list=JDXi.UI.Preset.Digital.LIST):
     """
     Retrieve MSB, LSB, and PC values for a given preset.
 

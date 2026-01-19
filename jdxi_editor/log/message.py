@@ -2,8 +2,8 @@
 
 import logging
 
+from decologr import decorate_log_message
 from jdxi_editor.globals import LOGGING, logger
-from jdxi_editor.log.decorator import decorate_log_message
 
 
 def log_message(

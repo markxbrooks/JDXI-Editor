@@ -11,6 +11,7 @@ from decologr.logger import (
     set_project_name,
     get_project_name,
     log_exception,
+    decorate_log_message
 )
 
 # Backward compatibility alias for JDXI and other code expecting "Logger"
@@ -36,6 +37,7 @@ try:
         "LogViewerApp",
         "create_log_viewer_widget",
         "run_log_viewer",
+        "decorate_log_message"
     ]
 except ImportError:
     __all__ = [
@@ -46,6 +48,7 @@ except ImportError:
         "set_project_name",
         "get_project_name",
         "log_exception",
+        "decorate_log_message"
     ]
 except TypeError:
     __all__ = [
@@ -56,6 +59,7 @@ except TypeError:
         "set_project_name",
         "get_project_name",
         "log_exception",
+        "decorate_log_message"
     ]
 
 

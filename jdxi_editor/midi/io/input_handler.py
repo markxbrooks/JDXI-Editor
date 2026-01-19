@@ -480,15 +480,16 @@ class MidiInHandler(MidiIOController):
 
         try:
             program_number = data.program_number
-            msb = data.msb  # data.msb or 85
-            lsb = data.lsb  # data.lsb or 0
+            # Default MSB to 85 (standard for JD-Xi programs) if not set
+            msb = data.msb if data.msb is not None else 85
+            # Default LSB to 0 (User Bank E/F) if not set
+            # This is the most common case for user programs
+            lsb = data.lsb if data.lsb is not None else 0
             prefix = None
 
-            # Guard against None values
-            if msb is None or lsb is None:
-                log.message(
-                    f"❌ Missing MSB or LSB (msb={msb}, lsb={lsb}); cannot auto-add program"
-                )
+            # Guard against None values (should not happen after defaults, but keep as safety check)
+            if msb is None:
+                log.message(f"❌ Missing MSB (msb={msb}); cannot auto-add program")
                 return
 
             index_in_bank = program_number % 64

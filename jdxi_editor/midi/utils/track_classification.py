@@ -8,7 +8,7 @@ This module provides functions to classify MIDI tracks into categories:
 """
 
 from collections import defaultdict
-from typing import List, Optional, Tuple
+from typing import List, Optional
 
 import mido
 from mido import MidiFile, MidiTrack

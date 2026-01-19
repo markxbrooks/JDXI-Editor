@@ -269,18 +269,20 @@ class DrumKitMixer(QWidget):
             from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
 
             composer = JDXiSysExComposer()
-            # PARTIAL_LEVEL address offset is 0x0E within the partial's address space
-            # Create a new address with the offset added to LSB
+            # PARTIAL_OUTPUT_LEVEL address offset is 0x16 within the partial's address space
+            # This matches what the Partial Tabs use (not PARTIAL_LEVEL which is 0x0E)
+            # Note: compose_message will automatically add the parameter's offset (0x16) via apply_address_offset
+            # So we set LSB to 0x00 and let compose_message add the offset
             partial_address = RolandSysExAddress(
                 address.msb,
                 address.umb,
                 address.lmb,
-                0x0E,  # PARTIAL_LEVEL offset
+                0x00,  # Base LSB - compose_message will add PARTIAL_OUTPUT_LEVEL offset (0x16)
             )
 
             message = composer.compose_message(
                 address=partial_address,
-                param=DrumPartialParam.PARTIAL_LEVEL,
+                param=DrumPartialParam.PARTIAL_OUTPUT_LEVEL,
                 value=value,
             )
             self.midi_helper.send_midi_message(message)

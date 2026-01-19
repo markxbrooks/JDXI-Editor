@@ -4,7 +4,7 @@ Composition of main JDXi components
 
 from jdxi_editor.ui.constant import JDXiUIConstants
 from jdxi_editor.ui.parameters import JDXiUIParameters
-from jdxi_editor.ui.preset import JDXiUIPresetList
+from jdxi_editor.ui.preset.tone.lists import JDXiUIPreset
 from jdxi_editor.ui.programs import JDXiUIProgramList
 from jdxi_editor.ui.style import (
     JDXiUIDimensions,
@@ -23,5 +23,5 @@ class JDXiUI:
     Dimensions: JDXiUIDimensions = JDXiUIDimensions
     Parameters: JDXiUIParameters = JDXiUIParameters
     Constants: JDXiUIConstants = JDXiUIConstants
-    Preset: JDXiUIPresetList = JDXiUIPresetList
+    Preset: JDXiUIPreset = JDXiUIPreset
     Program: JDXiUIProgramList = JDXiUIProgramList

@@ -13,7 +13,11 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from decologr import Decologr as log
 from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.log.midi_info import log_midi_info
+from jdxi_editor.midi.channel.channel import MidiChannel
+from jdxi_editor.ui.editors.helpers.preset import get_preset_parameter_value
 from jdxi_editor.ui.widgets.combo_box.searchable_filterable import (
     SearchableFilterableComboBox,
 )
@@ -146,9 +150,6 @@ class InstrumentPresetWidget(QWidget):
 
     def _add_normal_preset_content(self, layout: QVBoxLayout, synth_type: str):
         """Add normal preset selection content to the layout."""
-        from jdxi_editor.ui.programs.analog import ANALOG_PRESET_LIST
-        from jdxi_editor.ui.programs.digital import DIGITAL_PRESET_LIST
-        from jdxi_editor.ui.programs.drum import DRUM_KIT_LIST
 
         # Add icon row at the top (centered with stretch on both sides, matching PresetWidget)
         icon_row_container = QHBoxLayout()
@@ -176,22 +177,42 @@ class InstrumentPresetWidget(QWidget):
 
         # Determine the correct preset list based on synth_type
         if synth_type == "Analog":
-            preset_list = ANALOG_PRESET_LIST
+            preset_list = JDXi.UI.Preset.Analog.PROGRAM_CHANGE
         elif synth_type == "Digital":
-            preset_list = DIGITAL_PRESET_LIST
+            preset_list = JDXi.UI.Preset.Digital.PROGRAM_CHANGE
         elif synth_type == "Drums":
-            preset_list = DRUM_KIT_LIST
+            preset_list = JDXi.UI.Preset.Drum.PROGRAM_CHANGE
         else:
             # Default to digital preset list if synth_type is unknown
-            preset_list = DIGITAL_PRESET_LIST
+            preset_list = JDXi.UI.Preset.Digital.PROGRAM_CHANGE
 
-        # Build preset options, values, and categories from preset_list
+        # Convert dictionary format (Digital/Analog) to list format if needed
+        if isinstance(preset_list, dict):
+            # Convert dictionary {1: {"Name": "...", "Category": "...", ...}, ...} to list format
+            converted_preset_list = [
+                {
+                    "id": f"{preset_id:03d}",  # Format as "001", "002", etc.
+                    "name": preset_data.get("Name", ""),
+                    "category": preset_data.get("Category", ""),
+                    "msb": str(preset_data.get("MSB", 0)),
+                    "lsb": str(preset_data.get("LSB", 0)),
+                    "pc": str(preset_data.get("PC", preset_id)),
+                }
+                for preset_id, preset_data in sorted(preset_list.items())
+            ]
+        else:
+            # Already a list (Drum format)
+            converted_preset_list = preset_list
+
+        # Build preset options, values, and categories from converted_preset_list
         preset_options = [
-            f"{preset['id']} - {preset['name']}" for preset in preset_list
+            f"{preset['id']} - {preset['name']}" for preset in converted_preset_list
         ]
         # Convert preset IDs to integers for SearchableFilterableComboBox (e.g., "001" -> 1)
-        preset_values = [int(preset["id"]) for preset in preset_list]
-        preset_categories = sorted(set(preset["category"] for preset in preset_list))
+        preset_values = [int(preset["id"]) for preset in converted_preset_list]
+        preset_categories = sorted(
+            set(preset["category"] for preset in converted_preset_list)
+        )
 
         # Category filter function for presets
         def preset_category_filter(preset_display: str, category: str) -> bool:
@@ -204,7 +225,7 @@ class InstrumentPresetWidget(QWidget):
             )
             if preset_id_str:
                 # Find the preset in the list and check its category
-                for preset in preset_list:
+                for preset in converted_preset_list:
                     if preset["id"] == preset_id_str:
                         return preset["category"] == category
             return False
@@ -257,7 +278,6 @@ class InstrumentPresetWidget(QWidget):
 
     def _add_cheat_preset_content(self, layout: QVBoxLayout):
         """Add cheat preset content to the layout (Analog only)."""
-        from jdxi_editor.ui.programs.digital import DIGITAL_PRESET_LIST
 
         # Add icon row at the top (centered with stretch on both sides, matching PresetWidget)
         icon_row_container = QHBoxLayout()
@@ -269,14 +289,15 @@ class InstrumentPresetWidget(QWidget):
         layout.addLayout(icon_row_container)
         layout.addSpacing(10)  # Add spacing after icon row, matching PresetWidget
 
-        # Build preset options, values, and categories from DIGITAL_PRESET_LIST
+        # Build preset options, values, and categories
         preset_options = [
-            f"{preset['id']} - {preset['name']}" for preset in DIGITAL_PRESET_LIST
+            f"{preset['id']} - {preset['name']}"
+            for preset in JDXi.UI.Preset.Digital.LIST
         ]
         # Convert preset IDs to integers for SearchableFilterableComboBox (e.g., "001" -> 1)
-        preset_values = [int(preset["id"]) for preset in DIGITAL_PRESET_LIST]
+        preset_values = [int(preset["id"]) for preset in JDXi.UI.Preset.Digital.LIST]
         preset_categories = sorted(
-            set(preset["category"] for preset in DIGITAL_PRESET_LIST)
+            set(preset["category"] for preset in JDXi.UI.Preset.Digital.LIST)
         )
 
         # Category filter function for presets
@@ -290,7 +311,7 @@ class InstrumentPresetWidget(QWidget):
             )
             if preset_id_str:
                 # Find the preset in the list and check its category
-                for preset in DIGITAL_PRESET_LIST:
+                for preset in JDXi.UI.Preset.Digital.LIST:
                     if preset["id"] == preset_id_str:
                         return preset["category"] == category
             return False
@@ -335,16 +356,8 @@ class InstrumentPresetWidget(QWidget):
         Load a Digital Synth preset on the Analog Synth channel (Cheat Mode).
         """
         if not hasattr(self.parent, "midi_helper") or not self.parent.midi_helper:
-            from decologr import Decologr as log
-
             log.warning("⚠️ MIDI helper not available for cheat preset loading")
             return
-
-        from decologr import Decologr as log
-        from jdxi_editor.log.midi_info import log_midi_info
-        from jdxi_editor.midi.channel.channel import MidiChannel
-        from jdxi_editor.ui.editors.helpers.preset import get_preset_parameter_value
-        from jdxi_editor.ui.programs.digital import DIGITAL_PRESET_LIST
 
         # Get the current value from SearchableFilterableComboBox
         # The value is the preset ID as integer (e.g., 1 for "001")
@@ -355,9 +368,15 @@ class InstrumentPresetWidget(QWidget):
         log.parameter("combo box program_number", program_number)
 
         # Get MSB, LSB, PC values from the Digital preset list
-        msb = get_preset_parameter_value("msb", program_number, DIGITAL_PRESET_LIST)
-        lsb = get_preset_parameter_value("lsb", program_number, DIGITAL_PRESET_LIST)
-        pc = get_preset_parameter_value("pc", program_number, DIGITAL_PRESET_LIST)
+        msb = get_preset_parameter_value(
+            "msb", program_number, JDXi.UI.Preset.Digital.LIST
+        )
+        lsb = get_preset_parameter_value(
+            "lsb", program_number, JDXi.UI.Preset.Digital.LIST
+        )
+        pc = get_preset_parameter_value(
+            "pc", program_number, JDXi.UI.Preset.Digital.LIST
+        )
 
         if None in [msb, lsb, pc]:
             log.warning(

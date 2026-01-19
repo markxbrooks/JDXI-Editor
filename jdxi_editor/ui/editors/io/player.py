@@ -583,15 +583,41 @@ class MidiFileEditor(SynthEditor):
         source: "Digital" | "Analog" | "Drums"
         """
         self.ui.automation_program_combo.clear()
+
+        # Helper function to convert dictionary format to list format
+        def convert_preset_dict_to_list(preset_dict):
+            """Convert PROGRAM_CHANGE dictionary to list format."""
+            if isinstance(preset_dict, dict):
+                return [
+                    {
+                        "id": f"{preset_id:03d}",
+                        "name": preset_data.get("Name", ""),
+                        "category": preset_data.get("Category", ""),
+                        "msb": preset_data.get("MSB", 0),
+                        "lsb": preset_data.get("LSB", 0),
+                        "pc": preset_data.get("PC", preset_id),
+                    }
+                    for preset_id, preset_data in sorted(preset_dict.items())
+                ]
+            else:
+                # Already a list (Drum format)
+                return preset_dict
+
         if source == "Digital":
-            for item in JDXi.UI.Preset.Digital:
+            preset_list = convert_preset_dict_to_list(
+                JDXi.UI.Preset.Digital.PROGRAM_CHANGE
+            )
+            for item in preset_list:
                 label = f"{str(item.get('id')).zfill(3)}  {item.get('name')}"
                 msb = int(item.get("msb"))
                 lsb = int(item.get("lsb"))
                 pc = int(item.get("pc"))
                 self.ui.automation_program_combo.addItem(label, (msb, lsb, pc))
         elif source == "Analog":
-            for item in JDXi.UI.Preset.Analog:
+            preset_list = convert_preset_dict_to_list(
+                JDXi.UI.Preset.Analog.PROGRAM_CHANGE
+            )
+            for item in preset_list:
                 label = f"{str(item.get('id')).zfill(3)}  {item.get('name')}"
                 # analog list stores floats-as-numbers sometimes; cast to int
                 msb = int(item.get("msb"))
@@ -599,7 +625,10 @@ class MidiFileEditor(SynthEditor):
                 pc = int(item.get("pc"))
                 self.ui.automation_program_combo.addItem(label, (msb, lsb, pc))
         else:  # Drums
-            for item in JDXi.UI.Preset.Drum:
+            preset_list = convert_preset_dict_to_list(
+                JDXi.UI.Preset.Drum.PROGRAM_CHANGE
+            )
+            for item in preset_list:
                 label = f"{str(item.get('id')).zfill(3)}  {item.get('name')}"
                 msb = int(item.get("msb"))
                 lsb = int(item.get("lsb"))

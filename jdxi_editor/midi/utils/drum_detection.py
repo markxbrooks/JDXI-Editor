@@ -6,7 +6,7 @@ are likely drum tracks based on various heuristics.
 """
 
 from collections import defaultdict
-from typing import List, Optional, Tuple
+from typing import List, Tuple
 
 import mido
 from mido import MidiFile, MidiTrack

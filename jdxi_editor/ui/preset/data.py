@@ -33,11 +33,11 @@ JDXiPresetData(name='011: LFO Pad 1', presets=['001: JP8 Strings1', '002: Soft P
 ...    preset = JDXiPresetData(**data)
 """
 
-from dataclasses import asdict, dataclass
+from dataclasses import dataclass
 from typing import List
 
 from jdxi_editor.synth.type import JDXiSynth
-from jdxi_editor.ui.preset.tone.lists import JDXiPresetToneList
+from jdxi_editor.ui.preset.tone.lists import JDXiUIPreset
 
 
 @dataclass
@@ -61,22 +61,22 @@ class JDXiPresetData:
     @staticmethod
     def get_preset_details(synth_type: str, preset_number: int) -> "JDXiPresetData":
         if synth_type == JDXiSynth.ANALOG_SYNTH:
-            presets = JDXiPresetToneList.Analog.ENUMERATED
+            presets = JDXiUIPreset.Analog.ENUMERATED
             bank_msb = 0x10  # JD-Xi MSB for Analog (example)
             bank_lsb = preset_number // 7
             program = preset_number % 7
         elif synth_type == JDXiSynth.DIGITAL_SYNTH_1:
-            presets = JDXiPresetToneList.Digital.ENUMERATED
+            presets = JDXiUIPreset.Digital.ENUMERATED
             bank_msb = 0x10
             bank_lsb = preset_number // 16
             program = preset_number % 16
         elif synth_type == JDXiSynth.DIGITAL_SYNTH_2:
-            presets = JDXiPresetToneList.Digital.ENUMERATED
+            presets = JDXiUIPreset.Digital.ENUMERATED
             bank_msb = 0x10
             bank_lsb = preset_number // 16
             program = preset_number % 16
         elif synth_type == JDXiSynth.DRUM_KIT:
-            presets = JDXiPresetToneList.Drum.ENUMERATED
+            presets = JDXiUIPreset.Drum.ENUMERATED
             bank_msb = 0x10
             bank_lsb = preset_number // 16
             program = preset_number % 16

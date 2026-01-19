@@ -94,7 +94,7 @@ from jdxi_editor.ui.editors.main import MainEditor
 from jdxi_editor.ui.editors.pattern.pattern import PatternSequenceEditor
 from jdxi_editor.ui.preset.button import JDXiPresetButtonData
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper
-from jdxi_editor.ui.preset.tone.lists import JDXiPresetToneList
+from jdxi_editor.ui.preset.tone.lists import JDXiUIPreset
 from jdxi_editor.ui.style.factory import generate_sequencer_button_style
 from jdxi_editor.ui.widgets.button import SequencerSquare
 from jdxi_editor.ui.widgets.button.favorite import FavoriteButton
@@ -223,22 +223,22 @@ class JDXiInstrument(JDXiWindow):
         preset_configs = [
             (
                 JDXiSynth.DIGITAL_SYNTH_1,
-                JDXiPresetToneList.Digital.ENUMERATED,
+                JDXiUIPreset.Digital.ENUMERATED,
                 MidiChannel.DIGITAL_SYNTH_1,
             ),
             (
                 JDXiSynth.DIGITAL_SYNTH_2,
-                JDXiPresetToneList.Digital.ENUMERATED,
+                JDXiUIPreset.Digital.ENUMERATED,
                 MidiChannel.DIGITAL_SYNTH_2,
             ),
             (
                 JDXiSynth.ANALOG_SYNTH,
-                JDXiPresetToneList.Analog.ENUMERATED,
+                JDXiUIPreset.Analog.ENUMERATED,
                 MidiChannel.ANALOG_SYNTH,
             ),
             (
                 JDXiSynth.DRUM_KIT,
-                JDXiPresetToneList.Drum.ENUMERATED,
+                JDXiUIPreset.Drum.ENUMERATED,
                 MidiChannel.DRUM_KIT,
             ),
         ]
@@ -1710,15 +1710,15 @@ class JDXiInstrument(JDXiWindow):
 
             # Get preset name - adjust index to be 0-based
             if synth_type == JDXiSynth.ANALOG_SYNTH:
-                return JDXiPresetToneList.Analog.ENUMERATED[
+                return JDXiUIPreset.Analog.ENUMERATED[
                     preset_number - 1
                 ]  # Convert 1-based to 0-based
             if synth_type == JDXiSynth.DIGITAL_SYNTH_1:
-                return JDXiPresetToneList.Digital.ENUMERATED[preset_number - 1]
+                return JDXiUIPreset.Digital.ENUMERATED[preset_number - 1]
             if synth_type == JDXiSynth.DIGITAL_SYNTH_2:
-                return JDXiPresetToneList.Digital.ENUMERATED[preset_number - 1]
+                return JDXiUIPreset.Digital.ENUMERATED[preset_number - 1]
             else:
-                return JDXiPresetToneList.Drum.ENUMERATED[preset_number - 1]
+                return JDXiUIPreset.Drum.ENUMERATED[preset_number - 1]
         except IndexError:
             return "INIT PATCH"
 
@@ -1929,18 +1929,18 @@ class JDXiInstrument(JDXiWindow):
 
             # Define mappings for synth types
             synth_mappings = {
-                JDXiSynth.ANALOG_SYNTH: (JDXiPresetToneList.Analog.ENUMERATED, 0, 7),
+                JDXiSynth.ANALOG_SYNTH: (JDXiUIPreset.Analog.ENUMERATED, 0, 7),
                 JDXiSynth.DIGITAL_SYNTH_1: (
-                    JDXiPresetToneList.Digital.ENUMERATED,
+                    JDXiUIPreset.Digital.ENUMERATED,
                     1,
                     16,
                 ),
                 JDXiSynth.DIGITAL_SYNTH_2: (
-                    JDXiPresetToneList.Digital.ENUMERATED,
+                    JDXiUIPreset.Digital.ENUMERATED,
                     2,
                     16,
                 ),
-                JDXiSynth.DRUM_KIT: (JDXiPresetToneList.Drum.ENUMERATED, 3, 16),
+                JDXiSynth.DRUM_KIT: (JDXiUIPreset.Drum.ENUMERATED, 3, 16),
             }
 
             # Get preset list and MIDI parameters based on synth type

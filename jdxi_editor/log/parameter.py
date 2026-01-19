@@ -1,10 +1,12 @@
-"""parameter.py"""
+"""
+Log parameters as Key, values, showing types and midi values
+"""
 
 import logging
 from typing import Any
 
+from decologr import decorate_log_message
 from jdxi_editor.globals import LOG_PADDING_WIDTH, LOGGING, logger
-from jdxi_editor.log.decorator import decorate_log_message
 from picomidi.utils.formatting import (
     format_message_to_hex_string as format_midi_message_to_hex_string,
 )
