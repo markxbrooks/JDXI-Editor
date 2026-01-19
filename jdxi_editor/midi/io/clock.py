@@ -1,4 +1,5 @@
-"""import mido
+"""clock test file"""
+import mido
 import time
 
 try:
