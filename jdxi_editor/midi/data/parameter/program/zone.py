@@ -33,9 +33,9 @@ if param:
 switch_text = program_level.get_switch_text(1)  # "ON" or "---"
 """
 
-from typing import Tuple, Optional
+from typing import Optional, Tuple
 
-from jdxi_editor.midi.data.parameter.synth import AddressParameter
+from picomidi.sysex.parameter.address import AddressParameter
 
 
 class ProgramZoneParam(AddressParameter):

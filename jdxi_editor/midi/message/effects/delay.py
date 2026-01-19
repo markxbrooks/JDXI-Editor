@@ -4,10 +4,10 @@ DelayMessage
 
 # Example usage:
 # Set delay level
->>> msg = DelayMessage(param=Delay.LEVEL.value, value=100)  # Level 100
+>>> msg = DelayMessage(param=Delay.LEVEL.STATUS, value=100)  # Level 100
 
 # Set reverb send level
->>> msg = DelayMessage(param=Delay.REVERB_SEND.value, value=64)  # Send to reverb
+>>> msg = DelayMessage(param=Delay.REVERB_SEND.STATUS, value=64)  # Send to reverb
 
 # Set delay parameter 1 to +5000
 >>> msg = DelayMessage(
@@ -18,17 +18,17 @@ DelayMessage
 from dataclasses import dataclass
 
 from jdxi_editor.midi.data.address.address import (
-    CommandID,
-    AddressStartMSB,
     AddressOffsetProgramLMB,
+    AddressStartMSB,
+    CommandID,
 )
 from jdxi_editor.midi.data.address.sysex import ZERO_BYTE
-from jdxi_editor.midi.message.roland import RolandSysEx
-from jdxi_editor.midi.utils.byte import split_16bit_value_to_nibbles
+from jdxi_editor.midi.message.roland import JDXiSysEx
+from picomidi.utils.conversion import split_16bit_value_to_nibbles
 
 
 @dataclass
-class DelayMessage(RolandSysEx):
+class DelayMessage(JDXiSysEx):
     """Program Delay parameter message"""
 
     command: int = CommandID.DT1

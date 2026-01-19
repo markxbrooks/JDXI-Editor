@@ -1,7 +1,6 @@
 """
 Midi Widget Utils
 """
-from typing import Any
 
 import mido
 from mido import MidiFile
@@ -53,9 +52,9 @@ def get_total_duration_in_seconds(midi_file: MidiFile) -> float:
     return time_seconds
 
 
-def extract_notes_with_absolute_time(track: mido.MidiTrack,
-                                     tempo: int,
-                                     ticks_per_beat: int) -> list:
+def extract_notes_with_absolute_time(
+    track: mido.MidiTrack, tempo: int, ticks_per_beat: int
+) -> list:
     """
     Extract notes with absolute time from a MIDI track
 
@@ -95,6 +94,11 @@ def get_first_channel(track: mido.MidiTrack) -> int | None:
     :return: int | None
     """
     for msg in track:
-        if msg.type in {"note_on", "note_off", "control_change", "program_change"} and hasattr(msg, "channel"):
+        if msg.type in {
+            "note_on",
+            "note_off",
+            "control_change",
+            "program_change",
+        } and hasattr(msg, "channel"):
             return msg.channel
     return 0  # default fallback

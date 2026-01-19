@@ -31,15 +31,28 @@ Example:
     editor = DrumPartialSection(midi_helper)
     editor.show()
 """
+
 from typing import Callable
 
-from PySide6.QtWidgets import QGroupBox, QFormLayout, QWidget, QVBoxLayout, QScrollArea, QHBoxLayout, QTabWidget
+from PySide6.QtWidgets import (
+    QGroupBox,
+    QTabWidget,
+    QWidget,
+)
+
+from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.midi.data.parameter.drum.name import DrumDisplayName
+from jdxi_editor.midi.data.parameter.drum.option import DrumDisplayOptions
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
-from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.editors.drum.partial.base import DrumBaseSection
+from jdxi_editor.ui.widgets.editor.helper import (
+    create_group_with_form_layout,
+    create_group_with_layout,
+)
 
 
-class DrumPartialSection(QWidget):
+class DrumPartialSection(DrumBaseSection):
     """Drum Partial Section for the JDXI Editor"""
 
     def __init__(
@@ -66,147 +79,143 @@ class DrumPartialSection(QWidget):
 
     def setup_ui(self) -> None:
         """setup UI"""
-        self.setMinimumWidth(JDXiDimensions.DRUM_PARTIAL_TAB_MIN_WIDTH)
-        main_row_hlayout = QHBoxLayout(self)
-        main_row_hlayout.addStretch()
-
-        main_rows_vlayout = QVBoxLayout()
-        main_row_hlayout.addLayout(main_rows_vlayout)
-
+        # Icons row is already added by DrumBaseSection
+        # Add tab widget to scrolled layout
         self.partial_controls_tab_widget = QTabWidget()
-        main_rows_vlayout.addWidget(self.partial_controls_tab_widget)
+        self.scrolled_layout.addWidget(self.partial_controls_tab_widget)
 
-        self.partial_controls_tab_widget.addTab(self._create_pitch_controls_group(), "Controls")
+        controls_icon = JDXi.UI.IconRegistry.get_icon(
+            "mdi.tune", color=JDXi.UI.Style.GREY
+        )
+        self.partial_controls_tab_widget.addTab(
+            self._create_pitch_controls_group(), controls_icon, "Controls"
+        )
 
-        self.partial_controls_tab_widget.addTab(self._create_partial_pan_group(), "Pan")
+        pan_icon = JDXi.UI.IconRegistry.get_icon(
+            "mdi.pan-horizontal", color=JDXi.UI.Style.GREY
+        )
+        self.partial_controls_tab_widget.addTab(
+            self._create_partial_pan_group(), pan_icon, "Pan"
+        )
 
-        self.partial_controls_tab_widget.addTab(self._create_partial_misc_group(), "Misc")
+        misc_icon = JDXi.UI.IconRegistry.get_icon(
+            "mdi.dots-horizontal", color=JDXi.UI.Style.GREY
+        )
+        self.partial_controls_tab_widget.addTab(
+            self._create_partial_misc_group(), misc_icon, "Misc"
+        )
 
-        self.partial_controls_tab_widget.addTab(self._create_partial_modes_group(), "Modes")
+        modes_icon = JDXi.UI.IconRegistry.get_icon(
+            "mdi.toggle-switch", color=JDXi.UI.Style.GREY
+        )
+        self.partial_controls_tab_widget.addTab(
+            self._create_partial_modes_group(), modes_icon, "Modes"
+        )
 
-        # pitch_group.setLayout(scrolled_layout)
-        # scrolled_layout.addWidget(pitch_group)
-        main_row_hlayout.addStretch()
+        # Add stretch to allow proper expansion
+        self.scrolled_layout.addStretch()
 
     def _create_partial_misc_group(self) -> QGroupBox:
-        """ create partial misc group """
-        partial_misc_group = QGroupBox()
-        form_layout = QFormLayout()
-        partial_misc_group.setLayout(form_layout)
-
-        # --- Partial env mode ---
-        partial_env_mode_combo = self._create_parameter_combo_box(
-            DrumPartialParam.PARTIAL_ENV_MODE,
-            "Partial Env Mode",
-            ["NO-SUS", "SUSTAIN"],
-            [0, 1],
-        )
-        form_layout.addRow(partial_env_mode_combo)
-
-        # --- Partial Pitch Bend Range ---
-        pitch_bend_range_slider = self._create_parameter_slider(
-            DrumPartialParam.PARTIAL_PITCH_BEND_RANGE, "Pitch Bend Range"
-        )
-        form_layout.addRow(pitch_bend_range_slider)
-        # --- Assign Type ---
-        assign_type_combo = self._create_parameter_combo_box(
-            DrumPartialParam.ASSIGN_TYPE,
-            "Assign Type",
-            ["MULTI", "SINGLE"],
-            [0, 1],
-        )
-        form_layout.addRow(assign_type_combo)
-        #  --- Mute Group control ---
-        mute_group_combo = self._create_parameter_combo_box(
-            DrumPartialParam.MUTE_GROUP,
-            "Mute Group",
-            ["OFF"] + [str(i) for i in range(1, 31)],
-            list(range(0, 31)),
-        )
-        form_layout.addRow(mute_group_combo)
-        # --- Add pitch parameters ---
-        partial_level_slider = self._create_parameter_slider(
-            DrumPartialParam.PARTIAL_LEVEL, "Partial Level"
-        )
-        form_layout.addRow(partial_level_slider)
-        return partial_misc_group
+        """create partial misc group"""
+        widgets = [
+            self._create_parameter_combo_box(
+                DrumPartialParam.PARTIAL_ENV_MODE,
+                DrumDisplayName.PARTIAL_ENV_MODE,
+                options=DrumDisplayOptions.PARTIAL_ENV_MODE,
+                values=[0, 1],
+            ),
+            self._create_parameter_slider(
+                DrumPartialParam.PARTIAL_PITCH_BEND_RANGE,
+                DrumDisplayName.PARTIAL_PITCH_BEND_RANGE,
+            ),
+            self._create_parameter_combo_box(
+                DrumPartialParam.ASSIGN_TYPE,
+                DrumDisplayName.ASSIGN_TYPE,
+                options=DrumDisplayOptions.ASSIGN_TYPE,
+                values=[0, 1],
+            ),
+            self._create_parameter_combo_box(
+                DrumPartialParam.MUTE_GROUP,
+                DrumDisplayName.MUTE_GROUP,
+                options=DrumDisplayOptions.MUTE_GROUP,
+                values=list(range(0, 31)),
+            ),
+            self._create_parameter_slider(
+                DrumPartialParam.PARTIAL_LEVEL, DrumDisplayName.PARTIAL_LEVEL
+            ),
+        ]
+        group, _ = create_group_with_form_layout(widgets, group_name="Misc")
+        return group
 
     def _create_partial_modes_group(self) -> QGroupBox:
         """create partial modes group"""
-        partial_modes_group = QGroupBox()
-        form_layout = QFormLayout()
-        partial_modes_group.setLayout(form_layout)
-
-        # --- Receive Expression ---
-        receive_expression_combo = self._create_parameter_combo_box(
-            DrumPartialParam.PARTIAL_RECEIVE_EXPRESSION,
-            "Receive Expression",
-            ["OFF", "ON"],
-            [0, 1],
-        )
-        form_layout.addRow(receive_expression_combo)
-
-        # --- Partial Receive Hold-1 ---
-        receive_hold_combo = self._create_parameter_combo_box(
-            DrumPartialParam.PARTIAL_RECEIVE_HOLD_1,
-            "Receive Hold-1",
-            ["OFF", "ON"],
-            [0, 1],
-        )
-        form_layout.addRow(receive_hold_combo)
-
-        # --- One Shot Mode ---
-        one_shot_mode_combo = self._create_parameter_combo_box(
-            DrumPartialParam.ONE_SHOT_MODE,
-            "One Shot Mode",
-            ["OFF", "ON"],
-            [0, 1],
-        )
-        form_layout.addRow(one_shot_mode_combo)
-
-        return partial_modes_group
+        widgets = [
+            self._create_parameter_combo_box(
+                DrumPartialParam.PARTIAL_RECEIVE_EXPRESSION,
+                DrumDisplayName.PARTIAL_RECEIVE_EXPRESSION,
+                options=DrumDisplayOptions.PARTIAL_RECEIVE_EXPRESSION,
+                values=[0, 1],
+            ),
+            self._create_parameter_combo_box(
+                DrumPartialParam.PARTIAL_RECEIVE_HOLD_1,
+                DrumDisplayName.PARTIAL_RECEIVE_HOLD_1,
+                options=DrumDisplayOptions.PARTIAL_RECEIVE_HOLD_1,
+                values=[0, 1],
+            ),
+            self._create_parameter_combo_box(
+                DrumPartialParam.ONE_SHOT_MODE,
+                DrumDisplayName.ONE_SHOT_MODE,
+                options=DrumDisplayOptions.ONE_SHOT_MODE,
+                values=[0, 1],
+            ),
+        ]
+        group, _ = create_group_with_form_layout(widgets, group_name="Modes")
+        return group
 
     def _create_partial_pan_group(self) -> QGroupBox:
         """create partial pan group"""
-        partial_pan_group = QGroupBox()
-        form_layout = QFormLayout()
-        partial_pan_group.setLayout(form_layout)
-        partial_pan_slider = self._create_parameter_slider(
-            DrumPartialParam.PARTIAL_PAN, "Partial Pan"
-        )
-        form_layout.addRow(partial_pan_slider)
-
-        partial_random_pan_depth_slider = self._create_parameter_slider(
-            DrumPartialParam.PARTIAL_RANDOM_PAN_DEPTH,
-            "Partial Random Pan Depth",
-        )
-        form_layout.addRow(partial_random_pan_depth_slider)
-
-        partial_alternate_pan_depth_slider = self._create_parameter_slider(
-            DrumPartialParam.PARTIAL_ALTERNATE_PAN_DEPTH,
-            "Partial Alternate Pan Depth",
-        )
-        form_layout.addRow(partial_alternate_pan_depth_slider)
-        return partial_pan_group
+        widgets = [
+            self._create_parameter_slider(
+                DrumPartialParam.PARTIAL_PAN, DrumDisplayName.PARTIAL_PAN
+            ),
+            self._create_parameter_slider(
+                DrumPartialParam.PARTIAL_RANDOM_PAN_DEPTH,
+                DrumDisplayName.PARTIAL_RANDOM_PAN_DEPTH,
+            ),
+            self._create_parameter_slider(
+                DrumPartialParam.PARTIAL_ALTERNATE_PAN_DEPTH,
+                DrumDisplayName.PARTIAL_ALTERNATE_PAN_DEPTH,
+            ),
+        ]
+        group, _ = create_group_with_form_layout(widgets, group_name="Pan")
+        return group
 
     def _create_pitch_controls_group(self) -> QGroupBox:
         """create pitch group"""
-        pitch_controls_group = QGroupBox()
-        pitch_layout = QFormLayout()
-        pitch_controls_group.setLayout(pitch_layout)
-        partial_coarse_tune_slider = self._create_parameter_slider(
-            DrumPartialParam.PARTIAL_COARSE_TUNE, "Partial Coarse Tune"
-        )
-        pitch_layout.addRow(partial_coarse_tune_slider)
 
-        partial_fine_tune_slider = self._create_parameter_slider(
-            DrumPartialParam.PARTIAL_FINE_TUNE, "Partial Fine Tune"
+        widgets = [
+            self._create_parameter_slider(
+                DrumPartialParam.PARTIAL_COARSE_TUNE,
+                DrumDisplayName.PARTIAL_COARSE_TUNE,
+                vertical=True,
+            ),
+            self._create_parameter_slider(
+                DrumPartialParam.PARTIAL_FINE_TUNE,
+                DrumDisplayName.PARTIAL_FINE_TUNE,
+                vertical=True,
+            ),
+            self._create_parameter_slider(
+                DrumPartialParam.PARTIAL_RANDOM_PITCH_DEPTH,
+                DrumDisplayName.PARTIAL_RANDOM_PITCH_DEPTH,
+                vertical=True,
+            ),
+        ]
+        group, inner_layout = create_group_with_layout(
+            group_name="Controls", vertical=False
         )
-        pitch_layout.addRow(partial_fine_tune_slider)
-
-        partial_random_pitch_depth_slider = self._create_parameter_slider(
-            DrumPartialParam.PARTIAL_RANDOM_PITCH_DEPTH,
-            "Partial Random Pitch Depth",
-        )
-        pitch_layout.addRow(partial_random_pitch_depth_slider)
-        return pitch_controls_group
+        inner_layout.addStretch()
+        for widget in widgets:
+            inner_layout.addWidget(widget)
+        inner_layout.addStretch()
+        group.setStyleSheet(JDXi.UI.Style.ADSR)
+        return group

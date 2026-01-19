@@ -28,18 +28,24 @@ Customization:
 """
 
 import numpy as np
-from PySide6.QtCore import Qt, QPointF
+from PySide6.QtCore import QPointF, Qt
+from PySide6.QtGui import (
+    QColor,
+    QFont,
+    QLinearGradient,
+    QPainter,
+    QPainterPath,
+    QPen,
+)
 from PySide6.QtWidgets import QWidget
-from PySide6.QtGui import QPainter, QPainterPath, QLinearGradient, QColor, QPen, QFont, QBrush
 
-from jdxi_editor.jdxi.midi.constant import JDXiConstant
-from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.ui.constant import JDXiUI
 
 
-def generate_filter_plot(width: float,
-                         slope: float,
-                         sample_rate: int,
-                         duration: float) -> np.ndarray:
+def generate_filter_plot(
+    width: float, slope: float, sample_rate: int, duration: float
+) -> np.ndarray:
     """Generates a filter envelope with a sustain plateau followed by a slope down to zero."""
     width = max(0.0, min(1.0, width))  # Clip to valid range
     total_samples = int(duration * sample_rate)
@@ -56,11 +62,17 @@ def generate_filter_plot(width: float,
     slope_samples = max(1, slope_samples)
 
     # Create the sustain plateau first
-    sustain = np.full(sustain_samples, JDXiConstant.FILTER_PLOT_DEPTH, dtype=np.float32)
+    sustain = np.full(
+        sustain_samples, JDXi.UI.Constants.FILTER_PLOT_DEPTH, dtype=np.float32
+    )
 
     # Now create slope descending to zero
     slope_vals = np.linspace(
-        JDXiConstant.FILTER_PLOT_DEPTH, 0, slope_samples, endpoint=False, dtype=np.float32
+        JDXi.UI.Constants.FILTER_PLOT_DEPTH,
+        0,
+        slope_samples,
+        endpoint=False,
+        dtype=np.float32,
     )
 
     # Combine together
@@ -78,11 +90,11 @@ def generate_filter_plot(width: float,
 
 class AnalogFilterPlot(QWidget):
     def __init__(
-            self,
-            width: int = JDXiStyle.ADSR_PLOT_WIDTH,
-            height: int = JDXiStyle.ADSR_PLOT_HEIGHT,
-            envelope: dict = None,
-            parent: QWidget = None,
+        self,
+        width: int = JDXi.UI.Style.ADSR_PLOT_WIDTH,
+        height: int = JDXi.UI.Style.ADSR_PLOT_HEIGHT,
+        envelope: dict = None,
+        parent: QWidget = None,
     ):
         super().__init__(parent)
         self.point_moved = None
@@ -95,10 +107,10 @@ class AnalogFilterPlot(QWidget):
         self.setMaximumHeight(height)
         self.setMaximumWidth(width)
         # Use dark gray background
-        self.setStyleSheet(JDXiStyle.ADSR_PLOT)
+        JDXi.UI.ThemeManager.apply_adsr_plot(self)
         # Sample rate for converting times to samples
         self.sample_rate = 256
-        self.setMinimumHeight(JDXiStyle.ADSR_PLOT_HEIGHT)
+        self.setMinimumHeight(JDXi.UI.Style.ADSR_PLOT_HEIGHT)
         self.attack_x = 0.1
         self.decay_x = 0.3
         self.peak_level = 0.5
@@ -187,10 +199,12 @@ class AnalogFilterPlot(QWidget):
 
             # === Envelope Parameters ===
             # Pulse width envelope: rise and fall
-            envelope = generate_filter_plot(width=self.envelope["cutoff_param"],
-                                            slope=self.envelope["slope_param"],
-                                            sample_rate=self.sample_rate,
-                                            duration=self.envelope.get("duration", 1.0))
+            envelope = generate_filter_plot(
+                width=self.envelope["cutoff_param"],
+                slope=self.envelope["slope_param"],
+                sample_rate=self.sample_rate,
+                duration=self.envelope.get("duration", 1.0),
+            )
             total_samples = len(envelope)
             total_time = total_samples / self.sample_rate
 
@@ -223,7 +237,9 @@ class AnalogFilterPlot(QWidget):
                 painter.drawLine(left_pad - 5, y, left_pad, y)
                 label = f"{y_val:.1f}"
                 label_width = font_metrics.horizontalAdvance(label)
-                painter.drawText(left_pad - 10 - label_width, y + font_metrics.ascent() / 2, label)
+                painter.drawText(
+                    left_pad - 10 - label_width, y + font_metrics.ascent() / 2, label
+                )
 
             # === Title ===
             painter.setPen(QPen(QColor("orange")))
@@ -237,7 +253,9 @@ class AnalogFilterPlot(QWidget):
             painter.setFont(QFont("JD LCD Rounded", 10))
             x_label = "Frequency (Hz)"
             x_label_width = font_metrics.horizontalAdvance(x_label)
-            painter.drawText(left_pad + (plot_w - x_label_width) / 2, top_pad + plot_h + 35, x_label)
+            painter.drawText(
+                left_pad + (plot_w - x_label_width) / 2, top_pad + plot_h + 35, x_label
+            )
 
             # === Y-axis Label (rotated) ===
             painter.save()
@@ -284,15 +302,15 @@ class AnalogFilterPlot(QWidget):
                     painter.drawPath(path)
 
                     # Now fill in to axes
-                    path.lineTo(left_pad + plot_w, zero_y)
-                    path.lineTo(left_pad, zero_y)
-                    path.closeSubpath()
+                    # path.lineTo(left_pad + plot_w, zero_y)
+                    # path.lineTo(left_pad, zero_y)
+                    # path.closeSubpath()
 
                     # Fill the path black first
-                    painter.fillPath(path, gradient)
+                    # painter.fillPath(path, gradient)
                     # redraw x-axis
-                    painter.setPen(axis_pen)
-                    painter.drawLine(left_pad, zero_y, left_pad + plot_w, zero_y)
+                    # painter.setPen(axis_pen)
+                    # painter.drawLine(left_pad, zero_y, left_pad + plot_w, zero_y)
                     # === X-axis Labels & Ticks ===
                     num_ticks = 6
                     for i in range(num_ticks + 1):

@@ -42,63 +42,52 @@ Example:
 """
 
 import logging
-from typing import Optional, Dict, Union
+from typing import TYPE_CHECKING, Dict, Optional, Union
 
+from PySide6.QtGui import QKeySequence, QShortcut
 from PySide6.QtWidgets import (
-    QWidget,
-    QVBoxLayout,
+    QGroupBox,
     QHBoxLayout,
     QScrollArea,
     QSlider,
-    QTabWidget,
-    QLineEdit,
-    QComboBox,
-    QPushButton,
-    QLabel,
-    QGroupBox,
+    QVBoxLayout,
+    QWidget,
 )
-from PySide6.QtGui import QShortcut, QKeySequence
-import qtawesome as qta
 
-from jdxi_editor.jdxi.preset.widget import InstrumentPresetWidget
-from jdxi_editor.log.logger import Logger as log
+from jdxi_editor.ui.preset.widget import InstrumentPresetWidget
+
+if TYPE_CHECKING:
+    from jdxi_editor.ui.preset.helper import JDXiPresetHelper
+
+from decologr import Decologr as log
+from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.log.slider_parameter import log_slider_parameters
-from jdxi_editor.midi.data.control_change.analog import AnalogControlChange, AnalogRPN
-from jdxi_editor.midi.data.parameter.analog import AnalogParam
-from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.jdxi.synth.type import JDXiSynth
-from jdxi_editor.midi.utils.conversions import (
-    midi_value_to_ms,
-    midi_value_to_fraction,
-)
 from jdxi_editor.midi.data.analog.oscillator import AnalogOscWave
+from jdxi_editor.midi.data.control_change.analog import AnalogControlChange, AnalogRPN
+from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
+from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.synth.type import JDXiSynth
 from jdxi_editor.ui.editors.analog.amp import AnalogAmpSection
 from jdxi_editor.ui.editors.analog.common import AnalogCommonSection
 from jdxi_editor.ui.editors.analog.filter import AnalogFilterSection
 from jdxi_editor.ui.editors.analog.lfo import AnalogLFOSection
 from jdxi_editor.ui.editors.analog.oscillator import AnalogOscillatorSection
 from jdxi_editor.ui.editors.synth.editor import SynthEditor, log_changes
-from jdxi_editor.ui.image.utils import base64_to_pixmap
-from jdxi_editor.ui.image.waveform import generate_waveform_icon
-from jdxi_editor.jdxi.style import JDXiStyle
-from jdxi_editor.jdxi.preset.helper import create_scroll_area, create_scroll_container
-from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
-from jdxi_editor.midi.data.programs.digital import DIGITAL_PRESET_LIST
-from jdxi_editor.midi.channel.channel import MidiChannel
-from jdxi_editor.ui.editors.helpers.preset import get_preset_parameter_value
-from jdxi_editor.log.midi_info import log_midi_info
-from jdxi_editor.ui.widgets.display.digital import DigitalTitle
-from jdxi_editor.ui.widgets.preset.combo_box import PresetComboBox
+from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
+from picomidi.utils.conversion import (
+    midi_value_to_fraction,
+    midi_value_to_ms,
+)
 
 
 class AnalogSynthEditor(SynthEditor):
     """Analog Synth Editor UI."""
 
     def __init__(
-            self,
-            midi_helper: Optional[MidiIOHelper] = None,
-            preset_helper: Optional["JDXiPresetHelper"] = None,
-            parent: Optional[QWidget] = None,
+        self,
+        midi_helper: Optional[MidiIOHelper] = None,
+        preset_helper: Optional["JDXiPresetHelper"] = None,  # type: ignore[name-defined]
+        parent: Optional[QWidget] = None,
     ):
         """
         Initialize the AnalogSynthEditor
@@ -111,18 +100,18 @@ class AnalogSynthEditor(SynthEditor):
         self.instrument_image_group: QGroupBox | None = None
         self.scroll: QScrollArea | None = None
         self.instrument_preset_group: QGroupBox | None = None
-        self.instrument_preset_layout: QVBoxLayout | None = None
+        # self.instrument_preset_layout: QVBoxLayout | None = None
         self.instrument_preset: QWidget | None = None
         self.instrument_preset_widget: QWidget | None = None
-        self.instrument_preset_hlayout: QHBoxLayout | None = None
+        # self.instrument_preset_hlayout: QHBoxLayout | None = None
         self.amp_section: AnalogAmpSection | None = None
         self.oscillator_section: AnalogOscillatorSection | None = None
         self.filter_section: AnalogFilterSection | None = None
-        self.read_request_button = None
+        # self.read_request_button = None
         self.tab_widget = None
         self.lfo_section = None
-        self.instrument_selection_label = None
-        self.instrument_title_label = None
+        # self.instrument_selection_label = None
+        # self.instrument_title_label = None
         self.preset_helper = preset_helper
         self.wave_buttons = {}
         self.lfo_shape_buttons = {}
@@ -130,6 +119,12 @@ class AnalogSynthEditor(SynthEditor):
         self.updating_from_spinbox = False
         self.previous_json_data = None
         self.main_window = parent
+
+        # --- Initialize mappings as empty dicts/lists early to prevent AttributeError
+        # --- These will be populated after sections are created
+        self.adsr_mapping = {}
+        self.pitch_env_mapping = {}
+        self.pwm_mapping = []
 
         self._init_parameter_mappings()
         self._init_synth_data(JDXiSynth.ANALOG_SYNTH)
@@ -145,7 +140,7 @@ class AnalogSynthEditor(SynthEditor):
         self.refresh_shortcut = QShortcut(QKeySequence.StandardKey.Refresh, self)
         self.refresh_shortcut.activated.connect(self.data_request)
 
-        # Define mapping dictionaries
+        # --- Define mapping dictionaries
         self.sub_osc_type_map = {0: 0, 1: 1, 2: 2}
         self.filter_switch_map = {0: 0, 1: 1}
         self.osc_waveform_map = {
@@ -169,55 +164,78 @@ class AnalogSynthEditor(SynthEditor):
             AnalogParam.OSC_PITCH_ENV_DECAY_TIME: self.oscillator_section.pitch_env_widget.decay_control,
             AnalogParam.OSC_PITCH_ENV_DEPTH: self.oscillator_section.pitch_env_widget.depth_control,
         }
-        self.pwm_mapping = [AnalogParam.OSC_PULSE_WIDTH,
-                            AnalogParam.OSC_PULSE_WIDTH_MOD_DEPTH]
+        self.pwm_mapping = [
+            AnalogParam.OSC_PULSE_WIDTH,
+            AnalogParam.OSC_PULSE_WIDTH_MOD_DEPTH,
+        ]
         self.data_request()
 
     def setup_ui(self):
         """Set up the Analog Synth Editor UI."""
-        self.setMinimumSize(JDXiDimensions.EDITOR_ANALOG_MIN_WIDTH, JDXiDimensions.EDITOR_ANALOG_MIN_HEIGHT)
-        self.resize(JDXiDimensions.EDITOR_ANALOG_WIDTH, JDXiDimensions.EDITOR_ANALOG_HEIGHT)
-        self.setStyleSheet(JDXiStyle.TABS_ANALOG + JDXiStyle.EDITOR_ANALOG)
+        self.setMinimumSize(
+            JDXi.UI.Dimensions.EDITOR_ANALOG.MIN_WIDTH,
+            JDXi.UI.Dimensions.EDITOR_ANALOG.MIN_HEIGHT,
+        )
+        self.resize(
+            JDXi.UI.Dimensions.EDITOR_ANALOG.WIDTH,
+            JDXi.UI.Dimensions.EDITOR_ANALOG.HEIGHT,
+        )
+        JDXi.UI.ThemeManager.apply_tabs_style(self, analog=True)
+        JDXi.UI.ThemeManager.apply_editor_style(self, analog=True)
 
-        self.setup_main_layout()
-        self.scroll = create_scroll_area()
-        self.main_layout.addWidget(self.scroll)
+        # --- Use EditorBaseWidget for consistent layout structure (harmonized with Digital)
+        self.base_widget = EditorBaseWidget(parent=self, analog=True)
+        self.base_widget.setup_scrollable_content(spacing=5, margins=(5, 5, 5, 5))
 
-        container, container_layout = create_scroll_container()
-        self.scroll.setWidget(container)
+        # --- Add base widget to editor's layout (if editor has a layout)
+        if not hasattr(self, "main_layout") or self.main_layout is None:
+            self.main_layout = QVBoxLayout(self)
+            self.setLayout(self.main_layout)
+        self.main_layout.addWidget(self.base_widget)
 
+        # --- Store references for backward compatibility
+        self.scroll = self.base_widget.get_scroll_area()
+
+        # --- Set up instrument preset widget
         self.instrument_preset = InstrumentPresetWidget(parent=self)
         self.instrument_preset.setup_header_layout()
-
         self.instrument_preset.setup()
 
-        self.instrument_preset_group = self.instrument_preset.create_instrument_preset_group()
+        self.instrument_preset_group = (
+            self.instrument_preset.create_instrument_preset_group()
+        )
         self.instrument_preset.add_preset_group(self.instrument_preset_group)
         self.instrument_preset.add_stretch()
 
-        self.instrument_image_group, self.instrument_image_label, self.instrument_group_layout = self.instrument_preset.create_instrument_image_group()
+        (
+            self.instrument_image_group,
+            self.instrument_image_label,
+            self.instrument_group_layout,
+        ) = self.instrument_preset.create_instrument_image_group()
         self.instrument_preset.add_image_group(self.instrument_image_group)
         self.instrument_preset.add_stretch()
 
         self.update_instrument_image()
 
-        # --- Tab sections
-        self.tab_widget = QTabWidget()
-        container_layout.addWidget(self.tab_widget)
-        self.tab_widget.addTab(self.instrument_preset, "Presets")
+        # --- Create tab widget and add preset as first tab
+        self.tab_widget = self.base_widget.create_tab_widget()
+        try:
+            presets_icon = JDXi.UI.IconRegistry.get_icon(
+                JDXi.UI.IconRegistry.MUSIC_NOTE_MULTIPLE, color=JDXi.UI.Style.GREY
+            )
+            if presets_icon is None or presets_icon.isNull():
+                raise ValueError("Icon is null")
+        except:
+            presets_icon = JDXi.UI.IconRegistry.get_icon(
+                JDXi.UI.IconRegistry.MUSIC, color=JDXi.UI.Style.GREY
+            )
+        self.tab_widget.addTab(self.instrument_preset, presets_icon, "Presets")
 
         # --- Configure sliders
         for slider in self.controls.values():
             if isinstance(slider, QSlider):
                 slider.setTickPosition(QSlider.TickPosition.TicksBothSides)
                 slider.setTickInterval(10)
-
-        self.scroll.setWidget(container)
-
-    def setup_main_layout(self):
-        """set up main layout"""
-        self.main_layout = QVBoxLayout()
-        self.setLayout(self.main_layout)
 
     def _create_sections(self):
         """Create the sections for the Analog Synth Editor."""
@@ -232,7 +250,9 @@ class AnalogSynthEditor(SynthEditor):
         )
         self.tab_widget.addTab(
             self.oscillator_section,
-            qta.icon("mdi.triangle-wave", color="#666666"),
+            JDXi.UI.IconRegistry.get_icon(
+                JDXi.UI.IconRegistry.TRIANGLE_WAVE, color=JDXi.UI.Style.GREY
+            ),
             "Oscillator",
         )
         self.filter_section = AnalogFilterSection(
@@ -245,18 +265,24 @@ class AnalogSynthEditor(SynthEditor):
             address=self.synth_data.address,
         )
         self.tab_widget.addTab(
-            self.filter_section, qta.icon("ri.filter-3-fill", color="#666666"), "Filter"
+            self.filter_section,
+            JDXi.UI.IconRegistry.get_icon(
+                JDXi.UI.IconRegistry.FILTER, color=JDXi.UI.Style.GREY
+            ),
+            "Filter",
         )
         self.amp_section = AnalogAmpSection(
             midi_helper=self.midi_helper,
             address=self.synth_data.address,
             create_parameter_slider=self._create_parameter_slider,
-            generate_waveform_icon=generate_waveform_icon,
-            base64_to_pixmap=base64_to_pixmap,
-            controls=self.controls
+            controls=self.controls,
         )
         self.tab_widget.addTab(
-            self.amp_section, qta.icon("mdi.amplifier", color="#666666"), "Amp"
+            self.amp_section,
+            JDXi.UI.IconRegistry.get_icon(
+                JDXi.UI.IconRegistry.AMPLIFIER, color=JDXi.UI.Style.GREY
+            ),
+            "Amp",
         )
         self.lfo_section = AnalogLFOSection(
             create_parameter_slider=self._create_parameter_slider,
@@ -266,7 +292,11 @@ class AnalogSynthEditor(SynthEditor):
             lfo_shape_buttons=self.lfo_shape_buttons,
         )
         self.tab_widget.addTab(
-            self.lfo_section, qta.icon("mdi.sine-wave", color="#666666"), "LFO"
+            self.lfo_section,
+            JDXi.UI.IconRegistry.get_icon(
+                JDXi.UI.IconRegistry.SINE_WAVE, color=JDXi.UI.Style.GREY
+            ),
+            "LFO",
         )
         self.common_section = AnalogCommonSection(
             create_parameter_slider=self._create_parameter_slider,
@@ -274,7 +304,10 @@ class AnalogSynthEditor(SynthEditor):
             create_parameter_combo_box=self._create_parameter_combo_box,
             controls=self.controls,
         )
-        self.tab_widget.addTab(self.common_section, "Common")
+        common_icon = JDXi.UI.IconRegistry.get_icon(
+            "mdi.cog-outline", color=JDXi.UI.Style.GREY
+        )
+        self.tab_widget.addTab(self.common_section, common_icon, "Common")
 
     def _init_parameter_mappings(self):
         """Initialize MIDI parameter mappings."""
@@ -286,20 +319,20 @@ class AnalogSynthEditor(SynthEditor):
         }
 
         self.nrpn_parameters = {
-            "Envelope": AnalogRPN.ENVELOPE.value.msb_lsb,  # (0, 124),
-            "LFO Shape": AnalogRPN.LFO_SHAPE.value.msb_lsb,  # (0, 3),
-            "LFO Pitch Depth": AnalogRPN.LFO_PITCH_DEPTH.value.msb_lsb,  # (0, 15),
-            "LFO Filter Depth": AnalogRPN.LFO_FILTER_DEPTH.value.msb_lsb,  # (0, 18),
-            "LFO Amp Depth": AnalogRPN.LFO_AMP_DEPTH.value.msb_lsb,  # (0, 21),
-            "Pulse Width": AnalogRPN.PULSE_WIDTH.value.msb_lsb  # (0, 37),
+            "Envelope": AnalogRPN.ENVELOPE.value.msb_lsb,  # --- (0, 124),
+            "LFO Shape": AnalogRPN.LFO_SHAPE.value.msb_lsb,  # --- (0, 3),
+            "LFO Pitch Depth": AnalogRPN.LFO_PITCH_DEPTH.value.msb_lsb,  # --- (0, 15),
+            "LFO Filter Depth": AnalogRPN.LFO_FILTER_DEPTH.value.msb_lsb,  # --- (0, 18),
+            "LFO Amp Depth": AnalogRPN.LFO_AMP_DEPTH.value.msb_lsb,  # --- (0, 21),
+            "Pulse Width": AnalogRPN.PULSE_WIDTH.value.msb_lsb,  # --- (0, 37),
         }
 
-        # Reverse lookup map
+        # --- Reverse lookup map
         self.nrpn_map = {v: k for k, v in self.nrpn_parameters.items()}
 
     def update_filter_controls_state(self, mode: int):
         """Update filter controls enabled state based on mode"""
-        enabled = mode != 0  # Enable if not BYPASS
+        enabled = mode != 0  # --- Enable if not BYPASS
         for param in [
             AnalogParam.FILTER_CUTOFF,
             AnalogParam.FILTER_RESONANCE,
@@ -322,7 +355,41 @@ class AnalogSynthEditor(SynthEditor):
         :param value: int value
         :return: None
         """
+        self._update_filter_mode_buttons(value)
         self.update_filter_controls_state(value)
+
+    def _update_filter_mode_buttons(self, value: int):
+        """
+        Update the filter mode buttons based on the FILTER_MODE_SWITCH value with visual feedback
+
+        :param value: int filter mode value (0 = BYPASS, 1 = LPF)
+        :return: None
+        """
+        from jdxi_editor.midi.data.analog.filter import AnalogFilterType
+
+        filter_mode_map = {
+            0: AnalogFilterType.BYPASS,
+            1: AnalogFilterType.LPF,
+        }
+
+        selected_filter_mode = filter_mode_map.get(value)
+
+        if selected_filter_mode is None:
+            log.warning("Unknown filter mode value: %s", value)
+            return
+
+        # --- Reset all buttons to default style
+        for btn in self.filter_section.filter_mode_buttons.values():
+            btn.setChecked(False)
+            JDXi.UI.ThemeManager.apply_button_rect_analog(btn)
+
+        # --- Apply active style to the selected filter mode button
+        selected_btn = self.filter_section.filter_mode_buttons.get(selected_filter_mode)
+        if selected_btn:
+            selected_btn.setChecked(True)
+            JDXi.UI.ThemeManager.apply_button_analog_active(selected_btn)
+        else:
+            log.warning("Filter mode button not found for: %s", selected_filter_mode)
 
     def _on_waveform_selected(self, waveform: AnalogOscWave):
         """
@@ -332,43 +399,64 @@ class AnalogSynthEditor(SynthEditor):
         :return: None
         """
         if self.midi_helper:
-            sysex_message = self.sysex_composer.compose_message(address=self.address,
-                                                                param=AnalogParam.OSC_WAVEFORM,
-                                                                value=waveform.value)
+            sysex_message = self.sysex_composer.compose_message(
+                address=self.address,
+                param=AnalogParam.OSC_WAVEFORM,
+                value=waveform.value,
+            )
             self.midi_helper.send_midi_message(sysex_message)
 
             for btn in self.wave_buttons.values():
                 btn.setChecked(False)
-                btn.setStyleSheet(JDXiStyle.BUTTON_RECT_ANALOG)
+                JDXi.UI.ThemeManager.apply_button_rect_analog(btn)
 
-            # Apply active style to the selected waveform button
+            # --- Apply active style to the selected waveform button
             selected_btn = self.wave_buttons.get(waveform)
             if selected_btn:
                 selected_btn.setChecked(True)
-                selected_btn.setStyleSheet(JDXiStyle.BUTTON_ANALOG_ACTIVE)
+                JDXi.UI.ThemeManager.apply_button_analog_active(selected_btn)
             self._update_pw_controls_state(waveform)
 
     def get_controls_as_dict(self):
         """
         Get the current values of self.controls as a dictionary.
-        Override to handle waveform buttons specially.
+        Override to handle waveform buttons and filter mode buttons specially.
 
         :returns: dict A dictionary of control parameter names and their values.
         """
-        # Get base controls
+        # --- Get base controls
         controls_data = super().get_controls_as_dict()
-        
-        # Handle OSC_WAVEFORM specially - find which waveform button is checked
+
+        # --- Handle OSC_WAVEFORM specially - find which waveform button is checked
         if AnalogParam.OSC_WAVEFORM in self.controls:
-            # Check which waveform button is currently checked
+            # --- Check which waveform button is currently checked
             for waveform, btn in self.wave_buttons.items():
                 if btn.isChecked():
-                    controls_data[AnalogParam.OSC_WAVEFORM.name] = waveform.value
+                    controls_data[AnalogParam.OSC_WAVEFORM.name] = waveform.STATUS
                     break
-            # If no button is checked, use default (SAW = 0)
+            # --- If no button is checked, use default (SAW = 0)
             if AnalogParam.OSC_WAVEFORM.name not in controls_data:
                 controls_data[AnalogParam.OSC_WAVEFORM.name] = AnalogOscWave.SAW.value
-        
+
+        # --- Handle FILTER_MODE_SWITCH specially - find which filter mode button is checked
+        if hasattr(self, "filter_section") and hasattr(
+            self.filter_section, "filter_mode_buttons"
+        ):
+            from jdxi_editor.midi.data.analog.filter import AnalogFilterType
+
+            # --- Check which filter mode button is currently checked
+            for filter_mode, btn in self.filter_section.filter_mode_buttons.items():
+                if btn.isChecked():
+                    controls_data[AnalogParam.FILTER_MODE_SWITCH.name] = (
+                        filter_mode.value
+                    )
+                    break
+            # --- If no button is checked, use default (BYPASS = 0)
+            if AnalogParam.FILTER_MODE_SWITCH.name not in controls_data:
+                controls_data[AnalogParam.FILTER_MODE_SWITCH.name] = (
+                    AnalogFilterType.BYPASS.value
+                )
+
         return controls_data
 
     def _on_lfo_shape_changed(self, value: int):
@@ -379,27 +467,27 @@ class AnalogSynthEditor(SynthEditor):
         :return: None
         """
         if self.midi_helper:
-            sysex_message = self.sysex_composer.compose_message(address=self.address,
-                                                                param=AnalogParam.LFO_SHAPE,
-                                                                value=value)
+            sysex_message = self.sysex_composer.compose_message(
+                address=self.address, param=AnalogParam.LFO_SHAPE, value=value
+            )
             self.midi_helper.send_midi_message(sysex_message)
             # --- Reset all buttons to default style ---
             for btn in self.lfo_shape_buttons.values():
                 btn.setChecked(False)
-                btn.setStyleSheet(JDXiStyle.BUTTON_RECT_ANALOG)
+                JDXi.UI.ThemeManager.apply_button_rect_analog(btn)
 
             # --- Apply active style to the selected button ---
             selected_btn = self.lfo_shape_buttons.get(value)
             if selected_btn:
                 selected_btn.setChecked(True)
-                selected_btn.setStyleSheet(JDXiStyle.BUTTON_ANALOG_ACTIVE)
+                JDXi.UI.ThemeManager.apply_button_analog_active(selected_btn)
 
     def update_slider(
-            self,
-            param: AnalogParam,
-            midi_value: int,
-            successes: list = None,
-            failures: list = None,
+        self,
+        param: AnalogParam,
+        midi_value: int,
+        successes: list = None,
+        failures: list = None,
     ) -> None:
         """
         Helper function to update sliders safely.
@@ -417,18 +505,16 @@ class AnalogSynthEditor(SynthEditor):
             slider.setValue(slider_value)
             slider.blockSignals(False)
             successes.append(param.name)
-            log_slider_parameters(
-                self.address, param, midi_value, slider_value
-            )
+            log_slider_parameters(self.address, param, midi_value, slider_value)
         else:
             failures.append(param.name)
 
     def update_adsr_widget(
-            self,
-            param: AnalogParam,
-            midi_value: int,
-            successes: list = None,
-            failures: list = None,
+        self,
+        param: AnalogParam,
+        midi_value: int,
+        successes: list = None,
+        failures: list = None,
     ) -> None:
         """
         Helper function to update ADSR widgets.
@@ -442,10 +528,10 @@ class AnalogSynthEditor(SynthEditor):
         slider_value = (
             midi_value_to_fraction(midi_value)
             if param
-               in [
-                   AnalogParam.AMP_ENV_SUSTAIN_LEVEL,
-                   AnalogParam.FILTER_ENV_SUSTAIN_LEVEL,
-               ]
+            in [
+                AnalogParam.AMP_ENV_SUSTAIN_LEVEL,
+                AnalogParam.FILTER_ENV_SUSTAIN_LEVEL,
+            ]
             else midi_value_to_ms(midi_value)
         )
 
@@ -453,18 +539,16 @@ class AnalogSynthEditor(SynthEditor):
             control = self.adsr_mapping[param]
             control.setValue(slider_value)
             successes.append(param.name)
-            log_slider_parameters(
-                self.address, param, midi_value, slider_value
-            )
+            log_slider_parameters(self.address, param, midi_value, slider_value)
         else:
             failures.append(param.name)
 
     def update_pitch_env_widget(
-            self,
-            parameter: AnalogParam,
-            value: int,
-            successes: list = None,
-            failures: list = None,
+        self,
+        parameter: AnalogParam,
+        value: int,
+        successes: list = None,
+        failures: list = None,
     ) -> None:
         """
         Helper function to update ADSR widgets.
@@ -478,9 +562,9 @@ class AnalogSynthEditor(SynthEditor):
         new_value = (
             midi_value_to_fraction(value)
             if parameter
-               in [
-                   AnalogParam.OSC_PITCH_ENV_DEPTH,
-               ]
+            in [
+                AnalogParam.OSC_PITCH_ENV_DEPTH,
+            ]
             else midi_value_to_ms(value, 10, 1000)
         )
 
@@ -492,11 +576,12 @@ class AnalogSynthEditor(SynthEditor):
             failures.append(parameter.name)
 
     def update_pwm_widget(
-            self,
-            parameter: AnalogParam,
-            value: int,
-            successes: list = None,
-            failures: list = None) -> None:
+        self,
+        parameter: AnalogParam,
+        value: int,
+        successes: list = None,
+        failures: list = None,
+    ) -> None:
         """
         Helper function to update PWM widgets.
 
@@ -509,10 +594,10 @@ class AnalogSynthEditor(SynthEditor):
         new_value = (
             midi_value_to_fraction(value)
             if parameter
-               in [
-                   AnalogParam.OSC_PULSE_WIDTH_MOD_DEPTH,
-                   AnalogParam.OSC_PULSE_WIDTH,
-               ]
+            in [
+                AnalogParam.OSC_PULSE_WIDTH_MOD_DEPTH,
+                AnalogParam.OSC_PULSE_WIDTH,
+            ]
             else midi_value_to_ms(value, 10, 1000)
         )
 
@@ -523,11 +608,9 @@ class AnalogSynthEditor(SynthEditor):
         else:
             failures.append(parameter.name)
 
-    def _update_partial_controls(self,
-                                 partial_no: int,
-                                 sysex_data: dict,
-                                 successes: list,
-                                 failures: list) -> None:
+    def _update_partial_controls(
+        self, partial_no: int, sysex_data: dict, successes: list, failures: list
+    ) -> None:
         """
         Update sliders and combo boxes based on parsed SysEx data.
 
@@ -537,11 +620,11 @@ class AnalogSynthEditor(SynthEditor):
         :return: None
         """
 
-        # Compare with previous data and log changes
+        # --- Compare with previous data and log changes
         if self.previous_json_data:
             log_changes(self.previous_json_data, sysex_data)
 
-        # Store the current data for future comparison
+        # --- Store the current data for future comparison
         self.previous_json_data = sysex_data
 
         for param_name, param_value in sysex_data.items():
@@ -549,8 +632,8 @@ class AnalogSynthEditor(SynthEditor):
 
             if param:
                 if (
-                        param_name == "SUB_OSCILLATOR_TYPE"
-                        and param_value in self.sub_osc_type_map
+                    param_name == "SUB_OSCILLATOR_TYPE"
+                    and param_value in self.sub_osc_type_map
                 ):
                     self.oscillator_section.sub_oscillator_type_switch.blockSignals(
                         True
@@ -562,31 +645,30 @@ class AnalogSynthEditor(SynthEditor):
                         False
                     )
                 elif (
-                        param_name == "OSC_WAVEFORM"
-                        and param_value in self.osc_waveform_map
+                    param_name == "OSC_WAVEFORM"
+                    and param_value in self.osc_waveform_map
                 ):
                     self._update_waveform_buttons(param_value)
                 elif (
-                        param_name == "LFO_SHAPE" and param_value in self.lfo_shape_buttons
+                    param_name == "LFO_SHAPE" and param_value in self.lfo_shape_buttons
                 ):
                     self._update_lfo_shape_buttons(param_value)
                 elif param_name == "LFO_TEMPO_SYNC_SWITCH":
-                    self.controls[
-                        AnalogParam.LFO_TEMPO_SYNC_SWITCH
-                    ].setValue(param_value)
+                    control = self.controls.get(AnalogParam.LFO_TEMPO_SYNC_SWITCH)
+                    if control:
+                        control.setValue(param_value)
+                        successes.append(param_name)
+                    else:
+                        failures.append(param_name)
                 elif param_name == "LFO_TEMPO_SYNC_NOTE":
-                    self.controls[AnalogParam.LFO_TEMPO_SYNC_NOTE].setValue(
-                        param_value
-                    )
-                elif (
-                        param == AnalogParam.FILTER_MODE_SWITCH
-                        and param_value in self.filter_switch_map
-                ):
-                    self.filter_section.filter_mode_switch.blockSignals(True)
-                    self.filter_section.filter_mode_switch.setValue(
-                        self.filter_switch_map[param_value]
-                    )
-                    self.filter_section.filter_mode_switch.blockSignals(False)
+                    control = self.controls.get(AnalogParam.LFO_TEMPO_SYNC_NOTE)
+                    if control:
+                        control.setValue(param_value)
+                        successes.append(param_name)
+                    else:
+                        failures.append(param_name)
+                elif param == AnalogParam.FILTER_MODE_SWITCH:
+                    self._update_filter_mode_buttons(param_value)
                     self.update_filter_controls_state(bool(param_value))
                 elif param in [
                     AnalogParam.AMP_ENV_ATTACK_TIME,
@@ -632,19 +714,19 @@ class AnalogSynthEditor(SynthEditor):
 
         log.message(f"Waveform value {value} found, selecting {selected_waveform}")
 
-        # Retrieve waveform buttons for the given partial
+        # --- Retrieve waveform buttons for the given partial
         wave_buttons = self.wave_buttons
 
-        # Reset all buttons to default style
+        # --- Reset all buttons to default style
         for btn in wave_buttons.values():
             btn.setChecked(False)
-            btn.setStyleSheet(JDXiStyle.BUTTON_RECT_ANALOG)
+            JDXi.UI.ThemeManager.apply_button_rect_analog(btn)
 
-        # Apply active style to the selected waveform button
+        # --- Apply active style to the selected waveform button
         selected_btn = wave_buttons.get(selected_waveform)
         if selected_btn:
             selected_btn.setChecked(True)
-            selected_btn.setStyleSheet(JDXiStyle.BUTTON_ANALOG_ACTIVE)
+            JDXi.UI.ThemeManager.apply_button_analog_active(selected_btn)
 
     def _update_lfo_shape_buttons(self, value: int):
         """
@@ -653,16 +735,16 @@ class AnalogSynthEditor(SynthEditor):
         :param value: int value
         :return: None
         """
-        # Reset all buttons to default style
+        # --- Reset all buttons to default style
         for btn in self.lfo_shape_buttons.values():
             btn.setChecked(False)
-            btn.setStyleSheet(JDXiStyle.BUTTON_RECT_ANALOG)
+            JDXi.UI.ThemeManager.apply_button_rect_analog(btn)
 
-        # Apply active style to the selected button
+        # --- Apply active style to the selected button
         selected_btn = self.lfo_shape_buttons.get(value)
         if selected_btn:
             selected_btn.setChecked(True)
-            selected_btn.setStyleSheet(JDXiStyle.BUTTON_ANALOG_ACTIVE)
+            JDXi.UI.ThemeManager.apply_button_analog_active(selected_btn)
         else:
             log.message(f"Unknown LFO shape value: {value}", level=logging.WARNING)
 
@@ -676,198 +758,11 @@ class AnalogSynthEditor(SynthEditor):
         pw_enabled = waveform == AnalogOscWave.PULSE
         log.message(f"Waveform: {waveform} Pulse Width enabled: {pw_enabled}")
         self.controls[AnalogParam.OSC_PULSE_WIDTH].setEnabled(pw_enabled)
-        self.controls[AnalogParam.OSC_PULSE_WIDTH_MOD_DEPTH].setEnabled(
-            pw_enabled
-        )
-        # Update the visual state
+        self.controls[AnalogParam.OSC_PULSE_WIDTH_MOD_DEPTH].setEnabled(pw_enabled)
+        # --- Update the visual state
         self.controls[AnalogParam.OSC_PULSE_WIDTH].setStyleSheet(
             "" if pw_enabled else "QSlider::groove:vertical { background: #000000; }"
         )
         self.controls[AnalogParam.OSC_PULSE_WIDTH_MOD_DEPTH].setStyleSheet(
             "" if pw_enabled else "QSlider::groove:vertical { background: #000000; }"
         )
-    
-    def create_instrument_preset_group(self, synth_type: str = "Analog") -> QGroupBox:
-        """
-        Create the instrument preset group box with tabs for normal and cheat presets.
-        
-        :param synth_type: str
-        :return: QGroupBox
-        """
-        instrument_preset_group = QGroupBox(f"{synth_type} Synth")
-        instrument_title_group_layout = QVBoxLayout(instrument_preset_group)
-        
-        # Create tabbed widget inside the group box
-        preset_tabs = QTabWidget()
-        instrument_title_group_layout.addWidget(preset_tabs)
-        
-        # === Tab 1: Normal Analog Presets ===
-        normal_preset_widget, normal_preset_layout = create_scroll_container()
-
-        self.instrument_title_label = DigitalTitle()
-        normal_preset_layout.addWidget(self.instrument_title_label)
-        
-        # update_tone_name
-        self.edit_tone_name_button = QPushButton("Edit tone name")
-        self.edit_tone_name_button.clicked.connect(self.edit_tone_name)
-        normal_preset_layout.addWidget(self.edit_tone_name_button)
-        
-        # read request button
-        self.read_request_button = QPushButton("Send Read Request to Synth")
-        self.read_request_button.clicked.connect(self.data_request)
-        normal_preset_layout.addWidget(self.read_request_button)
-        
-        self.instrument_selection_label = QLabel(f"Select a {synth_type} synth:")
-        normal_preset_layout.addWidget(self.instrument_selection_label)
-        
-        self.instrument_selection_combo = PresetComboBox(self.preset_list)
-        self.instrument_selection_combo.setStyleSheet(JDXiStyle.COMBO_BOX_ANALOG)
-        self.instrument_selection_combo.combo_box.setEditable(True)
-        self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
-            self.update_instrument_image
-        )
-        self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
-            self.update_instrument_title
-        )
-        self.instrument_selection_combo.load_button.clicked.connect(
-            self.update_instrument_preset
-        )
-        self.instrument_selection_combo.preset_loaded.connect(self.load_preset)
-        normal_preset_layout.addWidget(self.instrument_selection_combo)
-        normal_preset_layout.addStretch()
-        
-        preset_tabs.addTab(normal_preset_widget, "Analog Presets")
-        
-        # === Tab 2: Cheat Presets (Digital Synth presets on Analog channel) ===
-        cheat_preset_widget, cheat_preset_layout = create_scroll_container()
-
-        # Search Box
-        search_row = QHBoxLayout()
-        search_row.addWidget(QLabel("Search Presets:"))
-        self.cheat_search_box = QLineEdit()
-        self.cheat_search_box.setPlaceholderText("Search presets...")
-        self.cheat_search_box.textChanged.connect(lambda text: self._populate_cheat_presets(text))
-        search_row.addWidget(self.cheat_search_box)
-        cheat_preset_layout.addLayout(search_row)
-        
-        # Preset List Combobox
-        self.cheat_preset_label = QLabel("Preset")
-        cheat_preset_layout.addWidget(self.cheat_preset_label)
-        self.cheat_preset_combo_box = QComboBox()
-        # Will be populated by _populate_cheat_presets()
-        cheat_preset_layout.addWidget(self.cheat_preset_combo_box)
-        
-        # Category Combobox
-        self.cheat_category_label = QLabel("Category")
-        cheat_preset_layout.addWidget(self.cheat_category_label)
-        self.cheat_category_combo_box = QComboBox()
-        self.cheat_category_combo_box.addItem("No Category Selected")
-        categories = set(preset["category"] for preset in DIGITAL_PRESET_LIST)
-        self.cheat_category_combo_box.addItems(sorted(categories))
-        self.cheat_category_combo_box.currentIndexChanged.connect(self._on_cheat_category_changed)
-        cheat_preset_layout.addWidget(self.cheat_category_combo_box)
-        
-        # Load Button
-        self.cheat_load_button = QPushButton(
-            qta.icon("ph.folder-notch-open-fill", color=JDXiStyle.FOREGROUND),
-            "Load Preset",
-        )
-        self.cheat_load_button.clicked.connect(self._load_cheat_preset)
-        cheat_preset_layout.addWidget(self.cheat_load_button)
-        
-        cheat_preset_layout.addStretch()
-        preset_tabs.addTab(cheat_preset_widget, "Cheat Presets")
-        
-        # Initialize cheat presets
-        self.cheat_presets = {}  # Maps preset names to indices
-        self._populate_cheat_presets()
-        
-        return instrument_preset_group
-    
-    def _populate_cheat_presets(self, search_text: str = ""):
-        """
-        Populate the cheat preset combo box with Digital Synth presets.
-        
-        :param search_text: str Search filter text
-        """
-        if not hasattr(self, 'cheat_preset_combo_box'):
-            return
-        
-        selected_category = self.cheat_category_combo_box.currentText()
-        
-        self.cheat_preset_combo_box.clear()
-        self.cheat_presets.clear()
-        
-        # Filter presets by category and search text
-        filtered_list = [
-            preset
-            for preset in DIGITAL_PRESET_LIST
-            if (selected_category in ["No Category Selected", preset["category"]])
-        ]
-        
-        filtered_presets = []
-        for preset in filtered_list:
-            if search_text.lower() in preset["name"].lower():
-                filtered_presets.append(preset)
-        
-        # Add presets to combo box
-        for preset in filtered_presets:
-            preset_name = preset["name"]
-            preset_id = preset["id"]
-            index = len(self.cheat_presets)
-            self.cheat_preset_combo_box.addItem(f"{preset_id} - {preset_name}", index)
-            self.cheat_presets[preset_name] = index
-        
-        if self.cheat_preset_combo_box.count() > 0:
-            self.cheat_preset_combo_box.setCurrentIndex(0)
-    
-    def _on_cheat_category_changed(self, index: int):  # pylint: disable=unused-argument
-        """Handle category selection change for cheat presets."""
-        search_text = self.cheat_search_box.text() if hasattr(self, 'cheat_search_box') else ""
-        self._populate_cheat_presets(search_text)
-    
-    def _load_cheat_preset(self):
-        """
-        Load a Digital Synth preset on the Analog Synth channel (Cheat Mode).
-        """
-        if not self.midi_helper:
-            log.warning("⚠️ MIDI helper not available for cheat preset loading")
-            return
-        
-        preset_name = self.cheat_preset_combo_box.currentText()
-        log.message("=======load_cheat_preset (Cheat Mode)=======")
-        log.parameter("combo box preset_name", preset_name)
-        
-        # Extract program number from preset name (format: "001 - Preset Name")
-        program_number = preset_name[:3]
-        log.parameter("combo box program_number", program_number)
-        
-        # Get MSB, LSB, PC values from the Digital preset list
-        msb = get_preset_parameter_value("msb", program_number, DIGITAL_PRESET_LIST)
-        lsb = get_preset_parameter_value("lsb", program_number, DIGITAL_PRESET_LIST)
-        pc = get_preset_parameter_value("pc", program_number, DIGITAL_PRESET_LIST)
-        
-        if None in [msb, lsb, pc]:
-            log.warning(
-                f"Could not retrieve preset parameters for program {program_number}"
-            )
-            return
-        
-        log.message("retrieved msb, lsb, pc for cheat preset:")
-        log.parameter("combo box msb", msb)
-        log.parameter("combo box lsb", lsb)
-        log.parameter("combo box pc", pc)
-        log_midi_info(msb, lsb, pc)
-        
-        # Send bank select and program change on ANALOG_SYNTH channel (Ch3)
-        # Note: PC is 0-based in MIDI, so subtract 1
-        self.midi_helper.send_bank_select_and_program_change(
-            MidiChannel.ANALOG_SYNTH,  # Send to Analog Synth channel (Ch3)
-            msb,  # MSB is already correct
-            lsb,  # LSB is already correct
-            pc - 1,  # Convert 1-based PC to 0-based
-        )
-        
-        # Request data update
-        if hasattr(self, 'data_request'):
-            self.data_request()

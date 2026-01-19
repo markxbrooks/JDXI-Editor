@@ -1,17 +1,14 @@
 from typing import Callable
 
 from PySide6.QtCore import Signal
-from PySide6.QtWidgets import QSpinBox, QDoubleSpinBox, QWidget, QVBoxLayout
+from PySide6.QtWidgets import QDoubleSpinBox, QSpinBox, QVBoxLayout, QWidget
 
-from jdxi_editor.jdxi.midi.constant import MidiConstant
-from jdxi_editor.log.logger import Logger as log
-from jdxi_editor.midi.data.parameter.synth import AddressParameter
+from decologr import Decologr as log
+from picomidi.constant import Midi
+from picomidi.sysex.parameter.address import AddressParameter
 
 
-def create_spinbox(min_value: int,
-                   max_value: int,
-                   suffix: str,
-                   value: int) -> QSpinBox:
+def create_spinbox(min_value: int, max_value: int, suffix: str, value: int) -> QSpinBox:
     """
     Create a spinbox with specified range and suffix
 
@@ -29,7 +26,7 @@ def create_spinbox(min_value: int,
 
 
 def create_double_spinbox(
-        min_value: float, max_value: float, step: float, value: int
+    min_value: float, max_value: float, step: float, value: int
 ) -> QDoubleSpinBox:
     """
     Create a double spinbox with specified range, step, and initial value.
@@ -55,15 +52,15 @@ class PWMSliderSpinbox(QWidget):
     envelope_changed = Signal(dict)
 
     def __init__(
-            self,
-            param: AddressParameter,
-            min_value: float = 0.0,
-            max_value: float = 1.0,
-            units: str = "",
-            label: str = "",
-            value: int = None,
-            create_parameter_slider: Callable = None,
-            parent: QWidget = None,
+        self,
+        param: AddressParameter,
+        min_value: float = 0.0,
+        max_value: float = 1.0,
+        units: str = "",
+        label: str = "",
+        value: int = None,
+        create_parameter_slider: Callable = None,
+        parent: QWidget = None,
     ):
         """
         Initialize the ADSR slider and spinbox widget.
@@ -80,7 +77,7 @@ class PWMSliderSpinbox(QWidget):
         super().__init__(parent)
 
         self.param = param
-        self.factor = MidiConstant.VALUE_MAX_SEVEN_BIT
+        self.factor = Midi.VALUE.MAX.SEVEN_BIT
         if max_value > 1:
             self.factor = max_value
         self.create_parameter_slider = create_parameter_slider
@@ -91,14 +88,10 @@ class PWMSliderSpinbox(QWidget):
             initial_value=int(value * self.factor) if value is not None else 0,
         )
         self.spinbox = create_double_spinbox(
-            min_value=min_value,
-            max_value=max_value,
-            step=0.01,
-            value=value
+            min_value=min_value, max_value=max_value, step=0.01, value=value
         )
-        self.spinbox.setRange(min_value,
-                              max_value)
-        self.factor = MidiConstant.VALUE_MAX_SEVEN_BIT
+        self.spinbox.setRange(min_value, max_value)
+        self.factor = Midi.VALUE.MAX.SEVEN_BIT
         layout = QVBoxLayout()
         layout.addWidget(self.slider)
         layout.addWidget(self.spinbox)
@@ -124,7 +117,9 @@ class PWMSliderSpinbox(QWidget):
             return 0.0
         param_type = self.param.get_envelope_param_type()
         if param_type is None:
-            log.error(f"Parameter type for {self.param.name} is None, cannot convert to envelope")
+            log.error(
+                f"Parameter type for {self.param.name} is None, cannot convert to envelope"
+            )
             return 0.0
         if param_type in ["filter_cutoff", "filter_resonance"]:
             return value
@@ -139,7 +134,9 @@ class PWMSliderSpinbox(QWidget):
     def convert_from_envelope(self, value: float):
         param_type = self.param.get_envelope_param_type()
         if param_type is None:
-            log.error(f"Parameter type for {self.param.name} is None, cannot convert from envelope")
+            log.error(
+                f"Parameter type for {self.param.name} is None, cannot convert from envelope"
+            )
             return 0.0
         if param_type in ["filter_cutoff", "filter_resonance"]:
             return value
@@ -185,9 +182,7 @@ class PWMSliderSpinbox(QWidget):
         """
         self.slider.setValue(value * self.factor)
         self.spinbox.setValue(value)
-        self.envelope_changed.emit(
-            {self.param.get_envelope_param_type(): value}
-        )
+        self.envelope_changed.emit({self.param.get_envelope_param_type(): value})
 
     def value(self) -> float:
         """

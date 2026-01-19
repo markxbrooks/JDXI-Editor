@@ -19,36 +19,38 @@ Functions:
 
 """
 
-
+import cProfile
+import io
+import logging
 import os
 import platform
-import sys
-import logging
-from pathlib import Path
-import cProfile
 import pstats
-import io
+import sys
+from pathlib import Path
 
 from PySide6.QtCore import QSettings
+from PySide6.QtGui import QColor, QIcon, QPixmap, Qt
 from PySide6.QtWidgets import (
     QApplication,
-    QProgressBar,
-    QLabel,
-    QVBoxLayout,
+    QFrame,
     QHBoxLayout,
-    QGroupBox, QSplashScreen, QFrame,
+    QLabel,
+    QProgressBar,
+    QSplashScreen,
+    QVBoxLayout,
 )
-from PySide6.QtGui import QIcon, QPixmap, QColor, Qt, QFont, QFontInfo, QScreen
 
+from decologr import setup_logging
+from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.log.message import log_message
-from jdxi_editor.log.setup import setup_logging
-from jdxi_editor.project import __program__, __version__
+from jdxi_editor.project import __organization_name__, __program__, __version__
 from jdxi_editor.resources import resource_path
-from jdxi_editor.jdxi.style import JDXiStyle
-from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
-from jdxi_editor.ui.windows.jdxi.instrument import JDXiInstrument
-from jdxi_editor.project import __version__, __program__, __organization_name__
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
+from jdxi_editor.ui.widgets.editor.helper import (
+    create_icon_label_with_pixmap,
+    create_layout_with_widgets,
+)
+from jdxi_editor.ui.windows.jdxi.instrument import JDXiInstrument
 
 os.environ["QT_LOGGING_RULES"] = "qt.qpa.fonts=false"
 
@@ -56,15 +58,15 @@ os.environ["QT_LOGGING_RULES"] = "qt.qpa.fonts=false"
 def main() -> None:
     """Main entry point for the JD-Xi Editor application."""
     try:
-        # Set up logging first
+        # --- Set up logging first
         settings = QSettings(__organization_name__, __program__)
         log_level = int(str(settings.value("log_level", logging.DEBUG)))
-        logger = setup_logging(log_level=log_level)
+        logger = setup_logging(use_rich=False, project_name="jdxi_editor")
 
-        # Create application
+        # --- Create application
         app = QApplication(sys.argv)
 
-        # Set application metadata
+        # --- Set application metadata
         app.setApplicationName(__program__)
         app.setApplicationVersion(__version__)
         app.setOrganizationName("mabsoft")
@@ -80,7 +82,7 @@ def main() -> None:
 
         logger.debug("Application initialized")
 
-        # Set application icon
+        # --- Set application icon
         icon_locations = [
             Path(__file__).parent / "resources" / "jdxi_icon.png",  # Package location
             Path(__file__).parent.parent
@@ -100,7 +102,7 @@ def main() -> None:
             logging.warning(
                 f"Icon not found in any of: {[str(p) for p in icon_locations]}"
             )
-            # Create address fallback icon only for windows, not macOS
+            # --- Create address fallback icon only for windows, not macOS
             if platform.system() == "Windows":
                 icon = QIcon()
                 pixmap = QPixmap(128, 128)
@@ -110,20 +112,22 @@ def main() -> None:
                 log_message("Using fallback icon")
 
         splash, progress_bar, status_label = setup_splash_screen(app)
-        
-        # Update splash screen with initial progress
+
+        # --- Update splash screen with initial progress
         status_label.setText("Initializing MIDI subsystem…")
         progress_bar.setValue(10)
         app.processEvents()
-        
-        # Create window and pass splash screen components
-        window = JDXiInstrument(splash=splash, progress_bar=progress_bar, status_label=status_label)
-        
-        # Finalize splash screen
+
+        # --- Create window and pass splash screen components
+        window = JDXiInstrument(
+            splash=splash, progress_bar=progress_bar, status_label=status_label
+        )
+
+        # --- Finalize splash screen
         splash.finish(window)
         window.show()
 
-        # Start event loop
+        # --- Start event loop
         return app.exec()
 
     except Exception as ex:
@@ -131,9 +135,11 @@ def main() -> None:
         raise
 
 
-def setup_splash_screen(app: QApplication) -> tuple[QSplashScreen, QProgressBar, QLabel]:
+def setup_splash_screen(
+    app: QApplication,
+) -> tuple[QSplashScreen, QProgressBar, DigitalTitle]:
     """Setup and display a professional application splash screen with rotating status text.
-    
+
     Returns:
         tuple: (splash_screen, progress_bar, status_label) for updating progress
     """
@@ -144,19 +150,24 @@ def setup_splash_screen(app: QApplication) -> tuple[QSplashScreen, QProgressBar,
     if screen:
         screen_geometry = screen.availableGeometry()
         screen_center = screen_geometry.center()
-        splash.move(int(screen_center.x() - JDXiDimensions.SPLASH_WIDTH / 2), 
-                   int(screen_center.y() - JDXiDimensions.SPLASH_HEIGHT / 2))
+        splash.move(
+            int(screen_center.x() - JDXi.UI.Dimensions.SPLASH.WIDTH / 2),
+            int(screen_center.y() - JDXi.UI.Dimensions.SPLASH.HEIGHT / 2),
+        )
     splash.setWindowFlags(
         Qt.SplashScreen | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint
     )
-    splash.setFixedSize(JDXiDimensions.SPLASH_WIDTH, JDXiDimensions.SPLASH_HEIGHT)
+    splash.setFixedSize(
+        JDXi.UI.Dimensions.SPLASH.WIDTH, JDXi.UI.Dimensions.SPLASH.HEIGHT
+    )
 
-    splash.setStyleSheet("""
+    splash.setStyleSheet(
+        """
         QSplashScreen { background-color: #111111; border: 1px solid #2c2c2c; }
         QLabel#TitleLabel { color: #f3f3f3; font-size: 28px; font-weight: 600; letter-spacing: 1px; }
         QLabel#SubtitleLabel { color: #bbbbbb; font-size: 14px; }
-        QLabel#StatusLabel { color: #88ccff; font-size: 12px; font-style: italic; }
-        QLabel#CreditLabel { color: #888888; font-size: 12px; }
+        QLabel#StatusLabel { color: #88ccff; font-size: 18px; font-style: italic; font-weight: 500; }
+        QLabel#CreditLabel { color: #888888; font-size: 10px; }
         QFrame#Card { 
             background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #1c1c1c, stop:1 #0f0f0f);
             border-radius: 14px; border: 1px solid #2a2a2a; 
@@ -168,7 +179,8 @@ def setup_splash_screen(app: QApplication) -> tuple[QSplashScreen, QProgressBar,
             border-radius: 6px;
             background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #7ac1ff, stop:1 #3b8fe8);
         }
-    """)
+    """
+    )
 
     root = QVBoxLayout(splash)
     root.setContentsMargins(28, 28, 28, 28)
@@ -181,45 +193,59 @@ def setup_splash_screen(app: QApplication) -> tuple[QSplashScreen, QProgressBar,
     card_layout.setContentsMargins(32, 32, 32, 32)
     card_layout.setSpacing(18)
 
-    # Title
-    title = DigitalTitle(__program__, digital_font_family=JDXiStyle.FONT_FAMILY_MONOSPACE, show_upper_text=False)
-    card_layout.addWidget(title)
-    title.setStyleSheet(JDXiStyle.INSTRUMENT_TITLE_LABEL)
+    # --- Title and Image row (side by side)
+    title_image_row = QHBoxLayout()
+    title_image_row.setSpacing(20)
 
-    # Image
+    # --- Title (left side)
+    title = DigitalTitle(
+        __program__,
+        digital_font_family=JDXi.UI.Style.FONT_FAMILY_MONOSPACE,
+        show_upper_text=False,
+    )
+    title.setStyleSheet(JDXi.UI.Style.INSTRUMENT_TITLE_LABEL)
+    title_image_row.addWidget(title)
+    title_image_row.addStretch()  # Push image to the right
+
+    # --- Image (right side)
     image_path = resource_path(os.path.join("resources", "jdxi_cartoon_600.png"))
-    pixmap = QPixmap(image_path).scaled(360, 220, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-    logo = QLabel()
-    logo.setPixmap(pixmap)
-    logo.setAlignment(Qt.AlignCenter)
-    card_layout.addWidget(logo)
+    pixmap = QPixmap(image_path).scaled(
+        JDXi.UI.Dimensions.SPLASH.IMAGE_WIDTH,
+        JDXi.UI.Dimensions.SPLASH.IMAGE_HEIGHT,
+        Qt.KeepAspectRatio,
+        Qt.SmoothTransformation,
+    )
+    logo = create_icon_label_with_pixmap(pixmap)
+    title_image_row.addWidget(logo)
 
-    # Subtitle
+    card_layout.addLayout(title_image_row)
+
+    # --- Subtitle
     subtitle = QLabel("An editor & toolkit for the Roland JD-Xi instrument")
     card_layout.addWidget(subtitle)
-    subtitle.setStyleSheet(JDXiStyle.INSTRUMENT_SUBTITLE_LABEL)
+    subtitle.setStyleSheet(JDXi.UI.Style.INSTRUMENT_SUBTITLE_LABEL)
 
-    # Progress bar
+    # --- Progress bar
     progress_bar = QProgressBar()
     progress_bar.setRange(0, 100)
     progress_bar.setValue(0)
     progress_bar.setFixedWidth(420)
-    progress_bar.setStyleSheet(JDXiStyle.PROGRESS_BAR)
-    progress_row = QHBoxLayout()
-    progress_row.addStretch()
-    progress_row.addWidget(progress_bar)
-    progress_row.addStretch()
+    progress_bar.setStyleSheet(JDXi.UI.Style.PROGRESS_BAR)
+    progress_row = create_layout_with_widgets([progress_bar])
     card_layout.addLayout(progress_row)
 
-    # Rotating status label
-    status_label = DigitalTitle("Starting...", digital_font_family=JDXiStyle.FONT_FAMILY_MONOSPACE)
-    status_label.setStyleSheet(JDXiStyle.INSTRUMENT_SUBTITLE_LABEL)
+    # --- Rotating status label (enlarged)
+    status_label = DigitalTitle(
+        "Starting...", digital_font_family=JDXi.UI.Style.FONT_FAMILY_MONOSPACE
+    )
+    status_label.setObjectName("StatusLabel")
+    # Style is applied via ObjectName in the stylesheet (font-size: 18px)
     card_layout.addWidget(status_label)
 
-    # Footer credits
+    # --- Footer credits
     credits = QLabel(
         f"{__program__}  •  Version {__version__}\n"
-        "Developed by Mark Brooks — Inspired by modern instrument editors"
+        "Developed by mabsoft.com — Inspired by modern instrument editors"
     )
     credits.setObjectName("CreditLabel")
     credits.setAlignment(Qt.AlignCenter)
@@ -248,7 +274,7 @@ if __name__ == "__main__":
         if profiling:
             profiler.disable()
             s = io.StringIO()
-            sortby = 'cumtime'  # or 'tottime'
+            sortby = "cumtime"  # or 'tottime'
             ps = pstats.Stats(profiler, stream=s).sort_stats(sortby)
             ps.print_stats(50)  # Top 50 entries
             print(s.getvalue())

@@ -27,18 +27,17 @@ Example Usage
 
 """
 
-
 from PySide6.QtWidgets import (
     QDialog,
-    QVBoxLayout,
+    QGroupBox,
     QHBoxLayout,
     QLabel,
     QLineEdit,
     QPushButton,
-    QGroupBox,
+    QVBoxLayout,
 )
 
-from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.core.jdxi import JDXi
 
 
 class PatchNameEditor(QDialog):
@@ -73,7 +72,7 @@ class PatchNameEditor(QDialog):
         layout.addLayout(button_layout)
         group.setLayout(layout)
         main_layout.addWidget(group)
-        self.setStyleSheet(JDXiStyle.EDITOR)
+        self.setStyleSheet(JDXi.UI.Style.EDITOR)
 
     def get_sysex_string(self):
         """
@@ -132,7 +131,7 @@ class PatchNameEditorOld(QDialog):
         layout.addLayout(button_layout)
         group.setLayout(layout)
         main_layout.addWidget(group)
-        self.setStyleSheet(JDXiStyle.EDITOR)
+        self.setStyleSheet(JDXi.UI.Style.EDITOR)
 
     def get_name(self):
         """Get the edited patch name"""

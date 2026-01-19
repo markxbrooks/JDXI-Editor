@@ -22,16 +22,16 @@ Usage Example:
 This module requires PySide6 to be installed.
 """
 
-from PySide6.QtWidgets import (
-    QWidget,
-    QVBoxLayout,
-    QHBoxLayout,
-    QLabel,
-    QSlider,
-    QSizePolicy,
-)
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QPainter, QPen
+from PySide6.QtWidgets import (
+    QHBoxLayout,
+    QLabel,
+    QSizePolicy,
+    QSlider,
+    QVBoxLayout,
+    QWidget,
+)
 
 from jdxi_editor.midi.io.helper import MidiIOHelper
 

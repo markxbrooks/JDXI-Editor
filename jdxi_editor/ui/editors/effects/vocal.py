@@ -21,43 +21,37 @@ Dependencies:
 
 """
 
-from typing import Optional, Dict
-from PySide6.QtWidgets import (
-    QWidget,
-    QVBoxLayout,
-    QHBoxLayout,
-    QGroupBox,
-    QLabel,
-    QScrollArea,
-    QTabWidget,
-)
-from PySide6.QtCore import Qt
+from typing import Dict, Optional
 
-from jdxi_editor.midi.data.address.address import (
-    RolandSysExAddress,
-    ZERO_BYTE,
-    AddressStartMSB,
-    AddressOffsetTemporaryToneUMB,
-    AddressOffsetProgramLMB,
+from PySide6.QtWidgets import (
+    QGroupBox,
+    QHBoxLayout,
+    QLabel,
+    QVBoxLayout,
+    QWidget,
 )
+
+from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.parameter.program.common import ProgramCommonParam
-from jdxi_editor.midi.data.parameter.synth import AddressParameter
-from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
-from jdxi_editor.ui.editors.synth.simple import BasicEditor
-from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.midi.data.parameter.vocal_fx import VocalFXParam
 from jdxi_editor.midi.data.vocal_effects.vocal import (
-    VocalAutoPitchType,
-    VocalOutputAssign,
     VocalAutoPitchKey,
     VocalAutoPitchNote,
+    VocalAutoPitchType,
+    VocalFxSwitch,
+    VocalOctaveRange,
+    VocalOutputAssign,
     VocoderEnvelope,
     VocoderHPF,
-    VocalOctaveRange,
-    VocalFxSwitch,
 )
-from jdxi_editor.midi.data.parameter.vocal_fx import VocalFXParam
-from jdxi_editor.ui.widgets.display.digital import DigitalTitle
+from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.editors.address.factory import create_vocal_fx_address
+from jdxi_editor.ui.editors.synth.simple import BasicEditor
+from jdxi_editor.ui.preset.helper import JDXiPresetHelper
+from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
+from jdxi_editor.ui.widgets.editor.helper import transfer_layout_items
+from jdxi_editor.ui.widgets.editor.simple_editor_helper import SimpleEditorHelper
+from picomidi.sysex.parameter.address import AddressParameter
 
 
 class VocalFXEditor(BasicEditor):
@@ -72,86 +66,53 @@ class VocalFXEditor(BasicEditor):
         super().__init__(midi_helper=midi_helper, parent=parent)
         self.setWindowTitle("Vocal FX")
         self.preset_helper = preset_helper
-        self.address = RolandSysExAddress(
-            AddressStartMSB.TEMPORARY_PROGRAM,
-            AddressOffsetTemporaryToneUMB.COMMON,
-            AddressOffsetProgramLMB.VOCAL_EFFECT,
-            ZERO_BYTE,
+        self.address = create_vocal_fx_address()
+
+        JDXi.UI.ThemeManager.apply_editor_style(self)
+
+        # Use EditorBaseWidget for consistent scrollable layout structure
+        self.base_widget = EditorBaseWidget(parent=self, analog=False)
+        self.base_widget.setup_scrollable_content()
+
+        # Use SimpleEditorHelper for standardized title/image/tab setup
+        self.editor_helper = SimpleEditorHelper(
+            editor=self,
+            base_widget=self.base_widget,
+            title="Vocal Effects",
+            image_folder="vocal_fx",
+            default_image="vocal_fx.png",
         )
-        self.setStyleSheet(JDXiStyle.EDITOR + JDXiStyle.TABS)
-
-        # Main layout
-
-        main_layout = QVBoxLayout()
-        self.setLayout(main_layout)
 
         self.controls: Dict[AddressParameter, QWidget] = {}
 
-        # Create scroll area
-        scroll = QScrollArea()
-        scroll.setWidgetResizable(True)
-        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
-        scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        # Get tab widget from helper and add tabs
+        self.tab_widget = self.editor_helper.get_tab_widget()
+        common_icon = JDXi.UI.IconRegistry.get_icon(
+            JDXi.UI.IconRegistry.COG_OUTLINE, color=JDXi.UI.Style.GREY
+        )
+        self.tab_widget.addTab(self._create_common_section(), common_icon, "Common")
+        vocal_fx_icon = JDXi.UI.IconRegistry.get_icon(
+            JDXi.UI.IconRegistry.MICROPHONE, color=JDXi.UI.Style.GREY
+        )
+        self.tab_widget.addTab(
+            self._create_vocal_effect_section(), vocal_fx_icon, "Vocal FX"
+        )
+        mixer_icon = JDXi.UI.IconRegistry.get_icon(
+            JDXi.UI.IconRegistry.EQUALIZER, color=JDXi.UI.Style.GREY
+        )
+        self.tab_widget.addTab(self._create_mixer_section(), mixer_icon, "Mixer")
+        auto_pitch_icon = JDXi.UI.IconRegistry.get_icon(
+            JDXi.UI.IconRegistry.MUSIC_NOTE, color=JDXi.UI.Style.GREY
+        )
+        self.tab_widget.addTab(
+            self._create_auto_pitch_section(), auto_pitch_icon, "Auto Pitch"
+        )
 
-        # Create container widget for scroll area
-        container = QWidget()
-        container_hlayout = QHBoxLayout()
-        container.setLayout(container_hlayout)
-        container_layout = QVBoxLayout()
-        container_hlayout.addStretch()
-        container_hlayout.addLayout(container_layout)
-        container_hlayout.addStretch()
-
-        # self.title_label = QLabel("Vocal Effects")
-        self.title_label = DigitalTitle()
-        self.title_label.setText("Vocal Effects")
-        self.title_label.setStyleSheet(JDXiStyle.INSTRUMENT_TITLE_LABEL)
-        title_layout = QHBoxLayout()
-        title_layout.addWidget(self.title_label)
-
-        main_rows_hlayout = QHBoxLayout()
-        main_layout.addLayout(main_rows_hlayout)
-        container_layout.addLayout(main_rows_hlayout)
-
-        # Image display
-        self.image_label = QLabel()
-        self.image_label.setAlignment(
-            Qt.AlignmentFlag.AlignCenter
-        )  # Center align the image
-        self.default_image = "vocal_fx.png"
-        self.instrument_icon_folder = "vocal_fx"
-        container_layout.addWidget(self.image_label)
-        self.update_instrument_image()
-        ###
-        title_group_box = QGroupBox()
-        title_group_layout = QHBoxLayout()
-        title_group_box.setLayout(title_group_layout)
-        title_group_layout.addWidget(self.title_label)
-        title_group_layout.addWidget(self.image_label)
-
-        main_row_hlayout = QHBoxLayout()
-        main_rows_hlayout.addLayout(main_row_hlayout)
-        main_row_hlayout.addStretch()
-        rows_layout = QVBoxLayout()
-        main_row_hlayout.addLayout(rows_layout)
-        rows_layout.addWidget(title_group_box)
-
-        main_rows_hlayout.addLayout(rows_layout)
-        main_row_hlayout.addStretch()
-        ###
-
-        self.tab_widget = QTabWidget()
-        self.tab_widget.addTab(self._create_common_section(), "Common")
-        self.tab_widget.addTab(self._create_vocal_effect_section(), "Vocal FX")
-        self.tab_widget.addTab(self._create_mixer_section(), "Mixer")
-        self.tab_widget.addTab(self._create_auto_pitch_section(), "Auto Pitch")
-
-        # Add sections to container
-        container_layout.addWidget(self.tab_widget)
-
-        # Add container to scroll area
-        scroll.setWidget(container)
-        main_layout.addWidget(scroll)
+        # Add base widget to editor's layout
+        if not hasattr(self, "main_layout") or self.main_layout is None:
+            self.main_layout = QVBoxLayout(self)
+            self.setLayout(self.main_layout)
+        self.main_layout.addWidget(self.base_widget)
 
     def _create_common_section(self) -> QWidget:
         """
@@ -162,6 +123,14 @@ class VocalFXEditor(BasicEditor):
         common_section = QWidget()
         layout = QVBoxLayout()
         common_section.setLayout(layout)
+
+        # Icons row (standardized across editor tabs) - transfer items to avoid "already has a parent" errors
+        icon_row_container = QHBoxLayout()
+        icon_hlayout = JDXi.UI.IconRegistry.create_generic_musical_icon_row()
+
+        transfer_layout_items(icon_hlayout, icon_row_container)
+        layout.addLayout(icon_row_container)
+
         self.program_tempo = self._create_parameter_slider(
             ProgramCommonParam.PROGRAM_TEMPO, "Tempo"
         )
@@ -204,6 +173,7 @@ class VocalFXEditor(BasicEditor):
         auto_note_switch_row.addWidget(self.auto_note_switch)
         layout.addLayout(auto_note_switch_row)  # Add at bottom
 
+        layout.addStretch()
         return common_section
 
     def _create_vocal_effect_section(self) -> QWidget:
@@ -211,6 +181,13 @@ class VocalFXEditor(BasicEditor):
         vocal_effect_section = QWidget()
         layout = QVBoxLayout()
         vocal_effect_section.setLayout(layout)
+
+        # Icons row (standardized across editor tabs) - transfer items to avoid "already has a parent" errors
+        icon_row_container = QHBoxLayout()
+        icon_hlayout = JDXi.UI.IconRegistry.create_adsr_icons_row()
+
+        transfer_layout_items(icon_hlayout, icon_row_container)
+        layout.addLayout(icon_row_container)
 
         # Add vocoder switch
         switch_row = QHBoxLayout()
@@ -275,7 +252,8 @@ class VocalFXEditor(BasicEditor):
         vocoder_layout.addLayout(hpf_row)
 
         layout.addWidget(vocoder_group)
-        vocoder_group.setStyleSheet(JDXiStyle.ADSR)
+        JDXi.UI.ThemeManager.apply_adsr_style(vocoder_group)
+        layout.addStretch()
         return vocal_effect_section
 
     def _create_mixer_section(self) -> QWidget:
@@ -288,14 +266,19 @@ class VocalFXEditor(BasicEditor):
         layout = QVBoxLayout()
         mixer_section.setLayout(layout)
 
+        # Icons row (standardized across editor tabs) - transfer items to avoid "already has a parent" errors
+        icon_row_container = QHBoxLayout()
+        icon_hlayout = JDXi.UI.IconRegistry.create_adsr_icons_row()
+
+        transfer_layout_items(icon_hlayout, icon_row_container)
+        layout.addLayout(icon_row_container)
+
         # Level and Pan
         self.level = self._create_parameter_slider(
             VocalFXParam.LEVEL,
             "Level",
         )
-        self.pan = self._create_parameter_slider(
-            VocalFXParam.PAN, "Pan"
-        )  # Center at 0
+        self.pan = self._create_parameter_slider(VocalFXParam.PAN, "Pan")  # Center at 0
 
         # Send Levels
         self.delay_send_level_slider = self._create_parameter_slider(
@@ -322,6 +305,7 @@ class VocalFXEditor(BasicEditor):
         layout.addWidget(self.delay_send_level_slider)
         layout.addWidget(self.reverb_send_level_slider)
 
+        layout.addStretch()
         return mixer_section
 
     def _create_auto_pitch_section(self):
@@ -334,6 +318,13 @@ class VocalFXEditor(BasicEditor):
         self.auto_pitch_group = auto_pitch_section  # Store reference
         layout = QVBoxLayout()
         auto_pitch_section.setLayout(layout)
+
+        # Icons row (standardized across editor tabs) - transfer items to avoid "already has a parent" errors
+        icon_row_container = QHBoxLayout()
+        icon_hlayout = JDXi.UI.IconRegistry.create_adsr_icons_row()
+
+        transfer_layout_items(icon_hlayout, icon_row_container)
+        layout.addLayout(icon_row_container)
 
         self.pitch_switch = self._create_parameter_switch(
             VocalFXParam.AUTO_PITCH_SWITCH,
@@ -407,4 +398,5 @@ class VocalFXEditor(BasicEditor):
         layout.addWidget(self.octave)
         layout.addWidget(self.auto_pitch_balance)
 
+        layout.addStretch()
         return auto_pitch_section

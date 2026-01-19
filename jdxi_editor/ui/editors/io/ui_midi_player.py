@@ -1,5 +1,6 @@
 """UI components for MIDI file player."""
-from PySide6.QtWidgets import QPushButton, QSlider, QCheckBox, QLabel, QComboBox
+
+from PySide6.QtWidgets import QCheckBox, QComboBox, QLabel, QPushButton, QSlider
 
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 from jdxi_editor.ui.widgets.midi.track_viewer import MidiTrackViewer
@@ -7,7 +8,12 @@ from jdxi_editor.ui.widgets.midi.track_viewer import MidiTrackViewer
 
 class UiMidi:
     """UI class for MIDI file player interface."""
+
     def __init__(self):
+        self.automation_channel_combo = None
+        self.automation_type_combo = None
+        self.automation_program_combo = None
+        self.usb_file_auto_generate_checkbox = None
         self.digital_title_file_name = DigitalTitle("No file loaded")
         self.load_button = QPushButton()
         self.save_button = QPushButton()

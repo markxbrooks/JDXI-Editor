@@ -28,21 +28,21 @@ Customization:
 """
 
 import numpy as np
-from PySide6.QtCore import Qt, QPointF
-from PySide6.QtWidgets import QWidget
+from PySide6.QtCore import QPointF, Qt
 from PySide6.QtGui import (
+    QColor,
+    QFont,
+    QLinearGradient,
+    QMouseEvent,
     QPainter,
     QPainterPath,
-    QLinearGradient,
-    QColor,
-    QPen,
-    QFont,
     QPaintEvent,
-    QMouseEvent,
+    QPen,
 )
+from PySide6.QtWidgets import QWidget
 
-from jdxi_editor.log.logger import Logger as log
-from jdxi_editor.jdxi.style import JDXiStyle
+from decologr import Decologr as log
+from jdxi_editor.core.jdxi import JDXi
 
 
 class ADSRPlot(QWidget):
@@ -71,7 +71,8 @@ class ADSRPlot(QWidget):
         self.setMaximumHeight(height)
         self.setMaximumWidth(width)
         # Use dark gray background
-        self.setStyleSheet(JDXiStyle.ADSR_PLOT)
+
+        JDXi.UI.ThemeManager.apply_adsr_plot(self)
         # Sample rate for converting times to samples
         self.sample_rate = 256
         self.setMinimumHeight(150)
@@ -187,7 +188,7 @@ class ADSRPlot(QWidget):
             decay_time = self.envelope["decay_time"] / 1000.0
             release_time = self.envelope["release_time"] / 1000.0
             sustain_level = self.envelope["sustain_level"]
-            peak_level = max(self.envelope["peak_level"]*2, 0)
+            peak_level = max(self.envelope["peak_level"] * 2, 0)
             log.message(f"peak_level: {peak_level}")
             initial_level = self.envelope["initial_level"]
 
@@ -199,10 +200,18 @@ class ADSRPlot(QWidget):
 
             # Construct the ADSR envelope as one concatenated array
             # Normalized ADSR envelope (peak level = 1.0)
-            attack = np.linspace(initial_level, peak_level, attack_samples, endpoint=False)  # Attack from initial to peak level
-            decay = np.linspace(peak_level, sustain_level * peak_level, decay_samples, endpoint=False)  # Decay to sustain level
-            sustain = np.full(sustain_samples, sustain_level * peak_level)  # Sustain level scaled by peak level
-            release = np.linspace(sustain_level * peak_level, 0.0, release_samples)  # Release from sustain level to 0
+            attack = np.linspace(
+                initial_level, peak_level, attack_samples, endpoint=False
+            )  # Attack from initial to peak level
+            decay = np.linspace(
+                peak_level, sustain_level * peak_level, decay_samples, endpoint=False
+            )  # Decay to sustain level
+            sustain = np.full(
+                sustain_samples, sustain_level * peak_level
+            )  # Sustain level scaled by peak level
+            release = np.linspace(
+                sustain_level * peak_level, 0.0, release_samples
+            )  # Release from sustain level to 0
             envelope = np.concatenate([attack, decay, sustain, release])
 
             # envelope = np.concatenate([attack, decay, sustain, release])

@@ -168,7 +168,7 @@ class ShaderManager:
         failed = []
         for shader_number, shader_type in enumerate(ShaderType):
             log.message(
-                f"Loading shader type: '{shader_type.value} from {self.shader_directory}'",
+                f"Loading shader type: '{shader_type.STATUS} from {self.shader_directory}'",
                 silent=True,
             )
             self.load_shader(shader_type, shader_number)
@@ -177,7 +177,7 @@ class ShaderManager:
 
         if failed:
             log.warning(
-                f"⚠️ Shader fallback used for: {', '.join(st.value for st in failed)}"
+                f"⚠️ Shader fallback used for: {', '.join(st.STATUS for st in failed)}"
             )
 
         self.initialized = True

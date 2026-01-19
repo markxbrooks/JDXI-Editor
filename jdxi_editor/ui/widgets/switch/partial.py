@@ -28,15 +28,15 @@ Usage Example:
 
 """
 
-from PySide6.QtWidgets import (
-    QWidget,
-    QHBoxLayout,
-    QCheckBox,
-)
 from PySide6.QtCore import Signal
+from PySide6.QtWidgets import (
+    QCheckBox,
+    QHBoxLayout,
+    QWidget,
+)
 
+from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.digital.partial import DigitalPartial
-from jdxi_editor.jdxi.style import JDXiStyle
 
 
 class PartialSwitch(QWidget):
@@ -64,7 +64,7 @@ class PartialSwitch(QWidget):
         layout.addWidget(self.select_check)
 
         # Style
-        self.setStyleSheet(JDXiStyle.PARTIAL_SWITCH)
+        self.setStyleSheet(JDXi.UI.Style.PARTIAL_SWITCH)
 
     def _on_state_changed(self, _):
         """Handle checkbox state changes"""

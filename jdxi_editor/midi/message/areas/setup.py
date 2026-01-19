@@ -1,15 +1,15 @@
 from dataclasses import dataclass
 
 from jdxi_editor.midi.data.address.address import (
-    CommandID,
-    AddressStartMSB,
     ZERO_BYTE,
+    AddressStartMSB,
+    CommandID,
 )
-from jdxi_editor.midi.message.roland import RolandSysEx
+from jdxi_editor.midi.message.roland import JDXiSysEx
 
 
 @dataclass
-class SetupMessage(RolandSysEx):
+class SetupMessage(JDXiSysEx):
     """Setup parameter message"""
 
     command: int = CommandID.DT1

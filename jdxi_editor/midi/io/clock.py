@@ -1,5 +1,8 @@
-"""import mido
+"""clock test file"""
+
 import time
+
+import mido
 
 try:
     outport = mido.open_output()
@@ -7,7 +10,7 @@ except Exception as e:
     print(f"Error opening MIDI output port: {e}")
     exit()
 
-clock_message = mido.Message('clock')
+clock_message = mido.Message("clock")
 tempo = 120
 time_per_pulse = (60 / tempo) / 24
 
@@ -18,4 +21,4 @@ try:
 except KeyboardInterrupt:
     print("Stopping MIDI clock.")
 finally:
-    outport.close()"""
+    outport.close()

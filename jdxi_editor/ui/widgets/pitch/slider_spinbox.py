@@ -1,12 +1,12 @@
 from typing import Callable
 
 from PySide6.QtCore import Signal
-from PySide6.QtWidgets import QSpinBox, QDoubleSpinBox, QWidget, QVBoxLayout
+from PySide6.QtWidgets import QDoubleSpinBox, QSpinBox, QVBoxLayout, QWidget
 
-from jdxi_editor.jdxi.midi.constant import MidiConstant
-from jdxi_editor.log.logger import Logger as log
-from jdxi_editor.midi.data.parameter.synth import AddressParameter
-from jdxi_editor.midi.utils.conversions import midi_value_to_ms, ms_to_midi_value
+from decologr import Decologr as log
+from picomidi.constant import Midi
+from picomidi.sysex.parameter.address import AddressParameter
+from picomidi.utils.conversion import midi_value_to_ms, ms_to_midi_value
 
 
 def create_spinbox(min_value: int, max_value: int, suffix: str, value: int) -> QSpinBox:
@@ -27,7 +27,7 @@ def create_spinbox(min_value: int, max_value: int, suffix: str, value: int) -> Q
 
 
 def create_double_spinbox(
-        min_value: float, max_value: float, step: float, value: int
+    min_value: float, max_value: float, step: float, value: int
 ) -> QDoubleSpinBox:
     """
     Create a double spinbox with specified range, step, and initial value.
@@ -53,15 +53,15 @@ class PitchEnvSliderSpinbox(QWidget):
     envelope_changed = Signal(dict)
 
     def __init__(
-            self,
-            param: AddressParameter,
-            min_value: float = 0.0,
-            max_value: float = 1.0,
-            units: str = "",
-            label: str = "",
-            value: int = None,
-            create_parameter_slider: Callable = None,
-            parent: QWidget = None,
+        self,
+        param: AddressParameter,
+        min_value: float = 0.0,
+        max_value: float = 1.0,
+        units: str = "",
+        label: str = "",
+        value: int = None,
+        create_parameter_slider: Callable = None,
+        parent: QWidget = None,
     ):
         """
         Initialize the ADSR slider and spinbox widget.
@@ -78,7 +78,7 @@ class PitchEnvSliderSpinbox(QWidget):
         super().__init__(parent)
 
         self.param = param
-        self.factor = MidiConstant.VALUE_MAX_SEVEN_BIT
+        self.factor = Midi.VALUE.MAX.SEVEN_BIT
         if max_value > 1:
             self.factor = max_value
         self.create_parameter_slider = create_parameter_slider
@@ -120,18 +120,18 @@ class PitchEnvSliderSpinbox(QWidget):
         """
         param_type = self.param.get_envelope_param_type()
         if param_type in ["sustain_level", "peak_level", "depth"]:
-            converted_value = value / MidiConstant.VALUE_MAX_SEVEN_BIT
-        elif param_type in ["attack_time",
-                            "decay_time",
-                            "release_time",
-                            "fade_lower",
-                            "fade_upper",
-                            "range_lower",
-                            "depth",
-                            "range_upper"]:
-            converted_value = midi_value_to_ms(int(value),
-                                               min_time=10,
-                                               max_time=5000)
+            converted_value = value / Midi.VALUE.MAX.SEVEN_BIT
+        elif param_type in [
+            "attack_time",
+            "decay_time",
+            "release_time",
+            "fade_lower",
+            "fade_upper",
+            "range_lower",
+            "depth",
+            "range_upper",
+        ]:
+            converted_value = midi_value_to_ms(int(value), min_time=10, max_time=5000)
         else:
             log.error(f"Unknown envelope parameter type {param_type} for {self.param}")
             converted_value = 0.0  # or raise an error, depending on design
@@ -145,19 +145,22 @@ class PitchEnvSliderSpinbox(QWidget):
         :return: int
         """
         param_type = self.param.get_envelope_param_type()
-        if param_type in ["peak_level",
-                          "sustain_level"
-                          "mod_depth",
-                          "depth"]:
-            converted_value = int(value * MidiConstant.VALUE_MAX_SEVEN_BIT)
-        elif param_type in ["attack_time",
-                            "decay_time",
-                            "release_time"
-                            "fade_lower",
-                            "fade_upper",
-                            "range_lower",
-                            "range_upper"]:
-            converted_value = int(ms_to_midi_value(value, min_time=10, max_time=5000))
+        if param_type in ["peak_level", "sustain_level", "mod_depth", "depth"]:
+            converted_value = int(value * Midi.VALUE.MAX.SEVEN_BIT)
+        elif param_type in [
+            "attack_time",
+            "decay_time",
+            "release_time",
+            "fade_lower",
+            "fade_upper",
+            "range_lower",
+            "range_upper",
+        ]:
+            # Ensure value is a number, not a string
+            value_num = float(value) if not isinstance(value, (int, float)) else value
+            converted_value = int(
+                ms_to_midi_value(value_num, min_time=10, max_time=5000)
+            )
         else:
             converted_value = 64
         log.message(f"convert_from_envelope: {value} -> {converted_value}")

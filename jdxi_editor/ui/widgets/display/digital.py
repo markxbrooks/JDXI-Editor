@@ -33,25 +33,20 @@ Dependencies:
 import platform
 
 from PySide6.QtCore import QRect
-from PySide6.QtWidgets import QWidget, QSizePolicy
-from PySide6.QtGui import QPainter, QLinearGradient, QColor, QPen, QFont, QPaintEvent
+from PySide6.QtGui import QColor, QFont, QLinearGradient, QPainter, QPaintEvent, QPen
+from PySide6.QtWidgets import QSizePolicy, QWidget
 
-from jdxi_editor.log.logger import Logger as log
-from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
-from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
-from jdxi_editor.midi.data.programs.digital import DIGITAL_PRESET_LIST
-from jdxi_editor.jdxi.synth.type import JDXiSynth
-from jdxi_editor.ui.editors.helpers.program import (
-    get_program_id_by_name,
-)
-from jdxi_editor.ui.editors.helpers.preset import get_preset_list_number_by_name
-from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
+from decologr import Decologr as log
+from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.synth.type import JDXiSynth
 
 
 class DigitalDisplayBase(QWidget):
     """Base class for JD-Xi style digital displays."""
 
-    def __init__(self, digital_font_family: str = "JD LCD Rounded", parent: QWidget = None):
+    def __init__(
+        self, digital_font_family: str = "JD LCD Rounded", parent: QWidget = None
+    ):
         super().__init__(parent)
         """Initialize the DigitalDisplayBase
 
@@ -135,7 +130,8 @@ class DigitalTitle(DigitalDisplayBase):
     ):
         super().__init__(digital_font_family, parent)
         self.setMinimumSize(
-            JDXiDimensions.DIGITAL_TITLE_WIDTH, JDXiDimensions.DIGITAL_TITLE_HEIGHT
+            JDXi.UI.Dimensions.DIGITAL_TITLE.WIDTH,
+            JDXi.UI.Dimensions.DIGITAL_TITLE.HEIGHT,
         )
         self.show_upper_text = show_upper_text
         self.set_tone_name(tone_name)
@@ -153,7 +149,6 @@ class DigitalTitle(DigitalDisplayBase):
             self.update_display(["", tone_name])
         else:
             self.update_display([tone_name])
-
 
     @property
     def text(self) -> str:
@@ -195,7 +190,7 @@ class DigitalDisplay(DigitalDisplayBase):
         self.margin = 10  # Default margin for display elements
 
         self.setMinimumSize(
-            JDXiDimensions.DISPLAY_WIDTH, JDXiDimensions.DISPLAY_HEIGHT
+            JDXi.UI.Dimensions.LED.WIDTH, JDXi.UI.Dimensions.LED.HEIGHT
         )  # Set size matching display
         self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
 
@@ -315,6 +310,9 @@ class DigitalDisplay(DigitalDisplayBase):
         program_name: str,
         active_synth: str = "D1",
     ) -> None:
+        # Lazy import to avoid circular dependency
+        from jdxi_editor.ui.editors.helpers.program import get_program_id_by_name
+
         self.current_octave = current_octave
         self.tone_number = tone_number
         self.tone_name = tone_name
@@ -344,22 +342,33 @@ class DigitalDisplay(DigitalDisplayBase):
         :param drums_tone_name: str
         :param analog_tone_name: str
         """
+        # Lazy import to avoid circular dependency
+        from jdxi_editor.ui.editors.helpers.preset import get_preset_list_number_by_name
+
         if synth_type == JDXiSynth.DIGITAL_SYNTH_1:
             tone_name = digital1_tone_name
-            tone_number = get_preset_list_number_by_name(tone_name, DIGITAL_PRESET_LIST)
+            tone_number = get_preset_list_number_by_name(
+                tone_name, JDXi.UI.Preset.Digital.PROGRAM_CHANGE
+            )
             active_synth = "D1"
         elif synth_type == JDXiSynth.DIGITAL_SYNTH_2:
             tone_name = digital2_tone_name
             active_synth = "D2"
-            tone_number = get_preset_list_number_by_name(tone_name, DIGITAL_PRESET_LIST)
+            tone_number = get_preset_list_number_by_name(
+                tone_name, JDXi.UI.Preset.Digital.PROGRAM_CHANGE
+            )
         elif synth_type == JDXiSynth.DRUM_KIT:
             tone_name = drums_tone_name
             active_synth = "DR"
-            tone_number = get_preset_list_number_by_name(tone_name, DRUM_KIT_LIST)
+            tone_number = get_preset_list_number_by_name(
+                tone_name, JDXi.UI.Preset.Drum.PROGRAM_CHANGE
+            )
         elif synth_type == JDXiSynth.ANALOG_SYNTH:
             tone_name = analog_tone_name
             active_synth = "AN"
-            tone_number = get_preset_list_number_by_name(tone_name, ANALOG_PRESET_LIST)
+            tone_number = get_preset_list_number_by_name(
+                tone_name, JDXi.UI.Preset.Analog.PROGRAM_CHANGE
+            )
         else:
             active_synth = "D1"
         log.message(f"current tone number: {tone_number}")

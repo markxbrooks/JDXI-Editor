@@ -3,14 +3,14 @@ Midi Track Widget
 """
 
 import mido
+from PySide6.QtCore import QRectF
+from PySide6.QtGui import QColor, QPainter, QPaintEvent, QPixmap
 from PySide6.QtWidgets import (
     QWidget,
 )
-from PySide6.QtGui import QPainter, QColor, QPaintEvent, QPixmap
-from PySide6.QtCore import QRectF
 
-from jdxi_editor.jdxi.style import JDXiStyle
-from jdxi_editor.log.logger import Logger as log
+from decologr import Decologr as log
+from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.ui.widgets.midi.colors import MIDI_CHANNEL_COLORS
 from jdxi_editor.ui.widgets.midi.utils import generate_track_colors, get_first_channel
 
@@ -19,11 +19,14 @@ class MidiTrackWidget(QWidget):
     """
     MidiTrackWidget
     """
-    def __init__(self,
-                 track: mido.MidiTrack,
-                 track_number: int,
-                 total_length: float,
-                 parent: QWidget = None):
+
+    def __init__(
+        self,
+        track: mido.MidiTrack,
+        track_number: int,
+        total_length: float,
+        parent: QWidget = None,
+    ):
         """
         Initialize the MidiTrackWidget.
 
@@ -40,7 +43,7 @@ class MidiTrackWidget(QWidget):
         self.color = generate_track_colors(track_number)
         self.muted = False
         self.total_length = total_length
-        self.setMinimumHeight(JDXiStyle.TRACK_HEIGHT_MINIMUM)  # Adjust as needed
+        self.setMinimumHeight(JDXi.UI.Style.TRACK_HEIGHT_MINIMUM)  # Adjust as needed
         self.track_data = None  # Dict: {rects: [...], label: str, channels: set}
         self.muted_channels = set()  # Set of muted channels
         self.muted_tracks = set()  # Set of muted channels
@@ -86,13 +89,13 @@ class MidiTrackWidget(QWidget):
                 note_count += 1
                 norm_time = abs_time / total_length if total_length else 0
                 # Use first_channel for all notes
-                rects.append(
-                    (norm_time, first_channel)
-                )
+                rects.append((norm_time, first_channel))
             if msg.type == "program_change":
                 program_changes.append(msg.program)
 
-        label = f"Track | {track.name if track.name else 'Unnamed'} | Notes: {note_count}"
+        label = (
+            f"Track | {track.name if track.name else 'Unnamed'} | Notes: {note_count}"
+        )
         if channels:
             label += f" | Channel: {first_channel + 1}"  # Display 1-based channel
         if program_changes:
@@ -282,8 +285,13 @@ class MidiTrackWidget(QWidget):
         track = self.midi_file.tracks[track_index]
         for msg in track:
             if msg.type in [
-                "note_on", "note_off", "control_change", "program_change",
-                "pitchwheel", "aftertouch", "polytouch"
+                "note_on",
+                "note_off",
+                "control_change",
+                "program_change",
+                "pitchwheel",
+                "aftertouch",
+                "polytouch",
             ]:
                 msg.channel = new_channel
 
@@ -298,7 +306,7 @@ class MidiTrackWidget(QWidget):
     def set_midi_file(self, new_midi: mido.MidiFile):
         """
         set_midi_file
-        
+
         :param new_midi: mido.MidiFile
         :return: None
         """

@@ -1,17 +1,17 @@
 from dataclasses import dataclass
 
 from jdxi_editor.midi.data.address.address import (
-    CommandID,
-    AddressStartMSB,
     AddressOffsetSystemLMB,
     AddressOffsetSystemUMB,
+    AddressStartMSB,
+    CommandID,
 )
 from jdxi_editor.midi.data.address.sysex import ZERO_BYTE
-from jdxi_editor.midi.message.roland import RolandSysEx
+from jdxi_editor.midi.message.roland import JDXiSysEx
 
 
 @dataclass
-class ProgramCommonParameterMessage(RolandSysEx):
+class ProgramCommonParameterMessage(JDXiSysEx):
     """Program Common parameter message"""
 
     command: int = CommandID.DT1

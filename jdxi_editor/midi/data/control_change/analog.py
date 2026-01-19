@@ -2,12 +2,12 @@
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import Tuple, Any
+from typing import Any, Tuple
 
 from shiboken6.Shiboken import Object
 
-from jdxi_editor.jdxi.midi.constant import MidiConstant
 from jdxi_editor.midi.data.control_change.base import ControlChange
+from picomidi.constant import Midi
 
 
 class AnalogControlChange(ControlChange):
@@ -31,6 +31,7 @@ class AnalogControlChange(ControlChange):
 @dataclass(frozen=True)
 class RPNValue:
     """Represents a MIDI RPN value with its MSB, LSB, and value range."""
+
     msb_lsb: Tuple[int, int]
     value_range: Tuple[int, int]
 
@@ -39,15 +40,16 @@ class RPNValue:
         msb, lsb = self.msb_lsb
         value = max(min(value, self.value_range[1]), self.value_range[0])
         return [
-            (MidiConstant.CONTROL_CHANGE, 101, msb),    # RPN MSB
-            (MidiConstant.CONTROL_CHANGE, 100, lsb),    # RPN LSB
-            (MidiConstant.CONTROL_CHANGE, 6, value >> 7),   # Data Entry MSB
-            (MidiConstant.CONTROL_CHANGE, 38, value & 0x7F)  # Data Entry LSB
+            (Midi.CC.STATUS, 101, msb),  # RPN MSB
+            (Midi.CC.STATUS, 100, lsb),  # RPN LSB
+            (Midi.CC.STATUS, 6, value >> 7),  # Data Entry MSB
+            (Midi.CC.STATUS, 38, value & 0x7F),  # Data Entry LSB
         ]
 
 
 class AnalogRPN(Enum):
     """Analog synth RPN parameters with their MSB, LSB, and value range."""
+
     ENVELOPE = RPNValue((0, 124), (0, 127))
     LFO_SHAPE = RPNValue((0, 3), (0, 5))
     LFO_PITCH_DEPTH = RPNValue((0, 15), (0, 127))
@@ -59,6 +61,7 @@ class AnalogRPN(Enum):
 @dataclass(frozen=True)
 class PartialRPNValue:
     """Represents a MIDI RPN value with base MSB/LSB, value range, and partial."""
+
     base_msb_lsb: Tuple[int, int]
     value_range: Tuple[int, int]
     partial: int
@@ -78,10 +81,10 @@ class PartialRPNValue:
         msb, lsb = self.msb_lsb
         value = max(min(value, self.value_range[1]), self.value_range[0])
         return [
-            (MidiConstant.CONTROL_CHANGE, 101, msb),    # RPN MSB
-            (MidiConstant.CONTROL_CHANGE, 100, lsb),    # RPN LSB
-            (MidiConstant.CONTROL_CHANGE, 6, value >> 7),   # Data Entry MSB
-            (MidiConstant.CONTROL_CHANGE, 38, value & 0x7F)  # Data Entry LSB
+            (Midi.CC.STATUS, 101, msb),  # RPN MSB
+            (Midi.CC.STATUS, 100, lsb),  # RPN LSB
+            (Midi.CC.STATUS, 6, value >> 7),  # Data Entry MSB
+            (Midi.CC.STATUS, 38, value & 0x7F),  # Data Entry LSB
         ]
 
 
@@ -104,6 +107,7 @@ def make_digital_rpn(partial: int) -> Object:
     :param partial: int
     :return: Object
     """
+
     class DigitalPartialRPN(Enum):
         ENVELOPE = PartialRPNValue((0, 124), (0, 127), partial)
         LFO_SHAPE = PartialRPNValue((0, 3), (0, 5), partial)
@@ -124,5 +128,5 @@ DigitalRPN_Partial3 = make_digital_rpn(3)
 if __name__ == "__main__":
     # Example usage
     print(AnalogRPN.ENVELOPE.value.msb_lsb)  # (0, 124)
-    print(DigitalRPN_Partial1.ENVELOPE.value.msb_lsb)  # (0, 124)
-    print(DigitalRPN_Partial2.ENVELOPE.value.msb_lsb)  # (0, 125)
+    print(DigitalRPN_Partial1.ENVELOPE.STATUS.msb_lsb)  # (0, 124)
+    print(DigitalRPN_Partial2.ENVELOPE.STATUS.msb_lsb)  # (0, 125)

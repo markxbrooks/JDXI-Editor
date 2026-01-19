@@ -18,6 +18,7 @@ class TestJDXiJSONComposer(unittest.TestCase):
         """
         self.composer = JDXiJSONComposer()
         self.output_json_file = None
+        self.temp_folder = None
 
     def test_compose_analog_synth_json_file(self):
         """

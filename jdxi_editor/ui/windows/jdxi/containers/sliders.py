@@ -3,9 +3,9 @@ Slider container
 """
 
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel
+from PySide6.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout, QWidget
 
-from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.ui.widgets.midi.slider.amp import AmpEnvelopeSlider, AmpLevelSlider
 from jdxi_editor.ui.widgets.midi.slider.effects import (
     DelaySlider,
@@ -22,17 +22,16 @@ from jdxi_editor.ui.widgets.midi.slider.lfo import (
     LFORateSlider,
 )
 from jdxi_editor.ui.widgets.midi.slider.lfo.shape import LFOShapeSlider
-from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
 def add_slider_container(central_widget, midi_helper):
     """ad slider container"""
     slider_container = QWidget(central_widget)
     slider_container.setGeometry(
-        JDXiDimensions.SLIDER_X,
-        JDXiDimensions.SLIDER_Y,
-        JDXiDimensions.SLIDER_CONTAINER_WIDTH,
-        JDXiDimensions.SLIDER_CONTAINER_HEIGHT,
+        JDXi.UI.Dimensions.SLIDER.X,
+        JDXi.UI.Dimensions.SLIDER.Y,
+        JDXi.UI.Dimensions.SLIDER.CONTAINER.WIDTH,
+        JDXi.UI.Dimensions.SLIDER.CONTAINER.HEIGHT,
     )
 
     main_layout = QVBoxLayout(slider_container)
@@ -44,8 +43,8 @@ def add_slider_container(central_widget, midi_helper):
     slider_row_layout.setContentsMargins(0, 0, 0, 0)
     slider_row_layout.setSpacing(3)
 
-    slider_height = JDXiDimensions.SLIDER_HEIGHT
-    slider_style = JDXiStyle.ADSR_DISABLED
+    slider_height = JDXi.UI.Dimensions.SLIDER.HEIGHT
+    slider_style = JDXi.UI.Style.ADSR_DISABLED
 
     def create_slider_with_label(label_text, slider_widget):
         """create a slider with a label"""
@@ -86,25 +85,67 @@ def add_slider_container(central_widget, midi_helper):
 
         return container
 
-    # Create sliders
+    # Create sliders with tooltips
     filter_cutoff_slider = FilterCutoffSlider(midi_helper, label="Cutoff")
+    filter_cutoff_slider.setToolTip(
+        "Filter Cutoff: Sets the filter cutoff frequency for all MIDI channels"
+    )
 
     filter_resonance_slider = FilterResonanceSlider(midi_helper, label="Reson.")
+    filter_resonance_slider.setToolTip(
+        "Filter Resonance: Sets the filter resonance (Q) for all MIDI channels"
+    )
+
     amp_level_slider = AmpLevelSlider(midi_helper, label="Level")
+    amp_level_slider.setToolTip(
+        "Amp Level: Sets the amplifier level for all MIDI channels"
+    )
+
     amp_env_slider = AmpEnvelopeSlider(midi_helper, label="Env")
+    amp_env_slider.setToolTip(
+        "Amp Envelope: Sets the amplifier envelope depth for all MIDI channels"
+    )
 
     lfo_rate_slider = LFORateSlider(midi_helper, label="Rate")
+    lfo_rate_slider.setToolTip(
+        "LFO Rate: Sets the LFO rate (speed) for all MIDI channels"
+    )
+
     lfo_pitch_slider = LFOPitchSlider(midi_helper, label="Pitch")
+    lfo_pitch_slider.setToolTip(
+        "LFO Pitch Depth: Sets the LFO pitch modulation depth for all MIDI channels"
+    )
 
     lfo_filter_slider = LFOFilterDepthSlider(midi_helper, label="Filter")
-    lfo_amp_slider = LFOAmpDepthSlider(midi_helper, label="Amp")
+    lfo_filter_slider.setToolTip(
+        "LFO Filter Depth: Sets the LFO filter modulation depth for all MIDI channels"
+    )
 
-    Effect1Slider(midi_helper, label="Efx1")
-    Effect2Slider(midi_helper, label="Efx2")
-    LFOShapeSlider(midi_helper, label="LFSh")
+    lfo_amp_slider = LFOAmpDepthSlider(midi_helper, label="Amp")
+    lfo_amp_slider.setToolTip(
+        "LFO Amp Depth: Sets the LFO amplitude modulation depth for all MIDI channels"
+    )
+
+    effect1_slider = Effect1Slider(midi_helper, label="Efx1")
+    effect1_slider.setToolTip(
+        "Effect 1: Sets the Effect 1 send level for all MIDI channels"
+    )
+
+    effect2_slider = Effect2Slider(midi_helper, label="Efx2")
+    effect2_slider.setToolTip(
+        "Effect 2: Sets the Effect 2 send level for all MIDI channels"
+    )
+
+    lfo_shape_slider = LFOShapeSlider(midi_helper, label="LFSh")
+    lfo_shape_slider.setToolTip(
+        "LFO Shape: Sets the LFO waveform shape for all MIDI channels"
+    )
 
     delay_slider = DelaySlider(midi_helper, label="Delay")
+    delay_slider.setToolTip("Delay: Sets the delay send level for all MIDI channels")
+
     reverb_slider = ReverbSlider(midi_helper, label="Reverb")
+    reverb_slider.setToolTip("Reverb: Sets the reverb send level for all MIDI channels")
 
     filter_cutoff_container = create_slider_with_label("Cut.", filter_cutoff_slider)
     filter_resonance_container = create_slider_with_label(
@@ -144,5 +185,5 @@ def add_slider_container(central_widget, midi_helper):
     )
 
     # Add to main layout
-    slider_row_container.setStyleSheet(JDXiStyle.ADSR_DISABLED)
+    slider_row_container.setStyleSheet(JDXi.UI.Style.ADSR_DISABLED)
     main_layout.addWidget(slider_row_container)

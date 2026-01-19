@@ -1,70 +1,87 @@
+from typing import Callable
+
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QHBoxLayout, QPushButton
+from PySide6.QtWidgets import QGridLayout, QLabel, QWidget
 
-from jdxi_editor.jdxi.style import JDXiStyle
-from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
+from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.ui.widgets.editor.helper import create_button_with_tooltip
 
 
-def add_arpeggiator_buttons(widget):
-    """Add arpeggiator up/down buttons to the interface"""
-    # Create container
-    arpeggiator_buttons_container = QWidget(widget)
+def _add_header(grid: QGridLayout, text: str, row: int, col: int, span: int):
+    """add a header"""
+    label = QLabel(text)
+    label.setStyleSheet(JDXi.UI.Style.LABEL)
+    label.setAlignment(Qt.AlignCenter)
+    grid.addWidget(label, row, col, 1, span)
 
-    # Apply the height offset to the Y position
-    arpeggiator_buttons_container.setGeometry(
-        JDXiDimensions.ARPEGGIATOR_X,
-        JDXiDimensions.ARPEGGIATOR_Y,  # Move up by offset_y (now 25% instead of 20%)
-        JDXiDimensions.ARPEGGIATOR_WIDTH,
-        JDXiDimensions.ARPEGGIATOR_HEIGHT,
+
+def _add_label(grid: QGridLayout, text: str, row: int, col: int):
+    """add a label"""
+    label = QLabel(text)
+    label.setStyleSheet(JDXi.UI.Style.LABEL_SUB)
+    label.setAlignment(Qt.AlignCenter)
+    grid.addWidget(label, row, col)
+
+
+def add_octave_and_arp_buttons(container: QWidget, send_octave: Callable):
+    """Add octave and arpeggiator controls on a single aligned grid."""
+
+    root = QWidget(container)
+    root.setGeometry(
+        JDXi.UI.Dimensions.OCTAVE.X,
+        JDXi.UI.Dimensions.OCTAVE.Y,
+        JDXi.UI.Dimensions.OCTAVE.WIDTH + JDXi.UI.Dimensions.ARPEGGIATOR.WIDTH,
+        max(JDXi.UI.Dimensions.OCTAVE.HEIGHT, JDXi.UI.Dimensions.ARPEGGIATOR.HEIGHT),
+    )
+    root.setStyleSheet("background: transparent;")
+
+    grid = QGridLayout(root)
+    grid.setHorizontalSpacing(20)
+    grid.setVerticalSpacing(6)
+
+    # Column layout:
+    # 0 = Octave Down
+    # 1 = Octave Up
+    # 2 = Arp On
+    # 3 = Key Hold
+
+    # Headers
+    _add_header(grid, "OCTAVE", row=0, col=0, span=2)
+    _add_header(grid, "ARPEGGIO", row=0, col=2, span=2)
+
+    # Sub-labels
+    _add_label(grid, "Down", row=1, col=0)
+    _add_label(grid, "Up", row=1, col=1)
+    _add_label(grid, "On", row=1, col=2)
+    _add_label(grid, "Key Hold", row=1, col=3)
+
+    # Buttons
+    octave_down_button = create_button_with_tooltip(
+        "Octave Down: Lower the keyboard pitch by one octave"
+    )
+    octave_down_button.clicked.connect(lambda: send_octave(-1))
+
+    octave_up_button = create_button_with_tooltip(
+        "Octave Up: Raise the keyboard pitch by one octave"
+    )
+    octave_up_button.clicked.connect(lambda: send_octave(1))
+
+    arpeggiator_button = create_button_with_tooltip(
+        "Arpeggiator On/Off: Enable or disable the arpeggiator"
     )
 
-    arpeggiator_layout = QVBoxLayout(arpeggiator_buttons_container)
-    arpeggiator_layout.setSpacing(5)
+    key_hold_button = create_button_with_tooltip(
+        "Key Hold: Hold arpeggiator notes when enabled"
+    )
 
-    # Add "ARPEGGIO" label at the top
-    arpeggiator_label = QLabel("ARPEGGIO")
-    arpeggiator_label.setStyleSheet(JDXiStyle.LABEL)
-    arpeggiator_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-    arpeggiator_layout.addWidget(arpeggiator_label)
+    grid.addWidget(octave_down_button, 2, 0, Qt.AlignCenter)
+    grid.addWidget(octave_up_button, 2, 1, Qt.AlignCenter)
+    grid.addWidget(arpeggiator_button, 2, 2, Qt.AlignCenter)
+    grid.addWidget(key_hold_button, 2, 3, Qt.AlignCenter)
 
-    # Create horizontal layout for Down/Up labels
-    labels_row = QHBoxLayout()
-    labels_row.setSpacing(20)  # Space between labels
-
-    # On label
-    on_label = QLabel("On")
-    on_label.setStyleSheet(JDXiStyle.LABEL_SUB)
-    labels_row.addWidget(on_label)
-
-    # Add labels row
-    arpeggiator_layout.addLayout(labels_row)
-
-    # Create horizontal layout for buttons
-    buttons_row = QHBoxLayout()
-    buttons_row.setSpacing(20)  # Space between buttons
-
-    # Down label
-    key_hold_label = QLabel("Key Hold")
-    key_hold_label.setStyleSheet(JDXiStyle.LABEL_SUB)
-    labels_row.addWidget(key_hold_label)
-
-    # Create and store arpeggiator  button
-    arpeggiator_button = QPushButton()
-    arpeggiator_button.setFixedSize(30, 30)
-    arpeggiator_button.setCheckable(True)
-    arpeggiator_button.setStyleSheet(JDXiStyle.BUTTON_ROUND)
-    buttons_row.addWidget(arpeggiator_button)
-
-    # Create and store octave down button
-    key_hold_button = QPushButton()
-    key_hold_button.setFixedSize(30, 30)
-    key_hold_button.setCheckable(True)
-    key_hold_button.setStyleSheet(JDXiStyle.BUTTON_ROUND)
-    buttons_row.addWidget(key_hold_button)
-
-    # Add buttons row
-    arpeggiator_layout.addLayout(buttons_row)
-
-    # Make container transparent
-    arpeggiator_buttons_container.setStyleSheet("background: transparent;")
-    return arpeggiator_button, key_hold_button
+    return (
+        octave_down_button,
+        octave_up_button,
+        arpeggiator_button,
+        key_hold_button,
+    )

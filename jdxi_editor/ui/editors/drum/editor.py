@@ -57,42 +57,40 @@ To use the `DrumEditor`, instantiate it with an optional `MIDIHelper` instance:
 
 """
 
-from typing import Optional, Dict, Union
+from typing import Dict, Optional, Union
 
-from PySide6.QtGui import QShortcut, QKeySequence
+from PySide6.QtGui import QKeySequence, QShortcut
 from PySide6.QtWidgets import (
+    QGroupBox,
+    QTabWidget,
     QVBoxLayout,
-    QHBoxLayout,
-    QScrollArea,
     QWidget,
-    QTabWidget, QGroupBox,
 )
-from PySide6.QtCore import Qt
 
-from jdxi_editor.log.logger import Logger as log
+from decologr import Decologr as log
+from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import AddressOffsetProgramLMB
 from jdxi_editor.midi.data.drum.data import JDXiMapPartialDrum
 from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParam
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.ui.editors.drum.common import DrumCommonSection
 from jdxi_editor.ui.editors.drum.partial.editor import DrumPartialEditor
-from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
+from jdxi_editor.ui.preset.helper import JDXiPresetHelper
+from jdxi_editor.ui.preset.widget import InstrumentPresetWidget
 from jdxi_editor.ui.widgets.dialog.progress import ProgressDialog
-from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
-from jdxi_editor.jdxi.preset.widget import InstrumentPresetWidget
+from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 
 
 class DrumCommonEditor(SynthEditor):
     """Editor for JD-Xi Drum Kit parameters"""
 
     def __init__(
-            self,
-            midi_helper: Optional[MidiIOHelper] = None,
-            preset_helper: Optional[JDXiPresetHelper] = None,
-            parent: Optional[QWidget] = None,
+        self,
+        midi_helper: Optional[MidiIOHelper] = None,
+        preset_helper: Optional[JDXiPresetHelper] = None,
+        parent: Optional["JDXiInstrument"] = None,
     ):
         super().__init__(midi_helper, parent)
         # Helpers
@@ -101,7 +99,7 @@ class DrumCommonEditor(SynthEditor):
         self.preset_helper = preset_helper
         self.midi_helper = midi_helper
         self.partial_number = 0
-        self._init_synth_data(synth_type=JDXiSynth.DRUM_KIT, partial_number=0)
+        self._init_synth_data(synth_type=JDXi.Synth.DRUM_KIT, partial_number=0)
         self.sysex_current_data = None
         self.sysex_previous_data = None
         self.partial_mapping = JDXiMapPartialDrum.MAP
@@ -128,49 +126,68 @@ class DrumCommonEditor(SynthEditor):
     def setup_ui(self) -> None:
         """Setup the UI components for the drum editor."""
         main_layout = QVBoxLayout(self)
-        self.setMinimumSize(1100, 500)
-
-        # splitter = QSplitter(Qt.Orientation.Vertical)
+        self.setMinimumSize(
+            JDXi.UI.Dimensions.EDITOR_DRUM.WIDTH, JDXi.UI.Dimensions.EDITOR_DRUM.HEIGHT
+        )
         self.presets_parts_tab_widget = QTabWidget()
 
         main_layout.addWidget(self.presets_parts_tab_widget)
 
         instrument_widget = QWidget()
         instrument_vrow_layout = QVBoxLayout(instrument_widget)
-        
+
         # Use InstrumentPresetWidget for consistent layout
         self.instrument_preset = InstrumentPresetWidget(parent=self)
         self.instrument_preset.setup_header_layout()
         self.instrument_preset.setup()
-        
+
         instrument_preset_group = self.instrument_preset.create_instrument_preset_group(
             synth_type="Drums"
         )
         self.instrument_preset.add_preset_group(instrument_preset_group)
         self.instrument_preset.add_stretch()
-        
-        self.instrument_image_group, self.instrument_image_label, self.instrument_group_layout = self.instrument_preset.create_instrument_image_group()
+
+        (
+            self.instrument_image_group,
+            self.instrument_image_label,
+            self.instrument_group_layout,
+        ) = self.instrument_preset.create_instrument_image_group()
         self.address.lmb = AddressOffsetProgramLMB.COMMON
-        self.instrument_image_group.setMinimumWidth(JDXiStyle.INSTRUMENT_IMAGE_WIDTH)
+        self.instrument_image_group.setMinimumWidth(
+            JDXi.UI.Style.INSTRUMENT_IMAGE_WIDTH
+        )
         self.instrument_preset.add_image_group(self.instrument_image_group)
         self.instrument_preset.add_stretch()
         self.update_instrument_image()
-        
+
         instrument_vrow_layout.addWidget(self.instrument_preset)
 
-        self.presets_parts_tab_widget.addTab(instrument_widget, "Drum Kit Presets")
+        drum_kit_presets_icon = JDXi.UI.IconRegistry.get_icon(
+            JDXi.UI.IconRegistry.MUSIC_NOTES, color=JDXi.UI.Style.GREY
+        )
+        self.presets_parts_tab_widget.addTab(
+            instrument_widget, drum_kit_presets_icon, "Drum Kit Presets"
+        )
 
-        scroll = QScrollArea()
-        scroll.setWidgetResizable(True)
-        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
-        scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        # --- Use EditorBaseWidget for consistent scrollable layout structure
+        self.base_widget = EditorBaseWidget(parent=self, analog=False)
+        self.base_widget.setup_scrollable_content()
+        container_layout = self.base_widget.get_container_layout()
 
-        self.partial_tab_widget.setStyleSheet(JDXiStyle.TABS_DRUMS)
-        scroll.setWidget(self.partial_tab_widget)
-        self.presets_parts_tab_widget.addTab(scroll, "Drum Kit Parts")
+        # Add partial_tab_widget to the container
+        self.partial_tab_widget.setStyleSheet(JDXi.UI.Style.TABS_DRUMS)
+        container_layout.addWidget(self.partial_tab_widget)
 
-        self.presets_parts_tab_widget.setStyleSheet(JDXiStyle.TABS_DRUMS)
-        self.partial_tab_widget.setStyleSheet(JDXiStyle.TABS_DRUMS)
+        # Add the base widget as the second tab (it contains the scroll area)
+        drum_kit_parts_icon = JDXi.UI.IconRegistry.get_icon(
+            "mdi.puzzle", color=JDXi.UI.Style.GREY
+        )
+        self.presets_parts_tab_widget.addTab(
+            self.base_widget, drum_kit_parts_icon, "Drum Kit Parts"
+        )
+
+        self.presets_parts_tab_widget.setStyleSheet(JDXi.UI.Style.TABS_DRUMS)
+        self.partial_tab_widget.setStyleSheet(JDXi.UI.Style.TABS_DRUMS)
         self._setup_partial_editors()
         # Create and add the common section
         self.common_section = DrumCommonSection(
@@ -178,9 +195,26 @@ class DrumCommonEditor(SynthEditor):
             create_parameter_combo_box=self._create_parameter_combo_box,
             create_parameter_slider=self._create_parameter_slider,
             midi_helper=self.midi_helper,
-            address=self.address
+            address=self.address,
         )
-        self.partial_tab_widget.addTab(self.common_section, "Common")
+        common_icon = JDXi.UI.IconRegistry.get_icon(
+            "mdi.cog-outline", color=JDXi.UI.Style.GREY
+        )
+        self.partial_tab_widget.addTab(self.common_section, common_icon, "Common")
+
+        # Create and add the mixer tab
+        from jdxi_editor.ui.editors.drum.mixer import DrumKitMixer
+
+        mixer_widget = DrumKitMixer(midi_helper=self.midi_helper, parent=self)
+        mixer_icon = JDXi.UI.IconRegistry.get_icon(
+            "ei.adjust-alt", color=JDXi.UI.Style.GREY
+        )
+        if mixer_icon is None or mixer_icon.isNull():
+            # Fallback icon if mixer icon not available
+            mixer_icon = JDXi.UI.IconRegistry.get_icon(
+                "ph.sliders-bold", color=JDXi.UI.Style.GREY
+            )
+        self.presets_parts_tab_widget.addTab(mixer_widget, mixer_icon, "Drum Kit Mixer")
 
         self.update_instrument_image()
         self.partial_tab_widget.currentChanged.connect(self.update_partial_number)
@@ -205,21 +239,26 @@ class DrumCommonEditor(SynthEditor):
         Setup the 36 partial editors
         """
         total = len(self.partial_mapping)
-        
+
         # Use splash screen if available, otherwise fall back to ProgressDialog
         splash = None
         splash_progress = None
         splash_status = None
-        if self.main_window and hasattr(self.main_window, 'splash') and self.main_window.splash:
+        if (
+            self.main_window
+            and hasattr(self.main_window, "splash")
+            and self.main_window.splash
+        ):
             splash = self.main_window.splash
             splash_progress = self.main_window.splash_progress_bar
             splash_status = self.main_window.splash_status_label
-        
+
         if splash and splash_progress and splash_status:
             # Update splash screen
             splash_status.setText(f"Loading drum kit parts ({total} parts)...")
             splash_progress.setValue(60)  # Start at 60% for drum kit loading
             from PySide6.QtWidgets import QApplication
+
             QApplication.processEvents()
         else:
             # Fall back to ProgressDialog if splash screen not available
@@ -229,7 +268,7 @@ class DrumCommonEditor(SynthEditor):
             progress_dialog.show()
 
         for count, (partial_name, partial_number) in enumerate(
-                self.partial_mapping.items(), 1
+            self.partial_mapping.items(), 1
         ):
             if splash and splash_progress and splash_status:
                 # Update splash screen
@@ -238,13 +277,14 @@ class DrumCommonEditor(SynthEditor):
                 progress_value = 60 + int((count / total) * 30)
                 splash_progress.setValue(progress_value)
                 from PySide6.QtWidgets import QApplication
+
                 QApplication.processEvents()
             elif not splash:
                 # Use ProgressDialog
                 progress_dialog.progress_bar.setFormat(
                     f"Loading {partial_name} ({count} of {total})"
                 )
-            
+
             editor = DrumPartialEditor(
                 midi_helper=self.midi_helper,
                 partial_number=partial_number,
@@ -264,6 +304,7 @@ class DrumCommonEditor(SynthEditor):
             splash_progress.setValue(90)
             splash_status.setText("Drum kit loaded successfully")
             from PySide6.QtWidgets import QApplication
+
             QApplication.processEvents()
 
     def update_partial_number(self, index: int):
@@ -279,7 +320,9 @@ class DrumCommonEditor(SynthEditor):
         except IndexError:
             log.message(f"Invalid partial index: {index}")
 
-    def _update_partial_controls(self, partial_no: int, sysex_data: dict, successes: list, failures: list) -> None:
+    def _update_partial_controls(
+        self, partial_no: int, sysex_data: dict, successes: list, failures: list
+    ) -> None:
         """
         apply partial ui updates
 
@@ -293,7 +336,9 @@ class DrumCommonEditor(SynthEditor):
         for param_name, param_value in sysex_data.items():
             param = DrumPartialParam.get_by_name(param_name)
             if param:
-                self._update_partial_slider(partial_no, param, param_value, successes, failures)
+                self._update_partial_slider(
+                    partial_no, param, param_value, successes, failures
+                )
             else:
                 failures.append(param_name)
 

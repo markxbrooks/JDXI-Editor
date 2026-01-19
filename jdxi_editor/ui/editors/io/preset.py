@@ -39,36 +39,37 @@ Dependencies:
 
 from typing import Optional
 
+from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import (
-    QVBoxLayout,
     QComboBox,
-    QPushButton,
-    QWidget,
-    QLabel,
+    QGroupBox,
     QHBoxLayout,
-    QLineEdit, QGroupBox,
+    QLabel,
+    QLineEdit,
+    QPushButton,
+    QVBoxLayout,
+    QWidget,
 )
-from PySide6.QtCore import Signal, Qt
-import qtawesome as qta
 
-from jdxi_editor.jdxi.preset.lists import JDXiPresetToneList
-from jdxi_editor.jdxi.synth.type import JDXiSynth
-from jdxi_editor.log.logger import Logger as log
-from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
-from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
-from jdxi_editor.midi.data.programs.digital import DIGITAL_PRESET_LIST
+from decologr import Decologr as log
+from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.log.midi_info import log_midi_info
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.midi.sysex.request.midi_requests import MidiRequests
-from jdxi_editor.ui.editors.helpers.program import (
-    get_program_by_id,
-    calculate_midi_values,
-)
+from jdxi_editor.synth.type import JDXiSynth
 from jdxi_editor.ui.editors.helpers.preset import get_preset_parameter_value
-from jdxi_editor.log.midi_info import log_midi_info
+from jdxi_editor.ui.editors.helpers.program import (
+    calculate_midi_values,
+    get_program_by_id,
+)
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
-from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.ui.preset.helper import JDXiPresetHelper
+from jdxi_editor.ui.preset.tone.lists import JDXiUIPreset
+from jdxi_editor.ui.widgets.editor.helper import (
+    create_group_with_layout,
+    create_layout_with_widgets,
+)
 
 
 class PresetEditor(BasicEditor):
@@ -129,7 +130,7 @@ class PresetEditor(BasicEditor):
         main_vlayout = QVBoxLayout()
         # self.setCentralWidget(center_widget)
         self.setLayout(main_vlayout)
-        self.setStyleSheet(JDXiStyle.EDITOR)
+        self.setStyleSheet(JDXi.UI.Style.EDITOR)
 
         self.title_label = QLabel("Presets:")
         self.title_label.setStyleSheet(
@@ -157,7 +158,9 @@ class PresetEditor(BasicEditor):
 
         self.digital_synth_1_icon = QLabel()
         self.digital_synth_1_icon.setPixmap(
-            qta.icon("msc.piano", color=JDXiStyle.FOREGROUND).pixmap(40, 40)
+            JDXi.UI.IconRegistry.get_icon_pixmap(
+                JDXi.UI.IconRegistry.PIANO, color=JDXi.UI.Style.FOREGROUND, size=40
+            )
         )
         self.digital_synth_1_hlayout.addWidget(self.digital_synth_1_icon)
 
@@ -167,7 +170,7 @@ class PresetEditor(BasicEditor):
             f"""
                 font-size: 16px;
                 font-weight: bold;
-                color: {JDXiStyle.ACCENT};
+                color: {JDXi.UI.Style.ACCENT};
             """
         )
         self.digital_synth_1_current_label = QLabel("Current Tone:")
@@ -176,7 +179,7 @@ class PresetEditor(BasicEditor):
             f"""
                 font-size: 16px;
                 font-weight: bold;
-                color: {JDXiStyle.ACCENT};
+                color: {JDXi.UI.Style.ACCENT};
             """
         )
         self.digital_synth_2_hlayout = QHBoxLayout()
@@ -184,7 +187,9 @@ class PresetEditor(BasicEditor):
 
         self.digital_synth_2_icon = QLabel()
         self.digital_synth_2_icon.setPixmap(
-            qta.icon("msc.piano", color=JDXiStyle.FOREGROUND).pixmap(40, 40)
+            JDXi.UI.IconRegistry.get_icon_pixmap(
+                JDXi.UI.IconRegistry.PIANO, color=JDXi.UI.Style.FOREGROUND, size=40
+            )
         )
         self.digital_synth_2_hlayout.addWidget(self.digital_synth_2_icon)
 
@@ -194,7 +199,7 @@ class PresetEditor(BasicEditor):
             f"""
                 font-size: 16px;
                 font-weight: bold;
-                color: {JDXiStyle.ACCENT};
+                color: {JDXi.UI.Style.ACCENT};
             """
         )
         self.digital_synth_2_current_label = QLabel("Current Tone:")
@@ -203,7 +208,7 @@ class PresetEditor(BasicEditor):
             f"""
                 font-size: 16px;
                 font-weight: bold;  
-                color: {JDXiStyle.ACCENT};
+                color: {JDXi.UI.Style.ACCENT};
             """
         )
         self.drum_kit_hlayout = QHBoxLayout()
@@ -211,7 +216,9 @@ class PresetEditor(BasicEditor):
 
         self.drum_kit_icon = QLabel()
         self.drum_kit_icon.setPixmap(
-            qta.icon("fa5s.drum", color=JDXiStyle.FOREGROUND).pixmap(40, 40)
+            JDXi.UI.IconRegistry.get_icon_pixmap(
+                JDXi.UI.IconRegistry.DRUM, color=JDXi.UI.Style.FOREGROUND, size=40
+            )
         )
         self.drum_kit_hlayout.addWidget(self.drum_kit_icon)
 
@@ -221,7 +228,7 @@ class PresetEditor(BasicEditor):
             f"""
                 font-size: 16px;
                 font-weight: bold;
-                color: {JDXiStyle.ACCENT};
+                color: {JDXi.UI.Style.ACCENT};
             """
         )
         self.drum_kit_current_label = QLabel("Current Tone:")
@@ -230,14 +237,16 @@ class PresetEditor(BasicEditor):
             f"""
                 font-size: 16px;
                 font-weight: bold;
-                color: {JDXiStyle.ACCENT};
+                color: {JDXi.UI.Style.ACCENT};
             """
         )
         self.analog_synth_hlayout = QHBoxLayout()
 
         self.analog_synth_icon = QLabel()
         self.analog_synth_icon.setPixmap(
-            qta.icon("msc.piano", color=JDXiStyle.FOREGROUND).pixmap(40, 40)
+            JDXi.UI.IconRegistry.get_icon(
+                JDXi.UI.IconRegistry.PIANO, color=JDXi.UI.Style.FOREGROUND
+            ).pixmap(40, 40)
         )
         self.analog_synth_hlayout.addWidget(self.analog_synth_icon)
 
@@ -249,7 +258,7 @@ class PresetEditor(BasicEditor):
             f"""
                 font-size: 16px;
                 font-weight: bold;
-                color: {JDXiStyle.ACCENT_ANALOG};
+                color: {JDXi.UI.Style.ACCENT_ANALOG};
             """
         )
         self.analog_synth_current_label = QLabel("Current Tone:")
@@ -258,12 +267,14 @@ class PresetEditor(BasicEditor):
             f"""
                 font-size: 16px;
                 font-weight: bold;
-                color: {JDXiStyle.ACCENT_ANALOG};
+                color: {JDXi.UI.Style.ACCENT_ANALOG};
             """
         )
         self._populate_presets()
         self.midi_helper.update_tone_name.connect(
-             lambda tone_name, synth_type: self.update_tone_name_for_synth(tone_name, synth_type)
+            lambda tone_name, synth_type: self.update_tone_name_for_synth(
+                tone_name, synth_type
+            )
         )
 
     def _create_preset_selection_group(self) -> QGroupBox:
@@ -272,10 +283,10 @@ class PresetEditor(BasicEditor):
 
         :return: QGroupBox
         """
-        # Program controls group
-        preset_group = QGroupBox("Load a program")
-        preset_vlayout = QVBoxLayout()
-        preset_group.setLayout(preset_vlayout)
+        # --- Program controls group
+        preset_group, preset_vlayout = create_group_with_layout(
+            group_name="Load a program", vertical=True
+        )
         # Synth type selection combo box
         self.digital_preset_type_combo = QComboBox()
         self.digital_preset_type_combo.addItems(
@@ -286,55 +297,61 @@ class PresetEditor(BasicEditor):
         )
         preset_vlayout.addWidget(self.digital_preset_type_combo)
         # Search Box
-        search_row = QHBoxLayout()
-        search_row.addWidget(QLabel("Search:"))
+
         self.search_box = QLineEdit()
-        self.search_box.setStyleSheet(JDXiStyle.QLINEEDIT)
+        search_row = create_layout_with_widgets([QLabel("Search:"), self.search_box])
+        self.search_box.setStyleSheet(JDXi.UI.Style.QLINEEDIT)
         self.search_box.setPlaceholderText("Search presets...")
         self.search_box.textChanged.connect(self._populate_presets)
         search_row.addWidget(self.search_box)
         preset_vlayout.addLayout(search_row)
         self.digital_preset_label = QLabel("Preset")
         preset_vlayout.addWidget(self.digital_preset_label)
-        # Program number selection combo box
+        # --- Program number selection combo box
         self.preset_combo_box = QComboBox()
         self.preset_combo_box.addItems([f"{i:02}" for i in range(1, 65)])
         self.preset_combo_box.currentIndexChanged.connect(self.on_preset_number_changed)
         preset_vlayout.addWidget(self.preset_combo_box)
         self.genre_label = QLabel("Category")
         preset_vlayout.addWidget(self.genre_label)
-        # Category selection combo box
+        # --- Category selection combo box
         self.category_combo_box = QComboBox()
         self.category_combo_box.addItem("No Category Selected")
-        categories = set(preset["category"] for preset in DIGITAL_PRESET_LIST)
+        categories = set(
+            preset["category"] for preset in JDXi.UI.Preset.Digital.PROGRAM_CHANGE
+        )
         self.category_combo_box.addItems(sorted(categories))
         self.category_combo_box.currentIndexChanged.connect(self.on_category_changed)
         preset_vlayout.addWidget(self.category_combo_box)
         # Load button
         self.load_button = QPushButton(
-            qta.icon("ph.folder-notch-open-fill", color=JDXiStyle.FOREGROUND),
+            JDXi.UI.IconRegistry.get_icon(
+                JDXi.UI.IconRegistry.FOLDER_NOTCH_OPEN, color=JDXi.UI.Style.FOREGROUND
+            ),
             "Load Preset",
         )
         self.load_button.clicked.connect(self.load_preset_by_program_change)
         preset_vlayout.addWidget(self.load_button)
         return preset_group
 
-    def on_preset_type_changed(self, index: int) -> None:  # pylint: disable=unused-argument
+    def on_preset_type_changed(
+        self, index: int
+    ) -> None:  # pylint: disable=unused-argument
         """Handle preset type selection change."""
         preset_type = self.digital_preset_type_combo.currentText()
         log.message(f"preset_type: {preset_type}")
         if preset_type == "Digital Synth 1":
             self.midi_channel = MidiChannel.DIGITAL_SYNTH_1
-            self.preset_list = JDXiPresetToneList.DIGITAL_PROGRAM_CHANGE
+            self.preset_list = JDXiUIPreset.Digital.PROGRAM_CHANGE
         elif preset_type == "Digital Synth 2":
             self.midi_channel = MidiChannel.DIGITAL_SYNTH_2
-            self.preset_list = JDXiPresetToneList.DIGITAL_PROGRAM_CHANGE
+            self.preset_list = JDXiUIPreset.Digital.PROGRAM_CHANGE
         elif preset_type == "Drums":
             self.midi_channel = MidiChannel.DRUM_KIT
-            self.preset_list = JDXiPresetToneList.DRUM_PROGRAM_CHANGE
+            self.preset_list = JDXiUIPreset.Drum.PROGRAM_CHANGE
         elif preset_type == "Analog Synth":
             self.midi_channel = MidiChannel.ANALOG_SYNTH
-            self.preset_list = JDXiPresetToneList.ANALOG_PROGRAM_CHANGE
+            self.preset_list = JDXiUIPreset.Analog.PROGRAM_CHANGE
         self._populate_presets()
         self.update_category_combo_box_categories()
 
@@ -351,9 +368,13 @@ class PresetEditor(BasicEditor):
         if label:
             label.setText(tone_name)
         else:
-            log.warning(f"synth type: {synth_type} not found in mapping. Cannot update tone name.")
+            log.warning(
+                f"synth type: {synth_type} not found in mapping. Cannot update tone name."
+            )
 
-    def load_preset_by_program_change(self, preset_index: int) -> None:  # pylint: disable=unused-argument
+    def load_preset_by_program_change(
+        self, preset_index: int
+    ) -> None:  # pylint: disable=unused-argument
         """
         Load a preset by program change.
 
@@ -403,13 +424,15 @@ class PresetEditor(BasicEditor):
 
         preset_type = self.digital_preset_type_combo.currentText()
         if preset_type in ["Digital Synth 1", "Digital Synth 2"]:
-            self.preset_list = DIGITAL_PRESET_LIST
+            self.preset_list = JDXi.UI.Preset.Digital.PROGRAM_CHANGE
         elif preset_type == "Drums":
-            self.preset_list = DRUM_KIT_LIST
+            self.preset_list = JDXi.UI.Preset.Drum.PROGRAM_CHANGE
         elif preset_type == "Analog Synth":
-            self.preset_list = ANALOG_PRESET_LIST
+            self.preset_list = JDXi.UI.Preset.Analog.PROGRAM_CHANGE
         else:
-            self.preset_list = DIGITAL_PRESET_LIST  # Default to digital synth 1
+            self.preset_list = (
+                JDXi.UI.Preset.Digital.PROGRAM_CHANGE
+            )  # Default to digital synth 1
         # self.update_category_combo_box_categories()
 
         selected_category = self.category_combo_box.currentText()

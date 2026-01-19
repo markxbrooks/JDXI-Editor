@@ -4,15 +4,17 @@ Common Section
 
 from typing import Callable
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel
-from PySide6.QtCore import Qt
-import qtawesome as qta
+from PySide6.QtWidgets import QHBoxLayout
 
-from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParam
+from jdxi_editor.midi.data.parameter.digital.name import DigitalDisplayName
+from jdxi_editor.midi.data.parameter.digital.option import DigitalDisplayOptions
+from jdxi_editor.ui.widgets.editor import IconType
+from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets
+from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 
 
-class DigitalCommonSection(QWidget):
+class DigitalCommonSection(SectionBaseWidget):
     def __init__(
         self,
         create_parameter_slider: Callable,
@@ -20,7 +22,6 @@ class DigitalCommonSection(QWidget):
         create_parameter_combo_box: Callable,
         controls: dict,
     ):
-        super().__init__()
         """
         Initialize the DigitalCommonSection
 
@@ -33,133 +34,116 @@ class DigitalCommonSection(QWidget):
         self._create_parameter_switch = create_parameter_switch
         self._create_parameter_combo_box = create_parameter_combo_box
         self.controls = controls
-        self.setStyleSheet(JDXiStyle.ADSR)
+
+        super().__init__(icon_type=IconType.GENERIC, analog=False)
         self.init_ui()
 
     def init_ui(self):
-        layout = QVBoxLayout()
-        self.setLayout(layout)
+        layout = self.get_layout()
 
-        # Icons
-        icons_hlayout = QHBoxLayout()
-        for icon_name in [
-            "ph.bell-ringing-bold",
-            "mdi.call-merge",
-            "mdi.account-voice",
-            "ri.voiceprint-fill",
-            "mdi.piano",
-        ]:
-            icon_label = QLabel()
-            icon = qta.icon(icon_name, color="#666666")
-            pixmap = icon.pixmap(24, 24)  # Using fixed icon size
-            icon_label.setPixmap(pixmap)
-            icon_label.setAlignment(Qt.AlignHCenter)
-            icons_hlayout.addWidget(icon_label)
-        layout.addLayout(icons_hlayout)
-
-        # Mono Switch
+        # --- Octave Switch
         self.octave_shift_switch = self._create_parameter_combo_box(
             DigitalCommonParam.OCTAVE_SHIFT,
-            "Octave shift",
-            ["-3", "-2", "-1", "0", "+1", "+2", "+3"],
-            [61, 62, 63, 64, 65, 66, 67],
+            DigitalDisplayName.OCTAVE_SHIFT,
+            options=DigitalDisplayOptions.OCTAVE_SHIFT,
+            values=[61, 62, 63, 64, 65, 66, 67],
         )
-        octave_shift_switch_row = QHBoxLayout()
-        octave_shift_switch_row.addStretch()
-        octave_shift_switch_row.addWidget(self.octave_shift_switch)
-        octave_shift_switch_row.addStretch()
+        octave_shift_switch_row = create_layout_with_widgets([self.octave_shift_switch])
         layout.addLayout(octave_shift_switch_row)
 
-        # Mono Switch
+        # --- Mono Switch
         self.mono_switch = self._create_parameter_switch(
-            DigitalCommonParam.MONO_SWITCH, "Mono", ["OFF", "ON"]
+            DigitalCommonParam.MONO_SWITCH,
+            DigitalDisplayName.MONO_SWITCH,
+            DigitalDisplayOptions.MONO_SWITCH,
         )
-        mono_switch_row = QHBoxLayout()
-        mono_switch_row.addStretch()
-        mono_switch_row.addWidget(self.mono_switch)
+        mono_switch_row = create_layout_with_widgets([self.mono_switch])
         layout.addLayout(mono_switch_row)
-        mono_switch_row.addStretch()
 
-        # Pitch Bend
+        # --- Pitch Bend
         self.pitch_bend_row = QHBoxLayout()
         self.pitch_bend_row.addStretch()
         self.pitch_bend_up = self._create_parameter_slider(
-            DigitalCommonParam.PITCH_BEND_UP, "Pitch Bend Up", vertical=True
+            DigitalCommonParam.PITCH_BEND_UP,
+            DigitalDisplayName.PITCH_BEND_UP,
+            vertical=True,
         )
         self.pitch_bend_down = self._create_parameter_slider(
-            DigitalCommonParam.PITCH_BEND_DOWN, "Pitch Bend Down", vertical=True
+            DigitalCommonParam.PITCH_BEND_DOWN,
+            DigitalDisplayName.PITCH_BEND_DOWN,
+            vertical=True,
         )
         self.tone_level = self._create_parameter_slider(
-            DigitalCommonParam.TONE_LEVEL, "Tone Level", vertical=True
+            DigitalCommonParam.TONE_LEVEL, DigitalDisplayName.TONE_LEVEL, vertical=True
         )
-
-        self.pitch_bend_row.addWidget(self.pitch_bend_up)
-        self.pitch_bend_row.addWidget(self.pitch_bend_down)
-        self.pitch_bend_row.addWidget(self.tone_level)
         self.portamento_time = self._create_parameter_slider(
-            DigitalCommonParam.PORTAMENTO_TIME, "Portamento Time", vertical=True
+            DigitalCommonParam.PORTAMENTO_TIME,
+            DigitalDisplayName.PORTAMENTO_TIME,
+            vertical=True,
         )
-        self.pitch_bend_row.addWidget(self.portamento_time)
-
-        # Analog Feel and Wave Shape
+        # --- Analog Feel and Wave Shape
         self.analog_feel = self._create_parameter_slider(
-            DigitalCommonParam.ANALOG_FEEL, "Analog Feel", vertical=True
+            DigitalCommonParam.ANALOG_FEEL,
+            DigitalDisplayName.ANALOG_FEEL,
+            vertical=True,
         )
         self.wave_shape = self._create_parameter_slider(
-            DigitalCommonParam.WAVE_SHAPE, "Wave Shape", vertical=True
+            DigitalCommonParam.WAVE_SHAPE, DigitalDisplayName.WAVE_SHAPE, vertical=True
         )
-        self.pitch_bend_row.addWidget(self.analog_feel)
-        self.pitch_bend_row.addWidget(self.wave_shape)
+        self.pitch_bend_row = create_layout_with_widgets(
+            [
+                self.pitch_bend_up,
+                self.pitch_bend_down,
+                self.tone_level,
+                self.portamento_time,
+                self.analog_feel,
+                self.wave_shape,
+            ]
+        )
         layout.addLayout(self.pitch_bend_row)
 
-        # Ring Modulator
+        # --- Ring Modulator
         self.ring_switch = self._create_parameter_switch(
-            DigitalCommonParam.RING_SWITCH, "Ring", ["OFF", "---", "ON"]
+            DigitalCommonParam.RING_SWITCH,
+            DigitalDisplayName.RING_SWITCH,
+            DigitalDisplayOptions.RING_SWITCH,
         )
-        ring_row = QHBoxLayout()
-        ring_row.addStretch()
-        ring_row.addWidget(self.ring_switch)
-        ring_row.addStretch()
+        ring_row = create_layout_with_widgets([self.ring_switch])
         layout.addLayout(ring_row)
 
-        # Unison Switch and Size
+        # --- Unison Switch and Size
         self.unison_switch = self._create_parameter_switch(
-            DigitalCommonParam.UNISON_SWITCH, "Unison", ["OFF", "ON"]
+            DigitalCommonParam.UNISON_SWITCH,
+            DigitalDisplayName.UNISON_SWITCH,
+            DigitalDisplayOptions.UNISON_SWITCH,
         )
         self.unison_size = self._create_parameter_switch(
             DigitalCommonParam.UNISON_SIZE,
-            "Size",
-            ["2 VOICE", "3 VOICE", "4 VOICE", "5 VOICE"],
+            DigitalDisplayName.UNISON_SIZE,
+            DigitalDisplayOptions.UNISON_SIZE,
         )
-        unison_row = QHBoxLayout()
-        unison_row.addStretch()
-        unison_row.addWidget(self.unison_switch)
-        unison_row.addWidget(self.unison_size)
-        unison_row.addStretch()
+        unison_row = create_layout_with_widgets([self.unison_switch, self.unison_size])
         layout.addLayout(unison_row)
 
-        # Portamento Switch
+        # --- Portamento Switch
         self.portamento_switch = self._create_parameter_switch(
-            DigitalCommonParam.PORTAMENTO_SWITCH, "Portamento", ["OFF", "ON"]
+            DigitalCommonParam.PORTAMENTO_SWITCH,
+            DigitalDisplayName.PORTAMENTO_SWITCH,
+            DigitalDisplayOptions.PORTAMENTO_SWITCH,
         )
-        portamento_row = QHBoxLayout()
-        portamento_row.addStretch()
-        portamento_row.addWidget(self.portamento_switch)
-        layout.addLayout(portamento_row)
-
-
-        # Portamento Mode and Legato
+        # --- Portamento Mode and Legato
         self.portamento_mode = self._create_parameter_switch(
             DigitalCommonParam.PORTAMENTO_MODE,
-            "Portamento Mode",
-            ["NORMAL", "LEGATO"],
+            DigitalDisplayName.PORTAMENTO_MODE,
+            DigitalDisplayOptions.PORTAMENTO_MODE,
         )
         self.legato_switch = self._create_parameter_switch(
-            DigitalCommonParam.LEGATO_SWITCH, "Legato", ["OFF", "ON"]
+            DigitalCommonParam.LEGATO_SWITCH,
+            DigitalDisplayName.LEGATO_SWITCH,
+            DigitalDisplayOptions.LEGATO_SWITCH,
         )
-
-        portamento_row.addWidget(self.legato_switch)
-        portamento_row.addStretch()
-
-        self.pitch_bend_row.addStretch()
+        portamento_row = create_layout_with_widgets(
+            [self.portamento_switch, self.legato_switch]
+        )
+        layout.addLayout(portamento_row)
         layout.addStretch()

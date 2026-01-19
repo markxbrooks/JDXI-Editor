@@ -1,30 +1,15 @@
 """
-utility functions 
+utility functions
 
 """
 
-from typing import List, Optional, Union, Iterable
+from typing import List, Optional, Union
 
 import mido
 
-from jdxi_editor.jdxi.midi.constant import MidiConstant
-from jdxi_editor.jdxi.sysex.offset import JDXiSysExOffset, JDXIProgramChangeOffset, JDXIControlChangeOffset
-
-from jdxi_editor.log.logger import Logger as log
-from jdxi_editor.midi.data.address.address import ModelID
-from jdxi_editor.midi.data.address.sysex import RolandID
-from jdxi_editor.jdxi.sysex.bitmask import BitMask
-from jdxi_editor.midi.sysex.device import DeviceInfo
-
-
-def format_midi_message_to_hex_string(message:  Iterable[int]) -> str:
-    """
-    Convert a list of MIDI byte values to a space-separated hex string.
-
-    :param message: Iterable[int]
-    :return: str A string like "F0 41 10 00 00 00 0E ... F7"
-    """
-    return " ".join([hex(x)[2:].upper().zfill(2) for x in message])
+from decologr import Decologr as log
+from picomidi.constant import Midi
+from picomidi.core.bitmask import BitMask
 
 
 def increment_if_lsb_exceeds_7bit(msb: int, lsb: int) -> int:
@@ -35,7 +20,7 @@ def increment_if_lsb_exceeds_7bit(msb: int, lsb: int) -> int:
     :param lsb: Least significant byte (int)
     :return: Adjusted MSB (int)
     """
-    if not (0 <= msb <= MidiConstant.VALUE_MAX_EIGHT_BIT):  # 255
+    if not (0 <= msb <= Midi.VALUE.MAX.EIGHT_BIT):  # 255
         raise ValueError("MSB must be an 8-bit value (0–255).")
 
     if lsb > BitMask.LOW_7_BITS:  # 127
@@ -53,7 +38,7 @@ def nibble_data(data: list[int]) -> list[int]:
     """
     nibbled_data = []
     for byte in data:
-        if byte > MidiConstant.VALUE_MAX_SEVEN_BIT:  # 127
+        if byte > Midi.VALUE.MAX.SEVEN_BIT:  # 127
             high_nibble = (byte >> 4) & BitMask.LOW_4_BITS
             low_nibble = byte & BitMask.LOW_4_BITS
             # Combine nibbles into valid data bytes (0-127)
@@ -84,44 +69,17 @@ def convert_to_mido_message(
     """
     Convert raw MIDI message content to a mido.Message object or a list of them.
 
-    :param message_content: List[int] byte list
-    :return: Optional[Union[mido.Message, List[mido.Message]] either a single mido message or a list of mido messages
-    """
-    if not message_content:
-        return None
-    status_byte = message_content[JDXIProgramChangeOffset.STATUS_BYTE]
-    # SysEx
-    try:
-        if status_byte == MidiConstant.START_OF_SYSEX and message_content[JDXiSysExOffset.SYSEX_END] == MidiConstant.END_OF_SYSEX:
-            sysex_data = nibble_data(message_content[JDXIProgramChangeOffset.PROGRAM_NUMBER:JDXIProgramChangeOffset.END])
-            if len(sysex_data) > 128:
-                nibbles = [sysex_data[i : i + 4] for i in range(0, len(sysex_data), 4)]
-                return [mido.Message("sysex", data=nibble) for nibble in nibbles]
-            return mido.Message("sysex", data=sysex_data)
-    except Exception as ex:
-        log.error(f"Error {ex} occurred")
-    # Program Change
-    try:
-        if MidiConstant.PROGRAM_CHANGE <= status_byte <= MidiConstant.PROGRAM_CHANGE_MAX and len(message_content) >= 2:
-            channel = status_byte & BitMask.LOW_4_BITS
-            program = message_content[JDXIProgramChangeOffset.PROGRAM_NUMBER]
-            return mido.Message("program_change", channel=channel, program=program)
-    except Exception as ex:
-        log.error(f"Error {ex} occurred")
-    # Control Change
-    try:
-        if MidiConstant.CONTROL_CHANGE <= status_byte <= MidiConstant.CONTROL_CHANGE_MAX and len(message_content) >= 3:
-            channel = status_byte & BitMask.LOW_4_BITS
-            control = message_content[JDXIControlChangeOffset.CONTROL]
-            value = message_content[JDXIControlChangeOffset.VALUE]
-            return mido.Message(
-                "control_change", channel=channel, control=control, value=value
-            )
-    except Exception as ex:
-        log.error(f"Error {ex} occurred")
+    .. deprecated::
+        This function is deprecated. Use JDXiSysExParser.convert_to_mido_message() instead.
+        This function is kept for backward compatibility and delegates to the parser.
 
-    log.message(f"Unhandled MIDI message: {message_content}")
-    return None
+    :param message_content: List[int] byte list
+    :return: Optional[Union[mido.Message, List[mido.Message]]] either a single mido message or a list of mido messages
+    """
+    from jdxi_editor.midi.sysex.parser.sysex import JDXiSysExParser
+
+    parser = JDXiSysExParser()
+    return parser.convert_to_mido_message(message_content)
 
 
 def mido_message_data_to_byte_list(message: mido.Message) -> bytes:
@@ -131,43 +89,32 @@ def mido_message_data_to_byte_list(message: mido.Message) -> bytes:
     :param message: mido.Message
     :return: bytes
     """
-    hex_string = " ".join(f"{byte:02X}" for byte in message.data)
+    # Safely convert to int for formatting
+    hex_string = " ".join(
+        f"{int(byte) if not isinstance(byte, int) else byte:02X}"
+        for byte in message.data
+    )
 
     message_byte_list = bytes(
-        [MidiConstant.START_OF_SYSEX] + [int(byte, 16) for byte in hex_string.split()] + [MidiConstant.END_OF_SYSEX]
+        [Midi.SYSEX.START]
+        + [int(byte, 16) for byte in hex_string.split()]
+        + [Midi.SYSEX.END]
     )
     return message_byte_list
 
 
 def handle_identity_request(message: mido.Message) -> dict:
     """
-    Handles an incoming Identity Request
+    Handles an incoming Identity Request/Reply message.
 
-    :param message: mido.Message incoming response to identity request
+    .. deprecated::
+        This function is deprecated. Use JDXiSysExParser.parse_identity_request() instead.
+        This function is kept for backward compatibility and delegates to the parser.
+
+    :param message: mido.Message incoming response to identity_request request
     :return: dict device details
     """
-    byte_list = mido_message_data_to_byte_list(message)
-    device_info = DeviceInfo.from_identity_reply(byte_list)
-    if device_info:
-        log.message(device_info.to_string)
-    device_id = device_info.device_id
-    manufacturer_id = device_info.manufacturer
-    version = message.data[JDXiSysExOffset.ADDRESS_UMB:JDXiSysExOffset.TONE_NAME_START]  #  Extract firmware version bytes
+    from jdxi_editor.midi.sysex.parser.sysex import JDXiSysExParser
 
-    version_str = ".".join(str(byte) for byte in version)
-    if device_id == ModelID.DEVICE_ID:
-        device_name = "JD-Xi"
-    else:
-        device_name = "Unknown"
-    if manufacturer_id[0] == RolandID.ROLAND_ID:
-        manufacturer_name = "Roland"
-    else:
-        manufacturer_name = "Unknown"
-    log.message(f"🏭 Manufacturer ID: \t{manufacturer_id}  \t{manufacturer_name}")
-    log.message(f"🎹 Device ID: \t\t\t{hex(device_id)} \t{device_name}")
-    log.message(f"🔄 Firmware Version: \t{version_str}")
-    return {
-        "device_id": device_id,
-        "manufacturer_id": manufacturer_id,
-        "firmware_version": version_str,
-    }
+    parser = JDXiSysExParser()
+    return parser.parse_identity_request(message)

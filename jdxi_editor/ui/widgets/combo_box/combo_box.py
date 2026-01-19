@@ -46,8 +46,8 @@ Methods
 
 """
 
-from PySide6.QtWidgets import QWidget, QHBoxLayout, QLabel, QComboBox
 from PySide6.QtCore import Signal, Slot
+from PySide6.QtWidgets import QComboBox, QHBoxLayout, QLabel, QWidget
 
 
 class ComboBox(QWidget):

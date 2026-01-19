@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QWidget, QSlider, QComboBox, QSpinBox
+from PySide6.QtWidgets import QComboBox, QSlider, QSpinBox, QWidget
 
 
 def set_widget_value_safely(widget: QWidget, value: int) -> None:

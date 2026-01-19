@@ -20,7 +20,8 @@ Functions:
 import base64
 import math
 from io import BytesIO
-from PIL import Image, ImageDraw, ImageColor
+
+from PIL import Image, ImageColor, ImageDraw
 
 
 def generate_waveform_icon(
@@ -82,6 +83,110 @@ def generate_waveform_icon(
             for i in range(num_points)
         ]
         draw.line(sine_wave, fill=color, width=th)
+
+    elif waveform == "lpf_filter":
+        """
+        Low-pass filter icon:
+        Full amplitude on the left, progressively attenuated to the right,
+        visually representing a low-pass filter's frequency response.
+        """
+        num_points = 80
+        points = []
+        for i in range(num_points):
+            t = i / (num_points - 1)  # 0 → 1 across X
+            x_pos = t * (x - 1)
+            # Sigmoid-style amplitude drop for LPF
+            # Left: full height, Right: approaches 0
+            # Shifted so the drop starts ~30% from left
+            y_pos = half_y + half_y * (1 - 1 / (1 + math.exp(-12 * (t - 0.3))))
+            # Flip vertically so 0 is bottom of canvas
+            y_pos = y - y_pos
+            points.append((x_pos, y_pos))
+        draw.line(points, fill=color, width=th)
+
+    elif waveform == "hpf_filter":
+        """
+        Low-pass filter icon:
+        Full amplitude on the left, progressively attenuated to the right,
+        visually representing a low-pass filter's frequency response.
+        """
+        num_points = 80
+        points = []
+
+        for i in range(num_points):
+            t = i / (num_points - 1)  # 0 → 1 across X
+            x_pos = t * (x - 1)
+
+            # Sigmoid-style amplitude drop for LPF
+            # Left: full height, Right: approaches 0
+            y_pos = half_y + half_y * (
+                1 - 1 / (1 + math.exp(-12 * (0.3 - t)))
+            )  # sigmoidal falloff
+            # Flip vertically so 0 is bottom of canvas
+            y_pos = y - y_pos
+
+            points.append((x_pos, y_pos))
+
+        draw.line(points, fill=color, width=th)
+
+    elif waveform == "bpf_filter":
+        """
+        Band-pass filter icon:
+        Low frequencies attenuated, middle frequencies pass, high frequencies attenuated.
+        Smooth bump in the middle representing the passband.
+        """
+        num_points = 80
+        points = []
+        for i in range(num_points):
+            t = i / (num_points - 1)  # 0 → 1 across X
+            x_pos = t * (x - 1)
+            # High-pass sigmoid: rises around 0.2
+            hp = 1 / (1 + math.exp(-12 * (t - 0.2)))
+            # Low-pass sigmoid: falls around 0.8
+            lp = 1 / (1 + math.exp(-12 * (0.8 - t)))
+            # Multiply for band-pass effect
+            amplitude = hp * lp
+            y_pos = half_y + half_y * amplitude
+            # Flip vertically so 0 is bottom
+            y_pos = y - y_pos
+            points.append((x_pos, y_pos))
+        draw.line(points, fill=color, width=th)
+
+    elif waveform == "bypass_filter":
+        """
+        Bypass filter icon:
+        A straight horizontal line representing no filtering - signal passes through unchanged.
+        The abrupt, flat line visually represents bypass mode.
+        """
+        # Draw a straight horizontal line at the middle (representing full signal, no attenuation)
+        draw.line(
+            [(0, half_y), (x - 1, half_y)],
+            fill=color,
+            width=th,
+        )
+
+    elif waveform == "filter_sine":
+        """
+        Low-pass filter icon:
+        A waveform whose amplitude decreases from left to right,
+        visually representing high-frequency attenuation.
+        """
+        num_points = 60
+        points = []
+
+        for i in range(num_points):
+            t = i / (num_points - 1)  # 0 → 1 across X
+            x_pos = t * (x - 1)
+
+            # Amplitude rolls off toward the right (LPF effect)
+            amplitude = half_y * (1.0 - 0.75 * t)
+
+            # Slightly flattened sine to feel more "filtered"
+            y_pos = half_y + math.sin(t * 2.5 * math.pi) * amplitude * 0.9
+
+            points.append((x_pos, y_pos))
+
+        draw.line(points, fill=color, width=th)
     elif waveform == "noise":
         import random
 

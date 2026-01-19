@@ -9,12 +9,11 @@ Features:
 - Custom styling for default, checked, and hover states.
 """
 
-
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QWidget
-from jdxi_editor.midi.wave.form import Waveform
-from jdxi_editor.jdxi.style import JDXiStyle
 
+from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.midi.wave.form import Waveform
 from jdxi_editor.ui.widgets.button.waveform.waveform import WaveformButton
 
 
@@ -36,4 +35,4 @@ class AnalogWaveformButton(WaveformButton):
 
         # Style
         self.setMinimumWidth(60)
-        self.setStyleSheet(JDXiStyle.BUTTON_WAVEFORM_ANALOG)
+        self.setStyleSheet(JDXi.UI.Style.BUTTON_WAVEFORM_ANALOG)

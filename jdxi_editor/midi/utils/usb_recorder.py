@@ -1,7 +1,9 @@
-import pyaudio
 import wave
+
+import pyaudio
+
 # import logging as log
-from jdxi_editor.log.logger import Logger as log
+from decologr import Decologr as log
 
 
 class USBRecorder:
@@ -9,11 +11,13 @@ class USBRecorder:
     A convenient class for recording audio from a USB input device.
     """
 
-    def __init__(self,
-                 input_device_index: int = None,
-                 channels: int = 1,
-                 rate: int = 44100,
-                 frames_per_buffer: int = 1024):
+    def __init__(
+        self,
+        input_device_index: int = None,
+        channels: int = 1,
+        rate: int = 44100,
+        frames_per_buffer: int = 1024,
+    ):
         """
         Initializes the recorder with the specified settings.
         """
@@ -22,20 +26,19 @@ class USBRecorder:
         self.channels = channels
         self.rate = rate
         self.frames_per_buffer = frames_per_buffer
-        self.file_save_recording = True
+        self.file_save_recording = False  # Default to false
         self.usb_port_input_device_index = None
-        self.usb_recording_rates = {
-            "16bit": pyaudio.paInt16,
-            "32bit": pyaudio.paInt32
-        }
+        self.usb_recording_rates = {"16bit": pyaudio.paInt16, "32bit": pyaudio.paInt32}
 
     def list_devices(self):
-        """ Prints a list of available audio input devices. """
+        """Prints a list of available audio input devices."""
         log.message("Available audio input devices:")
         device_list = []
         for i in range(self.p.get_device_count()):
             info = self.p.get_device_info_by_index(i)
-            device_info = f"{i}: {info['name']} (input channels: {info['maxInputChannels']})"
+            device_info = (
+                f"{i}: {info['name']} (input channels: {info['maxInputChannels']})"
+            )
             log.info(device_info)
             device_list.append(device_info)
         return device_list
@@ -44,19 +47,18 @@ class USBRecorder:
         """
         Records audio for the specified duration and saves to a .wav file.
         """
-        rates = {
-            "16bit": pyaudio.paInt16,
-            "32bit": pyaudio.paInt32
-        }
+        rates = {"16bit": pyaudio.paInt16, "32bit": pyaudio.paInt32}
         rate = rates.get(rate, pyaudio.paInt16)
         print("Recording...")
         try:
-            stream = self.p.open(format=rate,
-                                 channels=1, # self.channels,
-                                 rate=self.rate,
-                                 input=True,
-                                 input_device_index=self.input_device_index,
-                                 frames_per_buffer=self.frames_per_buffer)
+            stream = self.p.open(
+                format=rate,
+                channels=1,  # self.channels,
+                rate=self.rate,
+                input=True,
+                input_device_index=self.input_device_index,
+                frames_per_buffer=self.frames_per_buffer,
+            )
         except Exception as e:
             print(f"Unable to open stream: {e}")
             return
@@ -83,12 +85,12 @@ class USBRecorder:
             f.setnchannels(self.channels)
             f.setsampwidth(self.p.get_sample_size(pyaudio.paInt16))
             f.setframerate(self.rate)
-            f.writeframes(b''.join(frames))
+            f.writeframes(b"".join(frames))
 
         print(f"File successfully saved to {output_file}")
 
     def close(self):
-        """ Closes the PyAudio instance. """
+        """Closes the PyAudio instance."""
         self.p.terminate()
 
     def stop_recording(self):
@@ -109,5 +111,5 @@ if __name__ == "__main__":
     recorder = USBRecorder()
     recorder.list_devices()
     recorder.input_device_index = 7  # Change to your preferred device index
-    recorder.record(duration=270, output_file='new_order_ceremony.wav')
+    recorder.record(duration=270, output_file="new_order_ceremony.wav")
     recorder.close()

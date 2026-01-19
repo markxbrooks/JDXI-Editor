@@ -24,28 +24,28 @@ from typing import Dict, Optional
 import mido
 from PySide6.QtWidgets import QWidget
 
-from jdxi_editor.jdxi.synth.factory import create_synth_data
-from jdxi_editor.jdxi.synth.type import JDXiSynth
-from jdxi_editor.log.logger import Logger as log
+from decologr import Decologr as log
 from jdxi_editor.log.slider_parameter import log_slider_parameters
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
-from jdxi_editor.midi.data.parameter.synth import AddressParameter
-from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.io.delay import send_with_delay
+from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
+from jdxi_editor.synth.factory import create_synth_data
+from jdxi_editor.synth.type import JDXiSynth
 from jdxi_editor.ui.widgets.combo_box.combo_box import ComboBox
 from jdxi_editor.ui.widgets.slider import Slider
 from jdxi_editor.ui.widgets.spin_box.spin_box import SpinBox
 from jdxi_editor.ui.widgets.switch.switch import Switch
 from jdxi_editor.ui.windows.patch.name_editor import PatchNameEditor
+from picomidi.sysex.parameter.address import AddressParameter
 
 
 class SynthBase(QWidget):
     """base class for all synth editors"""
 
-    def __init__(self,
-                 midi_helper: Optional[MidiIOHelper] = None,
-                 parent: QWidget = None):
+    def __init__(
+        self, midi_helper: Optional[MidiIOHelper] = None, parent: QWidget = None
+    ):
         """
         Initialize the SynthBase editor with MIDI helper and parent widget.
 
@@ -55,11 +55,13 @@ class SynthBase(QWidget):
         super().__init__(parent)
         self.preset_type = None
         self.parent = parent
-        # Store all Tone/Preset names for access by Digital Displays
-        self.tone_names = {JDXiSynth.DIGITAL_SYNTH_1: "",
-                           JDXiSynth.DIGITAL_SYNTH_2: "",
-                           JDXiSynth.ANALOG_SYNTH: "",
-                           JDXiSynth.DRUM_KIT: ""}
+        # --- Store all Tone/Preset names for access by Digital Displays
+        self.tone_names = {
+            JDXiSynth.DIGITAL_SYNTH_1: "",
+            JDXiSynth.DIGITAL_SYNTH_2: "",
+            JDXiSynth.ANALOG_SYNTH: "",
+            JDXiSynth.DRUM_KIT: "",
+        }
         self.partial_editors = {}
         self.sysex_data = None
         self.address = None
@@ -84,6 +86,92 @@ class SynthBase(QWidget):
         """
         self._midi_helper = helper
 
+    def _get_address_from_hierarchy(
+        self, parameter_cls: AddressParameter = None
+    ) -> Optional[RolandSysExAddress]:
+        """
+        Get address from self, parent, or parent.parent if available.
+        If no address is found and we're dealing with a ProgramEditor or ProgramCommonParam,
+        create a program address.
+
+        :param parameter_cls: Optional[AddressParameter] Parameter class hint (e.g., ProgramCommonParam)
+        :return: Optional[RolandSysExAddress] The address if found, None otherwise
+        """
+        # Check if we need a program address based on parameter class or editor type
+        needs_program_address = False
+        is_program_editor = (
+            hasattr(self, "__class__") and "ProgramEditor" in self.__class__.__name__
+        )
+
+        if parameter_cls is not None:
+            from jdxi_editor.midi.data.parameter.program.common import (
+                ProgramCommonParam,
+            )
+
+            if parameter_cls == ProgramCommonParam or (
+                hasattr(parameter_cls, "__name__")
+                and "ProgramCommonParam" in parameter_cls.__name__
+            ):
+                needs_program_address = True
+
+        # If we're in a ProgramEditor or using ProgramCommonParam, we need a program address
+        needs_program_address = needs_program_address or is_program_editor
+
+        # Try self first
+        if hasattr(self, "address") and self.address is not None:
+            if isinstance(self.address, RolandSysExAddress) and hasattr(
+                self.address, "add_offset"
+            ):
+                return self.address
+
+        # If self is ProgramEditor and has no address, create one
+        if is_program_editor:
+            from jdxi_editor.midi.data.address.program import ProgramCommonAddress
+
+            return ProgramCommonAddress()
+
+        # Try parent
+        if hasattr(self, "parent") and self.parent is not None:
+            if hasattr(self.parent, "address") and self.parent.address is not None:
+                if isinstance(self.parent.address, RolandSysExAddress) and hasattr(
+                    self.parent.address, "add_offset"
+                ):
+                    return self.parent.address
+            # If parent is ProgramEditor and has no address, create one
+            if (
+                hasattr(self.parent, "__class__")
+                and "ProgramEditor" in self.parent.__class__.__name__
+            ):
+                from jdxi_editor.midi.data.address.program import ProgramCommonAddress
+
+                return ProgramCommonAddress()
+
+        # Try parent.parent
+        if (
+            hasattr(self, "parent")
+            and self.parent is not None
+            and hasattr(self.parent, "parent")
+            and self.parent.parent is not None
+        ):
+            if (
+                hasattr(self.parent.parent, "address")
+                and self.parent.parent.address is not None
+            ):
+                if isinstance(
+                    self.parent.parent.address, RolandSysExAddress
+                ) and hasattr(self.parent.parent.address, "add_offset"):
+                    return self.parent.parent.address
+            # If parent.parent is ProgramEditor and has no address, create one
+            if (
+                hasattr(self.parent.parent, "__class__")
+                and "ProgramEditor" in self.parent.parent.__class__.__name__
+            ):
+                from jdxi_editor.midi.data.address.program import ProgramCommonAddress
+
+                return ProgramCommonAddress()
+
+        return None
+
     def send_raw_message(self, message: bytes) -> bool:
         """
         Send a raw MIDI message using the MIDI helper.
@@ -102,16 +190,33 @@ class SynthBase(QWidget):
 
         :return: None
         """
-        tone_name = self.tone_names[self.preset_type]
+        if not hasattr(self, "synth_data") or self.synth_data is None:
+            log.error("Cannot edit tone name: synth_data is not initialized")
+            return
+        if self.preset_type is None:
+            log.error("Cannot edit tone name: preset_type is not set")
+            return
+        # Try to get address from hierarchy (self, parent, or parent.parent)
+        # We'll determine parameter_cls later, so pass None for now
+        address = self._get_address_from_hierarchy(parameter_cls=None)
+        if address is None:
+            log.error(
+                "Cannot edit tone name: address is not initialized in self, parent, or parent.parent"
+            )
+            return
+        tone_name = self.tone_names.get(self.preset_type, "")
         tone_name_dialog = PatchNameEditor(current_name=tone_name)
         if hasattr(self, "partial_parameters"):
             parameter_cls = self.synth_data.partial_parameters
         else:
             parameter_cls = self.synth_data.common_parameters
+        if parameter_cls is None:
+            log.error("Cannot edit tone name: parameter class is not available")
+            return
         if tone_name_dialog.exec():  # If the user clicks Save
             sysex_string = tone_name_dialog.get_sysex_string()
             log.message(f"SysEx string: {sysex_string}")
-            self.send_tone_name(parameter_cls, sysex_string)
+            self.send_tone_name(parameter_cls, sysex_string, address=address)
             self.data_request()
 
     def data_request(self, channel=None, program=None):
@@ -141,28 +246,53 @@ class SynthBase(QWidget):
             self.blockSignals(True)
             self.data_request()
             self.blockSignals(False)
-          
-    def send_tone_name(self, parameter_cls: AddressParameter, tone_name: str) -> None:
+
+    def send_tone_name(
+        self,
+        parameter_cls: AddressParameter,
+        tone_name: str,
+        address: RolandSysExAddress = None,
+    ) -> None:
         """
         send_tone_name
-        
+
+        :param parameter_cls: AddressParameter Parameter class containing TONE_NAME parameters
         :param tone_name: str Name of the Tone/preset
-        :param parameter_cls: AddressParameter
+        :param address: Optional[RolandSysExAddress] Address to use, or None to get from hierarchy
         Send the characters of the tone name to SysEx parameters.
         """
-        # Ensure the tone name is exactly 12 characters (pad with spaces if shorter)
+        # --- Get address from hierarchy if not provided
+        if address is None:
+            address = self._get_address_from_hierarchy(parameter_cls=parameter_cls)
+        if address is None:
+            log.error(
+                "Cannot send tone name: address is not available in self, parent, or parent.parent"
+            )
+            return
+
+        # --- Ensure the tone name is exactly 12 characters (pad with spaces if shorter)
         tone_name = tone_name.ljust(12)[:12]
 
-        # Iterate over characters and send them to corresponding parameters
+        # --- Iterate over characters and send them to corresponding parameters
         for i, char in enumerate(tone_name):
             ascii_value = ord(char)
-            param = getattr(parameter_cls, f"TONE_NAME_{i + 1}")
-            self.send_midi_parameter(param, ascii_value)
+            try:
+                param = getattr(parameter_cls, f"TONE_NAME_{i + 1}")
+                if param is None:
+                    log.warning(
+                        f"TONE_NAME_{i + 1} not found in {parameter_cls.__name__}, skipping"
+                    )
+                    continue
+                self.send_midi_parameter(param, ascii_value, address=address)
+            except AttributeError:
+                log.warning(
+                    f"TONE_NAME_{i + 1} not found in {parameter_cls.__name__}, skipping"
+                )
+                continue
 
-    def send_midi_parameter(self,
-                            param: AddressParameter,
-                            value: int,
-                            address: RolandSysExAddress = None) -> bool:
+    def send_midi_parameter(
+        self, param: AddressParameter, value: int, address: RolandSysExAddress = None
+    ) -> bool:
         """
         Send MIDI parameter with error handling
 
@@ -172,12 +302,64 @@ class SynthBase(QWidget):
         :return: bool True on success, False otherwise
         """
         if not address:
-            address = self.address
+            # Try to get address from hierarchy (self, parent, or parent.parent)
+            address = self._get_address_from_hierarchy(parameter_cls=None)
+        if address is None:
+            log.error(
+                f"Cannot send MIDI parameter {param.name if param else 'Unknown'}: "
+                f"address is not available in self, parent, or parent.parent"
+            )
+            return False
+        # Validate that address is a proper RolandSysExAddress instance with required methods
+        if not isinstance(address, RolandSysExAddress):
+            log.error(
+                f"Cannot send MIDI parameter {param.name if param else 'Unknown'}: "
+                f"address is not a RolandSysExAddress instance (got {type(address)})"
+            )
+            return False
+        if not hasattr(address, "add_offset"):
+            log.error(
+                f"Cannot send MIDI parameter {param.name if param else 'Unknown'}: "
+                f"address does not have add_offset method"
+            )
+            return False
+        if param is None:
+            log.error("Cannot send MIDI parameter: parameter is None")
+            return False
         try:
+            # --- Ensure value is an integer (handle enums, strings, floats)
+            def safe_int(val):
+                # --- Check for enums FIRST (IntEnum inherits from int, so isinstance check must come after)
+                if hasattr(val, "value") and not isinstance(
+                    val, type
+                ):  # --- Handle enums (but not enum classes)
+                    enum_val = val.value
+                    # --- Ensure we get the actual integer value, not the enum
+                    if isinstance(enum_val, int) and not hasattr(enum_val, "value"):
+                        return enum_val
+                    # --- If enum_val is still an enum, recurse
+                    if hasattr(enum_val, "value"):
+                        return safe_int(enum_val)
+                    try:
+                        return int(float(enum_val))  # Handle string enum values
+                    except (ValueError, TypeError):
+                        log.error(
+                            f"Cannot convert enum value {enum_val} to int for parameter {param.name}"
+                        )
+                        return 0
+                if isinstance(val, int):
+                    return val
+                try:
+                    return int(float(val))  # --- Handle floats and strings
+                except (ValueError, TypeError):
+                    log.error(
+                        f"Cannot convert value {val} to int for parameter {param.name}"
+                    )
+                    return 0
+
+            midi_value = safe_int(value)
             sysex_message = self.sysex_composer.compose_message(
-                address=address,
-                param=param,
-                value=value
+                address=address, param=param, value=midi_value
             )
             result = self._midi_helper.send_midi_message(sysex_message)
             return bool(result)
@@ -194,32 +376,36 @@ class SynthBase(QWidget):
         try:
             controls_data = {}
             for param, widget in self.controls.items():
-                # Get value from widget - all custom widgets have a value() method
-                # (Slider, ComboBox, SpinBox, Switch all implement value())
-                if hasattr(widget, 'value'):
+                # --- Get value from widget - all custom widgets have a value() method
+                # --- (Slider, ComboBox, SpinBox, Switch all implement value())
+                if hasattr(widget, "value"):
                     controls_data[param.name] = widget.value()
-                elif hasattr(widget, 'isChecked') and hasattr(widget, 'waveform'):
-                    # Handle waveform buttons (AnalogWaveformButton, etc.)
-                    # Check if this button is checked, and if so, use its waveform value
+                elif hasattr(widget, "isChecked") and hasattr(widget, "waveform"):
+                    # --- Handle waveform buttons (AnalogWaveformButton, etc.)
+                    # --- Check if this button is checked, and if so, use its waveform value
                     if widget.isChecked():
-                        controls_data[param.name] = widget.waveform.value
-                    # If not checked, don't add it - the checked button will be found by the editor's override
-                elif hasattr(widget, 'isChecked'):
-                    # QPushButton or other checkable widgets
+                        controls_data[param.name] = widget.waveform.STATUS
+                    # --- If not checked, don't add it - the checked button will be found by the editor's override
+                elif hasattr(widget, "isChecked"):
+                    # --- QPushButton or other checkable widgets
                     controls_data[param.name] = 1 if widget.isChecked() else 0
                 else:
                     # Fallback for unexpected widget types
-                    log.warning(f"Widget for {param.name} has no value() method: {type(widget)}")
+                    log.warning(
+                        f"Widget for {param.name} has no value() method: {type(widget)}"
+                    )
                     controls_data[param.name] = 0
             return controls_data
         except Exception as ex:
             log.error(f"Failed to get controls: {ex}")
             return {}
 
-    def _on_parameter_changed(self,
-                              param: AddressParameter,
-                              display_value: int,
-                              address: RolandSysExAddress = None) -> None:
+    def _on_parameter_changed(
+        self,
+        param: AddressParameter,
+        display_value: int,
+        address: RolandSysExAddress = None,
+    ) -> None:
         """
         Handle parameter change event, convert display value to MIDI value,
 
@@ -228,7 +414,7 @@ class SynthBase(QWidget):
         :return: None
         """
         try:
-            # Send MIDI message
+            # --- Send MIDI message
             if not address:
                 address = self.address
             if not self.send_midi_parameter(param, display_value, address):
@@ -237,13 +423,14 @@ class SynthBase(QWidget):
             log.error(f"Error handling parameter {param.name}: {ex}")
 
     def _create_parameter_slider(
-            self,
-            param: AddressParameter,
-            label: str,
-            vertical: bool = False,
-            initial_value: Optional[int] = 0,
-            address: RolandSysExAddress = None,
-            show_value_label: bool = True) -> Slider:
+        self,
+        param: AddressParameter,
+        label: str,
+        vertical: bool = False,
+        initial_value: Optional[int] = 0,
+        address: RolandSysExAddress = None,
+        show_value_label: bool = True,
+    ) -> Slider:
         """
         Create a slider for an address parameter with proper display conversion.
 
@@ -273,7 +460,6 @@ class SynthBase(QWidget):
             show_value_label=show_value_label,
             is_bipolar=param.is_bipolar,
             tooltip=tooltip,
-
         )
         if not address:
             address = self.address
@@ -282,27 +468,49 @@ class SynthBase(QWidget):
             slider.setCenterMark(0)
             slider.setTickPosition(Slider.TickPosition.TicksBothSides)
             slider.setTickInterval((display_max - display_min) // 4)
-        slider.valueChanged.connect(lambda v: self._on_parameter_changed(param, v, address))
+        slider.valueChanged.connect(
+            lambda v: self._on_parameter_changed(param, v, address)
+        )
         self.controls[param] = slider
         return slider
 
     def _create_parameter_combo_box(
-            self,
-            param: AddressParameter,
-            label: str = None,
-            options: list = None,
-            values: list = None,
-            show_label: bool = True) -> ComboBox:
+        self,
+        param: AddressParameter,
+        label: str = None,
+        options: list = None,
+        values: list = None,
+        show_label: bool = True,
+    ) -> ComboBox:
         """
         Create a combo box for an address parameter with options and values.
 
         :param param: AddressParameter
         :param label: str label for the combo box
         :param options: list of options to display in the combo box
-        :param values: list of values corresponding to the options
+        :param values: list of values corresponding to the options (or options if options is None)
         :param show_label: bool whether to show the label
         :return: ComboBox
         """
+        # Handle case where values is provided but options is None
+        # --- If values is a list of strings, treat it as options and generate numeric values
+        if options is None and values is not None:
+            if isinstance(values, list) and len(values) > 0:
+                # Check if values contains strings (likely options)
+                if isinstance(values[0], str):
+                    options = values
+                    # Generate numeric values from indices
+                    values = list(range(len(options)))
+                else:
+                    # Values are numeric, generate options from values
+                    options = [str(v) for v in values]
+
+        # --- Ensure options is not None (provide empty list as fallback)
+        if options is None:
+            options = []
+            if values is None:
+                values = []
+
         if hasattr(param, "get_display_value"):
             display_min, display_max = param.get_display_value()
         else:
@@ -311,19 +519,20 @@ class SynthBase(QWidget):
             tooltip = param.get_tooltip()
         else:
             tooltip = f"{param.name} ({display_min} to {display_max})"
-        combo_box = ComboBox(label=label,
-                             options=options,
-                             values=values,
-                             show_label=show_label,
-                             tooltip=tooltip)
+        combo_box = ComboBox(
+            label=label,
+            options=options,
+            values=values,
+            show_label=show_label,
+            tooltip=tooltip,
+        )
         combo_box.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))
         self.controls[param] = combo_box
         return combo_box
 
     def _create_parameter_spin_box(
-            self,
-            param: AddressParameter,
-            label: str = None) -> SpinBox:
+        self, param: AddressParameter, label: str = None
+    ) -> SpinBox:
         """
         Create address spin box for address parameter with proper display conversion
 
@@ -339,21 +548,18 @@ class SynthBase(QWidget):
             tooltip = param.get_tooltip()
         else:
             tooltip = f"{param.name} ({display_min} to {display_max})"
-        spin_box = SpinBox(label=label,
-                           low=display_min,
-                           high=display_max,
-                           tooltip=tooltip)
-        # Connect value changed signal
+        spin_box = SpinBox(
+            label=label, low=display_min, high=display_max, tooltip=tooltip
+        )
+        # --- Connect value changed signal
         spin_box.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))
-        # Store control reference
+        # --- Store control reference
         self.controls[param] = spin_box
         return spin_box
 
     def _create_parameter_switch(
-            self,
-            param: AddressParameter,
-            label: str,
-            values: list[str]) -> Switch:
+        self, param: AddressParameter, label: str, values: list[str]
+    ) -> Switch:
         """
         Create a switch for an address parameter with specified label and values.
 
@@ -370,19 +576,20 @@ class SynthBase(QWidget):
             tooltip = param.get_tooltip()
         else:
             tooltip = f"{param.name} ({display_min} to {display_max})"
-        switch = Switch(label=label,
-                        values=values,
-                        tooltip=tooltip)
+        switch = Switch(label=label, values=values, tooltip=tooltip)
         switch.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))
         self.controls[param] = switch
         return switch
 
-    def _init_synth_data(self, synth_type: JDXiSynth = JDXiSynth.DIGITAL_SYNTH_1,
-                         partial_number: Optional[int] = 0):
+    def _init_synth_data(
+        self,
+        synth_type: str = JDXiSynth.DIGITAL_SYNTH_1,
+        partial_number: Optional[int] = 0,
+    ):
         """Initialize synth-specific data."""
-        from jdxi_editor.jdxi.synth.factory import create_synth_data
-        self.synth_data = create_synth_data(synth_type,
-                                            partial_number=partial_number)
+        from jdxi_editor.synth.factory import create_synth_data
+
+        self.synth_data = create_synth_data(synth_type, partial_number=partial_number)
         # Dynamically assign attributes
         for attr in [
             "address",
@@ -394,18 +601,19 @@ class SynthBase(QWidget):
             "midi_requests",
             "midi_channel",
             "common_parameters",
-            "partial_parameters"
+            "partial_parameters",
         ]:
             if hasattr(self.synth_data, attr):
                 setattr(self, attr, getattr(self.synth_data, attr))
 
     def _update_slider(
-            self,
-            param: AddressParameter,
-            midi_value: int,
-            successes: list = None,
-            failures: list = None,
-            slider: QWidget = None) -> None:
+        self,
+        param: AddressParameter,
+        midi_value: int,
+        successes: list = None,
+        failures: list = None,
+        slider: QWidget = None,
+    ) -> None:
         """
         Update slider based on parameter and value.
 
@@ -422,9 +630,7 @@ class SynthBase(QWidget):
                 slider_value = param.convert_from_midi(midi_value)
             else:
                 slider_value = midi_value
-            log_slider_parameters(
-                self.address, param, midi_value, slider_value
-            )
+            log_slider_parameters(self.address, param, midi_value, slider_value)
             slider.blockSignals(True)
             slider.setValue(midi_value)
             slider.blockSignals(False)
@@ -433,11 +639,11 @@ class SynthBase(QWidget):
             failures.append(param.name)
 
     def _update_switch(
-            self,
-            param: AddressParameter,
-            midi_value: int,
-            successes: list = None,
-            failures: list = None,
+        self,
+        param: AddressParameter,
+        midi_value: int,
+        successes: list = None,
+        failures: list = None,
     ) -> None:
         """
         Update switch based on parameter and value.
@@ -462,16 +668,18 @@ class SynthBase(QWidget):
             else:
                 failures.append(param.name)
         except Exception as ex:
-            log.error(f"Error {ex} occurred setting switch {param.name} to {midi_value}")
+            log.error(
+                f"Error {ex} occurred setting switch {param.name} to {midi_value}"
+            )
             failures.append(param.name)
 
     def _update_partial_slider(
-            self,
-            partial_no: int,
-            param: AddressParameter,
-            value: int,
-            successes: list = None,
-            failures: list = None,
+        self,
+        partial_no: int,
+        param: AddressParameter,
+        value: int,
+        successes: list = None,
+        failures: list = None,
     ) -> None:
         """
         Update the slider for a specific partial based on the parameter and value.
@@ -492,9 +700,7 @@ class SynthBase(QWidget):
         synth_data = create_synth_data(self.synth_data.preset_type, partial_no)
         self.address.lmb = synth_data.lmb
         slider_value = param.convert_from_midi(value)
-        log_slider_parameters(
-            self.address, param, value, slider_value
-        )
+        log_slider_parameters(self.address, param, value, slider_value)
         slider.blockSignals(True)
         slider.setValue(slider_value)
         slider.blockSignals(False)

@@ -1,4 +1,8 @@
-from jdxi_editor.log.logger import Logger as log
+"""
+Log Debug info
+"""
+
+from decologr import Decologr as log
 
 
 def log_debug_info(successes: list[str], failures: list[str]) -> None:

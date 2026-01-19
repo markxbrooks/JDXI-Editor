@@ -1,16 +1,18 @@
 """
-    Digital Tone Modify Section
+Digital Tone Modify Section
 """
 
 from typing import Callable
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel
 
-from jdxi_editor.jdxi.style import JDXiStyle
+from PySide6.QtWidgets import QHBoxLayout
+
 from jdxi_editor.midi.data.lfo.lfo import LFOSyncNote
 from jdxi_editor.midi.data.parameter.digital.modify import DigitalModifyParam
+from jdxi_editor.ui.widgets.editor import IconType
+from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 
 
-class DigitalToneModifySection(QWidget):
+class DigitalToneModifySection(SectionBaseWidget):
     def __init__(
         self,
         create_parameter_slider: Callable,
@@ -26,39 +28,42 @@ class DigitalToneModifySection(QWidget):
         :param create_parameter_switch: Callable
         :param controls: dict
         """
-        super().__init__()
         self._create_parameter_slider = create_parameter_slider
         self._create_parameter_combo_box = create_parameter_combo_box
         self._create_parameter_switch = create_parameter_switch
         self.controls = controls
-        self.setStyleSheet(JDXiStyle.ADSR)
+
+        super().__init__(icon_type=IconType.ADSR, analog=False)
         self.init_ui()
 
     def init_ui(self):
         """
         Initialize the UI for the DigitalToneModifySection
         """
-        main_rows_vlayout = QVBoxLayout()
+        main_rows_vlayout = self.get_layout()
+
         slider_row_layout = QHBoxLayout()
-        self.setLayout(main_rows_vlayout)
         main_rows_vlayout.addLayout(slider_row_layout)
         slider_row_layout.addStretch()
 
         attack_time_interval_sens = self._create_parameter_slider(
             DigitalModifyParam.ATTACK_TIME_INTERVAL_SENS,
-            "Attack Time Interval Sens", vertical=True
+            "Attack Time Interval Sens",
+            vertical=True,
         )
         slider_row_layout.addWidget(attack_time_interval_sens)
 
         release_time_interval_sens = self._create_parameter_slider(
             DigitalModifyParam.RELEASE_TIME_INTERVAL_SENS,
-            "Release Time Interval Sens", vertical=True
+            "Release Time Interval Sens",
+            vertical=True,
         )
         slider_row_layout.addWidget(release_time_interval_sens)
 
         portamento_time_interval_sens = self._create_parameter_slider(
             DigitalModifyParam.PORTAMENTO_TIME_INTERVAL_SENS,
-            "Portamento Time Interval Sens", vertical=True
+            "Portamento Time Interval Sens",
+            vertical=True,
         )
         slider_row_layout.addWidget(portamento_time_interval_sens)
         slider_row_layout.addStretch()

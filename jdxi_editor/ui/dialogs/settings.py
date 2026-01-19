@@ -3,15 +3,28 @@ Preferences Dialog
 
 Sets settings for various biotoolkit features
 """
+
 import logging
-import qtawesome as qta
+
 from PySide6 import QtCore, QtWidgets
-from PySide6.QtWidgets import QDialog, QCheckBox, QVBoxLayout, QHBoxLayout, QPushButton, QComboBox, QLabel, QWidget
 from PySide6.QtCore import QSettings, QSize
+from PySide6.QtWidgets import (
+    QCheckBox,
+    QComboBox,
+    QDialog,
+    QHBoxLayout,
+    QLabel,
+    QVBoxLayout,
+    QWidget,
+)
 
-from jdxi_editor.project import __version__, __program__, __package_name__, __organization_name__, __project__
-
-from jdxi_editor.log.logger import Logger as log
+from decologr import Decologr as log
+from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.project import (
+    __organization_name__,
+    __package_name__,
+    __program__,
+)
 
 
 def log_settings() -> None:
@@ -51,7 +64,7 @@ class UiPreferencesDialog(QDialog):
             "INFO": logging.INFO,
             "WARNING": logging.WARNING,
             "ERROR": logging.ERROR,
-            "CRITICAL": logging.CRITICAL
+            "CRITICAL": logging.CRITICAL,
         }
         self.log_level_combo.addItems(self.log_levels.keys())
         # Load the log level from QSettings
@@ -70,7 +83,11 @@ class UiPreferencesDialog(QDialog):
 
         self.log_level_layout = QHBoxLayout(self)
         self.log_icon = QLabel()
-        self.log_icon.setPixmap(qta.icon("msc.report").pixmap(self.icon_size))
+        self.log_icon.setPixmap(
+            JDXi.UI.IconRegistry.get_icon(JDXi.UI.IconRegistry.REPORT).pixmap(
+                self.icon_size
+            )
+        )
         self.log_level_label = QLabel("Log file error reporting level:")
         self.log_level_layout.addWidget(self.log_icon)
         self.log_level_layout.addWidget(self.log_level_label)
@@ -80,8 +97,14 @@ class UiPreferencesDialog(QDialog):
         self.logging_icon = QLabel()
         self.logging_checkbox = QCheckBox("Enable Logging?")
         self.logging_checkbox.setLayoutDirection(QtCore.Qt.RightToLeft)
-        self.logging_checkbox.setChecked(bool(self.settings.value("logging", type=bool)))
-        self.logging_icon.setPixmap(qta.icon("msc.report").pixmap(self.icon_size))
+        self.logging_checkbox.setChecked(
+            bool(self.settings.value("logging", type=bool))
+        )
+        self.logging_icon.setPixmap(
+            JDXi.UI.IconRegistry.get_icon(JDXi.UI.IconRegistry.REPORT).pixmap(
+                self.icon_size
+            )
+        )
         self.logging_label = QLabel("Logging On or Off:")
         self.logging_layout.addWidget(self.logging_icon)
         self.logging_layout.addWidget(self.logging_label)
@@ -90,7 +113,9 @@ class UiPreferencesDialog(QDialog):
         self.buttonBox = QtWidgets.QDialogButtonBox(self)
         self.buttonBox.setGeometry(QtCore.QRect(150, 250, 341, 32))
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
-        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
+        self.buttonBox.setStandardButtons(
+            QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok
+        )
         self.buttonBox.setObjectName("buttonBox")
         self.buttonBox.rejected.connect(self.close)
         self.buttonBox.accepted.connect(self.on_save_settings)
@@ -133,7 +158,9 @@ class UiPreferencesDialog(QDialog):
             log_level = logging.DEBUG
 
         # Set combo box to correct index
-        level_name = next((k for k, v in self.log_levels.items() if v == log_level), "DEBUG")
+        level_name = next(
+            (k for k, v in self.log_levels.items() if v == log_level), "DEBUG"
+        )
         index = list(self.log_levels.keys()).index(level_name)
         self.log_level_combo.setCurrentIndex(index)
 

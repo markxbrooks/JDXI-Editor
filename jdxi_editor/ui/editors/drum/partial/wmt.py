@@ -32,41 +32,48 @@ Example:
     editor = DrumWMTSection(midi_helper)
     editor.show()
 """
-import re
-from typing import Callable, Any
+
+from typing import Any, Callable
 
 from PySide6.QtWidgets import (
     QGroupBox,
-    QFormLayout,
-    QWidget,
-    QVBoxLayout,
-    QScrollArea,
-    QTabWidget,
-    QComboBox,
-    QLabel,
-    QLineEdit,
     QHBoxLayout,
+    QSizePolicy,
+    QTabWidget,
+    QVBoxLayout,
+    QWidget,
 )
 
-from jdxi_editor.jdxi.style import JDXiStyle
-from jdxi_editor.log.logger import Logger as log
+from decologr import Decologr as log
+from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.drum.data import rm_waves
+from jdxi_editor.midi.data.parameter.drum.name import DrumDisplayName
+from jdxi_editor.midi.data.parameter.drum.option import DrumDisplayOptions
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
+from jdxi_editor.ui.widgets.combo_box.searchable_filterable import (
+    SearchableFilterableComboBox,
+)
+from jdxi_editor.ui.widgets.editor.helper import (
+    create_adsr_icon,
+    create_group_with_form_layout,
+    create_scrolled_area_with_layout,
+    transfer_layout_items,
+)
 from jdxi_editor.ui.widgets.wmt.envelope import WMTEnvelopeWidget
-from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
 class DrumWMTSection(QWidget):
     """Drum TVF Section for the JDXI Editor"""
 
     def __init__(
-            self,
-            controls,
-            create_parameter_combo_box,
-            create_parameter_slider,
-            create_parameter_switch,
-            midi_helper,
-            address=None,
+        self,
+        controls,
+        create_parameter_combo_box,
+        create_parameter_slider,
+        create_parameter_switch,
+        midi_helper,
+        address=None,
+        on_parameter_changed=None,
     ):
         super().__init__()
         """
@@ -75,14 +82,13 @@ class DrumWMTSection(QWidget):
         :param controls: dict
         :param create_parameter_combo_box: Callable
         :param create_parameter_slider: Callable
+        :param create_parameter_switch: Callable
         :param midi_helper: MidiIOHelper
+        :param address: RolandSysExAddress
+        :param on_parameter_changed: Callable to handle parameter changes
         """
         self.l_wave_combos = {}
-        self.l_wave_search_boxes = {}
-        self.l_wave_selectors = {}
         self.r_wave_combos = {}
-        self.r_wave_search_boxes = {}
-        self.r_wave_selectors = {}
         self.wmt_tab_widget = None
         self.controls = controls
         self._create_parameter_slider = create_parameter_slider
@@ -90,24 +96,32 @@ class DrumWMTSection(QWidget):
         self._create_parameter_switch = create_parameter_switch
         self.midi_helper = midi_helper
         self.address = address
+        self._on_parameter_changed = on_parameter_changed
         self.setup_ui()
 
     def setup_ui(self):
         """setup UI"""
-        self.setMinimumWidth(JDXiDimensions.DRUM_PARTIAL_TAB_MIN_WIDTH)
+        self.setMinimumWidth(JDXi.UI.Dimensions.EDITOR_DRUM.PARTIAL_TAB_MIN_WIDTH)
+        # Set size policy to allow vertical expansion
+        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         layout = QVBoxLayout(self)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(0)
 
-        scroll_area = QScrollArea()
-        scroll_area.setMinimumHeight(JDXiDimensions.SCROLL_AREA_HEIGHT)
-        scroll_area.setWidgetResizable(True)  # Important for resizing behavior
+        scroll_area, scrolled_layout = create_scrolled_area_with_layout()
+        scrolled_widget = scroll_area.widget()
+        scrolled_widget.setSizePolicy(
+            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
+        )
+        scrolled_layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(scroll_area)
 
-        scrolled_widget = QWidget()
-        scrolled_layout = QVBoxLayout(scrolled_widget)
+        # Icons row (standardized across editor tabs) - transfer items to avoid "already has a parent" errors
+        icon_row_container = QHBoxLayout()
+        icon_hlayout = JDXi.UI.IconRegistry.create_adsr_icons_row()
 
-        # Add widgets to scrolled_layout here if needed
-
-        scroll_area.setWidget(scrolled_widget)
+        transfer_layout_items(icon_hlayout, icon_row_container)
+        scrolled_layout.addLayout(icon_row_container)
 
         # WMT Group
         wmt_group = QGroupBox("WMT")
@@ -118,9 +132,11 @@ class DrumWMTSection(QWidget):
         wmt_velocity_control_combo_row_layout = QHBoxLayout()
         wmt_layout.addLayout(wmt_velocity_control_combo_row_layout)
         wmt_velocity_control_combo_row_layout.addStretch()
-        wmt_velocity_control_combo = self._create_parameter_switch(DrumPartialParam.WMT_VELOCITY_CONTROL,
-                                                                   "Velocity control",
-                                                                   ["OFF", "ON", "RANDOM"])
+        wmt_velocity_control_combo = self._create_parameter_switch(
+            DrumPartialParam.WMT_VELOCITY_CONTROL,
+            DrumDisplayName.WMT_VELOCITY_CONTROL,
+            values=DrumDisplayOptions.WMT_VELOCITY_CONTROL,
+        )
         wmt_velocity_control_combo_row_layout.addWidget(wmt_velocity_control_combo)
         wmt_velocity_control_combo_row_layout.addStretch()
 
@@ -165,335 +181,293 @@ class DrumWMTSection(QWidget):
 
         self.wmt_controls_tab_widget = QTabWidget()
         main_row_hlayout.addWidget(self.wmt_controls_tab_widget)
-        self.wmt_controls_tab_widget.addTab(self._create_wmt_controls_group(p), "Controls")
-        self.wmt_controls_tab_widget.addTab(self._create_wave_combo_group(p, wmt_index), "Waves")
-        self.wmt_controls_tab_widget.addTab(self._create_fxm_group(p), "FXM")
-        self.wmt_controls_tab_widget.addTab(self._create_tuning_group(p), "Tuning")
-        self.wmt_controls_tab_widget.addTab(self._create_wmt_pan_group(p), "Pan")
-        self.wmt_controls_tab_widget.addTab(self._create_adsr_widget(p), "ADSR Envelope")
+
+        controls_icon = JDXi.UI.IconRegistry.get_icon(
+            JDXi.UI.IconRegistry.TUNE, color=JDXi.UI.Style.GREY
+        )
+        self.wmt_controls_tab_widget.addTab(
+            self._create_wmt_controls_group(p), controls_icon, "Controls"
+        )
+        waves_icon = JDXi.UI.IconRegistry.get_icon(
+            JDXi.UI.IconRegistry.WAVEFORM, color=JDXi.UI.Style.GREY
+        )
+        self.wmt_controls_tab_widget.addTab(
+            self._create_wave_combo_group(p, wmt_index), waves_icon, "Waves"
+        )
+        fxm_icon = JDXi.UI.IconRegistry.get_icon(
+            JDXi.UI.IconRegistry.EQUALIZER, color=JDXi.UI.Style.GREY
+        )
+        self.wmt_controls_tab_widget.addTab(self._create_fxm_group(p), fxm_icon, "FXM")
+        tuning_icon = JDXi.UI.IconRegistry.get_icon(
+            JDXi.UI.IconRegistry.MUSIC_NOTE, color=JDXi.UI.Style.GREY
+        )
+        self.wmt_controls_tab_widget.addTab(
+            self._create_tuning_group(p), tuning_icon, "Tuning"
+        )
+        pan_icon = JDXi.UI.IconRegistry.get_icon(
+            JDXi.UI.IconRegistry.PAN_HORIZONTAL, color=JDXi.UI.Style.GREY
+        )
+        self.wmt_controls_tab_widget.addTab(
+            self._create_wmt_pan_group(p), pan_icon, "Pan"
+        )
+        adsr_icon = create_adsr_icon()
+        self.wmt_controls_tab_widget.addTab(
+            self._create_adsr_widget(p), adsr_icon, "ADSR Envelope"
+        )
         return main_row_hlayout
 
     def _create_wmt_controls_group(self, p: Callable[[Any], Any]):
-        wmt_controls_group = QGroupBox()
-        form_layout = QFormLayout()
-        wmt_controls_group.setLayout(form_layout)
         self.wave_switch = self._create_parameter_switch(
-            p("WAVE_SWITCH"), "Wave Switch", ["OFF", "ON"]
+            p("WAVE_SWITCH"),
+            DrumDisplayName.WMT_WAVE_SWITCH,
+            values=DrumDisplayOptions.WMT_WAVE_SWITCH,
         )
-        form_layout.addWidget(self.wave_switch)
-        form_layout.addRow(
+        widgets = [
+            self.wave_switch,
             self._create_parameter_combo_box(
-                p("WAVE_GAIN"), "Wave Gain", ["-6", "0", "6", "12"], [0, 1, 2, 3]
-            )
-        )
-        form_layout.addRow(
-            self._create_parameter_slider(p("WAVE_TEMPO_SYNC"), "Wave Tempo Sync")
-        )
-        return wmt_controls_group
+                p("WAVE_GAIN"),
+                DrumDisplayName.WMT_WAVE_GAIN,
+                options=DrumDisplayOptions.WMT_WAVE_GAIN,
+                values=[0, 1, 2, 3],
+            ),
+            self._create_parameter_slider(
+                p("WAVE_TEMPO_SYNC"), DrumDisplayName.WMT_WAVE_TEMPO_SYNC
+            ),
+        ]
+        group, _ = create_group_with_form_layout(widgets)
+        return group
 
     def _create_wave_combo_group(self, p: Callable[[Any], Any], wmt_index: int):
-        """create wave combo"""
-        wmt_wave_group = QGroupBox()
-        form_layout = QFormLayout()
-        wmt_wave_group.setLayout(form_layout)
-        rm_wave_groups = [
-            "",  # Empty string for the first item
-            # === Drum Machine Sources ===
+        """create wave combo using SearchableFilterableComboBox"""
+        # Extract categories from rm_wave_groups (non-empty, non-indented items)
+        rm_wave_categories = [
             "Drum Machines",
-            "    606",
-            "    626",
-            "    707",
-            "    808",
-            "    909",
-            "    78",
-            "    106",
-            "    TM-2",
-            # === Musical Genres & Styles ===
             "Genres/Styles",
-            "    Ballad",
-            "    Break",
-            "    Dance",
-            "    DanceHall",
-            "    Hip-Hop",
-            "    HipHop",
-            "    Jazz",
-            "    Jungle",
-            "    Ragga",
-            "    Reggae",
-            "    Rock",
-            # === Sound Character & Texture ===
             "Character",
-            "    Analog",
-            "    Bright",
-            "    Dry",
-            "    Hard",
-            "    Lite",
-            "    Lo-Bit",
-            "    Lo-Fi",
-            "    Old",
-            "    Plastic",
-            "    Power",
-            "    Tight",
-            "    Turbo",
-            "    Vint",
-            "    Warm",
-            "    Wet",
-            "    Wide",
-            "    Wild",
-            # === Instrument Types ===
-            "Instruments" "    Kick",
-            "    Snare",
-            "    Tom",
-            "    Clap",
-            "    Cymbal",
-            "    Crash",
-            # === Percussion Types ===
+            "Instruments",
             "Percussion",
-            "    Bongo",
-            "    Brush",
-            "    Brsh",
-            "    Conga",
-            "    Cowbell",
-            "    Piccolo",
-            "    Rim",
-            "    Rimshot",
-            "    Stick",
-            "    Cstick",
-            "    Swish",
-            "    Swish&Trn",
-            # === Hi-Hats ===
             "Hi-Hats",
-            "    CHH",
-            "    OHH",
-            "    PHH",
-            "    C&OHH",
-            "    Tip",
-            # === Layer/Expression/Technique Tags ===
             "Layer Tags",
-            "    Jazz Rim",
-            "    Jazz Snare",
-            "    Jz",
-            "    HphpJazz",
-            # === Synthesis & Processing ===
             "Synthesis",
-            "    Dst",
-            "    Hush",
-            "    Hash",
-            "    LD",
-            "    MG",
-            "    Mix",
-            "    PurePhat",
-            "    SF",
-            "    Sim",
-            "    SimV",
-            "    Synth",
-            "    TY",
-            "    WD",
         ]
 
-        # --- Combo and Search Controls for L Wave ---
-        form_layout.addRow(QLabel("Search L waves:"))
+        # Category filter function for wave groups
+        def wave_category_filter(wave_name: str, category: str) -> bool:
+            """Check if a wave name matches a category."""
+            if not category:
+                return True
+            # Map category to search terms
+            category_terms = {
+                "Drum Machines": [
+                    "606",
+                    "626",
+                    "707",
+                    "808",
+                    "909",
+                    "78",
+                    "106",
+                    "TM-2",
+                ],
+                "Genres/Styles": [
+                    "Ballad",
+                    "Break",
+                    "Dance",
+                    "DanceHall",
+                    "Hip-Hop",
+                    "HipHop",
+                    "Jazz",
+                    "Jungle",
+                    "Ragga",
+                    "Reggae",
+                    "Rock",
+                ],
+                "Character": [
+                    "Analog",
+                    "Bright",
+                    "Dry",
+                    "Hard",
+                    "Lite",
+                    "Lo-Bit",
+                    "Lo-Fi",
+                    "Old",
+                    "Plastic",
+                    "Power",
+                    "Tight",
+                    "Turbo",
+                    "Vint",
+                    "Warm",
+                    "Wet",
+                    "Wide",
+                    "Wild",
+                ],
+                "Instruments": ["Kick", "Snare", "Tom", "Clap", "Cymbal", "Crash"],
+                "Percussion": [
+                    "Bongo",
+                    "Brush",
+                    "Brsh",
+                    "Conga",
+                    "Cowbell",
+                    "Piccolo",
+                    "Rim",
+                    "Rimshot",
+                    "Stick",
+                    "Cstick",
+                    "Swish",
+                ],
+                "Hi-Hats": ["CHH", "OHH", "PHH", "C&OHH", "Tip"],
+                "Layer Tags": ["Jazz Rim", "Jazz Snare", "Jz", "HphpJazz"],
+                "Synthesis": [
+                    "Dst",
+                    "Hush",
+                    "Hash",
+                    "LD",
+                    "MG",
+                    "Mix",
+                    "PurePhat",
+                    "SF",
+                    "Sim",
+                    "SimV",
+                    "Synth",
+                    "TY",
+                    "WD",
+                ],
+            }
+            terms = category_terms.get(category, [])
+            return any(term.lower() in wave_name.lower() for term in terms)
 
-        # Search box
-        l_wave_search_box = QLineEdit()
-        l_wave_search_box.setPlaceholderText("Search L waves...")
-        self.l_wave_search_boxes[wmt_index] = l_wave_search_box
-
-        # Group selector
-        l_wave_selector = QComboBox()
-        l_wave_selector.addItems(rm_wave_groups)
-        self.l_wave_selectors[wmt_index] = l_wave_selector
-
-        # Combo box (wave list)
-        l_wave_combo = self._create_parameter_combo_box(
-            p("WAVE_NUMBER_L"), "Wave Number L/Mono", rm_waves, list(range(453))
+        # --- L Wave Combo Box ---
+        l_wave_param = p("WAVE_NUMBER_L")
+        l_wave_combo = SearchableFilterableComboBox(
+            label="Wave Number L/Mono",
+            options=rm_waves,
+            values=list(range(len(rm_waves))),
+            categories=rm_wave_categories,
+            category_filter_func=wave_category_filter,
+            show_label=True,
+            show_search=True,
+            show_category=True,
+            search_placeholder="Search L waves...",
+            category_label="Group:",
+            search_label="Search:",
+        )
+        # Connect to parameter change handler using the same pattern as _create_parameter_combo_box
+        # The valueChanged signal emits the original value (not filtered index), which is correct
+        l_wave_combo.valueChanged.connect(
+            lambda v: self._on_wave_parameter_changed(l_wave_param, v)
         )
         self.l_wave_combos[wmt_index] = l_wave_combo
+        self.controls[l_wave_param] = l_wave_combo
 
-        # Connect both search & selector to populate method
-        l_wave_search_box.textChanged.connect(
-            lambda _, i=wmt_index: self._populate_l_waves(i)
+        # --- R Wave Combo Box ---
+        r_wave_param = p("WAVE_NUMBER_R")
+        r_wave_combo = SearchableFilterableComboBox(
+            label="Wave Number R",
+            options=rm_waves,
+            values=list(range(len(rm_waves))),
+            categories=rm_wave_categories,
+            category_filter_func=wave_category_filter,
+            show_label=True,
+            show_search=True,
+            show_category=True,
+            search_placeholder="Search R waves...",
+            category_label="Group:",
+            search_label="Search:",
         )
-        l_wave_selector.currentTextChanged.connect(
-            lambda _, i=wmt_index: self._populate_l_waves(i)
-        )
-
-        # Add widgets to layout
-        search_row = QHBoxLayout()
-        search_row.addStretch()
-        search_row.addWidget(QLabel("Group:"))
-        search_row.addWidget(l_wave_selector)
-        search_row.addWidget(QLabel("Search:"))
-        search_row.addWidget(l_wave_search_box)
-        search_row.addStretch()
-        form_layout.addRow(search_row)
-        form_layout.addRow(l_wave_combo)
-
-        self.l_wave_combos[wmt_index] = l_wave_combo
-        self.l_wave_search_boxes[wmt_index] = l_wave_search_box
-        self.l_wave_selectors[wmt_index] = l_wave_selector
-
-        # --- Combo and Search Controls for R Wave ---
-        form_layout.addRow(QLabel("Search R waves:"))
-
-        # Search box
-        r_wave_search_box = QLineEdit()
-        r_wave_search_box.setPlaceholderText("Search R waves...")
-        self.r_wave_search_boxes[wmt_index] = r_wave_search_box
-
-        # Group selector
-        r_wave_selector = QComboBox()
-        r_wave_selector.addItems(rm_wave_groups)
-        self.r_wave_selectors[wmt_index] = r_wave_selector
-
-        # Combo box (wave list)
-        r_wave_combo = self._create_parameter_combo_box(
-            p("WAVE_NUMBER_R"), "Wave Number R", rm_waves, list(range(453))
+        # Connect to parameter change handler using the same pattern as _create_parameter_combo_box
+        r_wave_combo.valueChanged.connect(
+            lambda v: self._on_wave_parameter_changed(r_wave_param, v)
         )
         self.r_wave_combos[wmt_index] = r_wave_combo
+        self.controls[r_wave_param] = r_wave_combo
 
-        # Connect both search & selector to populate method
-        r_wave_search_box.textChanged.connect(
-            lambda _, i=wmt_index: self._populate_r_waves(i)
-        )
-        r_wave_selector.currentTextChanged.connect(
-            lambda _, i=wmt_index: self._populate_r_waves(i)
-        )
-
-        # Add widgets to layout
-        r_search_row = QHBoxLayout()
-        r_search_row.addStretch()
-        r_search_row.addWidget(QLabel("Group:"))
-        r_search_row.addWidget(r_wave_selector)
-        r_search_row.addWidget(QLabel("Search:"))
-        r_search_row.addWidget(r_wave_search_box)
-        r_search_row.addStretch()
-        form_layout.addRow(r_search_row)
-        form_layout.addRow(r_wave_combo)
-        return wmt_wave_group
+        widgets = [l_wave_combo, r_wave_combo]
+        group, _ = create_group_with_form_layout(widgets)
+        return group
 
     def _create_fxm_group(self, p: Callable[[Any], Any]):
         """create fxm group"""
-        wmt_fxm_group = QGroupBox("FXM")
-        form_layout = QFormLayout()
-        wmt_fxm_group.setLayout(form_layout)
-        form_layout.addRow(
+        widgets = [
             self._create_parameter_combo_box(
                 p("WAVE_FXM_SWITCH"), "Wave FXM Switch", ["OFF", "ON"], [0, 1]
-            )
-        )  # If this is correct — maybe it’s a typo?
-        form_layout.addRow(
-            self._create_parameter_slider(p("WAVE_FXM_COLOR"), "Wave FXM Color")
-        )
-        form_layout.addRow(
-            self._create_parameter_slider(p("WAVE_FXM_DEPTH"), "Wave FXM Depth")
-        )
-        return wmt_fxm_group
+            ),
+            self._create_parameter_slider(p("WAVE_FXM_COLOR"), "Wave FXM Color"),
+            self._create_parameter_slider(p("WAVE_FXM_DEPTH"), "Wave FXM Depth"),
+        ]
+        group, _ = create_group_with_form_layout(widgets, group_name="FXM")
+        return group
 
     def _create_wmt_pan_group(self, p: Callable[[Any], Any]):
         """create wmt pan"""
-        wmt_pan_group = QGroupBox("Pan")
-        form_layout = QFormLayout()
-        wmt_pan_group.setLayout(form_layout)
-        form_layout.addRow(self._create_parameter_slider(p("WAVE_PAN"), "Wave Pan"))
-
-        # More combo boxes
-        form_layout.addRow(
+        widgets = [
+            self._create_parameter_slider(p("WAVE_PAN"), "Wave Pan"),
             self._create_parameter_combo_box(
                 p("WAVE_RANDOM_PAN_SWITCH"),
                 "Wave Random Pan Switch",
                 ["OFF", "ON"],
                 [0, 1],
-            )
-        )
-        form_layout.addRow(
+            ),
             self._create_parameter_combo_box(
                 p("WAVE_ALTERNATE_PAN_SWITCH"),
                 "Wave Alternate Pan Switch",
                 ["OFF", "ON", "REVERSE"],
                 [0, 1, 2],
-            )
-        )
-        return wmt_pan_group
+            ),
+        ]
+        group, _ = create_group_with_form_layout(widgets, group_name="Pan")
+        return group
 
     def _create_adsr_widget(self, p: Callable[[Any], Any]) -> WMTEnvelopeWidget:
-        adsr_widget = WMTEnvelopeWidget(fade_lower_param=p("VELOCITY_FADE_WIDTH_LOWER"),
-                                        range_lower_param=p("VELOCITY_RANGE_LOWER"),
-                                        range_upper_param=p("VELOCITY_RANGE_UPPER"),
-                                        depth_param=p("WAVE_LEVEL"),
-                                        fade_upper_param=p("VELOCITY_FADE_WIDTH_UPPER"),
-                                        create_parameter_slider=self._create_parameter_slider,
-                                        controls=self.controls,
-                                        midi_helper=self.midi_helper,
-                                        address=self.address,
-                                        )
-        adsr_widget.setStyleSheet(JDXiStyle.ADSR)
+        adsr_widget = WMTEnvelopeWidget(
+            fade_lower_param=p("VELOCITY_FADE_WIDTH_LOWER"),
+            range_lower_param=p("VELOCITY_RANGE_LOWER"),
+            range_upper_param=p("VELOCITY_RANGE_UPPER"),
+            depth_param=p("WAVE_LEVEL"),
+            fade_upper_param=p("VELOCITY_FADE_WIDTH_UPPER"),
+            create_parameter_slider=self._create_parameter_slider,
+            controls=self.controls,
+            midi_helper=self.midi_helper,
+            address=self.address,
+        )
+        adsr_widget.setStyleSheet(JDXi.UI.Style.ADSR)
         return adsr_widget
 
     def _create_tuning_group(self, p: Callable[[Any], Any]):
-        """ Tuning Group"""
-        tuning_group = QGroupBox("Tuning")
-        form_layout = QFormLayout()
-        tuning_group.setLayout(form_layout)
-        form_layout.addRow(
-            self._create_parameter_slider(p("WAVE_COARSE_TUNE"), "Wave Coarse Tune")
-        )
-        form_layout.addRow(
-            self._create_parameter_slider(p("WAVE_FINE_TUNE"), "Wave Fine Tune")
-        )
-        return tuning_group
+        """Tuning Group"""
+        widgets = [
+            self._create_parameter_slider(p("WAVE_COARSE_TUNE"), "Wave Coarse Tune"),
+            self._create_parameter_slider(p("WAVE_FINE_TUNE"), "Wave Fine Tune"),
+        ]
+        group, _ = create_group_with_form_layout(widgets, group_name="Tuning")
+        return group
 
-    def _populate_l_waves(self, wmt_index):
-        try:
-            search_box = self.l_wave_search_boxes[wmt_index]
-            selector = self.l_wave_selectors[wmt_index]
-            combo = self.l_wave_combos[wmt_index]
+    def _on_wave_parameter_changed(self, param: DrumPartialParam, value: int) -> None:
+        """
+        Handle wave parameter change.
 
-            search_text = search_box.text().strip()
-            group_filter = selector.currentText().strip()
+        This method is called when a wave combo box value changes.
+        It sends the MIDI command with the correct value (original index, not filtered index).
 
-            filtered = rm_waves
-            if search_text:
-                filtered = [w for w in filtered if re.search(search_text, w, re.I)]
-            if group_filter:
-                filtered = [w for w in filtered if group_filter.lower() in w.lower()]
+        The new SearchableFilterableComboBox widget maintains proper value mapping,
+        so the value parameter is already the correct original index.
 
-            combo.combo_box.clear()
-            for wave in filtered:
-                index_in_rm_waves = rm_waves.index(wave)
-                combo.combo_box.addItem(wave, index_in_rm_waves)
+        :param param: The parameter that changed
+        :param value: The original value (wave index in rm_waves)
+        """
+        # Use the parent editor's _on_parameter_changed if available, otherwise use direct MIDI sending
+        if self._on_parameter_changed:
+            self._on_parameter_changed(param, value, self.address)
+        elif hasattr(self, "midi_helper") and self.midi_helper and self.address:
+            try:
+                from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
 
-            log.message(
-                f"WMT{wmt_index}: Showing {len(filtered)} results for group '{group_filter}' + search '{search_text}'"
-            )
-        except Exception as ex:
-            log.error(f"WMT{wmt_index}: Error filtering L waves:", exception=ex)
-
-    def _populate_r_waves(self, wmt_index):
-        try:
-            search_box = self.r_wave_search_boxes[wmt_index]
-            selector = self.r_wave_selectors[wmt_index]
-            combo = self.r_wave_combos[wmt_index]
-
-            search_text = search_box.text().strip()
-            group_filter = selector.currentText().strip()
-
-            filtered = rm_waves
-            if search_text:
-                filtered = [w for w in filtered if re.search(search_text, w, re.I)]
-            if group_filter:
-                filtered = [w for w in filtered if group_filter.lower() in w.lower()]
-
-            combo.combo_box.clear()
-            for wave in filtered:
-                index_in_rm_waves = rm_waves.index(wave)
-                combo.combo_box.addItem(wave, index_in_rm_waves)
-            log.message(
-                f"WMT{wmt_index}: Showing {len(filtered)} R wave results for "
-                f"group '{group_filter}' + search '{search_text}'"
-            )
-        except Exception as ex:
-            log.error(f"WMT{wmt_index}: Error filtering R waves: {ex}")
+                sysex_composer = JDXiSysExComposer()
+                sysex_message = sysex_composer.compose_message(
+                    address=self.address, param=param, value=value
+                )
+                self.midi_helper.send_midi_message(sysex_message)
+                log.debug(f"Sent MIDI for {param.name} with value {value}")
+            except Exception as ex:
+                log.error(f"Error sending MIDI for {param.name}: {ex}")
 
     def _create_wmt1_layout(self):
         return self._create_wmt_layout(1)

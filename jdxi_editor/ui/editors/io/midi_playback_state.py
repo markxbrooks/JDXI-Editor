@@ -1,18 +1,20 @@
 """MIDI playback state management."""
+
 from collections import defaultdict
 from dataclasses import dataclass, field
 from typing import Optional
 
-from PySide6.QtCore import QTimer, QThread
 from mido import MidiFile
+from PySide6.QtCore import QThread, QTimer
 
-from jdxi_editor.jdxi.midi.constant import MidiConstant
 from jdxi_editor.midi.channel.channel import MidiChannel
+from picomidi.constant import Midi
 
 
 @dataclass
 class MidiPlaybackState:
     """State container for MIDI file playback."""
+
     active_notes: dict = field(default_factory=lambda: defaultdict(set))
     buffered_msgs: list = field(default_factory=list)
     buffer_end_time: float = 0.0
@@ -27,9 +29,11 @@ class MidiPlaybackState:
     suppress_control_changes: bool = field(default=True)
     suppress_program_changes: bool = field(default=True)
     custom_tempo_force: bool = field(default=False)
-    custom_tempo: int = field(default=MidiConstant.TEMPO_162_BPM_USEC)  # Default custom tempo in microseconds
-    tempo_initial: int = field(default=MidiConstant.TEMPO_120_BPM_USEC)
-    tempo_at_position: int = field(default=MidiConstant.TEMPO_120_BPM_USEC)
+    custom_tempo: int = field(
+        default=Midi.TEMPO.BPM_162_USEC
+    )  # Default custom tempo in microseconds
+    tempo_initial: int = field(default=Midi.TEMPO.BPM_120_USEC)
+    tempo_at_position: int = field(default=Midi.TEMPO.BPM_120_USEC)
     timer: Optional[QTimer] = field(default=None)
     # end of new attributes
     muted_tracks: set[int] = field(default_factory=set)
@@ -38,8 +42,9 @@ class MidiPlaybackState:
     playback_paused_time: Optional[float] = None
     playback_start_time: Optional[float] = None
     playback_paused: bool = False
+
     def __post_init__(self) -> None:
         if self.custom_tempo_force:
             self.tempo_at_position = self.custom_tempo  # Use custom tempo if forced
         else:
-            self.tempo_at_position = MidiConstant.TEMPO_DEFAULT_120_BPM  # Default of 120 bpm
+            self.tempo_at_position = Midi.TEMPO.BPM_120_USEC  # Default of 120 bpm

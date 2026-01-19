@@ -6,6 +6,7 @@ Tokeniser for lexing
 # print(mapping)
 
 """
+
 import re
 from typing import Optional
 
@@ -44,6 +45,6 @@ def generate_mapping(input_string: str) -> Optional[dict[str, str]]:
     if "AREA" in tokens and "COMMON" in tokens:
         return {
             "SynthType": f"JDXiSynth.{tokens['AREA'].split('_')[1]}",
-            "Parameter": f"AddressParameter{tokens['COMMON'].replace('_', '')}"
+            "Parameter": f"AddressParameter{tokens['COMMON'].replace('_', '')}",
         }
     return None

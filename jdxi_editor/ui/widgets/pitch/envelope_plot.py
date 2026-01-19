@@ -28,18 +28,18 @@ Customization:
 """
 
 import numpy as np
-from PySide6.QtCore import Qt, QPointF
+from PySide6.QtCore import QPointF, Qt
+from PySide6.QtGui import QColor, QFont, QLinearGradient, QPainter, QPainterPath, QPen
 from PySide6.QtWidgets import QWidget
-from PySide6.QtGui import QPainter, QPainterPath, QLinearGradient, QColor, QPen, QFont
 
-from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.core.jdxi import JDXi
 
 
 class PitchEnvPlot(QWidget):
     def __init__(
         self,
-        width: int = JDXiStyle.ADSR_PLOT_WIDTH,
-        height: int = JDXiStyle.ADSR_PLOT_HEIGHT,
+        width: int = JDXi.UI.Style.ADSR_PLOT_WIDTH,
+        height: int = JDXi.UI.Style.ADSR_PLOT_HEIGHT,
         envelope: dict = None,
         parent: QWidget = None,
     ):
@@ -54,7 +54,8 @@ class PitchEnvPlot(QWidget):
         self.setMaximumHeight(height)
         self.setMaximumWidth(width)
         # Use dark gray background
-        self.setStyleSheet(JDXiStyle.ADSR_PLOT)
+
+        JDXi.UI.ThemeManager.apply_adsr_plot(self)
         # Sample rate for converting times to samples
         self.sample_rate = 256
         self.setMinimumHeight(150)

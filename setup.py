@@ -19,7 +19,7 @@ DATA_FILES = [
     ("resources/vocal_fx", glob.glob("resources/vocal_fx/*.png")),
 ]  # Include any additional files your app needs
 OPTIONS = {
-    'packages': ['jdxi_editor', 'rtmidi'],
+    'packages': ['jdxi_editor', 'rtmidi', 'decologr', 'picomidi', 'qtawesome'],
     'argv_emulation': False,
     'iconfile': 'jdxi_icon_512.icns',  # Path to the .icns file
     'includes': ['PySide6',
@@ -33,7 +33,11 @@ OPTIONS = {
                  'PIL.Image',
                  'PIL.ImageDraw',
                  'PIL.ImageColor',
-                 'PIL'],           # Ensure PySide6 is bundled
+                 'PIL',
+                 'decologr',      # Logging library
+                 'picomidi',      # MIDI library
+                 'qtawesome',     # Icon library
+                 'qtawesome.iconic_font'],  # Ensure PySide6 is bundled
     "excludes": [
                  'Image',
                  "Carbon",
@@ -66,5 +70,7 @@ setup(
         "qtawesome",
         "mido",
         "Pillow",
+        "decologr",
+        "picomidi",
     ],
 )

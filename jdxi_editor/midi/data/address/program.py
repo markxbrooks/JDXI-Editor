@@ -1,5 +1,5 @@
-from jdxi_editor.jdxi.midi.constant import MidiConstant
-from jdxi_editor.midi.data.address.address import RolandSysExAddress, AddressStartMSB
+from jdxi_editor.midi.data.address.address import AddressStartMSB, RolandSysExAddress
+from picomidi.constant import Midi
 
 
 class ProgramCommonAddress(RolandSysExAddress):
@@ -7,9 +7,11 @@ class ProgramCommonAddress(RolandSysExAddress):
     A convenient subclass for the standard "Program Common" address in Roland SysEx messages.
     """
 
-    def __init__(self,
-                 msb: int = AddressStartMSB.TEMPORARY_PROGRAM,
-                 umb: int = MidiConstant.ZERO_BYTE,
-                 lmb: int = MidiConstant.ZERO_BYTE,
-                 lsb: int = MidiConstant.ZERO_BYTE):
+    def __init__(
+        self,
+        msb: int = AddressStartMSB.TEMPORARY_PROGRAM,
+        umb: int = Midi.VALUE.ZERO,
+        lmb: int = Midi.VALUE.ZERO,
+        lsb: int = Midi.VALUE.ZERO,
+    ):
         super().__init__(msb, umb, lmb, lsb)

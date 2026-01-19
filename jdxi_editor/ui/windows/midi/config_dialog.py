@@ -25,25 +25,26 @@ Methods:
 
 """
 
-from PySide6.QtWidgets import (
-    QDialog,
-    QVBoxLayout,
-    QHBoxLayout,
-    QComboBox,
-    QLabel,
-    QPushButton,
-    QGroupBox,
-    QDialogButtonBox,
-    QCheckBox,
-    QLineEdit,
-    QFileDialog,
-)
-from PySide6.QtCore import Qt, QTimer
 import os
-import qtawesome as qta
 
-from jdxi_editor.log.logger import Logger as log
-from jdxi_editor.jdxi.style import JDXiStyle
+import qtawesome as qta
+from PySide6.QtCore import Qt, QTimer
+from PySide6.QtWidgets import (
+    QCheckBox,
+    QComboBox,
+    QDialog,
+    QDialogButtonBox,
+    QFileDialog,
+    QGroupBox,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QPushButton,
+    QVBoxLayout,
+)
+
+from decologr import Decologr as log
+from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.io.helper import MidiIOHelper
 
 # In-app FluidSynth defaults
@@ -56,7 +57,7 @@ class MIDIConfigDialog(QDialog):
         super().__init__(parent)
         self.setWindowTitle("MIDI Configuration")
         self.setMinimumSize(300, 300)
-        self.setStyleSheet(JDXiStyle.EDITOR)
+        self.setStyleSheet(JDXi.UI.Style.EDITOR)
         self.midi_helper = midi_helper
         self.input_ports = midi_helper.get_input_ports()
         self.output_ports = midi_helper.get_output_ports()
@@ -102,9 +103,9 @@ class MIDIConfigDialog(QDialog):
         icons_hlayout = QHBoxLayout()
         for icon in ["mdi6.midi-port"]:
             icon_label = QLabel()
-            icon = qta.icon(icon, color=JDXiStyle.FOREGROUND)
+            icon = qta.icon(icon, color=JDXi.UI.Style.FOREGROUND)
             pixmap = icon.pixmap(
-                JDXiStyle.ICON_SIZE, JDXiStyle.ICON_SIZE
+                JDXi.UI.Style.ICON_SIZE, JDXi.UI.Style.ICON_SIZE
             )  # Set the desired size
             icon_label.setPixmap(pixmap)
             icon_label.setAlignment(Qt.AlignHCenter)
@@ -126,9 +127,9 @@ class MIDIConfigDialog(QDialog):
         icons_hlayout = QHBoxLayout()
         for icon in ["mdi6.midi-port"]:
             icon_label = QLabel()
-            icon = qta.icon(icon, color=JDXiStyle.FOREGROUND)
+            icon = qta.icon(icon, color=JDXi.UI.Style.FOREGROUND)
             pixmap = icon.pixmap(
-                JDXiStyle.ICON_SIZE, JDXiStyle.ICON_SIZE
+                JDXi.UI.Style.ICON_SIZE, JDXi.UI.Style.ICON_SIZE
             )  # Set the desired size
             icon_label.setPixmap(pixmap)
             icon_label.setAlignment(Qt.AlignHCenter)
@@ -154,7 +155,7 @@ class MIDIConfigDialog(QDialog):
         sf_row = QHBoxLayout()
         sf_row.addWidget(QLabel("SoundFont (SF2/SF3):"))
         self.sf2_edit = QLineEdit()
-        self.sf2_edit.setPlaceholderText("FluidR3_GM.sf2") # default SoundFont
+        self.sf2_edit.setPlaceholderText("FluidR3_GM.sf2")  # default SoundFont
         sf_row.addWidget(self.sf2_edit)
         browse_btn = QPushButton("Browse…")
         browse_btn.clicked.connect(self._browse_sf2)
@@ -223,7 +224,11 @@ class MIDIConfigDialog(QDialog):
         else:
             # Auto-start if a valid SoundFont is already set and synth not running
             try:
-                if self.fs is None and self.sf2_edit.text().strip() and os.path.isfile(self.sf2_edit.text().strip()):
+                if (
+                    self.fs is None
+                    and self.sf2_edit.text().strip()
+                    and os.path.isfile(self.sf2_edit.text().strip())
+                ):
                     self._start_fluidsynth()
             except Exception:
                 pass
@@ -231,7 +236,10 @@ class MIDIConfigDialog(QDialog):
     def _browse_sf2(self) -> None:
         start_dir = os.path.expanduser("~/SoundFonts")
         file_path, _ = QFileDialog.getOpenFileName(
-            self, "Select SoundFont", start_dir if os.path.isdir(start_dir) else "", "SoundFonts (*.sf2 *.sf3)"
+            self,
+            "Select SoundFont",
+            start_dir if os.path.isdir(start_dir) else "",
+            "SoundFonts (*.sf2 *.sf3)",
         )
         if file_path:
             self.sf2_edit.setText(file_path)

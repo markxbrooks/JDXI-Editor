@@ -1,3 +1,6 @@
+"""Drum Kit CC values"""
+
+
 class DrumKitCC:
     """Drum Kit Control Change parameters"""
 

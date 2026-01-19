@@ -40,14 +40,14 @@ Usage Example:
     >>> msb, lsb, pc = calculate_midi_values("A", 5)
     >>> log_midi_info(msb, lsb, pc)
 """
-import json
-import logging
-from typing import Optional, Dict, List
 
-from jdxi_editor.jdxi.midi.constant import MidiConstant
-from jdxi_editor.jdxi.program.program import JDXiProgram
-from jdxi_editor.log.logger import Logger as log
-from jdxi_editor.midi.data.programs.programs import JDXiProgramList
+import json
+from typing import Dict, List, Optional
+
+from decologr import Decologr as log
+from jdxi_editor.midi.program.program import JDXiProgram
+from jdxi_editor.ui.programs.programs import JDXiUIProgramList
+from picomidi.constant import Midi
 
 
 def get_program_index_by_id(program_id: str) -> Optional[int]:
@@ -58,7 +58,7 @@ def get_program_index_by_id(program_id: str) -> Optional[int]:
     :return: int
     """
     log.message(f"Getting program index for {program_id}")
-    for index, program in enumerate(JDXiProgramList.list_rom_and_user_programs()):
+    for index, program in enumerate(JDXiUIProgramList.list_rom_and_user_programs()):
         if getattr(program, "id", None) == program_id:
             log.message(f"Index for {program_id} is {index}")
             return index
@@ -76,13 +76,19 @@ def get_program_by_id(program_id: str) -> Optional[JDXiProgram]:
     """
     # Check ROM programs first (they're in memory)
     rom_program = next(
-        (program for program in JDXiProgramList.ROM_PROGRAM_LIST if program.id == program_id), None
+        (
+            program
+            for program in JDXiUIProgramList.ROM_PROGRAM_LIST
+            if program.id == program_id
+        ),
+        None,
     )
     if rom_program:
         return rom_program
-    
+
     # Check user programs in SQLite database
-    from jdxi_editor.midi.data.programs.database import get_database
+    from jdxi_editor.ui.programs.database import get_database
+
     db = get_database()
     return db.get_program_by_id(program_id)
 
@@ -99,7 +105,12 @@ def get_program_by_bank_and_number(
     """
     program_id = f"{bank}{program_number:02d}"
     return next(
-        (program for program in JDXiProgramList.list_rom_and_user_programs() if program.id == program_id), None
+        (
+            program
+            for program in JDXiUIProgramList.list_rom_and_user_programs()
+            if program.id == program_id
+        ),
+        None,
     )
 
 
@@ -111,7 +122,7 @@ def get_program_id_by_name(name: str) -> Optional[str]:
     :return: Optional[str]
     """
     log.message(f"Searching for program name: {name}")
-    for program in JDXiProgramList.list_rom_and_user_programs():
+    for program in JDXiUIProgramList.list_rom_and_user_programs():
         if name in program.name:
             return getattr(program, "id", None)
     log.warning(f"Program named '{name}' not found.")
@@ -127,7 +138,11 @@ def add_program(program_list: List[JDXiProgram], new_program: JDXiProgram) -> bo
     :return:
     """
     existing_ids = {p.id for p in program_list}
-    existing_pcs = {f"{p.analog.bank_msb}-{p.analog.bank_lsb}-{p.analog.program}" for p in program_list if p.analog}
+    existing_pcs = {
+        f"{p.analog.bank_msb}-{p.analog.bank_lsb}-{p.analog.program}"
+        for p in program_list
+        if p.analog
+    }
 
     new_pc = f"{new_program.analog.bank_msb}-{new_program.analog.bank_lsb}-{new_program.analog.program}"
 
@@ -147,7 +162,7 @@ def load_programs() -> List[Dict[str, str]]:
     :return: list
     """
     try:
-        with open(JDXiProgramList.USER_PROGRAMS_FILE, "r", encoding="utf-8") as f:
+        with open(JDXiUIProgramList.USER_PROGRAMS_FILE, "r", encoding="utf-8") as f:
             return json.load(f)
     except (FileNotFoundError, json.JSONDecodeError):
         return []
@@ -160,7 +175,7 @@ def save_programs(program_list: List[Dict[str, str]]) -> None:
     :param program_list: List[Dict[str, str]]
     :return: None
     """
-    with open(JDXiProgramList.USER_PROGRAMS_FILE, "w", encoding="utf-8") as f:
+    with open(JDXiUIProgramList.USER_PROGRAMS_FILE, "w", encoding="utf-8") as f:
         json.dump(program_list, f, indent=4, ensure_ascii=False)
 
 
@@ -171,7 +186,14 @@ def get_program_number_by_name(program_name: str) -> Optional[int]:
     :param program_name: str
     :return: int
     """
-    program = next((p for p in JDXiProgramList.list_rom_and_user_programs() if p.name == program_name), None)
+    program = next(
+        (
+            p
+            for p in JDXiUIProgramList.list_rom_and_user_programs()
+            if p.name == program_name
+        ),
+        None,
+    )
     return int(program.id[1:]) if program else None
 
 
@@ -183,7 +205,12 @@ def get_program_name_by_id(program_id: str) -> Optional[str]:
     :return: str
     """
     program = next(
-        (program for program in JDXiProgramList.list_rom_and_user_programs() if program.id == program_id), None
+        (
+            program
+            for program in JDXiUIProgramList.list_rom_and_user_programs()
+            if program.id == program_id
+        ),
+        None,
     )
     return program.name if program else None
 
@@ -196,7 +223,14 @@ def get_program_parameter_value(parameter: str, program_id: str) -> Optional[str
     :param program_id: str
     :return:
     """
-    program = next((p for p in JDXiProgramList.list_rom_and_user_programs() if p.id == program_id), None)
+    program = next(
+        (
+            p
+            for p in JDXiUIProgramList.list_rom_and_user_programs()
+            if p.id == program_id
+        ),
+        None,
+    )
     return program.get(parameter) if program else None
 
 
@@ -212,8 +246,10 @@ def calculate_midi_values(bank: str, program_number: int) -> tuple[int, int, int
         # Validate program_number is in valid range (1-64)
         # Program numbers are 1-based in the UI, but 0-based for MIDI
         if program_number is None or program_number < 1 or program_number > 64:
-            raise ValueError(f"Program number must be between 1 and 64, got {program_number}")
-        
+            raise ValueError(
+                f"Program number must be between 1 and 64, got {program_number}"
+            )
+
         if bank in ["A", "B"]:
             msb = 85
             lsb = 64
@@ -233,14 +269,18 @@ def calculate_midi_values(bank: str, program_number: int) -> tuple[int, int, int
         else:
             log.error(f"Unknown bank: {bank}")
             return None, None, None
-        
+
         # Convert to 0-based PC value for MIDI (PC values are 0-127)
         pc_midi = pc - 1
-        
+
         # Ensure PC is within range (0-127 for MIDI)
-        if pc_midi is None or not 0 <= pc_midi <= MidiConstant.VALUE_MAX_SEVEN_BIT:
-            log.message(f"Invalid Program Change value: {pc_midi} (calculated from program_number={program_number}, bank={bank}, pc={pc})")
-            raise ValueError(f"Program Change value {pc_midi} is out of range (must be 0-127)")
+        if pc_midi is None or not 0 <= pc_midi <= Midi.VALUE.MAX.SEVEN_BIT:
+            log.message(
+                f"Invalid Program Change value: {pc_midi} (calculated from program_number={program_number}, bank={bank}, pc={pc})"
+            )
+            raise ValueError(
+                f"Program Change value {pc_midi} is out of range (must be 0-127)"
+            )
         return msb, lsb, pc_midi
     except ValueError:
         # Re-raise ValueError so caller can handle it
@@ -276,7 +316,7 @@ def get_msb_lsb_pc(program_number: int) -> tuple[int, int, int]:
     :raises ValueError: If any of the values can't be converted to int.
     """
     try:
-        program_list = JDXiProgramList.list_rom_and_user_programs()
+        program_list = JDXiUIProgramList.list_rom_and_user_programs()
         program = program_list[program_number]
     except IndexError:
         raise IndexError(f"Program number {program_number} is out of range.")

@@ -1,4 +1,5 @@
 """Sustain Control Change"""
+
 from jdxi_editor.midi.data.control_change.base import ControlChange
 
 

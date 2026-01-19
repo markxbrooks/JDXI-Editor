@@ -4,16 +4,18 @@ Common Section
 
 from typing import Callable
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel
-from PySide6.QtCore import Qt
-import qtawesome as qta
+from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
+from jdxi_editor.midi.data.parameter.analog.name import AnalogDisplayName
+from jdxi_editor.midi.data.parameter.analog.option import AnalogDisplayOptions
+from jdxi_editor.midi.data.parameter.analog.values import AnalogDisplayValues
+from jdxi_editor.ui.widgets.editor import IconType
+from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets
+from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 
-from jdxi_editor.jdxi.style import JDXiStyle
-from jdxi_editor.midi.data.parameter.analog import AnalogParam
 
-
-class AnalogCommonSection(QWidget):
+class AnalogCommonSection(SectionBaseWidget):
     """Common section for analog synth parameters."""
+
     def __init__(
         self,
         create_parameter_slider: Callable,
@@ -21,7 +23,6 @@ class AnalogCommonSection(QWidget):
         create_parameter_combo_box: Callable,
         controls: dict,
     ):
-        super().__init__()
         """
         Initialize the AnalogCommonSection
 
@@ -34,84 +35,70 @@ class AnalogCommonSection(QWidget):
         self._create_parameter_switch = create_parameter_switch
         self._create_parameter_combo_box = create_parameter_combo_box
         self.controls = controls
-        self.setStyleSheet(JDXiStyle.ADSR_ANALOG)
+
+        super().__init__(icon_type=IconType.GENERIC, analog=True)
         self.init_ui()
 
     def init_ui(self):
         """
         init ui
         """
-        main_rows_vlayout = QVBoxLayout()
-        self.setLayout(main_rows_vlayout)
+        main_rows_vlayout = self.get_layout()
 
-        # Icons
-        icons_hlayout = QHBoxLayout()
-        for icon_name in [
-            "ph.bell-ringing-bold",
-            "mdi.call-merge",
-            "mdi.account-voice",
-            "ri.voiceprint-fill",
-            "mdi.piano",
-        ]:
-            icon_label = QLabel()
-            icon = qta.icon(icon_name, color="#666666")
-            pixmap = icon.pixmap(24, 24)  # Using fixed icon size
-            icon_label.setPixmap(pixmap)
-            icon_label.setAlignment(Qt.AlignHCenter)
-            icons_hlayout.addWidget(icon_label)
-        main_rows_vlayout.addLayout(icons_hlayout)
+        self.create_sliders()
 
-        # Mono Switch
-        self.octave_shift_switch = self._create_parameter_combo_box(
-            AnalogParam.OCTAVE_SHIFT,
-            "Octave shift",
-            ["-3", "-2", "-1", "0", "+1", "+2", "+3"],
-            [61, 62, 63, 64, 65, 66, 67],
-        )
-        octave_shift_switch_row = QHBoxLayout()
-        octave_shift_switch_row.addStretch()
-        octave_shift_switch_row.addWidget(self.octave_shift_switch)
-        octave_shift_switch_row.addStretch()
+        # --- Octave Switch
+        octave_shift_switch_row = create_layout_with_widgets([self.octave_shift_switch])
         main_rows_vlayout.addLayout(octave_shift_switch_row)
 
-        self.legato_switch = self._create_parameter_switch(
-            AnalogParam.LEGATO_SWITCH, "Legato", ["OFF", "ON"]
-        )
-
-        legato_row = QHBoxLayout()
-        legato_row.addStretch()
-        legato_row.addWidget(self.legato_switch)
-        legato_row.addStretch()
+        # --- Legato Switch
+        legato_row = create_layout_with_widgets([self.legato_switch])
         main_rows_vlayout.addLayout(legato_row)
 
-        # Portamento Switch
-        self.portamento_switch = self._create_parameter_switch(
-            AnalogParam.PORTAMENTO_SWITCH, "Portamento", ["OFF", "ON"]
-        )
-        portamento_switch_row = QHBoxLayout()
-        portamento_switch_row.addStretch()
-        portamento_switch_row.addWidget(self.portamento_switch)
-        portamento_switch_row.addStretch()
+        # --- Portamento Switch
+        portamento_switch_row = create_layout_with_widgets([self.portamento_switch])
         main_rows_vlayout.addLayout(portamento_switch_row)
 
+        # --- Pitch Bend
+        pitch_bend_row = create_layout_with_widgets(
+            [self.pitch_bend_up, self.pitch_bend_down, self.portamento_time]
+        )
+        main_rows_vlayout.addLayout(pitch_bend_row)
+        main_rows_vlayout.addStretch()
+
+    def create_sliders(self):
+        """Create Sliders"""
+        #  --- Octave Switch
+        self.octave_shift_switch = self._create_parameter_combo_box(
+            AnalogParam.OCTAVE_SHIFT,
+            AnalogDisplayName.OCTAVE_SHIFT,
+            AnalogDisplayOptions.OCTAVE_SHIFT,
+            AnalogDisplayValues.OCTAVE_SHIFT,
+        )
+        self.legato_switch = self._create_parameter_switch(
+            AnalogParam.LEGATO_SWITCH,
+            AnalogDisplayName.LEGATO_SWITCH,
+            AnalogDisplayOptions.LEGATO_SWITCH,
+        )
+        # --- Portamento Switch
+        self.portamento_switch = self._create_parameter_switch(
+            AnalogParam.PORTAMENTO_SWITCH,
+            AnalogDisplayName.PORTAMENTO_SWITCH,
+            AnalogDisplayOptions.PORTAMENTO_SWITCH,
+        )
+
         self.pitch_bend_up = self._create_parameter_slider(
-            AnalogParam.PITCH_BEND_UP, "Pitch Bend Up", vertical=True
+            AnalogParam.PITCH_BEND_UP, AnalogDisplayName.PITCH_BEND_UP, vertical=True
         )
         self.pitch_bend_down = self._create_parameter_slider(
-            AnalogParam.PITCH_BEND_DOWN, "Pitch Bend Down", vertical=True
+            AnalogParam.PITCH_BEND_DOWN,
+            AnalogDisplayName.PITCH_BEND_DOWN,
+            vertical=True,
         )
 
-        # Portamento Time
+        # --- Portamento Time
         self.portamento_time = self._create_parameter_slider(
-            AnalogParam.PORTAMENTO_TIME, "Portamento Time", vertical=True
+            AnalogParam.PORTAMENTO_TIME,
+            AnalogDisplayName.PORTAMENTO_TIME,
+            vertical=True,
         )
-        # Pitch Bend
-        self.pitch_bend_row = QHBoxLayout()
-        main_rows_vlayout.addLayout(self.pitch_bend_row)
-        self.pitch_bend_row.addStretch()
-        self.pitch_bend_row.addWidget(self.pitch_bend_up)
-        self.pitch_bend_row.addWidget(self.pitch_bend_down)
-        self.pitch_bend_row.addWidget(self.portamento_time)
-        self.pitch_bend_row.addStretch()
-
-        main_rows_vlayout.addStretch()

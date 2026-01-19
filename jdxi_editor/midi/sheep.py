@@ -2,15 +2,18 @@
 
 import os
 import time
-from mido import MidiFile
-import mido
+
 import fluidsynth
+import mido
+from mido import MidiFile
 
 # Configuration
 HW_PORT_HINT = "Roland JDXi"  # adjust if your port name differs
 # SF2_PATH = os.path.expanduser("~/SoundFonts/FluidR3_GM.sf2")
 SF2_PATH = os.path.expanduser("~/SoundFonts/Guitar/Guitar.sf2")
-MIDI_FILE_PATH = os.path.expanduser("~/Desktop/music/Sheep - Pink Floyd.mid")  # optional: provide a test MIDI file
+MIDI_FILE_PATH = os.path.expanduser(
+    "~/Desktop/music/Sheep - Pink Floyd.mid"
+)  # optional: provide a test MIDI file
 
 
 def find_hw_output_name(prefer_hw=True):
@@ -53,13 +56,15 @@ def midi_to_events(in_port, sink_send, use_sw, fs=None):
         for msg in in_port:
             if use_sw:
                 # Translate to FluidSynth
-                if msg.type == 'note_on' and msg.velocity > 0:
-                    fs.noteon(0, msg.note, msg.velocity)
-                elif (msg.type == 'note_off') or (msg.type == 'note_on' and msg.velocity == 0):
-                    fs.noteoff(0, msg.note)
-                elif msg.type == 'control_change':
-                    fs.cc(0, msg.control, msg.value)
-                elif msg.type == 'program_change':
+                if msg.type == "note_on" and msg.velocity > 0:
+                    fs.noteon(0, msg.NOTE, msg.velocity)
+                elif (msg.type == "note_off") or (
+                    msg.type == "note_on" and msg.velocity == 0
+                ):
+                    fs.noteoff(0, msg.NOTE)
+                elif msg.type == "control_change":
+                    fs.CC(0, msg.control, msg.STATUS)
+                elif msg.type == "program_change":
                     fs.program_change(0, msg.program)
                 # You can extend with aftertouch, pitchwheel, etc.
             else:
@@ -94,13 +99,15 @@ def main():
         current_time = 0.0
         for msg in mid.play():
             if use_sw:
-                if msg.type == 'note_on' and msg.velocity > 0:
-                    fs.noteon(0, msg.note, msg.velocity)
-                elif (msg.type == 'note_off') or (msg.type == 'note_on' and msg.velocity == 0):
-                    fs.noteoff(0, msg.note)
-                elif msg.type == 'control_change':
-                    fs.cc(0, msg.control, msg.value)
-                elif msg.type == 'program_change':
+                if msg.type == "note_on" and msg.velocity > 0:
+                    fs.noteon(0, msg.NOTE, msg.velocity)
+                elif (msg.type == "note_off") or (
+                    msg.type == "note_on" and msg.velocity == 0
+                ):
+                    fs.noteoff(0, msg.NOTE)
+                elif msg.type == "control_change":
+                    fs.cc(0, msg.control, msg.STATUS)
+                elif msg.type == "program_change":
                     fs.program_change(0, msg.program)
             else:
                 # If someone modified this script to feed live MIDI, they'd forward here

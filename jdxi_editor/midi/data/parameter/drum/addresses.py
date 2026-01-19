@@ -8,7 +8,6 @@ Mappings:
 These mappings are used to identify the memory locations of drum parameters when processing MIDI SysEx messages.
 """
 
-
 DRUM_ADDRESS_MAP = {
     "COM": 0x00,  # Common parameters
     "BD1": 0x2E,  # Drum Kit Partial (Key # 36)

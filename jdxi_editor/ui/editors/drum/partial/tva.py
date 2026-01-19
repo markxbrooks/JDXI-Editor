@@ -36,29 +36,55 @@ from typing import Callable
 
 import numpy as np
 from PySide6.QtCore import Signal
-from PySide6.QtGui import QPainter, QLinearGradient, QPen, QColor, Qt, QFont, QPainterPath
-from PySide6.QtWidgets import QGroupBox, QFormLayout, QWidget, QVBoxLayout, QScrollArea, QHBoxLayout, QGridLayout
+from PySide6.QtGui import (
+    QColor,
+    QFont,
+    QLinearGradient,
+    QPainter,
+    QPainterPath,
+    QPen,
+    Qt,
+)
+from PySide6.QtWidgets import (
+    QGridLayout,
+    QWidget,
+)
 
-from jdxi_editor.jdxi.style import JDXiStyle
+from decologr import Decologr as log
+from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.midi.data.parameter.drum.name import DrumDisplayName
+from jdxi_editor.midi.data.parameter.drum.option import DrumDisplayOptions
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
-from jdxi_editor.ui.editors.drum.partial.tvf import midi_to_cutoff_level, midi_to_time_normalized
-from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.log.logger import Logger as log
+from jdxi_editor.ui.editors.drum.partial.base import DrumBaseSection
+from jdxi_editor.ui.editors.drum.partial.tvf import (
+    midi_to_cutoff_level,
+    midi_to_time_normalized,
+)
+from jdxi_editor.ui.widgets.editor.helper import (
+    create_group_with_layout,
+    create_layout_with_widgets,
+)
 
 
 class DrumTVAEnvPlot(QWidget):
     """Plot widget for drum TVA envelope visualization."""
 
-    def __init__(self, width: int = JDXiStyle.ADSR_PLOT_WIDTH, height: int = JDXiStyle.ADSR_PLOT_HEIGHT,
-                 envelope: dict = None, parent: QWidget = None):
+    def __init__(
+        self,
+        width: int = JDXi.UI.Style.ADSR_PLOT_WIDTH,
+        height: int = JDXi.UI.Style.ADSR_PLOT_HEIGHT,
+        envelope: dict = None,
+        parent: QWidget = None,
+    ):
         super().__init__(parent)
         self.enabled = True
         self.envelope = envelope or {}
         self.setMinimumSize(width, height)
         self.setMaximumHeight(height)
         self.setMaximumWidth(width)
-        self.setStyleSheet(JDXiStyle.ADSR_PLOT)
+
+        JDXi.UI.ThemeManager.apply_adsr_plot(self)
         self.sample_rate = 256
         self.setMinimumHeight(150)
 
@@ -90,7 +116,7 @@ class DrumTVAEnvPlot(QWidget):
             axis_pen = QPen(QColor("white"), 1)
             grid_pen = QPen(Qt.GlobalColor.darkGray, 1)
             grid_pen.setStyle(Qt.PenStyle.DashLine)
-            point_pen = QPen(QColor("orange"), JDXiDimensions.CHART_POINT_SIZE)
+            point_pen = QPen(QColor("orange"), JDXi.UI.Dimensions.CHART.POINT_SIZE)
             painter.setFont(QFont("JD LCD Rounded", 10))
 
             depth = self.envelope.get("depth", 64) - 64  # -63 to +63
@@ -136,7 +162,9 @@ class DrumTVAEnvPlot(QWidget):
             segment_3 = np.linspace(level_2, level_3, t3_samples, endpoint=False)
             segment_4 = np.linspace(level_3, level_4, t4_samples, endpoint=True)
 
-            envelope_curve = np.concatenate([segment_1, segment_2, segment_3, segment_4])
+            envelope_curve = np.concatenate(
+                [segment_1, segment_2, segment_3, segment_4]
+            )
             total_samples = len(envelope_curve)
 
             w, h = self.width(), self.height()
@@ -149,13 +177,22 @@ class DrumTVAEnvPlot(QWidget):
             y_max, y_min = 127.0, 0.0
 
             painter.setPen(axis_pen)
-            painter.drawLine(left_padding, top_padding, left_padding, top_padding + plot_h)
-            painter.drawLine(left_padding, top_padding + plot_h, left_padding + plot_w, top_padding + plot_h)
+            painter.drawLine(
+                left_padding, top_padding, left_padding, top_padding + plot_h
+            )
+            painter.drawLine(
+                left_padding,
+                top_padding + plot_h,
+                left_padding + plot_w,
+                top_padding + plot_h,
+            )
 
             num_ticks = 6
             for i in range(num_ticks + 1):
                 x = left_padding + i * plot_w / num_ticks
-                painter.drawLine(x, top_padding + plot_h - 5, x, top_padding + plot_h + 5)
+                painter.drawLine(
+                    x, top_padding + plot_h - 5, x, top_padding + plot_h + 5
+                )
                 time_val = (i / num_ticks) * total_time
                 painter.drawText(x - 15, top_padding + plot_h + 20, f"{time_val:.1f}")
 
@@ -168,10 +205,14 @@ class DrumTVAEnvPlot(QWidget):
 
             painter.setPen(QPen(QColor("orange")))
             painter.setFont(QFont("JD LCD Rounded", 16))
-            painter.drawText(left_padding + plot_w / 2 - 50, top_padding / 2, "TVA Envelope")
+            painter.drawText(
+                left_padding + plot_w / 2 - 50, top_padding / 2, "TVA Envelope"
+            )
 
             painter.setPen(QPen(QColor("white")))
-            painter.drawText(left_padding + plot_w / 2 - 10, top_padding + plot_h + 35, "Time (s)")
+            painter.drawText(
+                left_padding + plot_w / 2 - 10, top_padding + plot_h + 35, "Time (s)"
+            )
 
             painter.save()
             painter.translate(left_padding - 50, top_padding + plot_h / 2 + 25)
@@ -196,7 +237,7 @@ class DrumTVAEnvPlot(QWidget):
                 for i in indices:
                     if i >= len(envelope_curve):
                         continue
-                    t = (i / sample_rate)
+                    t = i / sample_rate
                     x = left_padding + (t / total_time) * plot_w
                     y_val = envelope_curve[i]
                     y = top_padding + plot_h - (y_val / y_max) * plot_h
@@ -210,8 +251,10 @@ class DrumTVAEnvPlot(QWidget):
 
                 painter.setPen(point_pen)
                 level_points = [
-                    (0, level_0, "L0"), (time_1, level_1, "L1"),
-                    (time_1 + time_2, level_2, "L2"), (time_1 + time_2 + time_3, level_3, "L3"),
+                    (0, level_0, "L0"),
+                    (time_1, level_1, "L1"),
+                    (time_1 + time_2, level_2, "L2"),
+                    (time_1 + time_2 + time_3, level_3, "L3"),
                     (time_1 + time_2 + time_3 + time_4, level_4, "L4"),
                 ]
                 for t, level, label in level_points:
@@ -228,7 +271,7 @@ class DrumTVAEnvPlot(QWidget):
             painter.end()
 
 
-class DrumTVASection(QWidget):
+class DrumTVASection(DrumBaseSection):
     """Drum TVA Section for the JDXI Editor"""
 
     envelope_changed = Signal(dict)
@@ -270,63 +313,52 @@ class DrumTVASection(QWidget):
 
     def setup_ui(self):
         """setup UI"""
-        self.setMinimumWidth(JDXiDimensions.DRUM_PARTIAL_TAB_MIN_WIDTH)
-        layout = QVBoxLayout(self)
 
-        scroll_area = QScrollArea()
-        scroll_area.setMinimumHeight(JDXiDimensions.SCROLL_AREA_HEIGHT)
-        scroll_area.setWidgetResizable(True)  # Important for resizing behavior
-        layout.addWidget(scroll_area)
-
-        scrolled_widget = QWidget()
-        scrolled_layout = QVBoxLayout(scrolled_widget)
-
-        # Add widgets to scrolled_layout here if needed
-
-        scroll_area.setWidget(scrolled_widget)
-        main_vbox_layout = QVBoxLayout()
-        main_row_hlayout = QHBoxLayout()
-        main_row_hlayout.addStretch()
-        scrolled_layout.addLayout(main_vbox_layout)
-
-        tva_level_velocity_curve_spin = self._create_tva_spin()
-        main_vbox_layout.addWidget(tva_level_velocity_curve_spin)
-        main_vbox_layout.addLayout(main_row_hlayout)
-
+        self.tva_level_velocity_curve_spin = self._create_tva_spin()
         self.tva_group = self._create_tva_group()
-        main_row_hlayout.addWidget(self.tva_group)
         self.plot = self._create_tva_plot()
-        main_row_hlayout.addWidget(self.plot)
-        main_row_hlayout.addStretch()
+
+        main_row_hlayout = create_layout_with_widgets(
+            widget_list=[self.tva_group, self.plot], vertical=False
+        )
+
+        main_vbox_layout = create_layout_with_widgets(
+            widget_list=[self.tva_level_velocity_curve_spin], vertical=True
+        )
+        main_vbox_layout.addLayout(main_row_hlayout)
+        self.scrolled_layout.addLayout(main_vbox_layout)
 
     def _create_tva_spin(self) -> QWidget:
         # Add TVA parameters
         tva_level_velocity_curve_spin = self._create_parameter_combo_box(
             DrumPartialParam.TVA_LEVEL_VELOCITY_CURVE,
-            "Level Velocity Curve",
-            ["FIXED", "1", "2", "3", "4", "5", "6", "7"],
-            [0, 1, 2, 3, 4, 5, 6, 7],
+            DrumDisplayName.TVA_LEVEL_VELOCITY_CURVE,
+            options=DrumDisplayOptions.TVA_LEVEL_VELOCITY_CURVE,
+            values=[0, 1, 2, 3, 4, 5, 6, 7],
         )
         return tva_level_velocity_curve_spin
 
     def _create_tva_group(self):
         """TVA Group"""
-        tva_group = QGroupBox("TVA")
-        tva_group.setStyleSheet(JDXiStyle.ADSR)
         envelope_slider_layout = QGridLayout()
-        tva_group.setLayout(envelope_slider_layout)
+        tva_group, _ = create_group_with_layout(
+            group_name="TVA",
+            inner_layout=envelope_slider_layout,
+            style_sheet=JDXi.UI.Style.ADSR,
+        )
 
         # --- Add TVA Velocity Sensitivity controls
         row = 0
         tva_level_velocity_sens_slider = self._create_parameter_slider(
-            DrumPartialParam.TVA_LEVEL_VELOCITY_SENS, "Level Velocity Sens", vertical=True
+            DrumPartialParam.TVA_LEVEL_VELOCITY_SENS,
+            DrumDisplayName.TVA_LEVEL_VELOCITY_SENS,
+            vertical=True,
         )
         envelope_slider_layout.addWidget(tva_level_velocity_sens_slider, row, 0)
 
         t1_v_sens_param = DrumPartialParam.TVA_ENV_TIME_1_VELOCITY_SENS
         self.t1_v_sens_slider = self._create_parameter_slider(
-            t1_v_sens_param,
-            "Env Time 1 Velocity Sens", vertical=True
+            t1_v_sens_param, DrumDisplayName.TVA_ENV_TIME_1_VELOCITY_SENS, vertical=True
         )
         envelope_slider_layout.addWidget(self.t1_v_sens_slider, row, 1)
 
@@ -350,7 +382,7 @@ class DrumTVASection(QWidget):
         row = 1
         time_1_param = DrumPartialParam.TVA_ENV_TIME_1
         self.time_1_slider = self._create_parameter_slider(
-            time_1_param, "Time 1", vertical=True
+            time_1_param, DrumDisplayName.TVA_TIME_1, vertical=True
         )
         self.controls[time_1_param] = self.time_1_slider
         envelope_slider_layout.addWidget(self.time_1_slider, row, 0)
@@ -360,7 +392,7 @@ class DrumTVASection(QWidget):
 
         time_2_param = DrumPartialParam.TVA_ENV_TIME_2
         self.time_2_slider = self._create_parameter_slider(
-            time_2_param, "Time 2", vertical=True
+            time_2_param, DrumDisplayName.TVA_TIME_2, vertical=True
         )
         self.controls[time_2_param] = self.time_2_slider
         envelope_slider_layout.addWidget(self.time_2_slider, row, 1)
@@ -370,7 +402,7 @@ class DrumTVASection(QWidget):
 
         time_3_param = DrumPartialParam.TVA_ENV_TIME_3
         self.time_3_slider = self._create_parameter_slider(
-            time_3_param, "Time 3", vertical=True
+            time_3_param, DrumDisplayName.TVA_TIME_3, vertical=True
         )
         self.controls[time_3_param] = self.time_3_slider
         envelope_slider_layout.addWidget(self.time_3_slider, row, 2)
@@ -380,7 +412,7 @@ class DrumTVASection(QWidget):
 
         time_4_param = DrumPartialParam.TVA_ENV_TIME_4
         self.time_4_slider = self._create_parameter_slider(
-            time_4_param, "Time 4", vertical=True
+            time_4_param, DrumDisplayName.TVA_TIME_4, vertical=True
         )
         self.controls[time_4_param] = self.time_4_slider
         envelope_slider_layout.addWidget(self.time_4_slider, row, 3)
@@ -392,7 +424,7 @@ class DrumTVASection(QWidget):
         row = 2
         level_1_param = DrumPartialParam.TVA_ENV_LEVEL_1
         self.level_1_slider = self._create_parameter_slider(
-            level_1_param, "Level 1", vertical=True
+            level_1_param, DrumDisplayName.TVA_LEVEL_1, vertical=True
         )
         self.controls[level_1_param] = self.level_1_slider
         envelope_slider_layout.addWidget(self.level_1_slider, row, 0)
@@ -402,7 +434,7 @@ class DrumTVASection(QWidget):
 
         level_2_param = DrumPartialParam.TVA_ENV_LEVEL_2
         self.level_2_slider = self._create_parameter_slider(
-            level_2_param, "Level 2", vertical=True
+            level_2_param, DrumDisplayName.TVA_LEVEL_2, vertical=True
         )
         self.controls[level_2_param] = self.level_2_slider
         envelope_slider_layout.addWidget(self.level_2_slider, row, 1)
@@ -412,7 +444,7 @@ class DrumTVASection(QWidget):
 
         level_3_param = DrumPartialParam.TVA_ENV_LEVEL_3
         self.level_3_slider = self._create_parameter_slider(
-            level_3_param, "Level 3", vertical=True
+            level_3_param, DrumDisplayName.TVA_LEVEL_3, vertical=True
         )
         self.controls[level_3_param] = self.level_3_slider
         envelope_slider_layout.addWidget(self.level_3_slider, row, 2)
@@ -423,14 +455,16 @@ class DrumTVASection(QWidget):
 
     def _create_tva_plot(self):
         plot = DrumTVAEnvPlot(
-            width=JDXiStyle.ADSR_PLOT_WIDTH,
-            height=JDXiStyle.ADSR_PLOT_HEIGHT,
+            width=JDXi.UI.Style.ADSR_PLOT_WIDTH,
+            height=JDXi.UI.Style.ADSR_PLOT_HEIGHT,
             envelope=self.envelope,
-            parent=self
+            parent=self,
         )
         return plot
 
-    def _update_envelope(self, key: str, value: int, param: DrumPartialParam = None) -> None:
+    def _update_envelope(
+        self, key: str, value: int, param: DrumPartialParam = None
+    ) -> None:
         """Update envelope value and refresh plot
 
         :param key: str Envelope parameter key
@@ -438,7 +472,7 @@ class DrumTVASection(QWidget):
         :param param: AddressParameterDrumPartial Parameter object for conversion
         """
         # Convert display value to MIDI value if parameter is provided
-        if param and hasattr(param, 'convert_from_display'):
+        if param and hasattr(param, "convert_from_display"):
             midi_value = param.convert_from_display(value)
         else:
             # For parameters without special conversion, assume value is already MIDI

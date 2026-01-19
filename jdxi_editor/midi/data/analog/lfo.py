@@ -1,4 +1,5 @@
 """Analog LFO"""
+
 from enum import Enum
 
 LFO_RANGES = {

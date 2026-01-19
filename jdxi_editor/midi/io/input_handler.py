@@ -21,30 +21,27 @@ Dependencies:
 """
 
 import json
-import logging
 import os
-from dataclasses import asdict
+from typing import Any, Callable, Dict, List, Optional
 
 import mido
-from typing import Any, Callable, List, Optional, Dict
 from PySide6.QtCore import Signal
 
-from jdxi_editor.jdxi.midi.constant import JDXiConstant, MidiConstant
-from jdxi_editor.jdxi.preset.data import JDXiPresetData
-from jdxi_editor.jdxi.preset.incoming_data import IncomingPresetData
-from jdxi_editor.jdxi.program.program import JDXiProgram
-from jdxi_editor.jdxi.synth.type import JDXiSynth
-from jdxi_editor.jdxi.sysex.offset import JDXIIdentityOffset
-from jdxi_editor.log.logger import Logger as log
-from jdxi_editor.midi.data.programs import JDXiProgramList
+from decologr import Decologr as log
+from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.midi.data.address.address import AddressStartMSB as AreaMSB
 from jdxi_editor.midi.io.controller import MidiIOController
-from jdxi_editor.midi.io.utils import handle_identity_request
+
+# handle_identity_request moved to JDXiSysExParser.parse_identity_request
 from jdxi_editor.midi.map.synth_type import JDXiMapSynthType
+from jdxi_editor.midi.message.sysex.offset import JDXiSysExIdentityLayout
+from jdxi_editor.midi.program.program import JDXiProgram
 from jdxi_editor.midi.sysex.parser.sysex import JDXiSysExParser
 from jdxi_editor.midi.sysex.request.data import IGNORED_KEYS
-from jdxi_editor.jdxi.preset.button import JDXiPresetButtonData
-
-from jdxi_editor.midi.data.address.address import AddressStartMSB as AreaMSB
+from jdxi_editor.ui.preset.button import JDXiPresetButtonData
+from jdxi_editor.ui.preset.incoming_data import IncomingPresetData
+from jdxi_editor.ui.programs import JDXiUIProgramList
+from picomidi.constant import Midi
 
 
 def add_or_replace_program_and_save(new_program: JDXiProgram) -> bool:
@@ -57,7 +54,8 @@ def add_or_replace_program_and_save(new_program: JDXiProgram) -> bool:
     """
     try:
         # Use SQLite database instead of JSON
-        from jdxi_editor.midi.data.programs.database import get_database
+        from jdxi_editor.ui.programs.database import get_database
+
         db = get_database()
         return db.add_or_replace_program(new_program)
     except Exception as e:
@@ -82,14 +80,18 @@ def add_or_replace_program_and_save_old(new_program: JDXiProgram) -> bool:
             print(f"Program '{new_program.id}' already exists.")
             return False
 
-        log.message(f"Adding new program {new_program}: {new_program.id} with PC {new_program.pc}")
+        log.message(
+            f"Adding new program {new_program}: {new_program.id} with PC {new_program.pc}"
+        )
 
         program_list.append(new_program.to_dict())
 
         log.message(f"Program list after addition: {program_list}")
 
         save_programs(program_list)
-        log.message(f"Added and saved program: {new_program.id} with PC {new_program.pc}")
+        log.message(
+            f"Added and saved program: {new_program.id} with PC {new_program.pc}"
+        )
         return True
     except Exception as e:
         log.error(f"Failed to add and save program: {e}")
@@ -98,7 +100,7 @@ def add_or_replace_program_and_save_old(new_program: JDXiProgram) -> bool:
 
 def load_programs() -> List[Dict[str, str]]:
     try:
-        with open(JDXiProgramList.USER_PROGRAMS_FILE, "r", encoding="utf-8") as f:
+        with open(JDXiUIProgramList.USER_PROGRAMS_FILE, "r", encoding="utf-8") as f:
             return json.load(f)
     except (FileNotFoundError, json.JSONDecodeError):
         return []
@@ -111,8 +113,10 @@ def save_programs(program_list: List[Dict[str, str]]) -> None:
     :param program_list: List of program dictionaries.
     """
     try:
-        file_path = JDXiProgramList.USER_PROGRAMS_FILE
-        os.makedirs(os.path.dirname(file_path), exist_ok=True)  # ensure directory exists
+        file_path = JDXiUIProgramList.USER_PROGRAMS_FILE
+        os.makedirs(
+            os.path.dirname(file_path), exist_ok=True
+        )  # ensure directory exists
         with open(file_path, "w", encoding="utf-8") as f:
             json.dump(program_list, f, indent=4, ensure_ascii=False)
     except Exception as e:
@@ -126,7 +130,7 @@ def save_programs_old(program_list: List[Dict[str, str]]) -> None:
     :param program_list: List[Dict[str, str]]
     :return: None
     """
-    with open(JDXiProgramList.USER_PROGRAMS_FILE, "w", encoding="utf-8") as f:
+    with open(JDXiUIProgramList.USER_PROGRAMS_FILE, "w", encoding="utf-8") as f:
         json.dump(program_list, f, indent=4, ensure_ascii=False)
 
 
@@ -284,25 +288,43 @@ class MidiInHandler(MidiIOController):
         try:
             if not (message.type == "sysex" and len(message.data) > 6):
                 return
-            mido_sub_id_byte_offset = JDXIIdentityOffset.SUB_ID_2_IDENTITY_REPLY - 1  # account for lack of status byte
-            if message.data[mido_sub_id_byte_offset] == JDXiConstant.SUB_ID_2_IDENTITY_REPLY:
-                handle_identity_request(message)
+            mido_sub_id_byte_offset = (
+                JDXiSysExIdentityLayout.ID.SUB2 - 1
+            )  # account for lack of status byte
+            if (
+                message.data[mido_sub_id_byte_offset]
+                == JDXi.Midi.SYSEX.IDENTITY.CONST.SUB2_IDENTITY_REPLY
+            ):
+                self.sysex_parser.parse_identity_request(message)
                 return
 
             hex_string = " ".join(f"{byte:02X}" for byte in message.data)
-            sysex_message_bytes = bytes([MidiConstant.START_OF_SYSEX]) + bytes(message.data) + bytes(
-                [MidiConstant.END_OF_SYSEX])
+            sysex_message_bytes = (
+                bytes([Midi.SYSEX.START])
+                + bytes(message.data)
+                + bytes([Midi.SYSEX.END])
+            )
             try:
                 parsed_data = self.sysex_parser.parse_bytes(sysex_message_bytes)
                 filtered_data = {
                     k: v for k, v in parsed_data.items() if k not in IGNORED_KEYS
                 }
+            except ValueError as ex:
+                # Skip logging for non-JD-Xi messages (e.g., universal identity_request requests)
+                error_msg = str(ex)
+                if "Not a JD-Xi SysEx message" in error_msg:
+                    # This is a universal MIDI message, not a JD-Xi message - skip silently
+                    filtered_data = {}
+                    return
+                else:
+                    # Log error for actual JD-Xi parsing errors
+                    log.error(f"Error {ex} occurred parsing data")
+                    filtered_data = {}
             except Exception as ex:
                 log.error(f"Error {ex} occurred parsing data")
                 filtered_data = {}
             log.message(
-                f"[MIDI SysEx received]: {hex_string} {filtered_data}",
-                silent=False
+                f"[MIDI SysEx received]: {hex_string} {filtered_data}", silent=False
             )
             try:
                 parsed_data = self.sysex_parser.parse_bytes(sysex_message_bytes)
@@ -316,7 +338,9 @@ class MidiInHandler(MidiIOController):
         except Exception as ex:
             log.error(f"Unexpected error {ex} while handling SysEx message")
 
-    def _handle_control_change(self, message: mido.Message, preset_data: dict) -> None:  # @@
+    def _handle_control_change(
+        self, message: mido.Message, preset_data: dict
+    ) -> None:  # @@
         """
         Handle Control Change (CC) MIDI messages.
 
@@ -329,16 +353,18 @@ class MidiInHandler(MidiIOController):
         log.message(
             f"Control Change - Channel: {channel}, Control: {control}, Value: {value}"
         )
-        if value in [MidiConstant.CONTROL_CHANGE_BANK_SELECT_LSB_BANK_E_AND_F,
-                     MidiConstant.CONTROL_CHANGE_BANK_SELECT_LSB_BANK_G_AND_H]:
+        if value in [
+            JDXi.Midi.CC.BANK_SELECT.LSB.BANK_E_AND_F,
+            JDXi.Midi.CC.BANK_SELECT.LSB.BANK_G_AND_H,
+        ]:
             log.parameter("control", control)  # Bank Select LSB 00 or 01
             log.parameter("value", value)  # Bank Select LSB 00 or 01
             self._incoming_preset_data.lsb = value
 
         self.midi_control_changed.emit(channel, control, value)
-        if control == MidiConstant.CONTROL_CHANGE_NRPN_MSB:  # NRPN MSB
+        if control == Midi.CC.NRPN.MSB:  # NRPN MSB
             self.nrpn_msb = value
-        elif control == MidiConstant.CONTROL_CHANGE_NRPN_LSB:  # NRPN LSB
+        elif control == Midi.CC.NRPN.LSB:  # NRPN LSB
             self.nrpn_lsb = value
         elif control == 6 and self.nrpn_msb is not None and self.nrpn_lsb is not None:
             # We have both MSB and LSB; reconstruct NRPN address
@@ -414,8 +440,11 @@ class MidiInHandler(MidiIOController):
 
         # All parts received? Then save program!
         # Only auto-add if enabled (disabled during manual database updates)
-        auto_add_enabled = getattr(self, '_auto_add_enabled', True)
-        if auto_add_enabled and all(k in self._incoming_preset_data.tone_names for k in ("digital_1", "digital_2", "analog", "drum")):
+        auto_add_enabled = getattr(self, "_auto_add_enabled", True)
+        if auto_add_enabled and all(
+            k in self._incoming_preset_data.tone_names
+            for k in ("digital_1", "digital_2", "analog", "drum")
+        ):
             self._auto_add_current_program()
 
     def _auto_add_current_program(self):
@@ -451,9 +480,18 @@ class MidiInHandler(MidiIOController):
 
         try:
             program_number = data.program_number
-            msb = data.msb  # data.msb or 85
-            lsb = data.lsb  # data.lsb or 0
+            # Default MSB to 85 (standard for JD-Xi programs) if not set
+            msb = data.msb if data.msb is not None else 85
+            # Default LSB to 0 (User Bank E/F) if not set
+            # This is the most common case for user programs
+            lsb = data.lsb if data.lsb is not None else 0
             prefix = None
+
+            # Guard against None values (should not happen after defaults, but keep as safety check)
+            if msb is None:
+                log.message(f"❌ Missing MSB (msb={msb}); cannot auto-add program")
+                return
+
             index_in_bank = program_number % 64
 
             # === User Banks ===

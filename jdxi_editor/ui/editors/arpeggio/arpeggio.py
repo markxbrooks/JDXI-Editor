@@ -39,33 +39,32 @@ Dependencies:
 from typing import Dict, Optional
 
 from PySide6.QtWidgets import (
-    QVBoxLayout,
     QHBoxLayout,
-    QLabel,
-    QWidget, QGroupBox,
+    QVBoxLayout,
+    QWidget,
 )
-from PySide6.QtCore import Qt
 
-from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
-from jdxi_editor.midi.data.address.address import RolandSysExAddress, ZERO_BYTE
-from jdxi_editor.midi.data.arpeggio.arpeggio import ArpeggioSwitch
+from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.arpeggio.arpeggio import (
+    ArpeggioDuration,
+    ArpeggioGrid,
     ArpeggioMotif,
     ArpeggioOctaveRange,
-    ArpeggioGrid,
-    ArpeggioDuration,
+    ArpeggioSwitch,
 )
 from jdxi_editor.midi.data.arpeggio.data import (
     ARPEGGIO_STYLE,
 )
-from jdxi_editor.midi.data.address.arpeggio import ArpeggioAddress
 from jdxi_editor.midi.data.parameter.arpeggio import ArpeggioParam
 from jdxi_editor.midi.data.parameter.program.zone import ProgramZoneParam
-from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.editors.address.factory import create_arp_address
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
-from jdxi_editor.jdxi.style import JDXiStyle
-from jdxi_editor.ui.widgets.display.digital import DigitalTitle
+from jdxi_editor.ui.preset.helper import JDXiPresetHelper
+from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
+from jdxi_editor.ui.widgets.editor.helper import transfer_layout_items
+from jdxi_editor.ui.widgets.editor.simple_editor_helper import SimpleEditorHelper
+from picomidi.sysex.parameter.address import AddressParameter
 
 
 class ArpeggioEditor(BasicEditor):
@@ -75,7 +74,7 @@ class ArpeggioEditor(BasicEditor):
         self,
         midi_helper: MidiIOHelper,
         preset_helper: Optional[JDXiPresetHelper] = None,
-        parent: Optional[QWidget] = None,
+        parent: Optional["JDXiInstrument"] = None,
     ):
         super().__init__(midi_helper=midi_helper, parent=parent)
         """
@@ -88,15 +87,8 @@ class ArpeggioEditor(BasicEditor):
         self.setWindowTitle("Arpeggio Editor")
         self.midi_helper = midi_helper
         self.preset_helper = preset_helper
-        self.address = RolandSysExAddress(
-            msb=ArpeggioAddress.TEMPORARY_PROGRAM,
-            umb=ArpeggioAddress.ARP_PART,
-            lmb=ArpeggioAddress.ARP_GROUP,
-            lsb=ZERO_BYTE,
-        )
+        self.address = create_arp_address()
         self.partial_number = 0
-        self.instrument_icon_folder = "arpeggiator"
-        self.default_image = "arpeggiator2.png"
         self.controls: Dict[AddressParameter, QWidget] = {}
 
         if parent:
@@ -110,116 +102,127 @@ class ArpeggioEditor(BasicEditor):
                 elif parent.current_synth_type == "Digital 4":
                     self.partial_number = 3
 
-        # Main layout
-        layout = QVBoxLayout()
-        self.setLayout(layout)
+        # --- Use EditorBaseWidget for consistent scrollable layout structure
+        self.base_widget = EditorBaseWidget(parent=self, analog=False)
+        self.base_widget.setup_scrollable_content()
 
-        self.title_label = DigitalTitle(tone_name="Arpeggiator")
-        self.title_label.setStyleSheet(JDXiStyle.INSTRUMENT_TITLE_LABEL)
+        # --- Use SimpleEditorHelper for standardized title/image/tab setup
+        self.editor_helper = SimpleEditorHelper(
+            editor=self,
+            base_widget=self.base_widget,
+            title="Arpeggiator",
+            image_folder="arpeggiator",
+            default_image="arpeggiator2.png",
+        )
 
-        # Image display
-        self.image_label = QLabel()
-        self.image_label.setAlignment(
-            Qt.AlignmentFlag.AlignCenter
-        )  # Center align the image
+        # --- Get rows layout to add additional content (icon row and switches)
+        # Helper function to create left-aligned horizontal layouts
+        def create_left_aligned_row(widget_list: list) -> QHBoxLayout:
+            """Create a left-aligned horizontal layout"""
+            row = QHBoxLayout()
+            for widget in widget_list:
+                row.addWidget(widget)
+            row.addStretch()  # Only add stretch on the right
+            return row
 
-        title_group_box = QGroupBox()
-        title_group_layout = QHBoxLayout()
-        title_group_box.setLayout(title_group_layout)
-        title_group_layout.addWidget(self.title_label)
-        title_group_layout.addWidget(self.image_label)
+        # --- Icons row (standardized across editor tabs) - transfer items to avoid "already has a parent" errors
+        icon_row_container = QHBoxLayout()
+        icon_hlayout = JDXi.UI.IconRegistry.create_generic_musical_icon_row()
 
-        self.update_instrument_image()
-
-        main_row_hlayout = QHBoxLayout()
-        layout.addLayout(main_row_hlayout)
-        main_row_hlayout.addStretch()
-        rows_layout = QVBoxLayout()
-        main_row_hlayout.addLayout(rows_layout)
-        rows_layout.addWidget(title_group_box)
+        transfer_layout_items(icon_hlayout, icon_row_container)
         # Add on-off switch
-        program_zone_row = QHBoxLayout()
         common_button = self._create_parameter_switch(
             ProgramZoneParam.ARPEGGIO_SWITCH,
             "Master Arpeggiator",
             [switch_setting.display_name for switch_setting in ArpeggioSwitch],
         )
-        program_zone_row.addWidget(common_button)
-
-        rows_layout.addLayout(program_zone_row)
-
+        program_zone_row = create_left_aligned_row([common_button])
         # Add on-off switch
-        switch_row = QHBoxLayout()
         self.switch_button = self._create_parameter_switch(
             ArpeggioParam.ARPEGGIO_SWITCH,
             "Arpeggiator",
             [switch_setting.display_name for switch_setting in ArpeggioSwitch],
         )
-        switch_row.addWidget(self.switch_button)
-        rows_layout.addLayout(switch_row)
-
-        # Create address combo box for Arpeggio Style
+        switch_row = create_left_aligned_row([self.switch_button])
+        # --- Create address combo box for Arpeggio Style
         self.style_combo = self._create_parameter_combo_box(
             ArpeggioParam.ARPEGGIO_STYLE, "Style", ARPEGGIO_STYLE
         )
-        style_row = QHBoxLayout()
-        style_row.addWidget(self.style_combo)
-        rows_layout.addLayout(style_row)
-
+        style_row = create_left_aligned_row([self.style_combo])
         # Create address combo box for Arpeggio Grid
         # Add grid combo box
-        grid_row = QHBoxLayout()
         self.grid_combo = self._create_parameter_combo_box(
             ArpeggioParam.ARPEGGIO_GRID,
             "Grid:",
             [grid.display_name for grid in ArpeggioGrid],
         )
-        grid_row.addWidget(self.grid_combo)
-        rows_layout.addLayout(grid_row)
-
+        grid_row = create_left_aligned_row([self.grid_combo])
         # Add grid combo box
-        duration_row = QHBoxLayout()
         # Create address combo box for Arpeggio Duration
         self.duration_combo = self._create_parameter_combo_box(
             ArpeggioParam.ARPEGGIO_DURATION,
             "Duration",
             [duration.display_name for duration in ArpeggioDuration],
         )
-        duration_row.addWidget(self.duration_combo)
-        rows_layout.addLayout(duration_row)
-
-        # Add sliders
+        duration_row = create_left_aligned_row([self.duration_combo])
+        # --- Add sliders
         self.velocity_slider = self._create_parameter_slider(
             ArpeggioParam.ARPEGGIO_VELOCITY, "Velocity", 0, 127
         )
-        rows_layout.addWidget(self.velocity_slider)
-
         self.accent_slider = self._create_parameter_slider(
             ArpeggioParam.ARPEGGIO_ACCENT_RATE, "Accent", 0, 127
         )
-        rows_layout.addWidget(self.accent_slider)
-
-        # Add octave range combo box
-        octave_row = QHBoxLayout()
+        # --- Add octave range combo box
         self.octave_combo = self._create_parameter_combo_box(
             ArpeggioParam.ARPEGGIO_OCTAVE_RANGE,
             "Octave Range:",
             [octave.display_name for octave in ArpeggioOctaveRange],
             [octave.midi_value for octave in ArpeggioOctaveRange],
         )
-        # Set default to 0
+        # --- Set default to 0
         self.octave_combo.combo_box.setCurrentIndex(3)  # Index 3 is OCT_ZERO
-        octave_row.addWidget(self.octave_combo)
-        rows_layout.addLayout(octave_row)
-
-        # Add motif combo box
-        motif_row = QHBoxLayout()
+        octave_row = create_left_aligned_row([self.octave_combo])
+        # --- Add motif combo box
         self.motif_combo = self._create_parameter_combo_box(
             ArpeggioParam.ARPEGGIO_MOTIF,
             "Motif:",
             [motif.name for motif in ArpeggioMotif],
         )
-        motif_row.addWidget(self.motif_combo)
-        rows_layout.addLayout(motif_row)
+        motif_row = create_left_aligned_row([self.motif_combo])
+
+        self.create_rows_layout(
+            {
+                "duration_row": duration_row,
+                "grid_row": grid_row,
+                "icon_hlayout": icon_hlayout,
+                "motif_row": motif_row,
+                "octave_row": octave_row,
+                "program_zone_row": program_zone_row,
+                "style_row": style_row,
+                "switch_row": switch_row,
+                "velocity_slider": self.velocity_slider,
+                "accent_slider": self.accent_slider,
+            }
+        )
+
+        # Add base widget to editor's layout
+        if not hasattr(self, "main_layout") or self.main_layout is None:
+            self.main_layout = QVBoxLayout(self)
+            self.setLayout(self.main_layout)
+        self.main_layout.addWidget(self.base_widget)
+
+    def create_rows_layout(self, widgets_dict: dict):
+        """create rows layout"""
+        rows_layout = self.editor_helper.get_rows_layout()
+        # Add all layouts and widgets
+        rows_layout.addLayout(widgets_dict["icon_hlayout"])
+        rows_layout.addLayout(widgets_dict["program_zone_row"])
+        rows_layout.addLayout(widgets_dict["switch_row"])
+        rows_layout.addLayout(widgets_dict["style_row"])
+        rows_layout.addLayout(widgets_dict["grid_row"])
+        rows_layout.addLayout(widgets_dict["duration_row"])
+        rows_layout.addWidget(widgets_dict["velocity_slider"])
+        rows_layout.addWidget(widgets_dict["accent_slider"])
+        rows_layout.addLayout(widgets_dict["octave_row"])
+        rows_layout.addLayout(widgets_dict["motif_row"])
         rows_layout.addStretch()
-        main_row_hlayout.addStretch()

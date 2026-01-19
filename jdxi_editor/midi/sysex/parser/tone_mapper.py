@@ -4,10 +4,10 @@ tone mapper functions
 
 from __future__ import annotations
 
-from jdxi_editor.jdxi.sysex.offset import JDXiSysExOffset
-from jdxi_editor.log.logger import Logger as log
-from jdxi_editor.midi.map import JDXiMapTemporaryArea, JDXiMapSynthTone
+from decologr import Decologr as log
+from jdxi_editor.midi.map import JDXiMapSynthTone, JDXiMapTemporaryArea
 from jdxi_editor.midi.map.drum_tone import JDXiMapDrumTone
+from jdxi_editor.midi.message.sysex.offset import JDXiSysExMessageLayout
 
 
 def get_temporary_area(data: bytes) -> str:
@@ -17,10 +17,13 @@ def get_temporary_area(data: bytes) -> str:
     :param data: bytes SysEx message data
     :return: str Temporary Area: TEMPORARY_PROGRAM, ANALOG_SYNTH, DIGITAL_SYNTH_1 ...
     """
-    temp_area_bytes = data[JDXiSysExOffset.ADDRESS_MSB:JDXiSysExOffset.ADDRESS_LMB]
+    temp_area_bytes = data[
+        JDXiSysExMessageLayout.ADDRESS.MSB : JDXiSysExMessageLayout.ADDRESS.LMB
+    ]
     return (
-        JDXiMapTemporaryArea.MAP.get(tuple(temp_area_bytes), "Unknown") if len(
-            data) >= JDXiSysExOffset.ADDRESS_LSB else "Unknown"
+        JDXiMapTemporaryArea.MAP.get(tuple(temp_area_bytes), "Unknown")
+        if len(data) >= JDXiSysExMessageLayout.ADDRESS.LSB
+        else "Unknown"
     )
 
 

@@ -2,12 +2,19 @@
 5. Parameter Address Map
 ========================
 
+Example usage:
+>>> from picomidi.core.parameter.factory import AddressFactory
+>>> system_common = AddressFactory.from_str("01 00 00 00")
+
+>>> print(PARAMETER_ADDRESS_MAP[ParameterAreas.SYSTEM][ByteGroupKind.ADDRESS_4][system_common])
+AddressStartMSB.SETUP: 0x02
+
 **Transmission of “#” marked address is divided to some packets. For
 example, ABH in hexadecimal notation will be divided to 0AH and
 0BH, and is sent/received in this order.
 **“<*>” marked address
 
-For reference: 
+For reference:
 JD-Xi (ModelID = 00H 00H 00H 0EH)
 +------------------------------------------------------------------------------+
 | Start       |                                                                |
@@ -92,108 +99,286 @@ JD-Xi (ModelID = 00H 00H 00H 0EH)
 +------------------------------------------------------------------------------+
 """
 
-from jdxi_editor.midi.data.address.address import AddressStartMSB, \
-    AddressOffsetSuperNATURALLMB, AddressOffsetProgramLMB, AddressOffsetTemporaryToneUMB, \
-    AddressOffsetProgramLMB, AddressOffsetSystemLMB, AddressOffsetDrumKitLMB
+from jdxi_editor.midi.data.address.address import (
+    AddressOffsetDrumKitLMB,
+    AddressOffsetProgramLMB,
+    AddressOffsetSuperNATURALLMB,
+    AddressOffsetSystemLMB,
+    AddressOffsetTemporaryToneUMB,
+    AddressStartMSB,
+)
+from jdxi_editor.midi.data.parameter.address.name import (
+    ParameterAddressName as AddressName,
+)
+from jdxi_editor.midi.data.parameter.address.table import (
+    PARAMETER_ADDRESS_TABLE as ADDRESSES,
+)
+from jdxi_editor.midi.data.parameter.address.table import (
+    parameter_address_table,
+)
+from jdxi_editor.midi.data.parameter.areas.name import ParameterAreas
+from jdxi_editor.midi.data.parameter.offset.name import (
+    ParameterOffsetName as OffsetName,
+)
+from jdxi_editor.midi.data.parameter.offset.table import (
+    PARAMETER_OFFSET_TABLE as OFFSETS,
+)
+from jdxi_editor.midi.data.parameter.offset.table import (
+    parameter_offset_table,
+)
+from picomidi.core.parameter.factory import AddressFactory
+from picomidi.core.parameter.kind import ByteGroupKind
+
+parameter_address_map = {}
+parameter_offset_map = {}
+
+for param, address in parameter_address_table:
+    print(f"{param}: {address}")
+    parameter_address_map[param] = AddressFactory.from_str(address)
+    print(f"{param}: {parameter_address_map[param]}")
+
+for param, offset in parameter_offset_table:
+    print(f"{param}: {offset}")
+    parameter_offset_map[param] = AddressFactory.from_str(offset)
+    print(f"{param}: {parameter_offset_map[param]}")
 
 PARAMETER_ADDRESS_MAP = {
-    "System": {
-        "4-byte-addresses": {
-            "01 00 00 00": AddressStartMSB.SETUP.name,  # "Setup",
-            "02 00 00 00": AddressStartMSB.SYSTEM.name,  # "System"
+    ParameterAreas.SYSTEM: {
+        ByteGroupKind.ADDRESS_4: {
+            ADDRESSES[AddressName.SETUP]: AddressStartMSB.SETUP,  # "Setup",
+            ADDRESSES[AddressName.SYSTEM]: AddressStartMSB.SYSTEM,  # "System"
         },
-        "3-byte-offsets": {
-            "00 00 00": AddressOffsetSystemLMB.COMMON.name,  # "System Common",
-            "00 03 00": AddressOffsetSystemLMB.CONTROLLER.name,  # "System Controller"
-        }
-    },
-    "Temporary Tone": {
-        "4-byte-addresses": {
-            "18 00 00 00": AddressStartMSB.TEMPORARY_PROGRAM.name,  # Temporary Program
-            "19 00 00 00": AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_1.name,  # "Temporary Tone (Digital Synth Part 1)",
-            "19 20 00 00": AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_2.name,  # "Temporary Tone (Digital Synth Part 2)",
-            "19 40 00 00": AddressOffsetTemporaryToneUMB.ANALOG_SYNTH.name,  # "Temporary Tone (Analog Synth Part)",
-            "19 60 00 00": AddressOffsetTemporaryToneUMB.DRUM_KIT.name,  # "Temporary Tone (Drums Part)"
+        ByteGroupKind.OFFSET_3: {
+            OFFSETS[
+                OffsetName.SYSTEM_COMMON
+            ]: AddressOffsetSystemLMB.COMMON,  # "System Common",
+            OFFSETS[
+                OffsetName.SYSTEM_CONTROLLER
+            ]: AddressOffsetSystemLMB.CONTROLLER,  # "System Controller"
         },
-        "3-byte-offsets": {
-            "01 00 00": AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_1.name,  # "Temporary SuperNATURAL Synth Tone",
-            "02 00 00": AddressOffsetTemporaryToneUMB.ANALOG_SYNTH.name,  #  "Temporary Analog Synth T one",
-            "10 00 00": AddressOffsetTemporaryToneUMB.DRUM_KIT.name,  #  "Temporary Drum Kit"
+    },
+    ParameterAreas.TEMPORARY_TONE: {
+        ByteGroupKind.ADDRESS_4: {
+            ADDRESSES[
+                AddressName.TEMPORARY_PROGRAM
+            ]: AddressStartMSB.TEMPORARY_PROGRAM,  # Temporary Program
+            ADDRESSES[
+                AddressName.TEMPORARY_TONE_DIGITAL1
+            ]: AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_1,
+            # "Temporary Tone (Digital Synth Part 1)",
+            ADDRESSES[
+                AddressName.TEMPORARY_TONE_DIGITAL2
+            ]: AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_2,
+            # "Temporary Tone (Digital Synth Part 2)",
+            ADDRESSES[
+                AddressName.TEMPORARY_TONE_ANALOG
+            ]: AddressOffsetTemporaryToneUMB.ANALOG_SYNTH,
+            # "Temporary Tone (Analog Synth Part)",
+            ADDRESSES[
+                AddressName.TEMPORARY_DRUM_KIT
+            ]: AddressOffsetTemporaryToneUMB.DRUM_KIT,  # "Temporary Tone (Drums Part)"
+        },
+        ByteGroupKind.OFFSET_3: {
+            OFFSETS[
+                OffsetName.TEMPORARY_SUPERNATURAL_SYNTH_TONE
+            ]: AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_1,  # "Temporary SuperNATURAL Synth Tone",
+            OFFSETS[
+                OffsetName.TEMPORARY_ANALOG_SYNTH_TONE
+            ]: AddressOffsetTemporaryToneUMB.ANALOG_SYNTH,  #  "Temporary Analog Synth Tone",
+            OFFSETS[
+                OffsetName.TEMPORARY_DRUM_KIT
+            ]: AddressOffsetTemporaryToneUMB.DRUM_KIT,  #  "Temporary Drum Kit"
+        },
+    },
+    ParameterAreas.PROGRAM: {
+        ByteGroupKind.OFFSET_3: {
+            OFFSETS[
+                OffsetName.PROGRAM_COMMON
+            ]: AddressOffsetProgramLMB.COMMON,  # "Program Common",
+            OFFSETS[
+                OffsetName.PROGRAM_VOCAL_EFFECT
+            ]: AddressOffsetProgramLMB.VOCAL_EFFECT,  # "Program Vocal Effect",
+            OFFSETS[
+                OffsetName.PROGRAM_EFFECT_1
+            ]: AddressOffsetProgramLMB.EFFECT_1,  # "Program Effect 1",
+            OFFSETS[
+                OffsetName.PROGRAM_EFFECT_2
+            ]: AddressOffsetProgramLMB.EFFECT_2,  # "Program Effect 2",
+            OFFSETS[
+                OffsetName.PROGRAM_DELAY
+            ]: AddressOffsetProgramLMB.DELAY,  # "Program Delay",
+            OFFSETS[
+                OffsetName.PROGRAM_REVERB
+            ]: AddressOffsetProgramLMB.REVERB,  # "Program Reverb",
+            OFFSETS[
+                OffsetName.PROGRAM_PART_DIGITAL1
+            ]: AddressOffsetProgramLMB.PART_DIGITAL_SYNTH_1,  # "Program Part (Digital Synth Part 1)",
+            OFFSETS[
+                OffsetName.PROGRAM_PART_DIGITAL2
+            ]: AddressOffsetProgramLMB.PART_DIGITAL_SYNTH_2,  # "Program Part (Digital Synth Part 2)",
+            OFFSETS[
+                OffsetName.PROGRAM_PART_ANALOG
+            ]: AddressOffsetProgramLMB.PART_ANALOG,  # "Program Part (Analog Synth Part)",
+            OFFSETS[
+                OffsetName.PROGRAM_PART_DRUMS
+            ]: AddressOffsetProgramLMB.PART_DRUM,  # "Program Part (Drums Part)",
+            OFFSETS[
+                OffsetName.PROGRAM_ZONE_DIGITAL1
+            ]: AddressOffsetProgramLMB.ZONE_DIGITAL_SYNTH_1,  # "Program Zone (Digital Synth Part 1)",
+            OFFSETS[
+                OffsetName.PROGRAM_ZONE_DIGITAL2
+            ]: AddressOffsetProgramLMB.ZONE_DIGITAL_SYNTH_2,  # "Program Zone (Digital Synth Part 2)",
+            OFFSETS[
+                OffsetName.PROGRAM_ZONE_ANALOG
+            ]: AddressOffsetProgramLMB.ZONE_ANALOG,  # "Program Zone (Analog Synth Part)",
+            OFFSETS[
+                OffsetName.PROGRAM_ZONE_DRUMS
+            ]: AddressOffsetProgramLMB.ZONE_DRUM,  # "Program Zone (Drums Part)",
+            OFFSETS[OffsetName.PROGRAM_CONTROLLER]: AddressOffsetProgramLMB.CONTROLLER,
         }
     },
-    "Program": {
-        "3-byte-offsets": {
-            "00 00 00": AddressOffsetProgramLMB.COMMON.name,  # "Program Common",
-            "00 01 00": AddressOffsetProgramLMB.VOCAL_EFFECT.name,  # "Program Vocal Effect",
-            "00 02 00": AddressOffsetProgramLMB.EFFECT_1.name,  # "Program Effect 1",
-            "00 04 00": AddressOffsetProgramLMB.EFFECT_2.name,  # "Program Effect 2",
-            "00 06 00": AddressOffsetProgramLMB.DELAY.name, # "Program Delay",
-            "00 08 00": AddressOffsetProgramLMB.REVERB.name, # "Program Reverb",
-            "00 20 00": AddressOffsetProgramLMB.PART_DIGITAL_SYNTH_1.name,  # "Program Part (Digital Synth Part 1)",
-            "00 21 00": AddressOffsetProgramLMB.PART_DIGITAL_SYNTH_2.name,  # "Program Part (Digital Synth Part 2)",
-            "00 22 00": AddressOffsetProgramLMB.PART_ANALOG.name,  # "Program Part (Analog Synth Part)",
-            "00 23 00": AddressOffsetProgramLMB.PART_DRUM.name,  # "Program Part (Drums Part)",
-            "00 30 00": AddressOffsetProgramLMB.ZONE_DIGITAL_SYNTH_1.name,  # "Program Zone (Digital Synth Part 1)",
-            "00 31 00": AddressOffsetProgramLMB.ZONE_DIGITAL_SYNTH_2.name,  # "Program Zone (Digital Synth Part 2)",
-            "00 32 00": AddressOffsetProgramLMB.ZONE_ANALOG.name,  # "Program Zone (Analog Synth Part)",
-            "00 33 00": AddressOffsetProgramLMB.ZONE_DRUM.name , # "Program Zone (Drums Part)",
-            "00 40 00": AddressOffsetProgramLMB.CONTROLLER.name,
+    ParameterAreas.SUPERNATURAL_SYNTH_TONE: {
+        ByteGroupKind.OFFSET_3: {
+            OFFSETS[
+                OffsetName.SUPERNATURAL_SYNTH_TONE_COMMON
+            ]: AddressOffsetSuperNATURALLMB.COMMON,  # "SuperNATURAL Synth Tone Common",
+            OFFSETS[
+                OffsetName.SUPERNATURAL_SYNTH_TONE_PARTIAL1
+            ]: AddressOffsetSuperNATURALLMB.PARTIAL_1,  # "SuperNATURAL Synth Tone Partial (1)",
+            OFFSETS[
+                OffsetName.SUPERNATURAL_SYNTH_TONE_PARTIAL2
+            ]: AddressOffsetSuperNATURALLMB.PARTIAL_2,  # "SuperNATURAL Synth Tone Partial (2)",
+            OFFSETS[
+                OffsetName.SUPERNATURAL_SYNTH_TONE_PARTIAL3
+            ]: AddressOffsetSuperNATURALLMB.PARTIAL_3,  # "SuperNATURAL Synth Tone Partial (3)",
+            OFFSETS[
+                OffsetName.SUPERNATURAL_SYNTH_TONE_MODIFY
+            ]: AddressOffsetSuperNATURALLMB.MODIFY,  # "SuperNATURAL Synth Tone Modify"
         }
     },
-    "SuperNATURAL Synth Tone": {
-        "3-byte-offsets": {
-            "00 00 00": AddressOffsetSuperNATURALLMB.COMMON.name,  # "SuperNATURAL Synth Tone Common",
-            "00 20 00": AddressOffsetSuperNATURALLMB.PARTIAL_1.name,  # "SuperNATURAL Synth Tone Partial (1)",
-            "00 21 00": AddressOffsetSuperNATURALLMB.PARTIAL_2.name,  # "SuperNATURAL Synth Tone Partial (2)",
-            "00 22 00": AddressOffsetSuperNATURALLMB.PARTIAL_3.name,  # "SuperNATURAL Synth Tone Partial (3)",
-            "00 50 00": AddressOffsetSuperNATURALLMB.MODIFY.name  # "SuperNATURAL Synth Tone Modify"
+    ParameterAreas.ANALOG_SYNTH_TONE: {
+        ByteGroupKind.OFFSET_3: {
+            OFFSETS[
+                OffsetName.ANALOG_SYNTH_TONE
+            ]: AddressOffsetProgramLMB.COMMON  # "Analog Synth Tone"
         }
     },
-    "Analog Synth Tone": {
-        "3-byte-offsets": {
-            "00 00 00": AddressOffsetProgramLMB.COMMON.name  # "Analog Synth Tone"
+    ParameterAreas.DRUM_KIT: {
+        ByteGroupKind.OFFSET_3: {
+            OFFSETS[
+                OffsetName.DRUM_KIT_COMMON
+            ]: AddressOffsetDrumKitLMB.COMMON,  # "Drum Kit Common",
+            OFFSETS[
+                OffsetName.DRUM_KIT_PARTIAL1
+            ]: AddressOffsetDrumKitLMB.DRUM_KIT_PART_1,  # "Drum Kit Partial (Key # 36)",
+            OFFSETS[
+                OffsetName.DRUM_KIT_PARTIAL2
+            ]: AddressOffsetDrumKitLMB.DRUM_KIT_PART_2,  # "Drum Kit Partial (Key # 37)",
+            OFFSETS[
+                OffsetName.DRUM_KIT_PARTIAL3
+            ]: AddressOffsetDrumKitLMB.DRUM_KIT_PART_3,  # "Drum Kit Partial (Key # 38)",
+            OFFSETS[
+                OffsetName.DRUM_KIT_PARTIAL4
+            ]: AddressOffsetDrumKitLMB.DRUM_KIT_PART_4,  # "Drum Kit Partial (Key # 39)",
+            OFFSETS[
+                OffsetName.DRUM_KIT_PARTIAL5
+            ]: AddressOffsetDrumKitLMB.DRUM_KIT_PART_5,  # "Drum Kit Partial (Key # 40)",
+            OFFSETS[
+                OffsetName.DRUM_KIT_PARTIAL6
+            ]: AddressOffsetDrumKitLMB.DRUM_KIT_PART_6,  # "Drum Kit Partial (Key # 41)",
+            OFFSETS[
+                OffsetName.DRUM_KIT_PARTIAL7
+            ]: AddressOffsetDrumKitLMB.DRUM_KIT_PART_7,  # "Drum Kit Partial (Key # 42)",
+            OFFSETS[
+                OffsetName.DRUM_KIT_PARTIAL8
+            ]: AddressOffsetDrumKitLMB.DRUM_KIT_PART_8,  # "Drum Kit Partial (Key # 43)",
+            OFFSETS[
+                OffsetName.DRUM_KIT_PARTIAL9
+            ]: AddressOffsetDrumKitLMB.DRUM_KIT_PART_9,  # "Drum Kit Partial (Key # 44)",
+            OFFSETS[
+                OffsetName.DRUM_KIT_PARTIAL10
+            ]: AddressOffsetDrumKitLMB.DRUM_KIT_PART_10,  # "Drum Kit Partial (Key # 45)",
+            OFFSETS[
+                OffsetName.DRUM_KIT_PARTIAL11
+            ]: AddressOffsetDrumKitLMB.DRUM_KIT_PART_11,  # "Drum Kit Partial (Key # 46)",
+            OFFSETS[
+                OffsetName.DRUM_KIT_PARTIAL12
+            ]: AddressOffsetDrumKitLMB.DRUM_KIT_PART_12,  # "Drum Kit Partial (Key # 47)",
+            OFFSETS[
+                OffsetName.DRUM_KIT_PARTIAL13
+            ]: AddressOffsetDrumKitLMB.DRUM_KIT_PART_13,  # "Drum Kit Partial (Key # 48)",
+            OFFSETS[
+                OffsetName.DRUM_KIT_PARTIAL14
+            ]: AddressOffsetDrumKitLMB.DRUM_KIT_PART_14,  # "Drum Kit Partial (Key # 49)",
+            OFFSETS[
+                OffsetName.DRUM_KIT_PARTIAL15
+            ]: AddressOffsetDrumKitLMB.DRUM_KIT_PART_15,  # "Drum Kit Partial (Key # 50)",
+            OFFSETS[
+                OffsetName.DRUM_KIT_PARTIAL16
+            ]: AddressOffsetDrumKitLMB.DRUM_KIT_PART_16,  # "Drum Kit Partial (Key # 51)",
+            OFFSETS[
+                OffsetName.DRUM_KIT_PARTIAL17
+            ]: AddressOffsetDrumKitLMB.DRUM_KIT_PART_17,  # "Drum Kit Partial (Key # 52)",
+            OFFSETS[
+                OffsetName.DRUM_KIT_PARTIAL18
+            ]: AddressOffsetDrumKitLMB.DRUM_KIT_PART_18,  # "Drum Kit Partial (Key # 53)",
+            OFFSETS[
+                OffsetName.DRUM_KIT_PARTIAL19
+            ]: AddressOffsetDrumKitLMB.DRUM_KIT_PART_19,  # "Drum Kit Partial (Key # 54)",
+            OFFSETS[
+                OffsetName.DRUM_KIT_PARTIAL20
+            ]: AddressOffsetDrumKitLMB.DRUM_KIT_PART_20,  # "Drum Kit Partial (Key # 55)",
+            OFFSETS[
+                OffsetName.DRUM_KIT_PARTIAL21
+            ]: AddressOffsetDrumKitLMB.DRUM_KIT_PART_21,  # "Drum Kit Partial (Key # 56)",
+            OFFSETS[
+                OffsetName.DRUM_KIT_PARTIAL22
+            ]: AddressOffsetDrumKitLMB.DRUM_KIT_PART_22,  # "Drum Kit Partial (Key # 57)",
+            OFFSETS[
+                OffsetName.DRUM_KIT_PARTIAL23
+            ]: AddressOffsetDrumKitLMB.DRUM_KIT_PART_23,  # "Drum Kit Partial (Key # 58)",
+            OFFSETS[
+                OffsetName.DRUM_KIT_PARTIAL24
+            ]: AddressOffsetDrumKitLMB.DRUM_KIT_PART_24,  # "Drum Kit Partial (Key # 59)",
+            OFFSETS[
+                OffsetName.DRUM_KIT_PARTIAL25
+            ]: AddressOffsetDrumKitLMB.DRUM_KIT_PART_25,  # "Drum Kit Partial (Key # 60)",
+            OFFSETS[
+                OffsetName.DRUM_KIT_PARTIAL26
+            ]: AddressOffsetDrumKitLMB.DRUM_KIT_PART_26,  # "Drum Kit Partial (Key # 61)",
+            OFFSETS[
+                OffsetName.DRUM_KIT_PARTIAL27
+            ]: AddressOffsetDrumKitLMB.DRUM_KIT_PART_27,  # "Drum Kit Partial (Key # 62)",
+            OFFSETS[
+                OffsetName.DRUM_KIT_PARTIAL28
+            ]: AddressOffsetDrumKitLMB.DRUM_KIT_PART_28,  # "Drum Kit Partial (Key # 63)",
+            OFFSETS[
+                OffsetName.DRUM_KIT_PARTIAL29
+            ]: AddressOffsetDrumKitLMB.DRUM_KIT_PART_29,  # "Drum Kit Partial (Key # 64)",
+            OFFSETS[
+                OffsetName.DRUM_KIT_PARTIAL30
+            ]: AddressOffsetDrumKitLMB.DRUM_KIT_PART_30,  # "Drum Kit Partial (Key # 65)",
+            OFFSETS[
+                OffsetName.DRUM_KIT_PARTIAL31
+            ]: AddressOffsetDrumKitLMB.DRUM_KIT_PART_31,  # "Drum Kit Partial (Key # 66)",
+            OFFSETS[
+                OffsetName.DRUM_KIT_PARTIAL32
+            ]: AddressOffsetDrumKitLMB.DRUM_KIT_PART_32,  # "Drum Kit Partial (Key # 67)",
+            OFFSETS[
+                OffsetName.DRUM_KIT_PARTIAL33
+            ]: AddressOffsetDrumKitLMB.DRUM_KIT_PART_33,  # "Drum Kit Partial (Key # 68)",
+            OFFSETS[
+                OffsetName.DRUM_KIT_PARTIAL34
+            ]: AddressOffsetDrumKitLMB.DRUM_KIT_PART_34,  # "Drum Kit Partial (Key # 69)",
+            OFFSETS[
+                OffsetName.DRUM_KIT_PARTIAL35
+            ]: AddressOffsetDrumKitLMB.DRUM_KIT_PART_35,  # "Drum Kit Partial (Key # 70)",
+            OFFSETS[
+                OffsetName.DRUM_KIT_PARTIAL36
+            ]: AddressOffsetDrumKitLMB.DRUM_KIT_PART_36,  # "Drum Kit Partial (Key # 71)",
+            OFFSETS[
+                OffsetName.DRUM_KIT_PARTIAL37
+            ]: AddressOffsetDrumKitLMB.DRUM_KIT_PART_37,  # "Drum Kit Partial (Key # 72)"
         }
     },
-    "Drum Kit": {
-        "3-byte-offsets": {
-            "00 00 00": AddressOffsetDrumKitLMB.COMMON.name,  # "Drum Kit Common",
-            "00 2E 00": AddressOffsetDrumKitLMB.DRUM_KIT_PART_1.name,  # "Drum Kit Partial (Key # 36)",
-            "00 30 00": AddressOffsetDrumKitLMB.DRUM_KIT_PART_2.name,  # "Drum Kit Partial (Key # 37)",
-            "00 32 00": AddressOffsetDrumKitLMB.DRUM_KIT_PART_3.name,  # "Drum Kit Partial (Key # 38)",
-            "00 34 00": AddressOffsetDrumKitLMB.DRUM_KIT_PART_4.name,  # "Drum Kit Partial (Key # 39)",
-            "00 36 00": AddressOffsetDrumKitLMB.DRUM_KIT_PART_5.name,  # "Drum Kit Partial (Key # 40)",
-            "00 38 00": AddressOffsetDrumKitLMB.DRUM_KIT_PART_6.name,  # "Drum Kit Partial (Key # 41)",
-            "00 3A 00": AddressOffsetDrumKitLMB.DRUM_KIT_PART_7.name,  # "Drum Kit Partial (Key # 42)",
-            "00 3C 00": AddressOffsetDrumKitLMB.DRUM_KIT_PART_8.name,  # "Drum Kit Partial (Key # 43)",
-            "00 3E 00": AddressOffsetDrumKitLMB.DRUM_KIT_PART_9.name,  # "Drum Kit Partial (Key # 44)",
-            "00 40 00": AddressOffsetDrumKitLMB.DRUM_KIT_PART_10.name,  # "Drum Kit Partial (Key # 45)",
-            "00 42 00": AddressOffsetDrumKitLMB.DRUM_KIT_PART_11.name,  # "Drum Kit Partial (Key # 46)",
-            "00 44 00": AddressOffsetDrumKitLMB.DRUM_KIT_PART_12.name,  # "Drum Kit Partial (Key # 47)",
-            "00 46 00": AddressOffsetDrumKitLMB.DRUM_KIT_PART_13.name,  # "Drum Kit Partial (Key # 48)",
-            "00 48 00": AddressOffsetDrumKitLMB.DRUM_KIT_PART_14.name,  # "Drum Kit Partial (Key # 49)",
-            "00 4A 00": AddressOffsetDrumKitLMB.DRUM_KIT_PART_15.name,  # "Drum Kit Partial (Key # 50)",
-            "00 4C 00": AddressOffsetDrumKitLMB.DRUM_KIT_PART_16.name,  # "Drum Kit Partial (Key # 51)",
-            "00 4E 00": AddressOffsetDrumKitLMB.DRUM_KIT_PART_17.name,  # "Drum Kit Partial (Key # 52)",
-            "00 50 00": AddressOffsetDrumKitLMB.DRUM_KIT_PART_18.name,  # "Drum Kit Partial (Key # 53)",
-            "00 52 00": AddressOffsetDrumKitLMB.DRUM_KIT_PART_19.name,  # "Drum Kit Partial (Key # 54)",
-            "00 54 00": AddressOffsetDrumKitLMB.DRUM_KIT_PART_20.name,  # "Drum Kit Partial (Key # 55)",
-            "00 56 00": AddressOffsetDrumKitLMB.DRUM_KIT_PART_21.name,  # "Drum Kit Partial (Key # 56)",
-            "00 58 00": AddressOffsetDrumKitLMB.DRUM_KIT_PART_22.name,  # "Drum Kit Partial (Key # 57)",
-            "00 5A 00": AddressOffsetDrumKitLMB.DRUM_KIT_PART_23.name,  # "Drum Kit Partial (Key # 58)",
-            "00 5C 00": AddressOffsetDrumKitLMB.DRUM_KIT_PART_24.name,  # "Drum Kit Partial (Key # 59)",
-            "00 5E 00": AddressOffsetDrumKitLMB.DRUM_KIT_PART_25.name,  # "Drum Kit Partial (Key # 60)",
-            "00 60 00": AddressOffsetDrumKitLMB.DRUM_KIT_PART_26.name,  # "Drum Kit Partial (Key # 61)",
-            "00 62 00": AddressOffsetDrumKitLMB.DRUM_KIT_PART_27.name,  # "Drum Kit Partial (Key # 62)",
-            "00 64 00": AddressOffsetDrumKitLMB.DRUM_KIT_PART_28.name,  # "Drum Kit Partial (Key # 63)",
-            "00 66 00": AddressOffsetDrumKitLMB.DRUM_KIT_PART_29.name,  # "Drum Kit Partial (Key # 64)",
-            "00 68 00": AddressOffsetDrumKitLMB.DRUM_KIT_PART_30.name,  # "Drum Kit Partial (Key # 65)",
-            "00 6A 00": AddressOffsetDrumKitLMB.DRUM_KIT_PART_31.name,  # "Drum Kit Partial (Key # 66)",
-            "00 6C 00": AddressOffsetDrumKitLMB.DRUM_KIT_PART_32.name,  # "Drum Kit Partial (Key # 67)",
-            "00 6E 00": AddressOffsetDrumKitLMB.DRUM_KIT_PART_33.name,  # "Drum Kit Partial (Key # 68)",
-            "00 70 00": AddressOffsetDrumKitLMB.DRUM_KIT_PART_34.name,  # "Drum Kit Partial (Key # 69)",
-            "00 72 00": AddressOffsetDrumKitLMB.DRUM_KIT_PART_35.name,  # "Drum Kit Partial (Key # 70)",
-            "00 74 00": AddressOffsetDrumKitLMB.DRUM_KIT_PART_36.name,  # "Drum Kit Partial (Key # 71)",
-            "00 76 00": AddressOffsetDrumKitLMB.DRUM_KIT_PART_37.name  # "Drum Kit Partial (Key # 72)"
-        }
-    }
 }

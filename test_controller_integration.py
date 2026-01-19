@@ -18,7 +18,7 @@ sys.path.insert(0, '/Users/brooks/projects/JDXI-Editor')
 import rtmidi_compat
 
 from jdxi_editor.midi.io.input_handler import MidiInHandler
-from jdxi_editor.log.setup import setup_logging
+from decologr import setup_logging
 
 class ControllerTestApp:
     def __init__(self):

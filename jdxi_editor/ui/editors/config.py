@@ -19,16 +19,15 @@ Example usage:
 """
 
 from dataclasses import dataclass, field
-from typing import Optional, Any, Dict
-
-from jdxi_editor.ui.editors.synth.base import SynthBase
+from typing import Any, Dict, Optional
 
 
 @dataclass
 class EditorConfig:
     """Configuration for a synth editor."""
+
     title: str
-    editor_class: SynthBase
+    editor_class: Optional[Any]
     synth_type: Optional[Any] = None
     midi_channel: Optional[Any] = None
     kwargs: Dict[str, Any] = field(default_factory=dict)

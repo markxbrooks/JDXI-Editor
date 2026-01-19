@@ -16,14 +16,30 @@ Key Features:
 """
 
 from typing import Callable
-from PySide6.QtWidgets import QGroupBox, QFormLayout, QWidget, QVBoxLayout, QScrollArea
 
-from jdxi_editor.midi.data.address.address import AddressOffsetProgramLMB, RolandSysExAddress
+from PySide6.QtWidgets import (
+    QFormLayout,
+    QGroupBox,
+    QHBoxLayout,
+    QScrollArea,
+    QVBoxLayout,
+    QWidget,
+)
+
+from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.midi.data.address.address import (
+    AddressOffsetProgramLMB,
+    RolandSysExAddress,
+)
 from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParam
+from jdxi_editor.midi.data.parameter.drum.name import DrumDisplayName
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.widgets.editor import IconType
+from jdxi_editor.ui.widgets.editor.helper import transfer_layout_items
+from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 
 
-class DrumCommonSection(QWidget):
+class DrumCommonSection(SectionBaseWidget):
     """Drum Common Section for the JDXI Editor"""
 
     def __init__(
@@ -32,9 +48,8 @@ class DrumCommonSection(QWidget):
         create_parameter_combo_box: Callable,
         create_parameter_slider: Callable,
         midi_helper: MidiIOHelper,
-        address: RolandSysExAddress
+        address: RolandSysExAddress,
     ):
-        super().__init__()
         """
         Initialize the DrumCommonSection
 
@@ -49,6 +64,8 @@ class DrumCommonSection(QWidget):
         self._create_parameter_combo_box = create_parameter_combo_box
         self.midi_helper = midi_helper
         self.address.lmb = AddressOffsetProgramLMB.COMMON
+
+        super().__init__(icon_type=IconType.GENERIC, analog=False)
         self.setup_ui()
 
     def setup_ui(self):
@@ -63,6 +80,16 @@ class DrumCommonSection(QWidget):
 
         common_scroll_area.setWidget(common_scrolled_widget)
 
+        # Icons row (standardized across editor tabs) - Note: Drum sections use scroll areas,
+        # so we add icon row to scrolled_layout instead of using get_layout()
+
+        # Transfer items to avoid "already has a parent" errors
+        icon_row_container = QHBoxLayout()
+        icon_hlayout = JDXi.UI.IconRegistry.create_generic_musical_icon_row()
+
+        transfer_layout_items(icon_hlayout, icon_row_container)
+        scrolled_layout.addLayout(icon_row_container)
+
         # Common controls
         common_group = QGroupBox("Common")
         common_layout = QFormLayout()
@@ -70,7 +97,7 @@ class DrumCommonSection(QWidget):
         # Kit Level control
         self.address.lmb = AddressOffsetProgramLMB.COMMON
         kit_level_slider = self._create_parameter_slider(
-            DrumCommonParam.KIT_LEVEL, "Kit Level"
+            DrumCommonParam.KIT_LEVEL, DrumDisplayName.KIT_LEVEL
         )
         common_layout.addRow("Kit Level:", kit_level_slider)
 

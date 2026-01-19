@@ -18,68 +18,64 @@ Methods:
 
 """
 
-import os
 import logging
+import os
 import re
 from typing import Union
 
-from PySide6.QtWidgets import (
-    QMainWindow,
-    QWidget,
-    QVBoxLayout,
-    QHBoxLayout,
-    QMessageBox,
-    QLabel,
-    QLayout,
-)
-from PySide6.QtCore import Qt, QSettings
+from PySide6.QtCore import QSettings, Qt
 from PySide6.QtGui import (
     QAction,
     QFontDatabase,
 )
-import qtawesome as qta
+from PySide6.QtWidgets import (
+    QHBoxLayout,
+    QLabel,
+    QLayout,
+    QMainWindow,
+    QMessageBox,
+    QVBoxLayout,
+    QWidget,
+)
 
-from jdxi_editor.project import __program__
-from jdxi_editor.log.logger import Logger as log
+from decologr import Decologr as log
+from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.channel.channel import MidiChannel
-from jdxi_editor.jdxi.synth.factory import create_synth_data
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.jdxi.preset.manager import JDXiPresetManager
-from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.midi.sysex.request.midi_requests import MidiRequests
+from jdxi_editor.project import __package_name__, __program__
 from jdxi_editor.resources import resource_path
+from jdxi_editor.synth.factory import create_synth_data
+from jdxi_editor.synth.type import JDXiSynth
+from jdxi_editor.ui.editors.helpers.preset import get_preset_list_number_by_name
 from jdxi_editor.ui.editors.helpers.program import (
     get_program_name_by_id,
 )
-from jdxi_editor.ui.editors.helpers.preset import get_preset_list_number_by_name
 from jdxi_editor.ui.image.instrument import draw_instrument_pixmap
-from jdxi_editor.jdxi.style.jdxi import JDXiStyle
-from jdxi_editor.ui.widgets.button.sequencer import SequencerSquare
+from jdxi_editor.ui.preset.manager import JDXiPresetManager
 from jdxi_editor.ui.widgets.button.favorite import FavoriteButton
-from jdxi_editor.ui.widgets.piano.keyboard import PianoKeyboard
+from jdxi_editor.ui.widgets.button.sequencer import SequencerSquare
 from jdxi_editor.ui.widgets.indicator.led import LEDIndicator
+from jdxi_editor.ui.widgets.piano.keyboard import PianoKeyboard
 from jdxi_editor.ui.windows.jdxi.containers import (
-    add_arpeggiator_buttons,
-    add_slider_container,
     add_digital_display,
     add_effects_container,
-    add_octave_buttons,
+    add_favorite_button_container,
+    add_octave_and_arp_buttons,
     add_program_container,
     add_sequencer_container,
-    add_favorite_button_container,
+    add_slider_container,
     add_title_container,
     add_tone_container,
-    build_wheel_row,
     build_wheel_label_row,
-    create_tone_buttons_row,
-    create_program_buttons_row,
+    build_wheel_row,
     create_parts_container,
+    create_program_buttons_row,
+    create_tone_buttons_row,
 )
-from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
-from jdxi_editor.project import __program__, __package_name__
 
 
-class JDXiUi(QMainWindow):
+class JDXiWindow(QMainWindow):
     """JD-Xi UI setup, with as little as possible functionality, which is to be super-classed"""
 
     def __init__(self):
@@ -95,23 +91,25 @@ class JDXiUi(QMainWindow):
         self.slot_number = None
         self.sequencer_buttons = []
         self.current_program_bank_letter = "A"
-        # Set up programs
+        # --- Set up programs
         self.current_program_id = "A01"
         self.current_program_number = int(self.current_program_id[1:])
         self.current_program_name = get_program_name_by_id(self.current_program_id)
-        # Set up presets
+        # --- Set up presets
         self.preset_manager = JDXiPresetManager()
         # Initialize synth preset_type
         self.current_synth_type = JDXiSynth.DIGITAL_SYNTH_1
-        # Initialize octave
+        # --- Initialize octave
         self.current_octave = 0  # Initialize octave tracking first
         self.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.FramelessWindowHint)
         self.setWindowTitle(__program__)
-        self.setMinimumSize(JDXiDimensions.WIDTH, JDXiDimensions.HEIGHT)
+        self.setMinimumSize(
+            JDXi.UI.Dimensions.INSTRUMENT.WIDTH, JDXi.UI.Dimensions.INSTRUMENT.HEIGHT
+        )
 
-        # Initialize MIDI helper
+        # --- Initialize MIDI helper
         self.midi_helper = MidiIOHelper()
-        #  Initialize MIDI connectivity
+        #  --- Initialize MIDI connectivity
         if self.midi_helper:
             self.midi_helper.close_ports()
         self.channel = MidiChannel.DIGITAL_SYNTH_1
@@ -119,10 +117,10 @@ class JDXiUi(QMainWindow):
         self.midi_key_hold_latched = False
         self.midi_requests = MidiRequests.PROGRAM_TONE_NAME_PARTIAL
 
-        # Load custom font
+        # --- Load custom font
         self._load_digital_font()
 
-        # Create UI
+        # --- Create UI
         self._create_menu_bar()
         self._create_status_bar()
         self._create_main_layout()
@@ -131,14 +129,14 @@ class JDXiUi(QMainWindow):
         self._create_playback_menu()
         self._create_help_menu()
 
-        # Load settings
+        # --- Load settings
         self.settings = QSettings("mabsoft", __package_name__)
 
-        # Add piano keyboard at bottom
+        # --- Add piano keyboard at bottom
         self.piano_keyboard = PianoKeyboard(parent=self)
         self.statusBar().addPermanentWidget(self.piano_keyboard)
 
-        # Load saved favorites
+        # --- Load saved favorites
         self._load_saved_favorites()
 
     def _create_main_layout(self) -> None:
@@ -146,25 +144,26 @@ class JDXiUi(QMainWindow):
         central = QWidget()
         self.setCentralWidget(central)
 
-        # Single layout to hold the image and overlays
+        # --- Single layout to hold the image and overlays
         layout = QVBoxLayout(central)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
 
-        # Create container for image and overlays
-        container = QWidget()
-        container.setLayout(QVBoxLayout())
-        container.layout().setContentsMargins(0, 0, 0, 0)
+        # --- Create container for image and overlays
+        container_widget = QWidget()
+        container_widget.setLayout(QVBoxLayout())
+        container_widget.layout().setContentsMargins(0, 0, 0, 0)
+        container_widget.layout().setSpacing(6)
 
-        # Store reference to image label
+        # --- Store reference to image label
         self.image_label = QLabel()
         self.image_label.setPixmap(draw_instrument_pixmap())
         self.image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        container.layout().addWidget(self.image_label)
+        container_widget.layout().addWidget(self.image_label)
 
-        # Add overlaid controls
-        self.digital_display = add_digital_display(container, self)
-        add_title_container(container)
+        # --- Add overlaid controls
+        self.digital_display = add_digital_display(container_widget, self)
+        add_title_container(container_widget)
         self.parts_container, self.part_buttons = create_parts_container(
             parent_widget=self,
             on_open_d1=lambda: self.show_editor("digital1"),
@@ -181,42 +180,47 @@ class JDXiUi(QMainWindow):
             JDXiSynth.DRUM_KIT: self.part_buttons["drums"],
         }
         self.arp_button = self.part_buttons["arp"]
-        self.octave_down, self.octave_up = add_octave_buttons(
-            container, self._midi_send_octave
-        )
-        self.arpeggiator_button, self.key_hold_button = add_arpeggiator_buttons(
-            container
-        )
+
+        (
+            self.octave_down,
+            self.octave_up,
+            self.arpeggiator_button,
+            self.key_hold_button,
+        ) = add_octave_and_arp_buttons(container_widget, self._midi_send_octave)
+
         self.vocal_effects_button, self.effects_button = add_effects_container(
-            container,
+            container_widget,
             lambda: self.show_editor("vocal_fx"),
             lambda: self.show_editor("effects"),
         )
 
         (self.program_down_button, self.program_up_button) = add_program_container(
-            container, create_program_buttons_row
+            container_widget, create_program_buttons_row
         )
 
         self.tone_down_button, self.tone_up_button = add_tone_container(
-            container, create_tone_buttons_row, self._preset_previous, self._preset_next
+            container_widget,
+            create_tone_buttons_row,
+            self._preset_previous,
+            self._preset_next,
         )
         self.sequencer_buttons = add_sequencer_container(
-            container,
+            container_widget,
             midi_helper=self.midi_helper,
             on_context_menu=self._show_favorite_context_menu,
             on_save_favorite=self._save_favorite,
         )
-        self.favorite_button = add_favorite_button_container(container)
-        add_slider_container(container, self.midi_helper)
-        layout.addWidget(container)
+        self.favorite_button = add_favorite_button_container(container_widget)
+        add_slider_container(container_widget, self.midi_helper)
+        layout.addWidget(container_widget)
 
-        # Initialize current preset index
+        # --- Initialize current preset index
         self.current_preset_index = 0
 
     def _create_menu_bar(self) -> None:
         menubar = self.menuBar()
 
-        # File menu
+        # --- File menu
         file_menu = menubar.addMenu("File")
 
         load_midi_file_action = QAction("Load MIDI file", self)
@@ -230,7 +234,9 @@ class JDXiUi(QMainWindow):
         file_menu.addSeparator()
 
         load_program_action = QAction(
-            qta.icon("msc.folder-opened"), "Load Program...", self
+            JDXi.UI.IconRegistry.get_icon(JDXi.UI.IconRegistry.FOLDER_OPENED),
+            "Load Program...",
+            self,
         )
         load_program_action.triggered.connect(lambda: self.show_editor("program"))
         file_menu.addAction(load_program_action)
@@ -259,7 +265,7 @@ class JDXiUi(QMainWindow):
         quit_action.triggered.connect(self.close)
         file_menu.addAction(quit_action)
 
-        # Edit menu
+        # --- Edit menu
         edit_menu = menubar.addMenu("Edit")
 
         midi_config_action = QAction("MIDI Configuration...", self)
@@ -310,10 +316,10 @@ class JDXiUi(QMainWindow):
         self.effects_menu.addAction(vocal_effects_action)
 
     def _create_playback_menu(self) -> None:
-        # Create editors menu
+        # --- Create editors menu
         playback_menu = self.menuBar().addMenu("Playback")
 
-        # Add MIDI file action
+        # --- Add MIDI file action
         midi_file_action = QAction("MIDI File", self)
         midi_file_action.triggered.connect(lambda: self.show_editor("midi_file"))
         playback_menu.addAction(midi_file_action)
@@ -325,25 +331,25 @@ class JDXiUi(QMainWindow):
         sequencer_action.triggered.connect(lambda: self.show_editor("pattern"))
 
     def _create_debug_menu(self) -> None:
-        # Add debug menu
+        # --- Add debug menu
         self.debug_menu = self.menuBar().addMenu("Debug")
 
-        # Add MIDI debugger action (SysEx decoder)
+        # --- Add MIDI debugger action (SysEx decoder)
         midi_debugger_action = QAction("MIDI SysEx Debugger", self)
         midi_debugger_action.triggered.connect(self._show_midi_debugger)
         self.debug_menu.addAction(midi_debugger_action)
 
-        # Add MIDI message monitor action
+        # --- Add MIDI message monitor action
         midi_monitor_action = QAction("MIDI Monitor", self)
         midi_monitor_action.triggered.connect(self._show_midi_message_monitor)
         self.debug_menu.addAction(midi_monitor_action)
 
-        # Add log viewer action
+        # --- Add log viewer action
         log_viewer_action = QAction("Log Viewer", self)
         log_viewer_action.triggered.connect(self._show_log_viewer)
         self.debug_menu.addAction(log_viewer_action)
 
-        # Add About window action
+        # --- Add About window action
         about_help_action = QAction("About", self)
         about_help_action.triggered.connect(self._show_about_help)
         self.debug_menu.addAction(about_help_action)
@@ -351,39 +357,47 @@ class JDXiUi(QMainWindow):
     def _create_help_menu(self) -> None:
         menubar = self.menuBar()
 
-        # Help menu
+        # --- Help menu
         self.help_menu = menubar.addMenu("Help")
         log_viewer_action = QAction("Log Viewer", self)
         log_viewer_action.triggered.connect(self._show_log_viewer)
         self.help_menu.addAction(log_viewer_action)
 
-        # Add MIDI debugger action (SysEx decoder)
+        # --- Add MIDI debugger action (SysEx decoder)
         midi_debugger_action = QAction("MIDI SysEx Debugger", self)
         midi_debugger_action.triggered.connect(self._show_midi_debugger)
         self.help_menu.addAction(midi_debugger_action)
 
-        # Add MIDI message monitor action
+        # --- Add MIDI message monitor action
         midi_monitor_action = QAction("MIDI Monitor", self)
         midi_monitor_action.triggered.connect(self._show_midi_message_monitor)
         self.help_menu.addAction(midi_monitor_action)
 
-        # Add About window action
+        # --- Add About window action
         about_help_action = QAction("About", self)
         about_help_action.triggered.connect(self._show_about_help)
         self.help_menu.addAction(about_help_action)
 
-        preferences_action = QAction(qta.icon("msc.settings"), "Preferences", self)
+        preferences_action = QAction(
+            JDXi.UI.IconRegistry.get_icon(JDXi.UI.IconRegistry.SETTINGS),
+            "Preferences",
+            self,
+        )
         preferences_action.setStatusTip("Show the Preferences window")
         preferences_action.triggered.connect(self.on_preferences)
         self.help_menu.addAction(preferences_action)
 
-        documentation_action = QAction(qta.icon("mdi6.help-rhombus-outline"),"Documentation", self)
+        documentation_action = QAction(
+            JDXi.UI.IconRegistry.get_icon(JDXi.UI.IconRegistry.HELP_RHOMBUS),
+            "Documentation",
+            self,
+        )
         documentation_action.setStatusTip(f"Show {__program__} documentation")
         documentation_action.triggered.connect(self.on_documentation)
 
         self.help_menu.addAction(documentation_action)
 
-        # Add Main Editor window action
+        # --- Add Main Editor window action
         main_editor_action = QAction("Main Editor", self)
         main_editor_action.triggered.connect(self._show_main_editor)
         self.help_menu.addAction(main_editor_action)
@@ -391,13 +405,14 @@ class JDXiUi(QMainWindow):
     def _create_status_bar(self):
         """Create status bar with MIDI indicators"""
         status_bar = self.statusBar()
-        status_bar.setStyleSheet(JDXiStyle.TRANSPARENT)
+
+        JDXi.UI.ThemeManager.apply_transparent(status_bar)
 
         midi_indicator_container = QWidget()
         midi_indicator_container.setLayout(self._build_status_layout())
         status_bar.addPermanentWidget(midi_indicator_container)
 
-        # Set initial indicator states
+        # --- Set initial indicator states
         self.midi_in_indicator.set_state(self.midi_helper.is_input_open)
         self.midi_out_indicator.set_state(self.midi_helper.is_output_open)
         status_bar.setStyleSheet('background: "black";')
@@ -426,24 +441,67 @@ class JDXiUi(QMainWindow):
     def _update_display(self):
         """Update the display with the current preset information"""
         if not self.current_synth_type:
-            logging.warning("No Synth type, defaulting to DIGITAL_1.")
+            log.warning("No Synth type, defaulting to DIGITAL_1.")
             self.current_synth_type = JDXiSynth.DIGITAL_SYNTH_1
         try:
             synth_data = create_synth_data(self.current_synth_type)
-            log.message(
-                f"Creating synth data for type: {self.current_synth_type}"
-            )
+            log.message(f"Creating synth data for type: {self.current_synth_type}")
             if not synth_data:
                 synth_data = create_synth_data(JDXiSynth.DIGITAL_SYNTH_1)
 
             self.preset_manager.current_preset_name = (
                 self.preset_manager.get_preset_name_by_type(self.current_synth_type)
             )
-            log.message(f"Current preset name: {self.preset_manager.current_preset_name}")
-            # Update preset number
-            self.preset_manager.current_preset_number = get_preset_list_number_by_name(
-                self.preset_manager.current_preset_name, synth_data.preset_list
+            log.message(
+                f"Current preset name: {self.preset_manager.current_preset_name}"
             )
+            # Update preset number
+            # synth_data.preset_list might be a dict (PROGRAM_CHANGE) or a list
+            # Use presets (ENUMERATED list) to find the index instead
+            if hasattr(synth_data, "presets") and isinstance(synth_data.presets, list):
+                # Search through the ENUMERATED list to find the preset name
+                preset_name = self.preset_manager.current_preset_name
+                try:
+                    # Try to find the preset in the list
+                    preset_index = next(
+                        (
+                            i
+                            for i, p in enumerate(synth_data.presets)
+                            if preset_name in p or p in preset_name
+                        ),
+                        None,
+                    )
+                    if preset_index is not None:
+                        # Convert 0-based index to 1-based preset number
+                        self.preset_manager.current_preset_number = preset_index + 1
+                    else:
+                        # Fallback: try get_preset_list_number_by_name if preset_list is a list
+                        if isinstance(synth_data.preset_list, list):
+                            self.preset_manager.current_preset_number = (
+                                get_preset_list_number_by_name(
+                                    preset_name, synth_data.preset_list
+                                )
+                            )
+                        else:
+                            # Default to 1 if we can't find it
+                            self.preset_manager.current_preset_number = 1
+                except Exception as ex:
+                    log.warning(f"Error finding preset number: {ex}, defaulting to 1")
+                    self.preset_manager.current_preset_number = 1
+            elif isinstance(synth_data.preset_list, list):
+                # preset_list is already a list, use the existing function
+                self.preset_manager.current_preset_number = (
+                    get_preset_list_number_by_name(
+                        self.preset_manager.current_preset_name, synth_data.preset_list
+                    )
+                )
+            else:
+                # preset_list is a dict or something else, default to 1
+                log.warning(
+                    f"preset_list is not a list (type: {type(synth_data.preset_list)}), "
+                    f"defaulting preset number to 1"
+                )
+                self.preset_manager.current_preset_number = 1
             log.message(
                 f"Current preset number: {self.preset_manager.current_preset_number}"
             )
@@ -509,7 +567,7 @@ class JDXiUi(QMainWindow):
         self.channel = channel
 
         try:
-            # Extract actual number and name if the preset_name is like '123:Some Name'
+            # --- Extract actual number and name if the preset_name is like '123:Some Name'
             match = re.match(r"^(\d{3}):(.*)", preset_name)
             if match:
                 preset_number = int(match.group(1))
@@ -519,7 +577,7 @@ class JDXiUi(QMainWindow):
             self.preset_manager.current_preset_name = preset_name
             self._update_display()
 
-            # Update piano keyboard MIDI channel if available
+            # --- Update piano keyboard MIDI channel if available
             if hasattr(self, "piano_keyboard"):
                 self.piano_keyboard.set_midi_channel(channel)
 

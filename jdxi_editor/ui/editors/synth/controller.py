@@ -1,10 +1,10 @@
 from typing import Dict, Optional
+
 from PySide6.QtCore import QObject
 
-from jdxi_editor.midi.data.digital.partial import DigitalPartial
+from decologr import Decologr as log
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParam
-from jdxi_editor.log.logger import Logger as log
-from jdxi_editor.midi.data.parameter.synth import AddressParameter
+from picomidi.sysex.parameter.address import AddressParameter
 
 
 class PartialController(QObject):
@@ -16,8 +16,13 @@ class PartialController(QObject):
 
     def __init__(self, partial_count: int = 3, parent: Optional[QObject] = None):
         super().__init__(parent)
-        self.partial_states = {i: {'enabled': False, 'selected': False} for i in range(1, partial_count + 1)}
-        self.partial_controls: Dict[int, dict] = {}  # Controls for each partial (e.g., sliders, switches)
+        self.partial_states = {
+            i: {"enabled": False, "selected": False}
+            for i in range(1, partial_count + 1)
+        }
+        self.partial_controls: Dict[int, dict] = (
+            {}
+        )  # Controls for each partial (e.g., sliders, switches)
 
     def enable_partial(self, partial_number: int, enabled: bool = True) -> None:
         """
@@ -27,7 +32,7 @@ class PartialController(QObject):
         :param enabled: True to enable, False to disable.
         """
         if partial_number in self.partial_states:
-            self.partial_states[partial_number]['enabled'] = enabled
+            self.partial_states[partial_number]["enabled"] = enabled
             # Update UI or send MIDI message here if needed
             self._update_partial_state_ui(partial_number)
 
@@ -38,10 +43,12 @@ class PartialController(QObject):
         :param partial_number: The partial number to select.
         """
         for num in self.partial_states.keys():
-            self.partial_states[num]['selected'] = (num == partial_number)
+            self.partial_states[num]["selected"] = num == partial_number
             self._update_partial_state_ui(num)
 
-    def update_partial_parameter(self, partial_number: int, param: str, value: int) -> None:
+    def update_partial_parameter(
+        self, partial_number: int, param: str, value: int
+    ) -> None:
         """
         Update a parameter for a specific partial.
 
@@ -49,7 +56,10 @@ class PartialController(QObject):
         :param param: The parameter name to update.
         :param value: The value to set.
         """
-        if partial_number in self.partial_states and partial_number in self.partial_controls:
+        if (
+            partial_number in self.partial_states
+            and partial_number in self.partial_controls
+        ):
             control = self.partial_controls[partial_number].get(param)
             if control:
                 control.setValue(value)  # Example: Update slider or UI element
@@ -63,9 +73,13 @@ class PartialController(QObject):
         :param partial_number: The partial number to update.
         """
         state = self.partial_states[partial_number]
-        print(f"Updating UI for Partial {partial_number}: Enabled={state['enabled']}, Selected={state['selected']}")
+        print(
+            f"Updating UI for Partial {partial_number}: Enabled={state['enabled']}, Selected={state['selected']}"
+        )
 
-    def _log_partial_parameter_change(self, partial_number: int, param: str, value: int) -> None:
+    def _log_partial_parameter_change(
+        self, partial_number: int, param: str, value: int
+    ) -> None:
         """
         Log a parameter change for a specific partial.
 
@@ -74,7 +88,7 @@ class PartialController(QObject):
         :param value: The new value.
         """
         print(f"Partial {partial_number}: {param} set to {value}")
-        
+
     def _on_partial_state_changed(
         self, partial: DigitalPartialParam, enabled: bool, selected: bool
     ) -> None:
@@ -131,10 +145,9 @@ class PartialController(QObject):
             enabled = partial == DigitalPartialParam.PARTIAL_1
             selected = enabled
             self.partials_panel.switches[partial].setState(enabled, selected)
-            self.partial_tab_widget.setTabEnabled(partial.value - 1, enabled)
+            self.partial_tab_widget.setTabEnabled(partial.STATUS - 1, enabled)
         self.partial_tab_widget.setCurrentIndex(0)
-        
-    
+
     def _handle_special_params(
         self, partial_no: int, param: AddressParameter, value: int
     ) -> None:
@@ -185,13 +198,17 @@ class PartialController(QObject):
                 DigitalPartialParam.FILTER_ENV_SUSTAIN_LEVEL,
                 DigitalPartialParam.FILTER_ENV_RELEASE_TIME,
             ]:
-                self._update_partial_adsr_widgets(partial_no, param, param_value, successes, failures)
+                self._update_partial_adsr_widgets(
+                    partial_no, param, param_value, successes, failures
+                )
             elif param in [
                 DigitalPartialParam.OSC_PITCH_ENV_ATTACK_TIME,
                 DigitalPartialParam.OSC_PITCH_ENV_DECAY_TIME,
                 DigitalPartialParam.OSC_PITCH_ENV_DEPTH,
             ]:
-                self._update_partial_pitch_env_widgets(partial_no, param, param_value, successes, failures)
+                self._update_partial_pitch_env_widgets(
+                    partial_no, param, param_value, successes, failures
+                )
             else:
                 self._update_partial_slider(
                     partial_no, param, param_value, successes, failures
@@ -201,5 +218,3 @@ class PartialController(QObject):
 
     def _update_waveform_buttons(self, partial_no, param_value):
         pass
-        
-    

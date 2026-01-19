@@ -4,22 +4,22 @@ SystemControllerMessage
 # Example usage:
 # Enable program change transmission
 >>> msg = SystemControllerMessage(
->>>     param=SystemController.TX_PROGRAM_CHANGE.value, value=1  # ON
+>>>     param=SystemController.TX_PROGRAM_CHANGE.STATUS, value=1  # ON
 >>> )
 
 # Set keyboard velocity to REAL
 >>> msg = SystemControllerMessage(
->>>     param=SystemController.KEYBOARD_VELOCITY.value, value=0  # REAL
+>>>     param=SystemController.KEYBOARD_VELOCITY.STATUS, value=0  # REAL
 >>> )
 
 # Set velocity curve to MEDIUM
 >>> msg = SystemControllerMessage(
->>>     param=SystemController.VELOCITY_CURVE.value, value=1  # MEDIUM
+>>>     param=SystemController.VELOCITY_CURVE.STATUS, value=1  # MEDIUM
 >>> )
 
 # Set velocity offset to +5
 >>> msg = SystemControllerMessage(
->>>     param=SystemController.VELOCITY_OFFSET.value, value=69  # Convert +5 to 69 (64+5)
+>>>     param=SystemController.VELOCITY_OFFSET.STATUS, value=69  # Convert +5 to 69 (64+5)
 >>> )
 """
 
@@ -27,16 +27,16 @@ from dataclasses import dataclass
 
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetSystemLMB,
-    CommandID,
-    AddressStartMSB,
     AddressOffsetTemporaryToneUMB,
+    AddressStartMSB,
+    CommandID,
 )
 from jdxi_editor.midi.data.address.sysex import ZERO_BYTE
-from jdxi_editor.midi.message.roland import RolandSysEx
+from jdxi_editor.midi.message.roland import JDXiSysEx
 
 
 @dataclass
-class SystemControllerMessage(RolandSysEx):
+class SystemControllerMessage(JDXiSysEx):
     """System Controller parameter message"""
 
     command: int = CommandID.DT1

@@ -2,7 +2,7 @@
 Pattern Measure
 """
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton
+from PySide6.QtWidgets import QHBoxLayout, QPushButton, QVBoxLayout, QWidget
 
 
 class PatternMeasure(QWidget):

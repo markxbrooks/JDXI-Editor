@@ -32,20 +32,20 @@ preset changes and communicate them to the UI and MIDI engine.
 import threading
 from typing import Optional
 
-from PySide6.QtCore import Signal, QObject
+from PySide6.QtCore import QObject, Signal
 
-from jdxi_editor.log.logger import Logger as log
+from decologr import Decologr as log
 from jdxi_editor.midi.io.delay import send_with_delay
+from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.program.utils import (
-    get_previous_program_bank_and_number,
     get_next_program_bank_and_number,
+    get_previous_program_bank_and_number,
 )
 from jdxi_editor.midi.sysex.request.midi_requests import MidiRequests
 from jdxi_editor.ui.editors.helpers.program import (
     calculate_midi_values,
     get_program_by_bank_and_number,
 )
-from jdxi_editor.midi.io.helper import MidiIOHelper
 
 
 class JDXiProgramHelper(QObject):
@@ -93,8 +93,7 @@ class JDXiProgramHelper(QObject):
         ) = get_previous_program_bank_and_number(
             self.current_program_number, self.current_bank_letter
         )
-        self.load_program(self.current_bank_letter,
-                          self.current_program_number)
+        self.load_program(self.current_bank_letter, self.current_program_number)
 
     def get_current_program(self) -> tuple[str, int]:
         """

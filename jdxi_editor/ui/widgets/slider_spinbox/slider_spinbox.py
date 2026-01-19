@@ -2,15 +2,15 @@
 Slider Spinbox Widget for Roland JD-Xi
 """
 
-from typing import Callable, Optional
+from typing import Callable
 
 from PySide6.QtCore import Signal
-from PySide6.QtWidgets import QSpinBox, QDoubleSpinBox, QWidget, QVBoxLayout
+from PySide6.QtWidgets import QDoubleSpinBox, QSpinBox, QVBoxLayout, QWidget
 
-from jdxi_editor.jdxi.midi.constant import MidiConstant
-from jdxi_editor.log.logger import Logger as log
-from jdxi_editor.midi.data.parameter.synth import AddressParameter
-from jdxi_editor.midi.utils.conversions import midi_value_to_ms, ms_to_midi_value
+from decologr import Decologr as log
+from picomidi.constant import Midi
+from picomidi.sysex.parameter.address import AddressParameter
+from picomidi.utils.conversion import midi_value_to_ms, ms_to_midi_value
 
 
 def create_spinbox(min_value: int, max_value: int, suffix: str, value: int) -> QSpinBox:
@@ -82,7 +82,7 @@ class AdsrSliderSpinbox(QWidget):
         super().__init__(parent)
 
         self.param = param
-        self.factor = MidiConstant.VALUE_MAX_SEVEN_BIT
+        self.factor = Midi.VALUE.MAX.SEVEN_BIT
         if max_value > 1:
             self.factor = max_value
         self.create_parameter_slider = create_parameter_slider
@@ -129,11 +129,15 @@ class AdsrSliderSpinbox(QWidget):
             return 0.0
         param_type = self.param.get_envelope_param_type()
         if param_type is None:
-            log.error(f"Parameter type for {self.param.name} is None, cannot convert to envelope")
+            log.error(
+                f"Parameter type for {self.param.name} is None, cannot convert to envelope"
+            )
             return 0.0
         if param_type == "sustain_level":
             converted_value = value / self.factor
-            log.message(f"convert_to_envelope param type: {param_type} value {value} -> env {converted_value}")
+            log.message(
+                f"convert_to_envelope param type: {param_type} value {value} -> env {converted_value}"
+            )
             return converted_value
         if param_type == "peak_level":
             return value / self.factor
@@ -149,8 +153,11 @@ class AdsrSliderSpinbox(QWidget):
             return int(value * self.factor)
         if param_type in ["sustain_level"]:
             converted_value = int(value * self.factor)
-            log.message(f"convert_from_envelope param type: "
-                        f"{param_type} value {value} -> Slider {converted_value}", silent=True)
+            log.message(
+                f"convert_from_envelope param type: "
+                f"{param_type} value {value} -> Slider {converted_value}",
+                silent=True,
+            )
             return converted_value
         elif param_type in ["attack_time", "decay_time", "release_time"]:
             return ms_to_midi_value(value)

@@ -4,28 +4,27 @@ VocalEffectMessage
 
 # Example usage:
 # Set vocal effect level
->>> msg = VocalEffectMessage(param=VocalEffect.LEVEL.value, value=100)  # Level 100
+>>> msg = VocalEffectMessage(param=VocalEffect.LEVEL.STATUS, value=100)  # Level 100
 
 # Set auto pitch parameters
->>> msg = VocalEffectMessage(param=VocalEffect.AUTO_PITCH_SW.value, value=1)  # ON
+>>> msg = VocalEffectMessage(param=VocalEffect.AUTO_PITCH_SW.STATUS, value=1)  # ON
 
->>> msg = VocalEffectMessage(param=VocalEffect.AUTO_PITCH_TYPE.value, value=0)  # SOFT
+>>> msg = VocalEffectMessage(param=VocalEffect.AUTO_PITCH_TYPE.STATUS, value=0)  # SOFT
 
 # Set vocoder parameters
->>> msg = VocalEffectMessage(param=VocalEffect.VOCODER_SW.value, value=1)  # ON
+>>> msg = VocalEffectMessage(param=VocalEffect.VOCODER_SW.STATUS, value=1)  # ON
 
->>> msg = VocalEffectMessage(param=VocalEffect.VOCODER_ENV.value, value=1)  # SOFT
+>>> msg = VocalEffectMessage(param=VocalEffect.VOCODER_ENV.STATUS, value=1)  # SOFT
 """
-
 
 from dataclasses import dataclass
 
-from jdxi_editor.midi.data.address.address import CommandID, AddressStartMSB
-from jdxi_editor.midi.message.roland import RolandSysEx
+from jdxi_editor.midi.data.address.address import AddressStartMSB, CommandID
+from jdxi_editor.midi.message.roland import JDXiSysEx
 
 
 @dataclass
-class VocalEffectMessage(RolandSysEx):
+class VocalEffectMessage(JDXiSysEx):
     """Program Vocal Effect parameter message"""
 
     command: int = CommandID.DT1

@@ -41,9 +41,10 @@ import os
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
 
+from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.resources import resource_path
-from jdxi_editor.ui.editors import SynthEditor
+from jdxi_editor.ui.editors.synth.editor import SynthEditor
 
 
 class BasicEditor(SynthEditor):
@@ -51,20 +52,22 @@ class BasicEditor(SynthEditor):
 
     def __init__(self, midi_helper: MidiIOHelper, parent=None):
         super().__init__(midi_helper=midi_helper, parent=parent)
-        # self.setFixedWidth(450)
         self.default_image = None
-        self.image_label = None
-        self.setMinimumWidth(550)
-        self.setMinimumHeight(550)
+        self.preset_image_label = None
+        self.setMinimumWidth(JDXi.UI.Dimensions.EDITOR_BASIC.WIDTH)
+        self.setMinimumHeight(JDXi.UI.Dimensions.EDITOR_BASIC.HEIGHT)
 
-    def load_and_set_image(self, image_path, secondary_image_path=None):
+    def load_and_set_image(self, image_path: str, secondary_image_path: str = None):
         """Helper function to load and set the image on the label."""
         if os.path.exists(image_path):
             pixmap = QPixmap(image_path)
             scaled_pixmap = pixmap.scaledToHeight(
-                150, Qt.TransformationMode.SmoothTransformation
-            )  # Resize to 250px height
-            self.image_label.setPixmap(scaled_pixmap)
+                JDXi.UI.Dimensions.EDITOR_BASIC.IMAGE_HEIGHT,
+                Qt.TransformationMode.SmoothTransformation,
+            )  # Resize to 150px height
+            # Only set pixmap if preset_image_label exists (some editors may not use it)
+            if self.preset_image_label is not None:
+                self.preset_image_label.setPixmap(scaled_pixmap)
             return True
         return False
 
@@ -72,7 +75,11 @@ class BasicEditor(SynthEditor):
         image_loaded = False
 
         # Define paths
-        default_image_path = resource_path(os.path.join("resources", self.instrument_icon_folder, self.default_image))
+        default_image_path = resource_path(
+            os.path.join("resources", self.instrument_icon_folder, self.default_image)
+        )
         if not image_loaded:
             if not self.load_and_set_image(default_image_path):
-                self.image_label.clear()  # Clear label if default image is also missing
+                # Only clear if preset_image_label exists (some editors may not use it)
+                if self.preset_image_label is not None:
+                    self.preset_image_label.clear()  # Clear label if default image is also missing

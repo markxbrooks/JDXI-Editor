@@ -2,21 +2,20 @@ import os
 import time
 from pathlib import Path
 
-import rtmidi
 import mido
+import rtmidi
 
-from jdxi_editor.log.logger import Logger as log
-from jdxi_editor.jdxi.midi.constant import MidiConstant
+from decologr import Decologr as log
 from jdxi_editor.ui.widgets.midi.utils import ticks_to_seconds
-
+from picomidi.constant import Midi
 
 # Constants
-default_tempo = MidiConstant.TEMPO_120_BPM_USEC  # microseconds per beat (120 BPM)
-# default_tempo = MidiConstant.TEMPO_100_BPM_USEC  # microseconds per beat (100 BPM)
-# default_tempo = MidiConstant.TEMPO_150_BPM_USEC  # microseconds per beat (120 BPM)
+default_tempo = Midi.TEMPO.BPM_120_USEC  # microseconds per beat (120 BPM)
 
 
-def buffer_midi_tracks(midi_file: mido.MidiFile, muted_tracks=None, muted_channels=None):
+def buffer_midi_tracks(
+    midi_file: mido.MidiFile, muted_tracks=None, muted_channels=None
+):
     """
     Preprocess MIDI tracks into a sorted list of (absolute_ticks, raw_bytes, tempo) tuples.
     Meta messages are excluded except for set_tempo.
@@ -27,11 +26,13 @@ def buffer_midi_tracks(midi_file: mido.MidiFile, muted_tracks=None, muted_channe
         muted_channels = set()
 
     buffered_messages_list = []
-    default_tempo = MidiConstant.TEMPO_120_BPM_USEC  # 120 BPM in microseconds per beat
+    default_tempo = Midi.TEMPO.BPM_120_USEC  # 120 BPM in microseconds per beat
 
     for i, track in enumerate(midi_file.tracks):
-        if i + MidiConstant.CHANNEL_DISPLAY_TO_BINARY in muted_tracks:
-            log.message(f"🚫 Skipping muted track {i + MidiConstant.CHANNEL_DISPLAY_TO_BINARY} ({track.name})")
+        if i + Midi.CHANNEL.DISPLAY_TO_BINARY in muted_tracks:
+            log.message(
+                f"🚫 Skipping muted track {i + Midi.CHANNEL.DISPLAY_TO_BINARY} ({track.name})"
+            )
             continue
         absolute_time_ticks = 0
         current_tempo = default_tempo
@@ -39,101 +40,35 @@ def buffer_midi_tracks(midi_file: mido.MidiFile, muted_tracks=None, muted_channe
         for msg in track:
             absolute_time_ticks += msg.time
 
-            if msg.type == 'set_tempo':
+            if msg.type == "set_tempo":
                 current_tempo = msg.tempo
-                buffered_messages_list.append((absolute_time_ticks, None, current_tempo))
+                buffered_messages_list.append(
+                    (absolute_time_ticks, None, current_tempo)
+                )
             elif not msg.is_meta:
                 if hasattr(msg, "channel"):
-                    log.message(f"🔍 Checking msg.channel={msg.channel + MidiConstant.CHANNEL_BINARY_TO_DISPLAY} in muted_channels={muted_channels}")
-                    if msg.channel + MidiConstant.CHANNEL_BINARY_TO_DISPLAY in muted_channels:
+                    log.message(
+                        f"🔍 Checking msg.channel={msg.channel + Midi.CHANNEL.BINARY_TO_DISPLAY} in muted_channels={muted_channels}"
+                    )
+                    if msg.channel + Midi.CHANNEL.BINARY_TO_DISPLAY in muted_channels:
                         log.message(f"🚫 Skipping muted channel {msg.channel}")
                         continue
                 log.message(f"🎵 Adding midi msg to buffer: {msg}")
                 raw_bytes = msg.bytes()
-                buffered_messages_list.append((absolute_time_ticks, raw_bytes, current_tempo))
+                buffered_messages_list.append(
+                    (absolute_time_ticks, raw_bytes, current_tempo)
+                )
 
     buffered_messages_list.sort(key=lambda x: x[0])
     return buffered_messages_list
 
 
-def buffer_midi_tracks_old(midi_file: mido.MidiFile, muted_tracks=None, muted_channels=None):
-    """
-    Preprocess MIDI tracks into a sorted list of (absolute_ticks, raw_bytes, tempo) tuples.
-    Meta messages are excluded except for set_tempo.
-    """
-    if muted_tracks is None:
-        muted_tracks = set()
-    if muted_channels is None:
-        muted_channels = set()
-
-    buffered_messages_list = []
-
-    for i, track in enumerate(midi_file.tracks):
-        if muted_tracks and i in muted_tracks:
-            log.message(f"🚫 Skipping muted track {track}")
-            continue
-        absolute_time_ticks = 0
-        current_tempo = default_tempo  # 500,000 μs per beat = 120 BPM
-
-        for msg in track:
-            absolute_time_ticks += msg.time
-
-            if msg.type == 'set_tempo':
-                current_tempo = msg.tempo
-                # Store a tempo update as a placeholder (no raw bytes to send)
-                buffered_messages_list.append((absolute_time_ticks, None, current_tempo))
-            elif not msg.is_meta:
-                # Pre-convert mido message to raw MIDI bytes
-                if hasattr(msg, "channel"):
-                    log.message(f"🔍 Checking msg.channel={msg.channel} in muted_channels={muted_channels}")
-                    if msg.channel in muted_channels:
-                        log.message(f"🚫 Skipping muted channel {msg.channel}")
-                        continue
-                log.message(f"🎵 Adding midi msg to buffer: {msg}")
-                raw_bytes = msg.bytes()
-                buffered_messages_list.append((absolute_time_ticks, raw_bytes, current_tempo))
-
-    # Sort all messages by absolute time
-    buffered_messages_list.sort(key=lambda x: x[0])
-    return buffered_messages_list
-
-
-def buffer_midi_tracks_old(midi_file: mido.MidiFile):
-    """
-    buffer_midi_tracks
-
-    :param midi_file: mido.MidiFile
-    :return:
-    Buffer all messages into a unified timeline
-    """
-    buffered_messages_list = []
-
-    for track in midi_file.tracks:
-        absolute_time_ticks = 0
-        current_tempo = default_tempo  # default tempo at start
-        for msg in track:
-            absolute_time_ticks += msg.time
-            # Update tempo if message is set_tempo
-            if msg.type == 'set_tempo':
-                current_tempo = msg.tempo
-                print("absolute_time_ticks", absolute_time_ticks, "current_tempo", current_tempo)
-            # Store message with absolute tick time and current tempo
-            buffered_messages_list.append((absolute_time_ticks, msg, current_tempo))
-    # Sort all messages globally by absolute time
-    buffered_messages_list.sort(key=lambda x: x[0])
-    return buffered_messages_list
-
-
-
-
-
-# Convert ticks to seconds, considering tempo
-
-
-def play_buffered(buffered_msgs: list,
-                  midi_out_port: rtmidi.MidiOut,
-                  ticks_per_beat: int,
-                  play_program_changes: bool = True):
+def play_buffered(
+    buffered_msgs: list,
+    midi_out_port: rtmidi.MidiOut,
+    ticks_per_beat: int,
+    play_program_changes: bool = True,
+):
     """
     play_buffered
 
@@ -157,7 +92,7 @@ def play_buffered(buffered_msgs: list,
 
         # Send message based on type and program change flag
         if not msg.is_meta:
-            if msg.type == 'program_change':
+            if msg.type == "program_change":
                 if play_program_changes:
                     midi_out_port.send_message(msg.bytes())
                 else:
@@ -166,8 +101,9 @@ def play_buffered(buffered_msgs: list,
             else:
                 midi_out_port.send_message(msg.bytes())
 
+
 if __name__ == "__main__":
-    import os
+
     import mido
     import rtmidi
 
@@ -182,10 +118,9 @@ if __name__ == "__main__":
             print("Creating virtual MIDI output port...")
             midi_out.open_virtual_port("My Virtual MIDI Output")
 
-        music_folder = Path.home() / 'Desktop' / 'music'
+        music_folder = Path.home() / "Desktop" / "music"
         midi_files = [
-            f for f in os.listdir(music_folder)
-            if f.lower().endswith(('.mid', '.midi'))
+            f for f in os.listdir(music_folder) if f.lower().endswith((".mid", ".midi"))
         ]
         midi_files.sort(key=str.lower)
 
@@ -197,15 +132,19 @@ if __name__ == "__main__":
         for idx, f in enumerate(midi_files):
             print(f"{idx}: {f}")
 
-        file_indices = input("Enter file numbers to play in order (e.g., 0 2 5): ").strip().split()
+        file_indices = (
+            input("Enter file numbers to play in order (e.g., 0 2 5): ").strip().split()
+        )
         try:
-            playlist = [os.path.join(music_folder, midi_files[int(i)]) for i in file_indices]
+            playlist = [
+                os.path.join(music_folder, midi_files[int(i)]) for i in file_indices
+            ]
         except (IndexError, ValueError):
             print("❌ Invalid input.")
             exit(1)
 
         play_pc_input = input("Play Program Changes? (y/n): ").strip().lower()
-        play_program_changes = play_pc_input == 'y'
+        play_program_changes = play_pc_input == "y"
 
         # === Playback Loop ===
         for file_path in playlist:
@@ -222,4 +161,3 @@ if __name__ == "__main__":
         print("✅ Playlist finished.")
     except Exception as e:
         print(f"❌ Error: {e}")
-

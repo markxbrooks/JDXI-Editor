@@ -5,7 +5,7 @@ ReverbMessage
     Examples
     --------
 # Set reverb level
->>> msg = ReverbMessage(param=Reverb.LEVEL.value, value=100)  # Level 100
+>>> msg = ReverbMessage(param=Reverb.LEVEL.STATUS, value=100)  # Level 100
 
 # Set reverb parameter 1 to +5000
 >>> msg = ReverbMessage(
@@ -18,17 +18,17 @@ from dataclasses import dataclass
 
 from jdxi_editor.midi.data import AddressParameterEffect
 from jdxi_editor.midi.data.address.address import (
-    CommandID,
-    AddressStartMSB,
-    AddressOffsetSystemLMB,
     AddressOffsetProgramLMB,
+    AddressOffsetSystemLMB,
+    AddressStartMSB,
+    CommandID,
 )
-from jdxi_editor.midi.message.roland import RolandSysEx
-from jdxi_editor.midi.utils.byte import split_16bit_value_to_nibbles
+from jdxi_editor.midi.message.roland import JDXiSysEx
+from picomidi.utils.conversion import split_16bit_value_to_nibbles
 
 
 @dataclass
-class ReverbMessage(RolandSysEx):
+class ReverbMessage(JDXiSysEx):
     """Program Reverb parameter message"""
 
     command: int = CommandID.DT1

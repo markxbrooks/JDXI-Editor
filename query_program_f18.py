@@ -24,7 +24,7 @@ from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.program.helper import JDXiProgramHelper
 from jdxi_editor.midi.sysex.request.midi_requests import MidiRequests
 from jdxi_editor.ui.editors.helpers.program import calculate_midi_values
-from jdxi_editor.log.logger import Logger as log
+from decologr import Decologr as log
 
 
 class SysExCollector(QObject):

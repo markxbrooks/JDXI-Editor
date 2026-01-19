@@ -12,20 +12,21 @@ The widget supports both analog and digital synth parameters and provides visual
 through an animated envelope curve.
 """
 
-from PySide6.QtCore import Signal
-from PySide6.QtWidgets import QWidget, QGridLayout, QSlider
-from typing import Optional, Callable
+from typing import Callable, Optional
 
-from jdxi_editor.jdxi.midi.constant import MidiConstant
-from jdxi_editor.jdxi.style import JDXiStyle
-from jdxi_editor.log.logger import Logger as log
+from PySide6.QtCore import Signal
+from PySide6.QtWidgets import QGridLayout, QSlider, QWidget
+
+from decologr import Decologr as log
+from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
-from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.widgets.envelope.base import EnvelopeWidgetBase
 from jdxi_editor.ui.widgets.pitch.envelope_plot import PitchEnvPlot
 from jdxi_editor.ui.widgets.pitch.slider_spinbox import PitchEnvSliderSpinbox
-from jdxi_editor.midi.utils.conversions import (
+from picomidi.constant import Midi
+from picomidi.sysex.parameter.address import AddressParameter
+from picomidi.utils.conversion import (
     midi_value_to_ms,
     ms_to_midi_value,
 )
@@ -49,13 +50,15 @@ class PitchEnvelopeWidget(EnvelopeWidgetBase):
         address: Optional[RolandSysExAddress] = None,
         parent: Optional[QWidget] = None,
     ):
-        super().__init__(envelope_keys=["attack_time", "decay_time", "peak_level"],
-                         create_parameter_slider=create_parameter_slider,
-                         parameters=[attack_param, decay_param, depth_param],
-                         midi_helper=midi_helper,
-                         address=address,
-                         controls=controls,
-                         parent=parent)
+        super().__init__(
+            envelope_keys=["attack_time", "decay_time", "peak_level"],
+            create_parameter_slider=create_parameter_slider,
+            parameters=[attack_param, decay_param, depth_param],
+            midi_helper=midi_helper,
+            address=address,
+            controls=controls,
+            parent=parent,
+        )
 
         self.address = address
         self.midi_helper = midi_helper
@@ -96,7 +99,7 @@ class PitchEnvelopeWidget(EnvelopeWidgetBase):
         self.depth_control = PitchEnvSliderSpinbox(
             depth_param,
             min_value=1,
-            max_value=MidiConstant.VALUE_MAX_SEVEN_BIT,
+            max_value=Midi.VALUE.MAX.SEVEN_BIT,
             units="",
             label="Depth",
             value=self.envelope["peak_level"],
@@ -119,10 +122,10 @@ class PitchEnvelopeWidget(EnvelopeWidgetBase):
             "peak_level": self.depth_control.spinbox,
         }
         self.plot = PitchEnvPlot(
-            width=JDXiStyle.ADSR_PLOT_WIDTH,
-            height=JDXiStyle.ADSR_PLOT_HEIGHT,
+            width=JDXi.UI.Style.ADSR_PLOT_WIDTH,
+            height=JDXi.UI.Style.ADSR_PLOT_HEIGHT,
             envelope=self.envelope,
-            parent=self
+            parent=self,
         )
 
         self.layout = QGridLayout()
@@ -194,13 +197,13 @@ class PitchEnvelopeWidget(EnvelopeWidgetBase):
                 envelope_param_type = param.get_envelope_param_type()
                 log.message(f"envelope_param_type = {envelope_param_type}")
                 if envelope_param_type == "sustain_level":
-                    self.envelope["sustain_level"] = slider.value() / 127
+                    self.envelope["sustain_level"] = slider.STATUS() / 127
                 elif envelope_param_type == "peak_level":
                     pass
                     # self.envelope["peak_level"] = (slider.value() / 127)
                 else:
                     self.envelope[envelope_param_type] = midi_value_to_ms(
-                        slider.value()
+                        slider.STATUS()
                     )
             log.message(f"{self.envelope}")
         except Exception as ex:

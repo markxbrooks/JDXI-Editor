@@ -2,17 +2,19 @@
 Favorite Button
 """
 
-from PySide6.QtWidgets import QPushButton, QWidget
-from PySide6.QtCore import Signal, QSettings
 import logging
 
-from jdxi_editor.log.logger import Logger as log
+from PySide6.QtCore import QSettings, Signal
+from PySide6.QtWidgets import QPushButton, QWidget
+
+from decologr import Decologr as log
+from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
-from jdxi_editor.jdxi.preset.button import JDXiPresetButtonData
-from jdxi_editor.jdxi.synth.type import JDXiSynth
-from jdxi_editor.jdxi.preset.data import JDXiPresetData
 from jdxi_editor.project import __package_name__
+from jdxi_editor.synth.type import JDXiSynth
+from jdxi_editor.ui.preset.button import JDXiPresetButtonData
+from jdxi_editor.ui.preset.data import JDXiPresetData
+from jdxi_editor.ui.preset.helper import JDXiPresetHelper
 
 
 class FavoriteButton(QPushButton):
@@ -143,12 +145,15 @@ class FavoriteButton(QPushButton):
             # Get color based on synth preset_type
             if self.preset.type == JDXiSynth.ANALOG_SYNTH:
                 color = "#00A3F0"  # Analog blue
-            elif self.preset.type in [JDXiSynth.DIGITAL_SYNTH_1, JDXiSynth.DIGITAL_SYNTH_2]:
+            elif self.preset.type in [
+                JDXiSynth.DIGITAL_SYNTH_1,
+                JDXiSynth.DIGITAL_SYNTH_2,
+            ]:
                 color = "#FF0000"  # Red for both digital synths
             elif self.preset.type == JDXiSynth.DRUM_KIT:
                 color = "#00FF00"  # Green for drums
             else:
-                color = "#666666"  # Gray for unknown types
+                color = JDXi.UI.Style.GREY  # Gray for unknown types
 
             # Set text to preset name
             # Get just the preset name without the number prefix
@@ -159,7 +164,7 @@ class FavoriteButton(QPushButton):
 
             text = f"FAV {self.slot_num + 1}\n{preset_display_name}"
         else:
-            color = "#666666"  # Gray for empty slot
+            color = JDXi.UI.Style.GREY  # Gray for empty slot
             text = f"FAV {self.slot_num + 1}"
 
         # Create gradient background

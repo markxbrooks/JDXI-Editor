@@ -7,34 +7,41 @@ Example Usage:
 >>> class AddressMemoryAreaMSB(Address):
 ...    PROGRAM = 0x18
 ...    TEMPORARY_TONE = 0x19
-... # Add an offset to a base address
-... addr_bytes = AddressMemoryAreaMSB.PROGRAM.add_offset((0x00, 0x20, 0x00))
-... print(addr_bytes)  # (0x18, 0x00, 0x20, 0x00)
-... # Get SysEx-ready address
-... sysex_address = AddressMemoryAreaMSB.PROGRAM.to_sysex_address((0x00, 0x20, 0x00))
-... print(sysex_address)  # b'\x18\x00\x20\x00'
-... # Lookup
-... found = AddressMemoryAreaMSB.get_parameter_by_address(0x19)
-... print(found)  # ProgramAddress.TEMPORARY_TONE
+>>> # Add an offset to a base address
+>>> addr_bytes = AddressMemoryAreaMSB.PROGRAM.add_offset((0x00, 0x20, 0x00))
+>>> print(addr_bytes)  # (0x18, 0x00, 0x20, 0x00)
+(24, 0, 32, 0)
+>>> # Get SysEx-ready address
+>>> sysex_address = AddressMemoryAreaMSB.PROGRAM.to_sysex_address((0x00, 0x20, 0x00))
+>>> print(sysex_address.hex())  # '18002000'
+18002000
+>>> # Lookup
+>>> found = AddressMemoryAreaMSB.get_parameter_by_address(0x19)
+>>> print(found)  # ProgramAddress.TEMPORARY_TONE
+AddressMemoryAreaMSB.TEMPORARY_TONE: 0x19
+
 
 SysExByte
 
 Example usage:
 --------------
 >>> command = CommandID.DT1
-... print(f"Command: {command}, Value: {command.value}, Message Position: {command.message_position}")
+>>> print(f"Command: {command}, Value: {command.DT1}, Message Position: {command.message_position}")
+Command: 18, Value: 18, Message Position: <bound method CommandID.message_position of <enum 'CommandID'>>
 """
 
 from __future__ import annotations
-from enum import unique, IntEnum
-from typing import Optional, Type, Union, Tuple, Any, TypeVar, List
 
-from jdxi_editor.jdxi.sysex.bitmask import BitMask
+from enum import IntEnum, unique
+from typing import Any, List, Optional, Tuple, Type, TypeVar, Union
+
 from jdxi_editor.midi.data.address.sysex import ZERO_BYTE
 from jdxi_editor.midi.data.address.sysex_byte import SysExByte
+from picomidi.core.bitmask import BitMask
 
 T = TypeVar("T", bound="Address")
 DIGITAL_PARTIAL_MAP = {i: 0x1F + i for i in range(1, 4)}  # 1: 0x20, 2: 0x21, 3: 0x22
+
 
 @unique
 class RolandID(IntEnum):
@@ -42,6 +49,13 @@ class RolandID(IntEnum):
 
     ROLAND_ID = 0x41
     DEVICE_ID = 0x10
+
+    @classmethod
+    def to_list(cls) -> list[int]:
+        """
+        Convert the header to a list of integers
+        """
+        return [cls.ROLAND_ID, cls.DEVICE_ID]
 
 
 @unique
@@ -94,6 +108,19 @@ class Address(SysExByte):
         return bytes(self.add_offset(address_offset))
 
     @classmethod
+    def get_parameter_by_address(cls: Type[T], address: int) -> Optional[T]:
+        """
+        Get parameter by address value.
+        Overrides the base class method to use 'value' instead of 'STATUS'.
+
+        :param address: int The address value
+        :return: Optional[T] The parameter
+        """
+        return next(
+            (parameter for parameter in cls if parameter.value == address), None
+        )
+
+    @classmethod
     def from_sysex_bytes(cls: Type[T], address: bytes) -> Optional[T]:
         """
         Create an Address object from a 4-byte SysEx address.
@@ -106,10 +133,14 @@ class Address(SysExByte):
         return cls.get_parameter_by_address(address[0])
 
     def __repr__(self) -> str:
-        return f"<{self.__class__.__name__}.{self.name}: 0x{self.value:02X}>"
+        # Safely convert value to int for formatting
+        value_int = int(self.value) if not isinstance(self.value, int) else self.value
+        return f"<{self.__class__.__name__}.{self.name}: 0x{value_int:02X}>"
 
     def __str__(self) -> str:
-        return f"{self.__class__.__name__}.{self.name}: 0x{self.value:02X}"
+        # Safely convert value to int for formatting
+        value_int = int(self.value) if not isinstance(self.value, int) else self.value
+        return f"{self.__class__.__name__}.{self.name}: 0x{value_int:02X}"
 
 
 class RolandSysExAddress:
@@ -166,7 +197,11 @@ class RolandSysExAddress:
         :return: RolandSysExAddress The RolandSysExAddress object
         """
         if isinstance(offset, int):
-            offset_bytes = [(offset >> 16) & 0x7F, (offset >> 8) & BitMask.LOW_7_BITS, offset & BitMask.LOW_7_BITS]
+            offset_bytes = [
+                (offset >> 16) & 0x7F,
+                (offset >> 8) & BitMask.LOW_7_BITS,
+                offset & BitMask.LOW_7_BITS,
+            ]
         elif isinstance(offset, tuple) and len(offset) == 3:
             offset_bytes = list(offset)
         else:
@@ -183,9 +218,36 @@ class RolandSysExAddress:
 
         :return: str The string representation
         """
+
+        # Safely convert to int for formatting (handles enums, strings, etc.)
+        def safe_int(value):
+            # Handle enums first - extract the actual value
+            if hasattr(value, "value"):
+                enum_value = value.value
+                if isinstance(enum_value, int):
+                    return enum_value
+                # If enum value is a string, try to convert it
+                try:
+                    return int(enum_value)
+                except (ValueError, TypeError):
+                    return 0
+            # Already an int
+            if isinstance(value, int):
+                return value
+            # Try to convert to int
+            try:
+                return int(value)
+            except (ValueError, TypeError):
+                return 0  # Fallback to 0 if conversion fails
+
+        msb_int = safe_int(self.msb)
+        umb_int = safe_int(self.umb)
+        lmb_int = safe_int(self.lmb)
+        lsb_int = safe_int(self.lsb)
+        # Ensure we're formatting actual integers, not enums
         return (
-            f"<{self.__class__.__name__}(msb=0x{int(self.msb):02X}, umb=0x{int(self.umb):02X}, "
-            f"lmb=0x{int(self.lmb):02X}, lsb=0x{int(self.lsb):02X})>"
+            f"<{self.__class__.__name__}(msb=0x{int(msb_int):02X}, umb=0x{int(umb_int):02X}, "
+            f"lmb=0x{int(lmb_int):02X}, lsb=0x{int(lsb_int):02X})>"
         )
 
     def __str__(self) -> str:
@@ -194,7 +256,34 @@ class RolandSysExAddress:
 
         :return: str The string representation
         """
-        return f"0x{int(self.msb):02X} 0x{int(self.umb):02X} 0x{int(self.lmb):02X} 0x{int(self.lsb):02X}"
+
+        # Safely convert to int for formatting (handles enums, strings, etc.)
+        def safe_int(value):
+            # Handle enums first - extract the actual value
+            if hasattr(value, "value"):
+                enum_value = value.value
+                if isinstance(enum_value, int):
+                    return enum_value
+                # If enum value is a string, try to convert it
+                try:
+                    return int(enum_value)
+                except (ValueError, TypeError):
+                    return 0
+            # Already an int
+            if isinstance(value, int):
+                return value
+            # Try to convert to int
+            try:
+                return int(value)
+            except (ValueError, TypeError):
+                return 0  # Fallback to 0 if conversion fails
+
+        msb_int = safe_int(self.msb)
+        umb_int = safe_int(self.umb)
+        lmb_int = safe_int(self.lmb)
+        lsb_int = safe_int(self.lsb)
+        # Ensure we're formatting actual integers, not enums
+        return f"0x{int(msb_int):02X} 0x{int(umb_int):02X} 0x{int(lmb_int):02X} 0x{int(lsb_int):02X}"
 
     def __eq__(self, other: object) -> bool:
         """
@@ -219,8 +308,6 @@ class RolandSysExAddress:
         return RolandSysExAddress(self.msb, self.umb, self.lsb, self.lsb)
 
 
-
-
 # ==========================
 # JD-Xi SysEx Header
 # ==========================
@@ -231,13 +318,18 @@ class ModelID(Address):
     Model ID
     """
 
-    ROLAND_ID = 0x41
-    DEVICE_ID = 0x10
     # Model ID bytes
     MODEL_ID_1 = ZERO_BYTE  # Manufacturer ID extension
     MODEL_ID_2 = ZERO_BYTE  # Device family code MSB
     MODEL_ID_3 = ZERO_BYTE  # Device family code LSB
     MODEL_ID_4 = 0x0E  # JD-XI Product code
+
+    @classmethod
+    def to_list(cls) -> list[int]:
+        """
+        Convert the header to a list of integers
+        """
+        return [cls.MODEL_ID_1, cls.MODEL_ID_2, cls.MODEL_ID_3, cls.MODEL_ID_4]
 
 
 JD_XI_MODEL_ID = [
@@ -247,6 +339,8 @@ JD_XI_MODEL_ID = [
     ModelID.MODEL_ID_4,
 ]
 
+# Deprecated: Use JDXiSysexHeader from jdxi_editor.midi.message.jdxi instead
+# This is kept here for backward compatibility only
 JD_XI_HEADER_LIST = [RolandID.ROLAND_ID, RolandID.DEVICE_ID, *JD_XI_MODEL_ID]
 
 
@@ -359,6 +453,7 @@ class AddressOffsetAnalogLMB(Address):
     """
     Analog Synth Tone
     """
+
     COMMON = 0x00
 
 
@@ -382,7 +477,9 @@ class AddressOffsetProgramLMB(Address):
     ZONE_ANALOG = 0x32
     ZONE_DRUM = 0x33
     CONTROLLER = 0x40
-    DRUM_DEFAULT_PARTIAL = 0x2E  # BD1 from DRUM_ADDRESS_MAP (lazy import to avoid circular dependency)
+    DRUM_DEFAULT_PARTIAL = (
+        0x2E  # BD1 from DRUM_ADDRESS_MAP (lazy import to avoid circular dependency)
+    )
     DIGITAL_DEFAULT_PARTIAL = DIGITAL_PARTIAL_MAP[1]
     DRUM_KIT_PART_1 = 0x2E
     DRUM_KIT_PART_2 = 0x30
@@ -450,7 +547,9 @@ class AddressOffsetDrumKitLMB(Address):
     """
 
     COMMON = 0x00
-    DRUM_DEFAULT_PARTIAL = 0x2E  # BD1 from DRUM_ADDRESS_MAP (lazy import to avoid circular dependency)
+    DRUM_DEFAULT_PARTIAL = (
+        0x2E  # BD1 from DRUM_ADDRESS_MAP (lazy import to avoid circular dependency)
+    )
     DIGITAL_DEFAULT_PARTIAL = DIGITAL_PARTIAL_MAP[1]
     DRUM_KIT_PART_1 = 0x2E
     DRUM_KIT_PART_2 = 0x30
@@ -510,4 +609,3 @@ class AddressOffsetDrumKitLMB(Address):
         base_address = 0x00
         step = 0x2E
         return base_address + (step * partial_number)
-

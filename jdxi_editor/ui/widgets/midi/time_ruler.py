@@ -4,22 +4,23 @@ TimeRulerWidget
 
 import mido
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QPaintEvent, QPainter, QPen, QColor
+from PySide6.QtGui import QColor, QPainter, QPaintEvent, QPen
 from PySide6.QtWidgets import QWidget
 
-from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.core.jdxi import JDXi
 
 
 class TimeRulerWidget(QWidget):
     """
     TimeRulerWidget
     """
+
     def __init__(self, midi_file: mido.MidiFile = None, parent: QWidget = None):
         super().__init__(parent)
         self.midi_file_cached_total_length = None
         self.midi_file = midi_file
         self.setMinimumHeight(20)
-        self.setMaximumHeight(JDXiStyle.MAX_RULER_HEIGHT)
+        self.setMaximumHeight(JDXi.UI.Style.MAX_RULER_HEIGHT)
         # List of (seconds: float, color: QColor | None, label: str | None)
         self._markers = []
 
@@ -59,7 +60,9 @@ class TimeRulerWidget(QWidget):
             if duration <= 0:
                 continue
             x = int((seconds / duration) * width)
-            pen = QPen(color if isinstance(color, QColor) else QColor(JDXiStyle.ACCENT))
+            pen = QPen(
+                color if isinstance(color, QColor) else QColor(JDXi.UI.Style.ACCENT)
+            )
             pen.setWidth(2)
             painter.setPen(pen)
             # Marker line
@@ -68,7 +71,9 @@ class TimeRulerWidget(QWidget):
             if label:
                 painter.drawText(x + 3, (height // 2) - 2, label)
 
-    def add_marker(self, seconds: float, color: QColor | None = None, label: str | None = None) -> None:
+    def add_marker(
+        self, seconds: float, color: QColor | None = None, label: str | None = None
+    ) -> None:
         """Add a time marker in seconds and repaint."""
         try:
             if seconds < 0:

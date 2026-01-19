@@ -12,46 +12,55 @@ The widget supports both analog and digital synth parameters and provides visual
 through an animated envelope curve.
 """
 
-from typing import Dict, Optional, Callable
+from typing import Callable, Dict, Optional
 
 from PySide6.QtCore import Signal
-from PySide6.QtWidgets import QWidget, QGridLayout
+from PySide6.QtWidgets import QGridLayout, QWidget
 
-from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
-from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
 from jdxi_editor.ui.widgets.adsr.plot import ADSRPlot
-from jdxi_editor.ui.widgets.envelope.base import EnvelopeWidgetBase, TOOLTIPS
+from jdxi_editor.ui.widgets.envelope.base import TOOLTIPS, EnvelopeWidgetBase
 from jdxi_editor.ui.widgets.slider_spinbox.slider_spinbox import AdsrSliderSpinbox
+from picomidi.sysex.parameter.address import AddressParameter
 
 
 class ADSR(EnvelopeWidgetBase):
-    """ ADSR Widget for Roland JD-Xi """
+    """ADSR Widget for Roland JD-Xi"""
+
     envelope_changed = Signal(dict)
 
     def __init__(
-            self,
-            attack_param: AddressParameter,
-            decay_param: AddressParameter,
-            sustain_param: AddressParameter,
-            release_param: AddressParameter,
-            initial_param: Optional[AddressParameter] = None,
-            peak_param: Optional[AddressParameter] = None,
-            create_parameter_slider: Callable = None,
-            midi_helper: Optional[MidiIOHelper] = None,
-            address: Optional[RolandSysExAddress] = None,
-            controls: Dict[AddressParameter, QWidget] = None,
-            parent: Optional[QWidget] = None,
+        self,
+        attack_param: AddressParameter,
+        decay_param: AddressParameter,
+        sustain_param: AddressParameter,
+        release_param: AddressParameter,
+        initial_param: Optional[AddressParameter] = None,
+        peak_param: Optional[AddressParameter] = None,
+        create_parameter_slider: Callable = None,
+        midi_helper: Optional[MidiIOHelper] = None,
+        address: Optional[RolandSysExAddress] = None,
+        controls: Dict[AddressParameter, QWidget] = None,
+        parent: Optional[QWidget] = None,
+        analog: bool = False,
     ):
-        super().__init__(envelope_keys=["attack_time", "decay_time", "sustain_level", "release_time"],
-                         create_parameter_slider=create_parameter_slider,
-                         parameters=[attack_param, decay_param, sustain_param, release_param],
-                         midi_helper=midi_helper,
-                         address=address,
-                         controls=controls,
-                         parent=parent)
+        super().__init__(
+            envelope_keys=[
+                "attack_time",
+                "decay_time",
+                "sustain_level",
+                "release_time",
+            ],
+            create_parameter_slider=create_parameter_slider,
+            parameters=[attack_param, decay_param, sustain_param, release_param],
+            midi_helper=midi_helper,
+            address=address,
+            controls=controls,
+            parent=parent,
+        )
         self.sysex_composer = JDXiSysExComposer()
         """
         Initialize the ADSR widget
@@ -144,10 +153,12 @@ class ADSR(EnvelopeWidgetBase):
             )
             self._control_widgets.append(self.peak_control)
 
-        for key, widget in [("attack_time", self.attack_control),
-                            ("decay_time", self.decay_control),
-                            ("sustain_level", self.sustain_control),
-                            ("release_time", self.release_control),]:
+        for key, widget in [
+            ("attack_time", self.attack_control),
+            ("decay_time", self.decay_control),
+            ("sustain_level", self.sustain_control),
+            ("release_time", self.release_control),
+        ]:
             if tooltip := TOOLTIPS.get(key):
                 widget.setToolTip(tooltip)
         self.attack_parameter = attack_param
@@ -177,11 +188,13 @@ class ADSR(EnvelopeWidgetBase):
             "release_time": self.release_control.spinbox,
         }
         # Create layout
-        self.plot = ADSRPlot(width=JDXiStyle.ADSR_PLOT_WIDTH,
-                             height=JDXiStyle.ADSR_PLOT_HEIGHT,
-                             envelope=self.envelope,
-                             parent=self)
-        if hasattr(self, 'peak_control'):
+        self.plot = ADSRPlot(
+            width=JDXi.UI.Style.ADSR_PLOT_WIDTH,
+            height=JDXi.UI.Style.ADSR_PLOT_HEIGHT,
+            envelope=self.envelope,
+            parent=self,
+        )
+        if hasattr(self, "peak_control"):
             self.layout.addWidget(self.peak_control, 0, 5)
             self.envelope_spinbox_map["peak_level"] = self.peak_control.spinbox
             self.layout.addWidget(self.plot, 0, 6, 3, 1)
@@ -193,6 +206,7 @@ class ADSR(EnvelopeWidgetBase):
         for control in self._control_widgets:
             control.envelope_changed.connect(self.on_control_changed)
         self.update_controls_from_envelope()
+        JDXi.UI.ThemeManager.apply_adsr_style(self, analog=analog)
 
     def on_control_changed(self, change: dict):
         self.envelope.update(change)

@@ -1,22 +1,21 @@
 """
 JD-Xi Device Information Module
 
-This module defines the `DeviceInfo` class, which represents identity information
+This module defines the `DeviceInfo` class, which represents identity_request information
 for a Roland JD-Xi synthesizer. It provides utilities for checking manufacturer
-and model identity, extracting firmware version, and constructing an instance
+and model identity_request, extracting firmware version, and constructing an instance
 from a MIDI Identity Reply message.
 
 Usage Example:
 --------------
->>> from device_info import DeviceInfo
->>> identity_data = bytes([0xF0, 0x7E, 0x10, 0x06, 0x02, 0x41, 0x00, 0x00, 0x00, 0x0E, 0x00, 0x00, 0x01, 0x00, 0x00, 0xF7])
+>>> identity_data = bytes([0xF0, 0x7E, 0x10, 0x06, 0x02, 0x41, 0x0E, 0x03, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0xF7])
 >>> device = DeviceInfo.from_identity_reply(identity_data)
->>> if device:
->>>     print(f"Device: JD-Xi, Version: {device.version_string}")
-
-Expected Output:
-----------------
-Device: JD-Xi, Version: v1.00
+>>> device is not None
+True
+>>> device.version_string
+'v0.03'
+>>> device.is_jdxi
+True
 
 Classes:
 --------
@@ -45,8 +44,8 @@ Dependencies:
 from dataclasses import dataclass
 from typing import List, Optional
 
-from jdxi_editor.jdxi.midi.constant import MidiConstant, JDXiConstant
-from jdxi_editor.jdxi.sysex.offset import JDXIIdentityOffset
+from jdxi_editor.core.jdxi import JDXi
+from picomidi.constant import Midi
 
 
 @dataclass
@@ -95,25 +94,38 @@ class DeviceInfo:
         """
         try:
             if (
-                    len(data) < JDXIIdentityOffset.expected_length()  # Minimum length check
-                or data[JDXIIdentityOffset.SYSEX_START] != MidiConstant.START_OF_SYSEX  # SysEx Start
-                or data[JDXIIdentityOffset.ID_NUMBER] != JDXiConstant.ID_NUMBER # 0x7E  # Universal Non-Realtime
-                or data[JDXIIdentityOffset.SUB_ID_1_GENERAL_INFORMATION] != JDXiConstant.SUB_ID_1_GENERAL_INFORMATION  # 0x06 General Info
-                or data[JDXIIdentityOffset.SUB_ID_2_IDENTITY_REPLY] != JDXiConstant.SUB_ID_2_IDENTITY_REPLY  # 0x02 Identity Reply
+                len(data)
+                < JDXi.Midi.SYSEX.IDENTITY.LAYOUT.expected_length()  # Minimum length check
+                or data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.START]
+                != Midi.SYSEX.START  # SysEx Start
+                or data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.ID.NUMBER]
+                != JDXi.Midi.SYSEX.IDENTITY.CONST.NUMBER  # 0x7E  # Universal Non-Realtime
+                or data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.ID.SUB1]
+                != JDXi.Midi.SYSEX.IDENTITY.CONST.SUB1_GENERAL_INFORMATION  # 0x06 General Info
+                or data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.ID.SUB2]
+                != JDXi.Midi.SYSEX.IDENTITY.CONST.SUB2_IDENTITY_REPLY  # 0x02 Identity Reply
             ):
                 return None  # Invalid Identity Reply
 
             return cls(
-                device_id=data[JDXIIdentityOffset.DEVICE_ID],
-                manufacturer=[data[JDXIIdentityOffset.ROLAND_ID]],  # Manufacturer ID (Roland = 0x41)
-                family=[data[JDXIIdentityOffset.DEVICE_FAMILY_CODE_1],
-                        data[JDXIIdentityOffset.DEVICE_FAMILY_CODE_2]],  # Family Code (JD-Xi = [0x0E, 0x03])
-                model=[data[JDXIIdentityOffset.DEVICE_FAMILY_NUMBER_CODE_1],
-                       data[JDXIIdentityOffset.DEVICE_FAMILY_NUMBER_CODE_2]],  # Model Number
-                version=[data[JDXIIdentityOffset.SOFTWARE_REVISION_1],
-                         data[JDXIIdentityOffset.SOFTWARE_REVISION_2],
-                         data[JDXIIdentityOffset.SOFTWARE_REVISION_3],
-                         data[JDXIIdentityOffset.SOFTWARE_REVISION_4]],  # Firmware Version
+                device_id=data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.ID.DEVICE],
+                manufacturer=[
+                    data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.ID.ROLAND]
+                ],  # Manufacturer ID (Roland = 0x41)
+                family=[
+                    data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.DEVICE.FAMILY_CODE_1],
+                    data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.DEVICE.FAMILY_CODE_2],
+                ],  # Family Code (JD-Xi = [0x0E, 0x03])
+                model=[
+                    data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.DEVICE.FAMILY_NUMBER_CODE_1],
+                    data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.DEVICE.FAMILY_NUMBER_CODE_2],
+                ],  # Model Number
+                version=[
+                    data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.SOFTWARE.REVISION_1],
+                    data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.SOFTWARE.REVISION_2],
+                    data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.SOFTWARE.REVISION_3],
+                    data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.SOFTWARE.REVISION_4],
+                ],  # Firmware Version
             )
         except Exception:
             return None

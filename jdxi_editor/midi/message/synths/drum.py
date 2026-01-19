@@ -5,15 +5,15 @@ DrumKitMessage
 # Example usage:
 # Set kit name
 >>> msg = DrumKitMessage(
->>>     section=DrumKitSection.COMMON.value,
->>>     param=DrumKitCommon.NAME_1.value,
+>>>     section=DrumKitSection.COMMON.STATUS,
+>>>     param=DrumKitCommon.NAME_1.STATUS,
 >>>     value=0x41,  # 'A'
 >>> )
 
 # Set pad parameter
 >>> msg = DrumKitMessage(
 >>>     section=DrumKitSection.get_pad_offset(36),  # Pad C1
->>>     param=DrumPadParam.WAVE.value,
+>>>     param=DrumPadParam.WAVE.STATUS,
 >>>     value=1,  # Wave number
 >>> )
 """
@@ -21,15 +21,15 @@ DrumKitMessage
 from dataclasses import dataclass
 
 from jdxi_editor.midi.data.address.address import (
-    CommandID,
-    AddressStartMSB,
     AddressOffsetTemporaryToneUMB,
+    AddressStartMSB,
+    CommandID,
 )
-from jdxi_editor.midi.message.roland import RolandSysEx
+from jdxi_editor.midi.message.roland import JDXiSysEx
 
 
 @dataclass
-class DrumKitMessage(RolandSysEx):
+class DrumKitMessage(JDXiSysEx):
     """Drum Kit parameter message"""
 
     command: int = CommandID.DT1
