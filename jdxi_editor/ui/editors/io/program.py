@@ -375,8 +375,6 @@ class ProgramEditor(BasicEditor):
         """Handle category selection change - no longer needed, handled by SearchableFilterableComboBox."""
         pass
 
-
-
     def on_preset_type_changed(self, index: int) -> None:
         """
         on_preset_type_changed
