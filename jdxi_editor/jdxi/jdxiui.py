@@ -2,6 +2,7 @@
 Composition of main JDXi components
 """
 
+from jdxi_editor.jdxi.preset import JDXiPresetList
 from jdxi_editor.ui.constant import JDXiUIConstants
 from jdxi_editor.ui.parameters import UiParameters
 from jdxi_editor.ui.style import (
