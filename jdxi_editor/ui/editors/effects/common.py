@@ -65,8 +65,7 @@ from PySide6.QtWidgets import (
 )
 
 from decologr import Decologr as log
-from jdxi_editor.jdxi.jdxi import JDXi
-from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
+from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetProgramLMB,
     AddressOffsetSystemUMB,
@@ -84,8 +83,11 @@ from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
 from jdxi_editor.ui.editors.effects.data import EffectsData
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
+from jdxi_editor.ui.preset.helper import JDXiPresetHelper
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
-from jdxi_editor.ui.widgets.editor.helper import create_layout_with_inner_layout_and_widgets
+from jdxi_editor.ui.widgets.editor.helper import (
+    create_layout_with_inner_layout_and_widgets,
+)
 from jdxi_editor.ui.widgets.editor.simple_editor_helper import SimpleEditorHelper
 from picomidi.constant import Midi
 from picomidi.sysex.parameter.address import AddressParameter

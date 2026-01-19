@@ -10,7 +10,7 @@ from jdxi_editor.midi.data.parameter.drum.name import DrumDisplayName
 from jdxi_editor.midi.data.parameter.drum.option import DrumDisplayOptions
 
 
-class UiParameters:
+class JDXiUIParameters:
     """UI options"""
 
     AnalogName: AnalogDisplayName = AnalogDisplayName

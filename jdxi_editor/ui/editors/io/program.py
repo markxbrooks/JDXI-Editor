@@ -39,52 +39,34 @@ Dependencies:
 
 from typing import Dict, Optional
 
-from PySide6.QtCore import Qt, QTimer, Signal
+from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import (
-    QComboBox,
-    QGridLayout,
-    QGroupBox,
     QHBoxLayout,
-    QHeaderView,
     QLabel,
-    QLineEdit,
-    QPushButton,
-    QTableWidget,
-    QTableWidgetItem,
     QTabWidget,
     QVBoxLayout,
     QWidget,
 )
 
 from decologr import Decologr as log
-from jdxi_editor.jdxi.jdxi import JDXi
-from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
-from jdxi_editor.jdxi.preset.lists import JDXiPresetToneList
-from jdxi_editor.jdxi.program.program import JDXiProgram
-from jdxi_editor.jdxi.synth.type import JDXiSynth
-from jdxi_editor.log.midi_info import log_midi_info
+from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetSuperNATURALLMB,
     AddressOffsetTemporaryToneUMB,
     AddressStartMSB,
 )
-from jdxi_editor.midi.data.address.program import ProgramCommonAddress
 from jdxi_editor.midi.data.drum.data import DRUM_PARTIAL_MAP
 from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
 from jdxi_editor.midi.data.parameter.digital import DigitalCommonParam
 from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParam
 from jdxi_editor.midi.data.parameter.program.common import ProgramCommonParam
-from jdxi_editor.midi.data.programs.programs import JDXiProgramList
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.midi.program.program import JDXiProgram
 from jdxi_editor.midi.sysex.request.data import SYNTH_PARTIAL_MAP
 from jdxi_editor.midi.sysex.request.midi_requests import MidiRequests
+from jdxi_editor.synth.type import JDXiSynth
 from jdxi_editor.ui.editors.digital.utils import filter_sysex_keys, get_partial_number
-from jdxi_editor.ui.editors.helpers.preset import get_preset_parameter_value
-from jdxi_editor.ui.editors.helpers.program import (
-    calculate_midi_values,
-    get_program_by_id,
-)
 from jdxi_editor.ui.editors.io.helper import create_placeholder_icon
 from jdxi_editor.ui.editors.io.mixer_widget import ProgramMixerWidget
 from jdxi_editor.ui.editors.io.playlist_editor_widget import PlaylistEditorWidget
@@ -93,13 +75,13 @@ from jdxi_editor.ui.editors.io.preset_widget import PresetWidget
 from jdxi_editor.ui.editors.io.program_group_widget import ProgramGroupWidget
 from jdxi_editor.ui.editors.io.user_programs_widget import UserProgramsWidget
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
+from jdxi_editor.ui.preset.helper import JDXiPresetHelper
+from jdxi_editor.ui.preset.lists import JDXiPresetToneList
+from jdxi_editor.ui.programs.programs import JDXiUIProgramList
 from jdxi_editor.ui.widgets.combo_box.searchable_filterable import (
     SearchableFilterableComboBox,
 )
-from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
-from jdxi_editor.ui.widgets.editor.helper import create_group_with_layout
-from jdxi_editor.ui.windows.patch.name_editor import PatchNameEditor
 from picomidi.constant import Midi
 from picomidi.sysex.parameter.address import AddressParameter
 
@@ -477,7 +459,7 @@ class ProgramEditor(BasicEditor):
         :return: None
         Initialize synth-specific data
         """
-        from jdxi_editor.jdxi.synth.factory import create_synth_data
+        from jdxi_editor.synth.factory import create_synth_data
 
         self.synth_data = create_synth_data(synth_type, partial_number=partial_number)
 
@@ -539,7 +521,7 @@ class ProgramEditor(BasicEditor):
             return
 
         # --- Get all programs (ROM + user from database)
-        all_programs = JDXiProgramList.list_rom_and_user_programs()
+        all_programs = JDXiUIProgramList.list_rom_and_user_programs()
         if self.program_group_widget:
             self.program_group_widget._program_list_data = all_programs
 
@@ -660,7 +642,7 @@ class ProgramEditor(BasicEditor):
         :param filtered_list: list of programs already loaded from database
         :param bank: str
         """
-        from jdxi_editor.midi.data.programs.database import get_database
+        from jdxi_editor.ui.programs.database import get_database
 
         user_banks = ["E", "F", "G", "H"]
         # --- Create sets for quick lookup

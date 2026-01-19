@@ -24,7 +24,7 @@ from PySide6.QtWidgets import (
 )
 
 from decologr import Decologr as log
-from jdxi_editor.jdxi.jdxi import JDXi
+from jdxi_editor.core.jdxi import JDXi
 
 
 class PlaylistWidget(QWidget):
@@ -151,7 +151,7 @@ class PlaylistWidget(QWidget):
             return
 
         try:
-            from jdxi_editor.midi.data.programs.database import get_database
+            from jdxi_editor.ui.programs.database import get_database
 
             # Get all playlists from database
             db = get_database()
@@ -218,7 +218,7 @@ class PlaylistWidget(QWidget):
         """Create a new playlist."""
         from PySide6.QtWidgets import QInputDialog
 
-        from jdxi_editor.midi.data.programs.database import get_database
+        from jdxi_editor.ui.programs.database import get_database
 
         name, ok = QInputDialog.getText(self, "New Playlist", "Enter playlist name:")
 
@@ -273,7 +273,7 @@ class PlaylistWidget(QWidget):
         )
 
         if reply == QMessageBox.StandardButton.Yes:
-            from jdxi_editor.midi.data.programs.database import get_database
+            from jdxi_editor.ui.programs.database import get_database
 
             db = get_database()
             if db.delete_playlist(playlist_id):
@@ -310,7 +310,7 @@ class PlaylistWidget(QWidget):
         playlist_id = playlist["id"]
         new_value = item.text().strip()
 
-        from jdxi_editor.midi.data.programs.database import get_database
+        from jdxi_editor.ui.programs.database import get_database
 
         db = get_database()
 

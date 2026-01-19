@@ -5,7 +5,6 @@ JDXiSysExComposer
 from typing import Optional
 
 from decologr import Decologr as log
-from jdxi_editor.jdxi.midi.message.sysex.offset import JDXiSysExMessageLayout
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetSuperNATURALLMB,
     RolandSysExAddress,
@@ -18,6 +17,7 @@ from jdxi_editor.midi.data.parameter.digital import (
 from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParam
 from jdxi_editor.midi.message.jdxi import JDXiSysexHeader
 from jdxi_editor.midi.message.roland import JDXiSysEx
+from jdxi_editor.midi.message.sysex.offset import JDXiSysExMessageLayout
 from jdxi_editor.midi.sysex.validation import (
     validate_raw_midi_message,
     validate_raw_sysex_message,

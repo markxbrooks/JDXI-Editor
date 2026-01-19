@@ -27,8 +27,7 @@ from dataclasses import dataclass, field
 from typing import List, Optional, Union
 
 from decologr import Decologr as log
-from jdxi_editor.jdxi.jdxi import JDXi
-from jdxi_editor.jdxi.midi.message.sysex.offset import JDXiSysExMessageLayout
+from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import (
     AddressStartMSB,
     CommandID,
@@ -41,6 +40,7 @@ from jdxi_editor.midi.data.address.sysex import (
     ZERO_BYTE,
     RolandID,
 )
+from jdxi_editor.midi.message.sysex.offset import JDXiSysExMessageLayout
 from picomidi import RolandSysExMessage
 from picomidi.constant import Midi
 from picomidi.core.bitmask import BitMask

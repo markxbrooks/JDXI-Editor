@@ -18,13 +18,12 @@ This test suite verifies:
 import sys
 import os
 import unittest
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import Mock
 
 # Add the project root to the path
 sys.path.insert(0, os.path.abspath('.'))
 
 from PySide6.QtWidgets import QApplication
-from PySide6.QtCore import QTimer
 from PySide6.QtTest import QTest
 
 from jdxi_editor.ui.editors.digital.editor import DigitalSynthEditor
@@ -32,7 +31,7 @@ from jdxi_editor.midi.data.digital import DigitalPartial, DigitalOscWave
 from jdxi_editor.midi.data.digital.filter import DigitalFilterMode
 from jdxi_editor.midi.data.digital.lfo import DigitalLFOShape
 from jdxi_editor.midi.data.parameter.digital import DigitalPartialParam
-from jdxi_editor.jdxi.synth.type import JDXiSynth
+from jdxi_editor.synth.type import JDXiSynth
 
 # Create QApplication for tests if it doesn't exist
 _app = None

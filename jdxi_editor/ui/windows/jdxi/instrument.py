@@ -46,13 +46,7 @@ from PySide6.QtGui import QAction, QCloseEvent, QKeySequence, QMouseEvent, QShor
 from PySide6.QtWidgets import QApplication, QMenu, QMessageBox, QProgressDialog
 
 from decologr import Decologr as log
-from jdxi_editor.jdxi.file.utils import documentation_file_path, os_file_open
-from jdxi_editor.jdxi.jdxi import JDXi
-from jdxi_editor.jdxi.preset.button import JDXiPresetButtonData
-from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
-from jdxi_editor.jdxi.preset.lists import JDXiPresetToneList
-from jdxi_editor.jdxi.program.program import JDXiProgram
-from jdxi_editor.jdxi.synth.type import JDXiSynth
+from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetProgramLMB,
@@ -69,8 +63,10 @@ from jdxi_editor.midi.io.delay import send_with_delay
 from jdxi_editor.midi.io.input_handler import add_or_replace_program_and_save
 from jdxi_editor.midi.message.roland import JDXiSysEx
 from jdxi_editor.midi.program.helper import JDXiProgramHelper
+from jdxi_editor.midi.program.program import JDXiProgram
 from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
 from jdxi_editor.project import __package_name__
+from jdxi_editor.synth.type import JDXiSynth
 from jdxi_editor.ui.dialogs.about import UiAboutDialog
 from jdxi_editor.ui.dialogs.settings import UiPreferencesDialog
 from jdxi_editor.ui.editors import (
@@ -96,6 +92,9 @@ from jdxi_editor.ui.editors.io.player import MidiFileEditor
 from jdxi_editor.ui.editors.io.preset import PresetEditor
 from jdxi_editor.ui.editors.main import MainEditor
 from jdxi_editor.ui.editors.pattern.pattern import PatternSequenceEditor
+from jdxi_editor.ui.preset.button import JDXiPresetButtonData
+from jdxi_editor.ui.preset.helper import JDXiPresetHelper
+from jdxi_editor.ui.preset.lists import JDXiPresetToneList
 from jdxi_editor.ui.style.factory import generate_sequencer_button_style
 from jdxi_editor.ui.widgets.button import SequencerSquare
 from jdxi_editor.ui.widgets.button.favorite import FavoriteButton
@@ -107,6 +106,7 @@ from jdxi_editor.ui.windows.midi.config_dialog import MIDIConfigDialog
 from jdxi_editor.ui.windows.midi.debugger import MIDIDebugger
 from jdxi_editor.ui.windows.midi.monitor import MIDIMessageMonitor
 from jdxi_editor.ui.windows.patch.manager import PatchManager
+from jdxi_editor.utils.file import documentation_file_path, os_file_open
 from picomidi.constant import Midi
 
 
@@ -242,7 +242,6 @@ class JDXiInstrument(JDXiWindow):
                 MidiChannel.DRUM_KIT,
             ),
         ]
-        from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 
         self.preset_helpers = {
             synth_type: JDXiPresetHelper(
@@ -1303,9 +1302,9 @@ class JDXiInstrument(JDXiWindow):
             self._cleanup_db_update()
 
             # Reload programs from database to refresh the UI
-            from jdxi_editor.midi.data.programs.programs import JDXiProgramList
+            from jdxi_editor.ui.programs.programs import JDXiUIProgramList
 
-            JDXiProgramList.USER_PROGRAMS = JDXiProgramList._load_user_programs()
+            JDXiUIProgramList.USER_PROGRAMS = JDXiUIProgramList._load_user_programs()
 
             # Refresh program editor if it's open
             if hasattr(self, "editors"):

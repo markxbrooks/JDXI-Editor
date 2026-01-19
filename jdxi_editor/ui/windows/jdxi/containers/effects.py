@@ -4,7 +4,7 @@ Effects buttons
 
 from PySide6.QtWidgets import QVBoxLayout, QWidget
 
-from jdxi_editor.jdxi.jdxi import JDXi
+from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.ui.windows.jdxi.helpers.button_row import create_button_row
 
 

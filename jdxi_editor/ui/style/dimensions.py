@@ -5,9 +5,9 @@ Class to store dimensions of a Roland JDXi instrument
 
 # Example usage:
 ----------------
->>> print(JDXiDimensions.INSTRUMENT.HEIGHT)
+>>> print(JDXiUIDimensions.INSTRUMENT.HEIGHT)
 400
->>> print(JDXiDimensions.INSTRUMENT.WIDTH)
+>>> print(JDXiUIDimensions.INSTRUMENT.WIDTH)
 1000
 """
 
@@ -314,7 +314,7 @@ class OctaveButtonDimensions(Dimensions):
     HEIGHT = 100
 
 
-class JDXiDimensions(Dimensions):
+class JDXiUIDimensions(Dimensions):
     """
     A class to store dimensions for the JD-Xi editor UI.
     """

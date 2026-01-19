@@ -52,23 +52,20 @@ from PySide6.QtWidgets import (
 )
 
 from decologr import Decologr as log
-from jdxi_editor.jdxi.jdxi import JDXi
-from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
-from jdxi_editor.jdxi.preset.lists import JDXiPresetToneList
-from jdxi_editor.jdxi.synth.type import JDXiSynth
+from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.log.midi_info import log_midi_info
 from jdxi_editor.midi.channel.channel import MidiChannel
-from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
-from jdxi_editor.midi.data.programs.digital import DIGITAL_PRESET_LIST
-from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.request.midi_requests import MidiRequests
+from jdxi_editor.synth.type import JDXiSynth
 from jdxi_editor.ui.editors.helpers.preset import get_preset_parameter_value
 from jdxi_editor.ui.editors.helpers.program import (
     calculate_midi_values,
     get_program_by_id,
 )
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
+from jdxi_editor.ui.preset.helper import JDXiPresetHelper
+from jdxi_editor.ui.preset.lists import JDXiPresetToneList
 from jdxi_editor.ui.widgets.editor.helper import (
     create_group_with_layout,
     create_layout_with_widgets,
@@ -310,17 +307,17 @@ class PresetEditor(BasicEditor):
         preset_vlayout.addLayout(search_row)
         self.digital_preset_label = QLabel("Preset")
         preset_vlayout.addWidget(self.digital_preset_label)
-        # Program number selection combo box
+        # --- Program number selection combo box
         self.preset_combo_box = QComboBox()
         self.preset_combo_box.addItems([f"{i:02}" for i in range(1, 65)])
         self.preset_combo_box.currentIndexChanged.connect(self.on_preset_number_changed)
         preset_vlayout.addWidget(self.preset_combo_box)
         self.genre_label = QLabel("Category")
         preset_vlayout.addWidget(self.genre_label)
-        # Category selection combo box
+        # --- Category selection combo box
         self.category_combo_box = QComboBox()
         self.category_combo_box.addItem("No Category Selected")
-        categories = set(preset["category"] for preset in DIGITAL_PRESET_LIST)
+        categories = set(preset["category"] for preset in JDXi.UI.Preset.Digital)
         self.category_combo_box.addItems(sorted(categories))
         self.category_combo_box.currentIndexChanged.connect(self.on_category_changed)
         preset_vlayout.addWidget(self.category_combo_box)
@@ -425,13 +422,13 @@ class PresetEditor(BasicEditor):
 
         preset_type = self.digital_preset_type_combo.currentText()
         if preset_type in ["Digital Synth 1", "Digital Synth 2"]:
-            self.preset_list = DIGITAL_PRESET_LIST
+            self.preset_list = JDXi.UI.Preset.Digital
         elif preset_type == "Drums":
-            self.preset_list = DRUM_KIT_LIST
+            self.preset_list = JDXi.UI.Preset.Drum
         elif preset_type == "Analog Synth":
-            self.preset_list = ANALOG_PRESET_LIST
+            self.preset_list = JDXi.UI.Preset.Analog
         else:
-            self.preset_list = DIGITAL_PRESET_LIST  # Default to digital synth 1
+            self.preset_list = JDXi.UI.Preset.Digital  # Default to digital synth 1
         # self.update_category_combo_box_categories()
 
         selected_category = self.category_combo_box.currentText()

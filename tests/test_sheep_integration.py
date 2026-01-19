@@ -6,11 +6,10 @@ tempo changes occur at the expected times (e.g., Bar 27).
 """
 
 import unittest
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import Mock, patch
 import sys
 import os
 import time
-import mido
 from mido import MidiFile
 from PySide6.QtWidgets import QApplication
 
@@ -19,8 +18,7 @@ sys.path.insert(0, os.path.abspath('.'))
 
 from jdxi_editor.ui.editors.io.player import MidiFileEditor
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
-from picomidi.constant import Midi
+from jdxi_editor.ui.preset.helper import JDXiPresetHelper
 
 # Create QApplication for tests if it doesn't exist
 _app = None

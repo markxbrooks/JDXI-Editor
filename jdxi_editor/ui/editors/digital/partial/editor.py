@@ -45,14 +45,14 @@ from PySide6.QtWidgets import (
 )
 
 from decologr import Decologr as log
-from jdxi_editor.jdxi.jdxi import JDXi
-from jdxi_editor.jdxi.synth.type import JDXiSynth
+from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import AddressOffsetSuperNATURALLMB
 from jdxi_editor.midi.data.digital.oscillator import DigitalOscWave
 from jdxi_editor.midi.data.digital.partial import DIGITAL_PARTIAL_NAMES
 from jdxi_editor.midi.data.parameter.digital import DigitalCommonParam
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.synth.type import JDXiSynth
 from jdxi_editor.ui.editors.digital.partial.amp import DigitalAmpSection
 from jdxi_editor.ui.editors.digital.partial.filter import DigitalFilterSection
 from jdxi_editor.ui.editors.digital.partial.lfo import DigitalLFOSection

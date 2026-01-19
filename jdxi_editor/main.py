@@ -41,7 +41,7 @@ from PySide6.QtWidgets import (
 )
 
 from decologr import setup_logging
-from jdxi_editor.jdxi.jdxi import JDXi
+from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.log.message import log_message
 from jdxi_editor.project import __organization_name__, __program__, __version__
 from jdxi_editor.resources import resource_path

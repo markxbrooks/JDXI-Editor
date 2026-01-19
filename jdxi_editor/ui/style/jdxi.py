@@ -84,7 +84,7 @@ from jdxi_editor.ui.style.factory import (
 )
 
 
-class JDXiStyle:
+class JDXiUIStyle:
     """Central style definitions for JD-Xi Manager"""
 
     # Colors

@@ -9,10 +9,10 @@ from PySide6.QtGui import QIcon, Qt
 from PySide6.QtWidgets import QHBoxLayout, QLabel
 
 from decologr import Decologr as log
-from jdxi_editor.ui.style.jdxi import JDXiStyle
+from jdxi_editor.ui.style.jdxi import JDXiUIStyle
 
 
-class JDXiIconRegistry:
+class JDXiUIIconRegistry:
     """Centralized icon definitions and retrieval"""
 
     # Action icons
@@ -165,11 +165,11 @@ class JDXiIconRegistry:
         :param fallback: Fallback icon if primary fails
         :return: QPixmap or None if all fail
         """
-        icon = JDXiIconRegistry.get_icon(icon_name, color=color, fallback=fallback)
+        icon = JDXiUIIconRegistry.get_icon(icon_name, color=color, fallback=fallback)
         if icon is None:
             return None
 
-        icon_size = size or JDXiStyle.ICON_SIZE
+        icon_size = size or JDXiUIStyle.ICON_SIZE
         return icon.pixmap(icon_size, icon_size)
 
     @staticmethod
@@ -187,7 +187,7 @@ class JDXiIconRegistry:
         :param fallback: Fallback icon if primary fails
         :return: QIcon (may be empty if all fail)
         """
-        icon = JDXiIconRegistry.get_icon(icon_name, color=color, fallback=fallback)
+        icon = JDXiUIIconRegistry.get_icon(icon_name, color=color, fallback=fallback)
         if icon is None:
             # Return empty icon
             return qta.icon("")
@@ -206,7 +206,7 @@ class JDXiIconRegistry:
             "mdi.waveform",
         ]:
             icon_label = QLabel()
-            icon_pixmap = qta.icon(icon, color=JDXiStyle.GREY).pixmap(30, 30)
+            icon_pixmap = qta.icon(icon, color=JDXiUIStyle.GREY).pixmap(30, 30)
             icon_label.setPixmap(icon_pixmap)
             icon_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
             icon_hlayout.addWidget(icon_label)
@@ -225,7 +225,7 @@ class JDXiIconRegistry:
             "mdi.sine-wave",
         ]:
             icon_label = QLabel()
-            icon_pixmap = qta.icon(icon, color=JDXiStyle.GREY).pixmap(30, 30)
+            icon_pixmap = qta.icon(icon, color=JDXiUIStyle.GREY).pixmap(30, 30)
             icon_label.setPixmap(icon_pixmap)
             icon_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
             icon_hlayout.addWidget(icon_label)
@@ -243,7 +243,7 @@ class JDXiIconRegistry:
             "mdi.piano",
         ]:
             icon_label = QLabel()
-            icon = qta.icon(icon_name, color=JDXiStyle.GREY)
+            icon = qta.icon(icon_name, color=JDXiUIStyle.GREY)
             pixmap = icon.pixmap(24, 24)  # Using fixed icon size
             icon_label.setPixmap(pixmap)
             icon_label.setAlignment(Qt.AlignHCenter)

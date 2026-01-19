@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import QHBoxLayout, QLabel
 
-from jdxi_editor.jdxi.jdxi import JDXi
+from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.ui.widgets.wheel.mod import ModWheel
 from jdxi_editor.ui.widgets.wheel.pitch import PitchWheel
 

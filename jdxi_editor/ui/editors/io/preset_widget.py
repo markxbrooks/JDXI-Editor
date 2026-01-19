@@ -13,14 +13,11 @@ from PySide6.QtWidgets import (
 )
 
 from decologr import Decologr as log
-from jdxi_editor.jdxi.jdxi import JDXi
-from jdxi_editor.jdxi.preset.lists import JDXiPresetToneList
+from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.log.midi_info import log_midi_info
 from jdxi_editor.midi.channel.channel import MidiChannel
-from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
-from jdxi_editor.midi.data.programs.digital import DIGITAL_PRESET_LIST
-from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
 from jdxi_editor.ui.editors.helpers.preset import get_preset_parameter_value
+from jdxi_editor.ui.preset.lists import JDXiPresetToneList
 from jdxi_editor.ui.widgets.combo_box.searchable_filterable import (
     SearchableFilterableComboBox,
 )
@@ -34,7 +31,7 @@ class PresetWidget(QWidget):
         self.preset_list = None
         self.midi_channel = None
         self.parent = parent
-        self._actual_preset_list = DIGITAL_PRESET_LIST  # Default preset list
+        self._actual_preset_list = JDXi.UI.Preset.Digital  # Default preset list
         preset_vlayout = QVBoxLayout()
         preset_vlayout.setContentsMargins(
             JDXi.UI.Style.PADDING,
@@ -131,13 +128,13 @@ class PresetWidget(QWidget):
             # Fallback: determine preset list from preset type
             preset_type = self.digital_preset_type_combo.currentText()
             if preset_type in ["Digital Synth 1", "Digital Synth 2"]:
-                preset_list_to_use = DIGITAL_PRESET_LIST
+                preset_list_to_use = JDXi.UI.Preset.Digital
             elif preset_type == "Drums":
-                preset_list_to_use = DRUM_KIT_LIST
+                preset_list_to_use = JDXi.UI.Preset.Drum
             elif preset_type == "Analog Synth":
-                preset_list_to_use = ANALOG_PRESET_LIST
+                preset_list_to_use = JDXi.UI.Preset.Analog
             else:
-                preset_list_to_use = DIGITAL_PRESET_LIST
+                preset_list_to_use = JDXi.UI.Preset.Digital
         
         msb = get_preset_parameter_value("msb", program_number, preset_list_to_use)
         lsb = get_preset_parameter_value("lsb", program_number, preset_list_to_use)
@@ -218,13 +215,13 @@ class PresetWidget(QWidget):
         """
         preset_type = self.digital_preset_type_combo.currentText()
         if preset_type in ["Digital Synth 1", "Digital Synth 2"]:
-            preset_list = DIGITAL_PRESET_LIST
+            preset_list = JDXi.UI.Preset.Digital
         elif preset_type == "Drums":
-            preset_list = DRUM_KIT_LIST
+            preset_list = JDXi.UI.Preset.Drum
         elif preset_type == "Analog Synth":
-            preset_list = ANALOG_PRESET_LIST
+            preset_list = JDXi.UI.Preset.Analog
         else:
-            preset_list = DIGITAL_PRESET_LIST  # Default to digital synth 1
+            preset_list = JDXi.UI.Preset.Digital  # Default to digital synth 1
 
         # Store the actual preset list for use in load_preset_by_program_change
         # Note: self.preset_list is still set to JDXiPresetToneList enum in set_channel_and_preset_lists

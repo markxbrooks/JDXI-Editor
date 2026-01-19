@@ -42,12 +42,12 @@ from PySide6.QtWidgets import (
 from rtmidi.midiconstants import CONTROL_CHANGE, NOTE_ON
 
 from decologr import Decologr as log
-from jdxi_editor.jdxi.jdxi import JDXi
-from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
+from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.io.data.options import DIGITAL_OPTIONS, DRUM_OPTIONS
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
+from jdxi_editor.ui.preset.helper import JDXiPresetHelper
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 from jdxi_editor.ui.widgets.pattern.measure import PatternMeasure
 
@@ -146,7 +146,7 @@ class PatternSequenceEditor(SynthEditor):
             "Save",
         )
         self.save_button.clicked.connect(self._save_pattern_dialog)
-        # Add the Clear Learned Pattern button
+        # --- Add the Clear Learned Pattern button
         self.clear_learn_button = QPushButton(
             JDXi.UI.IconRegistry.get_icon(
                 JDXi.UI.IconRegistry.CLEAR, color=JDXi.UI.Style.FOREGROUND

@@ -25,9 +25,9 @@ from PySide6.QtWidgets import (
 )
 
 from decologr import Decologr as log
-from jdxi_editor.jdxi.jdxi import JDXi
-from jdxi_editor.jdxi.program.program import JDXiProgram
+from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.midi.program.program import JDXiProgram
 from jdxi_editor.ui.editors.helpers.program import calculate_midi_values
 from jdxi_editor.ui.widgets.delegates.play_button import PlayButtonDelegate
 
@@ -199,7 +199,7 @@ class UserProgramsWidget(QWidget):
             return
 
         try:
-            from jdxi_editor.midi.data.programs.database import get_database
+            from jdxi_editor.ui.programs.database import get_database
 
             # Get all user programs from database
             db = get_database()
@@ -295,8 +295,8 @@ class UserProgramsWidget(QWidget):
             log.warning("User programs table not initialized")
             return
 
-        from jdxi_editor.midi.data.programs.database import get_database
         from jdxi_editor.midi.io.input_handler import add_or_replace_program_and_save
+        from jdxi_editor.ui.programs.database import get_database
 
         db = get_database()
         saved_count = 0

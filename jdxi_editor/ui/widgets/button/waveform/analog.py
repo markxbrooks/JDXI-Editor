@@ -12,7 +12,7 @@ Features:
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QWidget
 
-from jdxi_editor.jdxi.jdxi import JDXi
+from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.wave.form import Waveform
 from jdxi_editor.ui.widgets.button.waveform.waveform import WaveformButton
 

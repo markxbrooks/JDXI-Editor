@@ -32,7 +32,7 @@ import rtmidi
 from PySide6.QtWidgets import QMainWindow
 
 from decologr import Decologr as log
-from jdxi_editor.midi.message.identity_request import IdentityRequestMessage
+from jdxi_editor.midi.message.identity_request.message import IdentityRequestMessage
 from jdxi_editor.midi.sysex.device import DeviceInfo
 
 
@@ -110,7 +110,7 @@ class MIDIConnection:
         """Send Identity Request and verify response"""
         request = IdentityRequestMessage()
         self.send_message(request)
-        log.message(f"sending identity request message: {request}")
+        log.message(f"sending identity_request request message: {request}")
 
     @property
     def is_connected(self) -> bool:

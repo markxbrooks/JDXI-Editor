@@ -5,12 +5,12 @@ This module provides the declarative base and session management utilities
 for SQLAlchemy ORM operations.
 """
 
+from contextlib import contextmanager
 from pathlib import Path
 from typing import Optional
-from contextlib import contextmanager
 
-from sqlalchemy import create_engine, event, Index
-from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy import Index, create_engine, event
+from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
 from decologr import Decologr as log

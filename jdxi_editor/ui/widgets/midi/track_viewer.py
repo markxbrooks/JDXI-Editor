@@ -21,7 +21,7 @@ from PySide6.QtWidgets import (
 )
 
 from decologr import Decologr as log
-from jdxi_editor.jdxi.jdxi import JDXi
+from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.ui.widgets.midi.draggable_track_row import DraggableTrackRow
 from jdxi_editor.ui.widgets.midi.spin_box.spin_box import MidiSpinBox
 from jdxi_editor.ui.widgets.midi.time_ruler import TimeRulerWidget
@@ -95,7 +95,7 @@ class MidiTrackViewer(QWidget):
             self.mute_buttons[ch] = btn
             mute_layout.addWidget(btn)
 
-        scroll_layout.addLayout(mute_layout)
+        # scroll_layout.addLayout(mute_layout)
 
         # Scroll area
         scroll_area = QScrollArea()
@@ -503,7 +503,7 @@ class MidiTrackViewer(QWidget):
             self.change_channel(tr, sp.value())
             ))
             """
-            button_hlayout.addWidget(apply_button)
+            # button_hlayout.addWidget(apply_button)
 
             mute_icon = JDXi.UI.IconRegistry.get_icon(
                 JDXi.UI.IconRegistry.MUTE, color=JDXi.UI.Style.FOREGROUND

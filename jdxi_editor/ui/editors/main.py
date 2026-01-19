@@ -13,7 +13,7 @@ Methods:
 
 from PySide6.QtWidgets import QMainWindow, QTabWidget
 
-from jdxi_editor.jdxi.jdxi import JDXi
+from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.project import __program__, __version__
 
 

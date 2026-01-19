@@ -42,35 +42,31 @@ Example:
 """
 
 import logging
-from typing import Dict, Optional, Union
-
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Dict, Optional, Union
 
 from PySide6.QtGui import QKeySequence, QShortcut
 from PySide6.QtWidgets import (
     QGroupBox,
     QHBoxLayout,
-    QLabel,
-    QPushButton,
     QScrollArea,
     QSlider,
-    QTabWidget,
     QVBoxLayout,
     QWidget,
 )
 
+from jdxi_editor.ui.preset.widget import InstrumentPresetWidget
+
 if TYPE_CHECKING:
-    from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
+    from jdxi_editor.ui.preset.helper import JDXiPresetHelper
 
 from decologr import Decologr as log
-from jdxi_editor.jdxi.jdxi import JDXi
-from jdxi_editor.jdxi.preset.widget import InstrumentPresetWidget
-from jdxi_editor.jdxi.synth.type import JDXiSynth
+from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.log.slider_parameter import log_slider_parameters
 from jdxi_editor.midi.data.analog.oscillator import AnalogOscWave
 from jdxi_editor.midi.data.control_change.analog import AnalogControlChange, AnalogRPN
 from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.synth.type import JDXiSynth
 from jdxi_editor.ui.editors.analog.amp import AnalogAmpSection
 from jdxi_editor.ui.editors.analog.common import AnalogCommonSection
 from jdxi_editor.ui.editors.analog.filter import AnalogFilterSection

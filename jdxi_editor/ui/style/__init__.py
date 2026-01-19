@@ -1,12 +1,12 @@
-from .dimensions import JDXiDimensions
-from .icons import JDXiIconRegistry
-from .jdxi import JDXiStyle
-from .theme_manager import JDXiThemeManager, get_theme_manager
+from .dimensions import JDXiUIDimensions
+from .icons import JDXiUIIconRegistry
+from .jdxi import JDXiUIStyle
+from .theme_manager import JDXiUIThemeManager, get_theme_manager
 
 __all__ = [
-    "JDXiStyle",
-    "JDXiThemeManager",
+    "JDXiUIStyle",
+    "JDXiUIThemeManager",
     "get_theme_manager",
-    "JDXiDimensions",
-    "JDXiIconRegistry",
+    "JDXiUIDimensions",
+    "JDXiUIIconRegistry",
 ]

@@ -39,20 +39,20 @@ from PySide6.QtWidgets import (
 )
 
 from decologr import Decologr as log
-from jdxi_editor.jdxi.jdxi import JDXi
-from jdxi_editor.jdxi.preset.manager import JDXiPresetManager
-from jdxi_editor.jdxi.synth.factory import create_synth_data
-from jdxi_editor.jdxi.synth.type import JDXiSynth
+from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.request.midi_requests import MidiRequests
 from jdxi_editor.project import __package_name__, __program__
 from jdxi_editor.resources import resource_path
+from jdxi_editor.synth.factory import create_synth_data
+from jdxi_editor.synth.type import JDXiSynth
 from jdxi_editor.ui.editors.helpers.preset import get_preset_list_number_by_name
 from jdxi_editor.ui.editors.helpers.program import (
     get_program_name_by_id,
 )
 from jdxi_editor.ui.image.instrument import draw_instrument_pixmap
+from jdxi_editor.ui.preset.manager import JDXiPresetManager
 from jdxi_editor.ui.widgets.button.favorite import FavoriteButton
 from jdxi_editor.ui.widgets.button.sequencer import SequencerSquare
 from jdxi_editor.ui.widgets.indicator.led import LEDIndicator

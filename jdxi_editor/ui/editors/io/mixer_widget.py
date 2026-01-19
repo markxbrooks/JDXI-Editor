@@ -11,18 +11,18 @@ Classes:
 
 from typing import Dict, Optional
 
-from PySide6.QtWidgets import QGridLayout, QGroupBox, QLabel, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QGridLayout, QGroupBox, QLabel, QWidget
 
 from decologr import Decologr as log
-from jdxi_editor.jdxi.jdxi import JDXi
-from jdxi_editor.jdxi.synth.factory import create_synth_data
-from jdxi_editor.jdxi.synth.type import JDXiSynth
+from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.program import ProgramCommonAddress
 from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
 from jdxi_editor.midi.data.parameter.digital import DigitalCommonParam
 from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParam
 from jdxi_editor.midi.data.parameter.program.common import ProgramCommonParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.synth.factory import create_synth_data
+from jdxi_editor.synth.type import JDXiSynth
 from jdxi_editor.ui.editors.synth.base import SynthBase
 from jdxi_editor.ui.widgets.editor.helper import create_group_with_layout
 from picomidi.sysex.parameter.address import AddressParameter

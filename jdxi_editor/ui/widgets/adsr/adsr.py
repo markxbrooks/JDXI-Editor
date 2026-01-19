@@ -17,7 +17,7 @@ from typing import Callable, Dict, Optional
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QGridLayout, QWidget
 
-from jdxi_editor.jdxi.jdxi import JDXi
+from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.composer import JDXiSysExComposer

@@ -30,9 +30,8 @@ from PySide6.QtWidgets import (
 )
 
 from decologr import Decologr as log
+from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.globals import PROFILING
-from jdxi_editor.jdxi.jdxi import JDXi
-from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetProgramLMB,
@@ -46,9 +45,6 @@ from jdxi_editor.midi.data.parameter.effects.effects import (
     Effect2Param,
     ReverbParam,
 )
-from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
-from jdxi_editor.midi.data.programs.digital import DIGITAL_PRESET_LIST
-from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
 from jdxi_editor.midi.utils.drum_detection import detect_drum_tracks
@@ -60,6 +56,7 @@ from jdxi_editor.ui.editors.io.playback_worker import MidiPlaybackWorker
 from jdxi_editor.ui.editors.io.ui_midi_player import UiMidi
 from jdxi_editor.ui.editors.io.utils import format_time, tempo2bpm
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
+from jdxi_editor.ui.preset.helper import JDXiPresetHelper
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets
@@ -587,14 +584,14 @@ class MidiFileEditor(SynthEditor):
         """
         self.ui.automation_program_combo.clear()
         if source == "Digital":
-            for item in DIGITAL_PRESET_LIST:
+            for item in JDXi.UI.Preset.Digital:
                 label = f"{str(item.get('id')).zfill(3)}  {item.get('name')}"
                 msb = int(item.get("msb"))
                 lsb = int(item.get("lsb"))
                 pc = int(item.get("pc"))
                 self.ui.automation_program_combo.addItem(label, (msb, lsb, pc))
         elif source == "Analog":
-            for item in ANALOG_PRESET_LIST:
+            for item in JDXi.UI.Preset.Analog:
                 label = f"{str(item.get('id')).zfill(3)}  {item.get('name')}"
                 # analog list stores floats-as-numbers sometimes; cast to int
                 msb = int(item.get("msb"))
@@ -602,7 +599,7 @@ class MidiFileEditor(SynthEditor):
                 pc = int(item.get("pc"))
                 self.ui.automation_program_combo.addItem(label, (msb, lsb, pc))
         else:  # Drums
-            for item in DRUM_KIT_LIST:
+            for item in JDXi.UI.Preset.Drum:
                 label = f"{str(item.get('id')).zfill(3)}  {item.get('name')}"
                 msb = int(item.get("msb"))
                 lsb = int(item.get("lsb"))

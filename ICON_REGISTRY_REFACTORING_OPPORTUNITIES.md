@@ -177,10 +177,10 @@ self.play_button = QPushButton(
 **After:**
 
 ```python
-from jdxi_editor.ui.style.icons import JDXiIconRegistry
+from jdxi_editor.ui.style.icons import JDXiUIIconRegistry
 
 self.play_button = QPushButton(
-    JDXiIconRegistry.get_icon(JDXiIconRegistry.PLAY, color=JDXiStyle.FOREGROUND), "Play"
+    JDXiUIIconRegistry.get_icon(JDXiUIIconRegistry.PLAY, color=JDXiStyle.FOREGROUND), "Play"
 )
 ```
 

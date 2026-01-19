@@ -42,11 +42,7 @@ from PySide6.QtWidgets import (
 )
 
 from decologr import Decologr as log
-from jdxi_editor.jdxi.jdxi import JDXi
-from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
-from jdxi_editor.jdxi.preset.widget import InstrumentPresetWidget
-from jdxi_editor.jdxi.synth.factory import create_synth_data
-from jdxi_editor.jdxi.synth.type import JDXiSynth
+from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.log.slider_parameter import log_slider_parameters
 from jdxi_editor.midi.data.address.address import AddressOffsetSuperNATURALLMB
 from jdxi_editor.midi.data.digital import DigitalOscWave, DigitalPartial
@@ -56,12 +52,16 @@ from jdxi_editor.midi.data.parameter.digital import (
     DigitalPartialParam,
 )
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.synth.factory import create_synth_data
+from jdxi_editor.synth.type import JDXiSynth
 from jdxi_editor.ui.editors.digital import (
     DigitalCommonSection,
     DigitalPartialEditor,
     DigitalToneModifySection,
 )
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
+from jdxi_editor.ui.preset.helper import JDXiPresetHelper
+from jdxi_editor.ui.preset.widget import InstrumentPresetWidget
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 from jdxi_editor.ui.widgets.panel.partial import PartialsPanel
 from picomidi.sysex.parameter.address import AddressParameter

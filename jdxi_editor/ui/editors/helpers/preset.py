@@ -1,7 +1,11 @@
+"""
+preset retrieval
+"""
+
 import re
 from typing import Any, Dict, List, Optional, Union
 
-from jdxi_editor.midi.data.programs.digital import DIGITAL_PRESET_LIST
+from jdxi_editor.core.jdxi import JDXi
 
 
 def get_preset_list_number_by_name(
@@ -26,7 +30,7 @@ def get_preset_list_number_by_name(
 
 
 def get_preset_parameter_value(
-    parameter: str, id: Union[str, int], preset_list: List[dict] = DIGITAL_PRESET_LIST
+    parameter: str, id: Union[str, int], preset_list: list = None
 ) -> Union[Optional[int], Any]:
     """
     Retrieve a specific parameter value from a preset by its ID.
@@ -36,7 +40,9 @@ def get_preset_parameter_value(
     :param preset_list: List of preset dictionaries.
     :return: The parameter value, or None if not found.
     """
-    # Normalize ID to string, padded to 3 characters (e.g., "001")
+    # --- Normalize ID to string, padded to 3 characters (e.g., "001")
+    if preset_list is None:
+        preset_list = JDXi.UI.Preset.Digital
     if isinstance(id, int):
         id = f"{id:03d}"
 
@@ -48,7 +54,7 @@ def get_preset_parameter_value(
     if value is None:
         return None
 
-    # Convert string values to int if expected
+    # --- Convert string values to int if expected
     if parameter in ["msb", "lsb", "pc"]:
         try:
             return int(value)

@@ -10,6 +10,7 @@ class UiMidi:
     """UI class for MIDI file player interface."""
 
     def __init__(self):
+        self.automation_program_combo = None
         self.usb_file_auto_generate_checkbox = None
         self.digital_title_file_name = DigitalTitle("No file loaded")
         self.load_button = QPushButton()

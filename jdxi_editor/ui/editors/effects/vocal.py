@@ -31,8 +31,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from jdxi_editor.jdxi.jdxi import JDXi
-from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
+from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.parameter.program.common import ProgramCommonParam
 from jdxi_editor.midi.data.parameter.vocal_fx import VocalFXParam
 from jdxi_editor.midi.data.vocal_effects.vocal import (
@@ -48,6 +47,7 @@ from jdxi_editor.midi.data.vocal_effects.vocal import (
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.address.factory import create_vocal_fx_address
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
+from jdxi_editor.ui.preset.helper import JDXiPresetHelper
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 from jdxi_editor.ui.widgets.editor.simple_editor_helper import SimpleEditorHelper
 from picomidi.sysex.parameter.address import AddressParameter

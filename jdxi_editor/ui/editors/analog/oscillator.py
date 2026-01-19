@@ -7,7 +7,7 @@ from typing import Callable, Literal
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QGroupBox, QHBoxLayout, QTabWidget, QVBoxLayout, QWidget
 
-from jdxi_editor.jdxi.jdxi import JDXi
+from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.analog.oscillator import AnalogOscWave
 from jdxi_editor.midi.data.parameter.analog.address import AnalogParam

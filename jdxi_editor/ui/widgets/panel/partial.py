@@ -6,7 +6,7 @@ import qtawesome as qta
 from PySide6.QtGui import Qt
 from PySide6.QtWidgets import QGroupBox, QHBoxLayout, QLabel, QVBoxLayout, QWidget
 
-from jdxi_editor.jdxi.jdxi import JDXi
+from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.digital.partial import DigitalPartial
 from jdxi_editor.ui.widgets.switch.partial import PartialSwitch
 

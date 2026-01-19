@@ -68,10 +68,7 @@ from PySide6.QtWidgets import (
 )
 
 from decologr import Decologr as log
-from jdxi_editor.jdxi.jdxi import JDXi
-from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
-from jdxi_editor.jdxi.preset.widget import InstrumentPresetWidget
-from jdxi_editor.jdxi.synth.type import JDXiSynth
+from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import AddressOffsetProgramLMB
 from jdxi_editor.midi.data.drum.data import JDXiMapPartialDrum
 from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParam
@@ -80,6 +77,8 @@ from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.drum.common import DrumCommonSection
 from jdxi_editor.ui.editors.drum.partial.editor import DrumPartialEditor
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
+from jdxi_editor.ui.preset.helper import JDXiPresetHelper
+from jdxi_editor.ui.preset.widget import InstrumentPresetWidget
 from jdxi_editor.ui.widgets.dialog.progress import ProgressDialog
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 
@@ -91,7 +90,7 @@ class DrumCommonEditor(SynthEditor):
         self,
         midi_helper: Optional[MidiIOHelper] = None,
         preset_helper: Optional[JDXiPresetHelper] = None,
-        parent: Optional[QWidget] = None,
+        parent: Optional["JDXiInstrument"] = None,
     ):
         super().__init__(midi_helper, parent)
         # Helpers
@@ -100,7 +99,7 @@ class DrumCommonEditor(SynthEditor):
         self.preset_helper = preset_helper
         self.midi_helper = midi_helper
         self.partial_number = 0
-        self._init_synth_data(synth_type=JDXiSynth.DRUM_KIT, partial_number=0)
+        self._init_synth_data(synth_type=JDXi.Synth.DRUM_KIT, partial_number=0)
         self.sysex_current_data = None
         self.sysex_previous_data = None
         self.partial_mapping = JDXiMapPartialDrum.MAP

@@ -27,12 +27,10 @@ from typing import Optional
 
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QKeySequence, QPixmap, QShortcut, QShowEvent
-from PySide6.QtWidgets import QGroupBox, QLabel, QPushButton, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QWidget
 
 from decologr import Decologr as log
-from jdxi_editor.jdxi.jdxi import JDXi
-from jdxi_editor.jdxi.preset.lists import JDXiPresetToneList
-from jdxi_editor.jdxi.synth.type import JDXiSynth
+from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.log.midi_info import log_midi_info
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.address.address import (
@@ -47,6 +45,7 @@ from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.parser.json_parser import JDXiJsonSysexParser
 from jdxi_editor.midi.sysex.request.data import SYNTH_PARTIAL_MAP
 from jdxi_editor.resources import resource_path
+from jdxi_editor.synth.type import JDXiSynth
 from jdxi_editor.ui.editors.digital.utils import (
     filter_sysex_keys,
     get_area,
@@ -54,8 +53,7 @@ from jdxi_editor.ui.editors.digital.utils import (
 )
 from jdxi_editor.ui.editors.helpers.preset import get_preset_parameter_value
 from jdxi_editor.ui.editors.synth.base import SynthBase
-from jdxi_editor.ui.widgets.display.digital import DigitalTitle
-from jdxi_editor.ui.widgets.preset.combo_box import PresetComboBox
+from jdxi_editor.ui.preset.lists import JDXiPresetToneList
 
 
 def log_changes(previous_data, current_data):
@@ -154,7 +152,7 @@ class SynthEditor(SynthBase):
             self.midi_helper.midi_program_changed.connect(self._handle_program_change)
             self.midi_helper.midi_control_changed.connect(self._handle_control_change)
             # self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
-            from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
+            from jdxi_editor.ui.preset.helper import JDXiPresetHelper
 
             self.preset_loader = JDXiPresetHelper(
                 self.midi_helper, JDXiPresetToneList.DIGITAL_ENUMERATED
@@ -205,7 +203,7 @@ class SynthEditor(SynthBase):
         partial_number: Optional[int] = 0,
     ):
         """Initialize synth-specific data."""
-        from jdxi_editor.jdxi.synth.factory import create_synth_data
+        from jdxi_editor.synth.factory import create_synth_data
 
         self.synth_data = create_synth_data(synth_type, partial_number=partial_number)
 
@@ -443,10 +441,10 @@ class SynthEditor(SynthBase):
 
         # --- Determine preset list if not already set
         if self.preset_preset_list is None:
-            from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
-            from jdxi_editor.midi.data.programs.digital import DIGITAL_PRESET_LIST
-            from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
-            
+            from jdxi_editor.ui.programs import DIGITAL_PRESET_LIST
+            from jdxi_editor.ui.programs.analog import ANALOG_PRESET_LIST
+            from jdxi_editor.ui.programs.drum import DRUM_KIT_LIST
+
             # Determine preset list based on preset_type
             if self.preset_type == JDXiSynth.DIGITAL_SYNTH_1 or self.preset_type == JDXiSynth.DIGITAL_SYNTH_2:
                 self.preset_preset_list = DIGITAL_PRESET_LIST

@@ -11,15 +11,14 @@ from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QGridLayout, QLabel, QScrollArea, QVBoxLayout, QWidget
 
 from decologr import Decologr as log
-from jdxi_editor.jdxi.jdxi import JDXi
+from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetProgramLMB,
-    AddressOffsetSystemUMB,
     AddressOffsetTemporaryToneUMB,
     AddressStartMSB,
     RolandSysExAddress,
 )
-from jdxi_editor.midi.data.drum.data import DRUM_ADDRESSES, DRUM_PARTIAL_NAMES
+from jdxi_editor.midi.data.drum.data import DRUM_PARTIAL_NAMES
 from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParam
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper

@@ -69,8 +69,8 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from jdxi_editor.jdxi.jdxi import JDXi
-from jdxi_editor.jdxi.preset.helper import create_scroll_container
+from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.ui.widgets.editor.helper import create_scroll_container
 
 
 class EditorBaseWidget(QWidget):

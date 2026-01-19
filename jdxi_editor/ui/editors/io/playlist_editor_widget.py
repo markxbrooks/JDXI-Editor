@@ -32,9 +32,9 @@ from PySide6.QtWidgets import (
 )
 
 from decologr import Decologr as log
-from jdxi_editor.jdxi.jdxi import JDXi
-from jdxi_editor.jdxi.program.program import JDXiProgram
+from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.midi.program.program import JDXiProgram
 from jdxi_editor.ui.editors.helpers.program import calculate_midi_values
 from jdxi_editor.ui.widgets.delegates.midi_file import MidiFileDelegate
 from jdxi_editor.ui.widgets.delegates.play_button import PlayButtonDelegate
@@ -204,7 +204,7 @@ class PlaylistEditorWidget(QWidget):
             return
 
         try:
-            from jdxi_editor.midi.data.programs.database import get_database
+            from jdxi_editor.ui.programs.database import get_database
 
             db = get_database()
             playlists = db.get_all_playlists()
@@ -264,7 +264,7 @@ class PlaylistEditorWidget(QWidget):
             return
 
         try:
-            from jdxi_editor.midi.data.programs.database import get_database
+            from jdxi_editor.ui.programs.database import get_database
 
             db = get_database()
             playlist_items = db.get_playlist_programs(playlist_id)
@@ -322,7 +322,7 @@ class PlaylistEditorWidget(QWidget):
             cheat_preset_combo = QComboBox()
             cheat_preset_combo.addItem("None", None)  # No cheat preset
             # Add Digital Synth presets
-            from jdxi_editor.midi.data.programs.digital import DIGITAL_PRESET_LIST
+            from jdxi_editor.ui.programs import DIGITAL_PRESET_LIST
 
             for preset in DIGITAL_PRESET_LIST:
                 preset_id = preset["id"]
@@ -382,7 +382,7 @@ class PlaylistEditorWidget(QWidget):
             return
 
         try:
-            from jdxi_editor.midi.data.programs.database import get_database
+            from jdxi_editor.ui.programs.database import get_database
 
             db = get_database()
             db.update_playlist_item_cheat_preset(
@@ -419,7 +419,7 @@ class PlaylistEditorWidget(QWidget):
         midi_file_path = item.text().strip() if item.text() else None
 
         # Save to database
-        from jdxi_editor.midi.data.programs.database import get_database
+        from jdxi_editor.ui.programs.database import get_database
 
         db = get_database()
         if db.update_playlist_item_midi_file(playlist_id, program_id, midi_file_path):
@@ -458,7 +458,7 @@ class PlaylistEditorWidget(QWidget):
         program_list.setSelectionMode(QListWidget.SelectionMode.ExtendedSelection)
 
         try:
-            from jdxi_editor.midi.data.programs.database import get_database
+            from jdxi_editor.ui.programs.database import get_database
 
             db = get_database()
             all_programs = db.get_all_programs()
@@ -498,7 +498,7 @@ class PlaylistEditorWidget(QWidget):
                 return
 
             # Add selected programs to playlist
-            from jdxi_editor.midi.data.programs.database import get_database
+            from jdxi_editor.ui.programs.database import get_database
 
             db = get_database()
             added_count = 0
@@ -556,7 +556,7 @@ class PlaylistEditorWidget(QWidget):
         )
 
         if reply == QMessageBox.StandardButton.Yes:
-            from jdxi_editor.midi.data.programs.database import get_database
+            from jdxi_editor.ui.programs.database import get_database
 
             db = get_database()
             deleted_count = 0
@@ -992,7 +992,7 @@ class PlaylistEditorWidget(QWidget):
         # Get preset parameters from DIGITAL_PRESET_LIST
         from jdxi_editor.log.midi_info import log_midi_info
         from jdxi_editor.midi.channel.channel import MidiChannel
-        from jdxi_editor.midi.data.programs.digital import DIGITAL_PRESET_LIST
+        from jdxi_editor.ui.programs import DIGITAL_PRESET_LIST
 
         # Find preset in DIGITAL_PRESET_LIST
         preset = None

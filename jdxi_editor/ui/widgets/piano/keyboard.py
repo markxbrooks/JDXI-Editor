@@ -40,7 +40,7 @@ from PySide6.QtWidgets import (
 )
 
 from decologr import Decologr as log
-from jdxi_editor.jdxi.jdxi import JDXi
+from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.piano.keyboard import (
     DRUM_LABELS,
     KEYBOARD_BLACK_NOTES,

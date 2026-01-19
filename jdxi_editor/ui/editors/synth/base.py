@@ -25,13 +25,13 @@ import mido
 from PySide6.QtWidgets import QWidget
 
 from decologr import Decologr as log
-from jdxi_editor.jdxi.synth.factory import create_synth_data
-from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.log.slider_parameter import log_slider_parameters
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.io.delay import send_with_delay
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
+from jdxi_editor.synth.factory import create_synth_data
+from jdxi_editor.synth.type import JDXiSynth
 from jdxi_editor.ui.widgets.combo_box.combo_box import ComboBox
 from jdxi_editor.ui.widgets.slider import Slider
 from jdxi_editor.ui.widgets.spin_box.spin_box import SpinBox
@@ -105,7 +105,9 @@ class SynthBase(QWidget):
         )
         
         if parameter_cls is not None:
-            from jdxi_editor.midi.data.parameter.program.common import ProgramCommonParam
+            from jdxi_editor.midi.data.parameter.program.common import (
+                ProgramCommonParam,
+            )
 
             if parameter_cls == ProgramCommonParam or (
                 hasattr(parameter_cls, "__name__")
@@ -584,7 +586,7 @@ class SynthBase(QWidget):
         partial_number: Optional[int] = 0,
     ):
         """Initialize synth-specific data."""
-        from jdxi_editor.jdxi.synth.factory import create_synth_data
+        from jdxi_editor.synth.factory import create_synth_data
 
         self.synth_data = create_synth_data(synth_type, partial_number=partial_number)
         # Dynamically assign attributes

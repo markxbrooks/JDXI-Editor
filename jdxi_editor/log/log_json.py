@@ -1,3 +1,7 @@
+"""
+Log Json
+"""
+
 import json
 from typing import Dict
 
@@ -12,7 +16,7 @@ def log_json(data: Dict[str], silent: bool = False) -> None:
     :param data: Dict
     :return: None
     """
-    # Ensure `data` is address dictionary, if it's address string, try parsing it as JSON
+    # --- Ensure `data` is address dictionary, if it's address string, try parsing it as JSON
     if isinstance(data, str):
         try:
             data = json.loads(data)
@@ -20,9 +24,9 @@ def log_json(data: Dict[str], silent: bool = False) -> None:
             log.message("Invalid JSON string provided.")
             return
 
-    # Serialize the JSON into address single line string (compact form)
+    # --- Serialize the JSON into address single line string (compact form)
     compact_json = json.dumps(data)
 
-    # Log the JSON in address single line
+    # --- Log the JSON in address single line
     if not silent:
         log.message(compact_json, stacklevel=2)

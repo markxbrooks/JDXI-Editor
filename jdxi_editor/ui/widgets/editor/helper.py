@@ -19,7 +19,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from jdxi_editor.jdxi.jdxi import JDXi
+from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
 
@@ -269,3 +269,19 @@ def create_group_with_form_layout(
     form_layout = create_form_layout_with_widgets(widgets)
     group, _ = create_group_with_layout(group_name, inner_layout=form_layout)
     return group, form_layout
+
+
+def create_scroll_area() -> QScrollArea:
+    """setup scroll area"""
+    scroll = QScrollArea()
+    scroll.setWidgetResizable(True)
+    scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+    scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+    return scroll
+
+
+def create_scroll_container() -> tuple[QWidget, QVBoxLayout]:
+    """ create scroll container"""
+    container = QWidget()
+    container_layout = QVBoxLayout(container)
+    return container, container_layout

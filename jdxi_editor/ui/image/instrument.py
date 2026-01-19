@@ -36,7 +36,7 @@ from PySide6.QtGui import (
     QPixmap,
 )
 
-from jdxi_editor.jdxi.jdxi import JDXi
+from jdxi_editor.core.jdxi import JDXi
 
 
 def draw_instrument_pixmap() -> QPixmap:

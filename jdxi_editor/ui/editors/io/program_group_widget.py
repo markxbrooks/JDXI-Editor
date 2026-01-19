@@ -22,11 +22,11 @@ if TYPE_CHECKING:
     from jdxi_editor.ui.editors.io.program import ProgramEditor
 
 from decologr import Decologr as log
-from jdxi_editor.jdxi.jdxi import JDXi
-from jdxi_editor.jdxi.program.program import JDXiProgram
+from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.log.midi_info import log_midi_info
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.parameter.program.common import ProgramCommonParam
+from jdxi_editor.midi.program.program import JDXiProgram
 from jdxi_editor.ui.editors.helpers.program import (
     calculate_midi_values,
     get_program_by_id,

@@ -17,17 +17,17 @@ from typing import List, Optional, TextIO, Union
 import mido
 
 from decologr import Decologr as log
-from jdxi_editor.jdxi.jdxi import JDXi
-from jdxi_editor.jdxi.midi.device.constant import JDXiSysExIdentity
-from jdxi_editor.jdxi.midi.message.sysex.offset import (
+from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.midi.data.address.address import RolandID
+from jdxi_editor.midi.device.constant import JDXiSysExIdentity
+from jdxi_editor.midi.io.utils import nibble_data
+from jdxi_editor.midi.message.jdxi import JDXiSysexHeader
+from jdxi_editor.midi.message.sysex.offset import (
     FieldSpec,
     JDXIControlChangeOffset,
     JDXIProgramChangeOffset,
     JDXiSysExMessageLayout,
 )
-from jdxi_editor.midi.data.address.address import RolandID
-from jdxi_editor.midi.io.utils import nibble_data
-from jdxi_editor.midi.message.jdxi import JDXiSysexHeader
 from jdxi_editor.midi.sysex.device import DeviceInfo
 from jdxi_editor.midi.sysex.parser.utils import parse_sysex
 from jdxi_editor.project import __package_name__
@@ -41,7 +41,7 @@ class JDXiSysExParser:
     JD-Xi System Exclusive Message Parser
 
     Parses JD-Xi SysEx messages following a structure similar to Picomidi's Parser pattern.
-    Handles identity requests, parameter messages (short and long), and message conversion.
+    Handles identity_request requests, parameter messages (short and long), and message conversion.
 
     The parser leverages field mappings defined in JDXiSysExParameterLayout.FIELDS to provide
     structured parsing of SysEx messages. Use get_structured_fields() to extract parsed field data.
@@ -196,7 +196,7 @@ class JDXiSysExParser:
 
         JD-Xi messages either:
         1. Start with Roland ID (0x41) at position 1 (parameter messages)
-        2. Are JD-Xi identity messages (have Roland ID at position 5 after universal header)
+        2. Are JD-Xi identity_request messages (have Roland ID at position 5 after universal header)
 
         Universal MIDI messages (like F0 7E 7F 06 01 F7) are not JD-Xi messages.
         """
@@ -208,11 +208,11 @@ class JDXiSysExParser:
             if self.sysex_data[JDXiSysExMessageLayout.ROLAND_ID] == RolandID.ROLAND_ID:
                 return True
 
-        # Check if it's a JD-Xi identity message
-        # Universal identity requests (F0 7E 7F 06 01 F7) are only 6 bytes
-        # JD-Xi identity replies are longer and have Roland ID at position 5
+        # Check if it's a JD-Xi identity_request message
+        # Universal identity_request requests (F0 7E 7F 06 01 F7) are only 6 bytes
+        # JD-Xi identity_request replies are longer and have Roland ID at position 5
         if len(self.sysex_data) >= JDXi.Midi.SYSEX.IDENTITY.LAYOUT.expected_length():
-            # Check if it matches the identity message structure
+            # Check if it matches the identity_request message structure
             if (
                 self.sysex_data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.START]
                 == SysExByte.START
@@ -226,7 +226,7 @@ class JDXiSysExParser:
                     JDXiSysExIdentity.SUB2_IDENTITY_REPLY,
                 )
             ):
-                # If it's an identity reply (SUB2 == 0x02), check for Roland ID
+                # If it's an identity_request reply (SUB2 == 0x02), check for Roland ID
                 if (
                     self.sysex_data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.ID.SUB2]
                     == JDXiSysExIdentity.SUB2_IDENTITY_REPLY
@@ -239,7 +239,7 @@ class JDXiSysExParser:
                             return True
                 # Identity requests don't have Roland ID, but we can check length
                 # Universal requests are 6 bytes, JD-Xi requests would be longer if they exist
-                # For now, we'll treat identity requests as non-JD-Xi if they're too short
+                # For now, we'll treat identity_request requests as non-JD-Xi if they're too short
                 return False
 
         return False
@@ -455,14 +455,14 @@ class JDXiSysExParser:
 
     def _parse_identity_sysex(self) -> dict:
         """
-        Parse an identity SysEx message.
+        Parse an identity_request SysEx message.
 
-        :return: dict Parsed identity data
+        :return: dict Parsed identity_request data
         """
         data = self.sysex_data
 
         parsed = {
-            "type": "identity",
+            "type": "identity_request",
             "manufacturer_id": data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.ID.ROLAND],
             "device_family": tuple(
                 data[
@@ -487,7 +487,7 @@ class JDXiSysExParser:
 
         This method replaces the standalone handle_identity_request function.
 
-        :param message: mido.Message incoming response to identity request
+        :param message: mido.Message incoming response to identity_request request
         :return: dict device details
         """
         byte_list = self._mido_message_data_to_byte_list(message)

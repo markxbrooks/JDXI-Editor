@@ -26,12 +26,12 @@ from decologr import Decologr as log
 from jdxi_editor.midi.data.parsers.util import OUTBOUND_MESSAGE_IGNORED_KEYS
 from jdxi_editor.midi.io.controller import MidiIOController
 from jdxi_editor.midi.message import (
-    ChannelMessage,
     ControlChangeMessage,
     IdentityRequestMessage,
     MidiMessage,
     ProgramChangeMessage,
 )
+from jdxi_editor.midi.message.channel.message import ChannelMessage
 from jdxi_editor.midi.sysex.parser.sysex import JDXiSysExParser
 from jdxi_editor.midi.sysex.validation import validate_midi_message
 from picomidi.constant import Midi
@@ -114,7 +114,7 @@ class MidiOutHandler(MidiIOController):
                             if k not in OUTBOUND_MESSAGE_IGNORED_KEYS
                         }
                     except ValueError as parse_ex:
-                        # Skip logging for non-JD-Xi messages (e.g., universal identity requests)
+                        # Skip logging for non-JD-Xi messages (e.g., universal identity_request requests)
                         error_msg = str(parse_ex)
                         if "Not a JD-Xi SysEx message" in error_msg:
                             # This is a universal MIDI message, not a JD-Xi message - skip silently
@@ -224,22 +224,22 @@ class MidiOutHandler(MidiIOController):
 
     def send_identity_request(self) -> bool:
         """
-        Send identity request message (Universal System Exclusive).
+        Send identity_request request message (Universal System Exclusive).
 
         :return: bool True if the message was sent successfully, False otherwise.
         """
-        log.message("=========Sending identity request========")
+        log.message("=========Sending identity_request request========")
         try:
             identity_request_message = IdentityRequestMessage()
             identity_request_bytes_list = identity_request_message.to_message_list()
             log.message(
-                f"sending identity request message: "
+                f"sending identity_request request message: "
                 f"{type(identity_request_bytes_list)} {identity_request_bytes_list}"
             )
             self.send_raw_message(identity_request_bytes_list)
             return True
         except (ValueError, TypeError, OSError, IOError) as ex:
-            log.error(f"Error sending identity request: {ex}")
+            log.error(f"Error sending identity_request request: {ex}")
             return False
 
     def send_midi_message(self, sysex_message: MidiMessage) -> bool:
@@ -459,7 +459,7 @@ class MidiOutHandler(MidiIOController):
         """
         request = IdentityRequestMessage()
         self.send_message(request)
-        log.parameter("sending identity request message:", request)
+        log.parameter("sending identity_request request message:", request)
 
     def send_message(self, message: MidiMessage) -> None:
         """
@@ -473,4 +473,4 @@ class MidiOutHandler(MidiIOController):
             self.send_raw_message(raw_message)
             log.parameter("Sent MIDI message:", raw_message)
         except Exception as ex:
-            log.error(f"Error sending identity request: {str(ex)}")
+            log.error(f"Error sending identity_request request: {str(ex)}")

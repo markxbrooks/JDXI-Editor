@@ -111,7 +111,7 @@ def handle_identity_request(message: mido.Message) -> dict:
         This function is deprecated. Use JDXiSysExParser.parse_identity_request() instead.
         This function is kept for backward compatibility and delegates to the parser.
 
-    :param message: mido.Message incoming response to identity request
+    :param message: mido.Message incoming response to identity_request request
     :return: dict device details
     """
     from jdxi_editor.midi.sysex.parser.sysex import JDXiSysExParser

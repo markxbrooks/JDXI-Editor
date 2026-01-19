@@ -28,19 +28,19 @@ import mido
 from PySide6.QtCore import Signal
 
 from decologr import Decologr as log
-from jdxi_editor.jdxi.jdxi import JDXi
-from jdxi_editor.jdxi.midi.message.sysex.offset import JDXiSysExIdentityLayout
-from jdxi_editor.jdxi.preset.button import JDXiPresetButtonData
-from jdxi_editor.jdxi.preset.incoming_data import IncomingPresetData
-from jdxi_editor.jdxi.program.program import JDXiProgram
+from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import AddressStartMSB as AreaMSB
-from jdxi_editor.midi.data.programs import JDXiProgramList
 from jdxi_editor.midi.io.controller import MidiIOController
 
 # handle_identity_request moved to JDXiSysExParser.parse_identity_request
 from jdxi_editor.midi.map.synth_type import JDXiMapSynthType
+from jdxi_editor.midi.message.sysex.offset import JDXiSysExIdentityLayout
+from jdxi_editor.midi.program.program import JDXiProgram
 from jdxi_editor.midi.sysex.parser.sysex import JDXiSysExParser
 from jdxi_editor.midi.sysex.request.data import IGNORED_KEYS
+from jdxi_editor.ui.preset.button import JDXiPresetButtonData
+from jdxi_editor.ui.preset.incoming_data import IncomingPresetData
+from jdxi_editor.ui.programs import JDXiUIProgramList
 from picomidi.constant import Midi
 
 
@@ -54,7 +54,7 @@ def add_or_replace_program_and_save(new_program: JDXiProgram) -> bool:
     """
     try:
         # Use SQLite database instead of JSON
-        from jdxi_editor.midi.data.programs.database import get_database
+        from jdxi_editor.ui.programs.database import get_database
 
         db = get_database()
         return db.add_or_replace_program(new_program)
@@ -100,7 +100,7 @@ def add_or_replace_program_and_save_old(new_program: JDXiProgram) -> bool:
 
 def load_programs() -> List[Dict[str, str]]:
     try:
-        with open(JDXiProgramList.USER_PROGRAMS_FILE, "r", encoding="utf-8") as f:
+        with open(JDXiUIProgramList.USER_PROGRAMS_FILE, "r", encoding="utf-8") as f:
             return json.load(f)
     except (FileNotFoundError, json.JSONDecodeError):
         return []
@@ -113,7 +113,7 @@ def save_programs(program_list: List[Dict[str, str]]) -> None:
     :param program_list: List of program dictionaries.
     """
     try:
-        file_path = JDXiProgramList.USER_PROGRAMS_FILE
+        file_path = JDXiUIProgramList.USER_PROGRAMS_FILE
         os.makedirs(
             os.path.dirname(file_path), exist_ok=True
         )  # ensure directory exists
@@ -130,7 +130,7 @@ def save_programs_old(program_list: List[Dict[str, str]]) -> None:
     :param program_list: List[Dict[str, str]]
     :return: None
     """
-    with open(JDXiProgramList.USER_PROGRAMS_FILE, "w", encoding="utf-8") as f:
+    with open(JDXiUIProgramList.USER_PROGRAMS_FILE, "w", encoding="utf-8") as f:
         json.dump(program_list, f, indent=4, ensure_ascii=False)
 
 
@@ -310,7 +310,7 @@ class MidiInHandler(MidiIOController):
                     k: v for k, v in parsed_data.items() if k not in IGNORED_KEYS
                 }
             except ValueError as ex:
-                # Skip logging for non-JD-Xi messages (e.g., universal identity requests)
+                # Skip logging for non-JD-Xi messages (e.g., universal identity_request requests)
                 error_msg = str(ex)
                 if "Not a JD-Xi SysEx message" in error_msg:
                     # This is a universal MIDI message, not a JD-Xi message - skip silently

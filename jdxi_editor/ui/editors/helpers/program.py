@@ -45,8 +45,8 @@ import json
 from typing import Dict, List, Optional
 
 from decologr import Decologr as log
-from jdxi_editor.jdxi.program.program import JDXiProgram
-from jdxi_editor.midi.data.programs.programs import JDXiProgramList
+from jdxi_editor.midi.program.program import JDXiProgram
+from jdxi_editor.ui.programs.programs import JDXiUIProgramList
 from picomidi.constant import Midi
 
 
@@ -58,7 +58,7 @@ def get_program_index_by_id(program_id: str) -> Optional[int]:
     :return: int
     """
     log.message(f"Getting program index for {program_id}")
-    for index, program in enumerate(JDXiProgramList.list_rom_and_user_programs()):
+    for index, program in enumerate(JDXiUIProgramList.list_rom_and_user_programs()):
         if getattr(program, "id", None) == program_id:
             log.message(f"Index for {program_id} is {index}")
             return index
@@ -78,7 +78,7 @@ def get_program_by_id(program_id: str) -> Optional[JDXiProgram]:
     rom_program = next(
         (
             program
-            for program in JDXiProgramList.ROM_PROGRAM_LIST
+            for program in JDXiUIProgramList.ROM_PROGRAM_LIST
             if program.id == program_id
         ),
         None,
@@ -87,7 +87,7 @@ def get_program_by_id(program_id: str) -> Optional[JDXiProgram]:
         return rom_program
 
     # Check user programs in SQLite database
-    from jdxi_editor.midi.data.programs.database import get_database
+    from jdxi_editor.ui.programs.database import get_database
 
     db = get_database()
     return db.get_program_by_id(program_id)
@@ -107,7 +107,7 @@ def get_program_by_bank_and_number(
     return next(
         (
             program
-            for program in JDXiProgramList.list_rom_and_user_programs()
+            for program in JDXiUIProgramList.list_rom_and_user_programs()
             if program.id == program_id
         ),
         None,
@@ -122,7 +122,7 @@ def get_program_id_by_name(name: str) -> Optional[str]:
     :return: Optional[str]
     """
     log.message(f"Searching for program name: {name}")
-    for program in JDXiProgramList.list_rom_and_user_programs():
+    for program in JDXiUIProgramList.list_rom_and_user_programs():
         if name in program.name:
             return getattr(program, "id", None)
     log.warning(f"Program named '{name}' not found.")
@@ -162,7 +162,7 @@ def load_programs() -> List[Dict[str, str]]:
     :return: list
     """
     try:
-        with open(JDXiProgramList.USER_PROGRAMS_FILE, "r", encoding="utf-8") as f:
+        with open(JDXiUIProgramList.USER_PROGRAMS_FILE, "r", encoding="utf-8") as f:
             return json.load(f)
     except (FileNotFoundError, json.JSONDecodeError):
         return []
@@ -175,7 +175,7 @@ def save_programs(program_list: List[Dict[str, str]]) -> None:
     :param program_list: List[Dict[str, str]]
     :return: None
     """
-    with open(JDXiProgramList.USER_PROGRAMS_FILE, "w", encoding="utf-8") as f:
+    with open(JDXiUIProgramList.USER_PROGRAMS_FILE, "w", encoding="utf-8") as f:
         json.dump(program_list, f, indent=4, ensure_ascii=False)
 
 
@@ -189,7 +189,7 @@ def get_program_number_by_name(program_name: str) -> Optional[int]:
     program = next(
         (
             p
-            for p in JDXiProgramList.list_rom_and_user_programs()
+            for p in JDXiUIProgramList.list_rom_and_user_programs()
             if p.name == program_name
         ),
         None,
@@ -207,7 +207,7 @@ def get_program_name_by_id(program_id: str) -> Optional[str]:
     program = next(
         (
             program
-            for program in JDXiProgramList.list_rom_and_user_programs()
+            for program in JDXiUIProgramList.list_rom_and_user_programs()
             if program.id == program_id
         ),
         None,
@@ -224,7 +224,7 @@ def get_program_parameter_value(parameter: str, program_id: str) -> Optional[str
     :return:
     """
     program = next(
-        (p for p in JDXiProgramList.list_rom_and_user_programs() if p.id == program_id),
+        (p for p in JDXiUIProgramList.list_rom_and_user_programs() if p.id == program_id),
         None,
     )
     return program.get(parameter) if program else None
@@ -312,7 +312,7 @@ def get_msb_lsb_pc(program_number: int) -> tuple[int, int, int]:
     :raises ValueError: If any of the values can't be converted to int.
     """
     try:
-        program_list = JDXiProgramList.list_rom_and_user_programs()
+        program_list = JDXiUIProgramList.list_rom_and_user_programs()
         program = program_list[program_number]
     except IndexError:
         raise IndexError(f"Program number {program_number} is out of range.")

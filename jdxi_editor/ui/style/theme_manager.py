@@ -11,13 +11,13 @@ from PySide6.QtCore import QObject
 from PySide6.QtWidgets import QApplication, QWidget
 
 from decologr import Decologr as log
-from jdxi_editor.ui.style.jdxi import JDXiStyle
+from jdxi_editor.ui.style.jdxi import JDXiUIStyle
 
 
-class JDXiThemeManager(QObject):
+class JDXiUIThemeManager(QObject):
     """Centralized theme management for JD-Xi Editor"""
 
-    _instance: Optional["JDXiThemeManager"] = None
+    _instance: Optional["JDXiUIThemeManager"] = None
 
     def __new__(cls):
         """Singleton pattern"""
@@ -46,22 +46,22 @@ class JDXiThemeManager(QObject):
     @staticmethod
     def apply_editor_title_label(widget: QWidget) -> None:
         """Apply editor title label style"""
-        JDXiThemeManager.apply_style(widget, JDXiStyle.EDITOR_TITLE_LABEL)
+        JDXiUIThemeManager.apply_style(widget, JDXiUIStyle.EDITOR_TITLE_LABEL)
 
     @staticmethod
     def apply_analog_section_header(widget: QWidget) -> None:
         """Apply analog section header style"""
-        JDXiThemeManager.apply_style(widget, JDXiStyle.ANALOG_SECTION_HEADER)
+        JDXiUIThemeManager.apply_style(widget, JDXiUIStyle.ANALOG_SECTION_HEADER)
 
     @staticmethod
     def apply_digital_section_header(widget: QWidget) -> None:
         """Apply digital section header style"""
-        JDXiThemeManager.apply_style(widget, JDXiStyle.DIGITAL_SECTION_HEADER)
+        JDXiUIThemeManager.apply_style(widget, JDXiUIStyle.DIGITAL_SECTION_HEADER)
 
     @staticmethod
     def apply_midi_monitor(widget: QWidget) -> None:
         """Apply MIDI message monitor style"""
-        JDXiThemeManager.apply_style(widget, JDXiStyle.MIDI_MESSAGE_MONITOR)
+        JDXiUIThemeManager.apply_style(widget, JDXiUIStyle.MIDI_MESSAGE_MONITOR)
 
     @staticmethod
     def apply_status_indicator_active(widget: QWidget, analog: bool = False) -> None:
@@ -72,26 +72,26 @@ class JDXiThemeManager(QObject):
         :param analog: bool If True, use analog (blue) style, else digital (red)
         """
         if analog:
-            JDXiThemeManager.apply_style(
-                widget, JDXiStyle.STATUS_INDICATOR_ANALOG_ACTIVE
+            JDXiUIThemeManager.apply_style(
+                widget, JDXiUIStyle.STATUS_INDICATOR_ANALOG_ACTIVE
             )
         else:
-            JDXiThemeManager.apply_style(widget, JDXiStyle.STATUS_INDICATOR_ACTIVE)
+            JDXiUIThemeManager.apply_style(widget, JDXiUIStyle.STATUS_INDICATOR_ACTIVE)
 
     @staticmethod
     def apply_status_indicator_inactive(widget: QWidget) -> None:
         """Apply inactive status indicator style"""
-        JDXiThemeManager.apply_style(widget, JDXiStyle.STATUS_INDICATOR_INACTIVE)
+        JDXiUIThemeManager.apply_style(widget, JDXiUIStyle.STATUS_INDICATOR_INACTIVE)
 
     @staticmethod
     def apply_button_glow_red(widget: QWidget) -> None:
         """Apply red glow button style"""
-        JDXiThemeManager.apply_style(widget, JDXiStyle.BUTTON_GLOW_RED)
+        JDXiUIThemeManager.apply_style(widget, JDXiUIStyle.BUTTON_GLOW_RED)
 
     @staticmethod
     def apply_button_glow_analog(widget: QWidget) -> None:
         """Apply analog (blue) glow button style"""
-        JDXiThemeManager.apply_style(widget, JDXiStyle.BUTTON_GLOW_ANALOG)
+        JDXiUIThemeManager.apply_style(widget, JDXiUIStyle.BUTTON_GLOW_ANALOG)
 
     @staticmethod
     def apply_waveform_button(widget: QWidget, analog: bool = False) -> None:
@@ -102,14 +102,14 @@ class JDXiThemeManager(QObject):
         :param analog: bool If True, use analog style, else digital
         """
         if analog:
-            JDXiThemeManager.apply_style(widget, JDXiStyle.BUTTON_WAVEFORM_ANALOG)
+            JDXiUIThemeManager.apply_style(widget, JDXiUIStyle.BUTTON_WAVEFORM_ANALOG)
         else:
-            JDXiThemeManager.apply_style(widget, JDXiStyle.BUTTON_WAVEFORM)
+            JDXiUIThemeManager.apply_style(widget, JDXiUIStyle.BUTTON_WAVEFORM)
 
     @staticmethod
     def apply_instrument_background(widget: QWidget) -> None:
         """Apply instrument background gradient style"""
-        JDXiThemeManager.apply_style(widget, JDXiStyle.INSTRUMENT)
+        JDXiUIThemeManager.apply_style(widget, JDXiUIStyle.INSTRUMENT)
 
     @staticmethod
     def apply_editor_style(widget: QWidget, analog: bool = False) -> None:
@@ -119,15 +119,15 @@ class JDXiThemeManager(QObject):
         :param widget: QWidget to style
         :param analog: bool If True, use analog editor style, else standard
         """
-        if analog and hasattr(JDXiStyle, "EDITOR_ANALOG"):
-            JDXiThemeManager.apply_style(widget, JDXiStyle.EDITOR_ANALOG)
+        if analog and hasattr(JDXiUIStyle, "EDITOR_ANALOG"):
+            JDXiUIThemeManager.apply_style(widget, JDXiUIStyle.EDITOR_ANALOG)
         else:
-            JDXiThemeManager.apply_style(widget, JDXiStyle.EDITOR)
+            JDXiUIThemeManager.apply_style(widget, JDXiUIStyle.EDITOR)
 
     @staticmethod
     def apply_instrument_title_label(widget: QWidget) -> None:
         """Apply instrument title label style"""
-        JDXiThemeManager.apply_style(widget, JDXiStyle.INSTRUMENT_TITLE_LABEL)
+        JDXiUIThemeManager.apply_style(widget, JDXiUIStyle.INSTRUMENT_TITLE_LABEL)
 
     @staticmethod
     def apply_mixer_label(widget: QWidget, analog: bool = False) -> None:
@@ -138,14 +138,14 @@ class JDXiThemeManager(QObject):
         :param analog: bool If True, use analog mixer label style, else standard
         """
         if analog:
-            JDXiThemeManager.apply_style(widget, JDXiStyle.MIXER_LABEL_ANALOG)
+            JDXiUIThemeManager.apply_style(widget, JDXiUIStyle.MIXER_LABEL_ANALOG)
         else:
-            JDXiThemeManager.apply_style(widget, JDXiStyle.MIXER_LABEL)
+            JDXiUIThemeManager.apply_style(widget, JDXiUIStyle.MIXER_LABEL)
 
     @staticmethod
     def apply_partial_switch(widget: QWidget) -> None:
         """Apply partial switch (checkbox) style"""
-        JDXiThemeManager.apply_style(widget, JDXiStyle.PARTIAL_SWITCH)
+        JDXiUIThemeManager.apply_style(widget, JDXiUIStyle.PARTIAL_SWITCH)
 
     @staticmethod
     def apply_adsr_style(widget: QWidget, analog: bool = False) -> None:
@@ -156,19 +156,19 @@ class JDXiThemeManager(QObject):
         :param analog: bool If True, use analog ADSR style, else standard
         """
         if analog:
-            JDXiThemeManager.apply_style(widget, JDXiStyle.ADSR_ANALOG)
+            JDXiUIThemeManager.apply_style(widget, JDXiUIStyle.ADSR_ANALOG)
         else:
-            JDXiThemeManager.apply_style(widget, JDXiStyle.ADSR)
+            JDXiUIThemeManager.apply_style(widget, JDXiUIStyle.ADSR)
 
     @staticmethod
     def apply_adsr_plot(widget: QWidget) -> None:
         """Apply ADSR plot style"""
-        JDXiThemeManager.apply_style(widget, JDXiStyle.ADSR_PLOT)
+        JDXiUIThemeManager.apply_style(widget, JDXiUIStyle.ADSR_PLOT)
 
     @staticmethod
     def apply_adsr_disabled(widget: QWidget) -> None:
         """Apply ADSR disabled style"""
-        JDXiThemeManager.apply_style(widget, JDXiStyle.ADSR_DISABLED)
+        JDXiUIThemeManager.apply_style(widget, JDXiUIStyle.ADSR_DISABLED)
 
     @staticmethod
     def apply_tabs_style(widget: QWidget, analog: bool = False) -> None:
@@ -179,19 +179,19 @@ class JDXiThemeManager(QObject):
         :param analog: bool If True, use analog tabs style, else standard
         """
         if analog:
-            JDXiThemeManager.apply_style(widget, JDXiStyle.TABS_ANALOG)
+            JDXiUIThemeManager.apply_style(widget, JDXiUIStyle.TABS_ANALOG)
         else:
-            JDXiThemeManager.apply_style(widget, JDXiStyle.TABS)
+            JDXiUIThemeManager.apply_style(widget, JDXiUIStyle.TABS)
 
     @staticmethod
     def apply_transparent(widget: QWidget) -> None:
         """Apply transparent style"""
-        JDXiThemeManager.apply_style(widget, JDXiStyle.TRANSPARENT)
+        JDXiUIThemeManager.apply_style(widget, JDXiUIStyle.TRANSPARENT)
 
     @staticmethod
     def apply_debugger_window(widget: QWidget) -> None:
         """Apply debugger window style"""
-        JDXiThemeManager.apply_style(widget, JDXiStyle.DEBUGGER)
+        JDXiUIThemeManager.apply_style(widget, JDXiUIStyle.DEBUGGER)
 
     @staticmethod
     def apply_combo_box(widget: QWidget, analog: bool = False) -> None:
@@ -202,29 +202,29 @@ class JDXiThemeManager(QObject):
         :param analog: bool If True, use analog combo box style, else standard
         """
         if analog:
-            JDXiThemeManager.apply_style(widget, JDXiStyle.COMBO_BOX_ANALOG)
+            JDXiUIThemeManager.apply_style(widget, JDXiUIStyle.COMBO_BOX_ANALOG)
         else:
-            JDXiThemeManager.apply_style(widget, JDXiStyle.COMBO_BOX)
+            JDXiUIThemeManager.apply_style(widget, JDXiUIStyle.COMBO_BOX)
 
     @staticmethod
     def apply_line_edit(widget: QWidget) -> None:
         """Apply line edit style"""
-        JDXiThemeManager.apply_style(widget, JDXiStyle.QLINEEDIT)
+        JDXiUIThemeManager.apply_style(widget, JDXiUIStyle.QLINEEDIT)
 
     @staticmethod
     def apply_button_rect_analog(widget: QWidget) -> None:
         """Apply analog rectangular button style (blue)"""
-        JDXiThemeManager.apply_style(widget, JDXiStyle.BUTTON_RECT_ANALOG)
+        JDXiUIThemeManager.apply_style(widget, JDXiUIStyle.BUTTON_RECT_ANALOG)
 
     @staticmethod
     def apply_button_analog_active(widget: QWidget) -> None:
         """Apply analog active button style (blue, active state)"""
-        JDXiThemeManager.apply_style(widget, JDXiStyle.BUTTON_ANALOG_ACTIVE)
+        JDXiUIThemeManager.apply_style(widget, JDXiUIStyle.BUTTON_ANALOG_ACTIVE)
 
     @staticmethod
     def apply_table_style(widget: QWidget) -> None:
         """Apply table style with rounded corners and charcoal embossed cells"""
-        # This uses the style from program.py's _get_table_style method
+        # This uses the style from message.py's _get_table_style method
         table_style = """
             QTableWidget {
                 background-color: #1a1a1a;
@@ -294,7 +294,7 @@ class JDXiThemeManager(QObject):
                 border-radius: 8px 0 0 0;
             }
         """
-        JDXiThemeManager.apply_style(widget, table_style)
+        JDXiUIThemeManager.apply_style(widget, table_style)
 
     @staticmethod
     def get_application_style() -> str:
@@ -309,25 +309,25 @@ class JDXiThemeManager(QObject):
         return f"""
             /* Application-wide background gradient */
             QMainWindow {{
-                background: {JDXiStyle.BACKGROUND_GRADIENT};
+                background: {JDXiUIStyle.BACKGROUND_GRADIENT};
             }}
             
             QWidget {{
-                font-family: {JDXiStyle.FONT_FAMILY};
+                font-family: {JDXiUIStyle.FONT_FAMILY};
             }}
             
             /* Enhanced button glow effects */
             QPushButton:hover {{
-                border: 2px solid {JDXiStyle.ACCENT_GLOW};
+                border: 2px solid {JDXiUIStyle.ACCENT_GLOW};
             }}
             
             /* Enhanced slider gradients */
             QSlider::sub-page:vertical {{
-                background: {JDXiStyle.SLIDER_NEON_GRADIENT};
+                background: {JDXiUIStyle.SLIDER_NEON_GRADIENT};
             }}
             
             QSlider::sub-page:horizontal {{
-                background: {JDXiStyle.SLIDER_NEON_GRADIENT};
+                background: {JDXiUIStyle.SLIDER_NEON_GRADIENT};
             }}
         """
 
@@ -344,7 +344,7 @@ class JDXiThemeManager(QObject):
                 log.warning("No QApplication instance found for theme application")
                 return False
 
-            app_style = JDXiThemeManager.get_application_style()
+            app_style = JDXiUIThemeManager.get_application_style()
             current_style = app.styleSheet()
 
             # Append to existing stylesheet if present
@@ -369,10 +369,10 @@ class JDXiThemeManager(QObject):
 
         :return: bool True if initialization was successful, False otherwise
         """
-        return JDXiThemeManager.apply_application_style()
+        return JDXiUIThemeManager.apply_application_style()
 
 
 # Convenience instance getter
-def get_theme_manager() -> JDXiThemeManager:
+def get_theme_manager() -> JDXiUIThemeManager:
     """Get the singleton ThemeManager instance"""
-    return JDXiThemeManager()
+    return JDXiUIThemeManager()

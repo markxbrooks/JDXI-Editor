@@ -19,7 +19,7 @@ from typing import Callable
 
 from PySide6.QtWidgets import QFormLayout, QGroupBox, QScrollArea, QVBoxLayout, QWidget
 
-from jdxi_editor.jdxi.jdxi import JDXi
+from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetProgramLMB,
     RolandSysExAddress,

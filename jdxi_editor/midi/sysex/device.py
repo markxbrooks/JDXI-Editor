@@ -1,9 +1,9 @@
 """
 JD-Xi Device Information Module
 
-This module defines the `DeviceInfo` class, which represents identity information
+This module defines the `DeviceInfo` class, which represents identity_request information
 for a Roland JD-Xi synthesizer. It provides utilities for checking manufacturer
-and model identity, extracting firmware version, and constructing an instance
+and model identity_request, extracting firmware version, and constructing an instance
 from a MIDI Identity Reply message.
 
 Usage Example:
@@ -44,7 +44,7 @@ Dependencies:
 from dataclasses import dataclass
 from typing import List, Optional
 
-from jdxi_editor.jdxi.jdxi import JDXi
+from jdxi_editor.core.jdxi import JDXi
 from picomidi.constant import Midi
 
 
