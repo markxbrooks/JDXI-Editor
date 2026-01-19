@@ -62,6 +62,7 @@ from jdxi_editor.ui.editors.address.factory import create_arp_address
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
+from jdxi_editor.ui.widgets.editor.helper import transfer_layout_items
 from jdxi_editor.ui.widgets.editor.simple_editor_helper import SimpleEditorHelper
 from picomidi.sysex.parameter.address import AddressParameter
 
@@ -124,8 +125,11 @@ class ArpeggioEditor(BasicEditor):
             row.addStretch()  # Only add stretch on the right
             return row
 
-        # --- Icons row (standardized across editor tabs)
+        # --- Icons row (standardized across editor tabs) - transfer items to avoid "already has a parent" errors
+        icon_row_container = QHBoxLayout()
         icon_hlayout = JDXi.UI.IconRegistry.create_generic_musical_icon_row()
+
+        transfer_layout_items(icon_hlayout, icon_row_container)
         # Add on-off switch
         common_button = self._create_parameter_switch(
             ProgramZoneParam.ARPEGGIO_SWITCH,

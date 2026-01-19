@@ -94,7 +94,7 @@ from jdxi_editor.ui.editors.main import MainEditor
 from jdxi_editor.ui.editors.pattern.pattern import PatternSequenceEditor
 from jdxi_editor.ui.preset.button import JDXiPresetButtonData
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper
-from jdxi_editor.ui.preset.lists import JDXiPresetToneList
+from jdxi_editor.ui.preset.tone.lists import JDXiPresetToneList
 from jdxi_editor.ui.style.factory import generate_sequencer_button_style
 from jdxi_editor.ui.widgets.button import SequencerSquare
 from jdxi_editor.ui.widgets.button.favorite import FavoriteButton
@@ -223,22 +223,22 @@ class JDXiInstrument(JDXiWindow):
         preset_configs = [
             (
                 JDXiSynth.DIGITAL_SYNTH_1,
-                JDXiPresetToneList.DIGITAL_ENUMERATED,
+                JDXiPresetToneList.Digital.ENUMERATED,
                 MidiChannel.DIGITAL_SYNTH_1,
             ),
             (
                 JDXiSynth.DIGITAL_SYNTH_2,
-                JDXiPresetToneList.DIGITAL_ENUMERATED,
+                JDXiPresetToneList.Digital.ENUMERATED,
                 MidiChannel.DIGITAL_SYNTH_2,
             ),
             (
                 JDXiSynth.ANALOG_SYNTH,
-                JDXiPresetToneList.ANALOG_ENUMERATED,
+                JDXiPresetToneList.Analog.ENUMERATED,
                 MidiChannel.ANALOG_SYNTH,
             ),
             (
                 JDXiSynth.DRUM_KIT,
-                JDXiPresetToneList.DRUM_ENUMERATED,
+                JDXiPresetToneList.Drum.ENUMERATED,
                 MidiChannel.DRUM_KIT,
             ),
         ]
@@ -520,7 +520,39 @@ class JDXiInstrument(JDXiWindow):
         log.message(
             f"update_display_callback: synth_type: {synth_type} preset_index: {preset_index}, channel: {channel}",
         )
-        presets = self.preset_manager.get_presets_for_channel(channel)
+        # Convert channel integer to MidiChannel enum if needed
+        if isinstance(channel, int):
+            try:
+                channel_enum = MidiChannel(channel)
+            except (ValueError, TypeError):
+                log.warning(
+                    f"Invalid channel value: {channel}, using synth_type instead"
+                )
+                channel_enum = None
+        else:
+            channel_enum = channel
+
+        # Try to get presets by channel first, then fall back to synth_type
+        presets = None
+        if channel_enum is not None:
+            presets = self.preset_manager.get_presets_for_channel(channel_enum)
+
+        # Ensure presets is a list (it should be, but handle edge cases)
+        if not isinstance(presets, list):
+            # Try to get presets by synth_type instead
+            presets = self.preset_manager.get_presets_for_synth(synth_type)
+            if not isinstance(presets, list):
+                log.error(
+                    f"Both get_presets_for_channel and get_presets_for_synth returned non-list. "
+                    f"channel_enum: {channel_enum}, synth_type: {synth_type}, presets type: {type(presets)}"
+                )
+                return
+        # Ensure preset_index is within bounds
+        if preset_index < 0 or preset_index >= len(presets):
+            log.error(
+                f"Preset index {preset_index} out of range for presets list (length: {len(presets)})"
+            )
+            return
         self._update_display_preset(
             preset_index,
             presets[preset_index],
@@ -1678,15 +1710,15 @@ class JDXiInstrument(JDXiWindow):
 
             # Get preset name - adjust index to be 0-based
             if synth_type == JDXiSynth.ANALOG_SYNTH:
-                return JDXiPresetToneList.ANALOG[
+                return JDXiPresetToneList.Analog.ENUMERATED[
                     preset_number - 1
                 ]  # Convert 1-based to 0-based
             if synth_type == JDXiSynth.DIGITAL_SYNTH_1:
-                return JDXiPresetToneList.DIGITAL_ENUMERATED[preset_number - 1]
+                return JDXiPresetToneList.Digital.ENUMERATED[preset_number - 1]
             if synth_type == JDXiSynth.DIGITAL_SYNTH_2:
-                return JDXiPresetToneList.DIGITAL_ENUMERATED[preset_number - 1]
+                return JDXiPresetToneList.Digital.ENUMERATED[preset_number - 1]
             else:
-                return JDXiPresetToneList.DRUM_ENUMERATED[preset_number - 1]
+                return JDXiPresetToneList.Drum.ENUMERATED[preset_number - 1]
         except IndexError:
             return "INIT PATCH"
 
@@ -1897,18 +1929,18 @@ class JDXiInstrument(JDXiWindow):
 
             # Define mappings for synth types
             synth_mappings = {
-                JDXiSynth.ANALOG_SYNTH: (JDXiPresetToneList.ANALOG, 0, 7),
+                JDXiSynth.ANALOG_SYNTH: (JDXiPresetToneList.Analog.ENUMERATED, 0, 7),
                 JDXiSynth.DIGITAL_SYNTH_1: (
-                    JDXiPresetToneList.DIGITAL_ENUMERATED,
+                    JDXiPresetToneList.Digital.ENUMERATED,
                     1,
                     16,
                 ),
                 JDXiSynth.DIGITAL_SYNTH_2: (
-                    JDXiPresetToneList.DIGITAL_ENUMERATED,
+                    JDXiPresetToneList.Digital.ENUMERATED,
                     2,
                     16,
                 ),
-                JDXiSynth.DRUM_KIT: (JDXiPresetToneList.DRUM_ENUMERATED, 3, 16),
+                JDXiSynth.DRUM_KIT: (JDXiPresetToneList.Drum.ENUMERATED, 3, 16),
             }
 
             # Get preset list and MIDI parameters based on synth type

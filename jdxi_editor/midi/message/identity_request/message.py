@@ -44,6 +44,7 @@ class IdentityRequestMessage(MidiMessage):
         :return: list
         """
         from jdxi_editor.core.jdxi import JDXi
+
         return [
             Midi.SYSEX.START,
             JDXi.Midi.SYSEX.IDENTITY.CONST.NUMBER,

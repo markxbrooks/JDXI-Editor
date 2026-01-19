@@ -11,6 +11,7 @@ import sys
 import os
 import time
 from mido import MidiFile
+import mido  # is required lower down
 from PySide6.QtWidgets import QApplication
 
 # Add the project root to the path

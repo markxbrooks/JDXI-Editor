@@ -45,7 +45,9 @@ class PlayList(Base):
     )
 
     # Relationship to playlist items
-    items = relationship("PlaylistItem", back_populates="playlist", cascade="all, delete-orphan")
+    items = relationship(
+        "PlaylistItem", back_populates="playlist", cascade="all, delete-orphan"
+    )
 
     def __repr__(self):
         return f"<PlayList(id={self.id}, name='{self.name}')>"

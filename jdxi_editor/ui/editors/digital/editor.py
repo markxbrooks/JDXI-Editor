@@ -960,6 +960,7 @@ class DigitalSynth2Editor(DigitalSynthEditor):
             parent=parent,
         )
 
+
 class MyHandler:
     def __init__(self, partial_no):
         self.partial_no = partial_no
@@ -997,7 +998,7 @@ class MyHandler:
         failures = []
         successes = []
         handler = MyHandler(self.partial_no)
-    
+
         for param_name, param_value in sysex_data.items():
             param = DigitalPartialParam.get_by_name(param_name)
             if not param:
@@ -1020,7 +1021,7 @@ class MyHandler:
                     self._update_partial_slider(
                         self.partial_no, param, param_value, successes, failures
                     )
-    
+
         return successes, failures
 
 

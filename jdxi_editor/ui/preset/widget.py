@@ -21,6 +21,7 @@ from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 from jdxi_editor.ui.widgets.editor.helper import (
     create_layout_with_widgets,
     create_scroll_container,
+    transfer_layout_items,
 )
 
 if TYPE_CHECKING:
@@ -153,20 +154,15 @@ class InstrumentPresetWidget(QWidget):
         icon_row_container = QHBoxLayout()
         icon_row_container.addStretch()
         icon_row = JDXi.UI.IconRegistry.create_generic_musical_icon_row()
-        # Transfer all items from icon_row to icon_row_container
-        while icon_row.count() > 0:
-            item = icon_row.takeAt(0)
-            if item.widget():
-                icon_row_container.addWidget(item.widget())
-            elif item.spacerItem():
-                icon_row_container.addItem(item.spacerItem())
+
+        transfer_layout_items(icon_row, icon_row_container)
         icon_row_container.addStretch()
         layout.addLayout(icon_row_container)
         layout.addSpacing(10)  # Add spacing after icon row, matching PresetWidget
-        
+
         self.instrument_title_label = DigitalTitle()
         layout.addWidget(self.instrument_title_label)
-        
+
         # --- Update_tone_name
         self.edit_tone_name_button = QPushButton("Edit tone name")
         self.edit_tone_name_button.clicked.connect(self.parent.edit_tone_name)
@@ -195,9 +191,7 @@ class InstrumentPresetWidget(QWidget):
         ]
         # Convert preset IDs to integers for SearchableFilterableComboBox (e.g., "001" -> 1)
         preset_values = [int(preset["id"]) for preset in preset_list]
-        preset_categories = sorted(
-            set(preset["category"] for preset in preset_list)
-        )
+        preset_categories = sorted(set(preset["category"] for preset in preset_list))
 
         # Category filter function for presets
         def preset_category_filter(preset_display: str, category: str) -> bool:
@@ -251,8 +245,9 @@ class InstrumentPresetWidget(QWidget):
         load_button = QPushButton("Load")
         load_button.clicked.connect(self._on_load_preset)
 
-        selection_layout = create_layout_with_widgets([self.instrument_selection_combo, load_button],
-                                                      vertical=True)
+        selection_layout = create_layout_with_widgets(
+            [self.instrument_selection_combo, load_button], vertical=True
+        )
 
         layout.addLayout(selection_layout)
 
@@ -268,13 +263,8 @@ class InstrumentPresetWidget(QWidget):
         icon_row_container = QHBoxLayout()
         icon_row_container.addStretch()
         icon_row = JDXi.UI.IconRegistry.create_generic_musical_icon_row()
-        # Transfer all items from icon_row to icon_row_container
-        while icon_row.count() > 0:
-            item = icon_row.takeAt(0)
-            if item.widget():
-                icon_row_container.addWidget(item.widget())
-            elif item.spacerItem():
-                icon_row_container.addItem(item.spacerItem())
+
+        transfer_layout_items(icon_row, icon_row_container)
         icon_row_container.addStretch()
         layout.addLayout(icon_row_container)
         layout.addSpacing(10)  # Add spacing after icon row, matching PresetWidget

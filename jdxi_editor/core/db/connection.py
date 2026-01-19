@@ -49,10 +49,12 @@ class DatabaseConnection:
         conn = self.get_connection()
         try:
             # --- Apply additional settings
-            pragmas = [Pragma.FOREIGN_KEYS_ON,
-                       Pragma.JOURNAL_MODE_WAL,
-                       Pragma.SYNCHRONOUS_NORMAL,
-                       Pragma.BUSY_TIMEOUT_30_SEC]
+            pragmas = [
+                Pragma.FOREIGN_KEYS_ON,
+                Pragma.JOURNAL_MODE_WAL,
+                Pragma.SYNCHRONOUS_NORMAL,
+                Pragma.BUSY_TIMEOUT_30_SEC,
+            ]
             for pragma in pragmas:
                 conn.execute(pragma)
             yield conn

@@ -57,6 +57,7 @@ from jdxi_editor.ui.widgets.editor.helper import (
     create_adsr_icon,
     create_group_with_form_layout,
     create_scrolled_area_with_layout,
+    transfer_layout_items,
 )
 from jdxi_editor.ui.widgets.wmt.envelope import WMTEnvelopeWidget
 
@@ -115,9 +116,12 @@ class DrumWMTSection(QWidget):
         scrolled_layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(scroll_area)
 
-        # Icons row (standardized across editor tabs)
+        # Icons row (standardized across editor tabs) - transfer items to avoid "already has a parent" errors
+        icon_row_container = QHBoxLayout()
         icon_hlayout = JDXi.UI.IconRegistry.create_adsr_icons_row()
-        scrolled_layout.addLayout(icon_hlayout)
+
+        transfer_layout_items(icon_hlayout, icon_row_container)
+        scrolled_layout.addLayout(icon_row_container)
 
         # WMT Group
         wmt_group = QGroupBox("WMT")

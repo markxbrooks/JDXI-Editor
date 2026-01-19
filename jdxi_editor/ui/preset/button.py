@@ -1,3 +1,7 @@
+"""
+JDXi Preset Button Data
+"""
+
 from dataclasses import dataclass
 from typing import Optional
 

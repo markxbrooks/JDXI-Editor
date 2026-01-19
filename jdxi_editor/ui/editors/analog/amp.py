@@ -73,7 +73,9 @@ class AnalogAmpSection(SectionBaseWidget):
             amp_controls_widget, controls_icon, AnalogDisplayName.CONTROLS
         )
         adsr_icon = create_adsr_icon()
-        self.analog_amp_tab_widget.addTab(amp_adsr_group, adsr_icon, AnalogDisplayName.ADSR)
+        self.analog_amp_tab_widget.addTab(
+            amp_adsr_group, adsr_icon, AnalogDisplayName.ADSR
+        )
         JDXi.UI.ThemeManager.apply_tabs_style(self.analog_amp_tab_widget, analog=True)
 
         self.main_rows_layout = self.create_main_rows_layout()
@@ -86,7 +88,9 @@ class AnalogAmpSection(SectionBaseWidget):
             AnalogParam.AMP_LEVEL, AnalogDisplayName.AMP_LEVEL, vertical=True
         )
         self.amp_level_keyfollow = self._create_parameter_slider(
-            AnalogParam.AMP_LEVEL_KEYFOLLOW, AnalogDisplayName.AMP_LEVEL_KEYFOLLOW, vertical=True
+            AnalogParam.AMP_LEVEL_KEYFOLLOW,
+            AnalogDisplayName.AMP_LEVEL_KEYFOLLOW,
+            vertical=True,
         )
         self.amp_level_velocity_sensitivity = self._create_parameter_slider(
             AnalogParam.AMP_LEVEL_VELOCITY_SENSITIVITY,

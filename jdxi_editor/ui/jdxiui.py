@@ -25,4 +25,3 @@ class JDXiUI:
     Constants: JDXiUIConstants = JDXiUIConstants
     Preset: JDXiUIPresetList = JDXiUIPresetList
     Program: JDXiUIProgramList = JDXiUIProgramList
-

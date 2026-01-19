@@ -65,7 +65,7 @@ from jdxi_editor.ui.editors.helpers.program import (
 )
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper
-from jdxi_editor.ui.preset.lists import JDXiPresetToneList
+from jdxi_editor.ui.preset.tone.lists import JDXiPresetToneList
 from jdxi_editor.ui.widgets.editor.helper import (
     create_group_with_layout,
     create_layout_with_widgets,
@@ -340,16 +340,16 @@ class PresetEditor(BasicEditor):
         log.message(f"preset_type: {preset_type}")
         if preset_type == "Digital Synth 1":
             self.midi_channel = MidiChannel.DIGITAL_SYNTH_1
-            self.preset_list = JDXiPresetToneList.DIGITAL_PROGRAM_CHANGE
+            self.preset_list = JDXiPresetToneList.Digital.PROGRAM_CHANGE
         elif preset_type == "Digital Synth 2":
             self.midi_channel = MidiChannel.DIGITAL_SYNTH_2
-            self.preset_list = JDXiPresetToneList.DIGITAL_PROGRAM_CHANGE
+            self.preset_list = JDXiPresetToneList.Digital.PROGRAM_CHANGE
         elif preset_type == "Drums":
             self.midi_channel = MidiChannel.DRUM_KIT
-            self.preset_list = JDXiPresetToneList.DRUM_PROGRAM_CHANGE
+            self.preset_list = JDXiPresetToneList.Drum.PROGRAM_CHANGE
         elif preset_type == "Analog Synth":
             self.midi_channel = MidiChannel.ANALOG_SYNTH
-            self.preset_list = JDXiPresetToneList.ANALOG_PROGRAM_CHANGE
+            self.preset_list = JDXiPresetToneList.Analog.PROGRAM_CHANGE
         self._populate_presets()
         self.update_category_combo_box_categories()
 

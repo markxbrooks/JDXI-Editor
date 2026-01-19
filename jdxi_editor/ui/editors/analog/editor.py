@@ -420,7 +420,7 @@ class AnalogSynthEditor(SynthEditor):
     def get_controls_as_dict(self):
         """
         Get the current values of self.controls as a dictionary.
-        Override to handle waveform buttons specially.
+        Override to handle waveform buttons and filter mode buttons specially.
 
         :returns: dict A dictionary of control parameter names and their values.
         """
@@ -437,6 +437,25 @@ class AnalogSynthEditor(SynthEditor):
             # --- If no button is checked, use default (SAW = 0)
             if AnalogParam.OSC_WAVEFORM.name not in controls_data:
                 controls_data[AnalogParam.OSC_WAVEFORM.name] = AnalogOscWave.SAW.value
+
+        # --- Handle FILTER_MODE_SWITCH specially - find which filter mode button is checked
+        if hasattr(self, "filter_section") and hasattr(
+            self.filter_section, "filter_mode_buttons"
+        ):
+            from jdxi_editor.midi.data.analog.filter import AnalogFilterType
+
+            # --- Check which filter mode button is currently checked
+            for filter_mode, btn in self.filter_section.filter_mode_buttons.items():
+                if btn.isChecked():
+                    controls_data[AnalogParam.FILTER_MODE_SWITCH.name] = (
+                        filter_mode.value
+                    )
+                    break
+            # --- If no button is checked, use default (BYPASS = 0)
+            if AnalogParam.FILTER_MODE_SWITCH.name not in controls_data:
+                controls_data[AnalogParam.FILTER_MODE_SWITCH.name] = (
+                    AnalogFilterType.BYPASS.value
+                )
 
         return controls_data
 

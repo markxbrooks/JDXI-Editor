@@ -1,6 +1,7 @@
 """
 JDXI Sysex values
 """
+
 from jdxi_editor.midi.device.constant import JDXiSysExIdentity
 from jdxi_editor.midi.message.octave import JDXiOctave
 from jdxi_editor.midi.message.sysex.length import JDXiSysExLength

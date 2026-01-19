@@ -1385,7 +1385,7 @@ class PatternSequenceEditor(SynthEditor):
         # Handle None or invalid input
         if midi_note is None:
             return "N/A"
-        
+
         # Note mapping (reverse of note_to_semitone)
         semitone_to_note = [
             "C",
@@ -1408,12 +1408,12 @@ class PatternSequenceEditor(SynthEditor):
                 # Out of range, return a fallback
                 return f"Drum({midi_note})"
             return self.drum_options[midi_note - 36]
-        
+
         # Calculate octave and note for non-drum notes
         # Ensure midi_note is within valid MIDI range (0-127)
         if midi_note < 0 or midi_note > 127:
             return f"Note({midi_note})"
-        
+
         octave = (midi_note // 12) - 1
         note = semitone_to_note[midi_note % 12]
         return f"{note}{octave}"

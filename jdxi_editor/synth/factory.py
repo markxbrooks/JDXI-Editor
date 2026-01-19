@@ -28,7 +28,7 @@ from jdxi_editor.synth.analog import AnalogSynthData
 from jdxi_editor.synth.digital import DigitalSynthData
 from jdxi_editor.synth.drum import DrumSynthData
 from jdxi_editor.synth.type import JDXiSynth
-from jdxi_editor.ui.preset.lists import JDXiPresetToneList
+from jdxi_editor.ui.preset.tone.lists import JDXiPresetToneList
 
 
 def create_synth_data(
@@ -50,8 +50,8 @@ def create_synth_data(
         return DrumSynthData(
             midi_requests=MidiRequests.DRUMS_BD1_RIM_BD2_CLAP_BD3,
             midi_channel=MidiChannel.DRUM_KIT,
-            presets=JDXiPresetToneList.DRUM_ENUMERATED,
-            preset_list=JDXiPresetToneList.DRUM_PROGRAM_CHANGE,
+            presets=JDXiPresetToneList.Drum.ENUMERATED,
+            preset_list=JDXiPresetToneList.Drum.PROGRAM_CHANGE,
             preset_type=synth_type,
             instrument_icon_folder="drum_kits",
             instrument_default_image="drums.png",
@@ -98,8 +98,8 @@ def create_synth_data(
         return DigitalSynthData(
             midi_requests=midi_requests,
             midi_channel=midi_channel,
-            presets=JDXiPresetToneList.DIGITAL_ENUMERATED,
-            preset_list=JDXiPresetToneList.DIGITAL_LIST,
+            presets=JDXiPresetToneList.Digital.ENUMERATED,
+            preset_list=JDXiPresetToneList.Digital.PROGRAM_CHANGE,
             preset_type=synth_type,
             instrument_icon_folder="digital_synths",
             instrument_default_image="jdxi_vector.png",
@@ -118,8 +118,8 @@ def create_synth_data(
         return AnalogSynthData(
             midi_requests=[MidiRequests.PROGRAM_COMMON, MidiRequests.ANALOG],
             midi_channel=MidiChannel.ANALOG_SYNTH,
-            presets=JDXiPresetToneList.ANALOG_ENUMERATED,
-            preset_list=JDXiPresetToneList.ANALOG_PROGRAM_CHANGE,
+            presets=JDXiPresetToneList.Analog.ENUMERATED,
+            preset_list=JDXiPresetToneList.Analog.PROGRAM_CHANGE,
             preset_type=synth_type,
             instrument_icon_folder="analog_synths",
             instrument_default_image="analog.png",

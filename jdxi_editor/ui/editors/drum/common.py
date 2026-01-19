@@ -17,7 +17,14 @@ Key Features:
 
 from typing import Callable
 
-from PySide6.QtWidgets import QFormLayout, QGroupBox, QScrollArea, QVBoxLayout, QWidget
+from PySide6.QtWidgets import (
+    QFormLayout,
+    QGroupBox,
+    QHBoxLayout,
+    QScrollArea,
+    QVBoxLayout,
+    QWidget,
+)
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import (
@@ -28,6 +35,7 @@ from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParam
 from jdxi_editor.midi.data.parameter.drum.name import DrumDisplayName
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.widgets.editor import IconType
+from jdxi_editor.ui.widgets.editor.helper import transfer_layout_items
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 
 
@@ -75,8 +83,12 @@ class DrumCommonSection(SectionBaseWidget):
         # Icons row (standardized across editor tabs) - Note: Drum sections use scroll areas,
         # so we add icon row to scrolled_layout instead of using get_layout()
 
+        # Transfer items to avoid "already has a parent" errors
+        icon_row_container = QHBoxLayout()
         icon_hlayout = JDXi.UI.IconRegistry.create_generic_musical_icon_row()
-        scrolled_layout.addLayout(icon_hlayout)
+
+        transfer_layout_items(icon_hlayout, icon_row_container)
+        scrolled_layout.addLayout(icon_row_container)
 
         # Common controls
         common_group = QGroupBox("Common")

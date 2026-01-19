@@ -38,6 +38,7 @@ from jdxi_editor.midi.program.program import JDXiProgram
 from jdxi_editor.ui.editors.helpers.program import calculate_midi_values
 from jdxi_editor.ui.widgets.delegates.midi_file import MidiFileDelegate
 from jdxi_editor.ui.widgets.delegates.play_button import PlayButtonDelegate
+from jdxi_editor.ui.widgets.editor.helper import transfer_layout_items
 
 
 class PlaylistEditorWidget(QWidget):
@@ -88,9 +89,12 @@ class PlaylistEditorWidget(QWidget):
         """Setup the playlist editor UI."""
         layout = QVBoxLayout(self)
 
-        # Add icon row at the top
+        # Add icon row at the top (transfer items to avoid "already has a parent" errors)
+        icon_row_container = QHBoxLayout()
         icon_row = JDXi.UI.IconRegistry.create_generic_musical_icon_row()
-        layout.addLayout(icon_row)
+
+        transfer_layout_items(icon_row, icon_row_container)
+        layout.addLayout(icon_row_container)
 
         # Playlist selection
         playlist_select_layout = QHBoxLayout()
@@ -922,7 +926,11 @@ class PlaylistEditorWidget(QWidget):
 
         :param row: Row index in the table
         """
-        if not self.playlist_programs_table or row < 0 or row >= self.playlist_programs_table.rowCount():
+        if (
+            not self.playlist_programs_table
+            or row < 0
+            or row >= self.playlist_programs_table.rowCount()
+        ):
             return
 
         # Get program from first column's user data

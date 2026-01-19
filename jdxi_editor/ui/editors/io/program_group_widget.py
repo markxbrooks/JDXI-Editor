@@ -8,15 +8,19 @@ Classes:
     ProgramGroupWidget(QGroupBox)
         A widget for selecting and loading programs.
 """
+
 from typing import TYPE_CHECKING, Optional
 
 from PySide6.QtWidgets import (
     QGroupBox,
+    QHBoxLayout,
     QPushButton,
     QTabWidget,
     QVBoxLayout,
     QWidget,
 )
+
+from jdxi_editor.ui.widgets.editor.helper import transfer_layout_items
 
 if TYPE_CHECKING:
     from jdxi_editor.ui.editors.io.program import ProgramEditor
@@ -69,9 +73,12 @@ class ProgramGroupWidget(QGroupBox):
         program_widget = QWidget()
         program_widget.setLayout(program_vlayout)
 
-        # Add icon row at the top of Programs tab
+        # Add icon row at the top of Programs tab (transfer items to avoid "already has a parent" errors)
+        icon_row_container = QHBoxLayout()
         icon_row = JDXi.UI.IconRegistry.create_generic_musical_icon_row()
-        program_vlayout.addLayout(icon_row)
+
+        transfer_layout_items(icon_row, icon_row_container)
+        program_vlayout.addLayout(icon_row_container)
 
         program_layout.addWidget(self.program_preset_tab_widget)
         programs_icon = JDXi.UI.IconRegistry.get_icon(
@@ -156,13 +163,15 @@ class ProgramGroupWidget(QGroupBox):
         log.parameter("lsb", lsb)
         log.parameter("pc", pc)
         log_midi_info(msb, lsb, pc)
-        self.parent.midi_helper.send_bank_select_and_program_change(self.channel, msb, lsb, pc)
+        self.parent.midi_helper.send_bank_select_and_program_change(
+            self.channel, msb, lsb, pc
+        )
         self.parent.data_request()
 
     def update_current_synths(self, program_details: JDXiProgram) -> None:
         """Update the current synth label.
         Delegates to parent's update_current_synths method.
-        
+
         :param program_details: JDXiProgram
         :return: None
         """

@@ -25,6 +25,7 @@ from PySide6.QtWidgets import (
 
 from decologr import Decologr as log
 from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.ui.widgets.editor.helper import transfer_layout_items
 
 
 class PlaylistWidget(QWidget):
@@ -59,9 +60,12 @@ class PlaylistWidget(QWidget):
         """Setup the playlist UI."""
         layout = QVBoxLayout(self)
 
-        # Add icon row at the top
+        # Add icon row at the top (transfer items to avoid "already has a parent" errors)
+        icon_row_container = QHBoxLayout()
         icon_row = JDXi.UI.IconRegistry.create_generic_musical_icon_row()
-        layout.addLayout(icon_row)
+
+        transfer_layout_items(icon_row, icon_row_container)
+        layout.addLayout(icon_row_container)
 
         # Button layout for create/delete actions
         button_layout = QHBoxLayout()

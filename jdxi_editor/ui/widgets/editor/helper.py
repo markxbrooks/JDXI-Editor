@@ -25,7 +25,10 @@ from jdxi_editor.ui.image.waveform import generate_waveform_icon
 
 
 def create_layout_with_widgets(
-    widget_list: list, vertical: bool = False, top_stretch: bool = True, bottom_stretch: bool = True
+    widget_list: list,
+    vertical: bool = False,
+    top_stretch: bool = True,
+    bottom_stretch: bool = True,
 ) -> QHBoxLayout:
     """create a row from a list of widgets (centered with stretches)"""
     layout = create_layout(vertical=vertical)
@@ -88,7 +91,9 @@ def create_group_with_layout(
 
 
 def create_layout_with_inner_layout_and_widgets(
-    inner_layout: QHBoxLayout | QVBoxLayout | None = None, widgets: list = None, vertical: bool = True
+    inner_layout: QHBoxLayout | QVBoxLayout | None = None,
+    widgets: list = None,
+    vertical: bool = True,
 ) -> QVBoxLayout:
     """create vbox layout with horizontal layout and widgets below it"""
     if inner_layout is None:
@@ -281,7 +286,27 @@ def create_scroll_area() -> QScrollArea:
 
 
 def create_scroll_container() -> tuple[QWidget, QVBoxLayout]:
-    """ create scroll container"""
+    """create scroll container"""
     container = QWidget()
     container_layout = QVBoxLayout(container)
     return container, container_layout
+
+
+def transfer_layout_items(source_layout: QLayout, target_layout: QLayout) -> None:
+    """
+    Transfer all items from a source layout to a target layout.
+
+    This is useful for avoiding "already has a parent" errors when reusing layouts.
+    All widgets, spacer items, and nested layouts are transferred to the target.
+
+    :param source_layout: The layout to take items from
+    :param target_layout: The layout to add items to
+    """
+    while source_layout.count() > 0:
+        item = source_layout.takeAt(0)
+        if item.widget():
+            target_layout.addWidget(item.widget())
+        elif item.spacerItem():
+            target_layout.addItem(item.spacerItem())
+        elif item.layout():
+            target_layout.addLayout(item.layout())

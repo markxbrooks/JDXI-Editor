@@ -62,10 +62,12 @@ class DatabaseSession:
         def set_sqlite_pragma(dbapi_conn, connection_record):
             """Set SQLite pragmas on connection."""
             cursor = dbapi_conn.cursor()
-            pragmas = [Pragma.FOREIGN_KEYS_ON,
-                       Pragma.JOURNAL_MODE_WAL,
-                       Pragma.SYNCHRONOUS_NORMAL,
-                       Pragma.BUSY_TIMEOUT_30_SEC]
+            pragmas = [
+                Pragma.FOREIGN_KEYS_ON,
+                Pragma.JOURNAL_MODE_WAL,
+                Pragma.SYNCHRONOUS_NORMAL,
+                Pragma.BUSY_TIMEOUT_30_SEC,
+            ]
             for pragma in pragmas:
                 cursor.execute(pragma)
             cursor.close()
@@ -82,7 +84,11 @@ class DatabaseSession:
         indexes = [
             Index("idx_playlist_items_playlist_id", PlaylistItem.playlist_id),
             Index("idx_playlist_items_program_id", PlaylistItem.program_id),
-            Index("idx_playlist_items_position", PlaylistItem.playlist_id, PlaylistItem.position),
+            Index(
+                "idx_playlist_items_position",
+                PlaylistItem.playlist_id,
+                PlaylistItem.position,
+            ),
         ]
 
         for index in indexes:
@@ -111,7 +117,7 @@ class DatabaseSession:
         # --- Helper function to check if session is in a transaction
         # --- Compatible with both SQLAlchemy 1.x and 2.x
         def check_in_transaction():
-            if hasattr(session, 'in_transaction'):
+            if hasattr(session, "in_transaction"):
                 return session.in_transaction()
             return session.is_active
 
@@ -128,7 +134,10 @@ class DatabaseSession:
                     # --- Handle SQLite commit returning NULL (connection in bad state)
                     # --- This happens when the underlying SQLite connection is corrupted or closed
                     error_msg = str(sys_err)
-                    if "returned NULL" in error_msg or "without setting an exception" in error_msg:
+                    if (
+                        "returned NULL" in error_msg
+                        or "without setting an exception" in error_msg
+                    ):
                         log.warning(
                             "Database connection in invalid state during commit. "
                             "This may indicate database corruption, threading issues, or connection pool problems."
@@ -163,7 +172,10 @@ class DatabaseSession:
                     except SystemError as rollback_sys_err:
                         # --- Handle SystemError during rollback too
                         error_msg = str(rollback_sys_err)
-                        if "returned NULL" in error_msg or "without setting an exception" in error_msg:
+                        if (
+                            "returned NULL" in error_msg
+                            or "without setting an exception" in error_msg
+                        ):
                             log.warning(
                                 "Database connection error during rollback - connection may be corrupted. "
                                 "The session will be closed."

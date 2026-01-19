@@ -76,31 +76,29 @@ class AnalogCommonSection(SectionBaseWidget):
             AnalogDisplayValues.OCTAVE_SHIFT,
         )
         self.legato_switch = self._create_parameter_switch(
-            AnalogParam.LEGATO_SWITCH, 
-            AnalogDisplayName.LEGATO_SWITCH, 
-            AnalogDisplayOptions.LEGATO_SWITCH
+            AnalogParam.LEGATO_SWITCH,
+            AnalogDisplayName.LEGATO_SWITCH,
+            AnalogDisplayOptions.LEGATO_SWITCH,
         )
         # --- Portamento Switch
         self.portamento_switch = self._create_parameter_switch(
-            AnalogParam.PORTAMENTO_SWITCH, 
-            AnalogDisplayName.PORTAMENTO_SWITCH, 
-            AnalogDisplayOptions.PORTAMENTO_SWITCH
+            AnalogParam.PORTAMENTO_SWITCH,
+            AnalogDisplayName.PORTAMENTO_SWITCH,
+            AnalogDisplayOptions.PORTAMENTO_SWITCH,
         )
 
         self.pitch_bend_up = self._create_parameter_slider(
-            AnalogParam.PITCH_BEND_UP, 
-            AnalogDisplayName.PITCH_BEND_UP, 
-            vertical=True
+            AnalogParam.PITCH_BEND_UP, AnalogDisplayName.PITCH_BEND_UP, vertical=True
         )
         self.pitch_bend_down = self._create_parameter_slider(
-            AnalogParam.PITCH_BEND_DOWN, 
-            AnalogDisplayName.PITCH_BEND_DOWN, 
-            vertical=True
+            AnalogParam.PITCH_BEND_DOWN,
+            AnalogDisplayName.PITCH_BEND_DOWN,
+            vertical=True,
         )
 
         # --- Portamento Time
         self.portamento_time = self._create_parameter_slider(
-            AnalogParam.PORTAMENTO_TIME, 
-            AnalogDisplayName.PORTAMENTO_TIME, 
-            vertical=True
+            AnalogParam.PORTAMENTO_TIME,
+            AnalogDisplayName.PORTAMENTO_TIME,
+            vertical=True,
         )

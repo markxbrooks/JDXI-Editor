@@ -68,7 +68,7 @@ class JDXiUIIconRegistry:
     TUNE = "mdi.tune"
     CLOCK = "mdi.clock-outline"
     MUSIC_NOTE = "mdi.music-note"
-    MUSIC_NOTE_MULTIPLE = "mdi.music-note-multiple"
+    MUSIC_NOTE_MULTIPLE = "fa5s.music"
     CODE_BRACES = "mdi.code-braces"
     CIRCLE_OUTLINE = "mdi.circle-outline"
     VOLUME_HIGH = "mdi.volume-high"

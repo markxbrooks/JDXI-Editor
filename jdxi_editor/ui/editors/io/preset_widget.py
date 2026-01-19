@@ -17,10 +17,11 @@ from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.log.midi_info import log_midi_info
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.ui.editors.helpers.preset import get_preset_parameter_value
-from jdxi_editor.ui.preset.lists import JDXiPresetToneList
+from jdxi_editor.ui.preset.tone.lists import JDXiPresetToneList
 from jdxi_editor.ui.widgets.combo_box.searchable_filterable import (
     SearchableFilterableComboBox,
 )
+from jdxi_editor.ui.widgets.editor.helper import transfer_layout_items
 
 
 class PresetWidget(QWidget):
@@ -46,13 +47,8 @@ class PresetWidget(QWidget):
         icon_row_container = QHBoxLayout()
         icon_row_container.addStretch()
         icon_row = JDXi.UI.IconRegistry.create_generic_musical_icon_row()
-        # Transfer all items from icon_row to icon_row_container
-        while icon_row.count() > 0:
-            item = icon_row.takeAt(0)
-            if item.widget():
-                icon_row_container.addWidget(item.widget())
-            elif item.spacerItem():
-                icon_row_container.addItem(item.spacerItem())
+
+        transfer_layout_items(icon_row, icon_row_container)
         icon_row_container.addStretch()
         preset_vlayout.addLayout(icon_row_container)
         preset_vlayout.addSpacing(10)  # Add spacing after icon row
@@ -123,7 +119,7 @@ class PresetWidget(QWidget):
 
         # Get MSB, LSB, PC values from the preset using get_preset_parameter_value
         # Use _actual_preset_list (list of dicts) instead of preset_list (enum)
-        preset_list_to_use = getattr(self, '_actual_preset_list', None)
+        preset_list_to_use = getattr(self, "_actual_preset_list", None)
         if preset_list_to_use is None:
             # Fallback: determine preset list from preset type
             preset_type = self.digital_preset_type_combo.currentText()
@@ -135,7 +131,7 @@ class PresetWidget(QWidget):
                 preset_list_to_use = JDXi.UI.Preset.Analog
             else:
                 preset_list_to_use = JDXi.UI.Preset.Digital
-        
+
         msb = get_preset_parameter_value("msb", program_number, preset_list_to_use)
         lsb = get_preset_parameter_value("lsb", program_number, preset_list_to_use)
         pc = get_preset_parameter_value("pc", program_number, preset_list_to_use)
@@ -156,19 +152,25 @@ class PresetWidget(QWidget):
         # Note: PC is 0-based in MIDI, so subtract 1
         # Use PresetWidget's midi_channel if set, otherwise fall back to parent's
         # Access ProgramEditor through ProgramGroupWidget.parent
-        program_editor = getattr(self.parent, 'parent', None) if self.parent else None
-        if not program_editor or not hasattr(program_editor, 'midi_helper'):
-            log.error("Cannot access midi_helper: ProgramEditor not found in parent chain")
+        program_editor = getattr(self.parent, "parent", None) if self.parent else None
+        if not program_editor or not hasattr(program_editor, "midi_helper"):
+            log.error(
+                "Cannot access midi_helper: ProgramEditor not found in parent chain"
+            )
             return
-        
-        midi_channel = self.midi_channel if self.midi_channel is not None else getattr(self.parent, 'midi_channel', None)
+
+        midi_channel = (
+            self.midi_channel
+            if self.midi_channel is not None
+            else getattr(self.parent, "midi_channel", None)
+        )
         program_editor.midi_helper.send_bank_select_and_program_change(
             midi_channel,  # MIDI channel
             msb,  # MSB is already correct
             lsb,  # LSB is already correct
             pc - 1,  # Convert 1-based PC to 0-based
         )
-        if hasattr(program_editor, 'data_request'):
+        if hasattr(program_editor, "data_request"):
             program_editor.data_request()
 
     def on_preset_type_changed(self, index: int) -> None:
@@ -184,8 +186,8 @@ class PresetWidget(QWidget):
         self.set_channel_and_preset_lists(preset_type)
         self._update_preset_combo_box()
         # Also notify ProgramEditor to keep it in sync (access through ProgramGroupWidget.parent)
-        program_editor = getattr(self.parent, 'parent', None) if self.parent else None
-        if program_editor and hasattr(program_editor, 'set_channel_and_preset_lists'):
+        program_editor = getattr(self.parent, "parent", None) if self.parent else None
+        if program_editor and hasattr(program_editor, "set_channel_and_preset_lists"):
             program_editor.set_channel_and_preset_lists(preset_type)
 
     def set_channel_and_preset_lists(self, preset_type: str) -> None:
@@ -197,16 +199,16 @@ class PresetWidget(QWidget):
         """
         if preset_type == "Digital Synth 1":
             self.midi_channel = MidiChannel.DIGITAL_SYNTH_1
-            self.preset_list = JDXiPresetToneList.DIGITAL_PROGRAM_CHANGE
+            self.preset_list = JDXiPresetToneList.Digital.PROGRAM_CHANGE
         elif preset_type == "Digital Synth 2":
             self.midi_channel = MidiChannel.DIGITAL_SYNTH_2
-            self.preset_list = JDXiPresetToneList.DIGITAL_PROGRAM_CHANGE
+            self.preset_list = JDXiPresetToneList.Digital.PROGRAM_CHANGE
         elif preset_type == "Drums":
             self.midi_channel = MidiChannel.DRUM_KIT
-            self.preset_list = JDXiPresetToneList.DRUM_PROGRAM_CHANGE
+            self.preset_list = JDXiPresetToneList.Drum.PROGRAM_CHANGE
         elif preset_type == "Analog Synth":
             self.midi_channel = MidiChannel.ANALOG_SYNTH
-            self.preset_list = JDXiPresetToneList.ANALOG_PROGRAM_CHANGE
+            self.preset_list = JDXiPresetToneList.Analog.PROGRAM_CHANGE
 
     def _update_preset_combo_box(self) -> None:
         """

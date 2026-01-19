@@ -35,9 +35,10 @@ Usage Example:
 
 from typing import Literal, Optional
 
-from PySide6.QtWidgets import QVBoxLayout, QWidget
+from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget
 
 from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.ui.widgets.editor.helper import transfer_layout_items
 from jdxi_editor.ui.widgets.editor.icon_type import IconType
 
 
@@ -111,6 +112,9 @@ class SectionBaseWidget(QWidget):
         if self._layout is None:
             return
 
+        # Create a container layout to avoid "already has a parent" errors
+        icon_row_container = QHBoxLayout()
+
         if self.icon_type == IconType.ADSR:
             icon_hlayout = JDXi.UI.IconRegistry.create_adsr_icons_row()
         elif self.icon_type == IconType.OSCILLATOR:
@@ -120,7 +124,11 @@ class SectionBaseWidget(QWidget):
         else:
             return  # IconType.NONE or unknown
 
-        self._layout.addLayout(icon_hlayout)
+        # Transfer all items from icon_hlayout to icon_row_container
+
+        transfer_layout_items(icon_hlayout, icon_row_container)
+
+        self._layout.addLayout(icon_row_container)
 
     def setup_ui(self) -> None:
         """

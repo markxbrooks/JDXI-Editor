@@ -60,6 +60,7 @@ from typing import Dict, Union
 from PySide6.QtGui import QShowEvent
 from PySide6.QtWidgets import (
     QFormLayout,
+    QHBoxLayout,
     QVBoxLayout,
     QWidget,
 )
@@ -87,6 +88,7 @@ from jdxi_editor.ui.preset.helper import JDXiPresetHelper
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 from jdxi_editor.ui.widgets.editor.helper import (
     create_layout_with_inner_layout_and_widgets,
+    transfer_layout_items,
 )
 from jdxi_editor.ui.widgets.editor.simple_editor_helper import SimpleEditorHelper
 from picomidi.constant import Midi
@@ -493,14 +495,19 @@ class EffectsCommonEditor(BasicEditor):
     def _create_effect1_section(self):
         """Create Effect 1 section"""
         container = QWidget()
-        # Icons row (standardized across editor tabs)
+        # Icons row (standardized across editor tabs) - transfer items to avoid "already has a parent" errors
+        icon_row_container = QHBoxLayout()
         icon_hlayout = JDXi.UI.IconRegistry.create_adsr_icons_row()
+
+        transfer_layout_items(icon_hlayout, icon_row_container)
 
         widget = QWidget()
         form_layout = QFormLayout()
         widget.setLayout(form_layout)
 
-        container_layout = create_layout_with_inner_layout_and_widgets(icon_hlayout, widgets=[widget])
+        container_layout = create_layout_with_inner_layout_and_widgets(
+            icon_row_container, widgets=[widget]
+        )
         container.setLayout(container_layout)
 
         # Create address combo box for EFX1 preset_type
@@ -579,9 +586,12 @@ class EffectsCommonEditor(BasicEditor):
         container_layout = QVBoxLayout()
         container.setLayout(container_layout)
 
-        # Icons row (standardized across editor tabs)
+        # Icons row (standardized across editor tabs) - transfer items to avoid "already has a parent" errors
+        icon_row_container = QHBoxLayout()
         icon_hlayout = JDXi.UI.IconRegistry.create_adsr_icons_row()
-        container_layout.addLayout(icon_hlayout)
+
+        transfer_layout_items(icon_hlayout, icon_row_container)
+        container_layout.addLayout(icon_row_container)
 
         widget = QWidget()
         layout = QFormLayout()
@@ -645,9 +655,12 @@ class EffectsCommonEditor(BasicEditor):
         container_layout = QVBoxLayout()
         container.setLayout(container_layout)
 
-        # Icons row (standardized across editor tabs)
+        # Icons row (standardized across editor tabs) - transfer items to avoid "already has a parent" errors
+        icon_row_container = QHBoxLayout()
         icon_hlayout = JDXi.UI.IconRegistry.create_adsr_icons_row()
-        container_layout.addLayout(icon_hlayout)
+
+        transfer_layout_items(icon_hlayout, icon_row_container)
+        container_layout.addLayout(icon_row_container)
 
         widget = QWidget()
         layout = QFormLayout()
@@ -687,9 +700,12 @@ class EffectsCommonEditor(BasicEditor):
         container_layout = QVBoxLayout()
         container.setLayout(container_layout)
 
-        # Icons row (standardized across editor tabs)
+        # Icons row (standardized across editor tabs) - transfer items to avoid "already has a parent" errors
+        icon_row_container = QHBoxLayout()
         icon_hlayout = JDXi.UI.IconRegistry.create_adsr_icons_row()
-        container_layout.addLayout(icon_hlayout)
+
+        transfer_layout_items(icon_hlayout, icon_row_container)
+        container_layout.addLayout(icon_row_container)
 
         widget = QWidget()
         layout = QFormLayout()

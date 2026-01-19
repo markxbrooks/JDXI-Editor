@@ -49,6 +49,7 @@ from jdxi_editor.ui.editors.address.factory import create_vocal_fx_address
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
+from jdxi_editor.ui.widgets.editor.helper import transfer_layout_items
 from jdxi_editor.ui.widgets.editor.simple_editor_helper import SimpleEditorHelper
 from picomidi.sysex.parameter.address import AddressParameter
 
@@ -123,9 +124,12 @@ class VocalFXEditor(BasicEditor):
         layout = QVBoxLayout()
         common_section.setLayout(layout)
 
-        # Icons row (standardized across editor tabs)
+        # Icons row (standardized across editor tabs) - transfer items to avoid "already has a parent" errors
+        icon_row_container = QHBoxLayout()
         icon_hlayout = JDXi.UI.IconRegistry.create_generic_musical_icon_row()
-        layout.addLayout(icon_hlayout)
+
+        transfer_layout_items(icon_hlayout, icon_row_container)
+        layout.addLayout(icon_row_container)
 
         self.program_tempo = self._create_parameter_slider(
             ProgramCommonParam.PROGRAM_TEMPO, "Tempo"
@@ -178,9 +182,12 @@ class VocalFXEditor(BasicEditor):
         layout = QVBoxLayout()
         vocal_effect_section.setLayout(layout)
 
-        # Icons row (standardized across editor tabs)
+        # Icons row (standardized across editor tabs) - transfer items to avoid "already has a parent" errors
+        icon_row_container = QHBoxLayout()
         icon_hlayout = JDXi.UI.IconRegistry.create_adsr_icons_row()
-        layout.addLayout(icon_hlayout)
+
+        transfer_layout_items(icon_hlayout, icon_row_container)
+        layout.addLayout(icon_row_container)
 
         # Add vocoder switch
         switch_row = QHBoxLayout()
@@ -259,9 +266,12 @@ class VocalFXEditor(BasicEditor):
         layout = QVBoxLayout()
         mixer_section.setLayout(layout)
 
-        # Icons row (standardized across editor tabs)
+        # Icons row (standardized across editor tabs) - transfer items to avoid "already has a parent" errors
+        icon_row_container = QHBoxLayout()
         icon_hlayout = JDXi.UI.IconRegistry.create_adsr_icons_row()
-        layout.addLayout(icon_hlayout)
+
+        transfer_layout_items(icon_hlayout, icon_row_container)
+        layout.addLayout(icon_row_container)
 
         # Level and Pan
         self.level = self._create_parameter_slider(
@@ -309,9 +319,12 @@ class VocalFXEditor(BasicEditor):
         layout = QVBoxLayout()
         auto_pitch_section.setLayout(layout)
 
-        # Icons row (standardized across editor tabs)
+        # Icons row (standardized across editor tabs) - transfer items to avoid "already has a parent" errors
+        icon_row_container = QHBoxLayout()
         icon_hlayout = JDXi.UI.IconRegistry.create_adsr_icons_row()
-        layout.addLayout(icon_hlayout)
+
+        transfer_layout_items(icon_hlayout, icon_row_container)
+        layout.addLayout(icon_row_container)
 
         self.pitch_switch = self._create_parameter_switch(
             VocalFXParam.AUTO_PITCH_SWITCH,

@@ -456,9 +456,52 @@ class JDXiWindow(QMainWindow):
                 f"Current preset name: {self.preset_manager.current_preset_name}"
             )
             # Update preset number
-            self.preset_manager.current_preset_number = get_preset_list_number_by_name(
-                self.preset_manager.current_preset_name, synth_data.preset_list
-            )
+            # synth_data.preset_list might be a dict (PROGRAM_CHANGE) or a list
+            # Use presets (ENUMERATED list) to find the index instead
+            if hasattr(synth_data, "presets") and isinstance(synth_data.presets, list):
+                # Search through the ENUMERATED list to find the preset name
+                preset_name = self.preset_manager.current_preset_name
+                try:
+                    # Try to find the preset in the list
+                    preset_index = next(
+                        (
+                            i
+                            for i, p in enumerate(synth_data.presets)
+                            if preset_name in p or p in preset_name
+                        ),
+                        None,
+                    )
+                    if preset_index is not None:
+                        # Convert 0-based index to 1-based preset number
+                        self.preset_manager.current_preset_number = preset_index + 1
+                    else:
+                        # Fallback: try get_preset_list_number_by_name if preset_list is a list
+                        if isinstance(synth_data.preset_list, list):
+                            self.preset_manager.current_preset_number = (
+                                get_preset_list_number_by_name(
+                                    preset_name, synth_data.preset_list
+                                )
+                            )
+                        else:
+                            # Default to 1 if we can't find it
+                            self.preset_manager.current_preset_number = 1
+                except Exception as ex:
+                    log.warning(f"Error finding preset number: {ex}, defaulting to 1")
+                    self.preset_manager.current_preset_number = 1
+            elif isinstance(synth_data.preset_list, list):
+                # preset_list is already a list, use the existing function
+                self.preset_manager.current_preset_number = (
+                    get_preset_list_number_by_name(
+                        self.preset_manager.current_preset_name, synth_data.preset_list
+                    )
+                )
+            else:
+                # preset_list is a dict or something else, default to 1
+                log.warning(
+                    f"preset_list is not a list (type: {type(synth_data.preset_list)}), "
+                    f"defaulting preset number to 1"
+                )
+                self.preset_manager.current_preset_number = 1
             log.message(
                 f"Current preset number: {self.preset_manager.current_preset_number}"
             )

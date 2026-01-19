@@ -9,6 +9,7 @@ from jdxi_editor.ui.jdxiui import JDXiUI
 
 class JDXi:
     """Composition of main JDXI components as a single container."""
+
     Synth: JDXiSynth = JDXiSynth
     UI: JDXiUI = JDXiUI
     Midi: JDXiMidi = JDXiMidi

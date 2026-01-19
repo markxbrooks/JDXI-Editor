@@ -224,7 +224,11 @@ def get_program_parameter_value(parameter: str, program_id: str) -> Optional[str
     :return:
     """
     program = next(
-        (p for p in JDXiUIProgramList.list_rom_and_user_programs() if p.id == program_id),
+        (
+            p
+            for p in JDXiUIProgramList.list_rom_and_user_programs()
+            if p.id == program_id
+        ),
         None,
     )
     return program.get(parameter) if program else None

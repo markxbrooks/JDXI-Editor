@@ -100,10 +100,9 @@ class SynthBase(QWidget):
         # Check if we need a program address based on parameter class or editor type
         needs_program_address = False
         is_program_editor = (
-            hasattr(self, "__class__")
-            and "ProgramEditor" in self.__class__.__name__
+            hasattr(self, "__class__") and "ProgramEditor" in self.__class__.__name__
         )
-        
+
         if parameter_cls is not None:
             from jdxi_editor.midi.data.parameter.program.common import (
                 ProgramCommonParam,
@@ -266,7 +265,9 @@ class SynthBase(QWidget):
         if address is None:
             address = self._get_address_from_hierarchy(parameter_cls=parameter_cls)
         if address is None:
-            log.error("Cannot send tone name: address is not available in self, parent, or parent.parent")
+            log.error(
+                "Cannot send tone name: address is not available in self, parent, or parent.parent"
+            )
             return
 
         # --- Ensure the tone name is exactly 12 characters (pad with spaces if shorter)

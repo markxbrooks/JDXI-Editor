@@ -76,7 +76,7 @@ from jdxi_editor.ui.editors.io.program_group_widget import ProgramGroupWidget
 from jdxi_editor.ui.editors.io.user_programs_widget import UserProgramsWidget
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper
-from jdxi_editor.ui.preset.lists import JDXiPresetToneList
+from jdxi_editor.ui.preset.tone.lists import JDXiPresetToneList
 from jdxi_editor.ui.programs.programs import JDXiUIProgramList
 from jdxi_editor.ui.widgets.combo_box.searchable_filterable import (
     SearchableFilterableComboBox,
@@ -319,7 +319,7 @@ class ProgramEditor(BasicEditor):
         program_preset_hlayout.addWidget(self.program_group_widget)
 
         program_preset_hlayout.addStretch()
-        
+
         # Create PresetWidget and add it to the tab widget
         # Note: The preset widget is already created inside ProgramGroupWidget
         # We need to add it to the program_preset_tab_widget
@@ -347,15 +347,17 @@ class ProgramEditor(BasicEditor):
         self.populate_programs()
 
         # Create mixer widget
-        self.mixer_widget = ProgramMixerWidget(midi_helper=self.midi_helper, parent=self)
+        self.mixer_widget = ProgramMixerWidget(
+            midi_helper=self.midi_helper, parent=self
+        )
         mixer_group = self.mixer_widget.create_mixer_widget()
-        
+
         # Merge mixer widget's controls into ProgramEditor's controls dict
         self.controls.update(self.mixer_widget.get_controls())
-        
+
         # Wire mixer widget to program group widget
         self.program_group_widget.mixer_widget = self.mixer_widget
-        
+
         self.right_hlayout = QHBoxLayout()
         self.right_hlayout.addWidget(mixer_group)
         self.title_right_vlayout.addLayout(self.right_hlayout)
@@ -384,13 +386,15 @@ class ProgramEditor(BasicEditor):
         Note: This delegates to PresetWidget's on_preset_type_changed, but also
         updates ProgramEditor's internal state.
         """
-        preset_type = self.program_group_widget.preset.digital_preset_type_combo.currentText()
+        preset_type = (
+            self.program_group_widget.preset.digital_preset_type_combo.currentText()
+        )
         log.message(f"preset_type: {preset_type}")
         # Update ProgramEditor's channel and preset lists
         self.set_channel_and_preset_lists(preset_type)
         # PresetWidget handles its own combo box update via its on_preset_type_changed
         # But we also need to update ProgramEditor's combo box if it exists
-        if hasattr(self, '_update_preset_combo_box'):
+        if hasattr(self, "_update_preset_combo_box"):
             self._update_preset_combo_box()
 
     def set_channel_and_preset_lists(self, preset_type: str) -> None:
@@ -402,16 +406,24 @@ class ProgramEditor(BasicEditor):
         """
         if preset_type == "Digital Synth 1":
             self.midi_channel = MidiChannel.DIGITAL_SYNTH_1
-            self.program_group_widget.preset.preset_list = JDXiPresetToneList.DIGITAL_PROGRAM_CHANGE
+            self.program_group_widget.preset.preset_list = (
+                JDXiPresetToneList.Digital.PROGRAM_CHANGE
+            )
         elif preset_type == "Digital Synth 2":
             self.midi_channel = MidiChannel.DIGITAL_SYNTH_2
-            self.program_group_widget.preset.preset_list = JDXiPresetToneList.DIGITAL_PROGRAM_CHANGE
+            self.program_group_widget.preset.preset_list = (
+                JDXiPresetToneList.Digital.PROGRAM_CHANGE
+            )
         elif preset_type == "Drums":
             self.midi_channel = MidiChannel.DRUM_KIT
-            self.program_group_widget.preset.preset_list = JDXiPresetToneList.DRUM_PROGRAM_CHANGE
+            self.program_group_widget.preset.preset_list = (
+                JDXiPresetToneList.Drum.PROGRAM_CHANGE
+            )
         elif preset_type == "Analog Synth":
             self.midi_channel = MidiChannel.ANALOG_SYNTH
-            self.program_group_widget.preset.preset_list = JDXiPresetToneList.ANALOG_PROGRAM_CHANGE
+            self.program_group_widget.preset.preset_list = (
+                JDXiPresetToneList.Analog.PROGRAM_CHANGE
+            )
 
     def _update_preset_combo_box(self) -> None:
         """
@@ -421,7 +433,7 @@ class ProgramEditor(BasicEditor):
         but kept here for backward compatibility if needed.
         """
         # Delegate to PresetWidget's method
-        if hasattr(self.program_group_widget.preset, '_update_preset_combo_box'):
+        if hasattr(self.program_group_widget.preset, "_update_preset_combo_box"):
             self.program_group_widget.preset._update_preset_combo_box()
 
     def _populate_programs(self, search_text: str = "") -> None:
@@ -473,7 +485,6 @@ class ProgramEditor(BasicEditor):
             "midi_channel",
         ]:
             setattr(self, attr, getattr(self.synth_data, attr))
-
 
     def update_tone_name_for_synth(self, tone_name: str, synth_type: str) -> None:
         """
@@ -594,30 +605,38 @@ class ProgramEditor(BasicEditor):
 
         if program_vlayout:
             # --- Remove old combo box from layout
-            program_vlayout.removeWidget(self.program_group_widget.program_number_combo_box)
+            program_vlayout.removeWidget(
+                self.program_group_widget.program_number_combo_box
+            )
             self.program_group_widget.program_number_combo_box.deleteLater()
 
             # ---Create new combo box with updated data
-            self.program_group_widget.program_number_combo_box = SearchableFilterableComboBox(
-                label="Program",
-                options=program_options,
-                values=program_values,
-                categories=sorted(program_genres),
-                banks=sorted(program_banks),
-                bank_filter_func=program_bank_filter,
-                category_filter_func=program_genre_filter,
-                show_label=True,
-                show_search=True,
-                show_category=True,
-                show_bank=True,
-                search_placeholder="Search programs...",
-                category_label="Genre:",
-                bank_label="Bank:",
+            self.program_group_widget.program_number_combo_box = (
+                SearchableFilterableComboBox(
+                    label="Program",
+                    options=program_options,
+                    values=program_values,
+                    categories=sorted(program_genres),
+                    banks=sorted(program_banks),
+                    bank_filter_func=program_bank_filter,
+                    category_filter_func=program_genre_filter,
+                    show_label=True,
+                    show_search=True,
+                    show_category=True,
+                    show_bank=True,
+                    search_placeholder="Search programs...",
+                    category_label="Genre:",
+                    bank_label="Bank:",
+                )
             )
 
             # --- Insert after edit_program_name_button
-            index = program_vlayout.indexOf(self.program_group_widget.edit_program_name_button)
-            program_vlayout.insertWidget(index + 1, self.program_group_widget.program_number_combo_box)
+            index = program_vlayout.indexOf(
+                self.program_group_widget.edit_program_name_button
+            )
+            program_vlayout.insertWidget(
+                index + 1, self.program_group_widget.program_number_combo_box
+            )
 
     def populate_programs(self, search_text: str = ""):
         """Populate the program list with available presets.
@@ -646,7 +665,10 @@ class ProgramEditor(BasicEditor):
         # --- Create sets for quick lookup
         existing_program_ids_in_filtered = {program.id for program in filtered_list}
         # --- Also check what's already in the combo box to avoid duplicates
-        if not self.program_group_widget or not self.program_group_widget.program_number_combo_box:
+        if (
+            not self.program_group_widget
+            or not self.program_group_widget.program_number_combo_box
+        ):
             return
         existing_combo_items = {
             self.program_group_widget.program_number_combo_box.itemText(i)[
@@ -683,7 +705,10 @@ class ProgramEditor(BasicEditor):
                     if search_text and search_text.lower() not in program_name.lower():
                         continue
                     index = len(self.programs)
-                    if self.program_group_widget and self.program_group_widget.program_number_combo_box:
+                    if (
+                        self.program_group_widget
+                        and self.program_group_widget.program_number_combo_box
+                    ):
                         self.program_group_widget.program_number_combo_box.addItem(
                             f"{program_id} - {program_name}", index
                         )
@@ -716,11 +741,17 @@ class ProgramEditor(BasicEditor):
 
         # Also update the program combo box to reflect the selected program
         # Find the program in the combo box and select it
-        if self.program_group_widget and hasattr(self.program_group_widget, "program_number_combo_box"):
+        if self.program_group_widget and hasattr(
+            self.program_group_widget, "program_number_combo_box"
+        ):
             for i in range(self.program_group_widget.program_number_combo_box.count()):
-                item_text = self.program_group_widget.program_number_combo_box.itemText(i)
+                item_text = self.program_group_widget.program_number_combo_box.itemText(
+                    i
+                )
                 if item_text.startswith(program.id):
-                    self.program_group_widget.program_number_combo_box.setCurrentIndex(i)
+                    self.program_group_widget.program_number_combo_box.setCurrentIndex(
+                        i
+                    )
                     break
 
     def _on_playlist_changed(self) -> None:
@@ -732,8 +763,13 @@ class ProgramEditor(BasicEditor):
             self.playlist_editor_widget.populate_playlist_combo()
             # Clear the programs table if the deleted playlist was selected
             if self.playlist_editor_widget.playlist_editor_combo:
-                current_playlist_id = self.playlist_editor_widget.playlist_editor_combo.currentData()
-                if current_playlist_id is None and self.playlist_editor_widget.playlist_programs_table:
+                current_playlist_id = (
+                    self.playlist_editor_widget.playlist_editor_combo.currentData()
+                )
+                if (
+                    current_playlist_id is None
+                    and self.playlist_editor_widget.playlist_programs_table
+                ):
                     self.playlist_editor_widget.playlist_programs_table.setRowCount(0)
 
     def _on_playlist_program_loaded(self, program: JDXiProgram) -> None:
@@ -770,9 +806,11 @@ class ProgramEditor(BasicEditor):
             if not next_parent:
                 break
             parent_instrument = next_parent
-        return parent_instrument if hasattr(parent_instrument, "get_existing_editor") else None
-
-
+        return (
+            parent_instrument
+            if hasattr(parent_instrument, "get_existing_editor")
+            else None
+        )
 
     def on_bank_changed(self, _: int) -> None:
         """Handle bank selection change - no longer needed, handled by SearchableFilterableComboBox."""
@@ -799,16 +837,22 @@ class ProgramEditor(BasicEditor):
         if not self.mixer_widget:
             log.warning("Mixer widget not available, cannot update synth labels")
             return
-        
+
         try:
             if self.mixer_widget.digital_synth_1_current_label:
-                self.mixer_widget.digital_synth_1_current_label.setText(program_details.digital_1)
+                self.mixer_widget.digital_synth_1_current_label.setText(
+                    program_details.digital_1
+                )
             if self.mixer_widget.digital_synth_2_current_label:
-                self.mixer_widget.digital_synth_2_current_label.setText(program_details.digital_2)
+                self.mixer_widget.digital_synth_2_current_label.setText(
+                    program_details.digital_2
+                )
             if self.mixer_widget.drum_kit_current_label:
                 self.mixer_widget.drum_kit_current_label.setText(program_details.drums)
             if self.mixer_widget.analog_synth_current_label:
-                self.mixer_widget.analog_synth_current_label.setText(program_details.analog)
+                self.mixer_widget.analog_synth_current_label.setText(
+                    program_details.analog
+                )
         except (AttributeError, KeyError) as e:
             log.message(f"Error updating synth labels: {e}")
             log.message(f"Program details: {program_details}")

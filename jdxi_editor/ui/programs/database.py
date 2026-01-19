@@ -353,7 +353,9 @@ class ProgramDatabase:
         :param position: Position in playlist (optional, will append if not provided)
         :return: True if successful, False otherwise
         """
-        return self.playlist_orm.add_program_to_playlist(playlist_id, program_id, position)
+        return self.playlist_orm.add_program_to_playlist(
+            playlist_id, program_id, position
+        )
 
     def remove_program_from_playlist(self, playlist_id: int, program_id: str) -> bool:
         """

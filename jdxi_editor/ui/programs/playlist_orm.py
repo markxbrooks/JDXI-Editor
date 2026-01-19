@@ -27,7 +27,9 @@ class PlaylistORM:
         self.db_session.create_tables()
         self.db_session.create_indexes()
 
-    def create_playlist(self, name: str, description: Optional[str] = None) -> Optional[int]:
+    def create_playlist(
+        self, name: str, description: Optional[str] = None
+    ) -> Optional[int]:
         """
         Create a new playlist.
 
@@ -85,7 +87,10 @@ class PlaylistORM:
             return None
 
     def update_playlist(
-        self, playlist_id: int, name: Optional[str] = None, description: Optional[str] = None
+        self,
+        playlist_id: int,
+        name: Optional[str] = None,
+        description: Optional[str] = None,
     ) -> bool:
         """
         Update a playlist.
@@ -170,7 +175,11 @@ class PlaylistORM:
                 # Check if program already exists at this position
                 existing = (
                     session.query(PlaylistItem)
-                    .filter_by(playlist_id=playlist_id, program_id=program_id, position=position)
+                    .filter_by(
+                        playlist_id=playlist_id,
+                        program_id=program_id,
+                        position=position,
+                    )
                     .first()
                 )
                 if existing:
@@ -214,7 +223,9 @@ class PlaylistORM:
                 )
                 if item:
                     session.delete(item)
-                    log.info(f"✅ Removed program {program_id} from playlist {playlist_id}")
+                    log.info(
+                        f"✅ Removed program {program_id} from playlist {playlist_id}"
+                    )
                     return True
                 return False
         except Exception as e:

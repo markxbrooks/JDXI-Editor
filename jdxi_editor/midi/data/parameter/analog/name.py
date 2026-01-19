@@ -1,15 +1,15 @@
 class AnalogDisplayName:
     """Analog UI Display Names"""
-    
+
     # Widgets
     CONTROLS = "Controls"
     ADSR = "ADSR"
-    
-    # Amp Parameters 
+
+    # Amp Parameters
     AMP_LEVEL = "Level"
     AMP_LEVEL_KEYFOLLOW = "Keyfollow"
     AMP_LEVEL_VELOCITY_SENSITIVITY = "Velocity"
-    
+
     # --- Common Controls
     OCTAVE_SHIFT = "Octave shift"
     LEGATO_SWITCH = "Legato"

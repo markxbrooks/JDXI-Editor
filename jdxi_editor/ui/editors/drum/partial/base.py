@@ -41,12 +41,16 @@ Example:
 """
 
 from PySide6.QtWidgets import (
+    QHBoxLayout,
     QVBoxLayout,
     QWidget,
 )
 
 from jdxi_editor.core.jdxi import JDXi
-from jdxi_editor.ui.widgets.editor.helper import create_scrolled_area_with_layout
+from jdxi_editor.ui.widgets.editor.helper import (
+    create_scrolled_area_with_layout,
+    transfer_layout_items,
+)
 
 
 class DrumBaseSection(QWidget):
@@ -68,7 +72,10 @@ class DrumBaseSection(QWidget):
         scroll_area, scrolled_layout = create_scrolled_area_with_layout()
         layout.addWidget(scroll_area)
 
-        # --- Icons row (standardized across editor tabs)
+        # --- Icons row (standardized across editor tabs) - transfer items to avoid "already has a parent" errors
+        icon_row_container = QHBoxLayout()
         icon_hlayout = JDXi.UI.IconRegistry.create_adsr_icons_row()
-        scrolled_layout.addLayout(icon_hlayout)
+
+        transfer_layout_items(icon_hlayout, icon_row_container)
+        scrolled_layout.addLayout(icon_row_container)
         return layout, scrolled_layout
