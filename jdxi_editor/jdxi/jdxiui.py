@@ -21,3 +21,4 @@ class JDXiUI:
     Dimensions: JDXiDimensions = JDXiDimensions
     Parameters: UiParameters = UiParameters
     Constants: JDXiUIConstants = JDXiUIConstants
+    Preset: JDXiPresetList = JDXiPresetList
