@@ -441,7 +441,7 @@ class JDXiWindow(QMainWindow):
     def _update_display(self):
         """Update the display with the current preset information"""
         if not self.current_synth_type:
-            logging.warning("No Synth type, defaulting to DIGITAL_1.")
+            log.warning("No Synth type, defaulting to DIGITAL_1.")
             self.current_synth_type = JDXiSynth.DIGITAL_SYNTH_1
         try:
             synth_data = create_synth_data(self.current_synth_type)
