@@ -86,6 +86,91 @@ class SynthBase(QWidget):
         """
         self._midi_helper = helper
 
+    def _get_address_from_hierarchy(
+        self, parameter_cls: AddressParameter = None
+    ) -> Optional[RolandSysExAddress]:
+        """
+        Get address from self, parent, or parent.parent if available.
+        If no address is found and we're dealing with a ProgramEditor or ProgramCommonParam,
+        create a program address.
+
+        :param parameter_cls: Optional[AddressParameter] Parameter class hint (e.g., ProgramCommonParam)
+        :return: Optional[RolandSysExAddress] The address if found, None otherwise
+        """
+        # Check if we need a program address based on parameter class or editor type
+        needs_program_address = False
+        is_program_editor = (
+            hasattr(self, "__class__")
+            and "ProgramEditor" in self.__class__.__name__
+        )
+        
+        if parameter_cls is not None:
+            from jdxi_editor.midi.data.parameter.program.common import ProgramCommonParam
+
+            if parameter_cls == ProgramCommonParam or (
+                hasattr(parameter_cls, "__name__")
+                and "ProgramCommonParam" in parameter_cls.__name__
+            ):
+                needs_program_address = True
+
+        # If we're in a ProgramEditor or using ProgramCommonParam, we need a program address
+        needs_program_address = needs_program_address or is_program_editor
+
+        # Try self first
+        if hasattr(self, "address") and self.address is not None:
+            if isinstance(self.address, RolandSysExAddress) and hasattr(
+                self.address, "add_offset"
+            ):
+                return self.address
+
+        # If self is ProgramEditor and has no address, create one
+        if is_program_editor:
+            from jdxi_editor.midi.data.address.program import ProgramCommonAddress
+
+            return ProgramCommonAddress()
+
+        # Try parent
+        if hasattr(self, "parent") and self.parent is not None:
+            if hasattr(self.parent, "address") and self.parent.address is not None:
+                if isinstance(self.parent.address, RolandSysExAddress) and hasattr(
+                    self.parent.address, "add_offset"
+                ):
+                    return self.parent.address
+            # If parent is ProgramEditor and has no address, create one
+            if (
+                hasattr(self.parent, "__class__")
+                and "ProgramEditor" in self.parent.__class__.__name__
+            ):
+                from jdxi_editor.midi.data.address.program import ProgramCommonAddress
+
+                return ProgramCommonAddress()
+
+        # Try parent.parent
+        if (
+            hasattr(self, "parent")
+            and self.parent is not None
+            and hasattr(self.parent, "parent")
+            and self.parent.parent is not None
+        ):
+            if (
+                hasattr(self.parent.parent, "address")
+                and self.parent.parent.address is not None
+            ):
+                if isinstance(
+                    self.parent.parent.address, RolandSysExAddress
+                ) and hasattr(self.parent.parent.address, "add_offset"):
+                    return self.parent.parent.address
+            # If parent.parent is ProgramEditor and has no address, create one
+            if (
+                hasattr(self.parent.parent, "__class__")
+                and "ProgramEditor" in self.parent.parent.__class__.__name__
+            ):
+                from jdxi_editor.midi.data.address.program import ProgramCommonAddress
+
+                return ProgramCommonAddress()
+
+        return None
+
     def send_raw_message(self, message: bytes) -> bool:
         """
         Send a raw MIDI message using the MIDI helper.
@@ -104,16 +189,33 @@ class SynthBase(QWidget):
 
         :return: None
         """
-        tone_name = self.tone_names[self.preset_type]
+        if not hasattr(self, "synth_data") or self.synth_data is None:
+            log.error("Cannot edit tone name: synth_data is not initialized")
+            return
+        if self.preset_type is None:
+            log.error("Cannot edit tone name: preset_type is not set")
+            return
+        # Try to get address from hierarchy (self, parent, or parent.parent)
+        # We'll determine parameter_cls later, so pass None for now
+        address = self._get_address_from_hierarchy(parameter_cls=None)
+        if address is None:
+            log.error(
+                "Cannot edit tone name: address is not initialized in self, parent, or parent.parent"
+            )
+            return
+        tone_name = self.tone_names.get(self.preset_type, "")
         tone_name_dialog = PatchNameEditor(current_name=tone_name)
         if hasattr(self, "partial_parameters"):
             parameter_cls = self.synth_data.partial_parameters
         else:
             parameter_cls = self.synth_data.common_parameters
+        if parameter_cls is None:
+            log.error("Cannot edit tone name: parameter class is not available")
+            return
         if tone_name_dialog.exec():  # If the user clicks Save
             sysex_string = tone_name_dialog.get_sysex_string()
             log.message(f"SysEx string: {sysex_string}")
-            self.send_tone_name(parameter_cls, sysex_string)
+            self.send_tone_name(parameter_cls, sysex_string, address=address)
             self.data_request()
 
     def data_request(self, channel=None, program=None):
@@ -144,22 +246,46 @@ class SynthBase(QWidget):
             self.data_request()
             self.blockSignals(False)
 
-    def send_tone_name(self, parameter_cls: AddressParameter, tone_name: str) -> None:
+    def send_tone_name(
+        self,
+        parameter_cls: AddressParameter,
+        tone_name: str,
+        address: RolandSysExAddress = None,
+    ) -> None:
         """
         send_tone_name
 
+        :param parameter_cls: AddressParameter Parameter class containing TONE_NAME parameters
         :param tone_name: str Name of the Tone/preset
-        :param parameter_cls: AddressParameter
+        :param address: Optional[RolandSysExAddress] Address to use, or None to get from hierarchy
         Send the characters of the tone name to SysEx parameters.
         """
+        # --- Get address from hierarchy if not provided
+        if address is None:
+            address = self._get_address_from_hierarchy(parameter_cls=parameter_cls)
+        if address is None:
+            log.error("Cannot send tone name: address is not available in self, parent, or parent.parent")
+            return
+
         # --- Ensure the tone name is exactly 12 characters (pad with spaces if shorter)
         tone_name = tone_name.ljust(12)[:12]
 
         # --- Iterate over characters and send them to corresponding parameters
         for i, char in enumerate(tone_name):
             ascii_value = ord(char)
-            param = getattr(parameter_cls, f"TONE_NAME_{i + 1}")
-            self.send_midi_parameter(param, ascii_value)
+            try:
+                param = getattr(parameter_cls, f"TONE_NAME_{i + 1}")
+                if param is None:
+                    log.warning(
+                        f"TONE_NAME_{i + 1} not found in {parameter_cls.__name__}, skipping"
+                    )
+                    continue
+                self.send_midi_parameter(param, ascii_value, address=address)
+            except AttributeError:
+                log.warning(
+                    f"TONE_NAME_{i + 1} not found in {parameter_cls.__name__}, skipping"
+                )
+                continue
 
     def send_midi_parameter(
         self, param: AddressParameter, value: int, address: RolandSysExAddress = None
@@ -173,7 +299,30 @@ class SynthBase(QWidget):
         :return: bool True on success, False otherwise
         """
         if not address:
-            address = self.address
+            # Try to get address from hierarchy (self, parent, or parent.parent)
+            address = self._get_address_from_hierarchy(parameter_cls=None)
+        if address is None:
+            log.error(
+                f"Cannot send MIDI parameter {param.name if param else 'Unknown'}: "
+                f"address is not available in self, parent, or parent.parent"
+            )
+            return False
+        # Validate that address is a proper RolandSysExAddress instance with required methods
+        if not isinstance(address, RolandSysExAddress):
+            log.error(
+                f"Cannot send MIDI parameter {param.name if param else 'Unknown'}: "
+                f"address is not a RolandSysExAddress instance (got {type(address)})"
+            )
+            return False
+        if not hasattr(address, "add_offset"):
+            log.error(
+                f"Cannot send MIDI parameter {param.name if param else 'Unknown'}: "
+                f"address does not have add_offset method"
+            )
+            return False
+        if param is None:
+            log.error("Cannot send MIDI parameter: parameter is None")
+            return False
         try:
             # --- Ensure value is an integer (handle enums, strings, floats)
             def safe_int(val):
