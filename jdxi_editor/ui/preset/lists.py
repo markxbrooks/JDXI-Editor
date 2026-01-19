@@ -1,7 +1,20 @@
 from typing import Tuple
 
-
+class JDXiPresetToneListAnalog:
+    pass
+    
+class JDXiPresetToneListDigital:
+    pass
+    
+class JDXiPresetToneListDrum:
+    pass
+    
 class JDXiPresetToneList:
+    """JDXi Preset 'Tone' lists for each of the 3 parts; Analog, Digital and Drums"""
+    Analog: JDXiPresetToneListAnalog = JDXiPresetToneListAnalog
+    Digital: JDXiPresetToneListDigital = JDXiPresetToneListDigital
+    Drum: JDXiPresetToneListDrum = JDXiPresetToneListDrum
+    
     ANALOG_ENUMERATED = [
         "001: Toxic Bass 1",
         "002: Sub Bass 1",
