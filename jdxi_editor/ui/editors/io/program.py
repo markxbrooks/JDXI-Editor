@@ -155,7 +155,7 @@ class ProgramEditor(BasicEditor):
         self.preset_type = None
         self.programs = {}  # Maps program names to numbers
         self._actual_preset_list = (
-            DIGITAL_PRESET_LIST  # Default preset list for combo box
+            JDXi.UI.Preset.Digital  # Default preset list for combo box
         )
         # Initialize widget references before setup_ui() to prevent AttributeError
         # if callbacks are triggered during widget creation
