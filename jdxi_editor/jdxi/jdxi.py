@@ -8,7 +8,7 @@ from jdxi_editor.jdxi.synth.type import JDXiSynth
 
 
 class JDXi:
-    """Composition of main JDXI UI components as a single container."""
+    """Composition of main JDXI components as a single container."""
     Synth: JDXiSynth = JDXiSynth
     UI: JDXiUI = JDXiUI
     Midi: JDXiMidi = JDXiMidi
