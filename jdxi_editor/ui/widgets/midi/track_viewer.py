@@ -503,7 +503,7 @@ class MidiTrackViewer(QWidget):
             self.change_channel(tr, sp.value())
             ))
             """
-            # button_hlayout.addWidget(apply_button)
+            button_hlayout.addWidget(apply_button)
 
             mute_icon = JDXi.UI.IconRegistry.get_icon(
                 JDXi.UI.IconRegistry.MUTE, color=JDXi.UI.Style.FOREGROUND
@@ -553,7 +553,7 @@ class MidiTrackViewer(QWidget):
         apply_all_btn.setToolTip("Apply all Track Name and MIDI Channel changes")
         apply_all_btn.clicked.connect(self.apply_all_track_changes)
         apply_all_layout.addWidget(apply_all_btn)
-        self.channel_controls_vlayout.addLayout(apply_all_layout)
+        # self.channel_controls_vlayout.addLayout(apply_all_layout)
 
         self.channel_controls_vlayout.addStretch()
 
