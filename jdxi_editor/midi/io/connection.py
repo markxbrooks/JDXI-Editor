@@ -94,7 +94,7 @@ class MIDIConnection:
         try:
             if self._midi_out:
                 self._midi_out.send_message(message)
-                # Blink indicator if main window exists
+                # --- Blink indicator if main window exists
                 if self._main_window and hasattr(
                     self._main_window, "midi_out_indicator"
                 ):
