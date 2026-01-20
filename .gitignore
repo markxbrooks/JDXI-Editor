@@ -1,6 +1,6 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
-appinage
+appimagetool-extracted
 tests/sheep.mid
 appimagetool*
 spleeter-env
