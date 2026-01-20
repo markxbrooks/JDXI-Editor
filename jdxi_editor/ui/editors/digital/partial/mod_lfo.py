@@ -132,8 +132,7 @@ class DigitalModLFOSection(SectionBaseWidget):
         )
         depths_widget = self._create_depths_widget()
         mod_lfo_controls_tab_widget.addTab(depths_widget, depths_icon, "Depths")
-        
-        
+        return mod_lfo_controls_tab_widget
     
     def _create_rate_widget(self):
         """Rate and Rate Ctrl Controls Tab"""
