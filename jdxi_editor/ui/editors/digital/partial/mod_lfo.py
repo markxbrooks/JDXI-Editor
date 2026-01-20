@@ -26,14 +26,14 @@ from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 
 
-def create_icon_from_qta(icon_name: str):
+def create_icon_from_qta(icon_name: str) -> QIcon:
     """create qta icon"""
-    icon = qta.icon(icon_name, color=JDXi.UI.Style.WHITE, icon_size=0.7)
-    return icon
+    return qta.icon(icon_name, color=JDXi.UI.Style.WHITE, icon_size=0.7)
+    
             
-def create_button_with_icon(display_name: str, icon: QIcon):
+def create_button_with_icon(icon_name: str, icon: QIcon):
     """create button with icon"""
-    btn = QPushButton(display_name)
+    btn = QPushButton(icon_name)
     btn.setCheckable(True)
     btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
     # Add icon
@@ -43,6 +43,8 @@ def create_button_with_icon(display_name: str, icon: QIcon):
         JDXi.UI.Dimensions.WAVEFORM_ICON.WIDTH,
         JDXi.UI.Dimensions.WAVEFORM_ICON.HEIGHT,
     )
+    btn.setCheckable(True)
+    btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
     return btn
 
 class DigitalModLFOSection(SectionBaseWidget):
@@ -108,18 +110,8 @@ class DigitalModLFOSection(SectionBaseWidget):
 
         for mod_lfo_shape in mod_lfo_shapes:
             icon_name = shape_icon_map.get(mod_lfo_shape, "mdi.waveform")
-            icon = qta.icon(icon_name, color=JDXi.UI.Style.WHITE, icon_size=0.7)
-            
-            btn = QPushButton(mod_lfo_shape.display_name)
-            btn.setCheckable(True)
-            btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
-            # Add icon
-            btn.setIcon(icon)
-            btn.setIconSize(QSize(20, 20))
-            btn.setFixedSize(
-                JDXi.UI.Dimensions.WAVEFORM_ICON.WIDTH,
-                JDXi.UI.Dimensions.WAVEFORM_ICON.HEIGHT,
-            )
+            icon = create_icon_from_qta(icon_name)
+            btn = create_button_with_icon(icon_name=mod_lfo_shape.display_name, icon=icon)
             btn.clicked.connect(
                 lambda checked, shape=mod_lfo_shape: self._on_mod_lfo_shape_selected(
                     shape
