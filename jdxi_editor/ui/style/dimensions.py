@@ -120,6 +120,13 @@ class WaveformIconDimensions(Dimensions):
 
     WIDTH = 60
     HEIGHT = 30
+    
+
+class LfoIconDimensions(Dimensions):
+    """Lfo Icon Dimensions"""
+
+    WIDTH = 20
+    HEIGHT = 20
 
 
 class SplashScreenDimensions(Dimensions):
