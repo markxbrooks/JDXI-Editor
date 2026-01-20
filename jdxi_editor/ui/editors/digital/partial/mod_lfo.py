@@ -123,8 +123,6 @@ class DigitalModLFOSection(SectionBaseWidget):
         # --- Rate and Rate Ctrl Controls Tab ---
         rate_widget = QWidget()
 
-        
-
         # --- Rate and Rate Ctrl controls
         rate_layout_widgets = []
         rate_layout_widgets.append(
@@ -151,41 +149,42 @@ class DigitalModLFOSection(SectionBaseWidget):
         mod_lfo_controls_tab_widget.addTab(rate_widget, rate_icon, "Rate and Rate Ctrl")
 
         # --- Depths Tab ---
-        depths_widget = QWidget()
-        depths_layout = QHBoxLayout()
-        depths_layout.addStretch()
-        depths_widget.setLayout(depths_layout)
-        depths_widget.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MINIMUM_HEIGHT)
-
-        depths_layout.addWidget(
+        # --- First create a list of widgets
+        depths_layout_widgets = []
+        depths_layout_widgets.append(
             self._create_parameter_slider(
                 DigitalPartialParam.MOD_LFO_PITCH_DEPTH,
                 DigitalDisplayName.MOD_LFO_PITCH_DEPTH,
                 vertical=True,
             )
         )
-        depths_layout.addWidget(
+        depths_layout_widgets.append(
             self._create_parameter_slider(
                 DigitalPartialParam.MOD_LFO_FILTER_DEPTH,
                 DigitalDisplayName.MOD_LFO_FILTER_DEPTH,
                 vertical=True,
             )
         )
-        depths_layout.addWidget(
+        depths_layout_widgets.append(
             self._create_parameter_slider(
                 DigitalPartialParam.MOD_LFO_AMP_DEPTH,
                 DigitalDisplayName.MOD_LFO_AMP_DEPTH,
                 vertical=True,
             )
         )
-        depths_layout.addWidget(
+        depths_layout_widgets.append(
             self._create_parameter_slider(
                 DigitalPartialParam.MOD_LFO_PAN,
                 DigitalDisplayName.MOD_LFO_PAN,
                 vertical=True,
             )
         )
-        depths_layout.addStretch()
+        # --- Second add the list to a new hlayout 
+        depths_layout = create_layout_with_widgets(depths_layout_widgets)
+        # --- Third create the widget to put these on
+        depths_widget = QWidget()
+        depths_widget.setLayout(depths_layout)
+        depths_widget.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MINIMUM_HEIGHT)
 
         depths_icon = JDXi.UI.IconRegistry.get_icon(
             JDXi.UI.IconRegistry.WAVEFORM, color=JDXi.UI.Style.GREY
