@@ -18,16 +18,16 @@ from jdxi_editor.midi.data.parameter.digital.option import DigitalDisplayOptions
 from jdxi_editor.midi.data.parameter.digital.partial import (
     DigitalPartialParam,
 )
+from jdxi_editor.ui.editors.digital.partial.base_lfo import BaseLFOSection
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (
     create_button_with_icon,
     create_icon_from_qta,
     create_layout_with_widgets,
 )
-from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 
 
-class DigitalModLFOSection(SectionBaseWidget):
+class DigitalModLFOSection(BaseLFOSection):
     """MOD LFO section for the digital partial editor."""
 
     def __init__(
@@ -37,6 +37,8 @@ class DigitalModLFOSection(SectionBaseWidget):
         on_parameter_changed: Callable,
         controls: dict,
         send_midi_parameter: Callable = None,
+        icon_type=IconType.ADSR,
+        analog=False
     ):
         """
         Initialize the DigitalModLFOSection
@@ -54,19 +56,8 @@ class DigitalModLFOSection(SectionBaseWidget):
         self.send_midi_parameter = send_midi_parameter
         self.mod_lfo_shape_buttons = {}  # Dictionary to store Mod LFO shape buttons
 
-        super().__init__(icon_type=IconType.ADSR, analog=False)
-        self._init_ui()
-
-    def _init_ui(self):
-        """init the ui"""
-        mod_lfo_layout = self.get_layout()
-        shape_row_layout = self._create_shape_row_layout()
-        switch_row_layout = self._create_switch_row_layout()
-        mod_lfo_controls_tab_widget = self._create_mod_lfo_controls_tab_widget()
-        mod_lfo_layout.addLayout(shape_row_layout)
-        mod_lfo_layout.addLayout(switch_row_layout)
-        mod_lfo_layout.addWidget(mod_lfo_controls_tab_widget)
-        mod_lfo_layout.addStretch()
+        super().__init__(icon_type=icon_type, analog=analog)
+        self.setup_ui()
 
     def _create_shape_row_layout(self):
         """Shape and sync controls"""
@@ -129,7 +120,7 @@ class DigitalModLFOSection(SectionBaseWidget):
         )
         return switch_row_layout
 
-    def _create_mod_lfo_controls_tab_widget(self):
+    def _create_tab_widget(self):
         """Create tab widget for Rate/Rate Ctrl and Depths"""
         mod_lfo_controls_tab_widget = QTabWidget()
 

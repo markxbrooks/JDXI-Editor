@@ -19,16 +19,16 @@ from jdxi_editor.midi.data.parameter.digital.option import DigitalDisplayOptions
 from jdxi_editor.midi.data.parameter.digital.partial import (
     DigitalPartialParam,
 )
+from jdxi_editor.ui.editors.digital.partial.base_lfo import BaseLFOSection
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (
     create_button_with_icon,
     create_icon_from_qta,
     create_layout_with_widgets,
 )
-from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 
 
-class DigitalLFOSection(SectionBaseWidget):
+class DigitalLFOSection(BaseLFOSection):
     """LFO section for the digital partial editor."""
 
     def __init__(
@@ -38,6 +38,7 @@ class DigitalLFOSection(SectionBaseWidget):
         create_parameter_combo_box: Callable,
         controls: dict,
         send_midi_parameter: Callable = None,
+        icon_type=IconType.ADSR, analog=False
     ):
         """
         Initialize the DigitalLFOSection
@@ -55,22 +56,9 @@ class DigitalLFOSection(SectionBaseWidget):
         self.send_midi_parameter = send_midi_parameter
         self.lfo_shape_buttons = {}  # Dictionary to store LFO shape buttons
 
-        super().__init__(icon_type=IconType.ADSR, analog=False)
+        super().__init__(icon_type=icon_type,
+                         analog=analog)
         self.setup_ui()
-
-    def setup_ui(self):
-        """Set up the UI for the LFO section."""
-        layout = self.get_layout()
-
-        shape_row_layout = self._create_shape_row_layout()
-
-        switch_row_layout = self._create_switch_row_layout()
-        layout.addLayout(shape_row_layout)
-        layout.addLayout(switch_row_layout)
-
-        lfo_controls_tab_widget = self._create_lfo_controls_tab_widget()
-        layout.addWidget(lfo_controls_tab_widget)
-        layout.addStretch()
 
     def _create_switch_row_layout(self) -> QHBoxLayout:
         """Create Switch row"""
@@ -95,7 +83,7 @@ class DigitalLFOSection(SectionBaseWidget):
         )
         return switch_row_layout
 
-    def _create_lfo_controls_tab_widget(self) -> QTabWidget:
+    def _create_tab_widget(self) -> QTabWidget:
         """Create tab widget for Rate/Fade and Depths"""
         lfo_controls_tab_widget = QTabWidget()
 
