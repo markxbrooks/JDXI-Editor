@@ -24,6 +24,28 @@ from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
 
 
+def create_icon_from_qta(icon_name: str) -> QIcon:
+    """create qta icon"""
+    return qta.icon(icon_name, color=JDXi.UI.Style.WHITE, icon_size=0.7)
+    
+            
+def create_button_with_icon(icon_name: str, icon: QIcon):
+    """create button with icon"""
+    btn = QPushButton(icon_name)
+    btn.setCheckable(True)
+    btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
+    # Add icon
+    btn.setIcon(icon)
+    btn.setIconSize(QSize(20, 20))
+    btn.setFixedSize(
+        JDXi.UI.Dimensions.WAVEFORM_ICON.WIDTH,
+        JDXi.UI.Dimensions.WAVEFORM_ICON.HEIGHT,
+    )
+    btn.setCheckable(True)
+    btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
+    return btn
+    
+
 def create_layout_with_widgets(
     widget_list: list,
     vertical: bool = False,
