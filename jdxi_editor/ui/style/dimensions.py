@@ -331,6 +331,7 @@ class JDXiUIDimensions(Dimensions):
     ICON: IconDimensions = IconDimensions
     COMBO: ComboBoxDimensions = ComboBoxDimensions
     WAVEFORM_ICON: WaveformIconDimensions = WaveformIconDimensions
+    LFOIcon: LfoIconDimensions = LfoIconDimensions
 
     # --- Splash screen
     SPLASH: SplashScreenDimensions = SplashScreenDimensions
