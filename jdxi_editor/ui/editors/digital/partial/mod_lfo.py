@@ -91,7 +91,7 @@ class DigitalModLFOSection(SectionBaseWidget):
         for mod_lfo_shape in mod_lfo_shapes:
             icon_name = shape_icon_map.get(mod_lfo_shape, "mdi.waveform")
             icon = create_icon_from_qta(icon_name)
-            btn = create_button_with_icon(icon_name=mod_lfo_shape.display_name, icon=icon, dimensions=JDXi.UI.Dimensions.LFOIcon)
+            btn = create_button_with_icon(icon_name=mod_lfo_shape.display_name, icon=icon, button_dimensions=JDXi.UI.Dimensions.WAVEFORM_ICON, icon_dimensions=JDXi.UI.Dimensions.LFOIcon)
             btn.clicked.connect(
                 lambda checked, shape=mod_lfo_shape: self._on_mod_lfo_shape_selected(
                     shape
