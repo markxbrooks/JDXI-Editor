@@ -29,17 +29,17 @@ def create_icon_from_qta(icon_name: str) -> QIcon:
     return qta.icon(icon_name, color=JDXi.UI.Style.WHITE, icon_size=0.7)
     
             
-def create_button_with_icon(icon_name: str, icon: QIcon):
+def create_button_with_icon(icon_name: str, icon: QIcon, button_dimensions: "Dimensions", icon_dimensions="Dimensions"):
     """create button with icon"""
     btn = QPushButton(icon_name)
     btn.setCheckable(True)
     btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
     # Add icon
     btn.setIcon(icon)
-    btn.setIconSize(QSize(20, 20))
+    btn.setIconSize(QSize(dimensions.WIDTH, dimensions.HEIGHT))
     btn.setFixedSize(
-        JDXi.UI.Dimensions.WAVEFORM_ICON.WIDTH,
-        JDXi.UI.Dimensions.WAVEFORM_ICON.HEIGHT,
+        button_dimensions.WIDTH,
+        button_dimensions.HEIGHT,
     )
     btn.setCheckable(True)
     btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
