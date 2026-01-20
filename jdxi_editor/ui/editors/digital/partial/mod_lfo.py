@@ -61,13 +61,7 @@ class DigitalModLFOSection(SectionBaseWidget):
         mod_lfo_layout = self.get_layout()
 
         # Shape and sync controls
-        shape_row_layout = QHBoxLayout()
-        shape_row_layout.addStretch()
-
-        # Add label
-        shape_label = QLabel("Shape")
-        shape_row_layout.addWidget(shape_label)
-
+        
         # Create buttons for each Mod LFO shape
         mod_lfo_shapes = [
             DigitalLFOShape.TRIANGLE,
@@ -87,7 +81,10 @@ class DigitalModLFOSection(SectionBaseWidget):
             DigitalLFOShape.SAMPLE_HOLD: "mdi.waveform",
             DigitalLFOShape.RANDOM: "mdi.wave",
         }
-
+        shape_row_layout_widgets = []
+        # Add label
+        shape_label = QLabel("Shape")
+        shape_row_layout_widgets.append(shape_label)
         for mod_lfo_shape in mod_lfo_shapes:
             icon_name = shape_icon_map.get(mod_lfo_shape, "mdi.waveform")
             icon = create_icon_from_qta(icon_name)
@@ -98,29 +95,28 @@ class DigitalModLFOSection(SectionBaseWidget):
                 )
             )
             self.mod_lfo_shape_buttons[mod_lfo_shape] = btn
-            shape_row_layout.addWidget(btn)
+            shape_row_layout_widgets.append(btn)
+            
+        shape_row_layout = create_layout_with_widgets(shape_row_layout_widgets])
 
+        # --- Switch Row
         self.mod_lfo_sync = self._create_parameter_combo_box(
             DigitalPartialParam.MOD_LFO_TEMPO_SYNC_SWITCH,
             DigitalDisplayName.MOD_LFO_TEMPO_SYNC_SWITCH,
             options=DigitalDisplayOptions.MOD_LFO_TEMPO_SYNC_SWITCH,
         )
-        switch_row_layout = QHBoxLayout()
-        switch_row_layout.addStretch()
-        switch_row_layout.addWidget(self.mod_lfo_sync)
 
         self.mod_lfo_note = self._create_parameter_combo_box(
             DigitalPartialParam.MOD_LFO_TEMPO_SYNC_NOTE,
             DigitalDisplayName.MOD_LFO_TEMPO_SYNC_NOTE,
             options=DigitalDisplayOptions.MOD_LFO_TEMPO_SYNC_NOTE,
         )
-        switch_row_layout.addWidget(self.mod_lfo_note)
-        shape_row_layout.addStretch()
-        switch_row_layout.addStretch()
+ 
+        switch_row_layout = create_layout_with_widgets([self.mod_lfo_sync, self.mod_lfo_note])
         mod_lfo_layout.addLayout(shape_row_layout)
         mod_lfo_layout.addLayout(switch_row_layout)
 
-        # Create tab widget for Rate/Rate Ctrl and Depths
+        # --- Create tab widget for Rate/Rate Ctrl and Depths
         mod_lfo_controls_tab_widget = QTabWidget()
         mod_lfo_layout.addWidget(mod_lfo_controls_tab_widget)
 
@@ -131,7 +127,7 @@ class DigitalModLFOSection(SectionBaseWidget):
         rate_widget.setLayout(rate_layout)
         rate_widget.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MINIMUM_HEIGHT)
 
-        # Rate and Rate Ctrl controls
+        # --- Rate and Rate Ctrl controls
         rate_layout.addWidget(
             self._create_parameter_slider(
                 DigitalPartialParam.MOD_LFO_RATE,
