@@ -3,7 +3,7 @@ Helpers to create HBox and VBoxes
 """
 
 import qtawesome as qta
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QSize
 from PySide6.QtGui import QIcon, QPixmap
 from PySide6.QtWidgets import (
     QFormLayout,
@@ -22,6 +22,7 @@ from PySide6.QtWidgets import (
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
+from jdxi_editor.ui.style.dimensions import Dimensions
 
 
 def create_icon_from_qta(icon_name: str) -> QIcon:
@@ -29,14 +30,14 @@ def create_icon_from_qta(icon_name: str) -> QIcon:
     return qta.icon(icon_name, color=JDXi.UI.Style.WHITE, icon_size=0.7)
     
             
-def create_button_with_icon(icon_name: str, icon: QIcon, button_dimensions: "Dimensions", icon_dimensions="Dimensions"):
+def create_button_with_icon(icon_name: str, icon: QIcon, button_dimensions: Dimensions, icon_dimensions: Dimensions):
     """create button with icon"""
     btn = QPushButton(icon_name)
     btn.setCheckable(True)
     btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
     # Add icon
     btn.setIcon(icon)
-    btn.setIconSize(QSize(dimensions.WIDTH, dimensions.HEIGHT))
+    btn.setIconSize(QSize(icon_dimensions.WIDTH, icon_dimensions.HEIGHT))
     btn.setFixedSize(
         button_dimensions.WIDTH,
         button_dimensions.HEIGHT,

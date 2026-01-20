@@ -104,7 +104,7 @@ class DigitalModLFOSection(SectionBaseWidget):
             self.mod_lfo_shape_buttons[mod_lfo_shape] = btn
             shape_row_layout_widgets.append(btn)
             
-        shape_row_layout = create_layout_with_widgets(shape_row_layout_widgets])
+        shape_row_layout = create_layout_with_widgets(shape_row_layout_widgets)
         return shape_row_layout
         
     def _create_switch_row_layout(self):
