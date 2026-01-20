@@ -122,27 +122,28 @@ class DigitalModLFOSection(SectionBaseWidget):
 
         # --- Rate and Rate Ctrl Controls Tab ---
         rate_widget = QWidget()
-        rate_layout = QHBoxLayout()
-        rate_layout.addStretch()
-        rate_widget.setLayout(rate_layout)
-        rate_widget.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MINIMUM_HEIGHT)
+
+        
 
         # --- Rate and Rate Ctrl controls
-        rate_layout.addWidget(
+        rate_layout_widgets = []
+        rate_layout_widgets.append(
             self._create_parameter_slider(
                 DigitalPartialParam.MOD_LFO_RATE,
                 DigitalDisplayName.MOD_LFO_RATE,
                 vertical=True,
             )
         )
-        rate_layout.addWidget(
+        rate_layout_widgets.append(
             self._create_parameter_slider(
                 DigitalPartialParam.MOD_LFO_RATE_CTRL,
                 DigitalDisplayName.MOD_LFO_RATE_CTRL,
                 vertical=True,
             )
         )
-        rate_layout.addStretch()
+        rate_layout = create_layout_with_widgets(rate_layout_widgets)
+        rate_widget.setLayout(rate_layout)
+        rate_widget.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MINIMUM_HEIGHT)
 
         rate_icon = JDXi.UI.IconRegistry.get_icon(
             JDXi.UI.IconRegistry.CLOCK, color=JDXi.UI.Style.GREY
