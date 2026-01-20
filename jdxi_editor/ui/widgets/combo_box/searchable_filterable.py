@@ -263,10 +263,11 @@ class SearchableFilterableComboBox(QWidget):
 
         # --- Log for debugging
         if filtered_options:
-            log.debug(
+            pass  # logging here is way too noisy
+            """log.debug(
                 f"Populated combo box with {len(filtered_options)} items "
                 f"(filtered from {len(self._full_options)} total)"
-            )
+            )"""
 
     @Slot(int)
     def _on_combo_index_changed(self, filtered_index: int) -> None:

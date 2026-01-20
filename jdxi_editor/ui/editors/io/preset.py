@@ -120,7 +120,7 @@ class PresetEditor(BasicEditor):
         }
         self.presets = {}  # Maps program names to numbers
         self.setup_ui()
-        self.data_request()
+        # Note: data_request() is called in showEvent() when editor is displayed
 
     def setup_ui(self):
         """set up UI elements"""

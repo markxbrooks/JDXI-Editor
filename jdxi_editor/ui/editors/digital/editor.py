@@ -113,9 +113,7 @@ class DigitalSynthEditor(SynthEditor):
             self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
         self.refresh_shortcut = QShortcut(QKeySequence.StandardKey.Refresh, self)
         self.refresh_shortcut.activated.connect(self.data_request)
-        # Request data from the synth for initialization of state and show the editor
-        self.data_request()
-        # self.show()
+        # Note: data_request() is called in showEvent() when editor is displayed
         self.adsr_parameters = [
             DigitalPartialParam.AMP_ENV_ATTACK_TIME,
             DigitalPartialParam.AMP_ENV_DECAY_TIME,
@@ -557,7 +555,9 @@ class DigitalSynthEditor(SynthEditor):
             failures.append(param.name)
             return
         if spinbox:
+            spinbox.blockSignals(True)
             spinbox.setValue(control_value)
+            spinbox.blockSignals(False)
             synth_data = create_synth_data(JDXiSynth.DIGITAL_SYNTH_1, partial_no)
             self.address.lmb = synth_data.lmb
             log_slider_parameters(self.address, param, midi_value, control_value)
@@ -602,7 +602,9 @@ class DigitalSynthEditor(SynthEditor):
         }
         control = self.pitch_env_map.get(param)
         if control:
+            control.blockSignals(True)
             control.setValue(new_value)
+            control.blockSignals(False)
             successes.append(param.name)
         else:
             failures.append(param.name)
@@ -644,7 +646,9 @@ class DigitalSynthEditor(SynthEditor):
         }
         control = self.pitch_env_map.get(param)
         if control:
+            control.blockSignals(True)
             control.setValue(new_value)
+            control.blockSignals(False)
             successes.append(param.name)
         else:
             failures.append(param.name)

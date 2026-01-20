@@ -62,8 +62,10 @@ class PartialController(QObject):
         ):
             control = self.partial_controls[partial_number].get(param)
             if control:
-                control.setValue(value)  # Example: Update slider or UI element
-                # Send MIDI message or log parameter change if needed
+                control.blockSignals(True)
+                control.setValue(value)  # Update slider or UI element without triggering MIDI send
+                control.blockSignals(False)
+                # Log parameter change
                 self._log_partial_parameter_change(partial_number, param, value)
 
     def _update_partial_state_ui(self, partial_number: int) -> None:
@@ -164,7 +166,9 @@ class PartialController(QObject):
             log.parameter("Updated waveform buttons for OSC_WAVE", value)
 
         elif param == DigitalPartialParam.FILTER_MODE_SWITCH:
+            self.partial_editors[partial_no].filter_mode_switch.blockSignals(True)
             self.partial_editors[partial_no].filter_mode_switch.setValue(value)
+            self.partial_editors[partial_no].filter_mode_switch.blockSignals(False)
             self._update_filter_state(partial_no, value)
             log.parameter("Updated filter state for FILTER_MODE_SWITCH", value)
 

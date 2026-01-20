@@ -334,9 +334,7 @@ class EffectsCommonEditor(BasicEditor):
                 "🎛️ Effects Editor: midi_helper is None, cannot connect to signals"
             )
 
-        # Request current settings from the synthesizer
-        # Note: data_request() will also be called in showEvent when editor is shown
-        self.data_request()
+        # Note: data_request() is called in showEvent() when editor is displayed
 
     def showEvent(self, event: QShowEvent) -> None:
         """

@@ -211,7 +211,8 @@ class JDXiInstrument(JDXiWindow):
 
         self.show()
         self.main_editor = None
-        self.data_request()
+        # Note: Removed automatic data_request() at startup to reduce MIDI flood
+        # Each editor requests its own data via showEvent() when displayed
         self._show_main_editor()
         self.init_main_editor()
         # Initialize the current preset and synth type

@@ -119,9 +119,7 @@ class DrumCommonEditor(SynthEditor):
             self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
         self.refresh_shortcut = QShortcut(QKeySequence.StandardKey.Refresh, self)
         self.refresh_shortcut.activated.connect(self.data_request)
-        # Request initial state data & show the editor
-        self.data_request()
-        # self.show()
+        # Note: data_request() is called in showEvent() when editor is displayed
 
     def setup_ui(self) -> None:
         """Setup the UI components for the drum editor."""
@@ -219,8 +217,7 @@ class DrumCommonEditor(SynthEditor):
         self.update_instrument_image()
         self.partial_tab_widget.currentChanged.connect(self.update_partial_number)
         self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
-        # Register the callback for incoming MIDI messages
-        self.data_request()
+        # Note: data_request() is called in showEvent() when editor is displayed
 
     def _handle_program_change(self, channel: int, program: int):
         """

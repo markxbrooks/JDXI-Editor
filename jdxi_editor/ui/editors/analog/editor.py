@@ -168,7 +168,7 @@ class AnalogSynthEditor(SynthEditor):
             AnalogParam.OSC_PULSE_WIDTH,
             AnalogParam.OSC_PULSE_WIDTH_MOD_DEPTH,
         ]
-        self.data_request()
+        # Note: data_request() is called in showEvent() when editor is displayed
 
     def setup_ui(self):
         """Set up the Analog Synth Editor UI."""
@@ -537,7 +537,9 @@ class AnalogSynthEditor(SynthEditor):
 
         if param in self.adsr_mapping:
             control = self.adsr_mapping[param]
+            control.blockSignals(True)
             control.setValue(slider_value)
+            control.blockSignals(False)
             successes.append(param.name)
             log_slider_parameters(self.address, param, midi_value, slider_value)
         else:
@@ -570,7 +572,9 @@ class AnalogSynthEditor(SynthEditor):
 
         if parameter in self.pitch_env_mapping:
             control = self.pitch_env_mapping[parameter]
+            control.blockSignals(True)
             control.setValue(new_value)
+            control.blockSignals(False)
             successes.append(parameter.name)
         else:
             failures.append(parameter.name)
@@ -603,7 +607,9 @@ class AnalogSynthEditor(SynthEditor):
 
         if parameter in self.pwm_mapping:
             control = self.pwm_mapping[parameter]
+            control.blockSignals(True)
             control.setValue(new_value)
+            control.blockSignals(False)
             successes.append(parameter.name)
         else:
             failures.append(parameter.name)

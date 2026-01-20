@@ -209,6 +209,13 @@ class Slider(QWidget):
         """Set current value"""
         self.slider.setValue(value)
 
+    def setValueSilently(self, value: int):
+        """Set current value without emitting signals (use when updating from MIDI)"""
+        self.slider.blockSignals(True)
+        self.slider.setValue(value)
+        self.slider.blockSignals(False)
+        self._update_value_label()
+
     def setEnabled(self, enabled: bool):
         """Set enabled state"""
         super().setEnabled(enabled)
