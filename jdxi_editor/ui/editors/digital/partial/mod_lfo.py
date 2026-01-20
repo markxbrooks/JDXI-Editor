@@ -113,12 +113,30 @@ class DigitalModLFOSection(SectionBaseWidget):
         switch_row_layout = create_layout_with_widgets([self.mod_lfo_sync, self.mod_lfo_note])
         mod_lfo_layout.addLayout(shape_row_layout)
         mod_lfo_layout.addLayout(switch_row_layout)
-
-        # --- Create tab widget for Rate/Rate Ctrl and Depths
-        mod_lfo_controls_tab_widget = QTabWidget()
+        mod_lfo_controls_tab_widget = self._create_mod_lfo_controls_tab_widget()
         mod_lfo_layout.addWidget(mod_lfo_controls_tab_widget)
+        mod_lfo_layout.addStretch()
 
-        # --- Rate and Rate Ctrl Controls Tab ---
+    def _create_mod_lfo_controls_tab_widget(self):
+        """Create tab widget for Rate/Rate Ctrl and Depths"""
+        mod_lfo_controls_tab_widget = QTabWidget()
+
+        rate_widget = self._create_rate_widget()
+        rate_icon = JDXi.UI.IconRegistry.get_icon(
+            JDXi.UI.IconRegistry.CLOCK, color=JDXi.UI.Style.GREY
+        )
+        mod_lfo_controls_tab_widget.addTab(rate_widget, rate_icon, "Rate and Rate Ctrl")
+
+        depths_icon = JDXi.UI.IconRegistry.get_icon(
+            JDXi.UI.IconRegistry.WAVEFORM, color=JDXi.UI.Style.GREY
+        )
+        depths_widget = self._create_depths_widget()
+        mod_lfo_controls_tab_widget.addTab(depths_widget, depths_icon, "Depths")
+        
+        
+    
+    def _create_rate_widget(self):
+        """Rate and Rate Ctrl Controls Tab"""
         # --- Create the Rate and Rate Ctrl controls
         rate_layout_widgets = [
             self._create_parameter_slider(
@@ -137,13 +155,10 @@ class DigitalModLFOSection(SectionBaseWidget):
         rate_widget = QWidget()
         rate_widget.setLayout(rate_layout)
         rate_widget.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MINIMUM_HEIGHT)
+        return rate_widget
 
-        rate_icon = JDXi.UI.IconRegistry.get_icon(
-            JDXi.UI.IconRegistry.CLOCK, color=JDXi.UI.Style.GREY
-        )
-        mod_lfo_controls_tab_widget.addTab(rate_widget, rate_icon, "Rate and Rate Ctrl")
-
-        # --- Depths Tab ---
+    def _create_depths_widget(self):
+        """Depths Tab"""
         # --- First create a list of widgets
         depths_layout_widgets = [
             self._create_parameter_slider(
@@ -172,13 +187,8 @@ class DigitalModLFOSection(SectionBaseWidget):
         depths_widget = QWidget()
         depths_widget.setLayout(depths_layout)
         depths_widget.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MINIMUM_HEIGHT)
-
-        depths_icon = JDXi.UI.IconRegistry.get_icon(
-            JDXi.UI.IconRegistry.WAVEFORM, color=JDXi.UI.Style.GREY
-        )
-        mod_lfo_controls_tab_widget.addTab(depths_widget, depths_icon, "Depths")
-
-        mod_lfo_layout.addStretch()
+        return depths_widget
+ 
 
     def _on_mod_lfo_shape_selected(self, mod_lfo_shape: DigitalLFOShape):
         """
