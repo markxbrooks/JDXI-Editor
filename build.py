@@ -42,28 +42,34 @@ os.system(inno_cmd)
 """
 
 import os
-import shutil
 import subprocess
-from distutils.dir_util import copy_tree
+import shutil
+from pathlib import Path
+from decologr import Decologr as log, setup_logging
+
 from jdxi_editor.project import __version__, __package_name__
 
 
-
 def remove_build_dirs():
-    for path in [f"dist/{__package_name__}", f"build/{__package_name__}"]:
-        if os.path.exists(path):
-            print(f"Removing: {path}")
+    """remove build dirs"""
+    for path in [Path("dist") / __package_name__, Path("build") / __package_name__]:
+        if path.exists():
+            log.message(f"Removing: {path}")
             shutil.rmtree(path)
 
+
 def build_with_pyinstaller():
-    entry_point = os.path.abspath(os.path.join(__package_name__, "main.py"))
-    icon_file = os.path.abspath(os.path.join("resources", "jdxi_icon.ico"))
+    """build with pyinstaller"""
+    entry_point = Path(__package_name__) / "main.py"
+    entry_point = entry_point.resolve()
+    icon_file = Path("resources") / "jdxi_icon.ico"
+    icon_file = icon_file.resolve()
     try:
         cmd = [
             "pyinstaller.exe",
             "--exclude-module", "PyQt5",
             "-w",
-            "-i", icon_file,
+            "-i", str(icon_file),
             "--hidden-import", "numpy",
             "--additional-hooks-dir=.",
             "--paths=env/Lib/site-packages",
@@ -71,35 +77,59 @@ def build_with_pyinstaller():
             "--noconfirm",
             "-n", __package_name__,
             "--clean",
-            entry_point,
+            str(entry_point),
         ]
+
         dist_files = [icon_file, entry_point]
         for dist_file in dist_files:
-            if not os.path.exists(dist_file):
-                print(f"dist_file: {dist_file} not found")
+            if not dist_file.exists():
+                log.message(f"dist_file: {dist_file} not found")
                 return
-        print("Running PyInstaller...")
+        log.message("Running PyInstaller...")
         subprocess.run(cmd, check=True)
     except Exception as e:
-        print(e)
+        log.error(f"PyInstaller failed: {e}")
+        raise
 
 def copy_internal_dirs():
-    dest_dir = os.path.join("dist", __package_name__, "_internal")
+    """copy internal directory tree to dist"""
+    dest_dir = compose_dest_dir(package_name=__package_name__)
     os.makedirs(dest_dir, exist_ok=True)
     for folder in [__package_name__, "resources"]:
-        copy_tree(folder, os.path.join(dest_dir, folder))
+        shutil.copytree(folder, str(dest_dir / folder))
+
+
+def compose_dest_dir(package_name: str):
+    """compose dest dir"""
+    dist_dir = Path("dist")
+    dest_dir = dist_dir / package_name / "_internal"
+    return dest_dir
+
 
 def run_inno_setup():
-    iss_file = os.path.join(os.getcwd(), f"{__package_name__}.iss")
-    inno_exe = r"C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
-    cmd = [inno_exe, iss_file]
-    print("Running Inno Setup...")
+    """run inno setup"""
+    package_name = __package_name__  # assuming this exists in your module
+    iss_file = Path.cwd() / f"{package_name}.iss"
+    if not iss_file.exists():
+        raise FileNotFoundError(f"ISS file not found: {iss_file}")
+    inno_exe = Path(r"C:\Program Files (x86)\Inno Setup 6\ISCC.exe")
+    if not inno_exe.exists():
+        raise FileNotFoundError(f"Inno Setup compiler not found: {inno_exe}")
+    cmd = [str(inno_exe), str(iss_file)]
+    log.message("Running Inno Setup...")
     subprocess.run(cmd, check=True)
 
+
 if __name__ == "__main__":
-    print(f"{__package_name__} version {__version__} build system\n")
-    remove_build_dirs()
-    build_with_pyinstaller()
-    copy_internal_dirs()
-    run_inno_setup()
+    """main entry point"""
+    log.message(f"{__package_name__} version {__version__} build system\n")
+    setup_logging(project_name=__package_name__+ " builder")
+    try:
+        remove_build_dirs()
+        build_with_pyinstaller()
+        copy_internal_dirs()
+        run_inno_setup()
+    except Exception as e:
+        log.error(f"Build failed: {e}")
+        raise
 
