@@ -26,6 +26,25 @@ from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 
 
+def create_icon_from_qta(icon_name: str):
+    """create qta icon"""
+    icon = qta.icon(icon_name, color=JDXi.UI.Style.WHITE, icon_size=0.7)
+    return icon
+            
+def create_button_with_icon(display_name: str, icon: QIcon):
+    """create button with icon"""
+    btn = QPushButton(display_name)
+    btn.setCheckable(True)
+    btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
+    # Add icon
+    btn.setIcon(icon)
+    btn.setIconSize(QSize(20, 20))
+    btn.setFixedSize(
+        JDXi.UI.Dimensions.WAVEFORM_ICON.WIDTH,
+        JDXi.UI.Dimensions.WAVEFORM_ICON.HEIGHT,
+    )
+    return btn
+
 class DigitalModLFOSection(SectionBaseWidget):
     """MOD LFO section for the digital partial editor."""
 
@@ -88,12 +107,13 @@ class DigitalModLFOSection(SectionBaseWidget):
         }
 
         for mod_lfo_shape in mod_lfo_shapes:
+            icon_name = shape_icon_map.get(mod_lfo_shape, "mdi.waveform")
+            icon = qta.icon(icon_name, color=JDXi.UI.Style.WHITE, icon_size=0.7)
+            
             btn = QPushButton(mod_lfo_shape.display_name)
             btn.setCheckable(True)
             btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
             # Add icon
-            icon_name = shape_icon_map.get(mod_lfo_shape, "mdi.waveform")
-            icon = qta.icon(icon_name, color=JDXi.UI.Style.WHITE, icon_size=0.7)
             btn.setIcon(icon)
             btn.setIconSize(QSize(20, 20))
             btn.setFixedSize(
