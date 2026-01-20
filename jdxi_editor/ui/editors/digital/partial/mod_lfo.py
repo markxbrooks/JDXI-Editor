@@ -22,30 +22,10 @@ from jdxi_editor.midi.data.parameter.digital.option import DigitalDisplayOptions
 from jdxi_editor.midi.data.parameter.digital.partial import (
     DigitalPartialParam,
 )
+from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets, create_button_with_icon, create_icon_from_qta
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 
-
-def create_icon_from_qta(icon_name: str) -> QIcon:
-    """create qta icon"""
-    return qta.icon(icon_name, color=JDXi.UI.Style.WHITE, icon_size=0.7)
-    
-            
-def create_button_with_icon(icon_name: str, icon: QIcon):
-    """create button with icon"""
-    btn = QPushButton(icon_name)
-    btn.setCheckable(True)
-    btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
-    # Add icon
-    btn.setIcon(icon)
-    btn.setIconSize(QSize(20, 20))
-    btn.setFixedSize(
-        JDXi.UI.Dimensions.WAVEFORM_ICON.WIDTH,
-        JDXi.UI.Dimensions.WAVEFORM_ICON.HEIGHT,
-    )
-    btn.setCheckable(True)
-    btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
-    return btn
 
 class DigitalModLFOSection(SectionBaseWidget):
     """MOD LFO section for the digital partial editor."""
