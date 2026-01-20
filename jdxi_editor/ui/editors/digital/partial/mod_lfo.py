@@ -60,9 +60,9 @@ class DigitalModLFOSection(SectionBaseWidget):
     def _init_ui(self):
         mod_lfo_layout = self.get_layout()
 
-        # Shape and sync controls
+        # --- Shape and sync controls
         
-        # Create buttons for each Mod LFO shape
+        # --- Create buttons for each Mod LFO shape
         mod_lfo_shapes = [
             DigitalLFOShape.TRIANGLE,
             DigitalLFOShape.SINE,
@@ -72,7 +72,7 @@ class DigitalModLFOSection(SectionBaseWidget):
             DigitalLFOShape.RANDOM,
         ]
 
-        # Map Mod LFO shapes to icon names
+        # --- Map Mod LFO shapes to icon names
         shape_icon_map = {
             DigitalLFOShape.TRIANGLE: "mdi.triangle-wave",
             DigitalLFOShape.SINE: "mdi.sine-wave",
@@ -82,7 +82,7 @@ class DigitalModLFOSection(SectionBaseWidget):
             DigitalLFOShape.RANDOM: "mdi.wave",
         }
         shape_row_layout_widgets = []
-        # Add label
+        # --- Add label
         shape_label = QLabel("Shape")
         shape_row_layout_widgets.append(shape_label)
         for mod_lfo_shape in mod_lfo_shapes:
@@ -199,18 +199,18 @@ class DigitalModLFOSection(SectionBaseWidget):
 
         :param mod_lfo_shape: DigitalLFOShape enum value
         """
-        # Reset all buttons to default style
+        # --- Reset all buttons to default style
         for btn in self.mod_lfo_shape_buttons.values():
             btn.setChecked(False)
             btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
 
-        # Apply active style to the selected Mod LFO shape button
+        # --- Apply active style to the selected Mod LFO shape button
         selected_btn = self.mod_lfo_shape_buttons.get(mod_lfo_shape)
         if selected_btn:
             selected_btn.setChecked(True)
             selected_btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT_ACTIVE)
 
-        # Send MIDI message
+        # --- Send MIDI message
         if self.send_midi_parameter:
             if not self.send_midi_parameter(
                 DigitalPartialParam.MOD_LFO_SHAPE, mod_lfo_shape.value
