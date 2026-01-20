@@ -81,10 +81,9 @@ class DigitalModLFOSection(SectionBaseWidget):
             DigitalLFOShape.SAMPLE_HOLD: "mdi.waveform",
             DigitalLFOShape.RANDOM: "mdi.wave",
         }
-        shape_row_layout_widgets = []
         # --- Add label
         shape_label = QLabel("Shape")
-        shape_row_layout_widgets.append(shape_label)
+        shape_row_layout_widgets = [shape_label]
         for mod_lfo_shape in mod_lfo_shapes:
             icon_name = shape_icon_map.get(mod_lfo_shape, "mdi.waveform")
             icon = create_icon_from_qta(icon_name)
