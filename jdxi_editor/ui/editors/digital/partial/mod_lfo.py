@@ -105,7 +105,6 @@ class DigitalModLFOSection(SectionBaseWidget):
             DigitalDisplayName.MOD_LFO_TEMPO_SYNC_SWITCH,
             options=DigitalDisplayOptions.MOD_LFO_TEMPO_SYNC_SWITCH,
         )
-
         self.mod_lfo_note = self._create_parameter_combo_box(
             DigitalPartialParam.MOD_LFO_TEMPO_SYNC_NOTE,
             DigitalDisplayName.MOD_LFO_TEMPO_SYNC_NOTE,
@@ -122,21 +121,17 @@ class DigitalModLFOSection(SectionBaseWidget):
 
         # --- Rate and Rate Ctrl Controls Tab ---
         # --- Create the Rate and Rate Ctrl controls
-        rate_layout_widgets = []
-        rate_layout_widgets.append(
+        rate_layout_widgets = [
             self._create_parameter_slider(
                 DigitalPartialParam.MOD_LFO_RATE,
                 DigitalDisplayName.MOD_LFO_RATE,
                 vertical=True,
-            )
-        )
-        rate_layout_widgets.append(
+            ),
             self._create_parameter_slider(
                 DigitalPartialParam.MOD_LFO_RATE_CTRL,
                 DigitalDisplayName.MOD_LFO_RATE_CTRL,
                 vertical=True,
-            )
-        )
+            )]
         # --- Create the layout with the list of widgets
         rate_layout = create_layout_with_widgets(rate_layout_widgets)
         # --- Create the widget to add the controls to
@@ -151,35 +146,27 @@ class DigitalModLFOSection(SectionBaseWidget):
 
         # --- Depths Tab ---
         # --- First create a list of widgets
-        depths_layout_widgets = []
-        depths_layout_widgets.append(
+        depths_layout_widgets = [
             self._create_parameter_slider(
                 DigitalPartialParam.MOD_LFO_PITCH_DEPTH,
                 DigitalDisplayName.MOD_LFO_PITCH_DEPTH,
                 vertical=True,
-            )
-        )
-        depths_layout_widgets.append(
+            ),
             self._create_parameter_slider(
                 DigitalPartialParam.MOD_LFO_FILTER_DEPTH,
                 DigitalDisplayName.MOD_LFO_FILTER_DEPTH,
                 vertical=True,
-            )
-        )
-        depths_layout_widgets.append(
+            ),
             self._create_parameter_slider(
                 DigitalPartialParam.MOD_LFO_AMP_DEPTH,
                 DigitalDisplayName.MOD_LFO_AMP_DEPTH,
                 vertical=True,
-            )
-        )
-        depths_layout_widgets.append(
+            ),
             self._create_parameter_slider(
                 DigitalPartialParam.MOD_LFO_PAN,
                 DigitalDisplayName.MOD_LFO_PAN,
                 vertical=True,
-            )
-        )
+            )]
         # --- Second add the list to a new hlayout 
         depths_layout = create_layout_with_widgets(depths_layout_widgets)
         # --- Third create the widget to put these on
