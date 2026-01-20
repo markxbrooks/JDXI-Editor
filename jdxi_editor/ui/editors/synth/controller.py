@@ -63,7 +63,9 @@ class PartialController(QObject):
             control = self.partial_controls[partial_number].get(param)
             if control:
                 control.blockSignals(True)
-                control.setValue(value)  # Update slider or UI element without triggering MIDI send
+                control.setValue(
+                    value
+                )  # Update slider or UI element without triggering MIDI send
                 control.blockSignals(False)
                 # Log parameter change
                 self._log_partial_parameter_change(partial_number, param, value)

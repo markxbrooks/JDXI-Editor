@@ -88,18 +88,6 @@ class PartialRPNValue:
         ]
 
 
-@dataclass(frozen=True)
-class PartialRPNValue:
-    base_msb_lsb: Tuple[int, int]
-    value_range: Tuple[int, int]
-    partial: int
-
-    @property
-    def msb_lsb(self) -> Tuple[int, int]:
-        msb, base_lsb = self.base_msb_lsb
-        return (msb, base_lsb + (self.partial - 1))
-
-
 def make_digital_rpn(partial: int) -> Object:
     """
     make_digital_rpn

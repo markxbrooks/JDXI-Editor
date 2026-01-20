@@ -187,21 +187,21 @@ class PatternSequenceEditor(SynthEditor):
         bar_controls_layout.addStretch()  # Push controls to the left
 
         bar_layout.addLayout(bar_controls_layout)
-        
+
         # Copy/Paste controls
         copy_paste_layout = QHBoxLayout()
         self.copy_button = QPushButton("Copy Section")
         self.copy_button.clicked.connect(self._copy_section)
         self.copy_button.setToolTip("Copy selected steps from current bar")
-        
+
         self.paste_button = QPushButton("Paste Section")
         self.paste_button.clicked.connect(self._paste_section)
         self.paste_button.setToolTip("Paste copied steps to current bar")
         self.paste_button.setEnabled(False)  # Disabled until something is copied
-        
+
         copy_paste_layout.addWidget(self.copy_button)
         copy_paste_layout.addWidget(self.paste_button)
-        
+
         # Step range selection
         step_range_layout = QHBoxLayout()
         step_range_layout.addWidget(QLabel("Steps:"))
@@ -209,17 +209,17 @@ class PatternSequenceEditor(SynthEditor):
         self.start_step_spinbox.setRange(0, 15)
         self.start_step_spinbox.setValue(0)
         self.start_step_spinbox.setToolTip("Start step (0-15)")
-        
+
         step_range_layout.addWidget(QLabel("to"))
         self.end_step_spinbox = QSpinBox()
         self.end_step_spinbox.setRange(0, 15)
         self.end_step_spinbox.setValue(15)
         self.end_step_spinbox.setToolTip("End step (0-15)")
-        
+
         step_range_layout.addWidget(self.start_step_spinbox)
         step_range_layout.addWidget(QLabel("-"))
         step_range_layout.addWidget(self.end_step_spinbox)
-        
+
         bar_layout.addLayout(copy_paste_layout)
         bar_layout.addLayout(step_range_layout)
         bar_group.setLayout(bar_layout)
@@ -311,16 +311,18 @@ class PatternSequenceEditor(SynthEditor):
         self.duration_label = QLabel("Dur:")
         self.duration_combo = QComboBox()
         # Duration options as fractions of a beat (16th note = 0.25, 8th = 0.5, quarter = 1.0, etc.)
-        self.duration_combo.addItems([
-            "16th (1 step)",
-            "8th (2 steps)",
-            "Dotted 8th (3 steps)",
-            "Quarter (4 steps)",
-            "Dotted Quarter (6 steps)",
-            "Half (8 steps)",
-            "Dotted Half (12 steps)",
-            "Whole (16 steps)",
-        ])
+        self.duration_combo.addItems(
+            [
+                "16th (1 step)",
+                "8th (2 steps)",
+                "Dotted 8th (3 steps)",
+                "Quarter (4 steps)",
+                "Dotted Quarter (6 steps)",
+                "Half (8 steps)",
+                "Dotted Half (12 steps)",
+                "Whole (16 steps)",
+            ]
+        )
         self.duration_combo.setCurrentIndex(0)  # Default to 16th note
         self.duration_combo.setToolTip("Default note duration for new notes")
         self.duration_combo.currentIndexChanged.connect(self._on_duration_changed)
@@ -671,17 +673,17 @@ class PatternSequenceEditor(SynthEditor):
         if self.current_bar_index >= len(self.measures):
             QMessageBox.warning(self, "Copy", "No bar selected")
             return
-        
+
         start_step = self.start_step_spinbox.value()
         end_step = self.end_step_spinbox.value()
-        
+
         if start_step > end_step:
             QMessageBox.warning(self, "Copy", "Start step must be <= end step")
             return
-        
+
         measure = self.measures[self.current_bar_index]
         notes_data = {}
-        
+
         # Copy all rows and selected steps
         for row in range(4):
             notes_data[row] = {}
@@ -689,59 +691,73 @@ class PatternSequenceEditor(SynthEditor):
                 if step < len(measure.buttons[row]):
                     button = measure.buttons[row][step]
                     notes_data[row][step] = {
-                        'checked': button.isChecked(),
-                        'note': button.NOTE if hasattr(button, 'NOTE') else None,
-                        'duration': button.NOTE_DURATION if hasattr(button, 'NOTE_DURATION') else None,
-                        'velocity': button.NOTE_VELOCITY if hasattr(button, 'NOTE_VELOCITY') else None,
+                        "checked": button.isChecked(),
+                        "note": button.NOTE if hasattr(button, "NOTE") else None,
+                        "duration": (
+                            button.NOTE_DURATION
+                            if hasattr(button, "NOTE_DURATION")
+                            else None
+                        ),
+                        "velocity": (
+                            button.NOTE_VELOCITY
+                            if hasattr(button, "NOTE_VELOCITY")
+                            else None
+                        ),
                     }
-        
+
         self.clipboard = {
-            'source_bar': self.current_bar_index,
-            'start_step': start_step,
-            'end_step': end_step,
-            'notes_data': notes_data,
+            "source_bar": self.current_bar_index,
+            "start_step": start_step,
+            "end_step": end_step,
+            "notes_data": notes_data,
         }
-        
+
         self.paste_button.setEnabled(True)
-        log.message(f"Copied steps {start_step}-{end_step} from bar {self.current_bar_index + 1}")
+        log.message(
+            f"Copied steps {start_step}-{end_step} from bar {self.current_bar_index + 1}"
+        )
 
     def _paste_section(self):
         """Paste copied section to the current bar"""
         if self.clipboard is None:
-            QMessageBox.warning(self, "Paste", "Nothing copied. Use Copy Section first.")
+            QMessageBox.warning(
+                self, "Paste", "Nothing copied. Use Copy Section first."
+            )
             return
-        
+
         if self.current_bar_index >= len(self.measures):
             QMessageBox.warning(self, "Paste", "No bar selected")
             return
-        
+
         measure = self.measures[self.current_bar_index]
-        notes_data = self.clipboard['notes_data']
+        notes_data = self.clipboard["notes_data"]
         start_step = self.start_step_spinbox.value()
-        source_start = self.clipboard['start_step']
-        source_end = self.clipboard['end_step']
+        source_start = self.clipboard["start_step"]
+        source_end = self.clipboard["end_step"]
         num_steps = source_end - source_start + 1
-        
+
         # Paste notes starting at the selected start step
         for row in range(4):
             if row in notes_data:
                 for source_step, button_data in notes_data[row].items():
                     # Calculate destination step
                     dest_step = start_step + (source_step - source_start)
-                    
+
                     if dest_step < 0 or dest_step >= 16:
                         continue  # Skip if out of bounds
-                    
+
                     if dest_step < len(measure.buttons[row]):
                         button = measure.buttons[row][dest_step]
-                        button.setChecked(button_data['checked'])
-                        button.NOTE = button_data['note']
-                        button.NOTE_DURATION = button_data['duration']
-                        button.NOTE_VELOCITY = button_data['velocity']
-        
+                        button.setChecked(button_data["checked"])
+                        button.NOTE = button_data["note"]
+                        button.NOTE_DURATION = button_data["duration"]
+                        button.NOTE_VELOCITY = button_data["velocity"]
+
         # Sync sequencer display
         self._sync_sequencer_with_bar(self.current_bar_index)
-        log.message(f"Pasted {num_steps} steps to bar {self.current_bar_index + 1} starting at step {start_step}")
+        log.message(
+            f"Pasted {num_steps} steps to bar {self.current_bar_index + 1} starting at step {start_step}"
+        )
 
     def _sync_sequencer_with_bar(self, bar_index: int):
         """
@@ -1099,7 +1115,12 @@ class PatternSequenceEditor(SynthEditor):
                             (measure_index * 16 + step) * 120
                         )  # Convert to ticks
                         # Get velocity from button if available, otherwise use default
-                        velocity = button.NOTE_VELOCITY if hasattr(button, "NOTE_VELOCITY") and button.NOTE_VELOCITY is not None else 100
+                        velocity = (
+                            button.NOTE_VELOCITY
+                            if hasattr(button, "NOTE_VELOCITY")
+                            and button.NOTE_VELOCITY is not None
+                            else 100
+                        )
                         track.append(
                             Message(
                                 "note_on",
@@ -1281,7 +1302,11 @@ class PatternSequenceEditor(SynthEditor):
                                 button.setChecked(True)
                                 button.NOTE = msg.note
                                 # Store velocity from MIDI file editor
-                                button.NOTE_VELOCITY = msg.velocity if hasattr(msg, 'velocity') else self.velocity_spinbox.value()
+                                button.NOTE_VELOCITY = (
+                                    msg.velocity
+                                    if hasattr(msg, "velocity")
+                                    else self.velocity_spinbox.value()
+                                )
                                 # Set default duration for MIDI file editor loaded notes
                                 button.NOTE_DURATION = self._get_duration_ms()
                                 notes_loaded += 1
@@ -1339,7 +1364,12 @@ class PatternSequenceEditor(SynthEditor):
                             global_step = bar_index * 16 + step
                             time = global_step * 480  # Assuming 480 ticks per beat
                             # Get velocity from button if available, otherwise use default
-                            velocity = measure_button.NOTE_VELOCITY if hasattr(measure_button, "NOTE_VELOCITY") and measure_button.NOTE_VELOCITY is not None else 100
+                            velocity = (
+                                measure_button.NOTE_VELOCITY
+                                if hasattr(measure_button, "NOTE_VELOCITY")
+                                and measure_button.NOTE_VELOCITY is not None
+                                else 100
+                            )
                             track.append(
                                 Message(
                                     "note_on",
@@ -1458,48 +1488,51 @@ class PatternSequenceEditor(SynthEditor):
             # First pass: collect all note events with their absolute times and tempos
             note_events = []  # List of (absolute_time, msg, channel, tempo_at_time)
             current_tempo = 500000  # Default tempo (120 BPM in microseconds)
-            
+
             for track in midi_file.tracks:
                 absolute_time = 0
                 for msg in track:
                     absolute_time += msg.time
-                    
+
                     # Track tempo changes
                     if msg.type == "set_tempo":
                         current_tempo = msg.tempo
-                    
+
                     # Collect note_on and note_off events
-                    if (
-                        hasattr(msg, "channel")
-                        and (msg.type == "note_on" or msg.type == "note_off")
+                    if hasattr(msg, "channel") and (
+                        msg.type == "note_on" or msg.type == "note_off"
                     ):
-                        note_events.append((absolute_time, msg, msg.channel, current_tempo))
+                        note_events.append(
+                            (absolute_time, msg, msg.channel, current_tempo)
+                        )
 
             # Second pass: match note_on with note_off to calculate durations
             # Dictionary to track active notes: (channel, note) -> (on_time, on_tempo)
             active_notes = {}
             note_durations = {}  # (channel, note, on_time) -> duration_ms
-            
+
             for abs_time, msg, channel, tempo in note_events:
                 note_key = (channel, msg.note)
-                
+
                 if msg.type == "note_on" and msg.velocity > 0:
                     # Store note_on event
                     active_notes[note_key] = (abs_time, tempo)
-                elif msg.type == "note_off" or (msg.type == "note_on" and msg.velocity == 0):
+                elif msg.type == "note_off" or (
+                    msg.type == "note_on" and msg.velocity == 0
+                ):
                     # Find matching note_on
                     if note_key in active_notes:
                         on_time, on_tempo = active_notes[note_key]
                         duration_ticks = abs_time - on_time
-                        
+
                         # Convert ticks to milliseconds using the tempo at note_on time
                         # tempo is in microseconds per quarter note
                         # duration_ms = (duration_ticks / ticks_per_beat) * (tempo / 1000)
                         duration_ms = (duration_ticks / ppq) * (on_tempo / 1000.0)
-                        
+
                         note_durations[(channel, msg.note, on_time)] = duration_ms
                         del active_notes[note_key]
-            
+
             # Third pass: assign notes and durations to buttons
             for abs_time, msg, channel, tempo in note_events:
                 if msg.type == "note_on" and msg.velocity > 0:
@@ -1511,9 +1544,7 @@ class PatternSequenceEditor(SynthEditor):
 
                     # Calculate which bar and step this note belongs to
                     bar_index = int(abs_time / ticks_per_bar)
-                    step_in_bar = int(
-                        (abs_time % ticks_per_bar) / (ticks_per_bar / 16)
-                    )
+                    step_in_bar = int((abs_time % ticks_per_bar) / (ticks_per_bar / 16))
 
                     # Ensure we have enough bars (safety check)
                     while bar_index >= len(self.measures):
@@ -1528,9 +1559,7 @@ class PatternSequenceEditor(SynthEditor):
                                 button.setChecked(False)
                         self.measures.append(measure)
                         item = QListWidgetItem(f"Bar {len(self.measures)}")
-                        item.setData(
-                            Qt.ItemDataRole.UserRole, len(self.measures) - 1
-                        )
+                        item.setData(Qt.ItemDataRole.UserRole, len(self.measures) - 1)
                         self.bars_list.addItem(item)
 
                     if bar_index < len(self.measures) and step_in_bar < 16:
@@ -1539,10 +1568,10 @@ class PatternSequenceEditor(SynthEditor):
                             button = measure.buttons[row][step_in_bar]
                             button.setChecked(True)
                             button.NOTE = msg.note  # mido uses lowercase 'note'
-                            
+
                             # Store note velocity from MIDI file
                             button.NOTE_VELOCITY = msg.velocity
-                            
+
                             # Store note duration if available
                             duration_key = (channel, msg.note, abs_time)
                             if duration_key in note_durations:
@@ -1550,9 +1579,11 @@ class PatternSequenceEditor(SynthEditor):
                             else:
                                 # Default to step duration if no note_off found
                                 # Step duration = (ticks_per_bar / 16) / ppq * tempo / 1000
-                                step_duration_ms = (ticks_per_bar / 16.0 / ppq) * (tempo / 1000.0)
+                                step_duration_ms = (ticks_per_bar / 16.0 / ppq) * (
+                                    tempo / 1000.0
+                                )
                                 button.NOTE_DURATION = step_duration_ms
-                            
+
                             notes_loaded += 1
 
             log.message(
@@ -1743,24 +1774,30 @@ class PatternSequenceEditor(SynthEditor):
                                     f"Row {row} active at step {step_in_bar} in bar {bar_index + 1}, sending note {measure_button.NOTE} on channel {channel}"
                                 )
                                 # Get velocity from button if available, otherwise use default
-                                if hasattr(measure_button, "NOTE_VELOCITY") and measure_button.NOTE_VELOCITY is not None:
+                                if (
+                                    hasattr(measure_button, "NOTE_VELOCITY")
+                                    and measure_button.NOTE_VELOCITY is not None
+                                ):
                                     velocity = measure_button.NOTE_VELOCITY
                                 else:
                                     velocity = self.velocity_spinbox.value()
-                                
+
                                 self.midi_helper.send_raw_message(
                                     [NOTE_ON | channel, measure_button.NOTE, velocity]
                                 )
-                                
+
                                 # Calculate note duration
                                 # Use stored duration if available, otherwise calculate default based on step length
-                                if hasattr(measure_button, "NOTE_DURATION") and measure_button.NOTE_DURATION is not None:
+                                if (
+                                    hasattr(measure_button, "NOTE_DURATION")
+                                    and measure_button.NOTE_DURATION is not None
+                                ):
                                     note_duration_ms = measure_button.NOTE_DURATION
                                 else:
                                     # Default: use step duration (ms per step)
                                     # ms_per_step = (60000 / bpm) / 4 (for 16th notes)
                                     note_duration_ms = (60000.0 / self.bpm) / 4.0
-                                
+
                                 # Note Off message after the calculated duration
                                 QTimer.singleShot(
                                     int(note_duration_ms),

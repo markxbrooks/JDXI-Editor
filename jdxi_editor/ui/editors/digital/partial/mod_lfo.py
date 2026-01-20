@@ -4,12 +4,8 @@ MOD LFO section of the digital partial editor.
 
 from typing import Callable
 
-import qtawesome as qta
-from PySide6.QtCore import QSize
 from PySide6.QtWidgets import (
-    QHBoxLayout,
     QLabel,
-    QPushButton,
     QTabWidget,
     QWidget,
 )
@@ -22,8 +18,12 @@ from jdxi_editor.midi.data.parameter.digital.option import DigitalDisplayOptions
 from jdxi_editor.midi.data.parameter.digital.partial import (
     DigitalPartialParam,
 )
-from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets, create_button_with_icon, create_icon_from_qta
 from jdxi_editor.ui.widgets.editor import IconType
+from jdxi_editor.ui.widgets.editor.helper import (
+    create_button_with_icon,
+    create_icon_from_qta,
+    create_layout_with_widgets,
+)
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 
 
@@ -95,7 +95,12 @@ class DigitalModLFOSection(SectionBaseWidget):
         for mod_lfo_shape in mod_lfo_shapes:
             icon_name = shape_icon_map.get(mod_lfo_shape, "mdi.waveform")
             icon = create_icon_from_qta(icon_name)
-            btn = create_button_with_icon(icon_name=mod_lfo_shape.display_name, icon=icon, button_dimensions=JDXi.UI.Dimensions.WAVEFORM_ICON, icon_dimensions=JDXi.UI.Dimensions.LFOIcon)
+            btn = create_button_with_icon(
+                icon_name=mod_lfo_shape.display_name,
+                icon=icon,
+                button_dimensions=JDXi.UI.Dimensions.WAVEFORM_ICON,
+                icon_dimensions=JDXi.UI.Dimensions.LFOIcon,
+            )
             btn.clicked.connect(
                 lambda checked, shape=mod_lfo_shape: self._on_mod_lfo_shape_selected(
                     shape
@@ -103,10 +108,10 @@ class DigitalModLFOSection(SectionBaseWidget):
             )
             self.mod_lfo_shape_buttons[mod_lfo_shape] = btn
             shape_row_layout_widgets.append(btn)
-            
+
         shape_row_layout = create_layout_with_widgets(shape_row_layout_widgets)
         return shape_row_layout
-        
+
     def _create_switch_row_layout(self):
         """Switch Row layout"""
         self.mod_lfo_sync = self._create_parameter_combo_box(
@@ -119,7 +124,9 @@ class DigitalModLFOSection(SectionBaseWidget):
             DigitalDisplayName.MOD_LFO_TEMPO_SYNC_NOTE,
             options=DigitalDisplayOptions.MOD_LFO_TEMPO_SYNC_NOTE,
         )
-        switch_row_layout = create_layout_with_widgets([self.mod_lfo_sync, self.mod_lfo_note])
+        switch_row_layout = create_layout_with_widgets(
+            [self.mod_lfo_sync, self.mod_lfo_note]
+        )
         return switch_row_layout
 
     def _create_mod_lfo_controls_tab_widget(self):
@@ -138,7 +145,7 @@ class DigitalModLFOSection(SectionBaseWidget):
         depths_widget = self._create_depths_widget()
         mod_lfo_controls_tab_widget.addTab(depths_widget, depths_icon, "Depths")
         return mod_lfo_controls_tab_widget
-    
+
     def _create_rate_widget(self):
         """Rate and Rate Ctrl Controls Tab"""
         # --- Create the Rate and Rate Ctrl controls
@@ -152,7 +159,8 @@ class DigitalModLFOSection(SectionBaseWidget):
                 DigitalPartialParam.MOD_LFO_RATE_CTRL,
                 DigitalDisplayName.MOD_LFO_RATE_CTRL,
                 vertical=True,
-            )]
+            ),
+        ]
         # --- Create the layout with the list of widgets
         rate_layout = create_layout_with_widgets(rate_layout_widgets)
         # --- Create the widget to add the controls to
@@ -184,8 +192,9 @@ class DigitalModLFOSection(SectionBaseWidget):
                 DigitalPartialParam.MOD_LFO_PAN,
                 DigitalDisplayName.MOD_LFO_PAN,
                 vertical=True,
-            )]
-        # --- Second add the list to a new hlayout 
+            ),
+        ]
+        # --- Second add the list to a new hlayout
         depths_layout = create_layout_with_widgets(depths_layout_widgets)
         # --- Third create the widget to put these on
         depths_widget = QWidget()

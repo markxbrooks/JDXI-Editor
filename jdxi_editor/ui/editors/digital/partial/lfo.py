@@ -4,12 +4,9 @@ LFO section of the digital partial editor.
 
 from typing import Callable
 
-import qtawesome as qta
-from PySide6.QtCore import QSize
 from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
-    QPushButton,
     QTabWidget,
     QWidget,
 )
@@ -23,8 +20,11 @@ from jdxi_editor.midi.data.parameter.digital.partial import (
     DigitalPartialParam,
 )
 from jdxi_editor.ui.widgets.editor import IconType
-from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets, create_icon_from_qta, \
-    create_button_with_icon
+from jdxi_editor.ui.widgets.editor.helper import (
+    create_button_with_icon,
+    create_icon_from_qta,
+    create_layout_with_widgets,
+)
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 
 
@@ -91,7 +91,8 @@ class DigitalLFOSection(SectionBaseWidget):
             DigitalDisplayOptions.LFO_KEY_TRIGGER,
         )
         switch_row_layout = create_layout_with_widgets(
-            [self.lfo_tempo_sync_switch, self.lfo_sync_note, self.lfo_trigger])
+            [self.lfo_tempo_sync_switch, self.lfo_sync_note, self.lfo_trigger]
+        )
         return switch_row_layout
 
     def _create_lfo_controls_tab_widget(self) -> QTabWidget:
@@ -136,7 +137,8 @@ class DigitalLFOSection(SectionBaseWidget):
                 DigitalPartialParam.LFO_PAN_DEPTH,
                 DigitalDisplayName.LFO_PAN_DEPTH,
                 vertical=True,
-            )]
+            ),
+        ]
         depths_widget = QWidget()
         depths_layout = create_layout_with_widgets(depths_layout_widgets)
         depths_widget.setLayout(depths_layout)
@@ -153,7 +155,8 @@ class DigitalLFOSection(SectionBaseWidget):
                 DigitalPartialParam.LFO_FADE_TIME,
                 DigitalDisplayName.LFO_FADE_TIME,
                 vertical=True,
-            )]
+            ),
+        ]
         rate_fade_widget = QWidget()
         rate_fade_layout = create_layout_with_widgets(rate_fade_layout_widgets)
         rate_fade_widget.setLayout(rate_fade_layout)
@@ -193,10 +196,12 @@ class DigitalLFOSection(SectionBaseWidget):
             # --- Add icon
             icon_name = shape_icon_map.get(lfo_shape, "mdi.waveform")
             icon = create_icon_from_qta(icon_name=icon_name)
-            btn = create_button_with_icon(icon_name=lfo_shape.display_name,
-                                          icon=icon,
-                                          button_dimensions=JDXi.UI.Dimensions.LFOIcon,
-                                          icon_dimensions=JDXi.UI.Dimensions.WAVEFORM_ICON)
+            btn = create_button_with_icon(
+                icon_name=lfo_shape.display_name,
+                icon=icon,
+                button_dimensions=JDXi.UI.Dimensions.LFOIcon,
+                icon_dimensions=JDXi.UI.Dimensions.WAVEFORM_ICON,
+            )
             btn.clicked.connect(
                 lambda checked, shape=lfo_shape: self._on_lfo_shape_selected(shape)
             )

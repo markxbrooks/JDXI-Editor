@@ -120,7 +120,7 @@ class WaveformIconDimensions(Dimensions):
 
     WIDTH = 60
     HEIGHT = 30
-    
+
 
 class LfoIconDimensions(Dimensions):
     """Lfo Icon Dimensions"""
