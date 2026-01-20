@@ -121,9 +121,7 @@ class DigitalModLFOSection(SectionBaseWidget):
         mod_lfo_layout.addWidget(mod_lfo_controls_tab_widget)
 
         # --- Rate and Rate Ctrl Controls Tab ---
-        rate_widget = QWidget()
-
-        # --- Rate and Rate Ctrl controls
+        # --- Create the Rate and Rate Ctrl controls
         rate_layout_widgets = []
         rate_layout_widgets.append(
             self._create_parameter_slider(
@@ -139,7 +137,10 @@ class DigitalModLFOSection(SectionBaseWidget):
                 vertical=True,
             )
         )
+        # --- Create the layout with the list of widgets
         rate_layout = create_layout_with_widgets(rate_layout_widgets)
+        # --- Create the widget to add the controls to
+        rate_widget = QWidget()
         rate_widget.setLayout(rate_layout)
         rate_widget.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MINIMUM_HEIGHT)
 
