@@ -58,10 +58,18 @@ class DigitalModLFOSection(SectionBaseWidget):
         self._init_ui()
 
     def _init_ui(self):
+        """init the ui"""
         mod_lfo_layout = self.get_layout()
+        shape_row_layout = self._create_shape_row_layout()
+        switch_row_layout = self._create_switch_row_layout()
+        mod_lfo_controls_tab_widget = self._create_mod_lfo_controls_tab_widget()
+        mod_lfo_layout.addLayout(shape_row_layout)
+        mod_lfo_layout.addLayout(switch_row_layout)
+        mod_lfo_layout.addWidget(mod_lfo_controls_tab_widget)
+        mod_lfo_layout.addStretch()
 
-        # --- Shape and sync controls
-        
+    def _create_shape_row_layout(self):
+        """Shape and sync controls"""
         # --- Create buttons for each Mod LFO shape
         mod_lfo_shapes = [
             DigitalLFOShape.TRIANGLE,
@@ -97,8 +105,10 @@ class DigitalModLFOSection(SectionBaseWidget):
             shape_row_layout_widgets.append(btn)
             
         shape_row_layout = create_layout_with_widgets(shape_row_layout_widgets])
-
-        # --- Switch Row
+        return shape_row_layout
+        
+    def _create_switch_row_layout(self):
+        """Switch Row layout"""
         self.mod_lfo_sync = self._create_parameter_combo_box(
             DigitalPartialParam.MOD_LFO_TEMPO_SYNC_SWITCH,
             DigitalDisplayName.MOD_LFO_TEMPO_SYNC_SWITCH,
@@ -109,13 +119,8 @@ class DigitalModLFOSection(SectionBaseWidget):
             DigitalDisplayName.MOD_LFO_TEMPO_SYNC_NOTE,
             options=DigitalDisplayOptions.MOD_LFO_TEMPO_SYNC_NOTE,
         )
- 
         switch_row_layout = create_layout_with_widgets([self.mod_lfo_sync, self.mod_lfo_note])
-        mod_lfo_layout.addLayout(shape_row_layout)
-        mod_lfo_layout.addLayout(switch_row_layout)
-        mod_lfo_controls_tab_widget = self._create_mod_lfo_controls_tab_widget()
-        mod_lfo_layout.addWidget(mod_lfo_controls_tab_widget)
-        mod_lfo_layout.addStretch()
+        return switch_row_layout
 
     def _create_mod_lfo_controls_tab_widget(self):
         """Create tab widget for Rate/Rate Ctrl and Depths"""
@@ -187,7 +192,6 @@ class DigitalModLFOSection(SectionBaseWidget):
         depths_widget.setLayout(depths_layout)
         depths_widget.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MINIMUM_HEIGHT)
         return depths_widget
- 
 
     def _on_mod_lfo_shape_selected(self, mod_lfo_shape: DigitalLFOShape):
         """
