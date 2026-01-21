@@ -1,8 +1,8 @@
 """
 LFO section of the digital partial editor.
 """
-
-from typing import Callable
+from dataclasses import dataclass
+from typing import Callable, Any
 
 from PySide6.QtWidgets import (
     QHBoxLayout,
@@ -14,11 +14,6 @@ from PySide6.QtWidgets import (
 from decologr import Decologr as log
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.digital.lfo import DigitalLFOShape
-from jdxi_editor.midi.data.parameter.digital.name import DigitalDisplayName
-from jdxi_editor.midi.data.parameter.digital.option import DigitalDisplayOptions
-from jdxi_editor.midi.data.parameter.digital.partial import (
-    DigitalPartialParam,
-)
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (
     create_button_with_icon,
@@ -28,13 +23,31 @@ from jdxi_editor.ui.widgets.editor.helper import (
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 
 
+@dataclass(frozen=True)
+class SliderSpec:
+    param: Any
+    label: str
+    vertical: bool = True
+
+
+@dataclass(frozen=True)
+class SwitchSpec:
+    param: Any
+    label: str
+    options: Any
+
+
 class BaseLFOSection(SectionBaseWidget):
     """LFO section for the digital partial editor."""
 
+    rate_tab_label: str = "Rate"
+    depths_tab_label: str = "Depths"
+
     def __init__(
-        self,
-        icon_type=IconType.ADSR,
-        analog=False
+            self,
+            icon_type: str = IconType.ADSR,
+            analog: bool = False,
+            send_midi_parameter: Callable = None
     ):
         """
         Initialize the DigitalLFOSection
@@ -42,9 +55,35 @@ class BaseLFOSection(SectionBaseWidget):
         :param icon_type: Type of icon e.g
         :param analog: bool
         """
+        self.DEPTH_SLIDERS: list = []
+        self.RATE_FADE_SLIDERS: list = []
+        self.SWITCH_SPECS: list = []
+        self.lfo_shape_param = None
+        self.switch_row_widgets: list | None = None
+        self.rate_layout_widgets: list | None = None
+        self.depths_layout_widgets: list | None = None
+        self.send_midi_parameter: Callable | None = send_midi_parameter
         self.lfo_shape_buttons = {}  # Dictionary to store LFO shape buttons
 
         super().__init__(icon_type=icon_type, analog=analog)
+        # -- Set up LFO shapes
+        self.lfo_shapes = [
+            DigitalLFOShape.TRIANGLE,
+            DigitalLFOShape.SINE,
+            DigitalLFOShape.SAW,
+            DigitalLFOShape.SQUARE,
+            DigitalLFOShape.SAMPLE_HOLD,
+            DigitalLFOShape.RANDOM,
+        ]
+        # --- Map LFO shapes to icon names
+        self.shape_icon_map = {
+            DigitalLFOShape.TRIANGLE: "mdi.triangle-wave",
+            DigitalLFOShape.SINE: "mdi.sine-wave",
+            DigitalLFOShape.SAW: "mdi.sawtooth-wave",
+            DigitalLFOShape.SQUARE: "mdi.square-wave",
+            DigitalLFOShape.SAMPLE_HOLD: "mdi.waveform",
+            DigitalLFOShape.RANDOM: "mdi.wave",
+        }
 
     def setup_ui(self):
         """Set up the UI for the LFO section."""
@@ -57,31 +96,139 @@ class BaseLFOSection(SectionBaseWidget):
         layout.addWidget(tab_widget)
         layout.addStretch()
 
-    def _create_tab_widget(self) -> QTabWidget:
-        """Create tab widget for Rate/Fade and Depths"""
-        lfo_controls_tab_widget = QTabWidget()
+    def build_widgets(self):
+        """Build the widgets"""
+        self._create_rate_fade_layout_widgets()
+        self._create_depths_layout_widgets()
+        self._create_switch_layout_widgets()
 
-        rate_fade_widget = self._create_rate_fade_controls()
+    def _create_shape_row_layout(self):
+        """Shape and sync controls"""
+        shape_label = QLabel("Shape")
+        shape_row_layout_widgets = [shape_label]
+        for mod_lfo_shape in self.lfo_shapes:
+            icon_name = self.shape_icon_map.get(mod_lfo_shape, "mdi.waveform")
+            icon = create_icon_from_qta(icon_name)
+            btn = create_button_with_icon(
+                icon_name=mod_lfo_shape.display_name,
+                icon=icon,
+                button_dimensions=JDXi.UI.Dimensions.WAVEFORM_ICON,
+                icon_dimensions=JDXi.UI.Dimensions.LFOIcon,
+            )
+            btn.clicked.connect(
+                lambda checked, shape=mod_lfo_shape: self._on_lfo_shape_selected(
+                    shape
+                )
+            )
+            self.lfo_shape_buttons[mod_lfo_shape] = btn
+            shape_row_layout_widgets.append(btn)
 
-        rate_fade_icon = JDXi.UI.IconRegistry.get_icon(
+        shape_row_layout = create_layout_with_widgets(shape_row_layout_widgets)
+        return shape_row_layout
+
+    def _create_tab_widget(self):
+        """Create tab widget for Rate/Rate Ctrl and Depths"""
+        mod_lfo_controls_tab_widget = QTabWidget()
+        rate_widget = self._create_rate_widget()
+        rate_icon = JDXi.UI.IconRegistry.get_icon(
             JDXi.UI.IconRegistry.CLOCK, color=JDXi.UI.Style.GREY
         )
-        lfo_controls_tab_widget.addTab(
-            rate_fade_widget, rate_fade_icon, "Rate and Fade"
-        )
-        depths_widget = self._create_depths_controls()
-
+        mod_lfo_controls_tab_widget.addTab(rate_widget, rate_icon, self.rate_tab_label)
         depths_icon = JDXi.UI.IconRegistry.get_icon(
             JDXi.UI.IconRegistry.WAVEFORM, color=JDXi.UI.Style.GREY
         )
-        lfo_controls_tab_widget.addTab(depths_widget, depths_icon, "Depths")
-        return lfo_controls_tab_widget
+        depths_widget = self._create_depths_widget()
+        mod_lfo_controls_tab_widget.addTab(depths_widget, depths_icon, self.depths_tab_label)
+        return mod_lfo_controls_tab_widget
 
-    def _create_shape_row_layout(self) -> QHBoxLayout:
-        pass
+    def _create_rate_widget(self):
+        """Rate and Rate Ctrl Controls Tab"""
+        rate_layout = create_layout_with_widgets(self.rate_layout_widgets)
+        rate_widget = QWidget()
+        rate_widget.setLayout(rate_layout)
+        rate_widget.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MINIMUM_HEIGHT)
+        return rate_widget
 
-    def _create_switch_row_layout(self) -> QHBoxLayout:
-        pass
+    def _create_depths_widget(self):
+        """Depths Tab"""
+        depths_layout = create_layout_with_widgets(self.depths_layout_widgets)
+        depths_widget = QWidget()
+        depths_widget.setLayout(depths_layout)
+        depths_widget.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MINIMUM_HEIGHT)
+        return depths_widget
+
+    def _create_rate_fade_controls(self) -> QWidget:
+        """Rate and Fade Controls Tab"""
+        rate_fade_widget = QWidget()
+        rate_fade_layout = create_layout_with_widgets(self.rate_layout_widgets)
+        rate_fade_widget.setLayout(rate_fade_layout)
+        rate_fade_widget.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MINIMUM_HEIGHT)
+        return rate_fade_widget
 
     def _create_depths_controls(self) -> QWidget:
+        """Depths Tab"""
+        depths_widget = QWidget()
+        depths_layout = create_layout_with_widgets(self.depths_layout_widgets)
+        depths_widget.setLayout(depths_layout)
+        depths_widget.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MINIMUM_HEIGHT)
+        return depths_widget
+
+    def _on_lfo_shape_selected(self, lfo_shape: DigitalLFOShape):
+        """
+        Handle Mod LFO shape button clicks
+
+        :param lfo_shape: DigitalLFOShape enum value
+        """
+        for btn in self.lfo_shape_buttons.values():
+            btn.setChecked(False)
+            btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
+        selected_btn = self.lfo_shape_buttons.get(lfo_shape)
+        if selected_btn:
+            selected_btn.setChecked(True)
+            selected_btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT_ACTIVE)
+
+        # --- Send MIDI message
+        if self.send_midi_parameter:
+            if not self.send_midi_parameter(
+                    self.lfo_shape_param, lfo_shape.value
+            ):
+                log.warning(f"Failed to set Mod LFO shape to {lfo_shape.name}")
+
+    def _create_switch_row_layout(self) -> QHBoxLayout:
+        """Create Switch row"""
+        switch_row_layout = create_layout_with_widgets(
+            self.switch_row_widgets
+        )
+        return switch_row_layout
+
+    def _build_sliders(self, specs: list[SliderSpec]):
+        return [
+            self._create_parameter_slider(
+                spec.param,
+                spec.label,
+                vertical=spec.vertical,
+            )
+            for spec in specs
+        ]
+
+    def _build_switches(self, specs: list[SwitchSpec]):
+        return [
+            self._create_parameter_switch(spec.param, spec.label, spec.options)
+            for spec in specs
+        ]
+
+    def _create_switch_layout_widgets(self):
+        """Create switch layout widgets"""
+        self.switch_row_widgets = self._build_switches(self.SWITCH_SPECS)
+
+    def _create_rate_fade_layout_widgets(self):
+        self.rate_layout_widgets = self._build_sliders(self.RATE_FADE_SLIDERS)
+
+    def _create_depths_layout_widgets(self):
+        self.depths_layout_widgets = self._build_sliders(self.DEPTH_SLIDERS)
+
+    def _create_parameter_slider(self, param, label, vertical) -> QWidget:
+        pass
+
+    def _create_parameter_switch(self, param, label, options) -> QWidget:
         pass

@@ -195,11 +195,12 @@ class DigitalPartialEditor(PartialEditor):
             "LFO",
         )
         self.mod_lfo_tab = DigitalModLFOSection(
-            self._create_parameter_slider,
-            self._create_parameter_combo_box,
-            self._on_parameter_changed,
-            self.controls,
-            self.send_midi_parameter,
+            create_parameter_slider=self._create_parameter_slider,
+            create_parameter_combo_box=self._create_parameter_combo_box,
+            create_parameter_switch=self._create_parameter_switch,
+            on_parameter_changed=self._on_parameter_changed,
+            controls=self.controls,
+            send_midi_parameter=self.send_midi_parameter,
         )
         self.tab_widget.addTab(
             self.mod_lfo_tab,
