@@ -33,11 +33,6 @@ class DigitalCommonSection(SectionBaseWidget):
 
     PITCH_BEND_ROW_SWITCHES = [
         SwitchSpec(
-            DigitalCommonParam.PORTAMENTO_TIME,
-            DigitalDisplayName.PORTAMENTO_TIME,
-            DigitalDisplayOptions.PORTAMENTO_TIME,
-        ),
-        SwitchSpec(
             DigitalCommonParam.PORTAMENTO_MODE,
             DigitalDisplayName.PORTAMENTO_MODE,
             DigitalDisplayOptions.PORTAMENTO_MODE,

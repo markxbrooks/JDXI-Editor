@@ -2,7 +2,6 @@ class DigitalDisplayOptions:
     """Digital UI Display Options"""
 
     # LFO Parameters
-    PORTAMENTO_TIME = None
     LFO_TEMPO_SYNC_NOTE = ["1/1", "1/2", "1/4", "1/8", "1/16"]
     LFO_TEMPO_SYNC_SWITCH = ["OFF", "ON"]
     LFO_KEY_TRIGGER = ["OFF", "ON"]
