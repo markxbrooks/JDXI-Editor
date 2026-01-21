@@ -9,7 +9,8 @@ from jdxi_editor.midi.data.parameter.digital.option import DigitalDisplayOptions
 from jdxi_editor.midi.data.parameter.digital.partial import (
     DigitalPartialParam,
 )
-from jdxi_editor.ui.editors.digital.partial.base_lfo import BaseLFOSection, SwitchSpec, SliderSpec
+from jdxi_editor.ui.editors.digital.partial.base_lfo import BaseLFOSection
+from jdxi_editor.ui.editors.widget_specs import SliderSpec, SwitchSpec
 from jdxi_editor.ui.widgets.editor import IconType
 
 
@@ -17,6 +18,34 @@ class DigitalLFOSection(BaseLFOSection):
     """LFO section for the digital partial editor."""
 
     rate_tab_label = "Rate and Fade"
+
+    DEPTH_SLIDERS = [
+        SliderSpec(DigitalPartialParam.LFO_PITCH_DEPTH, DigitalDisplayName.LFO_PITCH_DEPTH),
+        SliderSpec(DigitalPartialParam.LFO_FILTER_DEPTH, DigitalDisplayName.LFO_FILTER_DEPTH),
+        SliderSpec(DigitalPartialParam.LFO_AMP_DEPTH, DigitalDisplayName.LFO_AMP_DEPTH),
+        SliderSpec(DigitalPartialParam.LFO_PAN_DEPTH, DigitalDisplayName.LFO_PAN_DEPTH),
+    ]
+    SWITCH_SPECS = [
+        SwitchSpec(
+            DigitalPartialParam.LFO_TEMPO_SYNC_SWITCH,
+            DigitalDisplayName.LFO_TEMPO_SYNC_SWITCH,
+            DigitalDisplayOptions.LFO_TEMPO_SYNC_SWITCH,
+        ),
+        SwitchSpec(
+            DigitalPartialParam.LFO_TEMPO_SYNC_NOTE,
+            DigitalDisplayName.LFO_TEMPO_SYNC_NOTE,
+            DigitalDisplayOptions.LFO_TEMPO_SYNC_NOTE,
+        ),
+        SwitchSpec(
+            DigitalPartialParam.LFO_KEY_TRIGGER,
+            DigitalDisplayName.LFO_KEY_TRIGGER,
+            DigitalDisplayOptions.LFO_KEY_TRIGGER,
+        ),
+    ]
+    RATE_FADE_SLIDERS = [
+        SliderSpec(DigitalPartialParam.LFO_RATE, DigitalDisplayName.LFO_RATE),
+        SliderSpec(DigitalPartialParam.LFO_FADE_TIME, DigitalDisplayName.LFO_FADE_TIME),
+    ]
 
     def __init__(
         self,
@@ -47,32 +76,5 @@ class DigitalLFOSection(BaseLFOSection):
                          send_midi_parameter=send_midi_parameter)
         self.send_midi_parameter = send_midi_parameter
         self.lfo_shape_param = DigitalPartialParam.LFO_SHAPE
-        self.DEPTH_SLIDERS = [
-            SliderSpec(DigitalPartialParam.LFO_PITCH_DEPTH, DigitalDisplayName.LFO_PITCH_DEPTH),
-            SliderSpec(DigitalPartialParam.LFO_FILTER_DEPTH, DigitalDisplayName.LFO_FILTER_DEPTH),
-            SliderSpec(DigitalPartialParam.LFO_AMP_DEPTH, DigitalDisplayName.LFO_AMP_DEPTH),
-            SliderSpec(DigitalPartialParam.LFO_PAN_DEPTH, DigitalDisplayName.LFO_PAN_DEPTH),
-        ]
-        self.SWITCH_SPECS = [
-            SwitchSpec(
-                DigitalPartialParam.LFO_TEMPO_SYNC_SWITCH,
-                DigitalDisplayName.LFO_TEMPO_SYNC_SWITCH,
-                DigitalDisplayOptions.LFO_TEMPO_SYNC_SWITCH,
-            ),
-            SwitchSpec(
-                DigitalPartialParam.LFO_TEMPO_SYNC_NOTE,
-                DigitalDisplayName.LFO_TEMPO_SYNC_NOTE,
-                DigitalDisplayOptions.LFO_TEMPO_SYNC_NOTE,
-            ),
-            SwitchSpec(
-                DigitalPartialParam.LFO_KEY_TRIGGER,
-                DigitalDisplayName.LFO_KEY_TRIGGER,
-                DigitalDisplayOptions.LFO_KEY_TRIGGER,
-            ),
-        ]
-        self.RATE_FADE_SLIDERS = [
-            SliderSpec(DigitalPartialParam.LFO_RATE, DigitalDisplayName.LFO_RATE),
-            SliderSpec(DigitalPartialParam.LFO_FADE_TIME, DigitalDisplayName.LFO_FADE_TIME),
-        ]
         self.build_widgets()
         self.setup_ui()

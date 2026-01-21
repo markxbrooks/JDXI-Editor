@@ -162,3 +162,25 @@ class SectionBaseWidget(QWidget):
         )
         layout.addSpacing(JDXi.UI.Dimensions.EDITOR_DIGITAL.SPACING)
         return layout
+
+    def _build_sliders(self, specs: list["SliderSpec"]):
+        return [
+            self._create_parameter_slider(
+                spec.param,
+                spec.label,
+                vertical=spec.vertical,
+            )
+            for spec in specs
+        ]
+
+    def _build_switches(self, specs: list["SwitchSpec"]):
+        return [
+            self._create_parameter_switch(spec.param, spec.label, spec.options)
+            for spec in specs
+        ]
+
+    def _create_parameter_slider(self, param, label, vertical) -> QWidget:
+        pass
+
+    def _create_parameter_switch(self, param, label, options) -> QWidget:
+        pass

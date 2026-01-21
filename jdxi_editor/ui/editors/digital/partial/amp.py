@@ -4,9 +4,7 @@ AMP section for the digital partial editor.
 
 from typing import Callable
 
-from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
-    QGroupBox,
     QTabWidget,
     QVBoxLayout,
     QWidget,
@@ -19,8 +17,7 @@ from jdxi_editor.midi.data.parameter.digital.partial import (
     DigitalPartialParam,
 )
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.ui.image.utils import base64_to_pixmap
-from jdxi_editor.ui.image.waveform import generate_waveform_icon
+from jdxi_editor.ui.editors.widget_specs import SliderSpec
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (
@@ -36,13 +33,21 @@ from picomidi.sysex.parameter.address import AddressParameter
 class DigitalAmpSection(SectionBaseWidget):
     """Digital Amp Section for the JDXI Editor"""
 
+    AMP_SLIDER_SPECS = [
+        SliderSpec(DigitalPartialParam.AMP_LEVEL, DigitalDisplayName.AMP_LEVEL),
+        SliderSpec(DigitalPartialParam.AMP_LEVEL_KEYFOLLOW, DigitalDisplayName.AMP_LEVEL_KEYFOLLOW),
+        SliderSpec(DigitalPartialParam.AMP_VELOCITY, DigitalDisplayName.AMP_VELOCITY),
+        SliderSpec(DigitalPartialParam.LEVEL_AFTERTOUCH, DigitalDisplayName.LEVEL_AFTERTOUCH),
+        SliderSpec(DigitalPartialParam.CUTOFF_AFTERTOUCH, DigitalDisplayName.CUTOFF_AFTERTOUCH),
+    ]
+
     def __init__(
-        self,
-        create_parameter_slider: Callable,
-        partial_number: int,
-        midi_helper: MidiIOHelper,
-        controls: dict[AddressParameter, QWidget],
-        address: RolandSysExAddress,
+            self,
+            create_parameter_slider: Callable,
+            partial_number: int,
+            midi_helper: MidiIOHelper,
+            controls: dict[AddressParameter, QWidget],
+            address: RolandSysExAddress,
     ):
         """
         Initialize the DigitalAmpSection
@@ -61,98 +66,79 @@ class DigitalAmpSection(SectionBaseWidget):
 
         super().__init__(
             icon_type=IconType.NONE, analog=False
-        )  # Use NONE since we have custom icons
+        )  # --- Use NONE since we have custom icons
+        self.build_widgets()
         self.setup_ui()
+
+    def build_widgets(self):
+        """
+        Instantiate all child widgets.
+
+        Must be called before setup_ui(), as setup_ui()
+        assumes widgets already exist.
+        """
+        self._create_amp_control_widgets()
+        self._create_adsr_widget()
+        self._create_controls_widget()  # Must be before _create_tab_widget()
+        self._create_amp_adsr_group()  # Must be before _create_tab_widget()
+        self._create_tab_widget()  # Must be last as it uses controls_widget and amp_adsr_group
 
     def setup_ui(self):
         """Setup the amplifier section UI."""
-        amp_section_layout = self.get_layout(margins=(5, 15, 5, 5), spacing=5)
+        layout = self.get_layout(margins=(5, 15, 5, 5), spacing=5)
         self.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MINIMUM_HEIGHT)
-
-        # Custom icons layout (kept for Digital Amp's unique icon set)
+        # --- Custom icons layout (kept for Digital Amp's unique icon set)
         icons_hlayout = create_icons_layout()
-        amp_section_layout.addLayout(icons_hlayout)
+        layout.addLayout(icons_hlayout)
+        layout.addWidget(self.tab_widget)
+        layout.addSpacing(JDXi.UI.Dimensions.EDITOR_DIGITAL.SPACING)
+        layout.addStretch()
 
-        # Create tab widget
-        self.digital_amp_tab_widget = QTabWidget()
-        amp_section_layout.addWidget(self.digital_amp_tab_widget)
+    def _create_tab_widget(self):
+        """Create tab widget"""
+        self.tab_widget = QTabWidget()
+        self.tab_widget.addTab(
+            self.controls_widget, self.controls_icon, "Controls"
+        )
+        # --- Add ADSR tab
+        self.tab_widget.addTab(self.amp_adsr_group, JDXi.UI.IconRegistry.get_generated_icon("adsr"), "ADSR")
 
-        # Add Controls tab
-        amp_controls_layout = self._create_amp_controls_layout()
-        amp_controls_widget = QWidget()
-        amp_controls_widget.setLayout(amp_controls_layout)
-        controls_icon = JDXi.UI.IconRegistry.get_icon(
+    def _create_controls_widget(self) -> None:
+        """Add Controls tab"""
+        controls_layout = self._create_controls_layout()
+        self.controls_widget = QWidget()
+        self.controls_widget.setLayout(controls_layout)
+        self.controls_icon = JDXi.UI.IconRegistry.get_icon(
             JDXi.UI.IconRegistry.TUNE, color=JDXi.UI.Style.GREY
         )
-        self.digital_amp_tab_widget.addTab(
-            amp_controls_widget, controls_icon, "Controls"
+
+    def _create_amp_adsr_group(self) -> None:
+        """Create amp ADSR group (harmonized with Analog Amp, uses standardized helper)"""
+        # --- Use standardized envelope group helper (centers icon automatically)
+        self.amp_adsr_group = create_envelope_group(
+            name="Envelope", adsr_widget=self.amp_env_adsr_widget, analog=False
         )
 
-        # Add ADSR tab
-        amp_adsr_group = self._create_amp_adsr_group()
-        adsr_icon_base64 = generate_waveform_icon("adsr", "#FFFFFF", 1.0)
-        adsr_icon = QIcon(base64_to_pixmap(adsr_icon_base64))
-        self.digital_amp_tab_widget.addTab(amp_adsr_group, adsr_icon, "ADSR")
-
-        amp_section_layout.addSpacing(JDXi.UI.Dimensions.EDITOR_DIGITAL.SPACING)
-        amp_section_layout.addStretch()
-
-    def _create_amp_controls_layout(self) -> QVBoxLayout:
+    def _create_controls_layout(self) -> QVBoxLayout:
         """Create amp controls layout"""
-
         # --- Level and velocity controls row - standardized order: Level, KeyFollow, Velocity
         controls_row_layout = create_layout_with_widgets(
-            [
-                self._create_parameter_slider(
-                    DigitalPartialParam.AMP_LEVEL,
-                    DigitalDisplayName.AMP_LEVEL,
-                    vertical=True,
-                ),
-                self._create_parameter_slider(
-                    DigitalPartialParam.AMP_LEVEL_KEYFOLLOW,
-                    DigitalDisplayName.AMP_LEVEL_KEYFOLLOW,
-                    vertical=True,
-                ),
-                self._create_parameter_slider(
-                    DigitalPartialParam.AMP_VELOCITY,
-                    DigitalDisplayName.AMP_VELOCITY,
-                    vertical=True,
-                ),
-                self._create_parameter_slider(
-                    DigitalPartialParam.LEVEL_AFTERTOUCH,
-                    DigitalDisplayName.LEVEL_AFTERTOUCH,
-                    vertical=True,
-                ),
-                self._create_parameter_slider(
-                    DigitalPartialParam.CUTOFF_AFTERTOUCH,
-                    DigitalDisplayName.CUTOFF_AFTERTOUCH,
-                    vertical=True,
-                ),
-            ]
+            self.amp_control_widgets
         )
-
-        # --- Pan slider in a separate row to get left to right
-        pan_slider = self._create_parameter_slider(
-            DigitalPartialParam.AMP_PAN, DigitalDisplayName.AMP_PAN
-        )
-        pan_slider.setValue(0)
-        pan_row_layout = create_layout_with_widgets([pan_slider])
-
+        self._create_horizontal_pan_slider()
+        self.pan_slider.setValue(0)
+        pan_row_layout = create_layout_with_widgets([self.pan_slider])
         # --- Create main layout with list of layouts
         main_layout = create_layout_with_inner_layouts(
-            [controls_row_layout, pan_row_layout]
+            [
+                controls_row_layout,
+                pan_row_layout
+            ]
         )
         return main_layout
 
-    def _create_amp_adsr_group(self) -> QGroupBox:
-        """Create amp ADSR group (harmonized with Analog Amp, uses standardized helper)"""
-        # --- Create ADSRWidget
-        (
-            group_address,
-            _,
-        ) = DigitalPartialParam.AMP_ENV_ATTACK_TIME.get_address_for_partial(
-            self.partial_number
-        )
+    def _create_adsr_widget(self):
+        """Create ADSRWidget"""
         self.amp_env_adsr_widget = ADSR(
             attack_param=DigitalPartialParam.AMP_ENV_ATTACK_TIME,
             decay_param=DigitalPartialParam.AMP_ENV_DECAY_TIME,
@@ -163,7 +149,15 @@ class DigitalAmpSection(SectionBaseWidget):
             controls=self.controls,
             address=self.address,
         )
-        # Use standardized envelope group helper (centers icon automatically)
-        return create_envelope_group(
-            name="Envelope", adsr_widget=self.amp_env_adsr_widget, analog=False
+
+    def _create_horizontal_pan_slider(self):
+        """Create pan slider (horizontal, centered)."""
+        self.pan_slider = self._create_parameter_slider(
+            DigitalPartialParam.AMP_PAN,
+            DigitalDisplayName.AMP_PAN,
         )
+        self.pan_slider.setValue(0)
+
+    def _create_amp_control_widgets(self):
+        """Create amp control sliders."""
+        self.amp_control_widgets = self._build_sliders(self.AMP_SLIDER_SPECS)

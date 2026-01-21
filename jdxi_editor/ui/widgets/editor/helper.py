@@ -52,6 +52,13 @@ def create_button_with_icon(
     return btn
 
 
+def create_widget_with_layout(inner_layout: QHBoxLayout) -> QWidget:
+    """create widget with given inner layout"""
+    widget = QWidget()
+    widget.setLayout(inner_layout)
+    return widget
+
+
 def create_layout_with_widgets(
     widget_list: list,
     vertical: bool = False,

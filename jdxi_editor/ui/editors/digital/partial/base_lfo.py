@@ -1,8 +1,7 @@
 """
 LFO section of the digital partial editor.
 """
-from dataclasses import dataclass
-from typing import Callable, Any
+from typing import Callable
 
 from PySide6.QtWidgets import (
     QHBoxLayout,
@@ -21,20 +20,6 @@ from jdxi_editor.ui.widgets.editor.helper import (
     create_layout_with_widgets,
 )
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
-
-
-@dataclass(frozen=True)
-class SliderSpec:
-    param: Any
-    label: str
-    vertical: bool = True
-
-
-@dataclass(frozen=True)
-class SwitchSpec:
-    param: Any
-    label: str
-    options: Any
 
 
 class BaseLFOSection(SectionBaseWidget):
@@ -201,22 +186,6 @@ class BaseLFOSection(SectionBaseWidget):
         )
         return switch_row_layout
 
-    def _build_sliders(self, specs: list[SliderSpec]):
-        return [
-            self._create_parameter_slider(
-                spec.param,
-                spec.label,
-                vertical=spec.vertical,
-            )
-            for spec in specs
-        ]
-
-    def _build_switches(self, specs: list[SwitchSpec]):
-        return [
-            self._create_parameter_switch(spec.param, spec.label, spec.options)
-            for spec in specs
-        ]
-
     def _create_switch_layout_widgets(self):
         """Create switch layout widgets"""
         self.switch_row_widgets = self._build_switches(self.SWITCH_SPECS)
@@ -227,8 +196,3 @@ class BaseLFOSection(SectionBaseWidget):
     def _create_depths_layout_widgets(self):
         self.depths_layout_widgets = self._build_sliders(self.DEPTH_SLIDERS)
 
-    def _create_parameter_slider(self, param, label, vertical) -> QWidget:
-        pass
-
-    def _create_parameter_switch(self, param, label, options) -> QWidget:
-        pass

@@ -9,7 +9,8 @@ from jdxi_editor.midi.data.parameter.digital.option import DigitalDisplayOptions
 from jdxi_editor.midi.data.parameter.digital.partial import (
     DigitalPartialParam,
 )
-from jdxi_editor.ui.editors.digital.partial.base_lfo import BaseLFOSection, SliderSpec, SwitchSpec
+from jdxi_editor.ui.editors.digital.partial.base_lfo import BaseLFOSection
+from jdxi_editor.ui.editors.widget_specs import SliderSpec, SwitchSpec
 from jdxi_editor.ui.widgets.editor import IconType
 
 
@@ -17,6 +18,29 @@ class DigitalModLFOSection(BaseLFOSection):
     """MOD LFO section for the digital partial editor."""
 
     rate_tab_label = "Rate and Rate Ctrl"
+
+    RATE_FADE_SLIDERS = [
+        SliderSpec(DigitalPartialParam.MOD_LFO_RATE, DigitalDisplayName.MOD_LFO_RATE),
+        SliderSpec(DigitalPartialParam.MOD_LFO_RATE_CTRL, DigitalDisplayName.MOD_LFO_RATE_CTRL),
+    ]
+    DEPTH_SLIDERS = [
+        SliderSpec(DigitalPartialParam.LFO_PITCH_DEPTH, DigitalDisplayName.MOD_LFO_PITCH_DEPTH),
+        SliderSpec(DigitalPartialParam.LFO_FILTER_DEPTH, DigitalDisplayName.MOD_LFO_FILTER_DEPTH),
+        SliderSpec(DigitalPartialParam.LFO_AMP_DEPTH, DigitalDisplayName.MOD_LFO_AMP_DEPTH),
+        SliderSpec(DigitalPartialParam.LFO_PAN_DEPTH, DigitalDisplayName.MOD_LFO_PAN),
+    ]
+    SWITCH_SPECS = [
+        SwitchSpec(
+            DigitalPartialParam.MOD_LFO_TEMPO_SYNC_SWITCH,
+            DigitalDisplayName.MOD_LFO_TEMPO_SYNC_SWITCH,
+            DigitalDisplayOptions.MOD_LFO_TEMPO_SYNC_SWITCH,
+        ),
+        SwitchSpec(
+            DigitalPartialParam.MOD_LFO_TEMPO_SYNC_NOTE,
+            DigitalDisplayName.MOD_LFO_TEMPO_SYNC_NOTE,
+            DigitalDisplayOptions.MOD_LFO_TEMPO_SYNC_NOTE,
+        ),
+    ]
 
     def __init__(
         self,
@@ -49,27 +73,5 @@ class DigitalModLFOSection(BaseLFOSection):
                          analog=analog,
                          send_midi_parameter=send_midi_parameter)
         self.lfo_shape_param = DigitalPartialParam.MOD_LFO_SHAPE
-        self.RATE_FADE_SLIDERS = [
-            SliderSpec(DigitalPartialParam.MOD_LFO_RATE, DigitalDisplayName.MOD_LFO_RATE),
-            SliderSpec(DigitalPartialParam.MOD_LFO_RATE_CTRL, DigitalDisplayName.MOD_LFO_RATE_CTRL),
-        ]
-        self.DEPTH_SLIDERS = [
-            SliderSpec(DigitalPartialParam.LFO_PITCH_DEPTH, DigitalDisplayName.MOD_LFO_PITCH_DEPTH),
-            SliderSpec(DigitalPartialParam.LFO_FILTER_DEPTH, DigitalDisplayName.MOD_LFO_FILTER_DEPTH),
-            SliderSpec(DigitalPartialParam.LFO_AMP_DEPTH, DigitalDisplayName.MOD_LFO_AMP_DEPTH),
-            SliderSpec(DigitalPartialParam.LFO_PAN_DEPTH, DigitalDisplayName.MOD_LFO_PAN),
-        ]
-        self.SWITCH_SPECS = [
-            SwitchSpec(
-                DigitalPartialParam.MOD_LFO_TEMPO_SYNC_SWITCH,
-                DigitalDisplayName.MOD_LFO_TEMPO_SYNC_SWITCH,
-                DigitalDisplayOptions.MOD_LFO_TEMPO_SYNC_SWITCH,
-            ),
-            SwitchSpec(
-                DigitalPartialParam.MOD_LFO_TEMPO_SYNC_NOTE,
-                DigitalDisplayName.MOD_LFO_TEMPO_SYNC_NOTE,
-                DigitalDisplayOptions.MOD_LFO_TEMPO_SYNC_NOTE,
-            ),
-        ]
         self.build_widgets()
         self.setup_ui()
