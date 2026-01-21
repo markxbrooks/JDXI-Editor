@@ -35,19 +35,26 @@ class DigitalAmpSection(SectionBaseWidget):
 
     AMP_SLIDER_SPECS = [
         SliderSpec(DigitalPartialParam.AMP_LEVEL, DigitalDisplayName.AMP_LEVEL),
-        SliderSpec(DigitalPartialParam.AMP_LEVEL_KEYFOLLOW, DigitalDisplayName.AMP_LEVEL_KEYFOLLOW),
+        SliderSpec(
+            DigitalPartialParam.AMP_LEVEL_KEYFOLLOW,
+            DigitalDisplayName.AMP_LEVEL_KEYFOLLOW,
+        ),
         SliderSpec(DigitalPartialParam.AMP_VELOCITY, DigitalDisplayName.AMP_VELOCITY),
-        SliderSpec(DigitalPartialParam.LEVEL_AFTERTOUCH, DigitalDisplayName.LEVEL_AFTERTOUCH),
-        SliderSpec(DigitalPartialParam.CUTOFF_AFTERTOUCH, DigitalDisplayName.CUTOFF_AFTERTOUCH),
+        SliderSpec(
+            DigitalPartialParam.LEVEL_AFTERTOUCH, DigitalDisplayName.LEVEL_AFTERTOUCH
+        ),
+        SliderSpec(
+            DigitalPartialParam.CUTOFF_AFTERTOUCH, DigitalDisplayName.CUTOFF_AFTERTOUCH
+        ),
     ]
 
     def __init__(
-            self,
-            create_parameter_slider: Callable,
-            partial_number: int,
-            midi_helper: MidiIOHelper,
-            controls: dict[AddressParameter, QWidget],
-            address: RolandSysExAddress,
+        self,
+        create_parameter_slider: Callable,
+        partial_number: int,
+        midi_helper: MidiIOHelper,
+        controls: dict[AddressParameter, QWidget],
+        address: RolandSysExAddress,
     ):
         """
         Initialize the DigitalAmpSection
@@ -97,11 +104,11 @@ class DigitalAmpSection(SectionBaseWidget):
     def _create_tab_widget(self):
         """Create tab widget"""
         self.tab_widget = QTabWidget()
-        self.tab_widget.addTab(
-            self.controls_widget, self.controls_icon, "Controls"
-        )
+        self.tab_widget.addTab(self.controls_widget, self.controls_icon, "Controls")
         # --- Add ADSR tab
-        self.tab_widget.addTab(self.amp_adsr_group, JDXi.UI.IconRegistry.get_generated_icon("adsr"), "ADSR")
+        self.tab_widget.addTab(
+            self.amp_adsr_group, JDXi.UI.IconRegistry.get_generated_icon("adsr"), "ADSR"
+        )
 
     def _create_controls_widget(self) -> None:
         """Add Controls tab"""
@@ -122,18 +129,13 @@ class DigitalAmpSection(SectionBaseWidget):
     def _create_controls_layout(self) -> QVBoxLayout:
         """Create amp controls layout"""
         # --- Level and velocity controls row - standardized order: Level, KeyFollow, Velocity
-        controls_row_layout = create_layout_with_widgets(
-            self.amp_control_widgets
-        )
+        controls_row_layout = create_layout_with_widgets(self.amp_control_widgets)
         self._create_horizontal_pan_slider()
         self.pan_slider.setValue(0)
         pan_row_layout = create_layout_with_widgets([self.pan_slider])
         # --- Create main layout with list of layouts
         main_layout = create_layout_with_inner_layouts(
-            [
-                controls_row_layout,
-                pan_row_layout
-            ]
+            [controls_row_layout, pan_row_layout]
         )
         return main_layout
 

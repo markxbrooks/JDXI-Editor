@@ -121,8 +121,11 @@ class SimpleEditorHelper:
         self.editor.instrument_icon_folder = self.image_folder
         self.editor.default_image = self.default_image
 
-        # Set image_label on editor so update_instrument_image can access it
+        # Set image_label and preset_image_label on editor so update_instrument_image can access it
         self.editor.image_label = self.image_label
+        # BasicEditor expects preset_image_label; keep both in sync
+        if not hasattr(self.editor, "preset_image_label") or self.editor.preset_image_label is None:
+            self.editor.preset_image_label = self.image_label
 
         # Update image (if editor has update_instrument_image method)
         if hasattr(self.editor, "update_instrument_image"):

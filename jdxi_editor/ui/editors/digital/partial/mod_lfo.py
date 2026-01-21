@@ -21,12 +21,21 @@ class DigitalModLFOSection(BaseLFOSection):
 
     RATE_FADE_SLIDERS = [
         SliderSpec(DigitalPartialParam.MOD_LFO_RATE, DigitalDisplayName.MOD_LFO_RATE),
-        SliderSpec(DigitalPartialParam.MOD_LFO_RATE_CTRL, DigitalDisplayName.MOD_LFO_RATE_CTRL),
+        SliderSpec(
+            DigitalPartialParam.MOD_LFO_RATE_CTRL, DigitalDisplayName.MOD_LFO_RATE_CTRL
+        ),
     ]
     DEPTH_SLIDERS = [
-        SliderSpec(DigitalPartialParam.LFO_PITCH_DEPTH, DigitalDisplayName.MOD_LFO_PITCH_DEPTH),
-        SliderSpec(DigitalPartialParam.LFO_FILTER_DEPTH, DigitalDisplayName.MOD_LFO_FILTER_DEPTH),
-        SliderSpec(DigitalPartialParam.LFO_AMP_DEPTH, DigitalDisplayName.MOD_LFO_AMP_DEPTH),
+        SliderSpec(
+            DigitalPartialParam.LFO_PITCH_DEPTH, DigitalDisplayName.MOD_LFO_PITCH_DEPTH
+        ),
+        SliderSpec(
+            DigitalPartialParam.LFO_FILTER_DEPTH,
+            DigitalDisplayName.MOD_LFO_FILTER_DEPTH,
+        ),
+        SliderSpec(
+            DigitalPartialParam.LFO_AMP_DEPTH, DigitalDisplayName.MOD_LFO_AMP_DEPTH
+        ),
         SliderSpec(DigitalPartialParam.LFO_PAN_DEPTH, DigitalDisplayName.MOD_LFO_PAN),
     ]
     SWITCH_SPECS = [
@@ -51,7 +60,7 @@ class DigitalModLFOSection(BaseLFOSection):
         controls: dict,
         send_midi_parameter: Callable = None,
         icon_type: str = IconType.ADSR,
-        analog: bool = False
+        analog: bool = False,
     ):
         """
         Initialize the DigitalModLFOSection
@@ -69,9 +78,9 @@ class DigitalModLFOSection(BaseLFOSection):
         self.controls = controls
         self.lfo_shape_buttons = {}  # Dictionary to store Mod LFO shape buttons
 
-        super().__init__(icon_type=icon_type,
-                         analog=analog,
-                         send_midi_parameter=send_midi_parameter)
+        super().__init__(
+            icon_type=icon_type, analog=analog, send_midi_parameter=send_midi_parameter
+        )
         self.lfo_shape_param = DigitalPartialParam.MOD_LFO_SHAPE
         self.build_widgets()
         self.setup_ui()

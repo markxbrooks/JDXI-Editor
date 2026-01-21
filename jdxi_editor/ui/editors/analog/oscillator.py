@@ -103,12 +103,16 @@ class AnalogOscillatorSection(SectionBaseWidget):
         layout.addWidget(self.oscillator_tab_widget)
 
         # --- Tuning and Pitch tab (standardized name matching Digital) ---
-        tuning_pitch_widget = self._create_tuning_pitch_widget()
+        tuning_widget = self._create_tuning_group()
+        pitch_widget = self._create_tuning_pitch_widget()
         tuning_icon = JDXi.UI.IconRegistry.get_icon(
             JDXi.UI.IconRegistry.MUSIC_NOTE, color=JDXi.UI.Style.GREY
         )
         self.oscillator_tab_widget.addTab(
-            tuning_pitch_widget, tuning_icon, "Tuning and Pitch"
+            pitch_widget, tuning_icon, "Pitch"
+        )
+        self.oscillator_tab_widget.addTab(
+            tuning_widget, tuning_icon, "Tuning"
         )
 
         # --- Pulse Width tab ---
@@ -124,7 +128,6 @@ class AnalogOscillatorSection(SectionBaseWidget):
         """Create tuning and pitch widget combining Tuning and Pitch Envelope (standardized name matching Digital)"""
         pitch_layout = QHBoxLayout()
         pitch_layout.addStretch()
-        pitch_layout.addWidget(self._create_tuning_group())
         pitch_layout.addWidget(self._create_pitch_env_group())
         pitch_layout.addStretch()
         pitch_widget = QWidget()

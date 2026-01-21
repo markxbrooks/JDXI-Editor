@@ -20,8 +20,12 @@ class DigitalLFOSection(BaseLFOSection):
     rate_tab_label = "Rate and Fade"
 
     DEPTH_SLIDERS = [
-        SliderSpec(DigitalPartialParam.LFO_PITCH_DEPTH, DigitalDisplayName.LFO_PITCH_DEPTH),
-        SliderSpec(DigitalPartialParam.LFO_FILTER_DEPTH, DigitalDisplayName.LFO_FILTER_DEPTH),
+        SliderSpec(
+            DigitalPartialParam.LFO_PITCH_DEPTH, DigitalDisplayName.LFO_PITCH_DEPTH
+        ),
+        SliderSpec(
+            DigitalPartialParam.LFO_FILTER_DEPTH, DigitalDisplayName.LFO_FILTER_DEPTH
+        ),
         SliderSpec(DigitalPartialParam.LFO_AMP_DEPTH, DigitalDisplayName.LFO_AMP_DEPTH),
         SliderSpec(DigitalPartialParam.LFO_PAN_DEPTH, DigitalDisplayName.LFO_PAN_DEPTH),
     ]
@@ -54,7 +58,8 @@ class DigitalLFOSection(BaseLFOSection):
         create_parameter_combo_box: Callable,
         controls: dict,
         send_midi_parameter: Callable = None,
-        icon_type=IconType.ADSR, analog=False
+        icon_type=IconType.ADSR,
+        analog=False,
     ):
         """
         Initialize the DigitalLFOSection
@@ -71,9 +76,9 @@ class DigitalLFOSection(BaseLFOSection):
         self.controls = controls
         self.lfo_shape_buttons = {}  # Dictionary to store LFO shape buttons
 
-        super().__init__(icon_type=icon_type,
-                         analog=analog,
-                         send_midi_parameter=send_midi_parameter)
+        super().__init__(
+            icon_type=icon_type, analog=analog, send_midi_parameter=send_midi_parameter
+        )
         self.send_midi_parameter = send_midi_parameter
         self.lfo_shape_param = DigitalPartialParam.LFO_SHAPE
         self.build_widgets()

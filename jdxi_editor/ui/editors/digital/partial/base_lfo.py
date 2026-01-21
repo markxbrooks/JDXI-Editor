@@ -1,6 +1,7 @@
 """
 LFO section of the digital partial editor.
 """
+
 from typing import Callable
 
 from PySide6.QtWidgets import (
@@ -29,10 +30,10 @@ class BaseLFOSection(SectionBaseWidget):
     depths_tab_label: str = "Depths"
 
     def __init__(
-            self,
-            icon_type: str = IconType.ADSR,
-            analog: bool = False,
-            send_midi_parameter: Callable = None
+        self,
+        icon_type: str = IconType.ADSR,
+        analog: bool = False,
+        send_midi_parameter: Callable = None,
     ):
         """
         Initialize the DigitalLFOSection
@@ -40,9 +41,6 @@ class BaseLFOSection(SectionBaseWidget):
         :param icon_type: Type of icon e.g
         :param analog: bool
         """
-        self.DEPTH_SLIDERS: list = []
-        self.RATE_FADE_SLIDERS: list = []
-        self.SWITCH_SPECS: list = []
         self.lfo_shape_param = None
         self.switch_row_widgets: list | None = None
         self.rate_layout_widgets: list | None = None
@@ -101,9 +99,7 @@ class BaseLFOSection(SectionBaseWidget):
                 icon_dimensions=JDXi.UI.Dimensions.LFOIcon,
             )
             btn.clicked.connect(
-                lambda checked, shape=mod_lfo_shape: self._on_lfo_shape_selected(
-                    shape
-                )
+                lambda checked, shape=mod_lfo_shape: self._on_lfo_shape_selected(shape)
             )
             self.lfo_shape_buttons[mod_lfo_shape] = btn
             shape_row_layout_widgets.append(btn)
@@ -123,7 +119,9 @@ class BaseLFOSection(SectionBaseWidget):
             JDXi.UI.IconRegistry.WAVEFORM, color=JDXi.UI.Style.GREY
         )
         depths_widget = self._create_depths_widget()
-        mod_lfo_controls_tab_widget.addTab(depths_widget, depths_icon, self.depths_tab_label)
+        mod_lfo_controls_tab_widget.addTab(
+            depths_widget, depths_icon, self.depths_tab_label
+        )
         return mod_lfo_controls_tab_widget
 
     def _create_rate_widget(self):
@@ -174,16 +172,12 @@ class BaseLFOSection(SectionBaseWidget):
 
         # --- Send MIDI message
         if self.send_midi_parameter:
-            if not self.send_midi_parameter(
-                    self.lfo_shape_param, lfo_shape.value
-            ):
+            if not self.send_midi_parameter(self.lfo_shape_param, lfo_shape.value):
                 log.warning(f"Failed to set Mod LFO shape to {lfo_shape.name}")
 
     def _create_switch_row_layout(self) -> QHBoxLayout:
         """Create Switch row"""
-        switch_row_layout = create_layout_with_widgets(
-            self.switch_row_widgets
-        )
+        switch_row_layout = create_layout_with_widgets(self.switch_row_widgets)
         return switch_row_layout
 
     def _create_switch_layout_widgets(self):
@@ -195,4 +189,3 @@ class BaseLFOSection(SectionBaseWidget):
 
     def _create_depths_layout_widgets(self):
         self.depths_layout_widgets = self._build_sliders(self.DEPTH_SLIDERS)
-

@@ -31,7 +31,10 @@ from jdxi_editor.ui.widgets.combo_box.searchable_filterable import (
     SearchableFilterableComboBox,
 )
 from jdxi_editor.ui.widgets.editor import IconType
-from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets, create_widget_with_layout
+from jdxi_editor.ui.widgets.editor.helper import (
+    create_layout_with_widgets,
+    create_widget_with_layout,
+)
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.pitch.envelope import PitchEnvelopeWidget
 from picomidi.sysex.parameter.address import AddressParameter
@@ -77,26 +80,26 @@ class DigitalOscillatorSection(SectionBaseWidget):
         layout.addWidget(self.oscillator_tab_widget)
 
         # --- Tuning and Pitch tab (combines Tuning and Pitch Envelope like Analog) ---
-        tuning_pitch_widget = self._create_tuning_pitch_widget()
+        pitch_widget = self._create_tuning_pitch_widget()
+        tuning_widget = self._create_tuning_group()
         tuning_icon = JDXi.UI.IconRegistry.get_icon(
             JDXi.UI.IconRegistry.MUSIC_NOTE, color=JDXi.UI.Style.GREY
         )
         self.oscillator_tab_widget.addTab(
-            tuning_pitch_widget, tuning_icon, "Tuning and Pitch"
+            pitch_widget, tuning_icon, "Pitch"
+        )
+        self.oscillator_tab_widget.addTab(
+            tuning_widget, tuning_icon, "Tuning"
         )
 
         # --- Pulse Width tab ---
         pw_group = self._create_pw_group()
-        pw_icon = QIcon(
-            base64_to_pixmap(generate_waveform_icon("square", "#FFFFFF", 1.0))
-        )
+        pw_icon = JDXi.UI.IconRegistry.get_generated_icon("square")
         self.oscillator_tab_widget.addTab(pw_group, pw_icon, "Pulse Width")
 
         # --- PCM Wave tab (unique to Digital) ---
         pcm_group = self._create_pcm_group()
-        pcm_icon = QIcon(
-            base64_to_pixmap(generate_waveform_icon("pcm", "#FFFFFF", 1.0))
-        )
+        pcm_icon = JDXi.UI.IconRegistry.get_generated_icon("pcm")
         self.oscillator_tab_widget.addTab(pcm_group, pcm_icon, "PCM Wave")
 
         layout.addStretch()
@@ -110,14 +113,14 @@ class DigitalOscillatorSection(SectionBaseWidget):
         """Create waveform buttons layout"""
         self.wave_buttons = {}
         wave_icons = {
-            DigitalOscWave.SAW: generate_waveform_icon("upsaw", "#FFFFFF", 1.0),
-            DigitalOscWave.SQUARE: generate_waveform_icon("square", "#FFFFFF", 1.0),
-            DigitalOscWave.PW_SQUARE: generate_waveform_icon("pwsqu", "#FFFFFF", 1.0),
-            DigitalOscWave.TRIANGLE: generate_waveform_icon("triangle", "#FFFFFF", 1.0),
-            DigitalOscWave.SINE: generate_waveform_icon("sine", "#FFFFFF", 1.0),
-            DigitalOscWave.NOISE: generate_waveform_icon("noise", "#FFFFFF", 1.0),
-            DigitalOscWave.SUPER_SAW: generate_waveform_icon("spsaw", "#FFFFFF", 1.0),
-            DigitalOscWave.PCM: generate_waveform_icon("pcm", "#FFFFFF", 1.0),
+            DigitalOscWave.SAW: generate_waveform_icon("upsaw", JDXi.UI.Style.WHITE, 1.0),
+            DigitalOscWave.SQUARE: generate_waveform_icon("square", JDXi.UI.Style.WHITE, 1.0),
+            DigitalOscWave.PW_SQUARE: generate_waveform_icon("pwsqu", JDXi.UI.Style.WHITE, 1.0),
+            DigitalOscWave.TRIANGLE: generate_waveform_icon("triangle", JDXi.UI.Style.WHITE, 1.0),
+            DigitalOscWave.SINE: generate_waveform_icon("sine", JDXi.UI.Style.WHITE, 1.0),
+            DigitalOscWave.NOISE: generate_waveform_icon("noise", JDXi.UI.Style.WHITE, 1.0),
+            DigitalOscWave.SUPER_SAW: generate_waveform_icon("spsaw", JDXi.UI.Style.WHITE, 1.0),
+            DigitalOscWave.PCM: generate_waveform_icon("pcm", JDXi.UI.Style.WHITE, 1.0),
         }
         wave_layout_widgets = []
         for wave, icon_base64 in wave_icons.items():
@@ -147,7 +150,9 @@ class DigitalOscillatorSection(SectionBaseWidget):
 
     def _create_tuning_pitch_widget(self) -> QWidget:
         """Create tuning and pitch widget combining Tuning and Pitch Envelope"""
-        pitch_layout_widgets = [self._create_tuning_group(), self._create_pitch_env_group()]
+        pitch_layout_widgets = [
+            self._create_pitch_env_group(),
+        ]
         pitch_layout = create_layout_with_widgets(pitch_layout_widgets)
         pitch_widget = create_widget_with_layout(pitch_layout)
         pitch_widget.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MINIMUM_HEIGHT)
@@ -172,7 +177,7 @@ class DigitalOscillatorSection(SectionBaseWidget):
                 DigitalDisplayName.OSC_DETUNE,
                 vertical=True,
             ),
-            self.super_saw_detune
+            self.super_saw_detune,
         ]
         tuning_layout = create_layout_with_widgets(tuning_layout_widgets)
         tuning_group.setLayout(tuning_layout)
@@ -220,8 +225,9 @@ class DigitalOscillatorSection(SectionBaseWidget):
         )
         JDXi.UI.ThemeManager.apply_adsr_style(self.pwm_widget)
         self.pwm_widget.setMaximumHeight(JDXi.UI.Style.PWM_WIDGET_HEIGHT)
-        pwm_widget_layout = create_layout_with_widgets([self.pwm_widget,
-                                                        self.pw_shift_slider])
+        pwm_widget_layout = create_layout_with_widgets(
+            [self.pwm_widget, self.pw_shift_slider]
+        )
         pw_layout.addLayout(pwm_widget_layout)
         pw_layout.addStretch()
         return pw_group
