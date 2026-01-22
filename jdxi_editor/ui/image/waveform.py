@@ -23,6 +23,8 @@ from io import BytesIO
 
 from PIL import Image, ImageColor, ImageDraw
 
+from jdxi_editor.midi.data.digital.oscillator import WaveformIconType
+
 
 def generate_waveform_icon(
     waveform: str, foreground_color: str, icon_scale: float
@@ -47,19 +49,19 @@ def generate_waveform_icon(
     quarter_x = x * 0.25
     three_quarters_x = x * 0.75
 
-    if waveform == "triangle":
+    if waveform == WaveformIconType.TRIANGLE:
         draw.line(
             [(0, half_y), (quarter_x, 0), (three_quarters_x, y - 1), (x, half_y)],
             fill=color,
             width=th,
         )
-    elif waveform == "upsaw":
+    elif waveform == WaveformIconType.UPSAW:
         draw.line(
             [(0, y - 1), (x * 0.5, 0), (x * 0.5, y - 1), (x - 1, 0)],
             fill=color,
             width=th,
         )
-    elif waveform == "square":
+    elif waveform == WaveformIconType.SQUARE:
         draw.line(
             [
                 (th * 0.5, y - 1),
@@ -72,7 +74,7 @@ def generate_waveform_icon(
             fill=color,
             width=th,
         )
-    elif waveform == "sine":
+    elif waveform == WaveformIconType.SINE:
         # Define the number of points for smoothness
         num_points = 60
         sine_wave = [
@@ -84,7 +86,7 @@ def generate_waveform_icon(
         ]
         draw.line(sine_wave, fill=color, width=th)
 
-    elif waveform == "lpf_filter":
+    elif waveform == WaveformIconType.LPF_FILTER:
         """
         Low-pass filter icon:
         Full amplitude on the left, progressively attenuated to the right,
@@ -104,7 +106,7 @@ def generate_waveform_icon(
             points.append((x_pos, y_pos))
         draw.line(points, fill=color, width=th)
 
-    elif waveform == "hpf_filter":
+    elif waveform == WaveformIconType.LPF_FILTER:
         """
         Low-pass filter icon:
         Full amplitude on the left, progressively attenuated to the right,
@@ -129,7 +131,7 @@ def generate_waveform_icon(
 
         draw.line(points, fill=color, width=th)
 
-    elif waveform == "bpf_filter":
+    elif waveform == WaveformIconType.BPF_FILTER:
         """
         Band-pass filter icon:
         Low frequencies attenuated, middle frequencies pass, high frequencies attenuated.
@@ -152,7 +154,7 @@ def generate_waveform_icon(
             points.append((x_pos, y_pos))
         draw.line(points, fill=color, width=th)
 
-    elif waveform == "bypass_filter":
+    elif waveform == WaveformIconType.BYPASS_FILTER:
         """
         Bypass filter icon:
         A straight horizontal line representing no filtering - signal passes through unchanged.
@@ -165,7 +167,7 @@ def generate_waveform_icon(
             width=th,
         )
 
-    elif waveform == "filter_sine":
+    elif waveform == WaveformIconType.FILTER_SINE:
         """
         Low-pass filter icon:
         A waveform whose amplitude decreases from left to right,
@@ -187,7 +189,7 @@ def generate_waveform_icon(
             points.append((x_pos, y_pos))
 
         draw.line(points, fill=color, width=th)
-    elif waveform == "noise":
+    elif waveform == WaveformIconType.NOISE:
         import random
 
         points = [
@@ -195,13 +197,13 @@ def generate_waveform_icon(
             for i in range(16)
         ]
         draw.line(points, fill=color, width=th)
-    elif waveform == "spsaw":
+    elif waveform == WaveformIconType.SPSAW:
         draw.line(
             [(0, half_y), (y * 0.5, 0), (y * 0.5, y - 1), (x - 1, half_y)],
             fill=color,
             width=th,
         )
-    elif waveform == "pcm":
+    elif waveform == WaveformIconType.PCM:
         for i in range(12):
             draw.line(
                 [
@@ -211,7 +213,7 @@ def generate_waveform_icon(
                 fill=color,
                 width=th,
             )
-    elif waveform == "pwsqu":
+    elif waveform == WaveformIconType.PWSQU:
         draw.line([(th * 0.5, y - 1), (th * 0.5, 0)], fill=color, width=th)
         draw.line(
             [(0, th * 0.5), (x * 0.68 - th * 0.5, th * 0.5)], fill=color, width=th
@@ -221,7 +223,7 @@ def generate_waveform_icon(
             [(x * 0.68, y - th * 0.5), (x - 1, y - th * 0.5)], fill=color, width=th
         )
         draw.line([(x - th * 0.5, y - 1), (x - th * 0.5, 0)], fill=color, width=th)
-    elif waveform == "adsr":
+    elif waveform == WaveformIconType.ADSR:
         # rgb = tuple(int(foreground_color[i : i + 2], 16) for i in (1, 3, 5))
         width = int(17 * icon_scale)
         height = int(9 * icon_scale)

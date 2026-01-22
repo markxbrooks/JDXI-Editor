@@ -17,6 +17,7 @@ from decologr import Decologr as log
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.digital.filter import DigitalFilterMode
+from jdxi_editor.midi.data.digital.oscillator import WaveformIconType
 from jdxi_editor.midi.data.parameter.digital.name import DigitalDisplayName
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
@@ -117,25 +118,25 @@ class DigitalFilterSection(SectionBaseWidget):
         # Map filter modes to their waveform icon types
         # Use scale 2.0 to make the icon larger and more visible (17*2=34x9*2=18 pixels)
         filter_icon_map = {
-            DigitalFilterMode.BYPASS: "bypass_filter",  # Straight horizontal line for bypass (no filtering)
-            DigitalFilterMode.LPF: "lpf_filter",
-            DigitalFilterMode.HPF: "hpf_filter",
-            DigitalFilterMode.BPF: "bpf_filter",  # Band-pass filter icon
-            DigitalFilterMode.PKG: "lpf_filter",  # Peaking can use LPF icon
-            DigitalFilterMode.LPF2: "lpf_filter",
-            DigitalFilterMode.LPF3: "lpf_filter",
-            DigitalFilterMode.LPF4: "lpf_filter",
+            DigitalFilterMode.BYPASS: WaveformIconType.BYPASS_FILTER,  # Straight horizontal line for bypass
+            DigitalFilterMode.LPF: WaveformIconType.LPF_FILTER,
+            DigitalFilterMode.HPF: WaveformIconType.HPF_FILTER,
+            DigitalFilterMode.BPF: WaveformIconType.BPF_FILTER,  # Band-pass filter icon
+            DigitalFilterMode.PKG: WaveformIconType.LPF_FILTER,  # Peaking can use LPF icon
+            DigitalFilterMode.LPF2: WaveformIconType.LPF_FILTER,
+            DigitalFilterMode.LPF3: WaveformIconType.LPF_FILTER,
+            DigitalFilterMode.LPF4: WaveformIconType.LPF_FILTER,
         }
 
         widgets = [mode_label]
         for filter_mode in filter_modes:
             btn = QPushButton(filter_mode.display_name)
             btn.setCheckable(True)
-            # Generate waveform icon for this specific filter mode
+            # --- Generate waveform icon for this specific filter mode
             icon_type = filter_icon_map.get(filter_mode, "filter")
-            filter_icon_base64 = generate_waveform_icon(icon_type, "#FFFFFF", 2.0)
+            filter_icon_base64 = generate_waveform_icon(icon_type, JDXi.UI.Style.WHITE, 2.0)
             filter_icon = QIcon(base64_to_pixmap(filter_icon_base64))
-            # Add waveform icon (let Qt handle icon sizing automatically, like oscillator buttons)
+            # --- Add waveform icon (let Qt handle icon sizing automatically, like oscillator buttons)
             btn.setIcon(filter_icon)
             btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
             btn.setFixedSize(
