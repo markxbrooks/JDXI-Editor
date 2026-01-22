@@ -2,6 +2,7 @@
 Digital Filter Section for the JDXI Editor
 """
 
+from decologr import Decologr as log
 from jdxi_editor.midi.data.digital.filter import DigitalFilterMode
 from jdxi_editor.midi.data.parameter.digital.name import DigitalDisplayName
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParam
@@ -22,6 +23,17 @@ class DigitalFilterSection(ParameterSectionBase):
         SliderSpec(DigitalPartialParam.FILTER_ENV_DEPTH, DigitalDisplayName.FILTER_ENV_DEPTH),
         SliderSpec(DigitalPartialParam.FILTER_SLOPE, DigitalDisplayName.FILTER_SLOPE),
     ]
+    
+    # Log PARAM_SPECS at class definition time
+    _log_param_specs = True
+    if _log_param_specs:
+        filter_env_depth_spec = next((s for s in PARAM_SPECS if hasattr(s.param, 'name') and s.param.name == 'FILTER_ENV_DEPTH'), None)
+        if filter_env_depth_spec:
+            log.message(f"🎯 DigitalFilterSection: FILTER_ENV_DEPTH found in PARAM_SPECS: {filter_env_depth_spec.param}, label: {filter_env_depth_spec.label}")
+        else:
+            log.warning(f"⚠️ DigitalFilterSection: FILTER_ENV_DEPTH NOT found in PARAM_SPECS!")
+        log.message(f"📋 DigitalFilterSection PARAM_SPECS count: {len(PARAM_SPECS)}")
+        log.message(f"📋 PARAM_SPECS params: {[getattr(s.param, 'name', str(s.param)) for s in PARAM_SPECS]}")
 
     # --- Filter mode buttons
     BUTTON_SPECS = [
@@ -47,3 +59,15 @@ class DigitalFilterSection(ParameterSectionBase):
         "release": DigitalPartialParam.FILTER_ENV_RELEASE_TIME,
         "peak": DigitalPartialParam.FILTER_ENV_DEPTH,
     }
+    
+    # Log ADSR_SPEC at class definition time
+    if _log_param_specs:
+        peak_param = ADSR_SPEC.get("peak")
+        if peak_param:
+            peak_name = getattr(peak_param, 'name', str(peak_param))
+            log.message(f"🎯 DigitalFilterSection: ADSR_SPEC peak param: {peak_param} (name: {peak_name})")
+            if peak_name == 'FILTER_ENV_DEPTH':
+                log.message(f"✅ ADSR_SPEC peak is FILTER_ENV_DEPTH")
+        else:
+            log.warning(f"⚠️ DigitalFilterSection: No peak param in ADSR_SPEC!")
+        log.message(f"📋 ADSR_SPEC keys: {list(ADSR_SPEC.keys())}")

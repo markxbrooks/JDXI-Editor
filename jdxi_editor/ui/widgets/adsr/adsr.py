@@ -141,6 +141,9 @@ class ADSR(EnvelopeWidgetBase):
         self.controls[sustain_param] = self.sustain_control
         self.controls[release_param] = self.release_control
         if peak_param:
+            # Always create a new AdsrSliderSpinbox for the ADSR widget
+            # The regular slider from PARAM_SPECS will remain in the Controls tab
+            # Both widgets will control the same parameter
             self.peak_control = AdsrSliderSpinbox(
                 peak_param,
                 min_value=0,
@@ -152,6 +155,9 @@ class ADSR(EnvelopeWidgetBase):
                 parent=self,
             )
             self._control_widgets.append(self.peak_control)
+            # Only store in controls if it doesn't already exist (to avoid overwriting PARAM_SPECS slider)
+            if peak_param not in self.controls:
+                self.controls[peak_param] = self.peak_control
 
         for key, widget in [
             ("attack_time", self.attack_control),

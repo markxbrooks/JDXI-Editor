@@ -62,202 +62,221 @@ from jdxi_editor.ui.editors.synth.partial import PartialEditor
 
 
 class DigitalPartialEditor(PartialEditor):
-    """Editor for address single partial"""
+    """Editor for a single Digital Synth partial"""
+
+    SYNTH_MAP = {
+        1: JDXiSynth.DIGITAL_SYNTH_1,
+        2: JDXiSynth.DIGITAL_SYNTH_2,
+    }
+
+    PARTIAL_ADDRESS_MAP = {
+        1: AddressOffsetSuperNATURALLMB.PARTIAL_1,
+        2: AddressOffsetSuperNATURALLMB.PARTIAL_2,
+        3: AddressOffsetSuperNATURALLMB.PARTIAL_3,
+    }
+
+    BIPOLAR_PARAMETERS = {
+        DigitalPartialParam.OSC_DETUNE,
+        DigitalPartialParam.OSC_PITCH,
+        DigitalPartialParam.OSC_PITCH_ENV_DEPTH,
+        DigitalPartialParam.AMP_PAN,
+    }
 
     def __init__(
         self,
-        midi_helper: Optional[MidiIOHelper] = None,
+        midi_helper: MidiIOHelper | None = None,
         synth_number: int = 1,
         partial_number: int = 1,
-        preset_type: JDXiSynth = None,
-        parent: Optional[QWidget] = None,
+        preset_type: JDXiSynth | None = None,
+        parent: QWidget | None = None,
     ):
         super().__init__(parent)
-        """
-        Initialize the DigitalPartialEditor
 
-        :param midi_helper: MidiIOHelper
-        :param synth_number: int
-        :param partial_number: int
-        :param preset_type: JDXiSynth
-        :param parent: QWidget
-        """
-        self.partial_address_default = AddressOffsetSuperNATURALLMB.PARTIAL_1
-        self.partial_address_map = {
-            1: AddressOffsetSuperNATURALLMB.PARTIAL_1,
-            2: AddressOffsetSuperNATURALLMB.PARTIAL_2,
-            3: AddressOffsetSuperNATURALLMB.PARTIAL_3,
-        }
-        self.bipolar_parameters = [
-            DigitalPartialParam.OSC_DETUNE,
-            DigitalPartialParam.OSC_PITCH,
-            DigitalPartialParam.OSC_PITCH_ENV_DEPTH,
-            DigitalPartialParam.AMP_PAN,
-        ]
+        self.filter_tab = None
         self.midi_helper = midi_helper
         self.partial_number = partial_number
         self.preset_type = preset_type
-        if synth_number == 1:
-            self._init_synth_data(
-                synth_type=JDXiSynth.DIGITAL_SYNTH_1, partial_number=self.partial_number
-            )
-        elif synth_number == 2:
-            self._init_synth_data(
-                synth_type=JDXiSynth.DIGITAL_SYNTH_2, partial_number=self.partial_number
-            )
-            """elif synth_number == 3:
-                self._init_synth_data(synth_type=JDXiSynth.DIGITAL_SYNTH_3, partial_number=self.partial_number)"""
-        else:
-            raise ValueError(f"Invalid synth_number: {synth_number}. Must be 1 or 2.")
-        log.parameter("Initializing partial:", self.synth_data.address)
-        if 0 <= partial_number < len(DIGITAL_PARTIAL_NAMES):
-            self.part_name = DIGITAL_PARTIAL_NAMES[partial_number]
-            log.parameter("Partial name:", self.part_name)
-        else:
-            log.error(f"Invalid partial_num: {partial_number}. Using default value.")
-            self.part_name = "Unknown"  # Provide a fallback value
-        # --- Store parameter controls for easy access
-        self.controls: Dict[
-            Union[DigitalPartialParam, DigitalCommonParam],
-            QWidget,
+        self.controls: dict[
+            DigitalPartialParam | DigitalCommonParam, QWidget
         ] = {}
 
-        # --- Main layout
-        main_layout = QVBoxLayout()
-        self.setLayout(main_layout)
+        self._resolve_synth_data(synth_number)
+        self._resolve_partial_name()
+        self._init_state()
+        self._build_ui()
 
-        # --- Create container widget for the tabs
+        log.parameter("DigitalPartialEditor initialized:", self)
+
+    # ------------------------------------------------------------------
+    # Initialization helpers
+    # ------------------------------------------------------------------
+
+    def _resolve_synth_data(self, synth_number: int) -> None:
+        try:
+            synth_type = self.SYNTH_MAP[synth_number]
+        except KeyError:
+            raise ValueError(
+                f"Invalid synth_number: {synth_number}. Must be {list(self.SYNTH_MAP)}"
+            )
+
+        self._init_synth_data(
+            synth_type=synth_type,
+            partial_number=self.partial_number,
+        )
+
+        log.parameter("Synth address:", self.synth_data.address)
+
+    def _resolve_partial_name(self) -> None:
+        try:
+            self.part_name = DIGITAL_PARTIAL_NAMES[self.partial_number]
+        except IndexError:
+            log.error(f"Invalid partial_number: {self.partial_number}")
+            self.part_name = "Unknown"
+
+        log.parameter("Partial name:", self.part_name)
+
+    def _init_state(self) -> None:
+        self.updating_from_spinbox = False
+
+    # ------------------------------------------------------------------
+    # UI Construction
+    # ------------------------------------------------------------------
+
+    def _build_ui(self) -> None:
+        main_layout = QVBoxLayout(self)
+
         container = QWidget()
-        container_layout = QVBoxLayout()
-        container.setLayout(container_layout)
+        container_layout = QVBoxLayout(container)
+
         self.tab_widget = QTabWidget()
         container_layout.addWidget(self.tab_widget)
-        # --- Add sections in address vertical layout
-        self.oscillator_tab = DigitalOscillatorSection(
-            create_parameter_slider=self._create_parameter_slider,
-            create_parameter_switch=self._create_parameter_switch,
-            create_parameter_combo_box=self._create_parameter_combo_box,
-            send_midi_parameter=self.send_midi_parameter,
-            midi_helper=self.midi_helper,
-            controls=self.controls,
-            address=self.address,
-        )
-        self.tab_widget.addTab(
-            self.oscillator_tab,
-            JDXi.UI.IconRegistry.get_icon(
-                JDXi.UI.IconRegistry.TRIANGLE_WAVE, color=JDXi.UI.Style.GREY
-            ),
-            "Oscillator",
-        )
-        self.filter_tab = DigitalFilterSection(
-            create_parameter_slider=self._create_parameter_slider,
-            create_parameter_switch=self._create_parameter_switch,
-            create_parameter_combo_box=self._create_parameter_combo_box,
-            send_midi_parameter=self.send_midi_parameter,
-            midi_helper=self.midi_helper,
-            controls=self.controls,
-            address=self.synth_data.address,
-        )
-        self.tab_widget.addTab(
-            self.filter_tab,
-            JDXi.UI.IconRegistry.get_icon(
-                JDXi.UI.IconRegistry.FILTER, color=JDXi.UI.Style.GREY
-            ),
-            "Filter",
-        )
-        self.amp_tab = DigitalAmpSection(
-            create_parameter_slider=self._create_parameter_slider,
-            create_parameter_switch=self._create_parameter_switch,
-            create_parameter_combo_box=self._create_parameter_combo_box,
-            send_midi_parameter=self.send_midi_parameter,
-            midi_helper=self.midi_helper,
-            controls=self.controls,
-            address=self.synth_data.address,
-        )
-        self.tab_widget.addTab(
-            self.amp_tab,
-            JDXi.UI.IconRegistry.get_icon(
-                JDXi.UI.IconRegistry.AMPLIFIER, color=JDXi.UI.Style.GREY
-            ),
-            "Amp",
-        )
-        self.lfo_tab = DigitalLFOSection(
-            self._create_parameter_slider,
-            self._create_parameter_switch,
-            self._create_parameter_combo_box,
-            self.controls,
-            self.send_midi_parameter,
-        )
-        self.tab_widget.addTab(
-            self.lfo_tab,
-            JDXi.UI.IconRegistry.get_icon(
-                JDXi.UI.IconRegistry.SINE_WAVE, color=JDXi.UI.Style.GREY
-            ),
-            "LFO",
-        )
-        self.mod_lfo_tab = DigitalModLFOSection(
-            create_parameter_slider=self._create_parameter_slider,
-            create_parameter_combo_box=self._create_parameter_combo_box,
-            create_parameter_switch=self._create_parameter_switch,
-            on_parameter_changed=self._on_parameter_changed,
-            controls=self.controls,
-            send_midi_parameter=self.send_midi_parameter,
-        )
-        self.tab_widget.addTab(
-            self.mod_lfo_tab,
-            JDXi.UI.IconRegistry.get_icon(
-                JDXi.UI.IconRegistry.WAVEFORM, color=JDXi.UI.Style.GREY
-            ),
-            "Mod LFO",
-        )
 
-        # --- Add container to scroll area
+        self._register_sections()
+
         main_layout.addWidget(container)
-        self.updating_from_spinbox = False
-        log.parameter(f"DigitalPartialEditor initialized for", self)
 
-    def __str__(self):
-        return f"{self.__class__.__name__} {self.preset_type} partial: {self.partial_number}"
+    def _register_sections(self) -> None:
+        self._add_tab(
+            key="oscillator",
+            widget=DigitalOscillatorSection(
+                create_parameter_slider=self._create_parameter_slider,
+                create_parameter_switch=self._create_parameter_switch,
+                create_parameter_combo_box=self._create_parameter_combo_box,
+                send_midi_parameter=self.send_midi_parameter,
+                midi_helper=self.midi_helper,
+                controls=self.controls,
+                address=self.synth_data.address,
+            ),
+            icon=JDXi.UI.IconRegistry.TRIANGLE_WAVE,
+            label="Oscillator",
+        )
 
-    def __repr__(self):
-        return f"{self.__class__.__name__} {self.preset_type} partial: {self.partial_number}"
+        self._add_tab(
+            key="filter",
+            widget=DigitalFilterSection(
+                create_parameter_slider=self._create_parameter_slider,
+                create_parameter_switch=self._create_parameter_switch,
+                create_parameter_combo_box=self._create_parameter_combo_box,
+                send_midi_parameter=self.send_midi_parameter,
+                midi_helper=self.midi_helper,
+                controls=self.controls,
+                address=self.synth_data.address,
+            ),
+            icon=JDXi.UI.IconRegistry.FILTER,
+            label="Filter",
+        )
 
-    def update_filter_controls_state(self, mode: int):
-        """
-        Update filter controls enabled state based on mode
+        self._add_tab(
+            key="amp",
+            widget=DigitalAmpSection(
+                create_parameter_slider=self._create_parameter_slider,
+                create_parameter_switch=self._create_parameter_switch,
+                create_parameter_combo_box=self._create_parameter_combo_box,
+                send_midi_parameter=self.send_midi_parameter,
+                midi_helper=self.midi_helper,
+                controls=self.controls,
+                address=self.synth_data.address,
+            ),
+            icon=JDXi.UI.IconRegistry.AMPLIFIER,
+            label="Amp",
+        )
 
-        :param mode: int
-        """
-        enabled = mode != 0  # --- Enable if not BYPASS
-        for param in [
+        self._add_tab(
+            key="lfo",
+            widget=DigitalLFOSection(
+                self._create_parameter_slider,
+                self._create_parameter_switch,
+                self._create_parameter_combo_box,
+                self.controls,
+                self.send_midi_parameter,
+            ),
+            icon=JDXi.UI.IconRegistry.SINE_WAVE,
+            label="LFO",
+        )
+
+        self._add_tab(
+            key="mod_lfo",
+            widget=DigitalModLFOSection(
+                create_parameter_slider=self._create_parameter_slider,
+                create_parameter_combo_box=self._create_parameter_combo_box,
+                create_parameter_switch=self._create_parameter_switch,
+                on_parameter_changed=self._on_parameter_changed,
+                controls=self.controls,
+                send_midi_parameter=self.send_midi_parameter,
+            ),
+            icon=JDXi.UI.IconRegistry.WAVEFORM,
+            label="Mod LFO",
+        )
+
+    def _add_tab(self, *, key: str, widget: QWidget, icon, label: str) -> None:
+        self.tab_widget.addTab(
+            widget,
+            JDXi.UI.IconRegistry.get_icon(icon, color=JDXi.UI.Style.GREY),
+            label,
+        )
+        setattr(self, f"{key}_tab", widget)
+
+    # ------------------------------------------------------------------
+    # Behavior
+    # ------------------------------------------------------------------
+
+    def update_filter_controls_state(self, mode: int) -> None:
+        enabled = mode != 0  # BYPASS == 0
+
+        params = (
             DigitalPartialParam.FILTER_CUTOFF,
             DigitalPartialParam.FILTER_RESONANCE,
             DigitalPartialParam.FILTER_CUTOFF_KEYFOLLOW,
             DigitalPartialParam.FILTER_ENV_VELOCITY_SENSITIVITY,
             DigitalPartialParam.FILTER_ENV_DEPTH,
             DigitalPartialParam.FILTER_SLOPE,
-        ]:
-            if param in self.controls:
-                self.filter_tab.controls[param].setEnabled(enabled)
-            self.filter_tab.filter_adsr_widget.setEnabled(enabled)
+        )
 
-    def _on_waveform_selected(self, waveform: DigitalOscWave):
-        """
-        Handle waveform button clicks
+        for param in params:
+            widget = self.controls.get(param)
+            if widget:
+                widget.setEnabled(enabled)
 
-        :param waveform: DigitalOscWave
-        """
-        # --- Reset all buttons to default style
+        self.filter_tab.filter_adsr_widget.setEnabled(enabled)
+
+    def _on_waveform_selected(self, waveform: DigitalOscWave) -> None:
         for btn in self.oscillator_tab.wave_buttons.values():
             btn.setChecked(False)
             btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
 
-        # --- Apply active style to the selected waveform button
-        selected_btn = self.oscillator_tab.wave_buttons.get(waveform)
-        if selected_btn:
-            selected_btn.setChecked(True)
-            selected_btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT_ACTIVE)
+        selected = self.oscillator_tab.wave_buttons.get(waveform)
+        if selected:
+            selected.setChecked(True)
+            selected.setStyleSheet(JDXi.UI.Style.BUTTON_RECT_ACTIVE)
 
-        # --- Send MIDI message
-        if not self.send_midi_parameter(DigitalPartialParam.OSC_WAVE, waveform.value):
-            log.warning(f"Failed to set waveform to {waveform.name}")
+        if not self.send_midi_parameter(
+            DigitalPartialParam.OSC_WAVE, waveform.value
+        ):
+            log.warning(f"Failed to set waveform: {waveform.name}")
+
+    # ------------------------------------------------------------------
+
+    def __str__(self) -> str:
+        return f"{self.__class__.__name__} {self.preset_type} partial {self.partial_number}"
+
+    __repr__ = __str__

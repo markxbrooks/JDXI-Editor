@@ -80,6 +80,7 @@ from jdxi_editor.midi.data.parameter.effects.effects import (
     Effect2Param,
     ReverbParam,
 )
+from jdxi_editor.midi.data.parameter.program.common import ProgramCommonParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
 from jdxi_editor.ui.editors.effects.data import EffectsData
@@ -823,6 +824,10 @@ class EffectsCommonEditor(BasicEditor):
                     param = None
                     widget = None
 
+                    # Skip metadata keys that aren't actual parameters
+                    if param_name in ["SYNTH_TONE", "TEMPORARY_AREA"]:
+                        continue
+                    
                     # Check all parameter types
                     for param_type in [
                         Effect1Param,
@@ -830,6 +835,7 @@ class EffectsCommonEditor(BasicEditor):
                         DelayParam,
                         ReverbParam,
                         AddressParameterEffectCommon,
+                        ProgramCommonParam,
                     ]:
                         if hasattr(param_type, "get_by_name"):
                             param = param_type.get_by_name(param_name)
