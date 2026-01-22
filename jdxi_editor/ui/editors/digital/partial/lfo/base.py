@@ -60,12 +60,12 @@ class BaseLFOSection(SectionBaseWidget):
         ]
         # --- Map LFO shapes to icon names
         self.shape_icon_map = {
-            DigitalLFOShape.TRIANGLE: "mdi.triangle-wave",
-            DigitalLFOShape.SINE: "mdi.sine-wave",
-            DigitalLFOShape.SAW: "mdi.sawtooth-wave",
-            DigitalLFOShape.SQUARE: "mdi.square-wave",
-            DigitalLFOShape.SAMPLE_HOLD: "mdi.waveform",
-            DigitalLFOShape.RANDOM: "mdi.wave",
+            DigitalLFOShape.TRIANGLE: JDXi.UI.IconRegistry.TRIANGLE_WAVE,
+            DigitalLFOShape.SINE: JDXi.UI.IconRegistry.SINE_WAVE,
+            DigitalLFOShape.SAW: JDXi.UI.IconRegistry.SAW_WAVE,
+            DigitalLFOShape.SQUARE: JDXi.UI.IconRegistry.SQUARE_WAVE,
+            DigitalLFOShape.SAMPLE_HOLD: JDXi.UI.IconRegistry.WAVEFORM,
+            DigitalLFOShape.RANDOM: JDXi.UI.IconRegistry.RANDOM_WAVE,
         }
 
     def setup_ui(self):
