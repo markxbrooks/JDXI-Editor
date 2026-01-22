@@ -20,7 +20,7 @@ class DigitalFilterSection(ParameterSectionBase):
     """Digital Filter Section for JD-Xi Digital Partial"""
 
     # --- Filter sliders
-    # Note: FILTER_CUTOFF and FILTER_SLOPE are handled by FilterWidget (includes plot)
+    #     Note: FILTER_CUTOFF and FILTER_SLOPE are handled by FilterWidget (includes plot)
     PARAM_SPECS = [
         SliderSpec(DigitalPartialParam.FILTER_RESONANCE, DigitalDisplayName.FILTER_RESONANCE),
         SliderSpec(DigitalPartialParam.FILTER_CUTOFF_KEYFOLLOW, DigitalDisplayName.FILTER_CUTOFF_KEYFOLLOW),
@@ -88,22 +88,22 @@ class DigitalFilterSection(ParameterSectionBase):
             controls=self.controls,
             address=self.address,
         )
-        # Store filter widget controls
+        # --- Store filter widget controls
         self.controls[DigitalPartialParam.FILTER_CUTOFF] = self.filter_widget.cutoff_param_control
         if hasattr(self.filter_widget, 'slope_param_control'):
             self.controls[DigitalPartialParam.FILTER_SLOPE] = self.filter_widget.slope_param_control
         
-        # Call parent to create other widgets from PARAM_SPECS
+        # --- Call parent to create other widgets from PARAM_SPECS
         super().build_widgets()
     
     def _create_tab_widget(self):
         """Override to add FilterWidget to Controls tab"""
         self.tab_widget = QTabWidget()
 
-        # Controls tab - include FilterWidget first, then other controls
+        # --- Controls tab - include FilterWidget first, then other controls
         controls_widget = QWidget()
-        # FilterWidget includes cutoff and slope with plot
-        # Other controls from PARAM_SPECS (resonance, keyfollow, velocity, depth)
+        # --- FilterWidget includes cutoff and slope with plot
+        #     Other controls from PARAM_SPECS (resonance, keyfollow, velocity, depth)
         all_control_widgets = [self.filter_widget] + self.control_widgets
         controls_layout = create_layout_with_widgets(all_control_widgets)
         controls_widget.setLayout(controls_layout)
@@ -113,21 +113,21 @@ class DigitalFilterSection(ParameterSectionBase):
             "Controls"
         )
 
-        # ADSR tab
+        # --- ADSR tab
         if self.adsr_widget:
             adsr_group = create_envelope_group("Envelope", adsr_widget=self.adsr_widget, analog=self.analog)
             self.tab_widget.addTab(adsr_group, create_adsr_icon(), "ADSR")
     
     def _on_button_selected(self, button_param):
         """Override to update filter mode in FilterWidget plot and enable/disable plot and ADSR"""
-        # Call parent to handle button selection
+        # --- Call parent to handle button selection
         super()._on_button_selected(button_param)
         
-        # Determine if bypass is selected
+        # --- Determine if bypass is selected
         is_bypass = button_param == DigitalFilterMode.BYPASS
         enabled = not is_bypass
         
-        # Update filter mode in FilterWidget plot
+        # --- Update filter mode in FilterWidget plot
         if hasattr(self, 'filter_widget') and self.filter_widget and hasattr(self.filter_widget, 'plot'):
             # Map DigitalFilterMode to filter mode string
             filter_mode_map = {
@@ -145,11 +145,11 @@ class DigitalFilterSection(ParameterSectionBase):
             if hasattr(self.filter_widget.plot, 'set_filter_mode'):
                 self.filter_widget.plot.set_filter_mode(filter_mode_str)
             
-            # Disable plot display when bypass is selected
+            # --- Disable plot display when bypass is selected
             self.filter_widget.plot.enabled = enabled
             self.filter_widget.plot.update()  # Trigger redraw
         
-        # Enable/disable ADSR widget based on filter mode (like PWM widget)
+        # --- Enable/disable ADSR widget based on filter mode (like PWM widget)
         if self.adsr_widget:
             self.adsr_widget.setEnabled(enabled)
 
@@ -179,11 +179,11 @@ class DigitalFilterSection(ParameterSectionBase):
             log.warning(f"Unknown filter mode value: {value}")
             return
         
-        # Enable/disable controls based on filter mode
+        # --- Enable/disable controls based on filter mode
         is_bypass = selected_filter_mode == DigitalFilterMode.BYPASS
         enabled = not is_bypass
         
-        # Enable/disable filter controls
+        # --- Enable/disable filter controls
         filter_params = [
             DigitalPartialParam.FILTER_CUTOFF,
             DigitalPartialParam.FILTER_SLOPE,
@@ -197,7 +197,7 @@ class DigitalFilterSection(ParameterSectionBase):
             if param in self.controls:
                 self.controls[param].setEnabled(enabled)
         
-        # Enable/disable filter widget and ADSR
+        # --- Enable/disable filter widget and ADSR
         if hasattr(self, 'filter_widget') and self.filter_widget:
             if hasattr(self.filter_widget, 'cutoff_param_control'):
                 self.filter_widget.cutoff_param_control.setEnabled(enabled)
@@ -210,7 +210,7 @@ class DigitalFilterSection(ParameterSectionBase):
         if self.adsr_widget:
             self.adsr_widget.setEnabled(enabled)
         
-        # Update filter mode in FilterWidget plot
+        # --- Update filter mode in FilterWidget plot
         if hasattr(self, 'filter_widget') and self.filter_widget and hasattr(self.filter_widget, 'plot'):
             filter_mode_str_map = {
                 DigitalFilterMode.BYPASS: "bypass",
