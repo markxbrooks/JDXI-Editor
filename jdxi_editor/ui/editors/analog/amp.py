@@ -14,6 +14,7 @@ from PySide6.QtWidgets import (
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
 from jdxi_editor.midi.data.parameter.analog.name import AnalogDisplayName
+from jdxi_editor.ui.adsr.type import ADSRType
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (
@@ -34,10 +35,10 @@ class AnalogAmpSection(SectionBaseWidget):
     ]
 
     AMP_ADSR_PARAMS = {
-        "attack": AnalogParam.AMP_ENV_ATTACK_TIME,
-        "decay": AnalogParam.AMP_ENV_DECAY_TIME,
-        "sustain": AnalogParam.AMP_ENV_SUSTAIN_LEVEL,
-        "release": AnalogParam.AMP_ENV_RELEASE_TIME,
+        ADSRType.ATTACK: AnalogParam.AMP_ENV_ATTACK_TIME,
+        ADSRType.DECAY: AnalogParam.AMP_ENV_DECAY_TIME,
+        ADSRType.SUSTAIN: AnalogParam.AMP_ENV_SUSTAIN_LEVEL,
+        ADSRType.RELEASE: AnalogParam.AMP_ENV_RELEASE_TIME,
     }
 
     def __init__(
@@ -83,10 +84,10 @@ class AnalogAmpSection(SectionBaseWidget):
     def _create_amp_adsr_group(self):
         """Create amp ADSR envelope using standardized helper"""
         self.amp_env_adsr_widget = ADSR(
-            attack_param=self.AMP_ADSR_PARAMS["attack"],
-            decay_param=self.AMP_ADSR_PARAMS["decay"],
-            sustain_param=self.AMP_ADSR_PARAMS["sustain"],
-            release_param=self.AMP_ADSR_PARAMS["release"],
+            attack_param=self.AMP_ADSR_PARAMS[ADSRType.ATTACK],
+            decay_param=self.AMP_ADSR_PARAMS[ADSRType.DECAY],
+            sustain_param=self.AMP_ADSR_PARAMS[ADSRType.SUSTAIN],
+            release_param=self.AMP_ADSR_PARAMS[ADSRType.RELEASE],
             midi_helper=self.midi_helper,
             create_parameter_slider=self._create_parameter_slider,
             address=self.address,

@@ -15,3 +15,11 @@ class SwitchSpec:
     param: Any
     label: str
     options: Any
+
+
+@dataclass(frozen=True)
+class ComboBoxSpec:
+    param: Any
+    label: str
+    options: Any = None
+    values: Any = None

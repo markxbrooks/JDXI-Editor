@@ -252,7 +252,7 @@ class DigitalSynthEditor(SynthEditor):
             self.controls,
         )
         common_icon = JDXi.UI.IconRegistry.get_icon(
-            "mdi.cog-outline", color=JDXi.UI.Style.GREY
+            JDXi.UI.IconRegistry.COG_OUTLINE, color=JDXi.UI.Style.GREY
         )
         self.partial_tab_widget.addTab(self.common_section, common_icon, "Common")
         self.tone_modify_section = DigitalToneModifySection(
@@ -262,7 +262,7 @@ class DigitalSynthEditor(SynthEditor):
             self.controls,
         )
         misc_icon = JDXi.UI.IconRegistry.get_icon(
-            "mdi.dots-horizontal", color=JDXi.UI.Style.GREY
+             JDXi.UI.IconRegistry.DOTS_HORIZONTAL, color=JDXi.UI.Style.GREY
         )
         self.partial_tab_widget.addTab(self.tone_modify_section, misc_icon, "Misc")
         container_layout.addWidget(self.partial_tab_widget)
@@ -636,15 +636,20 @@ class DigitalSynthEditor(SynthEditor):
             if use_fraction
             else midi_value_to_ms(midi_value, 10, 5000)
         )
-        self.pitch_env_map = {
-            DigitalPartialParam.OSC_PULSE_WIDTH: self.partial_editors[
-                partial_no
-            ].oscillator_tab.pwm_widget.pulse_width_control,
-            DigitalPartialParam.OSC_PULSE_WIDTH_MOD_DEPTH: self.partial_editors[
-                partial_no
-            ].oscillator_tab.pwm_widget.mod_depth_control,
-        }
-        control = self.pitch_env_map.get(param)
+        # Try to get controls from the oscillator section's controls dictionary
+        oscillator_section = self.partial_editors[partial_no].oscillator_tab
+        control = None
+        
+        # First, try to get from controls dictionary (new parameter-based system)
+        if hasattr(oscillator_section, 'controls') and param in oscillator_section.controls:
+            control = oscillator_section.controls[param]
+        # Fallback: try to access pwm_widget (old system, for backward compatibility)
+        elif hasattr(oscillator_section, 'pwm_widget') and oscillator_section.pwm_widget:
+            if param == DigitalPartialParam.OSC_PULSE_WIDTH:
+                control = oscillator_section.pwm_widget.pulse_width_control
+            elif param == DigitalPartialParam.OSC_PULSE_WIDTH_MOD_DEPTH:
+                control = oscillator_section.pwm_widget.mod_depth_control
+        
         if control:
             control.blockSignals(True)
             control.setValue(new_value)

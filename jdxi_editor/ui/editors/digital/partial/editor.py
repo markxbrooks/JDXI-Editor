@@ -36,8 +36,6 @@ Dependencies:
     - QIcons generated from waveform base64 data
 """
 
-from typing import Dict, Optional, Union
-
 from PySide6.QtWidgets import (
     QTabWidget,
     QVBoxLayout,
@@ -92,6 +90,7 @@ class DigitalPartialEditor(PartialEditor):
     ):
         super().__init__(parent)
 
+        self.oscillator_tab = None
         self.filter_tab = None
         self.midi_helper = midi_helper
         self.partial_number = partial_number

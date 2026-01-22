@@ -26,16 +26,19 @@ Customization:
   orange for better visibility against the dark background.
 - The time is represented in seconds, and the amplitude in address range from 0 to 1.
 """
+from typing import Any
 
 import numpy as np
 from PySide6.QtCore import QPointF, Qt
 from PySide6.QtGui import QColor, QFont, QLinearGradient, QPainter, QPainterPath, QPen
 from PySide6.QtWidgets import QWidget
+from numpy import ndarray, dtype, floating
 
 from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.ui.widgets.plot.base import BasePlotWidget
 
 
-class PitchEnvPlot(QWidget):
+class PitchEnvPlot(BasePlotWidget):
     def __init__(
         self,
         width: int = JDXi.UI.Style.ADSR_PLOT_WIDTH,
@@ -124,142 +127,168 @@ class PitchEnvPlot(QWidget):
         painter = QPainter(self)
         try:
             painter.setRenderHint(QPainter.Antialiasing)
-            # Background gradient
-            gradient = QLinearGradient(0, 0, self.width(), self.height())
-            gradient.setColorAt(0.0, QColor("#321212"))
-            gradient.setColorAt(0.3, QColor("#331111"))
-            gradient.setColorAt(0.5, QColor("#551100"))
-            gradient.setColorAt(0.7, QColor("#331111"))
-            gradient.setColorAt(1.0, QColor("#111111"))
-            painter.setBrush(gradient)
-            painter.setPen(QPen(QColor("#000000"), 0))
-            painter.drawRect(0, 0, self.width(), self.height())
+            self.draw_background(painter)
 
-            # Orange drawing pen
-            pen = QPen(QColor("orange"))
-            pen.setWidth(2)
-            axis_pen = QPen(QColor("white"))
-            painter.setRenderHint(QPainter.Antialiasing, False)
-            painter.setPen(pen)
-            painter.setFont(QFont("JD LCD Rounded", 10))
+            axis_pen = self.set_pen(painter)
 
-            # Envelope parameters
-            attack_time = self.envelope["attack_time"] / 1000.0
-            decay_time = self.envelope["decay_time"] / 1000.0
-            peak_level = self.envelope["peak_level"]
-            initial_level = self.envelope["initial_level"]
+            envelope, total_samples, total_time = self.envelope_parameters()
 
-            attack_samples = max(int(attack_time * self.sample_rate), 1)
-            decay_samples = max(int(decay_time * self.sample_rate), 1)
+            left_padding, plot_h, plot_w, top_padding = self.plot_dimensions()
 
-            attack = np.linspace(
-                initial_level, peak_level, attack_samples, endpoint=False
-            )
-            decay = np.linspace(
-                peak_level, initial_level, decay_samples, endpoint=False
-            )
-            envelope = np.concatenate([attack, decay])
-            total_samples = len(envelope)
-            total_time = 10  # seconds
+            y_max, y_min = self.get_y_range()
 
-            # Plot area dimensions
-            w = self.width()
-            h = self.height()
-            top_padding = 50
-            bottom_padding = 80
-            left_padding = 80
-            right_padding = 50
-            plot_w = w - left_padding - right_padding
-            plot_h = h - top_padding - bottom_padding
+            zero_y = self.draw_axes(axis_pen, left_padding, painter, plot_h, plot_w, top_padding, y_max, y_min)
 
-            # Y range
-            y_min = -0.6
-            y_max = 0.6
+            self.draw_x_axis(left_padding, painter, plot_w, total_time, zero_y)
 
-            # Draw axes
-            painter.setPen(axis_pen)
-            painter.drawLine(
-                left_padding, top_padding, left_padding, top_padding + plot_h
-            )  # Y-axis
+            self.draw_y_axis(left_padding, painter, plot_h, top_padding, y_max, y_min)
 
-            zero_y = top_padding + (y_max / (y_max - y_min)) * plot_h
-            painter.drawLine(
-                left_padding, zero_y, left_padding + plot_w, zero_y
-            )  # X-axis at Y=0
+            self.draw_title(painter, "Pitch Envelope", left_padding, plot_w, top_padding)
 
-            # X-axis labels
-            # painter.drawText(left_padding, zero_y + 20, "0")
-            # painter.drawText(left_padding + plot_w - 10, zero_y + 20, "5")
-            # X-axis ticks for 0, 3, 6, 9, 12, 15
-            num_ticks = 6
-            for i in range(num_ticks + 1):
-                x = left_padding + i * plot_w / num_ticks
-                painter.drawLine(x, zero_y - 5, x, zero_y + 5)
-                # label = f"{i * (total_time // num_ticks)}"
-                label = f"{i * (total_time / num_ticks):.0f}"
-                painter.drawText(x - 10, zero_y + 20, label)
+            self.draw_x_axis_label(painter, "Time (s)", left_padding, plot_w, plot_h, top_padding)
 
-            # Y-axis ticks and labels from +0.6 to -0.6
-            for i in range(-3, 4):
-                y_val = i * 0.2
-                y = top_padding + ((y_max - y_val) / (y_max - y_min)) * plot_h
-                painter.drawLine(left_padding - 5, y, left_padding, y)
-                painter.drawText(left_padding - 40, y + 5, f"{y_val:.1f}")
+            self.draw_y_axis_label(painter, "Pitch", left_padding, plot_h, top_padding)
 
-            # Draw top title
-            painter.setPen(QPen(QColor("orange")))
-            painter.setFont(QFont("JD LCD Rounded", 16))
-            painter.drawText(
-                left_padding + plot_w / 2 - 40, top_padding / 2, "Pitch Envelope"
+            # Background grid using base class method
+            # Pitch envelope has symmetric grid (positive and negative values)
+            def y_callback(y_val):
+                return top_padding + ((y_max - y_val) / (y_max - y_min)) * plot_h
+            
+            # Draw main grid lines (positive side: 0.2, 0.4, 0.6)
+            self.draw_grid(
+                painter=painter,
+                top_pad=top_padding,
+                plot_h=plot_h,
+                left_pad=left_padding,
+                plot_w=plot_w,
+                num_vertical_lines=6,
+                num_horizontal_lines=3,  # Only 3 lines for positive side (0.2, 0.4, 0.6)
+                y_min=y_min,
+                y_max=y_max,
+                y_callback=y_callback,
             )
 
-            # Draw X-axis label
-            painter.setPen(QPen(QColor("white")))
-            painter.drawText(
-                left_padding + plot_w / 2 - 10, top_padding + plot_h + 35, "Time (s)"
-            )
+            self.draw_mirror_grid(left_padding, painter, plot_h, plot_w, top_padding, y_max, y_min)
 
-            # Y-axis label rotated
-            painter.save()
-            painter.translate(left_padding - 50, top_padding + plot_h / 2 + 25)
-            painter.rotate(-90)
-            painter.drawText(0, 0, "Pitch")
-            painter.restore()
-
-            # Background grid
-            pen = QPen(Qt.GlobalColor.darkGray, 1)
-            pen.setStyle(Qt.PenStyle.DashLine)
-            painter.setPen(pen)
-            for i in range(1, 7):
-                x = left_padding + i * plot_w / 6
-                painter.drawLine(x, top_padding, x, top_padding + plot_h)
-            for i in range(1, 4):
-                y_val = i * 0.2
-                y = top_padding + ((y_max - y_val) / (y_max - y_min)) * plot_h
-                painter.drawLine(left_padding, y, left_padding + plot_w, y)
-                y_mirror = top_padding + ((y_max + y_val) / (y_max - y_min)) * plot_h
-                painter.drawLine(
-                    left_padding, y_mirror, left_padding + plot_w, y_mirror
-                )
-
-            # Draw envelope polyline
-            if self.enabled:
-                painter.setPen(QPen(QColor("orange")))
-                points = []
-                num_points = 500
-                indices = np.linspace(0, total_samples - 1, num_points).astype(int)
-                for i in indices:
-                    t = i / self.sample_rate
-                    x = left_padding + (t / total_time) * plot_w
-                    y_val = envelope[i]
-                    y = top_padding + ((y_max - y_val) / (y_max - y_min)) * plot_h
-                    points.append((x, y))
-
-                if points:
-                    path = QPainterPath()
-                    path.moveTo(*points[0])
-                    for pt in points[1:]:
-                        path.lineTo(*pt)
-                    painter.drawPath(path)
+            self.draw_envelope(envelope, left_padding, painter, plot_h, plot_w, top_padding, total_samples, total_time,
+                               y_max, y_min)
         finally:
             painter.end()
+
+    def draw_mirror_grid(self, left_padding: int, painter: QPainter, plot_h: int, plot_w: int, top_padding: int,
+                         y_max: float, y_min: float):
+        """Draw mirror grid lines for negative side"""
+        grid_pen = QPen(Qt.GlobalColor.darkGray, 1, Qt.PenStyle.DashLine)
+        painter.setPen(grid_pen)
+        for i in range(1, 4):
+            y_val = -i * 0.2  # Negative values: -0.2, -0.4, -0.6
+            y = top_padding + ((y_max - y_val) / (y_max - y_min)) * plot_h
+            painter.drawLine(left_padding, y, left_padding + plot_w, y)
+
+    def draw_envelope(self, envelope: ndarray[Any, dtype[floating[Any]]], left_padding: int, painter: QPainter,
+                      plot_h: int, plot_w: int, top_padding: int, total_samples: int, total_time: int, y_max: float,
+                      y_min: float):
+        # Draw envelope polyline
+        if self.enabled:
+            painter.setPen(QPen(QColor("orange")))
+            points = []
+            num_points = 500
+            indices = np.linspace(0, total_samples - 1, num_points).astype(int)
+            for i in indices:
+                t = i / self.sample_rate
+                x = left_padding + (t / total_time) * plot_w
+                y_val = envelope[i]
+                y = top_padding + ((y_max - y_val) / (y_max - y_min)) * plot_h
+                points.append((x, y))
+
+            if points:
+                path = QPainterPath()
+                path.moveTo(*points[0])
+                for pt in points[1:]:
+                    path.lineTo(*pt)
+                painter.drawPath(path)
+
+    def draw_y_axis(self, left_padding: int, painter: QPainter, plot_h: int, top_padding: int,
+                    y_max: float, y_min: float):
+        """Y-axis ticks and labels from +0.6 to -0.6"""
+        for i in range(-3, 4):
+            y_val = i * 0.2
+            y = top_padding + ((y_max - y_val) / (y_max - y_min)) * plot_h
+            painter.drawLine(left_padding - 5, y, left_padding, y)
+            painter.drawText(left_padding - 40, y + 5, f"{y_val:.1f}")
+
+    def draw_x_axis(self, left_padding: int, painter: QPainter, plot_w: int, total_time: int, zero_y: float):
+        # X-axis labels
+        # painter.drawText(left_padding, zero_y + 20, "0")
+        # painter.drawText(left_padding + plot_w - 10, zero_y + 20, "5")
+        # X-axis ticks for 0, 3, 6, 9, 12, 15
+        num_ticks = 6
+        for i in range(num_ticks + 1):
+            x = left_padding + i * plot_w / num_ticks
+            painter.drawLine(x, zero_y - 5, x, zero_y + 5)
+            # label = f"{i * (total_time // num_ticks)}"
+            label = f"{i * (total_time / num_ticks):.0f}"
+            painter.drawText(x - 10, zero_y + 20, label)
+
+    def get_y_range(self) -> tuple[float, float]:
+        # Y range
+        y_min = -0.6
+        y_max = 0.6
+        return y_max, y_min
+
+    def plot_dimensions(self) -> tuple[int, int, int, int]:
+        # Plot area dimensions
+        w = self.width()
+        h = self.height()
+        top_padding = 50
+        bottom_padding = 80
+        left_padding = 80
+        right_padding = 50
+        plot_w = w - left_padding - right_padding
+        plot_h = h - top_padding - bottom_padding
+        return left_padding, plot_h, plot_w, top_padding
+
+    def envelope_parameters(self) -> tuple[ndarray[Any, dtype[floating[Any]]], int, int]:
+        """Envelope parameters"""
+        attack_time = self.envelope["attack_time"] / 1000.0
+        decay_time = self.envelope["decay_time"] / 1000.0
+        peak_level = self.envelope["peak_level"]
+        initial_level = self.envelope["initial_level"]
+
+        attack_samples = max(int(attack_time * self.sample_rate), 1)
+        decay_samples = max(int(decay_time * self.sample_rate), 1)
+
+        attack = np.linspace(
+            initial_level, peak_level, attack_samples, endpoint=False
+        )
+        decay = np.linspace(
+            peak_level, initial_level, decay_samples, endpoint=False
+        )
+        envelope = np.concatenate([attack, decay])
+        total_samples = len(envelope)
+        total_time = 10  # seconds
+        return envelope, total_samples, total_time
+
+    def set_pen(self, painter: QPainter) -> QPen:
+        # Orange drawing pen
+        pen = QPen(QColor("orange"))
+        pen.setWidth(2)
+        axis_pen = QPen(QColor("white"))
+        painter.setRenderHint(QPainter.Antialiasing, False)
+        painter.setPen(pen)
+        painter.setFont(QFont("JD LCD Rounded", 10))
+        return axis_pen
+
+    def draw_axes(self, axis_pen: QPen, left_padding: int, painter: QPainter, plot_h: int, plot_w: int,
+                  top_padding: int, y_max: float, y_min: float) -> float:
+        """Draw axes"""
+        painter.setPen(axis_pen)
+        painter.drawLine(
+            left_padding, top_padding, left_padding, top_padding + plot_h
+        )  # Y-axis
+
+        zero_y = top_padding + (y_max / (y_max - y_min)) * plot_h
+        painter.drawLine(
+            left_padding, zero_y, left_padding + plot_w, zero_y
+        )  # X-axis at Y=0
+        return zero_y

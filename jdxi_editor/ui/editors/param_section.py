@@ -226,7 +226,16 @@ class ParameterSectionBase(SectionBaseWidget):
             log.message(f"🔧 Creating ADSR widget from ADSR_SPEC")
             log.message(f"📋 ADSR_SPEC keys: {list(self.ADSR_SPEC.keys())}")
         
-        peak_param = self.ADSR_SPEC.get("peak")
+        # Handle both string keys and ADSRType enum keys
+        from jdxi_editor.ui.adsr.type import ADSRType
+        
+        attack_key = "attack" if "attack" in self.ADSR_SPEC else ADSRType.ATTACK
+        decay_key = "decay" if "decay" in self.ADSR_SPEC else ADSRType.DECAY
+        sustain_key = "sustain" if "sustain" in self.ADSR_SPEC else ADSRType.SUSTAIN
+        release_key = "release" if "release" in self.ADSR_SPEC else ADSRType.RELEASE
+        peak_key = "peak" if "peak" in self.ADSR_SPEC else ADSRType.PEAK
+        
+        peak_param = self.ADSR_SPEC.get(peak_key) if peak_key else None
         if peak_param:
             peak_name = getattr(peak_param, 'name', str(peak_param))
             if is_filter_section:
@@ -249,10 +258,10 @@ class ParameterSectionBase(SectionBaseWidget):
                 log.warning(f"⚠️ No peak parameter in ADSR_SPEC")
         
         self.adsr_widget = ADSR(
-            attack_param=self.ADSR_SPEC["attack"],
-            decay_param=self.ADSR_SPEC["decay"],
-            sustain_param=self.ADSR_SPEC["sustain"],
-            release_param=self.ADSR_SPEC["release"],
+            attack_param=self.ADSR_SPEC[attack_key],
+            decay_param=self.ADSR_SPEC[decay_key],
+            sustain_param=self.ADSR_SPEC[sustain_key],
+            release_param=self.ADSR_SPEC[release_key],
             peak_param=peak_param,  # Optional peak parameter
             midi_helper=self.midi_helper,
             create_parameter_slider=self._create_parameter_slider,
