@@ -84,23 +84,23 @@ class DigitalFilterSection(SectionBaseWidget):
         filter_mode_row = self._create_filter_controls_row()
 
         # --- Create tab widget
-        self.digital_filter_tab_widget = QTabWidget()
-        self.digital_filter_tab_widget.addTab(
+        self.tab_widget = QTabWidget()
+        self.tab_widget.addTab(
             self._create_filter_controls_group(),
             JDXi.UI.IconRegistry.get_icon(
                 JDXi.UI.IconRegistry.TUNE, color=JDXi.UI.Style.GREY
             ),
             "Controls",
         )
-        self.digital_filter_tab_widget.addTab(
+        self.tab_widget.addTab(
             self._create_filter_adsr_env_group(), create_adsr_icon(), "ADSR"
         )
 
         # --- Layout everything
-        self.main_rows_layout = self.create_main_rows_layout()
-        self.main_rows_layout.addLayout(filter_mode_row)
-        self.main_rows_layout.addWidget(self.digital_filter_tab_widget)
-        self.main_rows_layout.addStretch()
+        self.layout = self.create_layout()
+        self.layout.addLayout(filter_mode_row)
+        self.layout.addWidget(self.tab_widget)
+        self.layout.addStretch()
 
     # ------------------------------------------------------------------
     # Filter Mode Buttons

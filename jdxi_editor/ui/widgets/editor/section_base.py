@@ -154,7 +154,7 @@ class SectionBaseWidget(QWidget):
         """
         self.setup_ui()
 
-    def create_main_rows_layout(self):
+    def create_layout(self):
         """create main rows layout"""
         layout = self.get_layout(
             margins=JDXi.UI.Dimensions.EDITOR_DIGITAL.MARGINS,
