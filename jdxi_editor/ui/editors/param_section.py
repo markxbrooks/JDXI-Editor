@@ -3,11 +3,14 @@ from typing import Callable
 from PySide6.QtWidgets import QWidget, QTabWidget
 
 from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.midi.data.digital.filter import DigitalFilterMode
+from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParam
 from jdxi_editor.ui.editors.widget_specs import SliderSpec, SwitchSpec
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 from jdxi_editor.ui.widgets.editor import SectionBaseWidget, IconType
 from jdxi_editor.ui.widgets.editor.helper import create_button_with_icon, create_layout_with_widgets, \
     create_envelope_group, create_adsr_icon
+from picomidi.sysex.parameter.address import AddressParameter
 
 
 class ComboBoxSpec:
@@ -149,14 +152,15 @@ class ParameterSectionBase(SectionBaseWidget):
             
             btn.clicked.connect(lambda _, b=spec.param: self._on_button_selected(b))
             self.button_widgets[spec.param] = btn
-            self.controls[spec.param] = btn
+            # Only store in controls if it's a parameter enum, not a mode enum (like DigitalFilterMode)
+            if not isinstance(spec.param, DigitalFilterMode):
+                self.controls[spec.param] = btn
         
         # For compatibility with code that expects filter_mode_buttons (DigitalFilterSection)
         # or wave_buttons (DigitalOscillatorSection), create an alias
         if hasattr(self, 'BUTTON_SPECS') and self.BUTTON_SPECS:
             # Check if this is a filter section by checking the first param type
             first_param = self.BUTTON_SPECS[0].param
-            from jdxi_editor.midi.data.digital.filter import DigitalFilterMode
             if isinstance(first_param, DigitalFilterMode):
                 self.filter_mode_buttons = self.button_widgets
 
@@ -216,9 +220,23 @@ class ParameterSectionBase(SectionBaseWidget):
         selected_btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT_ACTIVE)
         self._update_button_enabled_states(button_param)
         if self.send_midi_parameter:
-            # Get the value from the param (which might be an enum with .value attribute)
-            param_value = getattr(button_param, 'value', button_param)
-            self.send_midi_parameter(button_param, param_value)
+            # Map filter mode enums to their corresponding parameter
+            if isinstance(button_param, DigitalFilterMode):
+                # Filter mode buttons map to FILTER_MODE_SWITCH parameter
+                actual_param = DigitalPartialParam.FILTER_MODE_SWITCH
+                param_value = button_param.value
+            else:
+                # For other button types (like waveform), use the param directly
+                actual_param = button_param
+                param_value = getattr(button_param, 'value', button_param)
+            
+            # Ensure we have a valid AddressParameter before sending
+            if not isinstance(actual_param, AddressParameter):
+                from decologr import Decologr as log
+                log.error(f"Cannot send MIDI: {button_param} is not an AddressParameter (got {type(button_param)})")
+                return
+            
+            self.send_midi_parameter(actual_param, param_value)
 
     def _update_button_enabled_states(self, button_param):
         """Enable/disable controls based on BUTTON_ENABLE_RULES"""

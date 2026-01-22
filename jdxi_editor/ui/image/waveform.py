@@ -106,31 +106,6 @@ def generate_waveform_icon(
             points.append((x_pos, y_pos))
         draw.line(points, fill=color, width=th)
 
-    elif waveform == WaveformIconType.LPF_FILTER:
-        """
-        Low-pass filter icon:
-        Full amplitude on the left, progressively attenuated to the right,
-        visually representing a low-pass filter's frequency response.
-        """
-        num_points = 80
-        points = []
-
-        for i in range(num_points):
-            t = i / (num_points - 1)  # 0 → 1 across X
-            x_pos = t * (x - 1)
-
-            # Sigmoid-style amplitude drop for LPF
-            # Left: full height, Right: approaches 0
-            y_pos = half_y + half_y * (
-                1 - 1 / (1 + math.exp(-12 * (0.3 - t)))
-            )  # sigmoidal falloff
-            # Flip vertically so 0 is bottom of canvas
-            y_pos = y - y_pos
-
-            points.append((x_pos, y_pos))
-
-        draw.line(points, fill=color, width=th)
-
     elif waveform == WaveformIconType.HPF_FILTER:
         """
         High-pass filter icon:

@@ -669,6 +669,8 @@ class DigitalSynthEditor(SynthEditor):
         :param failures: list
         :return: None
         """
+        from jdxi_editor.midi.data.digital.partial import DigitalPartial
+        
         param_name = param.name
         partial_switch_map = {
             "PARTIAL1_SWITCH": 1,
@@ -676,7 +678,13 @@ class DigitalSynthEditor(SynthEditor):
             "PARTIAL3_SWITCH": 3,
         }
         partial_number = partial_switch_map.get(param_name)
-        check_box = self.partials_panel.switches.get(partial_number)
+        if partial_number is None:
+            failures.append(param.name)
+            return
+        
+        # Convert integer to DigitalPartial enum for dictionary lookup
+        partial_enum = DigitalPartial(partial_number)
+        check_box = self.partials_panel.switches.get(partial_enum)
         log.parameter(
             f"Updating switch for: {param_name}, checkbox:", check_box, silent=True
         )
@@ -705,6 +713,8 @@ class DigitalSynthEditor(SynthEditor):
         :param debug: bool
         :return: None
         """
+        from jdxi_editor.midi.data.digital.partial import DigitalPartial
+        
         param_name = param.name
         partial_switch_map = {
             "PARTIAL1_SELECT": 1,
@@ -712,7 +722,13 @@ class DigitalSynthEditor(SynthEditor):
             "PARTIAL3_SELECT": 3,
         }
         partial_number = partial_switch_map.get(param_name)
-        check_box = self.partials_panel.switches.get(partial_number)
+        if partial_number is None:
+            failures.append(param.name)
+            return
+        
+        # Convert integer to DigitalPartial enum for dictionary lookup
+        partial_enum = DigitalPartial(partial_number)
+        check_box = self.partials_panel.switches.get(partial_enum)
         if check_box:
             check_box.blockSignals(True)
             check_box.setSelected(bool(value))

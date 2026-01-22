@@ -2,40 +2,20 @@
 Digital Oscillator Section for the JDXI Editor
 """
 
-from typing import Callable
-
 from PySide6.QtCore import QSize
 from PySide6.QtGui import QIcon
-from PySide6.QtWidgets import (
-    QGridLayout,
-    QGroupBox,
-    QHBoxLayout,
-    QTabWidget,
-    QVBoxLayout,
-)
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.digital.oscillator import DigitalOscWave, WaveformIconType
 from jdxi_editor.midi.data.parameter.digital.name import DigitalDisplayName
-from jdxi_editor.midi.data.parameter.digital.option import DigitalDisplayOptions
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParam
-from jdxi_editor.midi.data.pcm.waves import PCM_WAVES_CATEGORIZED
-from jdxi_editor.ui.editors.digital.partial.pwm import PWMWidget
 from jdxi_editor.ui.editors.param_section import ParameterSectionBase
 from jdxi_editor.ui.editors.widget_specs import SliderSpec
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
-from jdxi_editor.ui.widgets.combo_box.searchable_filterable import (
-    SearchableFilterableComboBox,
-)
-from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (
     create_layout_with_widgets,
-    create_widget_with_layout,
 )
-from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
-from jdxi_editor.ui.widgets.pitch.envelope import PitchEnvelopeWidget
-
 
 
 class DigitalOscillatorSection(ParameterSectionBase):
@@ -93,14 +73,14 @@ class DigitalOscillatorSection(ParameterSectionBase):
             wave = spec.param
             icon_type = spec.icon_name  # This is a WaveformIconType enum
             
-            # Generate icon from waveform type
+            # --- Generate icon from waveform type
             icon_base64 = generate_waveform_icon(icon_type, JDXi.UI.Style.WHITE, 1.0)
-            # Use QPushButton directly since WaveformButton expects Waveform enum, not DigitalOscWave
+            # --- Use QPushButton directly since WaveformButton expects Waveform enum, not DigitalOscWave
             from PySide6.QtWidgets import QPushButton
             btn = QPushButton(spec.label)  # Use label from spec
             btn.setCheckable(True)
             
-            # Set icon
+            # --- Set icon
             pixmap = base64_to_pixmap(icon_base64)
             if pixmap and not pixmap.isNull():
                 btn.setIcon(QIcon(pixmap))
@@ -154,13 +134,13 @@ class DigitalOscillatorSection(ParameterSectionBase):
         This is called after all widgets are created (in setup_ui), so widgets
         should exist. We still check for None as a safety measure.
         """
-        # Disable all first
+        # --- Disable all first
         for attrs in self.BUTTON_ENABLE_RULES.values():
             for attr in attrs:
                 widget = getattr(self, attr, None)
                 if widget is not None:
                     widget.setEnabled(False)
-        # Enable per selected button
+        # --- Enable per selected button
         for attr in self.BUTTON_ENABLE_RULES.get(button_param, []):
             widget = getattr(self, attr, None)
             if widget is not None:

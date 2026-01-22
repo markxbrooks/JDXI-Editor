@@ -55,8 +55,8 @@ from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.synth.type import JDXiSynth
 from jdxi_editor.ui.editors.digital.partial.amp import DigitalAmpSection
 from jdxi_editor.ui.editors.digital.partial.filter import DigitalFilterSection
-from jdxi_editor.ui.editors.digital.partial.lfo import DigitalLFOSection
-from jdxi_editor.ui.editors.digital.partial.mod_lfo import DigitalModLFOSection
+from jdxi_editor.ui.editors.digital.partial.lfo.lfo import DigitalLFOSection
+from jdxi_editor.ui.editors.digital.partial.lfo.mod import DigitalModLFOSection
 from jdxi_editor.ui.editors.digital.partial.oscillator import DigitalOscillatorSection
 from jdxi_editor.ui.editors.synth.partial import PartialEditor
 
