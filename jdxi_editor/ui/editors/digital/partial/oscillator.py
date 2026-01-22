@@ -4,6 +4,7 @@ Digital Oscillator Section for the JDXI Editor
 
 from typing import Callable
 
+from PySide6.QtCore import QSize
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
     QGridLayout,
@@ -14,7 +15,7 @@ from PySide6.QtWidgets import (
 )
 
 from jdxi_editor.core.jdxi import JDXi
-from jdxi_editor.midi.data.digital.oscillator import DigitalOscWave
+from jdxi_editor.midi.data.digital.oscillator import DigitalOscWave, WaveformIconType
 from jdxi_editor.midi.data.parameter.digital.name import DigitalDisplayName
 from jdxi_editor.midi.data.parameter.digital.option import DigitalDisplayOptions
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParam
@@ -50,14 +51,14 @@ class DigitalOscillatorSection(SectionBaseWidget):
 
     # --- Waveform buttons spec
     WAVEFORM_BUTTONS = [
-        (DigitalOscWave.SAW, "UPSAW"),
-        (DigitalOscWave.SQUARE, "SQUARE"),
-        (DigitalOscWave.PW_SQUARE, "PWSQU"),
-        (DigitalOscWave.TRIANGLE, "TRIANGLE"),
-        (DigitalOscWave.SINE, "SINE"),
-        (DigitalOscWave.NOISE, "NOISE"),
-        (DigitalOscWave.SUPER_SAW, "SPSAW"),
-        (DigitalOscWave.PCM, "PCM"),
+        (DigitalOscWave.SAW, WaveformIconType.UPSAW),
+        (DigitalOscWave.SQUARE, WaveformIconType.SQUARE),
+        (DigitalOscWave.PW_SQUARE, WaveformIconType.PWSQU),
+        (DigitalOscWave.TRIANGLE, WaveformIconType.TRIANGLE),
+        (DigitalOscWave.SINE, WaveformIconType.SINE),
+        (DigitalOscWave.NOISE, WaveformIconType.NOISE),
+        (DigitalOscWave.SUPER_SAW, WaveformIconType.SPSAW),
+        (DigitalOscWave.PCM, WaveformIconType.PCM),
     ]
 
     # --- Declarative waveform-enable mapping
@@ -147,7 +148,11 @@ class DigitalOscillatorSection(SectionBaseWidget):
         for wave, icon_type in self.WAVEFORM_BUTTONS:
             icon_base64 = generate_waveform_icon(icon_type, JDXi.UI.Style.WHITE, 1.0)
             btn = WaveformButton(wave)
-            btn.setIcon(QIcon(base64_to_pixmap(icon_base64)))
+            # Set icon - text is already set by WaveformButton.__init__()
+            pixmap = base64_to_pixmap(icon_base64)
+            if pixmap and not pixmap.isNull():
+                btn.setIcon(QIcon(pixmap))
+                btn.setIconSize(QSize(20, 20))  # Set icon size for proper display
             btn.setFixedSize(
                 JDXi.UI.Dimensions.WAVEFORM_ICON.WIDTH,
                 JDXi.UI.Dimensions.WAVEFORM_ICON.HEIGHT,
