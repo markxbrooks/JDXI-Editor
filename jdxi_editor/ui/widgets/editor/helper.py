@@ -20,9 +20,41 @@ from PySide6.QtWidgets import (
 )
 
 from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.midi.data.digital.filter import DigitalFilterMode
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from jdxi_editor.ui.style.dimensions import Dimensions
+
+
+def create_filter_button(icon_type: str, mode: DigitalFilterMode) -> QPushButton:
+    """create filter button"""
+    btn = QPushButton(mode.display_name)
+    btn.setCheckable(True)
+    icon_base64 = generate_waveform_icon(icon_type, JDXi.UI.Style.WHITE, 2.0)
+    btn.setIcon(QIcon(base64_to_pixmap(icon_base64)))
+    btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
+    btn.setFixedSize(
+        JDXi.UI.Dimensions.WAVEFORM_ICON.WIDTH,
+        JDXi.UI.Dimensions.WAVEFORM_ICON.HEIGHT,
+    )
+    return btn
+
+
+def create_group(title: str, layout_or_widget) -> QGroupBox:
+    """Helper for QGroupBox creation with a layout or single widget."""
+    from PySide6.QtWidgets import QLayout
+
+    group = QGroupBox(title)
+    if isinstance(layout_or_widget, list):
+        group.setLayout(create_layout_with_widgets(layout_or_widget))
+    elif isinstance(layout_or_widget, QLayout):
+        # --- If it's already a layout, use it directly
+        group.setLayout(layout_or_widget)
+    else:
+        # --- If it's a widget, wrap it in a layout
+        layout = create_layout_with_widgets([layout_or_widget])
+        group.setLayout(layout)
+    return group
 
 
 def create_icon_from_qta(icon_name: str) -> QIcon:

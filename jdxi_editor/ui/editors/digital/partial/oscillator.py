@@ -43,7 +43,9 @@ class DigitalOscillatorSection(SectionBaseWidget):
     TUNING_SLIDERS = [
         SliderSpec(DigitalPartialParam.OSC_PITCH, DigitalDisplayName.OSC_PITCH),
         SliderSpec(DigitalPartialParam.OSC_DETUNE, DigitalDisplayName.OSC_DETUNE),
-        SliderSpec(DigitalPartialParam.SUPER_SAW_DETUNE, DigitalDisplayName.SUPER_SAW_DETUNE),
+        SliderSpec(
+            DigitalPartialParam.SUPER_SAW_DETUNE, DigitalDisplayName.SUPER_SAW_DETUNE
+        ),
     ]
 
     # --- Waveform buttons spec
@@ -111,17 +113,13 @@ class DigitalOscillatorSection(SectionBaseWidget):
     def _create_tab_widget(self):
         """Create and populate the tab widget"""
         self.oscillator_tab_widget = QTabWidget()
-        
+
         # --- Tuning and Pitch tab (combines Tuning and Pitch Envelope like Analog) ---
         tuning_icon = JDXi.UI.IconRegistry.get_icon(
             JDXi.UI.IconRegistry.MUSIC_NOTE, color=JDXi.UI.Style.GREY
         )
-        self.oscillator_tab_widget.addTab(
-            self.pitch_widget, tuning_icon, "Pitch"
-        )
-        self.oscillator_tab_widget.addTab(
-            self.tuning_group, tuning_icon, "Tuning"
-        )
+        self.oscillator_tab_widget.addTab(self.pitch_widget, tuning_icon, "Pitch")
+        self.oscillator_tab_widget.addTab(self.tuning_group, tuning_icon, "Tuning")
 
         # --- Pulse Width tab ---
         pw_group = self._create_pw_group()
@@ -174,7 +172,9 @@ class DigitalOscillatorSection(SectionBaseWidget):
     def _create_tuning_layout_widgets(self):
         """create tuning layout widgets"""
         sliders = {
-            spec.param: self._create_parameter_slider(spec.param, spec.label, vertical=True)
+            spec.param: self._create_parameter_slider(
+                spec.param, spec.label, vertical=True
+            )
             for spec in self.TUNING_SLIDERS
         }
         self.super_saw_detune = sliders[DigitalPartialParam.SUPER_SAW_DETUNE]
@@ -254,7 +254,9 @@ class DigitalOscillatorSection(SectionBaseWidget):
             options=DigitalDisplayOptions.PCM_WAVE_GAIN,
         )
 
-        pcm_options = [f"{w['Wave Number']}: {w['Wave Name']}" for w in PCM_WAVES_CATEGORIZED]
+        pcm_options = [
+            f"{w['Wave Number']}: {w['Wave Name']}" for w in PCM_WAVES_CATEGORIZED
+        ]
         pcm_values = [w["Wave Number"] for w in PCM_WAVES_CATEGORIZED]
         pcm_categories = sorted(set(w["Category"] for w in PCM_WAVES_CATEGORIZED))
 

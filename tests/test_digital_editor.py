@@ -377,7 +377,7 @@ class TestDigitalSynthEditor(unittest.TestCase):
         
         # Mock update_filter_controls_state method on partial editor
         mock_update_method = Mock()
-        self.editor.partial_editors[1].update_filter_controls_state = mock_update_method
+        self.editor.partial_editors[1].update_controls_state = mock_update_method
         
         # Update filter state to LPF (value 1)
         self.editor._update_filter_state(1, 1)
@@ -391,7 +391,7 @@ class TestDigitalSynthEditor(unittest.TestCase):
         
         # Mock update_filter_controls_state method on partial editor
         mock_update_method = Mock()
-        self.editor.partial_editors[1].update_filter_controls_state = mock_update_method
+        self.editor.partial_editors[1].update_controls_state = mock_update_method
         
         # Update filter state to BYPASS (value 0)
         self.editor._update_filter_state(1, 0)
@@ -405,7 +405,7 @@ class TestDigitalSynthEditor(unittest.TestCase):
         
         # Mock update_filter_controls_state method on partial editor
         mock_update_method = Mock()
-        self.editor.partial_editors[1].update_filter_controls_state = mock_update_method
+        self.editor.partial_editors[1].update_controls_state = mock_update_method
         
         # Update filter state to HPF (value 2)
         self.editor._update_filter_state(1, 2)
@@ -419,7 +419,7 @@ class TestDigitalSynthEditor(unittest.TestCase):
         
         # Mock update_filter_controls_state method on partial editor
         mock_update_method = Mock()
-        self.editor.partial_editors[1].update_filter_controls_state = mock_update_method
+        self.editor.partial_editors[1].update_controls_state = mock_update_method
         
         # Update filter state to BPF (value 3)
         self.editor._update_filter_state(1, 3)

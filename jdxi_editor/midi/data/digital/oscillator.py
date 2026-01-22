@@ -25,6 +25,7 @@ class DigitalOscPcmWaveGain(IntEnum):
 
 class WaveformIconType:
     """Types of Digital Oscillator Waves"""
+
     ADSR: str = "adsr"
     UPSAW: str = "upsaw"
     SQUARE: str = "square"

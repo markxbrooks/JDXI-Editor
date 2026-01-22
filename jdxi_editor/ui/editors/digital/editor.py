@@ -408,7 +408,7 @@ class DigitalSynthEditor(SynthEditor):
         :param value: int
         :return: None
         """
-        self.partial_editors[partial_no].update_filter_controls_state(value)
+        self.partial_editors[partial_no].filter_tab.update_controls_state(value)
 
     def _update_common_controls(
         self,

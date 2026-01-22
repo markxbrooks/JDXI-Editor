@@ -108,12 +108,8 @@ class AnalogOscillatorSection(SectionBaseWidget):
         tuning_icon = JDXi.UI.IconRegistry.get_icon(
             JDXi.UI.IconRegistry.MUSIC_NOTE, color=JDXi.UI.Style.GREY
         )
-        self.oscillator_tab_widget.addTab(
-            pitch_widget, tuning_icon, "Pitch"
-        )
-        self.oscillator_tab_widget.addTab(
-            tuning_widget, tuning_icon, "Tuning"
-        )
+        self.oscillator_tab_widget.addTab(pitch_widget, tuning_icon, "Pitch")
+        self.oscillator_tab_widget.addTab(tuning_widget, tuning_icon, "Tuning")
 
         # --- Pulse Width tab ---
         pw_group = self._create_pw_group()
