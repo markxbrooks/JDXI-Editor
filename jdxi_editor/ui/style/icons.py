@@ -113,6 +113,11 @@ class JDXiUIIconRegistry:
     FILTER = "ri.filter-3-fill"
     AMPLIFIER = "mdi.amplifier"
     WAVEFORM = "mdi.waveform"
+    
+    SAW_WAVE: str = "mdi.sawtooth-wave",
+    SQUARE_WAVE: str = "mdi.square-wave",
+    WAVEFORM: str = mdi.waveform",
+    RANDOM_WAVE: str = "mdi.wave"
 
     @staticmethod
     def get_icon(
