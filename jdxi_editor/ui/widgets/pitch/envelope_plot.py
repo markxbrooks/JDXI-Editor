@@ -237,16 +237,8 @@ class PitchEnvPlot(BasePlotWidget):
         return y_max, y_min
 
     def plot_dimensions(self) -> tuple[int, int, int, int]:
-        # Plot area dimensions
-        w = self.width()
-        h = self.height()
-        top_padding = 50
-        bottom_padding = 80
-        left_padding = 80
-        right_padding = 50
-        plot_w = w - left_padding - right_padding
-        plot_h = h - top_padding - bottom_padding
-        return left_padding, plot_h, plot_w, top_padding
+        # Plot area dimensions - PitchEnvPlot uses different bottom padding
+        return super().plot_dimensions(top_padding=50, bottom_padding=80, left_padding=80, right_padding=50)
 
     def envelope_parameters(self) -> tuple[ndarray[Any, dtype[floating[Any]]], int, int]:
         """Envelope parameters"""
@@ -269,26 +261,3 @@ class PitchEnvPlot(BasePlotWidget):
         total_time = 10  # seconds
         return envelope, total_samples, total_time
 
-    def set_pen(self, painter: QPainter) -> QPen:
-        # Orange drawing pen
-        pen = QPen(QColor("orange"))
-        pen.setWidth(2)
-        axis_pen = QPen(QColor("white"))
-        painter.setRenderHint(QPainter.Antialiasing, False)
-        painter.setPen(pen)
-        painter.setFont(QFont("JD LCD Rounded", 10))
-        return axis_pen
-
-    def draw_axes(self, axis_pen: QPen, left_padding: int, painter: QPainter, plot_h: int, plot_w: int,
-                  top_padding: int, y_max: float, y_min: float) -> float:
-        """Draw axes"""
-        painter.setPen(axis_pen)
-        painter.drawLine(
-            left_padding, top_padding, left_padding, top_padding + plot_h
-        )  # Y-axis
-
-        zero_y = top_padding + (y_max / (y_max - y_min)) * plot_h
-        painter.drawLine(
-            left_padding, zero_y, left_padding + plot_w, zero_y
-        )  # X-axis at Y=0
-        return zero_y

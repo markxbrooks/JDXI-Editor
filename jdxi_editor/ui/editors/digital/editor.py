@@ -527,28 +527,28 @@ class DigitalSynthEditor(SynthEditor):
         self.adsr_map = {
             DigitalPartialParam.AMP_ENV_ATTACK_TIME: self.partial_editors[
                 partial_no
-            ].amp_tab.amp_env_adsr_widget.attack_control,
+            ].amp_tab.adsr_widget.attack_control,
             DigitalPartialParam.AMP_ENV_DECAY_TIME: self.partial_editors[
                 partial_no
-            ].amp_tab.amp_env_adsr_widget.decay_control,
+            ].amp_tab.adsr_widget.decay_control,
             DigitalPartialParam.AMP_ENV_SUSTAIN_LEVEL: self.partial_editors[
                 partial_no
-            ].amp_tab.amp_env_adsr_widget.sustain_control,
+            ].amp_tab.adsr_widget.sustain_control,
             DigitalPartialParam.AMP_ENV_RELEASE_TIME: self.partial_editors[
                 partial_no
-            ].amp_tab.amp_env_adsr_widget.release_control,
+            ].amp_tab.adsr_widget.release_control,
             DigitalPartialParam.FILTER_ENV_ATTACK_TIME: self.partial_editors[
                 partial_no
-            ].filter_tab.filter_adsr_widget.attack_control,
+            ].filter_tab.adsr_widget.attack_control,
             DigitalPartialParam.FILTER_ENV_DECAY_TIME: self.partial_editors[
                 partial_no
-            ].filter_tab.filter_adsr_widget.decay_control,
+            ].filter_tab.adsr_widget.decay_control,
             DigitalPartialParam.FILTER_ENV_SUSTAIN_LEVEL: self.partial_editors[
                 partial_no
-            ].filter_tab.filter_adsr_widget.sustain_control,
+            ].filter_tab.adsr_widget.sustain_control,
             DigitalPartialParam.FILTER_ENV_RELEASE_TIME: self.partial_editors[
                 partial_no
-            ].filter_tab.filter_adsr_widget.release_control,
+            ].filter_tab.adsr_widget.release_control,
         }
         spinbox = self.adsr_map.get(param)
         if not spinbox:

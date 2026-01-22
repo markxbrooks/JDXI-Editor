@@ -256,7 +256,8 @@ class DigitalPartialEditor(PartialEditor):
             if widget:
                 widget.setEnabled(enabled)
 
-        self.filter_tab.filter_adsr_widget.setEnabled(enabled)
+        if self.filter_tab.adsr_widget:
+            self.filter_tab.adsr_widget.setEnabled(enabled)
 
     def _on_waveform_selected(self, waveform: DigitalOscWave) -> None:
         for btn in self.oscillator_tab.wave_buttons.values():

@@ -177,7 +177,7 @@ class ADSRPlot(BasePlotWidget):
 
             y_max, y_min = self.get_y_range()
 
-            zero_y = self.draw_axes(axis_pen, left_pad, painter, plot_h, plot_w, top_pad, y_max, y_min)
+            zero_y = self.draw_axes(axis_pen, left_pad, painter, plot_h, plot_w, top_pad, y_max, y_min, zero_at_bottom=True)
 
             self.draw_x_axis(left_pad, painter, plot_w, total_time, zero_y)
 
@@ -206,13 +206,6 @@ class ADSRPlot(BasePlotWidget):
                                y_max, y_min, zero_y)
         finally:
             painter.end()
-
-    def set_pen(self, painter: QPainter) -> QPen:
-        """Set up pens and fonts"""
-        orange_pen = QPen(QColor("orange"), 2)
-        axis_pen = QPen(QColor("white"))
-        painter.setFont(QFont("JD LCD Rounded", 10))
-        return axis_pen
 
     def envelope_parameters(self):
         """Compute envelope segments in seconds"""
@@ -249,31 +242,10 @@ class ADSRPlot(BasePlotWidget):
         total_time = 5  # in seconds
         return envelope, total_samples, total_time
 
-    def plot_dimensions(self):
-        """Get plot area dimensions"""
-        w = self.width()
-        h = self.height()
-        top_pad, bottom_pad = 50, 50
-        left_pad, right_pad = 80, 50
-        plot_w = w - left_pad - right_pad
-        plot_h = h - top_pad - bottom_pad
-        return left_pad, plot_h, plot_w, top_pad
-
     def get_y_range(self):
         """Get Y range"""
         y_min, y_max = 0.0, 1.0
         return y_max, y_min
-
-    def draw_axes(self, axis_pen: QPen, left_pad: int, painter: QPainter, plot_h: int, plot_w: int,
-                  top_pad: int, y_max: float, y_min: float) -> float:
-        """Draw axes"""
-        painter.setPen(axis_pen)
-        # Y-axis
-        painter.drawLine(left_pad, top_pad, left_pad, top_pad + plot_h)
-        # X-axis
-        zero_y = top_pad + plot_h  # Bottom of plot area
-        painter.drawLine(left_pad, zero_y, left_pad + plot_w, zero_y)
-        return zero_y
 
     def draw_x_axis(self, left_pad: int, painter: QPainter, plot_w: int, total_time: float, zero_y: float):
         """Draw X-axis ticks and labels"""

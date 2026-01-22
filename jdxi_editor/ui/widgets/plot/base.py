@@ -205,3 +205,93 @@ class BasePlotWidget(QWidget):
         painter.rotate(-90)
         painter.drawText(0, 0, label)
         painter.restore()
+
+    def set_pen(self, painter: QPainter) -> QPen:
+        """
+        Set up pens and fonts for plotting.
+
+        :param painter: QPainter instance
+        :return: QPen for drawing axes
+        """
+        orange_pen = QPen(QColor("orange"), 2)
+        axis_pen = QPen(QColor("white"))
+        painter.setFont(QFont("JD LCD Rounded", 10))
+        return axis_pen
+
+    def plot_dimensions(
+        self,
+        top_padding: int = 50,
+        bottom_padding: int = 50,
+        left_padding: int = 80,
+        right_padding: int = 50,
+    ) -> tuple[int, int, int, int]:
+        """
+        Get plot area dimensions.
+
+        :param top_padding: Top padding (default: 50)
+        :param bottom_padding: Bottom padding (default: 50)
+        :param left_padding: Left padding (default: 80)
+        :param right_padding: Right padding (default: 50)
+        :return: Tuple of (left_pad, plot_h, plot_w, top_pad)
+        """
+        w = self.width()
+        h = self.height()
+        plot_w = w - left_padding - right_padding
+        plot_h = h - top_padding - bottom_padding
+        return left_padding, plot_h, plot_w, top_padding
+
+    def calculate_zero_y(
+        self,
+        top_pad: int,
+        plot_h: int,
+        y_max: float,
+        y_min: float,
+        zero_at_bottom: bool = False,
+    ) -> float:
+        """
+        Calculate the Y coordinate of the zero line.
+
+        :param top_pad: Top padding of the plot area
+        :param plot_h: Height of the plot area
+        :param y_max: Maximum Y value
+        :param y_min: Minimum Y value
+        :param zero_at_bottom: If True, zero line is at bottom of plot (default: False, calculated from y_max/y_min)
+        :return: Y coordinate of the zero line
+        """
+        if zero_at_bottom:
+            return top_pad + plot_h
+        return top_pad + (y_max / (y_max - y_min)) * plot_h
+
+    def draw_axes(
+        self,
+        axis_pen: QPen,
+        left_pad: int,
+        painter: QPainter,
+        plot_h: int,
+        plot_w: int,
+        top_pad: int,
+        y_max: float,
+        y_min: float,
+        zero_at_bottom: bool = False,
+    ) -> float:
+        """
+        Draw axes (Y-axis and X-axis at zero line).
+
+        :param axis_pen: Pen for drawing axes
+        :param left_pad: Left padding of the plot area
+        :param painter: QPainter instance
+        :param plot_h: Height of the plot area
+        :param plot_w: Width of the plot area
+        :param top_pad: Top padding of the plot area
+        :param y_max: Maximum Y value
+        :param y_min: Minimum Y value
+        :param zero_at_bottom: If True, zero line is at bottom of plot (default: False)
+        :return: Y coordinate of the zero line
+        """
+        painter.setPen(axis_pen)
+        # Y-axis
+        painter.drawLine(left_pad, top_pad, left_pad, top_pad + plot_h)
+        # X-axis at zero line
+        zero_y = self.calculate_zero_y(top_pad, plot_h, y_max, y_min, zero_at_bottom)
+        painter.drawLine(left_pad, zero_y, left_pad + plot_w, zero_y)
+        return zero_y
