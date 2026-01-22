@@ -11,18 +11,14 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QTabWidget,
     QVBoxLayout,
-    QWidget,
 )
 
-from decologr import Decologr as log
 from jdxi_editor.core.jdxi import JDXi
-from jdxi_editor.midi.data.address.address import RolandSysExAddress
-from jdxi_editor.midi.data.digital.oscillator import DigitalOscWave, WaveformIconType
+from jdxi_editor.midi.data.digital.oscillator import DigitalOscWave
 from jdxi_editor.midi.data.parameter.digital.name import DigitalDisplayName
 from jdxi_editor.midi.data.parameter.digital.option import DigitalDisplayOptions
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParam
 from jdxi_editor.midi.data.pcm.waves import PCM_WAVES_CATEGORIZED
-from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.digital.partial.pwm import PWMWidget
 from jdxi_editor.ui.editors.widget_specs import SliderSpec
 from jdxi_editor.ui.image.utils import base64_to_pixmap
@@ -146,6 +142,7 @@ class DigitalOscillatorSection(SectionBaseWidget):
 
     # --- Waveform buttons ---
     def _create_waveform_buttons(self):
+        """create waveform buttons"""
         self.wave_buttons = {}
         self.wave_layout_widgets = []
 
