@@ -134,14 +134,13 @@ class DigitalPartialEditor(PartialEditor):
         container_layout.addWidget(self.tab_widget)
         # --- Add sections in address vertical layout
         self.oscillator_tab = DigitalOscillatorSection(
-            self._create_parameter_slider,
-            self._create_parameter_switch,
-            self._create_parameter_combo_box,
-            self.send_midi_parameter,
-            self.partial_number,
-            self.midi_helper,
-            self.controls,
-            self.address,
+            create_parameter_slider=self._create_parameter_slider,
+            create_parameter_switch=self._create_parameter_switch,
+            create_parameter_combo_box=self._create_parameter_combo_box,
+            send_midi_parameter=self.send_midi_parameter,
+            midi_helper=self.midi_helper,
+            controls=self.controls,
+            address=self.address,
         )
         self.tab_widget.addTab(
             self.oscillator_tab,
@@ -151,13 +150,13 @@ class DigitalPartialEditor(PartialEditor):
             "Oscillator",
         )
         self.filter_tab = DigitalFilterSection(
-            self._create_parameter_slider,
-            self._create_parameter_switch,
-            self.partial_number,
-            self.midi_helper,
-            self.controls,
-            self.synth_data.address,
-            self.send_midi_parameter,
+            create_parameter_slider=self._create_parameter_slider,
+            create_parameter_switch=self._create_parameter_switch,
+            create_parameter_combo_box=self._create_parameter_combo_box,
+            send_midi_parameter=self.send_midi_parameter,
+            midi_helper=self.midi_helper,
+            controls=self.controls,
+            address=self.synth_data.address,
         )
         self.tab_widget.addTab(
             self.filter_tab,
@@ -167,11 +166,13 @@ class DigitalPartialEditor(PartialEditor):
             "Filter",
         )
         self.amp_tab = DigitalAmpSection(
-            self._create_parameter_slider,
-            self.partial_number,
-            self.midi_helper,
-            self.controls,
-            self.synth_data.address,
+            create_parameter_slider=self._create_parameter_slider,
+            create_parameter_switch=self._create_parameter_switch,
+            create_parameter_combo_box=self._create_parameter_combo_box,
+            send_midi_parameter=self.send_midi_parameter,
+            midi_helper=self.midi_helper,
+            controls=self.controls,
+            address=self.synth_data.address,
         )
         self.tab_widget.addTab(
             self.amp_tab,

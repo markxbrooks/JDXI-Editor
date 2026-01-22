@@ -7,6 +7,7 @@ class SliderSpec:
     param: Any
     label: str
     vertical: bool = True
+    icon_name: str = None
 
 
 @dataclass(frozen=True)

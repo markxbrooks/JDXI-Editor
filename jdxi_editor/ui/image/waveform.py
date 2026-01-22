@@ -131,6 +131,26 @@ def generate_waveform_icon(
 
         draw.line(points, fill=color, width=th)
 
+    elif waveform == WaveformIconType.HPF_FILTER:
+        """
+        High-pass filter icon:
+        Low amplitude on the left, progressively increasing to full amplitude on the right,
+        visually representing a high-pass filter's frequency response.
+        """
+        num_points = 80
+        points = []
+        for i in range(num_points):
+            t = i / (num_points - 1)  # 0 → 1 across X
+            x_pos = t * (x - 1)
+            # Sigmoid-style amplitude rise for HPF
+            # Left: approaches 0, Right: full height
+            # Shifted so the rise starts ~30% from left
+            y_pos = half_y + half_y * (1 / (1 + math.exp(-12 * (t - 0.3))))
+            # Flip vertically so 0 is bottom of canvas
+            y_pos = y - y_pos
+            points.append((x_pos, y_pos))
+        draw.line(points, fill=color, width=th)
+
     elif waveform == WaveformIconType.BPF_FILTER:
         """
         Band-pass filter icon:
