@@ -65,7 +65,6 @@ class AnalogLFOSection(BaseLFOSection):
         self._create_parameter_combo_box = create_parameter_combo_box
         self._on_lfo_shape_changed = on_lfo_shape_changed
         self.lfo_shape_buttons = lfo_shape_buttons
-        self.display_names = AnalogDisplayName
 
         self.lfo_shapes = [
             AnalogLFOWaveShape.TRI,

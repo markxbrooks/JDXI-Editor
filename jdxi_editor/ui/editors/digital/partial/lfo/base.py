@@ -26,6 +26,10 @@ from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 class BaseLFOSection(SectionBaseWidget):
     """LFO section for the digital partial editor."""
 
+    SWITCH_SPECS: list = []
+    RATE_FADE_SLIDERS: list = []
+    DEPTH_SLIDERS: list = []
+
     rate_tab_label: str = "Rate"
     depths_tab_label: str = "Depths"
 
