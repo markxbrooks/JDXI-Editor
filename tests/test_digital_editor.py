@@ -289,7 +289,7 @@ class TestDigitalSynthEditor(unittest.TestCase):
             mock_btn.setStyleSheet = Mock()
             mock_buttons[shape] = mock_btn
         
-        self.editor.partial_editors[1].lfo_tab.lfo_shape_buttons = mock_buttons
+        self.editor.partial_editors[1].lfo_tab.wave_shape_buttons = mock_buttons
         
         # Update to SINE shape (value 1)
         self.editor._update_lfo_shape_buttons(1, 1)
@@ -309,7 +309,7 @@ class TestDigitalSynthEditor(unittest.TestCase):
             mock_btn.setStyleSheet = Mock()
             mock_buttons[shape] = mock_btn
         
-        self.editor.partial_editors[1].mod_lfo_tab.lfo_shape_buttons = mock_buttons
+        self.editor.partial_editors[1].mod_lfo_tab.wave_shape_buttons = mock_buttons
         
         # Update to SQUARE shape (value 3)
         self.editor._update_mod_lfo_shape_buttons(1, 3)

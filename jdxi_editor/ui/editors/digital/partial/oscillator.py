@@ -1,19 +1,23 @@
 """
 Digital Oscillator Section for the JDXI Editor
 """
+from typing import Callable
 
 from PySide6.QtCore import QSize
 from PySide6.QtGui import QIcon
 
 from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.digital.oscillator import DigitalOscWave, WaveformIconType
 from jdxi_editor.midi.data.parameter.digital.name import DigitalDisplayName
 from jdxi_editor.midi.data.parameter.digital.option import DigitalDisplayOptions
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParam
-from jdxi_editor.ui.editors.param_section import ParameterSectionBase
+from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.editors.base.oscillator import BaseOscillatorSection
 from jdxi_editor.ui.editors.widget_specs import SliderSpec
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
+from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (
     create_layout_with_widgets,
 )
@@ -21,7 +25,7 @@ from jdxi_editor.ui.widgets.pitch.envelope import PitchEnvelopeWidget
 from jdxi_editor.ui.widgets.pulse_width.pwm import PWMWidget
 
 
-class DigitalOscillatorSection(ParameterSectionBase):
+class DigitalOscillatorSection(BaseOscillatorSection):
     """Digital Oscillator Section for JD-Xi Editor (spec-driven)."""
 
     # --- Sliders
@@ -52,6 +56,32 @@ class DigitalOscillatorSection(ParameterSectionBase):
 
     # --- Optional ADSR can be added if Oscillator has one (Digital usually has pitch envelope)
     ADSR_SPEC = None
+
+    def __init__(
+            self,
+            icon_type: str = IconType.ADSR,
+            analog: bool = False,
+            send_midi_parameter: Callable = None,
+            create_parameter_slider: Callable = None,
+            create_parameter_switch: Callable = None,
+            create_parameter_combo_box: Callable = None,
+            midi_helper: MidiIOHelper = None,
+            controls: dict = None,
+            address: RolandSysExAddress = None
+    ):
+        super().__init__(
+            create_parameter_slider=create_parameter_slider,
+            create_parameter_switch=create_parameter_switch,
+            create_parameter_combo_box=create_parameter_combo_box,
+            send_midi_parameter=send_midi_parameter,
+            midi_helper=midi_helper,
+            controls=controls,
+            address=address,
+            icon_type=icon_type,
+            analog=analog,
+        )
+        # Store references for use in build_widgets
+        self._create_parameter_slider = create_parameter_slider
 
     def build_widgets(self):
         """Override to create PitchEnvelopeWidget and PWMWidget"""
@@ -85,6 +115,7 @@ class DigitalOscillatorSection(ParameterSectionBase):
         
         # Call parent to create other widgets from PARAM_SPECS
         super().build_widgets()
+
     
     def _create_tab_widget(self):
         """Override to add PitchEnvelopeWidget and PWMWidget as tabs"""
@@ -143,8 +174,24 @@ class DigitalOscillatorSection(ParameterSectionBase):
         pass
     
     def setup_ui(self):
-        """Override to initialize button states after all widgets are created"""
-        super().setup_ui()
+        """Override to create UI with button row layout and initialize button states"""
+        from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets
+        
+        layout = self.get_layout()
+        
+        # Add button row layout if buttons exist
+        if self.button_widgets:
+            button_layout = self._create_button_row_layout()
+            if button_layout is not None:
+                layout.addLayout(button_layout)
+        
+        # Create and add tab widget
+        self._create_tab_widget()
+        if self.tab_widget:
+            layout.addWidget(self.tab_widget)
+        
+        layout.addStretch()
+        
         # Now that all widgets are created, initialize button states
         if self.BUTTON_SPECS:
             first_param = self.BUTTON_SPECS[0].param

@@ -891,7 +891,7 @@ class DigitalSynthEditor(SynthEditor):
 
         lfo_shape_buttons = self.partial_editors[
             partial_number
-        ].lfo_tab.lfo_shape_buttons
+        ].lfo_tab.wave_shape_buttons
 
         # Reset all buttons to default style
         for btn in lfo_shape_buttons.values():
@@ -948,7 +948,7 @@ class DigitalSynthEditor(SynthEditor):
 
         mod_lfo_shape_buttons = self.partial_editors[
             partial_number
-        ].mod_lfo_tab.lfo_shape_buttons
+        ].mod_lfo_tab.wave_shape_buttons
 
         # Reset all buttons to default style
         for btn in mod_lfo_shape_buttons.values():

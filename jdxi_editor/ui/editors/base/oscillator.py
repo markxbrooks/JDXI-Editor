@@ -13,67 +13,87 @@ from PySide6.QtWidgets import (
 
 from decologr import Decologr as log
 from jdxi_editor.core.jdxi import JDXi
-from jdxi_editor.midi.data.digital.lfo import DigitalLFOShape
+from jdxi_editor.midi.data.digital import DigitalOscWave
+from jdxi_editor.ui.editors.param_section import ParameterSectionBase
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (
     create_button_with_icon,
     create_icon_from_qta,
     create_layout_with_widgets,
 )
-from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
-
-from typing import Protocol, runtime_checkable
 
 
-@runtime_checkable
-class LFOBehavior(Protocol):
-    def build_widgets(self) -> None: ...
-    def setup_ui(self) -> None: ...
-
-
-class BaseLFOSection(SectionBaseWidget):
+class BaseOscillatorSection(ParameterSectionBase):
     """Abstract base class for LFO sections."""
     
-    rate_tab_label: str = "Rate"
-    depths_tab_label: str = "Depths"
+    controls_tab_label: str = "Controls"
+    adsr_tab_label: str = "ADSR"
 
     def __init__(
         self,
+        *,
+        create_parameter_slider: Callable = None,
+        create_parameter_switch: Callable = None,
+        create_parameter_combo_box: Callable = None,
+        send_midi_parameter: Callable = None,
+        midi_helper=None,
+        controls: dict = None,
+        address=None,
         icon_type: str = IconType.ADSR,
         analog: bool = False,
-        send_midi_parameter: Callable = None,
     ):
         """
-        Initialize the DigitalLFOSection
+        Initialize the BaseOscillatorSection
 
-        :param icon_type: Type of icon e.g
+        :param create_parameter_slider: Callable to create parameter sliders
+        :param create_parameter_switch: Callable to create parameter switches
+        :param create_parameter_combo_box: Callable to create parameter combo boxes
+        :param send_midi_parameter: Callable to send MIDI parameters
+        :param midi_helper: MIDI helper instance
+        :param controls: Dictionary of controls
+        :param address: Roland SysEx address
+        :param icon_type: Type of icon
         :param analog: bool
         """
         self.wave_shape_param: list | None = None
         self.switch_row_widgets: list | None = None
-        self.rate_layout_widgets: list | None = None
-        self.depths_layout_widgets: list | None = None
+        self.control_layout_widgets: list | None = None
+        self.adsr_layout_widgets: list | None = None
         self.send_midi_parameter: Callable | None = send_midi_parameter
         self.wave_shape_buttons = {}  # Dictionary to store LFO shape buttons
 
-        super().__init__(icon_type=icon_type, analog=analog)
+        super().__init__(
+            create_parameter_slider=create_parameter_slider,
+            create_parameter_switch=create_parameter_switch,
+            create_parameter_combo_box=create_parameter_combo_box,
+            send_midi_parameter=send_midi_parameter,
+            midi_helper=midi_helper,
+            controls=controls,
+            address=address,
+            icon_type=icon_type,
+            analog=analog,
+        )
         # --- Set up LFO shapes
         self.wave_shapes = [
-            JDXi.Midi.Digital.Wave.LFO.TRIANGLE,
-            JDXi.Midi.Digital.Wave.LFO.SINE,
-            JDXi.Midi.Digital.Wave.LFO.SAW,
-            JDXi.Midi.Digital.Wave.LFO.SQUARE,
-            JDXi.Midi.Digital.Wave.LFO.SAMPLE_HOLD,
-            JDXi.Midi.Digital.Wave.LFO.RANDOM,
+            JDXi.Midi.Digital.Wave.Osc.SAW,
+            JDXi.Midi.Digital.Wave.Osc.SQUARE,
+            JDXi.Midi.Digital.Wave.Osc.PW_SQUARE,
+            JDXi.Midi.Digital.Wave.Osc.SQUARE,
+            JDXi.Midi.Digital.Wave.Osc.SINE,
+            JDXi.Midi.Digital.Wave.Osc.NOISE,
+            JDXi.Midi.Digital.Wave.Osc.SUPER_SAW,
+            JDXi.Midi.Digital.Wave.Osc.PCM,
         ]
-        # --- Map LFO shapes to icon names
+        # --- Map Oscillator shapes to icon names
         self.shape_icon_map = {
-            JDXi.Midi.Digital.Wave.LFO.TRIANGLE: JDXi.UI.IconRegistry.TRIANGLE_WAVE,
-            JDXi.Midi.Digital.Wave.LFO.SINE: JDXi.UI.IconRegistry.SINE_WAVE,
-            JDXi.Midi.Digital.Wave.LFO.SAW: JDXi.UI.IconRegistry.SAW_WAVE,
-            JDXi.Midi.Digital.Wave.LFO.SQUARE: JDXi.UI.IconRegistry.SQUARE_WAVE,
-            JDXi.Midi.Digital.Wave.LFO.SAMPLE_HOLD: JDXi.UI.IconRegistry.WAVEFORM,
-            JDXi.Midi.Digital.Wave.LFO.RANDOM: JDXi.UI.IconRegistry.RANDOM_WAVE,
+            JDXi.Midi.Digital.Wave.Osc.SAW: JDXi.UI.IconRegistry.SAW_WAVE,
+            JDXi.Midi.Digital.Wave.Osc.SQUARE: JDXi.UI.IconRegistry.SQUARE_WAVE,
+            JDXi.Midi.Digital.Wave.Osc.PW_SQUARE: JDXi.UI.IconRegistry.SQUARE_WAVE,
+            JDXi.Midi.Digital.Wave.Osc.TRIANGLE: JDXi.UI.IconRegistry.TRIANGLE_WAVE,
+            JDXi.Midi.Digital.Wave.Osc.SINE: JDXi.UI.IconRegistry.SINE_WAVE,
+            JDXi.Midi.Digital.Wave.Osc.NOISE: JDXi.UI.IconRegistry.RANDOM_WAVE,
+            JDXi.Midi.Digital.Wave.Osc.SUPER_SAW: JDXi.UI.IconRegistry.SAW_WAVE,
+            JDXi.Midi.Digital.Wave.Osc.PCM: JDXi.UI.IconRegistry.WAVEFORM,
         }
         
     def setup_ui(self):
@@ -89,9 +109,12 @@ class BaseLFOSection(SectionBaseWidget):
 
     def build_widgets(self):
         """Build the widgets"""
-        self._create_rate_fade_layout_widgets()
-        self._create_depths_layout_widgets()
-        self._create_switch_layout_widgets()
+        # Call parent to create buttons and other widgets from specs
+        super().build_widgets()
+        # Then create Oscillator wave-specific widgets
+        self._create_controls_layout_widgets()
+        self._create_adsr_layout_widgets()
+        # self._create_switch_layout_widgets()
 
     def _create_shape_row_layout(self):
         """Shape and sync controls"""
@@ -129,17 +152,17 @@ class BaseLFOSection(SectionBaseWidget):
         depths_icon = JDXi.UI.IconRegistry.get_icon(
             JDXi.UI.IconRegistry.WAVEFORM, color=JDXi.UI.Style.GREY
         )
-        tab_widget.addTab(rate_widget, rate_icon, self.rate_tab_label)
+        tab_widget.addTab(rate_widget, rate_icon, self.controls_tab_label)
         depths_widget = self._create_depths_widget()
         tab_widget.addTab(
-            depths_widget, depths_icon, self.depths_tab_label
+            depths_widget, depths_icon, self.adsr_tab_label
         )
         JDXi.UI.ThemeManager.apply_tabs_style(tab_widget, analog=self.analog)
         return tab_widget
 
     def _create_rate_widget(self):
         """Rate and Rate Ctrl Controls Tab"""
-        rate_layout = create_layout_with_widgets(self.rate_layout_widgets)
+        rate_layout = create_layout_with_widgets(self.control_layout_widgets)
         rate_widget = QWidget()
         rate_widget.setLayout(rate_layout)
         rate_widget.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MINIMUM_HEIGHT)
@@ -147,7 +170,7 @@ class BaseLFOSection(SectionBaseWidget):
 
     def _create_depths_widget(self):
         """Depths Tab"""
-        depths_layout = create_layout_with_widgets(self.depths_layout_widgets)
+        depths_layout = create_layout_with_widgets(self.adsr_layout_widgets)
         depths_widget = QWidget()
         depths_widget.setLayout(depths_layout)
         depths_widget.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MINIMUM_HEIGHT)
@@ -156,7 +179,7 @@ class BaseLFOSection(SectionBaseWidget):
     def _create_rate_fade_controls(self) -> QWidget:
         """Rate and Fade Controls Tab"""
         rate_fade_widget = QWidget()
-        rate_fade_layout = create_layout_with_widgets(self.rate_layout_widgets)
+        rate_fade_layout = create_layout_with_widgets(self.control_layout_widgets)
         rate_fade_widget.setLayout(rate_fade_layout)
         rate_fade_widget.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MINIMUM_HEIGHT)
         return rate_fade_widget
@@ -164,16 +187,16 @@ class BaseLFOSection(SectionBaseWidget):
     def _create_depths_controls(self) -> QWidget:
         """Depths Tab"""
         depths_widget = QWidget()
-        depths_layout = create_layout_with_widgets(self.depths_layout_widgets)
+        depths_layout = create_layout_with_widgets(self.adsr_layout_widgets)
         depths_widget.setLayout(depths_layout)
         depths_widget.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MINIMUM_HEIGHT)
         return depths_widget
 
-    def _on_wave_shape_selected(self, lfo_shape: DigitalLFOShape):
+    def _on_wave_shape_selected(self, wave_shape: DigitalOscWave):
         """
         Handle Mod LFO shape button clicks
 
-        :param lfo_shape: DigitalLFOShape enum value
+        :param wave_shape: DigitalLFOShape enum value
         """
         for btn in self.wave_shape_buttons.values():
             btn.setChecked(False)
@@ -181,7 +204,7 @@ class BaseLFOSection(SectionBaseWidget):
                 JDXi.UI.ThemeManager.apply_button_rect_analog(btn)
             else:
                 btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
-        selected_btn = self.wave_shape_buttons.get(lfo_shape)
+        selected_btn = self.wave_shape_buttons.get(wave_shape)
         if selected_btn:
             selected_btn.setChecked(True)
             if self.analog:
@@ -193,8 +216,8 @@ class BaseLFOSection(SectionBaseWidget):
 
         # --- Send MIDI message
         if self.send_midi_parameter:
-            if not self.send_midi_parameter(self.wave_shape_param, lfo_shape.value):
-                log.warning(f"Failed to set Mod LFO shape to {lfo_shape.name}")
+            if not self.send_midi_parameter(self.wave_shape_param, wave_shape.value):
+                log.warning(f"Failed to set Mod LFO shape to {wave_shape.name}")
 
     def _create_switch_row_layout(self) -> QHBoxLayout:
         """Create Switch row"""
@@ -203,10 +226,13 @@ class BaseLFOSection(SectionBaseWidget):
 
     def _create_switch_layout_widgets(self):
         """Create switch layout widgets"""
-        self.switch_row_widgets = self._build_switches(self.SWITCH_SPECS)
+        pass
+        # self.switch_row_widgets = self._build_switches(self.SWITCH_SPECS)
 
-    def _create_rate_fade_layout_widgets(self):
-        self.rate_layout_widgets = self._build_sliders(self.RATE_FADE_SLIDERS)
+    def _create_controls_layout_widgets(self):
+        pass
+        # self.control_layout_widgets = self._build_sliders(self.RATE_FADE_SLIDERS)
 
-    def _create_depths_layout_widgets(self):
-        self.depths_layout_widgets = self._build_sliders(self.DEPTH_SLIDERS)
+    def _create_adsr_layout_widgets(self):
+        pass
+        # self.adsr_layout_widgets = self._build_sliders(self.DEPTH_SLIDERS)

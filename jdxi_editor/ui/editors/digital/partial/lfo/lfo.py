@@ -2,14 +2,9 @@
 LFO section of the digital partial editor.
 """
 
-from typing import Callable
+from typing import Callable, Literal
 
 from jdxi_editor.core.jdxi import JDXi
-from jdxi_editor.midi.data.parameter.digital.name import DigitalDisplayName
-from jdxi_editor.midi.data.parameter.digital.option import DigitalDisplayOptions
-from jdxi_editor.midi.data.parameter.digital.partial import (
-    DigitalPartialParam,
-)
 from jdxi_editor.ui.editors.digital.partial.lfo.base import BaseLFOSection
 from jdxi_editor.ui.editors.widget_specs import SliderSpec, SwitchSpec
 from jdxi_editor.ui.widgets.editor import IconType
@@ -28,7 +23,7 @@ class DigitalLFOSection(BaseLFOSection):
             JDXi.Midi.Digital.Param.LFO_FILTER_DEPTH, JDXi.Midi.Digital.Display.Name.LFO_FILTER_DEPTH
         ),
         SliderSpec(JDXi.Midi.Digital.Param.LFO_AMP_DEPTH, JDXi.Midi.Digital.Display.Name.LFO_AMP_DEPTH),
-        SliderSpec(JDXi.Midi.Digital.Param.LFO_PAN_DEPTH, DigitalDisplayName.LFO_PAN_DEPTH),
+        SliderSpec(JDXi.Midi.Digital.Param.LFO_PAN_DEPTH, JDXi.Midi.Digital.Display.Name.LFO_PAN_DEPTH),
     ]
     SWITCH_SPECS = [
         SwitchSpec(
@@ -48,7 +43,7 @@ class DigitalLFOSection(BaseLFOSection):
         ),
     ]
     RATE_FADE_SLIDERS = [
-        SliderSpec(JDXi.Midi.Digital.Param.LFO_RATE, DigitalDisplayName.LFO_RATE),
+        SliderSpec(JDXi.Midi.Digital.Param.LFO_RATE, JDXi.Midi.Digital.Display.Name.LFO_RATE),
         SliderSpec(JDXi.Midi.Digital.Param.LFO_FADE_TIME, JDXi.Midi.Digital.Display.Name.LFO_FADE_TIME),
     ]
 
@@ -75,12 +70,11 @@ class DigitalLFOSection(BaseLFOSection):
         self._create_parameter_switch = create_parameter_switch
         self._create_parameter_combo_box = create_parameter_combo_box
         self.controls = controls
-        self.lfo_shape_buttons = {}  # Dictionary to store LFO shape buttons
 
         super().__init__(
             icon_type=icon_type, analog=analog, send_midi_parameter=send_midi_parameter
         )
         self.send_midi_parameter = send_midi_parameter
-        self.lfo_shape_param = JDXi.Midi.Digital.Param.LFO_SHAPE
+        self.wave_shape_param: Literal[JDXi.Midi.Digital.Param.LFO_SHAPE] = JDXi.Midi.Digital.Param.LFO_SHAPE
         self.build_widgets()
         self.setup_ui()
