@@ -30,24 +30,6 @@ class BaseLFOSection(ABC):
     rate_tab_label: str = "Rate"
     depths_tab_label: str = "Depths"
 
-    @property
-    @abstractmethod
-    def DEPTH_SLIDERS(self):
-        """List of depth sliders."""
-        pass
-
-    @property
-    @abstractmethod
-    def SWITCH_SPECS(self):
-        """List of switch specifications."""
-        pass
-
-    @property
-    @abstractmethod
-    def RATE_FADE_SLIDERS(self):
-        """List of rate and fade sliders."""
-        pass
-
     def __init__(
         self,
         icon_type: str = IconType.ADSR,
@@ -86,7 +68,25 @@ class BaseLFOSection(ABC):
             DigitalLFOShape.SAMPLE_HOLD: JDXi.UI.IconRegistry.WAVEFORM,
             DigitalLFOShape.RANDOM: JDXi.UI.IconRegistry.RANDOM_WAVE,
         }
+        
+    @property
+    @abstractmethod
+    def DEPTH_SLIDERS(self):
+        """List of depth sliders."""
+        pass
 
+    @property
+    @abstractmethod
+    def SWITCH_SPECS(self):
+        """List of switch specifications."""
+        pass
+
+    @property
+    @abstractmethod
+    def RATE_FADE_SLIDERS(self):
+        """List of rate and fade sliders."""
+        pass
+        
     def setup_ui(self):
         """Set up the UI for the LFO section."""
         layout = self.get_layout()
