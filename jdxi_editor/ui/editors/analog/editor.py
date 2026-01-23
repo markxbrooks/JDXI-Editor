@@ -119,6 +119,7 @@ class AnalogSynthEditor(SynthEditor):
         self.updating_from_spinbox = False
         self.previous_json_data = None
         self.main_window = parent
+        self.analog = True
 
         # --- Initialize mappings as empty dicts/lists early to prevent AttributeError
         # --- These will be populated after sections are created

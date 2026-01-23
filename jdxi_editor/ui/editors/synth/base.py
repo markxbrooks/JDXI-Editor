@@ -68,6 +68,7 @@ class SynthBase(QWidget):
         self.partial_number = None
         self.bipolar_parameters = []
         self.controls: Dict[AddressParameter, QWidget] = {}
+        self.analog: bool = False
         self._midi_helper = midi_helper
         self.midi_requests = []
         self.sysex_composer = JDXiSysExComposer()
@@ -693,7 +694,7 @@ class SynthBase(QWidget):
         """
         if not value:
             return
-        slider = self.partial_editors[partial_no].controls.get(param)
+        slider = self.partial_editors[partial_no].lfo_depth_controls.get(param)
         if not slider:
             failures.append(param.name)
             return

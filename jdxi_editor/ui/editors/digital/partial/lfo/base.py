@@ -41,7 +41,7 @@ class BaseLFOSection(SectionBaseWidget):
         :param icon_type: Type of icon e.g
         :param analog: bool
         """
-        self.lfo_shape_param = None
+        self.lfo_shape_param: list | None = None
         self.switch_row_widgets: list | None = None
         self.rate_layout_widgets: list | None = None
         self.depths_layout_widgets: list | None = None
@@ -90,7 +90,7 @@ class BaseLFOSection(SectionBaseWidget):
         shape_label = QLabel("Shape")
         shape_row_layout_widgets = [shape_label]
         for mod_lfo_shape in self.lfo_shapes:
-            icon_name = self.shape_icon_map.get(mod_lfo_shape, "mdi.waveform")
+            icon_name = self.shape_icon_map.get(mod_lfo_shape, JDXi.UI.IconRegistry.WAVEFORM)
             icon = create_icon_from_qta(icon_name)
             btn = create_button_with_icon(
                 icon_name=mod_lfo_shape.display_name,
@@ -101,6 +101,8 @@ class BaseLFOSection(SectionBaseWidget):
             btn.clicked.connect(
                 lambda checked, shape=mod_lfo_shape: self._on_lfo_shape_selected(shape)
             )
+            if self.analog:
+                JDXi.UI.ThemeManager.apply_button_rect_analog(btn)
             self.lfo_shape_buttons[mod_lfo_shape] = btn
             shape_row_layout_widgets.append(btn)
 
@@ -109,20 +111,23 @@ class BaseLFOSection(SectionBaseWidget):
 
     def _create_tab_widget(self):
         """Create tab widget for Rate/Rate Ctrl and Depths"""
-        mod_lfo_controls_tab_widget = QTabWidget()
+        tab_widget = QTabWidget()
+
         rate_widget = self._create_rate_widget()
+        # --- Create icons
         rate_icon = JDXi.UI.IconRegistry.get_icon(
             JDXi.UI.IconRegistry.CLOCK, color=JDXi.UI.Style.GREY
         )
-        mod_lfo_controls_tab_widget.addTab(rate_widget, rate_icon, self.rate_tab_label)
         depths_icon = JDXi.UI.IconRegistry.get_icon(
             JDXi.UI.IconRegistry.WAVEFORM, color=JDXi.UI.Style.GREY
         )
+        tab_widget.addTab(rate_widget, rate_icon, self.rate_tab_label)
         depths_widget = self._create_depths_widget()
-        mod_lfo_controls_tab_widget.addTab(
+        tab_widget.addTab(
             depths_widget, depths_icon, self.depths_tab_label
         )
-        return mod_lfo_controls_tab_widget
+        JDXi.UI.ThemeManager.apply_tabs_style(tab_widget, analog=self.analog)
+        return tab_widget
 
     def _create_rate_widget(self):
         """Rate and Rate Ctrl Controls Tab"""

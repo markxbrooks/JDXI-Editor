@@ -32,6 +32,12 @@ class BasePlotWidget(QWidget):
         painter.setPen(QPen(QColor("#000000"), 0))
         painter.drawRect(0, 0, self.width(), self.height())
 
+    def set_dimensions(self, height: int, width: int):
+        """Set address fixed size for the widget (or use layouts as needed)"""
+        self.setMinimumSize(width, height)
+        self.setMaximumHeight(height)
+        self.setMaximumWidth(width)
+
     def draw_shaded_curve(
         self,
         painter: QPainter,
@@ -53,10 +59,10 @@ class BasePlotWidget(QWidget):
         :param left_pad: Left padding of the plot area
         :param plot_w: Width of the plot area
         """
-        # Create a copy of the path for filling
+        # --- Create a copy of the path for filling
         fill_path = QPainterPath(path)
         
-        # Check if path is already closed by checking the last element type
+        # --- Check if path is already closed by checking the last element type
         element_count = fill_path.elementCount()
         is_closed = False
         
@@ -70,10 +76,10 @@ class BasePlotWidget(QWidget):
             # The simplest approach: always ensure it's closed to the zero line
             pass
         
-        # Always close the path to zero line (it's safe to do even if already closed)
+        # Always close the path to zero line
         # Get the current position (last point of the path)
         last_point = fill_path.currentPosition()
-        # Close to zero line
+        # Close to zero line: go to right edge, then to left edge
         fill_path.lineTo(left_pad + plot_w, zero_y)
         fill_path.lineTo(left_pad, zero_y)
         fill_path.closeSubpath()
@@ -115,18 +121,18 @@ class BasePlotWidget(QWidget):
         grid_pen = QPen(Qt.GlobalColor.darkGray, 1, Qt.PenStyle.DashLine)
         painter.setPen(grid_pen)
         
-        # Vertical grid lines
+        # --- Vertical grid lines
         for i in range(1, num_vertical_lines + 1):
             x = left_pad + i * plot_w / num_vertical_lines
             painter.drawLine(x, top_pad, x, top_pad + plot_h)
         
-        # Horizontal grid lines
+        # --- Horizontal grid lines
         for i in range(1, num_horizontal_lines + 1):
             y_val = i * ((y_max - y_min) / num_horizontal_lines)
             if y_callback:
                 y = y_callback(y_val)
             else:
-                # Default: simple linear mapping (for ADSR style: 0.0 at bottom, 1.0 at top)
+                # --- Default: simple linear mapping (for ADSR style: 0.0 at bottom, 1.0 at top)
                 y = top_pad + plot_h - (y_val * plot_h)
             painter.drawLine(left_pad, y, left_pad + plot_w, y)
 
@@ -289,9 +295,9 @@ class BasePlotWidget(QWidget):
         :return: Y coordinate of the zero line
         """
         painter.setPen(axis_pen)
-        # Y-axis
+        # --- Y-axis
         painter.drawLine(left_pad, top_pad, left_pad, top_pad + plot_h)
-        # X-axis at zero line
+        # --- X-axis at zero line
         zero_y = self.calculate_zero_y(top_pad, plot_h, y_max, y_min, zero_at_bottom)
         painter.drawLine(left_pad, zero_y, left_pad + plot_w, zero_y)
         return zero_y

@@ -15,7 +15,6 @@ from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
 from jdxi_editor.midi.data.parameter.analog.name import AnalogDisplayName
 from jdxi_editor.ui.adsr.type import ADSRType
-from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (
     create_adsr_icon,
@@ -83,6 +82,7 @@ class AnalogAmpSection(SectionBaseWidget):
 
     def _create_amp_adsr_group(self):
         """Create amp ADSR envelope using standardized helper"""
+        from jdxi_editor.ui.widgets.adsr.adsr import ADSR
         self.amp_env_adsr_widget = ADSR(
             attack_param=self.AMP_ADSR_PARAMS[ADSRType.ATTACK],
             decay_param=self.AMP_ADSR_PARAMS[ADSRType.DECAY],

@@ -47,6 +47,7 @@ from jdxi_editor.ui.widgets.plot.base import BasePlotWidget
 
 
 class ADSRPlot(BasePlotWidget):
+
     def __init__(
         self,
         width: int = 300,
@@ -55,6 +56,7 @@ class ADSRPlot(BasePlotWidget):
         parent: QWidget = None,
     ):
         super().__init__(parent)
+
         """
         Initialize the ADSRPlot
 
@@ -67,12 +69,7 @@ class ADSRPlot(BasePlotWidget):
         # Default envelope parameters (times in ms)
         self.enabled = True
         self.envelope = envelope
-        # Set address fixed size for the widget (or use layouts as needed)
-        self.setMinimumSize(width, height)
-        self.setMaximumHeight(height)
-        self.setMaximumWidth(width)
-        # Use dark gray background
-
+        self.set_dimensions(height, width)
         JDXi.UI.ThemeManager.apply_adsr_plot(self)
         # Sample rate for converting times to samples
         self.sample_rate = 256
@@ -86,32 +83,6 @@ class ADSRPlot(BasePlotWidget):
             self.parent.envelope_changed.connect(self.set_values)
         if hasattr(self.parent, "pitchenvelope_changed"):
             self.parent.pitchenvelope_changed.connect(self.set_values)
-
-    def paintEvent_experimental(self, event: QPaintEvent) -> None:
-        painter = QPainter(self)
-        painter.setRenderHint(QPainter.Antialiasing)
-        pen = QPen(QColor("#ffffff"), 2)
-        painter.setPen(pen)
-
-        w = self.width()
-        h = self.height()
-
-        # Define points
-        p0 = QPointF(0, h)
-        p1 = QPointF(self.attack_x * w, 0)
-        p2 = QPointF(self.decay_x * w, (1 - self.sustain_level) * h)
-        p3 = QPointF(self.release_x * w, (1 - self.sustain_level) * h)
-        p4 = QPointF(w, h)
-
-        # Draw lines
-        painter.drawPolyline([p0, p1, p2, p3, p4])
-
-        # Draw draggable points
-        dot_pen = QPen(QColor("#ff6666"), 4)
-        painter.setPen(dot_pen)
-        painter.setBrush(QColor("#ffcccc"))
-        for pt in [p1, p2, p3]:
-            painter.drawEllipse(pt, 6, 6)
 
     def mousePressEvent(self, event: QMouseEvent) -> None:
         pos = event.position()
@@ -295,23 +266,22 @@ class ADSRPlot(BasePlotWidget):
 
         # Build the path for the envelope curve
         if points:
-            path = QPainterPath()
-            # Start from the left edge at zero line
-            path.moveTo(left_pad, zero_y)
+            # Create curve path starting from left edge at zero line
+            # This ensures proper closing when draw_shaded_curve closes it
+            curve_path = QPainterPath()
+            # Start at left edge, zero line
+            curve_path.moveTo(left_pad, zero_y)
             # Move to first point of the curve
-            path.lineTo(*points[0])
+            curve_path.lineTo(*points[0])
             # Draw through all curve points
             for pt in points[1:]:
-                path.lineTo(*pt)
-            # End at the right edge at zero line
-            path.lineTo(left_pad + plot_w, zero_y)
-            # Close back to start (this creates the closed area under the curve)
-            path.closeSubpath()
+                curve_path.lineTo(*pt)
+            # Note: draw_shaded_curve will add the right edge and close the path
             
-            # Draw shaded fill under the curve
+            # Draw shaded fill under the curve (draw_shaded_curve will close it to zero line)
             self.draw_shaded_curve(
                 painter=painter,
-                path=path,
+                path=curve_path,
                 top_pad=top_pad,
                 plot_h=plot_h,
                 zero_y=zero_y,
@@ -319,10 +289,10 @@ class ADSRPlot(BasePlotWidget):
                 plot_w=plot_w,
             )
             
-            # Draw the envelope polyline on top (just the curve, not the closed path)
-            curve_path = QPainterPath()
-            curve_path.moveTo(*points[0])
+            # Draw the envelope polyline on top (just the curve, not the zero line edges)
+            curve_only_path = QPainterPath()
+            curve_only_path.moveTo(*points[0])
             for pt in points[1:]:
-                curve_path.lineTo(*pt)
+                curve_only_path.lineTo(*pt)
             painter.setPen(QPen(QColor("orange"), 2))
-            painter.drawPath(curve_path)
+            painter.drawPath(curve_only_path)

@@ -235,6 +235,25 @@ class DigitalPartialEditor(PartialEditor):
         )
         setattr(self, f"{key}_tab", widget)
 
+    @property
+    def lfo_depth_controls(self) -> dict:
+        """
+        Get a dictionary of LFO depth controls filtered from the main controls dictionary.
+        This provides compatibility with the base class's _update_partial_lfo_depth method.
+        
+        :return: dict mapping LFO depth parameters to their control widgets
+        """
+        lfo_depth_params = {
+            DigitalPartialParam.LFO_PITCH_DEPTH,
+            DigitalPartialParam.LFO_FILTER_DEPTH,
+            DigitalPartialParam.LFO_AMP_DEPTH,
+            DigitalPartialParam.LFO_PAN_DEPTH,
+            DigitalPartialParam.MOD_LFO_PITCH_DEPTH,
+            DigitalPartialParam.MOD_LFO_FILTER_DEPTH,
+            DigitalPartialParam.MOD_LFO_AMP_DEPTH,
+        }
+        return {param: self.controls[param] for param in lfo_depth_params if param in self.controls}
+
     # ------------------------------------------------------------------
     # Behavior
     # ------------------------------------------------------------------

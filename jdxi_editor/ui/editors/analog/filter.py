@@ -20,7 +20,6 @@ from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.analog.filter import AnalogFilterType
 from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (
     create_adsr_icon,
@@ -212,6 +211,7 @@ class AnalogFilterSection(SectionBaseWidget):
 
     def _create_filter_adsr_env_group(self) -> QGroupBox:
         """Create filter ADSR group (harmonized with Digital Filter, includes centered icon)"""
+        from jdxi_editor.ui.widgets.adsr.adsr import ADSR
         self.filter_adsr_widget = ADSR(
             attack_param=AnalogParam.FILTER_ENV_ATTACK_TIME,
             decay_param=AnalogParam.FILTER_ENV_DECAY_TIME,

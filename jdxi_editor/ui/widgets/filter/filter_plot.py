@@ -194,12 +194,7 @@ class FilterPlot(BasePlotWidget):
         self.enabled = True
         self.envelope = envelope
         self.filter_mode = filter_mode  # Store filter mode
-        # Set address fixed size for the widget (or use layouts as needed)
-        self.setMinimumSize(width, height)
-        self.setMaximumHeight(height)
-        self.setMaximumWidth(width)
-        # Use dark gray background
-
+        self.set_dimensions(width=width, height=height)
         JDXi.UI.ThemeManager.apply_adsr_plot(self)
         # Sample rate for converting times to samples
         self.sample_rate = 256

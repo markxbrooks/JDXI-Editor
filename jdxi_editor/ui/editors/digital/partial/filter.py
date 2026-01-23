@@ -3,7 +3,7 @@ Digital Filter Section for the JDXI Editor
 """
 
 from decologr import Decologr as log
-from jdxi_editor.midi.data.digital.filter import DigitalFilterMode
+from jdxi_editor.midi.data.digital.filter import DigitalFilterMode, DigitalFilterType, DigitalFilterModeType
 from jdxi_editor.midi.data.parameter.digital.name import DigitalDisplayName
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParam
 from jdxi_editor.ui.adsr.type import ADSRType
@@ -41,14 +41,14 @@ class DigitalFilterSection(ParameterSectionBase):
 
     # --- Filter mode buttons
     BUTTON_SPECS = [
-        SliderSpec(DigitalFilterMode.BYPASS, "Bypass", icon_name=WaveformIconType.BYPASS_FILTER),
-        SliderSpec(DigitalFilterMode.LPF, "LPF", icon_name=WaveformIconType.LPF_FILTER),
-        SliderSpec(DigitalFilterMode.HPF, "HPF", icon_name=WaveformIconType.HPF_FILTER),
-        SliderSpec(DigitalFilterMode.BPF, "BPF", icon_name=WaveformIconType.BPF_FILTER),
-        SliderSpec(DigitalFilterMode.PKG, "PKG", icon_name=WaveformIconType.LPF_FILTER),
-        SliderSpec(DigitalFilterMode.LPF2, "LPF2", icon_name=WaveformIconType.LPF_FILTER),
-        SliderSpec(DigitalFilterMode.LPF3, "LPF3", icon_name=WaveformIconType.LPF_FILTER),
-        SliderSpec(DigitalFilterMode.LPF4, "LPF4", icon_name=WaveformIconType.LPF_FILTER),
+        SliderSpec(DigitalFilterMode.BYPASS, DigitalFilterType.BYPASS, icon_name=WaveformIconType.BYPASS_FILTER),
+        SliderSpec(DigitalFilterMode.LPF, DigitalFilterType.LPF, icon_name=WaveformIconType.LPF_FILTER),
+        SliderSpec(DigitalFilterMode.HPF, DigitalFilterType.HPF, icon_name=WaveformIconType.HPF_FILTER),
+        SliderSpec(DigitalFilterMode.BPF, DigitalFilterType.BPF, icon_name=WaveformIconType.BPF_FILTER),
+        SliderSpec(DigitalFilterMode.PKG, DigitalFilterType.PKG, icon_name=WaveformIconType.LPF_FILTER),
+        SliderSpec(DigitalFilterMode.LPF2, DigitalFilterType.LPF2, icon_name=WaveformIconType.LPF_FILTER),
+        SliderSpec(DigitalFilterMode.LPF3, DigitalFilterType.LPF3, icon_name=WaveformIconType.LPF_FILTER),
+        SliderSpec(DigitalFilterMode.LPF4, DigitalFilterType.LPF4, icon_name=WaveformIconType.LPF_FILTER),
     ]
 
     BUTTON_ENABLE_RULES = {
@@ -78,7 +78,7 @@ class DigitalFilterSection(ParameterSectionBase):
     
     def build_widgets(self):
         """Override to create FilterWidget with plot"""
-        # Create FilterWidget first (includes cutoff and slope with plot)
+        # --- Create FilterWidget first (includes cutoff and slope with plot)
         self.filter_widget = FilterWidget(
             cutoff_param=DigitalPartialParam.FILTER_CUTOFF,
             slope_param=DigitalPartialParam.FILTER_SLOPE,
@@ -131,16 +131,16 @@ class DigitalFilterSection(ParameterSectionBase):
         if hasattr(self, 'filter_widget') and self.filter_widget and hasattr(self.filter_widget, 'plot'):
             # Map DigitalFilterMode to filter mode string
             filter_mode_map = {
-                DigitalFilterMode.BYPASS: "bypass",
-                DigitalFilterMode.LPF: "lpf",
-                DigitalFilterMode.HPF: "hpf",
-                DigitalFilterMode.BPF: "bpf",
-                DigitalFilterMode.PKG: "lpf",  # PKG uses LPF-style plot
-                DigitalFilterMode.LPF2: "lpf",
-                DigitalFilterMode.LPF3: "lpf",
-                DigitalFilterMode.LPF4: "lpf",
+                DigitalFilterMode.BYPASS: DigitalFilterModeType.BYPASS,
+                DigitalFilterMode.LPF: DigitalFilterModeType.LPF,
+                DigitalFilterMode.HPF: DigitalFilterModeType.HPF,
+                DigitalFilterMode.BPF: DigitalFilterModeType.BPF,
+                DigitalFilterMode.PKG: DigitalFilterModeType.LPF,  # PKG uses LPF-style plot
+                DigitalFilterMode.LPF2: DigitalFilterModeType.LPF,
+                DigitalFilterMode.LPF3: DigitalFilterModeType.LPF,
+                DigitalFilterMode.LPF4: DigitalFilterModeType.LPF,
             }
-            filter_mode_str = filter_mode_map.get(button_param, "lpf")
+            filter_mode_str = filter_mode_map.get(button_param, DigitalFilterModeType.LPF)
             self.filter_widget.filter_mode = filter_mode_str
             if hasattr(self.filter_widget.plot, 'set_filter_mode'):
                 self.filter_widget.plot.set_filter_mode(filter_mode_str)
@@ -213,16 +213,16 @@ class DigitalFilterSection(ParameterSectionBase):
         # --- Update filter mode in FilterWidget plot
         if hasattr(self, 'filter_widget') and self.filter_widget and hasattr(self.filter_widget, 'plot'):
             filter_mode_str_map = {
-                DigitalFilterMode.BYPASS: "bypass",
-                DigitalFilterMode.LPF: "lpf",
-                DigitalFilterMode.HPF: "hpf",
-                DigitalFilterMode.BPF: "bpf",
-                DigitalFilterMode.PKG: "lpf",
-                DigitalFilterMode.LPF2: "lpf",
-                DigitalFilterMode.LPF3: "lpf",
-                DigitalFilterMode.LPF4: "lpf",
+                DigitalFilterMode.BYPASS: DigitalFilterModeType.BYPASS,
+                DigitalFilterMode.LPF: DigitalFilterModeType.LPF,
+                DigitalFilterMode.HPF: DigitalFilterModeType.HPF,
+                DigitalFilterMode.BPF: DigitalFilterModeType.BPF,
+                DigitalFilterMode.PKG: DigitalFilterModeType.BYPASS,
+                DigitalFilterMode.LPF2: DigitalFilterModeType.BYPASS,
+                DigitalFilterMode.LPF3: DigitalFilterModeType.BYPASS,
+                DigitalFilterMode.LPF4: DigitalFilterModeType.BYPASS,
             }
-            filter_mode_str = filter_mode_str_map.get(selected_filter_mode, "lpf")
+            filter_mode_str = filter_mode_str_map.get(selected_filter_mode, DigitalFilterModeType.BYPASS)
             self.filter_widget.filter_mode = filter_mode_str
             if hasattr(self.filter_widget.plot, 'set_filter_mode'):
                 self.filter_widget.plot.set_filter_mode(filter_mode_str)

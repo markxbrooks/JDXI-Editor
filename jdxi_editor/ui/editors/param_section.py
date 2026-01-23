@@ -150,16 +150,16 @@ class ParameterSectionBase(SectionBaseWidget):
         from PySide6.QtCore import QSize
         
         for spec in self.BUTTON_SPECS:
-            # Handle both SliderSpec (has 'label') and other specs (may have 'name')
+            # --- Handle both SliderSpec (has 'label') and other specs (may have 'name')
             button_label = getattr(spec, 'label', getattr(spec, 'name', 'Button'))
             icon_name_str = getattr(spec, 'icon_name', None)
             
-            # Create button
+            # --- Create button
             btn = QPushButton(button_label)
             btn.setCheckable(True)
             btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
             
-            # Create icon if icon_name is provided
+            # --- Create icon if icon_name is provided
             if icon_name_str:
                 icon = None
                 try:
