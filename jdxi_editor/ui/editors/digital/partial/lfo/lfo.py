@@ -4,6 +4,7 @@ LFO section of the digital partial editor.
 
 from typing import Callable
 
+from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.parameter.digital.name import DigitalDisplayName
 from jdxi_editor.midi.data.parameter.digital.option import DigitalDisplayOptions
 from jdxi_editor.midi.data.parameter.digital.partial import (
@@ -21,34 +22,34 @@ class DigitalLFOSection(BaseLFOSection):
 
     DEPTH_SLIDERS = [
         SliderSpec(
-            DigitalPartialParam.LFO_PITCH_DEPTH, DigitalDisplayName.LFO_PITCH_DEPTH
+            JDXi.Midi.Digital.Param.LFO_PITCH_DEPTH, JDXi.Midi.Digital.Display.Name.LFO_PITCH_DEPTH
         ),
         SliderSpec(
-            DigitalPartialParam.LFO_FILTER_DEPTH, DigitalDisplayName.LFO_FILTER_DEPTH
+            JDXi.Midi.Digital.Param.LFO_FILTER_DEPTH, JDXi.Midi.Digital.Display.Name.LFO_FILTER_DEPTH
         ),
-        SliderSpec(DigitalPartialParam.LFO_AMP_DEPTH, DigitalDisplayName.LFO_AMP_DEPTH),
-        SliderSpec(DigitalPartialParam.LFO_PAN_DEPTH, DigitalDisplayName.LFO_PAN_DEPTH),
+        SliderSpec(JDXi.Midi.Digital.Param.LFO_AMP_DEPTH, JDXi.Midi.Digital.Display.Name.LFO_AMP_DEPTH),
+        SliderSpec(JDXi.Midi.Digital.Param.LFO_PAN_DEPTH, DigitalDisplayName.LFO_PAN_DEPTH),
     ]
     SWITCH_SPECS = [
         SwitchSpec(
-            DigitalPartialParam.LFO_TEMPO_SYNC_SWITCH,
-            DigitalDisplayName.LFO_TEMPO_SYNC_SWITCH,
-            DigitalDisplayOptions.LFO_TEMPO_SYNC_SWITCH,
+            JDXi.Midi.Digital.Param.LFO_TEMPO_SYNC_SWITCH,
+            JDXi.Midi.Digital.Display.Name.LFO_TEMPO_SYNC_SWITCH,
+            JDXi.Midi.Digital.Display.Options.LFO_TEMPO_SYNC_SWITCH,
         ),
         SwitchSpec(
-            DigitalPartialParam.LFO_TEMPO_SYNC_NOTE,
-            DigitalDisplayName.LFO_TEMPO_SYNC_NOTE,
-            DigitalDisplayOptions.LFO_TEMPO_SYNC_NOTE,
+            JDXi.Midi.Digital.Param.LFO_TEMPO_SYNC_NOTE,
+            JDXi.Midi.Digital.Display.Name.LFO_TEMPO_SYNC_NOTE,
+            JDXi.Midi.Digital.Display.Options.LFO_TEMPO_SYNC_NOTE,
         ),
         SwitchSpec(
-            DigitalPartialParam.LFO_KEY_TRIGGER,
-            DigitalDisplayName.LFO_KEY_TRIGGER,
-            DigitalDisplayOptions.LFO_KEY_TRIGGER,
+            JDXi.Midi.Digital.Param.LFO_KEY_TRIGGER,
+            JDXi.Midi.Digital.Display.Name.LFO_KEY_TRIGGER,
+            JDXi.Midi.Digital.Display.Options.LFO_KEY_TRIGGER,
         ),
     ]
     RATE_FADE_SLIDERS = [
-        SliderSpec(DigitalPartialParam.LFO_RATE, DigitalDisplayName.LFO_RATE),
-        SliderSpec(DigitalPartialParam.LFO_FADE_TIME, DigitalDisplayName.LFO_FADE_TIME),
+        SliderSpec(JDXi.Midi.Digital.Param.LFO_RATE, DigitalDisplayName.LFO_RATE),
+        SliderSpec(JDXi.Midi.Digital.Param.LFO_FADE_TIME, JDXi.Midi.Digital.Display.Name.LFO_FADE_TIME),
     ]
 
     def __init__(
@@ -80,6 +81,6 @@ class DigitalLFOSection(BaseLFOSection):
             icon_type=icon_type, analog=analog, send_midi_parameter=send_midi_parameter
         )
         self.send_midi_parameter = send_midi_parameter
-        self.lfo_shape_param = DigitalPartialParam.LFO_SHAPE
+        self.lfo_shape_param = JDXi.Midi.Digital.Param.LFO_SHAPE
         self.build_widgets()
         self.setup_ui()

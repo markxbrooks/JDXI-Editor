@@ -23,8 +23,16 @@ from jdxi_editor.ui.widgets.editor.helper import (
 )
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 
+from typing import Protocol, runtime_checkable
 
-class BaseLFOSection(ABC):
+
+@runtime_checkable
+class LFOBehavior(Protocol):
+    def build_widgets(self) -> None: ...
+    def setup_ui(self) -> None: ...
+
+
+class BaseLFOSection(SectionBaseWidget):
     """Abstract base class for LFO sections."""
     
     rate_tab_label: str = "Rate"
@@ -52,40 +60,22 @@ class BaseLFOSection(ABC):
         super().__init__(icon_type=icon_type, analog=analog)
         # -- Set up LFO shapes
         self.lfo_shapes = [
-            DigitalLFOShape.TRIANGLE,
-            DigitalLFOShape.SINE,
-            DigitalLFOShape.SAW,
-            DigitalLFOShape.SQUARE,
-            DigitalLFOShape.SAMPLE_HOLD,
-            DigitalLFOShape.RANDOM,
+            JDXi.Midi.Digital.Wave.LFO.TRIANGLE,
+            JDXi.Midi.Digital.Wave.LFO.SINE,
+            JDXi.Midi.Digital.Wave.LFO.SAW,
+            JDXi.Midi.Digital.Wave.LFO.SQUARE,
+            JDXi.Midi.Digital.Wave.LFO.SAMPLE_HOLD,
+            JDXi.Midi.Digital.Wave.LFO.RANDOM,
         ]
         # --- Map LFO shapes to icon names
         self.shape_icon_map = {
-            DigitalLFOShape.TRIANGLE: JDXi.UI.IconRegistry.TRIANGLE_WAVE,
-            DigitalLFOShape.SINE: JDXi.UI.IconRegistry.SINE_WAVE,
-            DigitalLFOShape.SAW: JDXi.UI.IconRegistry.SAW_WAVE,
-            DigitalLFOShape.SQUARE: JDXi.UI.IconRegistry.SQUARE_WAVE,
-            DigitalLFOShape.SAMPLE_HOLD: JDXi.UI.IconRegistry.WAVEFORM,
-            DigitalLFOShape.RANDOM: JDXi.UI.IconRegistry.RANDOM_WAVE,
+            JDXi.Midi.Digital.Wave.LFO.TRIANGLE: JDXi.UI.IconRegistry.TRIANGLE_WAVE,
+            JDXi.Midi.Digital.Wave.LFO.SINE: JDXi.UI.IconRegistry.SINE_WAVE,
+            JDXi.Midi.Digital.Wave.LFO.SAW: JDXi.UI.IconRegistry.SAW_WAVE,
+            JDXi.Midi.Digital.Wave.LFO.SQUARE: JDXi.UI.IconRegistry.SQUARE_WAVE,
+            JDXi.Midi.Digital.Wave.LFO.SAMPLE_HOLD: JDXi.UI.IconRegistry.WAVEFORM,
+            JDXi.Midi.Digital.Wave.LFO.RANDOM: JDXi.UI.IconRegistry.RANDOM_WAVE,
         }
-        
-    @property
-    @abstractmethod
-    def DEPTH_SLIDERS(self):
-        """List of depth sliders."""
-        pass
-
-    @property
-    @abstractmethod
-    def SWITCH_SPECS(self):
-        """List of switch specifications."""
-        pass
-
-    @property
-    @abstractmethod
-    def RATE_FADE_SLIDERS(self):
-        """List of rate and fade sliders."""
-        pass
         
     def setup_ui(self):
         """Set up the UI for the LFO section."""

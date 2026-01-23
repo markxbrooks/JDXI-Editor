@@ -5,6 +5,7 @@ This module provides:
 - MidiConstant: Standard MIDI protocol constants (status bytes, channels, values, etc.)
 - JDXiConstant: JD-Xi-specific constants (SysEx addresses, bank mappings, etc.)
 """
+from jdxi_editor.midi.data.parameter.digital.spec import Digital
 from jdxi_editor.midi.data.parameter.analog.spec import Analog
 from jdxi_editor.midi.message.control.change import JDXiControlChange
 from jdxi_editor.midi.message.program.change import JDXiProgramChange
@@ -18,3 +19,4 @@ class JDXiMidi:
     PC = JDXiProgramChange
     SYSEX = JDXiSysExSpec
     Analog: Analog = Analog
+    Digital: Digital = Digital

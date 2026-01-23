@@ -1,0 +1,3 @@
+
+class DigitalDisplayValues:
+    pass

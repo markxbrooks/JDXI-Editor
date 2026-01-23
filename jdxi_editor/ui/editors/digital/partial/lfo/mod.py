@@ -4,11 +4,8 @@ MOD LFO section of the digital partial editor.
 
 from typing import Callable
 
-from jdxi_editor.midi.data.parameter.digital.name import DigitalDisplayName
-from jdxi_editor.midi.data.parameter.digital.option import DigitalDisplayOptions
-from jdxi_editor.midi.data.parameter.digital.partial import (
-    DigitalPartialParam,
-)
+from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.midi.data.parameter.digital import DigitalPartialParam
 from jdxi_editor.ui.editors.digital.partial.lfo.base import BaseLFOSection
 from jdxi_editor.ui.editors.widget_specs import SliderSpec, SwitchSpec
 from jdxi_editor.ui.widgets.editor import IconType
@@ -20,34 +17,34 @@ class DigitalModLFOSection(BaseLFOSection):
     rate_tab_label = "Rate and Rate Ctrl"
 
     RATE_FADE_SLIDERS = [
-        SliderSpec(DigitalPartialParam.MOD_LFO_RATE, DigitalDisplayName.MOD_LFO_RATE),
+        SliderSpec(JDXi.Midi.Digital.Param.MOD_LFO_RATE, JDXi.Midi.Digital.Display.Name.MOD_LFO_RATE),
         SliderSpec(
-            DigitalPartialParam.MOD_LFO_RATE_CTRL, DigitalDisplayName.MOD_LFO_RATE_CTRL
+            JDXi.Midi.Digital.Param.MOD_LFO_RATE_CTRL, JDXi.Midi.Digital.Display.Name.MOD_LFO_RATE_CTRL
         ),
     ]
     DEPTH_SLIDERS = [
         SliderSpec(
-            DigitalPartialParam.LFO_PITCH_DEPTH, DigitalDisplayName.MOD_LFO_PITCH_DEPTH
+            JDXi.Midi.Digital.Param.LFO_PITCH_DEPTH, JDXi.Midi.Digital.Display.Name.MOD_LFO_PITCH_DEPTH
         ),
         SliderSpec(
-            DigitalPartialParam.LFO_FILTER_DEPTH,
-            DigitalDisplayName.MOD_LFO_FILTER_DEPTH,
+            JDXi.Midi.Digital.Param.LFO_FILTER_DEPTH,
+            JDXi.Midi.Digital.Display.Name.MOD_LFO_FILTER_DEPTH,
         ),
         SliderSpec(
-            DigitalPartialParam.LFO_AMP_DEPTH, DigitalDisplayName.MOD_LFO_AMP_DEPTH
+            JDXi.Midi.Digital.Param.LFO_AMP_DEPTH, JDXi.Midi.Digital.Display.Name.MOD_LFO_AMP_DEPTH
         ),
-        SliderSpec(DigitalPartialParam.LFO_PAN_DEPTH, DigitalDisplayName.MOD_LFO_PAN),
+        SliderSpec(JDXi.Midi.Digital.Param.LFO_PAN_DEPTH, JDXi.Midi.Digital.Display.Name.MOD_LFO_PAN),
     ]
     SWITCH_SPECS = [
         SwitchSpec(
-            DigitalPartialParam.MOD_LFO_TEMPO_SYNC_SWITCH,
-            DigitalDisplayName.MOD_LFO_TEMPO_SYNC_SWITCH,
-            DigitalDisplayOptions.MOD_LFO_TEMPO_SYNC_SWITCH,
+            JDXi.Midi.Digital.Param.MOD_LFO_TEMPO_SYNC_SWITCH,
+            JDXi.Midi.Digital.Display.Name.MOD_LFO_TEMPO_SYNC_SWITCH,
+            JDXi.Midi.Digital.Display.Options.MOD_LFO_TEMPO_SYNC_SWITCH,
         ),
         SwitchSpec(
-            DigitalPartialParam.MOD_LFO_TEMPO_SYNC_NOTE,
-            DigitalDisplayName.MOD_LFO_TEMPO_SYNC_NOTE,
-            DigitalDisplayOptions.MOD_LFO_TEMPO_SYNC_NOTE,
+            JDXi.Midi.Digital.Param.MOD_LFO_TEMPO_SYNC_NOTE,
+            JDXi.Midi.Digital.Display.Name.MOD_LFO_TEMPO_SYNC_NOTE,
+            JDXi.Midi.Digital.Display.Options.MOD_LFO_TEMPO_SYNC_NOTE,
         ),
     ]
 
