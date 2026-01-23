@@ -291,6 +291,7 @@ class AnalogSynthEditor(SynthEditor):
             create_parameter_combo_box=self._create_parameter_combo_box,
             on_lfo_shape_changed=self._on_lfo_shape_changed,
             lfo_shape_buttons=self.lfo_shape_buttons,
+            send_midi_parameter=self.send_midi_parameter,
         )
         self.tab_widget.addTab(
             self.lfo_section,

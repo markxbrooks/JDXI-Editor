@@ -173,11 +173,19 @@ class BaseLFOSection(SectionBaseWidget):
         """
         for btn in self.lfo_shape_buttons.values():
             btn.setChecked(False)
-            btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
+            if self.analog:
+                JDXi.UI.ThemeManager.apply_button_rect_analog(btn)
+            else:
+                btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
         selected_btn = self.lfo_shape_buttons.get(lfo_shape)
         if selected_btn:
             selected_btn.setChecked(True)
-            selected_btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT_ACTIVE)
+            if self.analog:
+                JDXi.UI.ThemeManager.apply_button_analog_active(selected_btn)
+            else:
+                selected_btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT_ACTIVE)
+        if self.analog:
+            JDXi.UI.ThemeManager.apply_button_analog_active(selected_btn)
 
         # --- Send MIDI message
         if self.send_midi_parameter:
