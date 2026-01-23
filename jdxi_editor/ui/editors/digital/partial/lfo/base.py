@@ -3,6 +3,7 @@ LFO section of the digital partial editor.
 """
 
 from typing import Callable
+from abc import ABC, abstractmethod
 
 from PySide6.QtWidgets import (
     QHBoxLayout,
@@ -23,15 +24,29 @@ from jdxi_editor.ui.widgets.editor.helper import (
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 
 
-class BaseLFOSection(SectionBaseWidget):
-    """LFO section for the digital partial editor."""
-
-    SWITCH_SPECS: list = []
-    RATE_FADE_SLIDERS: list = []
-    DEPTH_SLIDERS: list = []
-
+class BaseLFOSection(ABC):
+    """Abstract base class for LFO sections."""
+    
     rate_tab_label: str = "Rate"
     depths_tab_label: str = "Depths"
+
+    @property
+    @abstractmethod
+    def DEPTH_SLIDERS(self):
+        """List of depth sliders."""
+        pass
+
+    @property
+    @abstractmethod
+    def SWITCH_SPECS(self):
+        """List of switch specifications."""
+        pass
+
+    @property
+    @abstractmethod
+    def RATE_FADE_SLIDERS(self):
+        """List of rate and fade sliders."""
+        pass
 
     def __init__(
         self,
