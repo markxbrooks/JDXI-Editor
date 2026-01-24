@@ -5,7 +5,7 @@ Digital Spec File
 from enum import Enum
 from typing import Any, Protocol
 
-from jdxi_editor.midi.data.digital import DigitalOscWave
+from jdxi_editor.midi.data.digital import DigitalWaveOsc
 from jdxi_editor.midi.data.digital.filter import (
     DigitalFilterMode,
     DigitalFilterModeType,
@@ -13,7 +13,7 @@ from jdxi_editor.midi.data.digital.filter import (
 )
 from jdxi_editor.midi.data.digital.lfo import DigitalLFOShape
 from jdxi_editor.midi.data.digital.oscillator import WaveformType
-from jdxi_editor.midi.data.parameter.digital import DigitalPartialParam, DigitalModifyParam
+from jdxi_editor.midi.data.parameter.digital import DigitalPartialParam, DigitalModifyParam, DigitalCommonParam
 from jdxi_editor.midi.data.parameter.digital.name import DigitalDisplayName
 from jdxi_editor.midi.data.parameter.digital.option import DigitalDisplayOptions
 from jdxi_editor.midi.data.parameter.digital.tone_modify import DigitalModifyNames, DigitalModifyOptions
@@ -64,6 +64,10 @@ class DigitalTab(TabDefinitionMixin, Enum):
         self.icon = icon
 
 
+class DigitalLFO:
+    """Digital LFO"""
+    Shape: DigitalLFOShape = DigitalLFOShape
+
 class DigitalAmp:
     """Digital Amp"""
 
@@ -83,7 +87,7 @@ class DigitalWave:
     """Analog Wave"""
 
     LFO: DigitalLFOShape = DigitalLFOShape
-    Osc: DigitalOscWave = DigitalOscWave
+    Osc: DigitalWaveOsc = DigitalWaveOsc
     SubOsc = None  # No sub-oscillator for the digital synth
     WaveType: WaveformType = WaveformType
 
@@ -106,10 +110,12 @@ class JDXiMidiDigital:
     """Digital Spec Class"""
 
     Param: DigitalPartialParam = DigitalPartialParam
+    Common: DigitalCommonParam = DigitalCommonParam
     Display: DigitalDisplay = DigitalDisplay
     ModifyParam: DigitalModifyParam = DigitalModifyParam
     ModifyDisplay: DigitalToneModifyDisplay = DigitalToneModifyDisplay
     Wave: DigitalWave = DigitalWave
     Filter: DigitalFilter = DigitalFilter
+    LFO: DigitalLFO = DigitalLFO
     Amp: DigitalAmp = DigitalAmp
     Tab: DigitalTab = DigitalTab

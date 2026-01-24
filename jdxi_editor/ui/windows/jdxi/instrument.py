@@ -81,7 +81,6 @@ from jdxi_editor.ui.editors import (
 from jdxi_editor.ui.editors.config import EditorConfig
 from jdxi_editor.ui.editors.digital.editor import (
     DigitalSynth2Editor,
-    DigitalSynth3Editor,
 )
 from jdxi_editor.ui.editors.helpers.program import (
     calculate_midi_values,
@@ -705,7 +704,6 @@ class JDXiInstrument(JDXiWindow):
                     ArpeggioEditor,
                     DigitalSynthEditor,
                     DigitalSynth2Editor,
-                    DigitalSynth3Editor,
                     AnalogSynthEditor,
                     DrumCommonEditor,
                     PatternSequenceEditor,

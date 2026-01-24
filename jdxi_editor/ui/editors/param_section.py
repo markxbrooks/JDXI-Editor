@@ -48,7 +48,7 @@ class ParameterSectionBase(SectionBaseWidget):
         midi_helper=None,
         controls: dict = None,
         address=None,
-        icon_type: str = IconType.NONE,
+        icon_type: str = IconType.OSCILLATOR,
         analog: bool = False,
     ):
         self.midi_helper = midi_helper

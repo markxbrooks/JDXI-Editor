@@ -46,7 +46,7 @@ from decologr import Decologr as log
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.core.synth.type import JDXiSynth
 from jdxi_editor.midi.data.address.address import AddressOffsetSuperNATURALLMB
-from jdxi_editor.midi.data.digital.oscillator import DigitalOscWave
+from jdxi_editor.midi.data.digital.oscillator import DigitalWaveOsc
 from jdxi_editor.midi.data.digital.partial import DIGITAL_PARTIAL_NAMES
 from jdxi_editor.midi.data.parameter.digital import DigitalCommonParam
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParam
@@ -268,7 +268,7 @@ class BasePartialEditor(PartialEditor):
         if self.filter_tab.adsr_widget:
             self.filter_tab.adsr_widget.setEnabled(enabled)
 
-    def _on_waveform_selected(self, waveform: DigitalOscWave) -> None:
+    def _on_waveform_selected(self, waveform: DigitalWaveOsc) -> None:
         """on waveform selected"""
         for btn in self.oscillator_tab.wave_buttons.values():
             btn.setChecked(False)

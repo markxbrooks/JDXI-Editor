@@ -13,9 +13,7 @@ from PySide6.QtWidgets import (
 
 from decologr import Decologr as log
 from jdxi_editor.core.jdxi import JDXi
-from jdxi_editor.midi.data.digital import DigitalOscWave
-from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital
-from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
+from jdxi_editor.midi.data.digital.lfo import DigitalLFOShape
 from jdxi_editor.ui.editors.param_section import ParameterSectionBase
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (
@@ -27,7 +25,7 @@ from jdxi_editor.ui.widgets.editor.helper import (
 
 class BaseOscillatorSection(ParameterSectionBase):
     """Abstract base class for LFO sections."""
-
+    
     controls_tab_label: str = "Controls"
     adsr_tab_label: str = "ADSR"
 
@@ -41,7 +39,7 @@ class BaseOscillatorSection(ParameterSectionBase):
         midi_helper=None,
         controls: dict = None,
         address=None,
-        icon_type: str = IconType.ADSR,
+        icon_type: str = IconType.OSCILLATOR,
         analog: bool = False,
     ):
         """
@@ -59,11 +57,10 @@ class BaseOscillatorSection(ParameterSectionBase):
         """
         self.wave_shape_param: list | None = None
         self.switch_row_widgets: list | None = None
-        self.control_layout_widgets: list | None = None
-        self.adsr_layout_widgets: list | None = None
+        self.rate_layout_widgets: list | None = None
+        self.depths_layout_widgets: list | None = None
         self.send_midi_parameter: Callable | None = send_midi_parameter
         self.wave_shape_buttons = {}  # Dictionary to store LFO shape buttons
-        self.synth = JDXiMidiDigital
 
         super().__init__(
             create_parameter_slider=create_parameter_slider,
@@ -76,29 +73,25 @@ class BaseOscillatorSection(ParameterSectionBase):
             icon_type=icon_type,
             analog=analog,
         )
-        # --- Set up LFO shapes
+        # --- Set up waveform shapes
         self.wave_shapes = [
-            Digital.Wave.Osc.SAW,
-            Digital.Wave.Osc.SQUARE,
-            Digital.Wave.Osc.PW_SQUARE,
-            Digital.Wave.Osc.SQUARE,
-            Digital.Wave.Osc.SINE,
-            Digital.Wave.Osc.NOISE,
-            Digital.Wave.Osc.SUPER_SAW,
-            Digital.Wave.Osc.PCM,
+            JDXi.Midi.Digital.Wave.LFO.TRIANGLE,
+            JDXi.Midi.Digital.Wave.LFO.SINE,
+            JDXi.Midi.Digital.Wave.LFO.SAW,
+            JDXi.Midi.Digital.Wave.LFO.SQUARE,
+            JDXi.Midi.Digital.Wave.LFO.SAMPLE_HOLD,
+            JDXi.Midi.Digital.Wave.LFO.RANDOM,
         ]
-        # --- Map Oscillator shapes to icon names
+        # --- Map waveform shapes to icon names
         self.shape_icon_map = {
-            Digital.Wave.Osc.SAW: JDXi.UI.Icon.SAW_WAVE,
-            Digital.Wave.Osc.SQUARE: JDXi.UI.Icon.SQUARE_WAVE,
-            Digital.Wave.Osc.PW_SQUARE: JDXi.UI.Icon.SQUARE_WAVE,
-            Digital.Wave.Osc.TRIANGLE: JDXi.UI.Icon.TRIANGLE_WAVE,
-            Digital.Wave.Osc.SINE: JDXi.UI.Icon.SINE_WAVE,
-            Digital.Wave.Osc.NOISE: JDXi.UI.Icon.RANDOM_WAVE,
-            Digital.Wave.Osc.SUPER_SAW: JDXi.UI.Icon.SAW_WAVE,
-            Digital.Wave.Osc.PCM: JDXi.UI.Icon.WAVEFORM,
+            JDXi.Midi.Digital.Wave.LFO.TRIANGLE: JDXi.UI.Icon.TRIANGLE_WAVE,
+            JDXi.Midi.Digital.Wave.LFO.SINE: JDXi.UI.Icon.SINE_WAVE,
+            JDXi.Midi.Digital.Wave.LFO.SAW: JDXi.UI.Icon.SAW_WAVE,
+            JDXi.Midi.Digital.Wave.LFO.SQUARE: JDXi.UI.Icon.SQUARE_WAVE,
+            JDXi.Midi.Digital.Wave.LFO.SAMPLE_HOLD: JDXi.UI.Icon.WAVEFORM,
+            JDXi.Midi.Digital.Wave.LFO.RANDOM: JDXi.UI.Icon.RANDOM_WAVE,
         }
-
+        
     def setup_ui(self):
         """Set up the UI for the LFO section."""
         layout = self.get_layout()
@@ -114,10 +107,13 @@ class BaseOscillatorSection(ParameterSectionBase):
         """Build the widgets"""
         # Call parent to create buttons and other widgets from specs
         super().build_widgets()
-        # Then create Oscillator wave-specific widgets
-        self._create_controls_layout_widgets()
-        self._create_adsr_layout_widgets()
-        # self._create_switch_layout_widgets()
+        # Then create LFO-specific widgets (only if attributes exist)
+        if hasattr(self, 'RATE_FADE_SLIDERS'):
+            self._create_rate_fade_layout_widgets()
+        if hasattr(self, 'DEPTH_SLIDERS'):
+            self._create_depths_layout_widgets()
+        if hasattr(self, 'SWITCH_SPECS'):
+            self._create_switch_layout_widgets()
 
     def _create_shape_row_layout(self):
         """Shape and sync controls"""
@@ -149,19 +145,23 @@ class BaseOscillatorSection(ParameterSectionBase):
 
         rate_widget = self._create_rate_widget()
         # --- Create icons
-        rate_icon = JDXi.UI.Icon.get_icon(JDXi.UI.Icon.CLOCK, color=JDXi.UI.Style.GREY)
+        rate_icon = JDXi.UI.Icon.get_icon(
+            JDXi.UI.Icon.CLOCK, color=JDXi.UI.Style.GREY
+        )
         depths_icon = JDXi.UI.Icon.get_icon(
             JDXi.UI.Icon.WAVEFORM, color=JDXi.UI.Style.GREY
         )
         tab_widget.addTab(rate_widget, rate_icon, self.controls_tab_label)
         depths_widget = self._create_depths_widget()
-        tab_widget.addTab(depths_widget, depths_icon, self.adsr_tab_label)
+        tab_widget.addTab(
+            depths_widget, depths_icon, self.adsr_tab_label
+        )
         JDXi.UI.Theme.apply_tabs_style(tab_widget, analog=self.analog)
         return tab_widget
 
     def _create_rate_widget(self):
         """Rate and Rate Ctrl Controls Tab"""
-        rate_layout = create_layout_with_widgets(self.control_layout_widgets)
+        rate_layout = create_layout_with_widgets(self.rate_layout_widgets)
         rate_widget = QWidget()
         rate_widget.setLayout(rate_layout)
         rate_widget.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MINIMUM_HEIGHT)
@@ -169,7 +169,7 @@ class BaseOscillatorSection(ParameterSectionBase):
 
     def _create_depths_widget(self):
         """Depths Tab"""
-        depths_layout = create_layout_with_widgets(self.adsr_layout_widgets)
+        depths_layout = create_layout_with_widgets(self.depths_layout_widgets)
         depths_widget = QWidget()
         depths_widget.setLayout(depths_layout)
         depths_widget.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MINIMUM_HEIGHT)
@@ -178,7 +178,7 @@ class BaseOscillatorSection(ParameterSectionBase):
     def _create_rate_fade_controls(self) -> QWidget:
         """Rate and Fade Controls Tab"""
         rate_fade_widget = QWidget()
-        rate_fade_layout = create_layout_with_widgets(self.control_layout_widgets)
+        rate_fade_layout = create_layout_with_widgets(self.rate_layout_widgets)
         rate_fade_widget.setLayout(rate_fade_layout)
         rate_fade_widget.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MINIMUM_HEIGHT)
         return rate_fade_widget
@@ -186,16 +186,16 @@ class BaseOscillatorSection(ParameterSectionBase):
     def _create_depths_controls(self) -> QWidget:
         """Depths Tab"""
         depths_widget = QWidget()
-        depths_layout = create_layout_with_widgets(self.adsr_layout_widgets)
+        depths_layout = create_layout_with_widgets(self.depths_layout_widgets)
         depths_widget.setLayout(depths_layout)
         depths_widget.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MINIMUM_HEIGHT)
         return depths_widget
 
-    def _on_wave_shape_selected(self, wave_shape: DigitalOscWave):
+    def _on_wave_shape_selected(self, lfo_shape: DigitalLFOShape):
         """
         Handle Mod LFO shape button clicks
 
-        :param wave_shape: DigitalLFOShape enum value
+        :param lfo_shape: DigitalLFOShape enum value
         """
         for btn in self.wave_shape_buttons.values():
             btn.setChecked(False)
@@ -203,7 +203,7 @@ class BaseOscillatorSection(ParameterSectionBase):
                 JDXi.UI.Theme.apply_button_rect_analog(btn)
             else:
                 btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
-        selected_btn = self.wave_shape_buttons.get(wave_shape)
+        selected_btn = self.wave_shape_buttons.get(lfo_shape)
         if selected_btn:
             selected_btn.setChecked(True)
             if self.analog:
@@ -215,8 +215,8 @@ class BaseOscillatorSection(ParameterSectionBase):
 
         # --- Send MIDI message
         if self.send_midi_parameter:
-            if not self.send_midi_parameter(self.wave_shape_param, wave_shape.value):
-                log.warning(f"Failed to set Mod LFO shape to {wave_shape.name}")
+            if not self.send_midi_parameter(self.wave_shape_param, lfo_shape.value):
+                log.warning(f"Failed to set Mod LFO shape to {lfo_shape.name}")
 
     def _create_switch_row_layout(self) -> QHBoxLayout:
         """Create Switch row"""
@@ -225,13 +225,19 @@ class BaseOscillatorSection(ParameterSectionBase):
 
     def _create_switch_layout_widgets(self):
         """Create switch layout widgets"""
-        pass
-        # self.switch_row_widgets = self._build_switches(self.SWITCH_SPECS)
+        if hasattr(self, 'SWITCH_SPECS'):
+            self.switch_row_widgets = self._build_switches(self.SWITCH_SPECS)
+        else:
+            self.switch_row_widgets = []
 
-    def _create_controls_layout_widgets(self):
-        pass
-        # self.control_layout_widgets = self._build_sliders(self.RATE_FADE_SLIDERS)
+    def _create_rate_fade_layout_widgets(self):
+        if hasattr(self, 'RATE_FADE_SLIDERS'):
+            self.rate_layout_widgets = self._build_sliders(self.RATE_FADE_SLIDERS)
+        else:
+            self.rate_layout_widgets = []
 
-    def _create_adsr_layout_widgets(self):
-        pass
-        # self.adsr_layout_widgets = self._build_sliders(self.DEPTH_SLIDERS)
+    def _create_depths_layout_widgets(self):
+        if hasattr(self, 'DEPTH_SLIDERS'):
+            self.depths_layout_widgets = self._build_sliders(self.DEPTH_SLIDERS)
+        else:
+            self.depths_layout_widgets = []

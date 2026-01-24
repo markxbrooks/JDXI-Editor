@@ -1,2 +1,2 @@
-from .oscillator import DigitalOscWave
+from .oscillator import DigitalWaveOsc
 from .partial import DigitalPartial

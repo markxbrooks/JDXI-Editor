@@ -27,7 +27,7 @@ from PySide6.QtWidgets import QApplication
 from PySide6.QtTest import QTest
 
 from jdxi_editor.ui.editors.digital.editor import DigitalSynthEditor
-from jdxi_editor.midi.data.digital import DigitalPartial, DigitalOscWave
+from jdxi_editor.midi.data.digital import DigitalPartial, DigitalWaveOsc
 from jdxi_editor.midi.data.digital.filter import DigitalFilterMode
 from jdxi_editor.midi.data.digital.lfo import DigitalLFOShape
 from jdxi_editor.midi.data.parameter.digital import DigitalPartialParam
@@ -207,7 +207,7 @@ class TestDigitalSynthEditor(unittest.TestCase):
         
         # Mock waveform buttons for partial 1
         mock_buttons = {}
-        for wave in DigitalOscWave:
+        for wave in DigitalWaveOsc:
             mock_btn = Mock()
             mock_btn.setChecked = Mock()
             mock_btn.setStyleSheet = Mock()
@@ -219,8 +219,8 @@ class TestDigitalSynthEditor(unittest.TestCase):
         self.editor._update_waveform_buttons(1, 2)
         
         # PW_SQUARE button should be checked
-        mock_buttons[DigitalOscWave.PW_SQUARE].setChecked.assert_called_with(True)
-        mock_buttons[DigitalOscWave.PW_SQUARE].setStyleSheet.assert_called()
+        mock_buttons[DigitalWaveOsc.PW_SQUARE].setChecked.assert_called_with(True)
+        mock_buttons[DigitalWaveOsc.PW_SQUARE].setStyleSheet.assert_called()
 
     def test_update_waveform_buttons_invalid_partial(self):
         """Test updating waveform buttons with invalid partial number."""

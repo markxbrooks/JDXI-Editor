@@ -4,11 +4,8 @@ Common Section
 
 from typing import Callable
 
-from PySide6.QtWidgets import QHBoxLayout
-
-from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParam
-from jdxi_editor.midi.data.parameter.digital.name import DigitalDisplayName
 from jdxi_editor.midi.data.parameter.digital.option import DigitalDisplayOptions
+from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.ui.editors.widget_specs import SliderSpec, SwitchSpec, ComboBoxSpec
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets
@@ -20,59 +17,59 @@ class DigitalCommonSection(SectionBaseWidget):
 
     SLIDER_GROUPS = {
         "pitch": [
-            SliderSpec(DigitalCommonParam.PITCH_BEND_UP, DigitalDisplayName.PITCH_BEND_UP),
-            SliderSpec(DigitalCommonParam.PITCH_BEND_DOWN, DigitalDisplayName.PITCH_BEND_DOWN),
-            SliderSpec(DigitalCommonParam.TONE_LEVEL, DigitalDisplayName.TONE_LEVEL),
-            SliderSpec(DigitalCommonParam.PORTAMENTO_TIME, DigitalDisplayName.PORTAMENTO_TIME),
-            SliderSpec(DigitalCommonParam.ANALOG_FEEL, DigitalDisplayName.ANALOG_FEEL),
-            SliderSpec(DigitalCommonParam.WAVE_SHAPE, DigitalDisplayName.WAVE_SHAPE),
+            SliderSpec(Digital.Common.PITCH_BEND_UP, Digital.Display.Name.PITCH_BEND_UP),
+            SliderSpec(Digital.Common.PITCH_BEND_DOWN, Digital.Display.Name.PITCH_BEND_DOWN),
+            SliderSpec(Digital.Common.TONE_LEVEL, Digital.Display.Name.TONE_LEVEL),
+            SliderSpec(Digital.Common.PORTAMENTO_TIME, Digital.Display.Name.PORTAMENTO_TIME),
+            SliderSpec(Digital.Common.ANALOG_FEEL, Digital.Display.Name.ANALOG_FEEL),
+            SliderSpec(Digital.Common.WAVE_SHAPE, Digital.Display.Name.WAVE_SHAPE),
         ]
     }
 
     PORTAMENTO_SWITCHES = [
         SwitchSpec(
-            DigitalCommonParam.PORTAMENTO_SWITCH,
-            DigitalDisplayName.PORTAMENTO_SWITCH,
+            Digital.Common.PORTAMENTO_SWITCH,
+            Digital.Display.Name.PORTAMENTO_SWITCH,
             DigitalDisplayOptions.PORTAMENTO_SWITCH,
         ),
         SwitchSpec(
-            DigitalCommonParam.PORTAMENTO_MODE,
-            DigitalDisplayName.PORTAMENTO_MODE,
+            Digital.Common.PORTAMENTO_MODE,
+            Digital.Display.Name.PORTAMENTO_MODE,
             DigitalDisplayOptions.PORTAMENTO_MODE,
         ),
         SwitchSpec(
-            DigitalCommonParam.LEGATO_SWITCH,
-            DigitalDisplayName.LEGATO_SWITCH,
+            Digital.Common.LEGATO_SWITCH,
+            Digital.Display.Name.LEGATO_SWITCH,
             DigitalDisplayOptions.LEGATO_SWITCH,
         ),
         ]
     COMBO_BOXES = [
         ComboBoxSpec(
-            DigitalCommonParam.OCTAVE_SHIFT,
-            DigitalDisplayName.OCTAVE_SHIFT,
+            Digital.Common.OCTAVE_SHIFT,
+            Digital.Display.Name.OCTAVE_SHIFT,
             DigitalDisplayOptions.OCTAVE_SHIFT,
             [61, 62, 63, 64, 65, 66, 67]
         ),
         ]
     OTHER_SWITCHES = [
         SwitchSpec(
-            DigitalCommonParam.MONO_SWITCH,
-            DigitalDisplayName.MONO_SWITCH,
+            Digital.Common.MONO_SWITCH,
+            Digital.Display.Name.MONO_SWITCH,
             DigitalDisplayOptions.MONO_SWITCH,
         ),
         SwitchSpec(
-            DigitalCommonParam.RING_SWITCH,
-            DigitalDisplayName.RING_SWITCH,
+            Digital.Common.RING_SWITCH,
+            Digital.Display.Name.RING_SWITCH,
             DigitalDisplayOptions.RING_SWITCH,
         ),
         SwitchSpec(
-            DigitalCommonParam.UNISON_SWITCH,
-            DigitalDisplayName.UNISON_SWITCH,
+            Digital.Common.UNISON_SWITCH,
+            Digital.Display.Name.UNISON_SWITCH,
             DigitalDisplayOptions.UNISON_SWITCH,
         ),
         SwitchSpec(
-            DigitalCommonParam.UNISON_SIZE,
-            DigitalDisplayName.UNISON_SIZE,
+            Digital.Common.UNISON_SIZE,
+            Digital.Display.Name.UNISON_SIZE,
             DigitalDisplayOptions.UNISON_SIZE,
         ),
     ]

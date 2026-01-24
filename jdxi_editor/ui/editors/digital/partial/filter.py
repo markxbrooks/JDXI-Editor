@@ -9,6 +9,7 @@ from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.ui.editors.param_section import ParameterSectionBase
 from jdxi_editor.ui.editors.widget_specs import SliderSpec
+from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (
     create_adsr_icon,
     create_envelope_group,
@@ -133,6 +134,10 @@ class DigitalFilterSection(ParameterSectionBase):
         else:
             log.warning(f"⚠️ DigitalFilterSection: No peak param in ADSR_SPEC!")
         log.message(f"📋 ADSR_SPEC keys: {list(ADSR_SPEC.keys())}")
+
+    def __init__(self, *, icon_type: str = IconType.ADSR, **kwargs):
+        """Initialize DigitalFilterSection with ADSR icon type"""
+        super().__init__(icon_type=icon_type, **kwargs)
 
     def build_widgets(self):
         """Override to create FilterWidget with plot"""

@@ -45,7 +45,7 @@ class WaveformType:
     FILTER_SINE: str = "filter_sine"
 
 
-class DigitalOscWave(IntEnum):
+class DigitalWaveOsc(IntEnum):
     """Oscillator waveform types"""
 
     SAW = 0
