@@ -14,6 +14,7 @@ from PySide6.QtWidgets import (
 from decologr import Decologr as log
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.digital import DigitalOscWave
+from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital, JDXiMidiDigital
 from jdxi_editor.ui.editors.param_section import ParameterSectionBase
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (
@@ -61,6 +62,7 @@ class BaseOscillatorSection(ParameterSectionBase):
         self.adsr_layout_widgets: list | None = None
         self.send_midi_parameter: Callable | None = send_midi_parameter
         self.wave_shape_buttons = {}  # Dictionary to store LFO shape buttons
+        self.synth = JDXiMidiDigital
 
         super().__init__(
             create_parameter_slider=create_parameter_slider,
@@ -75,25 +77,25 @@ class BaseOscillatorSection(ParameterSectionBase):
         )
         # --- Set up LFO shapes
         self.wave_shapes = [
-            JDXi.Midi.Digital.Wave.Osc.SAW,
-            JDXi.Midi.Digital.Wave.Osc.SQUARE,
-            JDXi.Midi.Digital.Wave.Osc.PW_SQUARE,
-            JDXi.Midi.Digital.Wave.Osc.SQUARE,
-            JDXi.Midi.Digital.Wave.Osc.SINE,
-            JDXi.Midi.Digital.Wave.Osc.NOISE,
-            JDXi.Midi.Digital.Wave.Osc.SUPER_SAW,
-            JDXi.Midi.Digital.Wave.Osc.PCM,
+            Digital.Wave.Osc.SAW,
+            Digital.Wave.Osc.SQUARE,
+            Digital.Wave.Osc.PW_SQUARE,
+            Digital.Wave.Osc.SQUARE,
+            Digital.Wave.Osc.SINE,
+            Digital.Wave.Osc.NOISE,
+            Digital.Wave.Osc.SUPER_SAW,
+            Digital.Wave.Osc.PCM,
         ]
         # --- Map Oscillator shapes to icon names
         self.shape_icon_map = {
-            JDXi.Midi.Digital.Wave.Osc.SAW: JDXi.UI.Icon.SAW_WAVE,
-            JDXi.Midi.Digital.Wave.Osc.SQUARE: JDXi.UI.Icon.SQUARE_WAVE,
-            JDXi.Midi.Digital.Wave.Osc.PW_SQUARE: JDXi.UI.Icon.SQUARE_WAVE,
-            JDXi.Midi.Digital.Wave.Osc.TRIANGLE: JDXi.UI.Icon.TRIANGLE_WAVE,
-            JDXi.Midi.Digital.Wave.Osc.SINE: JDXi.UI.Icon.SINE_WAVE,
-            JDXi.Midi.Digital.Wave.Osc.NOISE: JDXi.UI.Icon.RANDOM_WAVE,
-            JDXi.Midi.Digital.Wave.Osc.SUPER_SAW: JDXi.UI.Icon.SAW_WAVE,
-            JDXi.Midi.Digital.Wave.Osc.PCM: JDXi.UI.Icon.WAVEFORM,
+            Digital.Wave.Osc.SAW: JDXi.UI.Icon.SAW_WAVE,
+            Digital.Wave.Osc.SQUARE: JDXi.UI.Icon.SQUARE_WAVE,
+            Digital.Wave.Osc.PW_SQUARE: JDXi.UI.Icon.SQUARE_WAVE,
+            Digital.Wave.Osc.TRIANGLE: JDXi.UI.Icon.TRIANGLE_WAVE,
+            Digital.Wave.Osc.SINE: JDXi.UI.Icon.SINE_WAVE,
+            Digital.Wave.Osc.NOISE: JDXi.UI.Icon.RANDOM_WAVE,
+            Digital.Wave.Osc.SUPER_SAW: JDXi.UI.Icon.SAW_WAVE,
+            Digital.Wave.Osc.PCM: JDXi.UI.Icon.WAVEFORM,
         }
 
     def setup_ui(self):
