@@ -104,7 +104,7 @@ class DigitalOscillatorSection(BaseOscillatorSection):
 
     def __init__(
         self,
-        icon_type: str = IconType.ADSR,
+        icons_row_type: str = IconType.ADSR,
         analog: bool = False,
         send_midi_parameter: Callable = None,
         create_parameter_slider: Callable = None,
@@ -122,7 +122,7 @@ class DigitalOscillatorSection(BaseOscillatorSection):
             midi_helper=midi_helper,
             controls=controls,
             address=address,
-            icon_type=icon_type,
+            icons_row_type=icons_row_type,
             analog=analog,
         )
         # Store references for use in build_widgets

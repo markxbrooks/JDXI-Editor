@@ -39,7 +39,7 @@ class BaseOscillatorSection(ParameterSectionBase):
         midi_helper=None,
         controls: dict = None,
         address=None,
-        icon_type: str = IconType.OSCILLATOR,
+        icons_row_type: str = IconType.OSCILLATOR,
         analog: bool = False,
     ):
         """
@@ -52,7 +52,7 @@ class BaseOscillatorSection(ParameterSectionBase):
         :param midi_helper: MIDI helper instance
         :param controls: Dictionary of controls
         :param address: Roland SysEx address
-        :param icon_type: Type of icon
+        :param icons_row_type: Type of icon
         :param analog: bool
         """
         self.wave_shape_param: list | None = None
@@ -70,7 +70,7 @@ class BaseOscillatorSection(ParameterSectionBase):
             midi_helper=midi_helper,
             controls=controls,
             address=address,
-            icon_type=icon_type,
+            icons_row_type=icons_row_type,
             analog=analog,
         )
         # --- Set up waveform shapes

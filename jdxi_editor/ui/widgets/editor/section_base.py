@@ -60,7 +60,7 @@ class SectionBaseWidget(QWidget):
     def __init__(
         self,
         parent: Optional[QWidget] = None,
-        icon_type: Literal[
+        icons_row_type: Literal[
             IconType.ADSR, IconType.OSCILLATOR, IconType.GENERIC, IconType.NONE
         ] = "adsr",
         analog: bool = False,
@@ -69,12 +69,12 @@ class SectionBaseWidget(QWidget):
         Initialize the SectionBaseWidget.
 
         :param parent: Parent widget
-        :param icon_type: Type of icon row to add ("adsr", "oscillator", "generic", or "none")
+        :param icons_row_type: Type of icon row to add ("adsr", "oscillator", "generic", or "none")
         :param analog: Whether to apply analog-specific styling
         """
         super().__init__(parent)
         self.analog = analog
-        self.icon_type = icon_type
+        self.icons_row_type = icons_row_type
         self._layout: Optional[QVBoxLayout] = None
         self._icon_added = False
 
@@ -112,7 +112,7 @@ class SectionBaseWidget(QWidget):
             JDXi.UI.Theme.apply_adsr_style(self, analog=self.analog)
 
             # Add icon row if not disabled
-            if self.icon_type != IconType.NONE and not self._icon_added:
+            if self.icons_row_type != IconType.NONE and not self._icon_added:
                 self._add_icon_row()
                 self._icon_added = True
 
@@ -135,11 +135,11 @@ class SectionBaseWidget(QWidget):
         # Create a container layout to avoid "already has a parent" errors
         icon_row_container = QHBoxLayout()
 
-        if self.icon_type == IconType.ADSR:
+        if self.icons_row_type == IconType.ADSR:
             icon_hlayout = JDXi.UI.Icon.create_adsr_icons_row()
-        elif self.icon_type == IconType.OSCILLATOR:
+        elif self.icons_row_type == IconType.OSCILLATOR:
             icon_hlayout = JDXi.UI.Icon.create_oscillator_icons_row()
-        elif self.icon_type == IconType.GENERIC:
+        elif self.icons_row_type == IconType.GENERIC:
             icon_hlayout = JDXi.UI.Icon.create_generic_musical_icon_row()
         else:
             return  # IconType.NONE or unknown

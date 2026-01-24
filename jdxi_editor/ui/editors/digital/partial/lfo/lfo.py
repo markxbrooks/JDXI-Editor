@@ -67,7 +67,7 @@ class DigitalLFOSection(BaseLFOSection):
         create_parameter_combo_box: Callable,
         controls: dict,
         send_midi_parameter: Callable = None,
-        icon_type=IconType.ADSR,
+        icons_row_type=IconType.ADSR,
         analog=False,
     ):
         """
@@ -85,7 +85,7 @@ class DigitalLFOSection(BaseLFOSection):
         self.controls = controls
 
         super().__init__(
-            icon_type=icon_type, analog=analog, send_midi_parameter=send_midi_parameter
+            icons_row_type=icons_row_type, analog=analog, send_midi_parameter=send_midi_parameter
         )
         self.send_midi_parameter = send_midi_parameter
         self.wave_shape_param: Literal[JDXi.Midi.Digital.Param.LFO_SHAPE] = (

@@ -1,10 +1,12 @@
-from typing import Callable
+from typing import Callable, Literal
 
 from PySide6.QtWidgets import QTabWidget, QWidget
 
 from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.digital.filter import DigitalFilterMode
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParam
+from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.widget_specs import SliderSpec, SwitchSpec
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 from jdxi_editor.ui.widgets.editor import IconType
@@ -45,10 +47,12 @@ class ParameterSectionBase(SectionBaseWidget):
         create_parameter_switch: Callable = None,
         create_parameter_combo_box: Callable = None,
         send_midi_parameter: Callable = None,
-        midi_helper=None,
+        midi_helper: MidiIOHelper = None,
         controls: dict = None,
-        address=None,
-        icon_type: str = IconType.OSCILLATOR,
+        address: RolandSysExAddress = None,
+        icons_row_type: Literal[
+            IconType.ADSR, IconType.OSCILLATOR, IconType.GENERIC, IconType.NONE
+        ] = IconType.OSCILLATOR,
         analog: bool = False,
     ):
         self.midi_helper = midi_helper
@@ -65,7 +69,7 @@ class ParameterSectionBase(SectionBaseWidget):
         self.control_widgets = []
         self.button_widgets = {}
 
-        super().__init__(icon_type=icon_type, analog=analog)
+        super().__init__(icons_row_type=icons_row_type, analog=analog)
 
         self.build_widgets()
         self.setup_ui()

@@ -135,9 +135,9 @@ class DigitalFilterSection(ParameterSectionBase):
             log.warning(f"⚠️ DigitalFilterSection: No peak param in ADSR_SPEC!")
         log.message(f"📋 ADSR_SPEC keys: {list(ADSR_SPEC.keys())}")
 
-    def __init__(self, *, icon_type: str = IconType.ADSR, **kwargs):
+    def __init__(self, *, icons_row_type: str = IconType.ADSR, **kwargs):
         """Initialize DigitalFilterSection with ADSR icon type"""
-        super().__init__(icon_type=icon_type, **kwargs)
+        super().__init__(icons_row_type=icons_row_type, **kwargs)
 
     def build_widgets(self):
         """Override to create FilterWidget with plot"""

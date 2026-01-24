@@ -36,7 +36,7 @@ class AnalogCommonSection(SectionBaseWidget):
         self._create_parameter_combo_box = create_parameter_combo_box
         self.controls = controls
 
-        super().__init__(icon_type=IconType.GENERIC, analog=True)
+        super().__init__(icons_row_type=IconType.GENERIC, analog=True)
         self.init_ui()
 
     def init_ui(self):

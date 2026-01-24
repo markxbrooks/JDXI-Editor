@@ -66,7 +66,7 @@ class AnalogFilterSection(SectionBaseWidget):
         self.controls = controls
         self.filter_mode_buttons = {}  # Dictionary to store filter mode buttons
 
-        super().__init__(icon_type=IconType.ADSR, analog=True)
+        super().__init__(icons_row_type=IconType.ADSR, analog=True)
         self.setup_ui()
 
     def setup_ui(self):

@@ -65,7 +65,7 @@ class AnalogAmpSection(SectionBaseWidget):
         self.analog_amp_tab_widget = None
         self.layout = None
 
-        super().__init__(icon_type=IconType.ADSR, analog=True)
+        super().__init__(icons_row_type=IconType.ADSR, analog=True)
 
         self.build_widgets()
         self.setup_ui()

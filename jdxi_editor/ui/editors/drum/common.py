@@ -65,7 +65,7 @@ class DrumCommonSection(SectionBaseWidget):
         self.midi_helper = midi_helper
         self.address.lmb = AddressOffsetProgramLMB.COMMON
 
-        super().__init__(icon_type=IconType.GENERIC, analog=False)
+        super().__init__(icons_row_type=IconType.GENERIC, analog=False)
         self.setup_ui()
 
     def setup_ui(self):

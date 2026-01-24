@@ -91,7 +91,7 @@ class AnalogLFOSection(BaseLFOSection):
         }
         self.analog: bool = True
         super().__init__(
-            icon_type=IconType.ADSR,
+            icons_row_type=IconType.ADSR,
             analog=self.analog,
             send_midi_parameter=send_midi_parameter,
         )

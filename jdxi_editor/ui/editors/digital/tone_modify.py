@@ -46,7 +46,7 @@ class DigitalToneModifySection(SectionBaseWidget):
         self._create_parameter_switch = create_parameter_switch
         self.controls = controls
 
-        super().__init__(icon_type=IconType.ADSR, analog=False)
+        super().__init__(icons_row_type=IconType.ADSR, analog=False)
 
         self._build_widgets()
         self.setup_ui()

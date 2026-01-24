@@ -65,7 +65,7 @@ class DigitalModLFOSection(BaseLFOSection):
         on_parameter_changed: Callable,
         controls: dict,
         send_midi_parameter: Callable = None,
-        icon_type: str = IconType.ADSR,
+        icons_row_type: str = IconType.ADSR,
         analog: bool = False,
     ):
         """
@@ -85,7 +85,7 @@ class DigitalModLFOSection(BaseLFOSection):
         self.wave_shape_buttons = {}  # Dictionary to store Mod LFO shape buttons
 
         super().__init__(
-            icon_type=icon_type, analog=analog, send_midi_parameter=send_midi_parameter
+            icons_row_type=icons_row_type, analog=analog, send_midi_parameter=send_midi_parameter
         )
         self.wave_shape_param: Literal[DigitalPartialParam.MOD_LFO_SHAPE] = (
             DigitalPartialParam.MOD_LFO_SHAPE

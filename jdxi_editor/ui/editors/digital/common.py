@@ -94,7 +94,7 @@ class DigitalCommonSection(SectionBaseWidget):
         self._create_parameter_combo_box = create_parameter_combo_box
         self.controls = controls
 
-        super().__init__(icon_type=IconType.GENERIC, analog=False)
+        super().__init__(icons_row_type=IconType.GENERIC, analog=False)
 
         self.build_widgets()
         self.setup_ui()

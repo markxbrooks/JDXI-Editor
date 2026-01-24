@@ -84,7 +84,7 @@ class AnalogOscillatorSection(SectionBaseWidget):
         self.controls = controls
         self.analog = True
 
-        super().__init__(icon_type=IconType.OSCILLATOR, analog=True)
+        super().__init__(icons_row_type=IconType.OSCILLATOR, analog=True)
         self.setup_ui()
 
     def setup_ui(self) -> None:

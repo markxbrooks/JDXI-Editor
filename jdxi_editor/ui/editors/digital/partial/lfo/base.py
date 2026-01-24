@@ -37,14 +37,14 @@ class BaseLFOSection(SectionBaseWidget):
 
     def __init__(
         self,
-        icon_type: str = IconType.ADSR,
+        icons_row_type: str = IconType.ADSR,
         analog: bool = False,
         send_midi_parameter: Callable = None,
     ):
         """
         Initialize the DigitalLFOSection
 
-        :param icon_type: Type of icon e.g
+        :param icons_row_type: Type of icon e.g
         :param analog: bool
         """
         self.wave_shape_param: list | None = None
@@ -54,7 +54,7 @@ class BaseLFOSection(SectionBaseWidget):
         self.send_midi_parameter: Callable | None = send_midi_parameter
         self.wave_shape_buttons = {}  # Dictionary to store LFO shape buttons
 
-        super().__init__(icon_type=icon_type, analog=analog)
+        super().__init__(icons_row_type=icons_row_type, analog=analog)
         # --- Set up LFO shapes
         self.wave_shapes = [
             JDXi.Midi.Digital.Wave.LFO.TRIANGLE,
