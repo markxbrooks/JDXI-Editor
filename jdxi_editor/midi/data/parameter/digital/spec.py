@@ -13,9 +13,10 @@ from jdxi_editor.midi.data.digital.filter import (
 )
 from jdxi_editor.midi.data.digital.lfo import DigitalLFOShape
 from jdxi_editor.midi.data.digital.oscillator import WaveformType
-from jdxi_editor.midi.data.parameter.digital import DigitalPartialParam
+from jdxi_editor.midi.data.parameter.digital import DigitalPartialParam, DigitalModifyParam
 from jdxi_editor.midi.data.parameter.digital.name import DigitalDisplayName
 from jdxi_editor.midi.data.parameter.digital.option import DigitalDisplayOptions
+from jdxi_editor.midi.data.parameter.digital.tone_modify import DigitalModifyNames, DigitalModifyOptions
 from jdxi_editor.midi.data.parameter.digital.values import DigitalDisplayValues
 from jdxi_editor.ui.adsr.type import ADSRType
 from jdxi_editor.ui.style import JDXiUIIconRegistry
@@ -87,6 +88,12 @@ class DigitalWave:
     WaveType: WaveformType = WaveformType
 
 
+class DigitalToneModifyDisplay:
+    """Digital Tone Modify Display names and options"""
+    Names: DigitalModifyNames = DigitalModifyNames
+    Options: DigitalModifyOptions = DigitalModifyOptions
+
+
 class DigitalDisplay:
     """Analog Display class"""
 
@@ -100,6 +107,8 @@ class JDXiMidiDigital:
 
     Param: DigitalPartialParam = DigitalPartialParam
     Display: DigitalDisplay = DigitalDisplay
+    ModifyParam: DigitalModifyParam = DigitalModifyParam
+    ModifyDisplay: DigitalToneModifyDisplay = DigitalToneModifyDisplay
     Wave: DigitalWave = DigitalWave
     Filter: DigitalFilter = DigitalFilter
     Amp: DigitalAmp = DigitalAmp

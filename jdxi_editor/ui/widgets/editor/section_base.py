@@ -118,6 +118,15 @@ class SectionBaseWidget(QWidget):
 
         return self._layout
 
+    def _add_centered_row(self, *widgets: QWidget) -> None:
+        """add centered row"""
+        row = QHBoxLayout()
+        row.addStretch()
+        for w in widgets:
+            row.addWidget(w)
+        row.addStretch()
+        self.get_layout().addLayout(row)
+
     def _add_icon_row(self) -> None:
         """Add the appropriate icon row based on icon_type"""
         if self._layout is None:
