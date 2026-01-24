@@ -8,6 +8,8 @@ Data Model for JDXi Synth
 from dataclasses import dataclass, field
 from typing import Dict, Optional, Union
 
+from jdxi_editor.core.synth.instrument_display import InstrumentDisplayConfig
+from jdxi_editor.core.synth.midi_config import MidiSynthConfig
 from jdxi_editor.midi.data.address.address import (
     Address,
     AddressOffsetProgramLMB,
@@ -16,8 +18,6 @@ from jdxi_editor.midi.data.address.address import (
 from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
 from jdxi_editor.midi.data.parameter.digital import DigitalCommonParam
 from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParam
-from jdxi_editor.synth.instrument_display import InstrumentDisplayConfig
-from jdxi_editor.synth.midi_config import MidiSynthConfig
 from picomidi.constant import Midi
 
 

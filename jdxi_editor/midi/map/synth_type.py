@@ -1,10 +1,10 @@
 from __future__ import annotations
 
+from jdxi_editor.core.synth.type import JDXiSynth
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetTemporaryToneUMB as TemporaryToneUMB,
 )
 from jdxi_editor.midi.data.address.address import AddressStartMSB as AreaMSB
-from jdxi_editor.synth.type import JDXiSynth
 
 SYNTH_TYPE_MAP = {
     AreaMSB.TEMPORARY_PROGRAM.name: JDXiSynth.PROGRAM,

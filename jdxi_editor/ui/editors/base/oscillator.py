@@ -14,7 +14,8 @@ from PySide6.QtWidgets import (
 from decologr import Decologr as log
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.digital import DigitalOscWave
-from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital, JDXiMidiDigital
+from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital
+from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.ui.editors.param_section import ParameterSectionBase
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (

@@ -5,8 +5,8 @@ JDXi Preset Button Data
 from dataclasses import dataclass
 from typing import Optional
 
+from jdxi_editor.core.synth.type import JDXiSynth
 from jdxi_editor.midi.channel.channel import MidiChannel
-from jdxi_editor.synth.type import JDXiSynth
 
 
 @dataclass

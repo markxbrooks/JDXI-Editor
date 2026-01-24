@@ -14,14 +14,13 @@ from jdxi_editor.midi.data.address.address import (
 )
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.project import __package_name__
-from jdxi_editor.ui.editors import SynthEditor
 from jdxi_editor.ui.windows.midi.debugger import parse_sysex_byte
 
 
 class JDXiJSONComposer:
     """JSON SysExComposer"""
 
-    def __init__(self, editor: Optional[SynthEditor] = None):
+    def __init__(self, editor: Optional["SynthEditor"] = None):
         self.json_string = None
         if editor:
             self.editor = editor
@@ -32,7 +31,7 @@ class JDXiJSONComposer:
 
     def compose_message(
         self,
-        editor: SynthEditor,
+        editor: "SynthEditor",
     ) -> Optional[dict[Union[str, Any], Union[str, Any]]]:
         """
         :param editor: SynthEditor Editor instance to process
@@ -118,7 +117,7 @@ class JDXiJSONComposer:
         except Exception as ex:
             log.error(f"Error saving JSON: {ex}")
 
-    def process_editor(self, editor: SynthEditor, temp_folder: Path) -> Path:
+    def process_editor(self, editor: "SynthEditor", temp_folder: Path) -> Path:
         """
         Process the editor and save the JSON
 
@@ -394,7 +393,7 @@ class JDXiJSONComposer:
 
     def _save_editor_section(
         self,
-        editor: SynthEditor,
+        editor: "SynthEditor",
         controls_dict: dict,
         address: RolandSysExAddress,
         temp_folder: Path,

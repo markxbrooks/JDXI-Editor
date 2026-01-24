@@ -50,6 +50,7 @@ from PySide6.QtWidgets import (
 
 from decologr import Decologr as log
 from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.core.synth.type import JDXiSynth
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetSuperNATURALLMB,
@@ -65,7 +66,6 @@ from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.program.program import JDXiProgram
 from jdxi_editor.midi.sysex.request.data import SYNTH_PARTIAL_MAP
 from jdxi_editor.midi.sysex.request.midi_requests import MidiRequests
-from jdxi_editor.synth.type import JDXiSynth
 from jdxi_editor.ui.editors.digital.utils import filter_sysex_keys, get_partial_number
 from jdxi_editor.ui.editors.io.helper import create_placeholder_icon
 from jdxi_editor.ui.editors.io.mixer_widget import ProgramMixerWidget
@@ -469,7 +469,7 @@ class ProgramEditor(BasicEditor):
         :return: None
         Initialize synth-specific data
         """
-        from jdxi_editor.synth.factory import create_synth_data
+        from jdxi_editor.core.synth.factory import create_synth_data
 
         self.synth_data = create_synth_data(synth_type, partial_number=partial_number)
 

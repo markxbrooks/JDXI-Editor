@@ -9,9 +9,9 @@ from PySide6.QtWidgets import QPushButton, QWidget
 
 from decologr import Decologr as log
 from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.core.synth.type import JDXiSynth
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.project import __package_name__
-from jdxi_editor.synth.type import JDXiSynth
 from jdxi_editor.ui.preset.button import JDXiPresetButtonData
 from jdxi_editor.ui.preset.data import JDXiPresetData
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper

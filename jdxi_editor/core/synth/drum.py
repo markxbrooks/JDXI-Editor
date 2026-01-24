@@ -5,9 +5,9 @@ Drum Synth Data
 from dataclasses import dataclass, field
 from typing import Dict
 
+from jdxi_editor.core.synth.data import JDXISynthData
 from jdxi_editor.midi.data.address.address import Address, AddressOffsetDrumKitLMB
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
-from jdxi_editor.synth.data import JDXISynthData
 
 
 @dataclass

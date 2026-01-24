@@ -44,6 +44,9 @@ class Dimensions:
     MIN_WIDTH: Optional[int] = None
     MIN_HEIGHT: Optional[int] = None
 
+    INIT_WIDTH: Optional[int] = None
+    INIT_HEIGHT: Optional[int] = None
+
     @classmethod
     def right(cls) -> int:
         return cls.X + cls.WIDTH
@@ -95,6 +98,10 @@ class DigitalEditorDimensions(Dimensions):
 
     SPACING = 5
     MARGINS = Margins(5, 15, 5, 5)
+    MIN_WIDTH: Optional[int] = 850
+    MIN_HEIGHT: Optional[int] = 300
+    INIT_WIDTH: Optional[int] = 1030
+    INIT_HEIGHT: Optional[int] = 600
 
 
 class BasicEditorDimensions(Dimensions):

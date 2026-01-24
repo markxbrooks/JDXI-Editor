@@ -43,6 +43,8 @@ from PySide6.QtWidgets import (
 
 from decologr import Decologr as log
 from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.core.synth.factory import create_synth_data
+from jdxi_editor.core.synth.type import JDXiSynth
 from jdxi_editor.log.slider_parameter import log_slider_parameters
 from jdxi_editor.midi.data.address.address import AddressOffsetSuperNATURALLMB
 from jdxi_editor.midi.data.digital import DigitalOscWave, DigitalPartial
@@ -52,11 +54,9 @@ from jdxi_editor.midi.data.parameter.digital import (
     DigitalPartialParam,
 )
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.synth.factory import create_synth_data
-from jdxi_editor.synth.type import JDXiSynth
 from jdxi_editor.ui.editors.digital import (
     DigitalCommonSection,
-    DigitalPartialEditor,
+    DigitalPartialPanel,
     DigitalToneModifySection,
 )
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
@@ -78,31 +78,29 @@ class DigitalSynthEditor(SynthEditor):
         midi_helper: Optional[MidiIOHelper] = None,
         preset_helper: JDXiPresetHelper = None,
         synth_number: int = 1,
-        parent: QWidget = None,
+        parent: "JDXiInstrument" = None,
     ):
         super().__init__(parent)
+        self.main_layout = None
         self.instrument_image_group: QGroupBox | None = None
         self.instrument_title_label: QLabel | None = None
         self.partial_number = None
         self.current_data = None
         self.midi_helper = midi_helper
-        self.preset_helper = preset_helper or (
-            parent.digital_1_preset_helper
-            if self.preset_type == JDXiSynth.DIGITAL_SYNTH_1
-            else parent.digital_2_preset_helper
-        )
+        self.preset_helper = preset_helper
         self.main_window = parent
         self.controls: Dict[
             Union[DigitalPartialParam, DigitalCommonParam],
             QWidget,
         ] = {}
-        synth_map = {1: JDXiSynth.DIGITAL_SYNTH_1, 2: JDXiSynth.DIGITAL_SYNTH_2}
+        synth_map = {1: JDXi.Synth.DIGITAL_SYNTH_1, 2: JDXi.Synth.DIGITAL_SYNTH_2}
         if synth_number not in synth_map:
             raise ValueError(
                 f"Invalid synth_number: {synth_number}. Must be 1, 2 or 3."
             )
         self.synth_number = synth_number
         self._init_synth_data(synth_map[synth_number])
+        self.build_widgets()
         self.setup_ui()
         self.update_instrument_image()
         self._initialize_partial_states()
@@ -142,20 +140,15 @@ class DigitalSynthEditor(SynthEditor):
 
     def setup_ui(self):
         """set up user interface"""
-        self.setMinimumSize(850, 300)
-        self.resize(1030, 600)
+        self.set_dimensions()
+        self.set_style()
 
-        JDXi.UI.Theme.apply_tabs_style(self)
-        JDXi.UI.Theme.apply_editor_style(self)
+        self.base_widget.setup_scrollable_content(
+            spacing=JDXi.UI.Dimensions.EDITOR_DIGITAL.SPACING,
+            margins=JDXi.UI.Dimensions.EDITOR_DIGITAL.MARGINS,
+        )
 
-        # Use EditorBaseWidget for consistent layout structure
-        self.base_widget = EditorBaseWidget(parent=self, analog=False)
-        self.base_widget.setup_scrollable_content(spacing=5, margins=(5, 5, 5, 5))
-
-        # Get container layout for adding content
-        container_layout = self.base_widget.get_container_layout()
-
-        # Add base widget to editor's layout
+        # --- Add base widget to editor's layout
         if not hasattr(self, "main_layout") or self.main_layout is None:
             self.main_layout = QVBoxLayout(self)
             self.setLayout(self.main_layout)
@@ -194,15 +187,9 @@ class DigitalSynthEditor(SynthEditor):
         self.update_instrument_image()
 
         instrument_layout.addWidget(self.instrument_preset)
-        instrument_layout.setSpacing(5)  # Minimal spacing
-
-        # --- Add partials panel directly to container
-        container_layout.addWidget(self.partials_panel)
-        container_layout.setSpacing(5)  # Minimal spacing instead of stretch
-
-        # --- Create partial tab widget
-        self.partial_tab_widget = QTabWidget()
-        self.partial_tab_widget.setStyleSheet(JDXi.UI.Style.TAB_TITLE)
+        instrument_layout.setSpacing(
+            JDXi.UI.Dimensions.EDITOR_DIGITAL.SPACING
+        )  # Minimal spacing
         instrument_widget.setLayout(instrument_layout)
         try:
             presets_icon = JDXi.UI.Icon.get_icon(
@@ -214,10 +201,41 @@ class DigitalSynthEditor(SynthEditor):
             presets_icon = JDXi.UI.Icon.get_icon(
                 JDXi.UI.Icon.MUSIC, color=JDXi.UI.Style.GREY
             )
-        self.partial_tab_widget.addTab(instrument_widget, presets_icon, "Presets")
-        self._create_partial_tab_widget(container_layout, self.midi_helper)
+        # Get container layout for adding content
+        container_layout = self.base_widget.get_container_layout()
+        # --- Add partials panel directly to container
+        container_layout.addWidget(self.partials_panel)
+        container_layout.setSpacing(
+            JDXi.UI.Dimensions.EDITOR_DIGITAL.SPACING
+        )  # Minimal spacing instead of stretch
+        self.tab_widget.setStyleSheet(JDXi.UI.Style.TAB_TITLE)
+        self.tab_widget.addTab(instrument_widget, presets_icon, "Presets")
+        self._setup_tabs(container_layout, self.midi_helper)
 
-    def _create_partial_tab_widget(
+    def set_style(self):
+        """Set style"""
+        JDXi.UI.Theme.apply_tabs_style(self)
+        JDXi.UI.Theme.apply_editor_style(self)
+
+    def set_dimensions(self):
+        """Set dimensions"""
+        self.setMinimumSize(
+            JDXi.UI.Dimensions.EDITOR_DIGITAL.MIN_WIDTH,
+            JDXi.UI.Dimensions.EDITOR_DIGITAL.MIN_HEIGHT,
+        )
+        self.resize(
+            JDXi.UI.Dimensions.EDITOR_DIGITAL.INIT_WIDTH,
+            JDXi.UI.Dimensions.EDITOR_DIGITAL.INIT_HEIGHT,
+        )
+
+    def build_widgets(self):
+        """Build Widgets before running setup ui"""
+        # --- Create partial tab widget
+        self.tab_widget = QTabWidget()
+        # Use EditorBaseWidget for consistent layout structure
+        self.base_widget = EditorBaseWidget(parent=self, analog=self.analog)
+
+    def _setup_tabs(
         self, container_layout: QVBoxLayout, midi_helper: MidiIOHelper
     ) -> None:
         """
@@ -227,13 +245,12 @@ class DigitalSynthEditor(SynthEditor):
         :param midi_helper: MiodiIOHelper instance for MIDI communication
         :return: None
         """
-
-        JDXi.UI.Theme.apply_tabs_style(self.partial_tab_widget)
-        JDXi.UI.Theme.apply_editor_style(self.partial_tab_widget)
+        JDXi.UI.Theme.apply_tabs_style(self.tab_widget)
+        JDXi.UI.Theme.apply_editor_style(self.tab_widget)
         self.partial_editors = {}
         # --- Create editor for each partial
         for i in range(1, 4):
-            editor = DigitalPartialEditor(
+            editor = DigitalPartialPanel(
                 midi_helper,
                 self.synth_number,
                 i,
@@ -244,7 +261,7 @@ class DigitalSynthEditor(SynthEditor):
             partial_icon = JDXi.UI.Icon.get_icon(
                 f"mdi.numeric-{i}-circle-outline", color=JDXi.UI.Style.GREY
             )
-            self.partial_tab_widget.addTab(editor, partial_icon, f"Partial {i}")
+            self.tab_widget.addTab(editor, partial_icon, f"Partial {i}")
         self.common_section = DigitalCommonSection(
             self._create_parameter_slider,
             self._create_parameter_switch,
@@ -254,7 +271,7 @@ class DigitalSynthEditor(SynthEditor):
         common_icon = JDXi.UI.Icon.get_icon(
             JDXi.UI.Icon.COG_OUTLINE, color=JDXi.UI.Style.GREY
         )
-        self.partial_tab_widget.addTab(self.common_section, common_icon, "Common")
+        self.tab_widget.addTab(self.common_section, common_icon, "Common")
         self.tone_modify_section = DigitalToneModifySection(
             self._create_parameter_slider,
             self._create_parameter_combo_box,
@@ -264,8 +281,8 @@ class DigitalSynthEditor(SynthEditor):
         misc_icon = JDXi.UI.Icon.get_icon(
             JDXi.UI.Icon.DOTS_HORIZONTAL, color=JDXi.UI.Style.GREY
         )
-        self.partial_tab_widget.addTab(self.tone_modify_section, misc_icon, "Misc")
-        container_layout.addWidget(self.partial_tab_widget)
+        self.tab_widget.addTab(self.tone_modify_section, misc_icon, "Misc")
+        container_layout.addWidget(self.tab_widget)
 
     def _on_partial_state_changed(
         self, partial: DigitalPartialParam, enabled: bool, selected: bool
@@ -282,19 +299,19 @@ class DigitalSynthEditor(SynthEditor):
 
         # Enable/disable corresponding tab
         partial_num = partial.value
-        self.partial_tab_widget.setTabEnabled(partial_num, enabled)
+        self.tab_widget.setTabEnabled(partial_num, enabled)
 
         # Switch to selected partial's tab
         if selected:
-            self.partial_tab_widget.setCurrentIndex(partial_num)
+            self.tab_widget.setCurrentIndex(partial_num)
 
     def set_partial_state(
-        self, partial: DigitalPartialParam, enabled: bool = True, selected: bool = True
+        self, partial: DigitalPartial, enabled: bool = True, selected: bool = True
     ) -> Optional[bool]:
         """
         Set the state of a partial (enabled/disabled and selected/unselected).
 
-        :param partial: The partial to modify
+        :param partial: The partial to modify (DigitalPartial enum)
         :param enabled: Whether the partial is enabled (ON/OFF)
         :param selected: Whether the partial is selected
         :return: True if successful, False otherwise
@@ -323,8 +340,8 @@ class DigitalSynthEditor(SynthEditor):
             enabled = partial == DigitalPartial.PARTIAL_1
             selected = enabled
             self.partials_panel.switches[partial].setState(enabled, selected)
-            self.partial_tab_widget.setTabEnabled(partial.value, enabled)
-        self.partial_tab_widget.setCurrentIndex(0)
+            self.tab_widget.setTabEnabled(partial.value, enabled)
+        self.tab_widget.setCurrentIndex(0)
 
     def _handle_special_params(
         self, partial_no: int, param: AddressParameter, value: int

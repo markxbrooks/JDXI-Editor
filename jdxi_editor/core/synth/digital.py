@@ -5,13 +5,13 @@ Digital Synth Data
 from dataclasses import dataclass
 from typing import Dict
 
+from jdxi_editor.core.synth.data import JDXISynthData
 from jdxi_editor.midi.data.address.address import (
     Address,
     AddressOffsetProgramLMB,
     AddressOffsetSuperNATURALLMB,
 )
 from jdxi_editor.midi.data.parameter.digital import DigitalPartialParam
-from jdxi_editor.synth.data import JDXISynthData
 
 
 @dataclass

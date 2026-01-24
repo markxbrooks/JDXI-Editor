@@ -60,7 +60,9 @@ class SectionBaseWidget(QWidget):
     def __init__(
         self,
         parent: Optional[QWidget] = None,
-        icon_type: Literal["adsr", "oscillator", "generic", "none"] = "adsr",
+        icon_type: Literal[
+            IconType.ADSR, IconType.OSCILLATOR, IconType.GENERIC, IconType.NONE
+        ] = "adsr",
         analog: bool = False,
     ):
         """

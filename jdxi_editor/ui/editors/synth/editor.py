@@ -40,12 +40,9 @@ from jdxi_editor.midi.data.address.address import (
 from jdxi_editor.midi.data.control_change.base import ControlChange
 from jdxi_editor.midi.data.drum.data import DRUM_PARTIAL_MAP
 from jdxi_editor.midi.io.helper import MidiIOHelper
-
-# from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.parser.json_parser import JDXiJsonSysexParser
 from jdxi_editor.midi.sysex.request.data import SYNTH_PARTIAL_MAP
 from jdxi_editor.resources import resource_path
-from jdxi_editor.synth.type import JDXiSynth
 from jdxi_editor.ui.editors.digital.utils import (
     filter_sysex_keys,
     get_area,
@@ -53,7 +50,6 @@ from jdxi_editor.ui.editors.digital.utils import (
 )
 from jdxi_editor.ui.editors.helpers.preset import get_preset_parameter_value
 from jdxi_editor.ui.editors.synth.base import SynthBase
-from jdxi_editor.ui.preset.tone.lists import JDXiUIPreset
 
 
 def log_changes(previous_data, current_data):
@@ -132,19 +128,18 @@ class SynthEditor(SynthBase):
         # Set window flags for address tool window
         self.setWindowFlags(Qt.WindowType.Tool)
 
-        # Apply common style
-
+        # --- Apply common style
         JDXi.UI.Theme.apply_editor_style(self)
 
-        # Add keyboard shortcuts
+        # --- Add keyboard shortcuts
         self.refresh_shortcut = QShortcut(QKeySequence.StandardKey.Refresh, self)
         self.refresh_shortcut.activated.connect(self.data_request)
 
-        # Add close window shortcut
+        # --- Add close window shortcut
         self.close_shortcut = QShortcut(QKeySequence.StandardKey.Close, self)
         self.close_shortcut.activated.connect(self.close)
 
-        # Common minimum size for all editors
+        # --- Common minimum size for all editors
         self.setMinimumSize(200, 200)
 
         # Connect to program change signal if MIDI helper exists
@@ -155,28 +150,28 @@ class SynthEditor(SynthBase):
             from jdxi_editor.ui.preset.helper import JDXiPresetHelper
 
             self.preset_loader = JDXiPresetHelper(
-                self.midi_helper, JDXiUIPreset.Digital.ENUMERATED
+                self.midi_helper, JDXi.UI.Preset.Digital.ENUMERATED
             )
             # Initialize preset handlers dynamically
             preset_configs = [
                 (
-                    JDXiSynth.DIGITAL_SYNTH_1,
-                    JDXiUIPreset.Digital.ENUMERATED,
+                    JDXi.Synth.DIGITAL_SYNTH_1,
+                    JDXi.UI.Preset.Digital.ENUMERATED,
                     MidiChannel.DIGITAL_SYNTH_1,
                 ),
                 (
-                    JDXiSynth.DIGITAL_SYNTH_2,
-                    JDXiUIPreset.Digital.ENUMERATED,
+                    JDXi.Synth.DIGITAL_SYNTH_2,
+                    JDXi.UI.Preset.Digital.ENUMERATED,
                     MidiChannel.DIGITAL_SYNTH_2,
                 ),
                 (
-                    JDXiSynth.ANALOG_SYNTH,
-                    JDXiUIPreset.Analog.ENUMERATED,
+                    JDXi.Synth.ANALOG_SYNTH,
+                    JDXi.UI.Preset.Analog.ENUMERATED,
                     MidiChannel.ANALOG_SYNTH,
                 ),
                 (
-                    JDXiSynth.DRUM_KIT,
-                    JDXiUIPreset.Drum.ENUMERATED,
+                    JDXi.Synth.DRUM_KIT,
+                    JDXi.UI.Preset.Drum.ENUMERATED,
                     MidiChannel.DRUM_KIT,
                 ),
             ]
@@ -199,11 +194,11 @@ class SynthEditor(SynthBase):
 
     def _init_synth_data(
         self,
-        synth_type: str = JDXiSynth.DIGITAL_SYNTH_1,
+        synth_type: str = JDXi.Synth.DIGITAL_SYNTH_1,
         partial_number: Optional[int] = 0,
     ):
         """Initialize synth-specific data."""
-        from jdxi_editor.synth.factory import create_synth_data
+        from jdxi_editor.core.synth.factory import create_synth_data
 
         self.synth_data = create_synth_data(synth_type, partial_number=partial_number)
 
@@ -266,7 +261,7 @@ class SynthEditor(SynthBase):
             log.warning(
                 f"Unknown synth preset_type: {self.preset_type}, defaulting to digital_1"
             )
-            return self.preset_helpers[JDXiSynth.DIGITAL_SYNTH_1]  # Safe fallback
+            return self.preset_helpers[JDXi.Synth.DIGITAL_SYNTH_1]  # Safe fallback
         return handler
 
     def _dispatch_sysex_to_area(self, json_sysex_data: str) -> None:
@@ -444,17 +439,17 @@ class SynthEditor(SynthBase):
 
             # Determine preset list based on preset_type
             if (
-                self.preset_type == JDXiSynth.DIGITAL_SYNTH_1
-                or self.preset_type == JDXiSynth.DIGITAL_SYNTH_2
+                self.preset_type == JDXi.Synth.DIGITAL_SYNTH_1
+                or self.preset_type == JDXi.Synth.DIGITAL_SYNTH_2
             ):
-                self.preset_preset_list = JDXiUIPreset.Digital.PROGRAM_CHANGE
-            elif self.preset_type == JDXiSynth.ANALOG_SYNTH:
-                self.preset_preset_list = JDXiUIPreset.Analog.PROGRAM_CHANGE
-            elif self.preset_type == JDXiSynth.DRUM_KIT:
-                self.preset_preset_list = JDXiUIPreset.Drum.PROGRAM_CHANGE
+                self.preset_preset_list = JDXi.UI.Preset.Digital.PROGRAM_CHANGE
+            elif self.preset_type == JDXi.Synth.ANALOG_SYNTH:
+                self.preset_preset_list = JDXi.UI.Preset.Analog.PROGRAM_CHANGE
+            elif self.preset_type == JDXi.Synth.DRUM_KIT:
+                self.preset_preset_list = JDXi.UI.Preset.Drum.PROGRAM_CHANGE
             else:
                 # Default to digital preset list
-                self.preset_preset_list = JDXiUIPreset.Digital.PROGRAM_CHANGE
+                self.preset_preset_list = JDXi.UI.Preset.Digital.PROGRAM_CHANGE
                 log.warning(
                     f"Unknown preset_type {self.preset_type}, defaulting to JDXi.UI.Preset.Digital.LIST"
                 )
@@ -478,10 +473,10 @@ class SynthEditor(SynthBase):
         if self.midi_channel is None:
             # --- Try to determine channel from preset_type
             channel_map = {
-                JDXiSynth.DIGITAL_SYNTH_1: MidiChannel.DIGITAL_SYNTH_1,
-                JDXiSynth.DIGITAL_SYNTH_2: MidiChannel.DIGITAL_SYNTH_2,
-                JDXiSynth.ANALOG_SYNTH: MidiChannel.ANALOG_SYNTH,
-                JDXiSynth.DRUM_KIT: MidiChannel.DRUM_KIT,
+                JDXi.Synth.DIGITAL_SYNTH_1: MidiChannel.DIGITAL_SYNTH_1,
+                JDXi.Synth.DIGITAL_SYNTH_2: MidiChannel.DIGITAL_SYNTH_2,
+                JDXi.Synth.ANALOG_SYNTH: MidiChannel.ANALOG_SYNTH,
+                JDXi.Synth.DRUM_KIT: MidiChannel.DRUM_KIT,
             }
             if self.preset_type in channel_map:
                 self.midi_channel = channel_map[self.preset_type]

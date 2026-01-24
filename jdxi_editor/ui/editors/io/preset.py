@@ -53,11 +53,11 @@ from PySide6.QtWidgets import (
 
 from decologr import Decologr as log
 from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.core.synth.type import JDXiSynth
 from jdxi_editor.log.midi_info import log_midi_info
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.request.midi_requests import MidiRequests
-from jdxi_editor.synth.type import JDXiSynth
 from jdxi_editor.ui.editors.helpers.preset import get_preset_parameter_value
 from jdxi_editor.ui.editors.helpers.program import (
     calculate_midi_values,

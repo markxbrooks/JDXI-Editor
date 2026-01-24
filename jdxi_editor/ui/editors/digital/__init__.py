@@ -1,3 +1,3 @@
 from .common import DigitalCommonSection
-from .partial.editor import DigitalPartialEditor
+from .partial.panel import DigitalPartialPanel
 from .tone_modify import DigitalToneModifySection

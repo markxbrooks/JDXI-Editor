@@ -19,11 +19,11 @@ from PySide6.QtWidgets import (
 )
 
 from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.core.synth.type import JDXiSynth
 from jdxi_editor.midi.data.address.address import AddressOffsetProgramLMB
 from jdxi_editor.midi.data.parameter.drum.addresses import DRUM_GROUP_MAP
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.synth.type import JDXiSynth
 from jdxi_editor.ui.editors.drum.partial.output import DrumOutputSection
 from jdxi_editor.ui.editors.drum.partial.partial import DrumPartialSection
 from jdxi_editor.ui.editors.drum.partial.pitch_env import DrumPitchEnvSection

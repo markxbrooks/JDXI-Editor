@@ -47,6 +47,7 @@ from PySide6.QtWidgets import QApplication, QMenu, QMessageBox, QProgressDialog
 
 from decologr import Decologr as log
 from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.core.synth.type import JDXiSynth
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetProgramLMB,
@@ -66,7 +67,6 @@ from jdxi_editor.midi.program.helper import JDXiProgramHelper
 from jdxi_editor.midi.program.program import JDXiProgram
 from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
 from jdxi_editor.project import __package_name__
-from jdxi_editor.synth.type import JDXiSynth
 from jdxi_editor.ui.dialogs.about import UiAboutDialog
 from jdxi_editor.ui.dialogs.settings import UiPreferencesDialog
 from jdxi_editor.ui.editors import (
@@ -76,7 +76,6 @@ from jdxi_editor.ui.editors import (
     DrumCommonEditor,
     EffectsCommonEditor,
     ProgramEditor,
-    SynthEditor,
     VocalFXEditor,
 )
 from jdxi_editor.ui.editors.config import EditorConfig
@@ -342,7 +341,7 @@ class JDXiInstrument(JDXiWindow):
         """
         self.data_request()
 
-    def register_editor(self, editor: SynthEditor) -> None:
+    def register_editor(self, editor: "SynthEditor") -> None:
         """
         register editor
 
@@ -666,7 +665,7 @@ class JDXiInstrument(JDXiWindow):
         preferences_dialog.setAttribute(Qt.WA_DeleteOnClose)
         preferences_dialog.exec()
 
-    def get_existing_editor(self, editor_class) -> Optional[SynthEditor]:
+    def get_existing_editor(self, editor_class) -> Optional["SynthEditor"]:
         """
         Get existing editor instance of the specified class
 

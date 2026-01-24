@@ -5,8 +5,8 @@ Analog Synth Data
 from dataclasses import dataclass
 from typing import Dict
 
+from jdxi_editor.core.synth.data import JDXISynthData
 from jdxi_editor.midi.data.address.address import Address, AddressOffsetAnalogLMB
-from jdxi_editor.synth.data import JDXISynthData
 
 
 @dataclass

@@ -31,7 +31,7 @@ from jdxi_editor.midi.data.digital import DigitalPartial, DigitalOscWave
 from jdxi_editor.midi.data.digital.filter import DigitalFilterMode
 from jdxi_editor.midi.data.digital.lfo import DigitalLFOShape
 from jdxi_editor.midi.data.parameter.digital import DigitalPartialParam
-from jdxi_editor.synth.type import JDXiSynth
+from jdxi_editor.core.synth.type import JDXiSynth
 
 # Create QApplication for tests if it doesn't exist
 _app = None
@@ -104,7 +104,7 @@ class TestDigitalSynthEditor(unittest.TestCase):
         
         # Verify main components exist
         self.assertIsNotNone(self.editor.base_widget)
-        self.assertIsNotNone(self.editor.partial_tab_widget)
+        self.assertIsNotNone(self.editor.tab_widget)
         self.assertIsNotNone(self.editor.partials_panel)
         self.assertIsNotNone(self.editor.instrument_preset)
         self.assertIsNotNone(self.editor.common_section)
@@ -160,8 +160,8 @@ class TestDigitalSynthEditor(unittest.TestCase):
         
         # Mock set_partial_state and tab widget methods
         self.editor.set_partial_state = Mock(return_value=True)
-        self.editor.partial_tab_widget.setTabEnabled = Mock()
-        self.editor.partial_tab_widget.setCurrentIndex = Mock()
+        self.editor.tab_widget.setTabEnabled = Mock()
+        self.editor.tab_widget.setCurrentIndex = Mock()
         
         # Use actual DigitalPartial enum (which has .value attribute)
         from jdxi_editor.midi.data.digital import DigitalPartial
@@ -179,8 +179,8 @@ class TestDigitalSynthEditor(unittest.TestCase):
             True   # selected
         )
         # Tab index 1 corresponds to "Partial 1" (index 0 is "Presets")
-        self.editor.partial_tab_widget.setTabEnabled.assert_called_with(1, True)
-        self.editor.partial_tab_widget.setCurrentIndex.assert_called_with(1)
+        self.editor.tab_widget.setTabEnabled.assert_called_with(1, True)
+        self.editor.tab_widget.setCurrentIndex.assert_called_with(1)
 
     def test_initialize_partial_states(self):
         """Test initializing partial states."""
@@ -432,12 +432,12 @@ class TestDigitalSynthEditor(unittest.TestCase):
         self.editor.setup_ui()
         
         # Should have Presets tab + 3 Partial tabs + Common + Misc = 6 tabs
-        self.assertEqual(self.editor.partial_tab_widget.count(), 6)
+        self.assertEqual(self.editor.tab_widget.count(), 6)
         
         # Check tab names
         tab_names = [
-            self.editor.partial_tab_widget.tabText(i)
-            for i in range(self.editor.partial_tab_widget.count())
+            self.editor.tab_widget.tabText(i)
+            for i in range(self.editor.tab_widget.count())
         ]
         
         self.assertIn("Presets", tab_names)

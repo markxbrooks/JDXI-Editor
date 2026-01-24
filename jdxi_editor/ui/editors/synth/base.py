@@ -22,16 +22,18 @@ import threading
 from typing import Dict, Optional
 
 import mido
-from PySide6.QtWidgets import QWidget
+from PySide6.QtWidgets import QTabWidget, QWidget
 
 from decologr import Decologr as log
+from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.core.synth.factory import create_synth_data
+from jdxi_editor.core.synth.type import JDXiSynth
 from jdxi_editor.log.slider_parameter import log_slider_parameters
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
+from jdxi_editor.midi.data.parameter.digital.spec import TabDefinitionMixin
 from jdxi_editor.midi.io.delay import send_with_delay
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
-from jdxi_editor.synth.factory import create_synth_data
-from jdxi_editor.synth.type import JDXiSynth
 from jdxi_editor.ui.widgets.combo_box.combo_box import ComboBox
 from jdxi_editor.ui.widgets.slider import Slider
 from jdxi_editor.ui.widgets.spin_box.spin_box import SpinBox
@@ -53,6 +55,7 @@ class SynthBase(QWidget):
         :param parent: QWidget Parent widget for this editor
         """
         super().__init__(parent)
+        self.tab_widget: QTabWidget | None = None
         self.preset_type = None
         self.parent = parent
         # --- Store all Tone/Preset names for access by Digital Displays
@@ -401,6 +404,19 @@ class SynthBase(QWidget):
             log.error(f"Failed to get controls: {ex}")
             return {}
 
+    def _add_tab(
+        self,
+        *,
+        key: TabDefinitionMixin,
+        widget: QWidget,
+    ) -> None:
+        self.tab_widget.addTab(
+            widget,
+            JDXi.UI.Icon.get_icon(key.icon, color=JDXi.UI.Style.GREY),
+            key.label,
+        )
+        setattr(self, key.attr_name, widget)
+
     def _on_parameter_changed(
         self,
         param: AddressParameter,
@@ -588,7 +604,7 @@ class SynthBase(QWidget):
         partial_number: Optional[int] = 0,
     ):
         """Initialize synth-specific data."""
-        from jdxi_editor.synth.factory import create_synth_data
+        from jdxi_editor.core.synth.factory import create_synth_data
 
         self.synth_data = create_synth_data(synth_type, partial_number=partial_number)
         # Dynamically assign attributes

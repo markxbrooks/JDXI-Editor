@@ -5,6 +5,10 @@ Synth Factory
 from typing import Union
 
 from decologr import Decologr as log
+from jdxi_editor.core.synth.analog import AnalogSynthData
+from jdxi_editor.core.synth.digital import DigitalSynthData
+from jdxi_editor.core.synth.drum import DrumSynthData
+from jdxi_editor.core.synth.type import JDXiSynth
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetProgramLMB,
@@ -21,10 +25,6 @@ from jdxi_editor.midi.data.parameter.drum.addresses import DRUM_GROUP_MAP
 from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParam
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.sysex.request.midi_requests import MidiRequests
-from jdxi_editor.synth.analog import AnalogSynthData
-from jdxi_editor.synth.digital import DigitalSynthData
-from jdxi_editor.synth.drum import DrumSynthData
-from jdxi_editor.synth.type import JDXiSynth
 from jdxi_editor.ui.preset.tone.lists import JDXiUIPreset
 
 

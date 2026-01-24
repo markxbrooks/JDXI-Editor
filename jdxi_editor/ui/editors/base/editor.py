@@ -44,14 +44,15 @@ from PySide6.QtWidgets import (
 
 from decologr import Decologr as log
 from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.core.synth.type import JDXiSynth
 from jdxi_editor.midi.data.address.address import AddressOffsetSuperNATURALLMB
 from jdxi_editor.midi.data.digital.oscillator import DigitalOscWave
 from jdxi_editor.midi.data.digital.partial import DIGITAL_PARTIAL_NAMES
 from jdxi_editor.midi.data.parameter.digital import DigitalCommonParam
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParam
+from jdxi_editor.midi.data.parameter.digital.spec import DigitalTab
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.synth.type import JDXiSynth
 from jdxi_editor.ui.editors.digital.partial.amp import DigitalAmpSection
 from jdxi_editor.ui.editors.digital.partial.filter import DigitalFilterSection
 from jdxi_editor.ui.editors.digital.partial.lfo.lfo import DigitalLFOSection
@@ -60,7 +61,7 @@ from jdxi_editor.ui.editors.digital.partial.oscillator import DigitalOscillatorS
 from jdxi_editor.ui.editors.synth.partial import PartialEditor
 
 
-class DigitalPartialEditor(PartialEditor):
+class BasePartialEditor(PartialEditor):
     """Editor for a single Digital Synth partial"""
 
     SYNTH_MAP = {
@@ -110,6 +111,7 @@ class DigitalPartialEditor(PartialEditor):
     # ------------------------------------------------------------------
 
     def _resolve_synth_data(self, synth_number: int) -> None:
+        """resolve synth data"""
         try:
             synth_type = self.SYNTH_MAP[synth_number]
         except KeyError:
@@ -141,6 +143,7 @@ class DigitalPartialEditor(PartialEditor):
     # ------------------------------------------------------------------
 
     def _build_ui(self) -> None:
+        """build ui"""
         main_layout = QVBoxLayout(self)
 
         container = QWidget()
@@ -154,8 +157,9 @@ class DigitalPartialEditor(PartialEditor):
         main_layout.addWidget(container)
 
     def _register_sections(self) -> None:
+        """Register sections"""
         self._add_tab(
-            key="oscillator",
+            key=Digital.Tab.OSCILLATOR,
             widget=DigitalOscillatorSection(
                 create_parameter_slider=self._create_parameter_slider,
                 create_parameter_switch=self._create_parameter_switch,
@@ -165,12 +169,10 @@ class DigitalPartialEditor(PartialEditor):
                 controls=self.controls,
                 address=self.synth_data.address,
             ),
-            icon=JDXi.UI.Icon.TRIANGLE_WAVE,
-            label="Oscillator",
         )
 
         self._add_tab(
-            key="filter",
+            key=Digital.Tab.FILTER,
             widget=DigitalFilterSection(
                 create_parameter_slider=self._create_parameter_slider,
                 create_parameter_switch=self._create_parameter_switch,
@@ -180,12 +182,10 @@ class DigitalPartialEditor(PartialEditor):
                 controls=self.controls,
                 address=self.synth_data.address,
             ),
-            icon=JDXi.UI.Icon.FILTER,
-            label="Filter",
         )
 
         self._add_tab(
-            key="amp",
+            key=Digital.Tab.AMP,
             widget=DigitalAmpSection(
                 create_parameter_slider=self._create_parameter_slider,
                 create_parameter_switch=self._create_parameter_switch,
@@ -195,25 +195,21 @@ class DigitalPartialEditor(PartialEditor):
                 controls=self.controls,
                 address=self.synth_data.address,
             ),
-            icon=JDXi.UI.Icon.AMPLIFIER,
-            label="Amp",
         )
 
         self._add_tab(
-            key="lfo",
+            key=Digital.Tab.LFO,
             widget=DigitalLFOSection(
-                self._create_parameter_slider,
-                self._create_parameter_switch,
-                self._create_parameter_combo_box,
-                self.controls,
-                self.send_midi_parameter,
+                create_parameter_slider=self._create_parameter_slider,
+                create_parameter_switch=self._create_parameter_switch,
+                create_parameter_combo_box=self._create_parameter_combo_box,
+                controls=self.controls,
+                send_midi_parameter=self.send_midi_parameter,
             ),
-            icon=JDXi.UI.Icon.SINE_WAVE,
-            label="LFO",
         )
 
         self._add_tab(
-            key="mod_lfo",
+            key=Digital.Tab.MODLFO,
             widget=DigitalModLFOSection(
                 create_parameter_slider=self._create_parameter_slider,
                 create_parameter_combo_box=self._create_parameter_combo_box,
@@ -222,17 +218,7 @@ class DigitalPartialEditor(PartialEditor):
                 controls=self.controls,
                 send_midi_parameter=self.send_midi_parameter,
             ),
-            icon=JDXi.UI.Icon.WAVEFORM,
-            label="Mod LFO",
         )
-
-    def _add_tab(self, *, key: str, widget: QWidget, icon, label: str) -> None:
-        self.tab_widget.addTab(
-            widget,
-            JDXi.UI.Icon.get_icon(icon, color=JDXi.UI.Style.GREY),
-            label,
-        )
-        setattr(self, f"{key}_tab", widget)
 
     @property
     def lfo_depth_controls(self) -> dict:
@@ -262,6 +248,7 @@ class DigitalPartialEditor(PartialEditor):
     # ------------------------------------------------------------------
 
     def update_filter_controls_state(self, mode: int) -> None:
+        """update filter controls state"""
         enabled = mode != 0  # BYPASS == 0
 
         params = (
@@ -282,6 +269,7 @@ class DigitalPartialEditor(PartialEditor):
             self.filter_tab.adsr_widget.setEnabled(enabled)
 
     def _on_waveform_selected(self, waveform: DigitalOscWave) -> None:
+        """on waveform selected"""
         for btn in self.oscillator_tab.wave_buttons.values():
             btn.setChecked(False)
             btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
@@ -291,9 +279,7 @@ class DigitalPartialEditor(PartialEditor):
             selected.setChecked(True)
             selected.setStyleSheet(JDXi.UI.Style.BUTTON_RECT_ACTIVE)
 
-        if not self.send_midi_parameter(
-            Digital.Param.OSC_WAVE, waveform.value
-        ):
+        if not self.send_midi_parameter(Digital.Param.OSC_WAVE, waveform.value):
             log.warning(f"Failed to set waveform: {waveform.name}")
 
     # ------------------------------------------------------------------

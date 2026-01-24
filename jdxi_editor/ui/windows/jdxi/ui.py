@@ -40,13 +40,13 @@ from PySide6.QtWidgets import (
 
 from decologr import Decologr as log
 from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.core.synth.factory import create_synth_data
+from jdxi_editor.core.synth.type import JDXiSynth
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.request.midi_requests import MidiRequests
 from jdxi_editor.project import __package_name__, __program__
 from jdxi_editor.resources import resource_path
-from jdxi_editor.synth.factory import create_synth_data
-from jdxi_editor.synth.type import JDXiSynth
 from jdxi_editor.ui.editors.helpers.preset import get_preset_list_number_by_name
 from jdxi_editor.ui.editors.helpers.program import (
     get_program_name_by_id,
