@@ -1,10 +1,8 @@
 """
 Common Section
 """
-
 from typing import Callable
 
-from jdxi_editor.midi.data.parameter.digital.option import DigitalDisplayOptions
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.ui.editors.widget_specs import SliderSpec, SwitchSpec, ComboBoxSpec
 from jdxi_editor.ui.widgets.editor import IconType

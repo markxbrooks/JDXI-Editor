@@ -7,6 +7,9 @@ from PySide6.QtWidgets import QTabWidget, QWidget
 from decologr import Decologr as log
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
+from typing import Dict
+
+from jdxi_editor.ui.adsr.spec import ADSRStage, ADSRSpec
 from jdxi_editor.ui.editors.param_section import ParameterSectionBase
 from jdxi_editor.ui.editors.widget_specs import SliderSpec
 from jdxi_editor.ui.widgets.editor import IconType
@@ -113,18 +116,19 @@ class DigitalFilterSection(ParameterSectionBase):
         # --- Other modes: all sliders are enabled (default)
     }
 
-    ADSR_SPEC = {
-        Digital.Filter.ADSR.ATTACK: Digital.Param.FILTER_ENV_ATTACK_TIME,
-        Digital.Filter.ADSR.DECAY: Digital.Param.FILTER_ENV_DECAY_TIME,
-        Digital.Filter.ADSR.SUSTAIN: Digital.Param.FILTER_ENV_SUSTAIN_LEVEL,
-        Digital.Filter.ADSR.RELEASE: Digital.Param.FILTER_ENV_RELEASE_TIME,
-        Digital.Filter.ADSR.PEAK: Digital.Param.FILTER_ENV_DEPTH,
+    ADSR_SPEC: Dict[ADSRStage, ADSRSpec] = {
+        ADSRStage.ATTACK: ADSRSpec(ADSRStage.ATTACK, Digital.Param.FILTER_ENV_ATTACK_TIME),
+        ADSRStage.DECAY: ADSRSpec(ADSRStage.DECAY, Digital.Param.FILTER_ENV_DECAY_TIME),
+        ADSRStage.SUSTAIN: ADSRSpec(ADSRStage.SUSTAIN, Digital.Param.FILTER_ENV_SUSTAIN_LEVEL),
+        ADSRStage.RELEASE: ADSRSpec(ADSRStage.RELEASE, Digital.Param.FILTER_ENV_RELEASE_TIME),
+        ADSRStage.PEAK: ADSRSpec(ADSRStage.PEAK, Digital.Param.FILTER_ENV_DEPTH),
     }
 
     # --- Log ADSR_SPEC at class definition time
     if _log_param_specs:
-        peak_param = ADSR_SPEC.get(Digital.Filter.ADSR.PEAK)
-        if peak_param:
+        peak_spec = ADSR_SPEC.get(ADSRStage.PEAK)
+        if peak_spec:
+            peak_param = peak_spec.param if isinstance(peak_spec, ADSRSpec) else peak_spec
             peak_name = getattr(peak_param, "name", str(peak_param))
             log.message(
                 f"🎯 DigitalFilterSection: ADSR_SPEC peak param: {peak_param} (name: {peak_name})"

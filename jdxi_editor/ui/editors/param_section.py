@@ -7,7 +7,9 @@ from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.digital.filter import DigitalFilterMode
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.adsr.spec import ADSRStage
 from jdxi_editor.ui.editors.widget_specs import SliderSpec, SwitchSpec, ComboBoxSpec
+from jdxi_editor.ui.adsr.spec import ADSRSpec
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (
@@ -265,13 +267,31 @@ class ParameterSectionBase(SectionBaseWidget):
         # Handle both string keys and ADSRType enum keys
         from jdxi_editor.ui.adsr.type import ADSRType
 
-        attack_key = "attack" if "attack" in self.ADSR_SPEC else ADSRType.ATTACK
-        decay_key = "decay" if "decay" in self.ADSR_SPEC else ADSRType.DECAY
-        sustain_key = "sustain" if "sustain" in self.ADSR_SPEC else ADSRType.SUSTAIN
-        release_key = "release" if "release" in self.ADSR_SPEC else ADSRType.RELEASE
-        peak_key = "peak" if "peak" in self.ADSR_SPEC else ADSRType.PEAK
+        attack_key = ADSRStage.ATTACK  #if "attack" in self.ADSR_SPEC else ADSRType.ATTACK
+        decay_key = ADSRStage.DECAY # if "decay" in self.ADSR_SPEC else ADSRType.DECAY
+        sustain_key = ADSRStage.SUSTAIN # if "sustain" in self.ADSR_SPEC else ADSRType.SUSTAIN
+        release_key = ADSRStage.RELEASE # "release" in self.ADSR_SPEC else ADSRType.RELEASE
+        peak_key = ADSRStage.PEAK #  if "peak" in self.ADSR_SPEC else ADSRType.PEAK
 
-        peak_param = self.ADSR_SPEC.get(peak_key) if peak_key else None
+        # Extract parameters from ADSR_SPEC (handles both ADSRSpec objects and direct parameters)
+        def get_param(spec_or_param):
+            """Extract parameter from ADSRSpec or return parameter directly"""
+            if isinstance(spec_or_param, ADSRSpec):
+                return spec_or_param.param
+            return spec_or_param
+
+        attack_spec = self.ADSR_SPEC.get(attack_key)
+        decay_spec = self.ADSR_SPEC.get(decay_key)
+        sustain_spec = self.ADSR_SPEC.get(sustain_key)
+        release_spec = self.ADSR_SPEC.get(release_key)
+        peak_spec = self.ADSR_SPEC.get(peak_key) if peak_key else None
+
+        attack_param = get_param(attack_spec) if attack_spec else None
+        decay_param = get_param(decay_spec) if decay_spec else None
+        sustain_param = get_param(sustain_spec) if sustain_spec else None
+        release_param = get_param(release_spec) if release_spec else None
+        peak_param = get_param(peak_spec) if peak_spec else None
+
         if peak_param:
             peak_name = getattr(peak_param, "name", str(peak_param))
             if is_filter_section:
@@ -298,10 +318,10 @@ class ParameterSectionBase(SectionBaseWidget):
                 log.warning(f"⚠️ No peak parameter in ADSR_SPEC")
 
         self.adsr_widget = ADSR(
-            attack_param=self.ADSR_SPEC[attack_key],
-            decay_param=self.ADSR_SPEC[decay_key],
-            sustain_param=self.ADSR_SPEC[sustain_key],
-            release_param=self.ADSR_SPEC[release_key],
+            attack_param=attack_param,
+            decay_param=decay_param,
+            sustain_param=sustain_param,
+            release_param=release_param,
             peak_param=peak_param,  # Optional peak parameter
             midi_helper=self.midi_helper,
             create_parameter_slider=self._create_parameter_slider,
