@@ -6,6 +6,7 @@ Base class for plot widgets that provides common functionality like shaded curve
 """
 
 from typing import Callable, Optional
+
 from PySide6.QtCore import QPointF, Qt
 from PySide6.QtGui import QColor, QFont, QLinearGradient, QPainter, QPainterPath, QPen
 from PySide6.QtWidgets import QWidget
@@ -61,11 +62,11 @@ class BasePlotWidget(QWidget):
         """
         # --- Create a copy of the path for filling
         fill_path = QPainterPath(path)
-        
+
         # --- Check if path is already closed by checking the last element type
         element_count = fill_path.elementCount()
         is_closed = False
-        
+
         if element_count > 0:
             # Get the last element
             last_element = fill_path.elementAt(element_count - 1)
@@ -75,7 +76,7 @@ class BasePlotWidget(QWidget):
             # Instead, we'll check if the path's bounding rect suggests it's closed, or just always close it
             # The simplest approach: always ensure it's closed to the zero line
             pass
-        
+
         # Always close the path to zero line
         # Get the current position (last point of the path)
         last_point = fill_path.currentPosition()
@@ -120,12 +121,12 @@ class BasePlotWidget(QWidget):
         """
         grid_pen = QPen(Qt.GlobalColor.darkGray, 1, Qt.PenStyle.DashLine)
         painter.setPen(grid_pen)
-        
+
         # --- Vertical grid lines
         for i in range(1, num_vertical_lines + 1):
             x = left_pad + i * plot_w / num_vertical_lines
             painter.drawLine(x, top_pad, x, top_pad + plot_h)
-        
+
         # --- Horizontal grid lines
         for i in range(1, num_horizontal_lines + 1):
             y_val = i * ((y_max - y_min) / num_horizontal_lines)

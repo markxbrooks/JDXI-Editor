@@ -17,13 +17,21 @@ class DigitalLFOSection(BaseLFOSection):
 
     DEPTH_SLIDERS = [
         SliderSpec(
-            JDXi.Midi.Digital.Param.LFO_PITCH_DEPTH, JDXi.Midi.Digital.Display.Name.LFO_PITCH_DEPTH
+            JDXi.Midi.Digital.Param.LFO_PITCH_DEPTH,
+            JDXi.Midi.Digital.Display.Name.LFO_PITCH_DEPTH,
         ),
         SliderSpec(
-            JDXi.Midi.Digital.Param.LFO_FILTER_DEPTH, JDXi.Midi.Digital.Display.Name.LFO_FILTER_DEPTH
+            JDXi.Midi.Digital.Param.LFO_FILTER_DEPTH,
+            JDXi.Midi.Digital.Display.Name.LFO_FILTER_DEPTH,
         ),
-        SliderSpec(JDXi.Midi.Digital.Param.LFO_AMP_DEPTH, JDXi.Midi.Digital.Display.Name.LFO_AMP_DEPTH),
-        SliderSpec(JDXi.Midi.Digital.Param.LFO_PAN_DEPTH, JDXi.Midi.Digital.Display.Name.LFO_PAN_DEPTH),
+        SliderSpec(
+            JDXi.Midi.Digital.Param.LFO_AMP_DEPTH,
+            JDXi.Midi.Digital.Display.Name.LFO_AMP_DEPTH,
+        ),
+        SliderSpec(
+            JDXi.Midi.Digital.Param.LFO_PAN_DEPTH,
+            JDXi.Midi.Digital.Display.Name.LFO_PAN_DEPTH,
+        ),
     ]
     SWITCH_SPECS = [
         SwitchSpec(
@@ -43,8 +51,13 @@ class DigitalLFOSection(BaseLFOSection):
         ),
     ]
     RATE_FADE_SLIDERS = [
-        SliderSpec(JDXi.Midi.Digital.Param.LFO_RATE, JDXi.Midi.Digital.Display.Name.LFO_RATE),
-        SliderSpec(JDXi.Midi.Digital.Param.LFO_FADE_TIME, JDXi.Midi.Digital.Display.Name.LFO_FADE_TIME),
+        SliderSpec(
+            JDXi.Midi.Digital.Param.LFO_RATE, JDXi.Midi.Digital.Display.Name.LFO_RATE
+        ),
+        SliderSpec(
+            JDXi.Midi.Digital.Param.LFO_FADE_TIME,
+            JDXi.Midi.Digital.Display.Name.LFO_FADE_TIME,
+        ),
     ]
 
     def __init__(
@@ -75,6 +88,8 @@ class DigitalLFOSection(BaseLFOSection):
             icon_type=icon_type, analog=analog, send_midi_parameter=send_midi_parameter
         )
         self.send_midi_parameter = send_midi_parameter
-        self.wave_shape_param: Literal[JDXi.Midi.Digital.Param.LFO_SHAPE] = JDXi.Midi.Digital.Param.LFO_SHAPE
+        self.wave_shape_param: Literal[JDXi.Midi.Digital.Param.LFO_SHAPE] = (
+            JDXi.Midi.Digital.Param.LFO_SHAPE
+        )
         self.build_widgets()
         self.setup_ui()

@@ -5,6 +5,7 @@ from enum import Enum
 
 class DigitalFilterType:
     """DigitalFilterType"""
+
     BYPASS: str = "Bypass"
     LPF: str = "LPF"
     HPF: str = "HPF"

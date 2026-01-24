@@ -1,5 +1,6 @@
 class ADSRType:
     """Types of ADSR"""
+
     ATTACK = "attack"
     DECAY = "decay"
     SUSTAIN = "sustain"

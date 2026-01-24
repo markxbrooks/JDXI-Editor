@@ -74,7 +74,7 @@ class DrumBaseSection(QWidget):
 
         # --- Icons row (standardized across editor tabs) - transfer items to avoid "already has a parent" errors
         icon_row_container = QHBoxLayout()
-        icon_hlayout = JDXi.UI.IconRegistry.create_adsr_icons_row()
+        icon_hlayout = JDXi.UI.Icon.create_adsr_icons_row()
 
         transfer_layout_items(icon_hlayout, icon_row_container)
         scrolled_layout.addLayout(icon_row_container)

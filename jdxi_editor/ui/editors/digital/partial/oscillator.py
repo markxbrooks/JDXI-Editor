@@ -1,24 +1,32 @@
 """
 Digital Oscillator Section for the JDXI Editor
 """
+
 from typing import Callable
 
 from PySide6.QtCore import QSize
 from PySide6.QtGui import QIcon
+from PySide6.QtWidgets import (
+    QGroupBox,
+    QHBoxLayout,
+    QPushButton,
+    QTabWidget,
+    QVBoxLayout,
+    QWidget,
+)
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
-from jdxi_editor.midi.data.digital.oscillator import DigitalOscWave, WaveformIconType
-from jdxi_editor.midi.data.parameter.digital.name import DigitalDisplayName
-from jdxi_editor.midi.data.parameter.digital.option import DigitalDisplayOptions
-from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParam
+from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.base.oscillator import BaseOscillatorSection
 from jdxi_editor.ui.editors.widget_specs import SliderSpec
-from jdxi_editor.ui.image.utils import base64_to_pixmap
-from jdxi_editor.ui.image.waveform import generate_waveform_icon
+from jdxi_editor.ui.image.waveform import generate_icon_from_waveform
+from jdxi_editor.ui.widgets.combo_box import SearchableFilterableComboBox
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (
+    create_adsr_icon,
+    create_envelope_group,
     create_layout_with_widgets,
 )
 from jdxi_editor.ui.widgets.pitch.envelope import PitchEnvelopeWidget
@@ -30,44 +38,81 @@ class DigitalOscillatorSection(BaseOscillatorSection):
 
     # --- Sliders
     PARAM_SPECS = [
-        SliderSpec(DigitalPartialParam.OSC_PITCH, DigitalDisplayName.OSC_PITCH),
-        SliderSpec(DigitalPartialParam.OSC_DETUNE, DigitalDisplayName.OSC_DETUNE),
-        SliderSpec(DigitalPartialParam.SUPER_SAW_DETUNE, DigitalDisplayName.SUPER_SAW_DETUNE),
+        SliderSpec(param=Digital.Param.OSC_PITCH, label=Digital.Display.Name.OSC_PITCH),
+        SliderSpec(
+            param=Digital.Param.OSC_DETUNE, label=Digital.Display.Name.OSC_DETUNE
+        ),
+        SliderSpec(
+            param=Digital.Param.SUPER_SAW_DETUNE,
+            label=Digital.Display.Name.SUPER_SAW_DETUNE,
+        ),
     ]
 
     # --- Waveform buttons
     BUTTON_SPECS = [
-        SliderSpec(DigitalOscWave.SAW, WaveformIconType.UPSAW, icon_name=WaveformIconType.UPSAW),
-        SliderSpec(DigitalOscWave.SQUARE, WaveformIconType.SQUARE, icon_name=WaveformIconType.SQUARE),
-        SliderSpec(DigitalOscWave.PW_SQUARE, WaveformIconType.PWSQU, icon_name=WaveformIconType.PWSQU),
-        SliderSpec(DigitalOscWave.TRIANGLE, WaveformIconType.TRIANGLE, icon_name=WaveformIconType.TRIANGLE),
-        SliderSpec(DigitalOscWave.SINE, WaveformIconType.SINE, icon_name=WaveformIconType.SINE),
-        SliderSpec(DigitalOscWave.NOISE, WaveformIconType.NOISE, icon_name=WaveformIconType.NOISE),
-        SliderSpec(DigitalOscWave.SUPER_SAW, WaveformIconType.SPSAW, icon_name=WaveformIconType.SPSAW),
-        SliderSpec(DigitalOscWave.PCM, WaveformIconType.PCM, icon_name=WaveformIconType.PCM),
+        SliderSpec(
+            param=Digital.Wave.Osc.SAW,
+            label=Digital.Wave.WaveType.UPSAW,
+            icon_name=Digital.Wave.WaveType.UPSAW,
+        ),
+        SliderSpec(
+            param=Digital.Wave.Osc.SQUARE,
+            label=Digital.Wave.WaveType.SQUARE,
+            icon_name=Digital.Wave.WaveType.SQUARE,
+        ),
+        SliderSpec(
+            param=Digital.Wave.Osc.PW_SQUARE,
+            label=Digital.Wave.WaveType.PWSQU,
+            icon_name=Digital.Wave.WaveType.PWSQU,
+        ),
+        SliderSpec(
+            param=Digital.Wave.Osc.TRIANGLE,
+            label=Digital.Wave.WaveType.TRIANGLE,
+            icon_name=Digital.Wave.WaveType.TRIANGLE,
+        ),
+        SliderSpec(
+            param=Digital.Wave.Osc.SINE,
+            label=Digital.Wave.WaveType.SINE,
+            icon_name=Digital.Wave.WaveType.SINE,
+        ),
+        SliderSpec(
+            param=Digital.Wave.Osc.NOISE,
+            label=Digital.Wave.WaveType.NOISE,
+            icon_name=Digital.Wave.WaveType.NOISE,
+        ),
+        SliderSpec(
+            param=Digital.Wave.Osc.SUPER_SAW,
+            label=Digital.Wave.WaveType.SPSAW,
+            icon_name=Digital.Wave.WaveType.SPSAW,
+        ),
+        SliderSpec(
+            param=Digital.Wave.Osc.PCM,
+            label=Digital.Wave.WaveType.PCM,
+            icon_name=Digital.Wave.WaveType.PCM,
+        ),
     ]
 
     # --- Enable rules for dependent widgets
     BUTTON_ENABLE_RULES = {
-        DigitalOscWave.PW_SQUARE: ["pwm_widget", "pw_shift_slider"],
-        DigitalOscWave.PCM: ["pwm_widget", "pcm_wave_gain", "pcm_wave_number"],
-        DigitalOscWave.SUPER_SAW: ["super_saw_detune"],
+        Digital.Wave.Osc.PW_SQUARE: ["pwm_widget", "pw_shift_slider"],
+        Digital.Wave.Osc.PCM: ["pwm_widget", "pcm_wave_gain", "pcm_wave_number"],
+        Digital.Wave.Osc.SUPER_SAW: ["super_saw_detune"],
     }
 
     # --- Optional ADSR can be added if Oscillator has one (Digital usually has pitch envelope)
     ADSR_SPEC = None
 
     def __init__(
-            self,
-            icon_type: str = IconType.ADSR,
-            analog: bool = False,
-            send_midi_parameter: Callable = None,
-            create_parameter_slider: Callable = None,
-            create_parameter_switch: Callable = None,
-            create_parameter_combo_box: Callable = None,
-            midi_helper: MidiIOHelper = None,
-            controls: dict = None,
-            address: RolandSysExAddress = None
+        self,
+        icon_type: str = IconType.ADSR,
+        analog: bool = False,
+        send_midi_parameter: Callable = None,
+        create_parameter_slider: Callable = None,
+        create_parameter_switch: Callable = None,
+        create_parameter_combo_box: Callable = None,
+        midi_helper: MidiIOHelper = None,
+        controls: dict = None,
+        address: RolandSysExAddress = None,
     ):
         super().__init__(
             create_parameter_slider=create_parameter_slider,
@@ -87,44 +132,109 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         """Override to create PitchEnvelopeWidget and PWMWidget"""
         # Create PitchEnvelopeWidget for pitch envelope (Attack, Decay, Depth)
         self.pitch_env_widget = PitchEnvelopeWidget(
-            attack_param=DigitalPartialParam.OSC_PITCH_ENV_ATTACK_TIME,
-            decay_param=DigitalPartialParam.OSC_PITCH_ENV_DECAY_TIME,
-            depth_param=DigitalPartialParam.OSC_PITCH_ENV_DEPTH,
+            attack_param=Digital.Param.OSC_PITCH_ENV_ATTACK_TIME,
+            decay_param=Digital.Param.OSC_PITCH_ENV_DECAY_TIME,
+            depth_param=Digital.Param.OSC_PITCH_ENV_DEPTH,
             midi_helper=self.midi_helper,
             create_parameter_slider=self._create_parameter_slider,
             controls=self.controls,
             address=self.address,
         )
         # Store pitch envelope controls
-        self.controls[DigitalPartialParam.OSC_PITCH_ENV_ATTACK_TIME] = self.pitch_env_widget.attack_control
-        self.controls[DigitalPartialParam.OSC_PITCH_ENV_DECAY_TIME] = self.pitch_env_widget.decay_control
-        self.controls[DigitalPartialParam.OSC_PITCH_ENV_DEPTH] = self.pitch_env_widget.depth_control
-        
+        self.controls[Digital.Param.OSC_PITCH_ENV_ATTACK_TIME] = (
+            self.pitch_env_widget.attack_control
+        )
+        self.controls[Digital.Param.OSC_PITCH_ENV_DECAY_TIME] = (
+            self.pitch_env_widget.decay_control
+        )
+        self.controls[Digital.Param.OSC_PITCH_ENV_DEPTH] = (
+            self.pitch_env_widget.depth_control
+        )
+
         # Create PWMWidget for pulse width modulation
         self.pwm_widget = PWMWidget(
-            pulse_width_param=DigitalPartialParam.OSC_PULSE_WIDTH,
-            mod_depth_param=DigitalPartialParam.OSC_PULSE_WIDTH_MOD_DEPTH,
+            pulse_width_param=Digital.Param.OSC_PULSE_WIDTH,
+            mod_depth_param=Digital.Param.OSC_PULSE_WIDTH_MOD_DEPTH,
             midi_helper=self.midi_helper,
             create_parameter_slider=self._create_parameter_slider,
             controls=self.controls,
             address=self.address,
         )
         # Store PWM controls
-        self.controls[DigitalPartialParam.OSC_PULSE_WIDTH] = self.pwm_widget.pulse_width_control
-        self.controls[DigitalPartialParam.OSC_PULSE_WIDTH_MOD_DEPTH] = self.pwm_widget.mod_depth_control
-        
+        self.controls[Digital.Param.OSC_PULSE_WIDTH] = (
+            self.pwm_widget.pulse_width_control
+        )
+        self.controls[Digital.Param.OSC_PULSE_WIDTH_MOD_DEPTH] = (
+            self.pwm_widget.mod_depth_control
+        )
+
         # Call parent to create other widgets from PARAM_SPECS
         super().build_widgets()
 
-    
+        # Create PCM Wave controls (Gain and Number) after parent builds widgets
+        # These will be added to a separate "PCM" tab, not the Controls tab
+        # PCM Wave Gain: combo box with -6, 0, +6, +12 dB options
+        self.pcm_wave_gain = self._create_parameter_combo_box(
+            Digital.Param.PCM_WAVE_GAIN,
+            Digital.Display.Name.PCM_WAVE_GAIN,
+            options=Digital.Display.Options.PCM_WAVE_GAIN,
+            values=[0, 1, 2, 3],  # MIDI values for -6, 0, +6, +12 dB
+        )
+        self.controls[Digital.Param.PCM_WAVE_GAIN] = self.pcm_wave_gain
+        # Don't add to control_widgets - it will be in the PCM tab
+
+        # PCM Wave Number: SearchableFilterableComboBox with categorized PCM waves
+        from jdxi_editor.midi.data.pcm.waves import PCM_WAVES_CATEGORIZED
+
+        # Build options, values, and categories from PCM_WAVES_CATEGORIZED
+        pcm_options = [
+            f"{w['Wave Number']:03d}: {w['Wave Name']}" for w in PCM_WAVES_CATEGORIZED
+        ]
+        pcm_values = [w["Wave Number"] for w in PCM_WAVES_CATEGORIZED]
+        pcm_categories = sorted(
+            set(w["Category"] for w in PCM_WAVES_CATEGORIZED if w["Category"] != "None")
+        )
+
+        # Category filter function
+        def pcm_category_filter(wave_name: str, category: str) -> bool:
+            """Check if a PCM wave matches a category."""
+            if not category:
+                return True
+            # Find the wave in PCM_WAVES_CATEGORIZED and check its category
+            wave_num_str = wave_name.split(":")[0].strip()
+            try:
+                wave_num = int(wave_num_str)
+                for w in PCM_WAVES_CATEGORIZED:
+                    if w["Wave Number"] == wave_num:
+                        return w["Category"] == category
+            except ValueError:
+                pass
+            return False
+
+        self.pcm_wave_number = SearchableFilterableComboBox(
+            label=Digital.Display.Name.PCM_WAVE_NUMBER,
+            options=pcm_options,
+            values=pcm_values,
+            categories=pcm_categories,
+            category_filter_func=pcm_category_filter,
+            show_label=True,
+            show_search=True,
+            show_category=True,
+            show_bank=False,
+            search_placeholder="Search PCM waves...",
+            category_label="Category:",
+        )
+        # Connect to MIDI parameter sending
+        if self.send_midi_parameter:
+            self.pcm_wave_number.valueChanged.connect(
+                lambda v: self.send_midi_parameter(Digital.Param.PCM_WAVE_NUMBER, v)
+            )
+        self.controls[Digital.Param.PCM_WAVE_NUMBER] = self.pcm_wave_number
+        # Don't add to control_widgets - it will be in the PCM tab
+
     def _create_tab_widget(self):
         """Override to add PitchEnvelopeWidget and PWMWidget as tabs"""
-        from PySide6.QtWidgets import QWidget, QTabWidget, QGroupBox, QHBoxLayout, QVBoxLayout
-        from jdxi_editor.core.jdxi import JDXi
-        from jdxi_editor.ui.widgets.editor.helper import create_envelope_group, create_adsr_icon
-        from jdxi_editor.ui.image.waveform import generate_waveform_icon
-        from jdxi_editor.ui.image.utils import base64_to_pixmap
-        
+
         self.tab_widget = QTabWidget()
 
         # Controls tab
@@ -132,13 +242,13 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         controls_layout = create_layout_with_widgets(self.control_widgets)
         controls_widget.setLayout(controls_layout)
         self.tab_widget.addTab(
-            controls_widget, 
-            JDXi.UI.IconRegistry.get_icon(JDXi.UI.IconRegistry.TUNE, JDXi.UI.Style.GREY), 
-            "Controls"
+            controls_widget,
+            JDXi.UI.Icon.get_icon(JDXi.UI.Icon.TUNE, JDXi.UI.Style.GREY),
+            "Controls",
         )
 
         # Pulse Width tab
-        if hasattr(self, 'pwm_widget') and self.pwm_widget:
+        if hasattr(self, "pwm_widget") and self.pwm_widget:
             pw_group = QGroupBox("Pulse Width")
             pw_layout = QVBoxLayout()
             pw_layout.addStretch()
@@ -147,12 +257,11 @@ class DigitalOscillatorSection(BaseOscillatorSection):
             pw_layout.addStretch()
             pw_group.setLayout(pw_layout)
             # Use square wave icon for PWM tab
-            pw_icon_base64 = generate_waveform_icon(WaveformIconType.SQUARE, JDXi.UI.Style.WHITE, 1.0)
-            pw_icon = QIcon(base64_to_pixmap(pw_icon_base64))
+            pw_icon = JDXi.UI.Icon.get_generated_icon(Digital.Wave.WaveType.SQUARE)
             self.tab_widget.addTab(pw_group, pw_icon, "Pulse Width")
 
         # Pitch Envelope tab
-        if hasattr(self, 'pitch_env_widget') and self.pitch_env_widget:
+        if hasattr(self, "pitch_env_widget") and self.pitch_env_widget:
             pitch_env_group = QGroupBox("Pitch Envelope")
             pitch_env_group.setProperty("adsr", True)
             pitch_env_layout = QHBoxLayout()
@@ -162,9 +271,24 @@ class DigitalOscillatorSection(BaseOscillatorSection):
             pitch_env_group.setLayout(pitch_env_layout)
             self.tab_widget.addTab(pitch_env_group, create_adsr_icon(), "Pitch Env")
 
+        # PCM tab
+        if hasattr(self, "pcm_wave_gain") and hasattr(self, "pcm_wave_number"):
+            pcm_group = QGroupBox("PCM Wave")
+            pcm_layout = QVBoxLayout()
+            pcm_layout.addStretch()
+            pcm_layout.addWidget(self.pcm_wave_gain)
+            pcm_layout.addWidget(self.pcm_wave_number)
+            pcm_layout.addStretch()
+            pcm_group.setLayout(pcm_layout)
+            # Use PCM wave icon for PCM tab
+            pcm_icon = JDXi.UI.Icon.get_generated_icon(Digital.Wave.WaveType.PCM)
+            self.tab_widget.addTab(pcm_group, pcm_icon, "PCM")
+
         # ADSR tab (if any)
         if self.adsr_widget:
-            adsr_group = create_envelope_group("Envelope", adsr_widget=self.adsr_widget, analog=self.analog)
+            adsr_group = create_envelope_group(
+                "Envelope", adsr_widget=self.adsr_widget, analog=self.analog
+            )
             self.tab_widget.addTab(adsr_group, create_adsr_icon(), "ADSR")
 
     def _initialize_button_states(self):
@@ -172,26 +296,26 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         # Don't initialize button states during __init__ - widgets may not exist yet
         # This will be called manually after all widgets are created
         pass
-    
+
     def setup_ui(self):
         """Override to create UI with button row layout and initialize button states"""
         from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets
-        
+
         layout = self.get_layout()
-        
+
         # Add button row layout if buttons exist
         if self.button_widgets:
             button_layout = self._create_button_row_layout()
             if button_layout is not None:
                 layout.addLayout(button_layout)
-        
+
         # Create and add tab widget
         self._create_tab_widget()
         if self.tab_widget:
             layout.addWidget(self.tab_widget)
-        
+
         layout.addStretch()
-        
+
         # Now that all widgets are created, initialize button states
         if self.BUTTON_SPECS:
             first_param = self.BUTTON_SPECS[0].param
@@ -204,21 +328,19 @@ class DigitalOscillatorSection(BaseOscillatorSection):
 
         for spec in self.BUTTON_SPECS:
             wave = spec.param
-            icon_type = spec.icon_name  # This is a WaveformIconType enum
-            
-            # --- Generate icon from waveform type
-            icon_base64 = generate_waveform_icon(icon_type, JDXi.UI.Style.WHITE, 1.0)
-            # --- Use QPushButton directly since WaveformButton expects Waveform enum, not DigitalOscWave
-            from PySide6.QtWidgets import QPushButton
+            icon_name = spec.icon_name  # This is a WaveformIconType enum
+
+            pixmap = generate_icon_from_waveform(icon_name)
+            # --- Use QPushButton directly since WaveformButton expects Waveform enum, not Digital.Wave.Osc
+
             btn = QPushButton(spec.label)  # Use label from spec
             btn.setCheckable(True)
-            
+
             # --- Set icon
-            pixmap = base64_to_pixmap(icon_base64)
             if pixmap and not pixmap.isNull():
                 btn.setIcon(QIcon(pixmap))
                 btn.setIconSize(QSize(20, 20))
-            
+
             btn.setFixedSize(
                 JDXi.UI.Dimensions.WAVEFORM_ICON.WIDTH,
                 JDXi.UI.Dimensions.WAVEFORM_ICON.HEIGHT,
@@ -228,51 +350,50 @@ class DigitalOscillatorSection(BaseOscillatorSection):
 
             self.wave_buttons[wave] = btn
             self.button_widgets[wave] = btn
-            self.controls[DigitalPartialParam.OSC_WAVE] = btn
+            self.controls[Digital.Param.OSC_WAVE] = btn
             self.wave_layout_widgets.append(btn)
-    
+
     def _create_button_row_layout(self):
         """Override to create waveform button row layout"""
-        from PySide6.QtWidgets import QHBoxLayout
-        
-        # Create wave variation combo box
+
+        # --- Create wave variation combo box
         self.wave_variation = self._create_parameter_combo_box(
-            DigitalPartialParam.OSC_WAVE_VARIATION,
-            DigitalDisplayName.OSC_WAVE_VARIATION,
-            options=DigitalDisplayOptions.OSC_WAVE_VARIATION,
+            Digital.Param.OSC_WAVE_VARIATION,
+            Digital.Display.Name.OSC_WAVE_VARIATION,
+            options=Digital.Display.Options.OSC_WAVE_VARIATION,
             values=[0, 1, 2],  # A, B, C
         )
-        self.controls[DigitalPartialParam.OSC_WAVE_VARIATION] = self.wave_variation
-        
+        self.controls[Digital.Param.OSC_WAVE_VARIATION] = self.wave_variation
+
         top_row = QHBoxLayout()
         top_row.addStretch()
         top_row.addLayout(create_layout_with_widgets(self.wave_layout_widgets))
         top_row.addWidget(self.wave_variation)  # Add wave variation switch
         top_row.addStretch()
         return top_row
-    
+
     def _on_button_selected(self, button_param):
         """Override to handle waveform button selection with correct MIDI parameter"""
         # --- Reset all buttons
         for btn in self.button_widgets.values():
             btn.setChecked(False)
             btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
-        
+
         # Set selected button
         selected_btn = self.button_widgets[button_param]
         selected_btn.setChecked(True)
         selected_btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT_ACTIVE)
-        
+
         # Update enabled states
         self._update_button_enabled_states(button_param)
-        
-        # --- Send MIDI parameter - button_param is a DigitalOscWave enum
+
+        # --- Send MIDI parameter - button_param is a Digital.Wave.Osc enum
         if self.send_midi_parameter:
-            self.send_midi_parameter(DigitalPartialParam.OSC_WAVE, button_param.value)
-    
+            self.send_midi_parameter(Digital.Param.OSC_WAVE, button_param.value)
+
     def _update_button_enabled_states(self, button_param):
         """Override to enable/disable widgets based on selected waveform.
-        
+
         This is called after all widgets are created (in setup_ui), so widgets
         should exist. We still check for None as a safety measure.
         """

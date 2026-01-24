@@ -84,7 +84,7 @@ class DrumTVAEnvPlot(QWidget):
         self.setMaximumHeight(height)
         self.setMaximumWidth(width)
 
-        JDXi.UI.ThemeManager.apply_adsr_plot(self)
+        JDXi.UI.Theme.apply_adsr_plot(self)
         self.sample_rate = 256
         self.setMinimumHeight(150)
 

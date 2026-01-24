@@ -85,7 +85,7 @@ class DrumCommonSection(SectionBaseWidget):
 
         # Transfer items to avoid "already has a parent" errors
         icon_row_container = QHBoxLayout()
-        icon_hlayout = JDXi.UI.IconRegistry.create_generic_musical_icon_row()
+        icon_hlayout = JDXi.UI.Icon.create_generic_musical_icon_row()
 
         transfer_layout_items(icon_hlayout, icon_row_container)
         scrolled_layout.addLayout(icon_row_container)

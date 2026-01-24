@@ -46,7 +46,7 @@ class PresetWidget(QWidget):
         # Add icon row at the top (centered with stretch on both sides)
         icon_row_container = QHBoxLayout()
         icon_row_container.addStretch()
-        icon_row = JDXi.UI.IconRegistry.create_generic_musical_icon_row()
+        icon_row = JDXi.UI.Icon.create_generic_musical_icon_row()
 
         transfer_layout_items(icon_row, icon_row_container)
         icon_row_container.addStretch()
@@ -88,8 +88,8 @@ class PresetWidget(QWidget):
 
         # Load button
         self.load_button = QPushButton(
-            JDXi.UI.IconRegistry.get_icon(
-                JDXi.UI.IconRegistry.FOLDER_NOTCH_OPEN, color=JDXi.UI.Style.FOREGROUND
+            JDXi.UI.Icon.get_icon(
+                JDXi.UI.Icon.FOLDER_NOTCH_OPEN, color=JDXi.UI.Style.FOREGROUND
             ),
             "Load Preset",
         )

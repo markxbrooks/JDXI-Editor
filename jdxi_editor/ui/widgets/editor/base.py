@@ -179,7 +179,7 @@ class EditorBaseWidget(QWidget):
         """
         if self.tab_widget is None:
             self.tab_widget = QTabWidget()
-            JDXi.UI.ThemeManager.apply_tabs_style(self.tab_widget, analog=self.analog)
+            JDXi.UI.Theme.apply_tabs_style(self.tab_widget, analog=self.analog)
 
             # Ensure container layout exists
             if self.container_layout is None:

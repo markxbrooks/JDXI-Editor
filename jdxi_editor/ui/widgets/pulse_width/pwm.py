@@ -120,7 +120,7 @@ class PWMWidget(EnvelopeWidgetBase):
         self.mod_depth_control.setValue(
             self.envelope["mod_depth"] * Midi.VALUE.MAX.SEVEN_BIT
         )
-        JDXi.UI.ThemeManager.apply_adsr_style(self, analog=analog)
+        JDXi.UI.Theme.apply_adsr_style(self, analog=analog)
 
     def on_envelope_changed(self, envelope: dict) -> None:
         """

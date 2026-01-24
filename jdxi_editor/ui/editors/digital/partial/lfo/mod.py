@@ -17,23 +17,32 @@ class DigitalModLFOSection(BaseLFOSection):
     rate_tab_label = "Rate and Rate Ctrl"
 
     RATE_FADE_SLIDERS = [
-        SliderSpec(JDXi.Midi.Digital.Param.MOD_LFO_RATE, JDXi.Midi.Digital.Display.Name.MOD_LFO_RATE),
         SliderSpec(
-            JDXi.Midi.Digital.Param.MOD_LFO_RATE_CTRL, JDXi.Midi.Digital.Display.Name.MOD_LFO_RATE_CTRL
+            JDXi.Midi.Digital.Param.MOD_LFO_RATE,
+            JDXi.Midi.Digital.Display.Name.MOD_LFO_RATE,
+        ),
+        SliderSpec(
+            JDXi.Midi.Digital.Param.MOD_LFO_RATE_CTRL,
+            JDXi.Midi.Digital.Display.Name.MOD_LFO_RATE_CTRL,
         ),
     ]
     DEPTH_SLIDERS = [
         SliderSpec(
-            JDXi.Midi.Digital.Param.LFO_PITCH_DEPTH, JDXi.Midi.Digital.Display.Name.MOD_LFO_PITCH_DEPTH
+            JDXi.Midi.Digital.Param.LFO_PITCH_DEPTH,
+            JDXi.Midi.Digital.Display.Name.MOD_LFO_PITCH_DEPTH,
         ),
         SliderSpec(
             JDXi.Midi.Digital.Param.LFO_FILTER_DEPTH,
             JDXi.Midi.Digital.Display.Name.MOD_LFO_FILTER_DEPTH,
         ),
         SliderSpec(
-            JDXi.Midi.Digital.Param.LFO_AMP_DEPTH, JDXi.Midi.Digital.Display.Name.MOD_LFO_AMP_DEPTH
+            JDXi.Midi.Digital.Param.LFO_AMP_DEPTH,
+            JDXi.Midi.Digital.Display.Name.MOD_LFO_AMP_DEPTH,
         ),
-        SliderSpec(JDXi.Midi.Digital.Param.LFO_PAN_DEPTH, JDXi.Midi.Digital.Display.Name.MOD_LFO_PAN),
+        SliderSpec(
+            JDXi.Midi.Digital.Param.LFO_PAN_DEPTH,
+            JDXi.Midi.Digital.Display.Name.MOD_LFO_PAN,
+        ),
     ]
     SWITCH_SPECS = [
         SwitchSpec(
@@ -78,6 +87,8 @@ class DigitalModLFOSection(BaseLFOSection):
         super().__init__(
             icon_type=icon_type, analog=analog, send_midi_parameter=send_midi_parameter
         )
-        self.wave_shape_param: Literal[DigitalPartialParam.MOD_LFO_SHAPE] = DigitalPartialParam.MOD_LFO_SHAPE
+        self.wave_shape_param: Literal[DigitalPartialParam.MOD_LFO_SHAPE] = (
+            DigitalPartialParam.MOD_LFO_SHAPE
+        )
         self.build_widgets()
         self.setup_ui()

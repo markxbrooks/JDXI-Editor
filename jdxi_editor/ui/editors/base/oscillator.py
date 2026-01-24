@@ -25,7 +25,7 @@ from jdxi_editor.ui.widgets.editor.helper import (
 
 class BaseOscillatorSection(ParameterSectionBase):
     """Abstract base class for LFO sections."""
-    
+
     controls_tab_label: str = "Controls"
     adsr_tab_label: str = "ADSR"
 
@@ -86,16 +86,16 @@ class BaseOscillatorSection(ParameterSectionBase):
         ]
         # --- Map Oscillator shapes to icon names
         self.shape_icon_map = {
-            JDXi.Midi.Digital.Wave.Osc.SAW: JDXi.UI.IconRegistry.SAW_WAVE,
-            JDXi.Midi.Digital.Wave.Osc.SQUARE: JDXi.UI.IconRegistry.SQUARE_WAVE,
-            JDXi.Midi.Digital.Wave.Osc.PW_SQUARE: JDXi.UI.IconRegistry.SQUARE_WAVE,
-            JDXi.Midi.Digital.Wave.Osc.TRIANGLE: JDXi.UI.IconRegistry.TRIANGLE_WAVE,
-            JDXi.Midi.Digital.Wave.Osc.SINE: JDXi.UI.IconRegistry.SINE_WAVE,
-            JDXi.Midi.Digital.Wave.Osc.NOISE: JDXi.UI.IconRegistry.RANDOM_WAVE,
-            JDXi.Midi.Digital.Wave.Osc.SUPER_SAW: JDXi.UI.IconRegistry.SAW_WAVE,
-            JDXi.Midi.Digital.Wave.Osc.PCM: JDXi.UI.IconRegistry.WAVEFORM,
+            JDXi.Midi.Digital.Wave.Osc.SAW: JDXi.UI.Icon.SAW_WAVE,
+            JDXi.Midi.Digital.Wave.Osc.SQUARE: JDXi.UI.Icon.SQUARE_WAVE,
+            JDXi.Midi.Digital.Wave.Osc.PW_SQUARE: JDXi.UI.Icon.SQUARE_WAVE,
+            JDXi.Midi.Digital.Wave.Osc.TRIANGLE: JDXi.UI.Icon.TRIANGLE_WAVE,
+            JDXi.Midi.Digital.Wave.Osc.SINE: JDXi.UI.Icon.SINE_WAVE,
+            JDXi.Midi.Digital.Wave.Osc.NOISE: JDXi.UI.Icon.RANDOM_WAVE,
+            JDXi.Midi.Digital.Wave.Osc.SUPER_SAW: JDXi.UI.Icon.SAW_WAVE,
+            JDXi.Midi.Digital.Wave.Osc.PCM: JDXi.UI.Icon.WAVEFORM,
         }
-        
+
     def setup_ui(self):
         """Set up the UI for the LFO section."""
         layout = self.get_layout()
@@ -121,7 +121,7 @@ class BaseOscillatorSection(ParameterSectionBase):
         shape_label = QLabel("Shape")
         shape_row_layout_widgets = [shape_label]
         for mod_lfo_shape in self.wave_shapes:
-            icon_name = self.shape_icon_map.get(mod_lfo_shape, JDXi.UI.IconRegistry.WAVEFORM)
+            icon_name = self.shape_icon_map.get(mod_lfo_shape, JDXi.UI.Icon.WAVEFORM)
             icon = create_icon_from_qta(icon_name)
             btn = create_button_with_icon(
                 icon_name=mod_lfo_shape.display_name,
@@ -133,7 +133,7 @@ class BaseOscillatorSection(ParameterSectionBase):
                 lambda checked, shape=mod_lfo_shape: self._on_wave_shape_selected(shape)
             )
             if self.analog:
-                JDXi.UI.ThemeManager.apply_button_rect_analog(btn)
+                JDXi.UI.Theme.apply_button_rect_analog(btn)
             self.wave_shape_buttons[mod_lfo_shape] = btn
             shape_row_layout_widgets.append(btn)
 
@@ -146,18 +146,14 @@ class BaseOscillatorSection(ParameterSectionBase):
 
         rate_widget = self._create_rate_widget()
         # --- Create icons
-        rate_icon = JDXi.UI.IconRegistry.get_icon(
-            JDXi.UI.IconRegistry.CLOCK, color=JDXi.UI.Style.GREY
-        )
-        depths_icon = JDXi.UI.IconRegistry.get_icon(
-            JDXi.UI.IconRegistry.WAVEFORM, color=JDXi.UI.Style.GREY
+        rate_icon = JDXi.UI.Icon.get_icon(JDXi.UI.Icon.CLOCK, color=JDXi.UI.Style.GREY)
+        depths_icon = JDXi.UI.Icon.get_icon(
+            JDXi.UI.Icon.WAVEFORM, color=JDXi.UI.Style.GREY
         )
         tab_widget.addTab(rate_widget, rate_icon, self.controls_tab_label)
         depths_widget = self._create_depths_widget()
-        tab_widget.addTab(
-            depths_widget, depths_icon, self.adsr_tab_label
-        )
-        JDXi.UI.ThemeManager.apply_tabs_style(tab_widget, analog=self.analog)
+        tab_widget.addTab(depths_widget, depths_icon, self.adsr_tab_label)
+        JDXi.UI.Theme.apply_tabs_style(tab_widget, analog=self.analog)
         return tab_widget
 
     def _create_rate_widget(self):
@@ -201,18 +197,18 @@ class BaseOscillatorSection(ParameterSectionBase):
         for btn in self.wave_shape_buttons.values():
             btn.setChecked(False)
             if self.analog:
-                JDXi.UI.ThemeManager.apply_button_rect_analog(btn)
+                JDXi.UI.Theme.apply_button_rect_analog(btn)
             else:
                 btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
         selected_btn = self.wave_shape_buttons.get(wave_shape)
         if selected_btn:
             selected_btn.setChecked(True)
             if self.analog:
-                JDXi.UI.ThemeManager.apply_button_analog_active(selected_btn)
+                JDXi.UI.Theme.apply_button_analog_active(selected_btn)
             else:
                 selected_btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT_ACTIVE)
         if self.analog:
-            JDXi.UI.ThemeManager.apply_button_analog_active(selected_btn)
+            JDXi.UI.Theme.apply_button_analog_active(selected_btn)
 
         # --- Send MIDI message
         if self.send_midi_parameter:

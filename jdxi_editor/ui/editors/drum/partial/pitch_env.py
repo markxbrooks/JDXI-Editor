@@ -80,7 +80,7 @@ class DrumPitchEnvPlot(QWidget):
         self.setMinimumSize(width, height)
         self.setMaximumHeight(height)
         self.setMaximumWidth(width)
-        JDXi.UI.ThemeManager.apply_adsr_plot(self)
+        JDXi.UI.Theme.apply_adsr_plot(self)
         self.sample_rate = 256
         self.setMinimumHeight(150)
 
@@ -305,7 +305,7 @@ class DrumPitchEnvSection(DrumBaseSection):
         controls_group, controls_layout = create_group_and_grid_layout(
             group_name="Pitch Envelope Controls"
         )
-        JDXi.UI.ThemeManager.apply_adsr_style(controls_group)
+        JDXi.UI.Theme.apply_adsr_style(controls_group)
         main_layout.addWidget(controls_group)
         self.create_sliders(controls_layout)
 

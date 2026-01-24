@@ -1,6 +1,8 @@
-"""Digital Oscillator"""
+"""
+Digital Oscillator
+"""
 
-from enum import Enum, IntEnum, unique
+from enum import Enum, IntEnum
 
 from jdxi_editor.midi.wave.form import (
     OSC_WAVE_NOISE,
@@ -23,7 +25,7 @@ class DigitalOscPcmWaveGain(IntEnum):
     DB_PLUS_12 = 3  # +12 dB
 
 
-class WaveformIconType:
+class WaveformType:
     """Types of Digital Oscillator Waves"""
 
     ADSR: str = "adsr"

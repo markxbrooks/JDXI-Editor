@@ -33,11 +33,12 @@ Usage Example:
 
 """
 
-from typing import Literal, Optional
+from typing import Any, Callable, Literal, Optional
 
-from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QHBoxLayout, QPushButton, QVBoxLayout, QWidget
 
 from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.ui.editors.widget_specs import SliderSpec
 from jdxi_editor.ui.widgets.editor.helper import transfer_layout_items
 from jdxi_editor.ui.widgets.editor.icon_type import IconType
 
@@ -50,6 +51,11 @@ class SectionBaseWidget(QWidget):
     appropriate icon rows based on section type, reducing boilerplate
     and ensuring consistency.
     """
+
+    WAVEFORM_SPECS: list[SliderSpec] = []
+    SLIDER_GROUPS: dict[str, list[SliderSpec]] = {}
+    BUTTON_ENABLE_RULES: dict[Any, list[str]] = {}
+    ENVELOPE_WIDGET_FACTORIES: list[Callable] = []
 
     def __init__(
         self,
@@ -69,6 +75,9 @@ class SectionBaseWidget(QWidget):
         self.icon_type = icon_type
         self._layout: Optional[QVBoxLayout] = None
         self._icon_added = False
+
+        self.button_widgets: dict[Any, QPushButton] = {}
+        self.slider_widgets: dict[Any, QWidget] = {}
 
     def get_layout(
         self,
@@ -98,7 +107,7 @@ class SectionBaseWidget(QWidget):
                 self._layout.setSpacing(spacing)
 
             # Apply styling
-            JDXi.UI.ThemeManager.apply_adsr_style(self, analog=self.analog)
+            JDXi.UI.Theme.apply_adsr_style(self, analog=self.analog)
 
             # Add icon row if not disabled
             if self.icon_type != IconType.NONE and not self._icon_added:
@@ -116,11 +125,11 @@ class SectionBaseWidget(QWidget):
         icon_row_container = QHBoxLayout()
 
         if self.icon_type == IconType.ADSR:
-            icon_hlayout = JDXi.UI.IconRegistry.create_adsr_icons_row()
+            icon_hlayout = JDXi.UI.Icon.create_adsr_icons_row()
         elif self.icon_type == IconType.OSCILLATOR:
-            icon_hlayout = JDXi.UI.IconRegistry.create_oscillator_icons_row()
+            icon_hlayout = JDXi.UI.Icon.create_oscillator_icons_row()
         elif self.icon_type == IconType.GENERIC:
-            icon_hlayout = JDXi.UI.IconRegistry.create_generic_musical_icon_row()
+            icon_hlayout = JDXi.UI.Icon.create_generic_musical_icon_row()
         else:
             return  # IconType.NONE or unknown
 

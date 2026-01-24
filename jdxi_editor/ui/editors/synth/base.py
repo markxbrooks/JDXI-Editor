@@ -694,7 +694,19 @@ class SynthBase(QWidget):
         """
         if not value:
             return
-        slider = self.partial_editors[partial_no].lfo_depth_controls.get(param)
+
+        # Check if partial editor has lfo_depth_controls property (Digital synths have it, drums don't)
+        partial_editor = self.partial_editors[partial_no]
+        if not hasattr(partial_editor, "lfo_depth_controls"):
+            # For editors without lfo_depth_controls (like drums), try to get from controls directly
+            slider = (
+                partial_editor.controls.get(param)
+                if hasattr(partial_editor, "controls")
+                else None
+            )
+        else:
+            slider = partial_editor.lfo_depth_controls.get(param)
+
         if not slider:
             failures.append(param.name)
             return

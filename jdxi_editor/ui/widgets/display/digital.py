@@ -128,7 +128,7 @@ class DigitalTitle(DigitalDisplayBase):
     ):
         # Lazy import to avoid circular dependency
         from jdxi_editor.core.jdxi import JDXi
-        
+
         super().__init__(digital_font_family, parent)
         self.setMinimumSize(
             JDXi.UI.Dimensions.DIGITAL_TITLE.WIDTH,
@@ -192,7 +192,7 @@ class DigitalDisplay(DigitalDisplayBase):
 
         # Lazy import to avoid circular dependency
         from jdxi_editor.core.jdxi import JDXi
-        
+
         self.setMinimumSize(
             JDXi.UI.Dimensions.LED.WIDTH, JDXi.UI.Dimensions.LED.HEIGHT
         )  # Set size matching display

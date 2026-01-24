@@ -26,13 +26,14 @@ Customization:
   orange for better visibility against the dark background.
 - The time is represented in seconds, and the amplitude in address range from 0 to 1.
 """
+
 from typing import Any
 
 import numpy as np
+from numpy import dtype, floating, ndarray
 from PySide6.QtCore import QPointF, Qt
 from PySide6.QtGui import QColor, QFont, QLinearGradient, QPainter, QPainterPath, QPen
 from PySide6.QtWidgets import QWidget
-from numpy import ndarray, dtype, floating
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.ui.widgets.plot.base import BasePlotWidget
@@ -53,7 +54,7 @@ class PitchEnvPlot(BasePlotWidget):
         self.enabled = True
         self.envelope = envelope
         self.set_dimensions(height, width)
-        JDXi.UI.ThemeManager.apply_adsr_plot(self)
+        JDXi.UI.Theme.apply_adsr_plot(self)
         # Sample rate for converting times to samples
         self.sample_rate = 256
         self.setMinimumHeight(150)
@@ -132,15 +133,28 @@ class PitchEnvPlot(BasePlotWidget):
 
             y_max, y_min = self.get_y_range()
 
-            zero_y = self.draw_axes(axis_pen, left_padding, painter, plot_h, plot_w, top_padding, y_max, y_min)
+            zero_y = self.draw_axes(
+                axis_pen,
+                left_padding,
+                painter,
+                plot_h,
+                plot_w,
+                top_padding,
+                y_max,
+                y_min,
+            )
 
             self.draw_x_axis(left_padding, painter, plot_w, total_time, zero_y)
 
             self.draw_y_axis(left_padding, painter, plot_h, top_padding, y_max, y_min)
 
-            self.draw_title(painter, "Pitch Envelope", left_padding, plot_w, top_padding)
+            self.draw_title(
+                painter, "Pitch Envelope", left_padding, plot_w, top_padding
+            )
 
-            self.draw_x_axis_label(painter, "Time (s)", left_padding, plot_w, plot_h, top_padding)
+            self.draw_x_axis_label(
+                painter, "Time (s)", left_padding, plot_w, plot_h, top_padding
+            )
 
             self.draw_y_axis_label(painter, "Pitch", left_padding, plot_h, top_padding)
 
@@ -148,7 +162,7 @@ class PitchEnvPlot(BasePlotWidget):
             # Pitch envelope has symmetric grid (positive and negative values)
             def y_callback(y_val):
                 return top_padding + ((y_max - y_val) / (y_max - y_min)) * plot_h
-            
+
             # Draw main grid lines (positive side: 0.2, 0.4, 0.6)
             self.draw_grid(
                 painter=painter,
@@ -163,15 +177,35 @@ class PitchEnvPlot(BasePlotWidget):
                 y_callback=y_callback,
             )
 
-            self.draw_mirror_grid(left_padding, painter, plot_h, plot_w, top_padding, y_max, y_min)
+            self.draw_mirror_grid(
+                left_padding, painter, plot_h, plot_w, top_padding, y_max, y_min
+            )
 
-            self.draw_envelope(envelope, left_padding, painter, plot_h, plot_w, top_padding, total_samples, total_time,
-                               y_max, y_min)
+            self.draw_envelope(
+                envelope,
+                left_padding,
+                painter,
+                plot_h,
+                plot_w,
+                top_padding,
+                total_samples,
+                total_time,
+                y_max,
+                y_min,
+            )
         finally:
             painter.end()
 
-    def draw_mirror_grid(self, left_padding: int, painter: QPainter, plot_h: int, plot_w: int, top_padding: int,
-                         y_max: float, y_min: float):
+    def draw_mirror_grid(
+        self,
+        left_padding: int,
+        painter: QPainter,
+        plot_h: int,
+        plot_w: int,
+        top_padding: int,
+        y_max: float,
+        y_min: float,
+    ):
         """Draw mirror grid lines for negative side"""
         grid_pen = QPen(Qt.GlobalColor.darkGray, 1, Qt.PenStyle.DashLine)
         painter.setPen(grid_pen)
@@ -180,9 +214,19 @@ class PitchEnvPlot(BasePlotWidget):
             y = top_padding + ((y_max - y_val) / (y_max - y_min)) * plot_h
             painter.drawLine(left_padding, y, left_padding + plot_w, y)
 
-    def draw_envelope(self, envelope: ndarray[Any, dtype[floating[Any]]], left_padding: int, painter: QPainter,
-                      plot_h: int, plot_w: int, top_padding: int, total_samples: int, total_time: int, y_max: float,
-                      y_min: float):
+    def draw_envelope(
+        self,
+        envelope: ndarray[Any, dtype[floating[Any]]],
+        left_padding: int,
+        painter: QPainter,
+        plot_h: int,
+        plot_w: int,
+        top_padding: int,
+        total_samples: int,
+        total_time: int,
+        y_max: float,
+        y_min: float,
+    ):
         # Draw envelope polyline
         if self.enabled:
             painter.setPen(QPen(QColor("orange")))
@@ -203,8 +247,15 @@ class PitchEnvPlot(BasePlotWidget):
                     path.lineTo(*pt)
                 painter.drawPath(path)
 
-    def draw_y_axis(self, left_padding: int, painter: QPainter, plot_h: int, top_padding: int,
-                    y_max: float, y_min: float):
+    def draw_y_axis(
+        self,
+        left_padding: int,
+        painter: QPainter,
+        plot_h: int,
+        top_padding: int,
+        y_max: float,
+        y_min: float,
+    ):
         """Y-axis ticks and labels from +0.6 to -0.6"""
         for i in range(-3, 4):
             y_val = i * 0.2
@@ -212,7 +263,14 @@ class PitchEnvPlot(BasePlotWidget):
             painter.drawLine(left_padding - 5, y, left_padding, y)
             painter.drawText(left_padding - 40, y + 5, f"{y_val:.1f}")
 
-    def draw_x_axis(self, left_padding: int, painter: QPainter, plot_w: int, total_time: int, zero_y: float):
+    def draw_x_axis(
+        self,
+        left_padding: int,
+        painter: QPainter,
+        plot_w: int,
+        total_time: int,
+        zero_y: float,
+    ):
         # X-axis labels
         # painter.drawText(left_padding, zero_y + 20, "0")
         # painter.drawText(left_padding + plot_w - 10, zero_y + 20, "5")
@@ -233,9 +291,13 @@ class PitchEnvPlot(BasePlotWidget):
 
     def plot_dimensions(self) -> tuple[int, int, int, int]:
         # Plot area dimensions - PitchEnvPlot uses different bottom padding
-        return super().plot_dimensions(top_padding=50, bottom_padding=80, left_padding=80, right_padding=50)
+        return super().plot_dimensions(
+            top_padding=50, bottom_padding=80, left_padding=80, right_padding=50
+        )
 
-    def envelope_parameters(self) -> tuple[ndarray[Any, dtype[floating[Any]]], int, int]:
+    def envelope_parameters(
+        self,
+    ) -> tuple[ndarray[Any, dtype[floating[Any]]], int, int]:
         """Envelope parameters"""
         attack_time = self.envelope["attack_time"] / 1000.0
         decay_time = self.envelope["decay_time"] / 1000.0
@@ -245,14 +307,9 @@ class PitchEnvPlot(BasePlotWidget):
         attack_samples = max(int(attack_time * self.sample_rate), 1)
         decay_samples = max(int(decay_time * self.sample_rate), 1)
 
-        attack = np.linspace(
-            initial_level, peak_level, attack_samples, endpoint=False
-        )
-        decay = np.linspace(
-            peak_level, initial_level, decay_samples, endpoint=False
-        )
+        attack = np.linspace(initial_level, peak_level, attack_samples, endpoint=False)
+        decay = np.linspace(peak_level, initial_level, decay_samples, endpoint=False)
         envelope = np.concatenate([attack, decay])
         total_samples = len(envelope)
         total_time = 10  # seconds
         return envelope, total_samples, total_time
-

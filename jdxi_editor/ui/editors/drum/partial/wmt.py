@@ -118,7 +118,7 @@ class DrumWMTSection(QWidget):
 
         # Icons row (standardized across editor tabs) - transfer items to avoid "already has a parent" errors
         icon_row_container = QHBoxLayout()
-        icon_hlayout = JDXi.UI.IconRegistry.create_adsr_icons_row()
+        icon_hlayout = JDXi.UI.Icon.create_adsr_icons_row()
 
         transfer_layout_items(icon_hlayout, icon_row_container)
         scrolled_layout.addLayout(icon_row_container)
@@ -182,30 +182,30 @@ class DrumWMTSection(QWidget):
         self.wmt_controls_tab_widget = QTabWidget()
         main_row_hlayout.addWidget(self.wmt_controls_tab_widget)
 
-        controls_icon = JDXi.UI.IconRegistry.get_icon(
-            JDXi.UI.IconRegistry.TUNE, color=JDXi.UI.Style.GREY
+        controls_icon = JDXi.UI.Icon.get_icon(
+            JDXi.UI.Icon.TUNE, color=JDXi.UI.Style.GREY
         )
         self.wmt_controls_tab_widget.addTab(
             self._create_wmt_controls_group(p), controls_icon, "Controls"
         )
-        waves_icon = JDXi.UI.IconRegistry.get_icon(
-            JDXi.UI.IconRegistry.WAVEFORM, color=JDXi.UI.Style.GREY
+        waves_icon = JDXi.UI.Icon.get_icon(
+            JDXi.UI.Icon.WAVEFORM, color=JDXi.UI.Style.GREY
         )
         self.wmt_controls_tab_widget.addTab(
             self._create_wave_combo_group(p, wmt_index), waves_icon, "Waves"
         )
-        fxm_icon = JDXi.UI.IconRegistry.get_icon(
-            JDXi.UI.IconRegistry.EQUALIZER, color=JDXi.UI.Style.GREY
+        fxm_icon = JDXi.UI.Icon.get_icon(
+            JDXi.UI.Icon.EQUALIZER, color=JDXi.UI.Style.GREY
         )
         self.wmt_controls_tab_widget.addTab(self._create_fxm_group(p), fxm_icon, "FXM")
-        tuning_icon = JDXi.UI.IconRegistry.get_icon(
-            JDXi.UI.IconRegistry.MUSIC_NOTE, color=JDXi.UI.Style.GREY
+        tuning_icon = JDXi.UI.Icon.get_icon(
+            JDXi.UI.Icon.MUSIC_NOTE, color=JDXi.UI.Style.GREY
         )
         self.wmt_controls_tab_widget.addTab(
             self._create_tuning_group(p), tuning_icon, "Tuning"
         )
-        pan_icon = JDXi.UI.IconRegistry.get_icon(
-            JDXi.UI.IconRegistry.PAN_HORIZONTAL, color=JDXi.UI.Style.GREY
+        pan_icon = JDXi.UI.Icon.get_icon(
+            JDXi.UI.Icon.PAN_HORIZONTAL, color=JDXi.UI.Style.GREY
         )
         self.wmt_controls_tab_widget.addTab(
             self._create_wmt_pan_group(p), pan_icon, "Pan"

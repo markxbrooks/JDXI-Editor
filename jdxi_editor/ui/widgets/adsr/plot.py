@@ -70,7 +70,7 @@ class ADSRPlot(BasePlotWidget):
         self.enabled = True
         self.envelope = envelope
         self.set_dimensions(height, width)
-        JDXi.UI.ThemeManager.apply_adsr_plot(self)
+        JDXi.UI.Theme.apply_adsr_plot(self)
         # Sample rate for converting times to samples
         self.sample_rate = 256
         self.setMinimumHeight(150)
@@ -148,7 +148,17 @@ class ADSRPlot(BasePlotWidget):
 
             y_max, y_min = self.get_y_range()
 
-            zero_y = self.draw_axes(axis_pen, left_pad, painter, plot_h, plot_w, top_pad, y_max, y_min, zero_at_bottom=True)
+            zero_y = self.draw_axes(
+                axis_pen,
+                left_pad,
+                painter,
+                plot_h,
+                plot_w,
+                top_pad,
+                y_max,
+                y_min,
+                zero_at_bottom=True,
+            )
 
             self.draw_x_axis(left_pad, painter, plot_w, total_time, zero_y)
 
@@ -156,7 +166,9 @@ class ADSRPlot(BasePlotWidget):
 
             self.draw_title(painter, "ADSR Envelope", left_pad, plot_w, top_pad)
 
-            self.draw_x_axis_label(painter, "Time (s)", left_pad, plot_w, plot_h, top_pad)
+            self.draw_x_axis_label(
+                painter, "Time (s)", left_pad, plot_w, plot_h, top_pad
+            )
 
             self.draw_y_axis_label(painter, "Amplitude", left_pad, plot_h, top_pad)
 
@@ -173,8 +185,19 @@ class ADSRPlot(BasePlotWidget):
                 y_max=y_max,
             )
 
-            self.draw_envelope(envelope, left_pad, painter, plot_h, plot_w, top_pad, total_samples, total_time,
-                               y_max, y_min, zero_y)
+            self.draw_envelope(
+                envelope,
+                left_pad,
+                painter,
+                plot_h,
+                plot_w,
+                top_pad,
+                total_samples,
+                total_time,
+                y_max,
+                y_min,
+                zero_y,
+            )
         finally:
             painter.end()
 
@@ -218,7 +241,14 @@ class ADSRPlot(BasePlotWidget):
         y_min, y_max = 0.0, 1.0
         return y_max, y_min
 
-    def draw_x_axis(self, left_pad: int, painter: QPainter, plot_w: int, total_time: float, zero_y: float):
+    def draw_x_axis(
+        self,
+        left_pad: int,
+        painter: QPainter,
+        plot_w: int,
+        total_time: float,
+        zero_y: float,
+    ):
         """Draw X-axis ticks and labels"""
         font_metrics = painter.fontMetrics()
         num_ticks = 6
@@ -230,11 +260,17 @@ class ADSRPlot(BasePlotWidget):
             time_val = i * (total_time / num_ticks)
             label = f"{time_val:.1f}"
             label_width = font_metrics.horizontalAdvance(label)
-            painter.drawText(
-                x - label_width / 2, zero_y + 20, label
-            )
+            painter.drawText(x - label_width / 2, zero_y + 20, label)
 
-    def draw_y_axis(self, left_pad: int, painter: QPainter, plot_h: int, top_pad: int, y_max: float, y_min: float):
+    def draw_y_axis(
+        self,
+        left_pad: int,
+        painter: QPainter,
+        plot_h: int,
+        top_pad: int,
+        y_max: float,
+        y_min: float,
+    ):
         """Draw Y-axis ticks and labels"""
         font_metrics = painter.fontMetrics()
         for i in range(6):  # 0.0 to 1.0 in 0.2 steps
@@ -247,8 +283,20 @@ class ADSRPlot(BasePlotWidget):
                 left_pad - 10 - label_width, y + font_metrics.ascent() / 2, label
             )
 
-    def draw_envelope(self, envelope, left_pad: int, painter: QPainter, plot_h: int, plot_w: int,
-                      top_pad: int, total_samples: int, total_time: float, y_max: float, y_min: float, zero_y: float):
+    def draw_envelope(
+        self,
+        envelope,
+        left_pad: int,
+        painter: QPainter,
+        plot_h: int,
+        plot_w: int,
+        top_pad: int,
+        total_samples: int,
+        total_time: float,
+        y_max: float,
+        y_min: float,
+        zero_y: float,
+    ):
         """Draw envelope plot"""
         if not self.enabled:
             return
@@ -277,7 +325,7 @@ class ADSRPlot(BasePlotWidget):
             for pt in points[1:]:
                 curve_path.lineTo(*pt)
             # Note: draw_shaded_curve will add the right edge and close the path
-            
+
             # Draw shaded fill under the curve (draw_shaded_curve will close it to zero line)
             self.draw_shaded_curve(
                 painter=painter,
@@ -288,7 +336,7 @@ class ADSRPlot(BasePlotWidget):
                 left_pad=left_pad,
                 plot_w=plot_w,
             )
-            
+
             # Draw the envelope polyline on top (just the curve, not the zero line edges)
             curve_only_path = QPainterPath()
             curve_only_path.moveTo(*points[0])

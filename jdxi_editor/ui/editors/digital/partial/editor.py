@@ -74,10 +74,10 @@ class DigitalPartialEditor(PartialEditor):
     }
 
     BIPOLAR_PARAMETERS = {
-        DigitalPartialParam.OSC_DETUNE,
-        DigitalPartialParam.OSC_PITCH,
-        DigitalPartialParam.OSC_PITCH_ENV_DEPTH,
-        DigitalPartialParam.AMP_PAN,
+        JDXi.Midi.Digital.Param.OSC_DETUNE,
+        JDXi.Midi.Digital.Param.OSC_PITCH,
+        JDXi.Midi.Digital.Param.OSC_PITCH_ENV_DEPTH,
+        JDXi.Midi.Digital.Param.AMP_PAN,
     }
 
     def __init__(
@@ -95,9 +95,7 @@ class DigitalPartialEditor(PartialEditor):
         self.midi_helper = midi_helper
         self.partial_number = partial_number
         self.preset_type = preset_type
-        self.controls: dict[
-            DigitalPartialParam | DigitalCommonParam, QWidget
-        ] = {}
+        self.controls: dict[DigitalPartialParam | DigitalCommonParam, QWidget] = {}
 
         self._resolve_synth_data(synth_number)
         self._resolve_partial_name()
@@ -166,7 +164,7 @@ class DigitalPartialEditor(PartialEditor):
                 controls=self.controls,
                 address=self.synth_data.address,
             ),
-            icon=JDXi.UI.IconRegistry.TRIANGLE_WAVE,
+            icon=JDXi.UI.Icon.TRIANGLE_WAVE,
             label="Oscillator",
         )
 
@@ -181,7 +179,7 @@ class DigitalPartialEditor(PartialEditor):
                 controls=self.controls,
                 address=self.synth_data.address,
             ),
-            icon=JDXi.UI.IconRegistry.FILTER,
+            icon=JDXi.UI.Icon.FILTER,
             label="Filter",
         )
 
@@ -196,7 +194,7 @@ class DigitalPartialEditor(PartialEditor):
                 controls=self.controls,
                 address=self.synth_data.address,
             ),
-            icon=JDXi.UI.IconRegistry.AMPLIFIER,
+            icon=JDXi.UI.Icon.AMPLIFIER,
             label="Amp",
         )
 
@@ -209,7 +207,7 @@ class DigitalPartialEditor(PartialEditor):
                 self.controls,
                 self.send_midi_parameter,
             ),
-            icon=JDXi.UI.IconRegistry.SINE_WAVE,
+            icon=JDXi.UI.Icon.SINE_WAVE,
             label="LFO",
         )
 
@@ -223,14 +221,14 @@ class DigitalPartialEditor(PartialEditor):
                 controls=self.controls,
                 send_midi_parameter=self.send_midi_parameter,
             ),
-            icon=JDXi.UI.IconRegistry.WAVEFORM,
+            icon=JDXi.UI.Icon.WAVEFORM,
             label="Mod LFO",
         )
 
     def _add_tab(self, *, key: str, widget: QWidget, icon, label: str) -> None:
         self.tab_widget.addTab(
             widget,
-            JDXi.UI.IconRegistry.get_icon(icon, color=JDXi.UI.Style.GREY),
+            JDXi.UI.Icon.get_icon(icon, color=JDXi.UI.Style.GREY),
             label,
         )
         setattr(self, f"{key}_tab", widget)
@@ -240,19 +238,23 @@ class DigitalPartialEditor(PartialEditor):
         """
         Get a dictionary of LFO depth controls filtered from the main controls dictionary.
         This provides compatibility with the base class's _update_partial_lfo_depth method.
-        
+
         :return: dict mapping LFO depth parameters to their control widgets
         """
         lfo_depth_params = {
-            DigitalPartialParam.LFO_PITCH_DEPTH,
-            DigitalPartialParam.LFO_FILTER_DEPTH,
-            DigitalPartialParam.LFO_AMP_DEPTH,
-            DigitalPartialParam.LFO_PAN_DEPTH,
-            DigitalPartialParam.MOD_LFO_PITCH_DEPTH,
-            DigitalPartialParam.MOD_LFO_FILTER_DEPTH,
-            DigitalPartialParam.MOD_LFO_AMP_DEPTH,
+            JDXi.Midi.Digital.Param.LFO_PITCH_DEPTH,
+            JDXi.Midi.Digital.Param.LFO_FILTER_DEPTH,
+            JDXi.Midi.Digital.Param.LFO_AMP_DEPTH,
+            JDXi.Midi.Digital.Param.LFO_PAN_DEPTH,
+            JDXi.Midi.Digital.Param.MOD_LFO_PITCH_DEPTH,
+            JDXi.Midi.Digital.Param.MOD_LFO_FILTER_DEPTH,
+            JDXi.Midi.Digital.Param.MOD_LFO_AMP_DEPTH,
         }
-        return {param: self.controls[param] for param in lfo_depth_params if param in self.controls}
+        return {
+            param: self.controls[param]
+            for param in lfo_depth_params
+            if param in self.controls
+        }
 
     # ------------------------------------------------------------------
     # Behavior
@@ -262,12 +264,12 @@ class DigitalPartialEditor(PartialEditor):
         enabled = mode != 0  # BYPASS == 0
 
         params = (
-            DigitalPartialParam.FILTER_CUTOFF,
-            DigitalPartialParam.FILTER_RESONANCE,
-            DigitalPartialParam.FILTER_CUTOFF_KEYFOLLOW,
-            DigitalPartialParam.FILTER_ENV_VELOCITY_SENSITIVITY,
-            DigitalPartialParam.FILTER_ENV_DEPTH,
-            DigitalPartialParam.FILTER_SLOPE,
+            JDXi.Midi.Digital.Param.FILTER_CUTOFF,
+            JDXi.Midi.Digital.Param.FILTER_RESONANCE,
+            JDXi.Midi.Digital.Param.FILTER_CUTOFF_KEYFOLLOW,
+            JDXi.Midi.Digital.Param.FILTER_ENV_VELOCITY_SENSITIVITY,
+            JDXi.Midi.Digital.Param.FILTER_ENV_DEPTH,
+            JDXi.Midi.Digital.Param.FILTER_SLOPE,
         )
 
         for param in params:
@@ -289,7 +291,7 @@ class DigitalPartialEditor(PartialEditor):
             selected.setStyleSheet(JDXi.UI.Style.BUTTON_RECT_ACTIVE)
 
         if not self.send_midi_parameter(
-            DigitalPartialParam.OSC_WAVE, waveform.value
+            JDXi.Midi.Digital.Param.OSC_WAVE, waveform.value
         ):
             log.warning(f"Failed to set waveform: {waveform.name}")
 

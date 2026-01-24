@@ -134,7 +134,7 @@ class SynthEditor(SynthBase):
 
         # Apply common style
 
-        JDXi.UI.ThemeManager.apply_editor_style(self)
+        JDXi.UI.Theme.apply_editor_style(self)
 
         # Add keyboard shortcuts
         self.refresh_shortcut = QShortcut(QKeySequence.StandardKey.Refresh, self)

@@ -195,7 +195,7 @@ class FilterPlot(BasePlotWidget):
         self.envelope = envelope
         self.filter_mode = filter_mode  # Store filter mode
         self.set_dimensions(width=width, height=height)
-        JDXi.UI.ThemeManager.apply_adsr_plot(self)
+        JDXi.UI.Theme.apply_adsr_plot(self)
         # Sample rate for converting times to samples
         self.sample_rate = 256
         self.setMinimumHeight(JDXi.UI.Style.ADSR_PLOT_HEIGHT)
@@ -286,7 +286,9 @@ class FilterPlot(BasePlotWidget):
 
             y_max, y_min = self.get_y_range()
 
-            zero_y = self.draw_axes(axis_pen, left_pad, painter, plot_h, plot_w, top_pad, y_max, y_min)
+            zero_y = self.draw_axes(
+                axis_pen, left_pad, painter, plot_h, plot_w, top_pad, y_max, y_min
+            )
 
             self.draw_x_axis(left_pad, painter, plot_w, total_time, zero_y)
 
@@ -295,14 +297,16 @@ class FilterPlot(BasePlotWidget):
             title = self.get_title()
             self.draw_title(painter, title, left_pad, plot_w, top_pad)
 
-            self.draw_x_axis_label(painter, "Frequency (Hz)", left_pad, plot_w, plot_h, top_pad)
+            self.draw_x_axis_label(
+                painter, "Frequency (Hz)", left_pad, plot_w, plot_h, top_pad
+            )
 
             self.draw_y_axis_label(painter, "Voltage (V)", left_pad, plot_h, top_pad)
 
             # Background grid using base class method
             def y_callback(y_val):
                 return top_pad + ((y_max - y_val) / (y_max - y_min)) * plot_h
-            
+
             self.draw_grid(
                 painter=painter,
                 top_pad=top_pad,
@@ -316,8 +320,19 @@ class FilterPlot(BasePlotWidget):
                 y_callback=y_callback,
             )
 
-            self.draw_envelope(envelope, left_pad, painter, plot_h, plot_w, top_pad, total_samples, total_time,
-                               y_max, y_min, zero_y)
+            self.draw_envelope(
+                envelope,
+                left_pad,
+                painter,
+                plot_h,
+                plot_w,
+                top_pad,
+                total_samples,
+                total_time,
+                y_max,
+                y_min,
+                zero_y,
+            )
         finally:
             painter.end()
 
@@ -339,7 +354,14 @@ class FilterPlot(BasePlotWidget):
         y_min, y_max = -0.2, 1.2
         return y_max, y_min
 
-    def draw_x_axis(self, left_pad: int, painter: QPainter, plot_w: int, total_time: float, zero_y: float):
+    def draw_x_axis(
+        self,
+        left_pad: int,
+        painter: QPainter,
+        plot_w: int,
+        total_time: float,
+        zero_y: float,
+    ):
         """Draw X-axis ticks and labels"""
         # X-axis ticks are drawn but labels are not shown in FilterPlot
         num_ticks = 6
@@ -347,7 +369,15 @@ class FilterPlot(BasePlotWidget):
             x = left_pad + i * plot_w / num_ticks
             # Tick marks are drawn but labels are omitted
 
-    def draw_y_axis(self, left_pad: int, painter: QPainter, plot_h: int, top_pad: int, y_max: float, y_min: float):
+    def draw_y_axis(
+        self,
+        left_pad: int,
+        painter: QPainter,
+        plot_h: int,
+        top_pad: int,
+        y_max: float,
+        y_min: float,
+    ):
         """Draw Y-axis ticks and labels"""
         font_metrics = painter.fontMetrics()
         for i in range(-1, 6):
@@ -372,13 +402,25 @@ class FilterPlot(BasePlotWidget):
         else:
             return "LPF Cutoff"
 
-    def draw_envelope(self, envelope, left_pad: int, painter: QPainter, plot_h: int, plot_w: int,
-                      top_pad: int, total_samples: int, total_time: float, y_max: float, y_min: float, zero_y: float):
+    def draw_envelope(
+        self,
+        envelope,
+        left_pad: int,
+        painter: QPainter,
+        plot_h: int,
+        plot_w: int,
+        top_pad: int,
+        total_samples: int,
+        total_time: float,
+        y_max: float,
+        y_min: float,
+        zero_y: float,
+    ):
         """Draw envelope plot"""
         # At the point of drawing the curve, but after the axes and the grid:
         if not self.enabled:
             return
-        
+
         samples_per_pixel = max(1, int(total_samples / plot_w))
 
         # --- Build fill path (upper envelope only) ---

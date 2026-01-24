@@ -121,8 +121,8 @@ class JDXiInstrument(JDXiWindow):
         self.splash_progress_bar = progress_bar
         self.splash_status_label = status_label
         if platform.system() == "Windows":
-            JDXi.UI.ThemeManager.apply_transparent(self)
-            JDXi.UI.ThemeManager.apply_adsr_disabled(self)
+            JDXi.UI.Theme.apply_transparent(self)
+            JDXi.UI.Theme.apply_adsr_disabled(self)
         # Try to auto-connect to JD-Xi
         self.midi_helper.auto_connect_jdxi()
         if (

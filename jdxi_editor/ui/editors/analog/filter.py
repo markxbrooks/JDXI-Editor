@@ -74,17 +74,15 @@ class AnalogFilterSection(SectionBaseWidget):
         layout = self.get_layout()
 
         self.analog_filter_tab_widget = QTabWidget()
-        JDXi.UI.ThemeManager.apply_tabs_style(
-            self.analog_filter_tab_widget, analog=True
-        )
+        JDXi.UI.Theme.apply_tabs_style(self.analog_filter_tab_widget, analog=True)
 
         # --- Filter Selection Buttons ---
         filter_row = self._create_filter_controls_row()
         layout.addLayout(filter_row)
         layout.addWidget(self.analog_filter_tab_widget)
         # --- Filter Controls ---
-        controls_icon = JDXi.UI.IconRegistry.get_icon(
-            JDXi.UI.IconRegistry.TUNE, color=JDXi.UI.Style.GREY
+        controls_icon = JDXi.UI.Icon.get_icon(
+            JDXi.UI.Icon.TUNE, color=JDXi.UI.Style.GREY
         )
         self.analog_filter_tab_widget.addTab(
             self._create_filter_controls_group(), controls_icon, "Controls"
@@ -127,7 +125,7 @@ class AnalogFilterSection(SectionBaseWidget):
             )
             btn.setIcon(icon)
             btn.setIconSize(QSize(20, 20))
-            JDXi.UI.ThemeManager.apply_button_rect_analog(btn)
+            JDXi.UI.Theme.apply_button_rect_analog(btn)
             btn.setFixedSize(
                 JDXi.UI.Dimensions.WAVEFORM_ICON.WIDTH,
                 JDXi.UI.Dimensions.WAVEFORM_ICON.HEIGHT,
@@ -149,13 +147,13 @@ class AnalogFilterSection(SectionBaseWidget):
         # Reset all buttons to default style
         for btn in self.filter_mode_buttons.values():
             btn.setChecked(False)
-            JDXi.UI.ThemeManager.apply_button_rect_analog(btn)
+            JDXi.UI.Theme.apply_button_rect_analog(btn)
 
         # Apply active style to the selected filter mode button
         selected_btn = self.filter_mode_buttons.get(filter_mode)
         if selected_btn:
             selected_btn.setChecked(True)
-            JDXi.UI.ThemeManager.apply_button_analog_active(selected_btn)
+            JDXi.UI.Theme.apply_button_analog_active(selected_btn)
 
         # Send MIDI message via SysEx (analog synth uses SysEx, not control changes)
         if self.midi_helper and self.address:
@@ -212,6 +210,7 @@ class AnalogFilterSection(SectionBaseWidget):
     def _create_filter_adsr_env_group(self) -> QGroupBox:
         """Create filter ADSR group (harmonized with Digital Filter, includes centered icon)"""
         from jdxi_editor.ui.widgets.adsr.adsr import ADSR
+
         self.filter_adsr_widget = ADSR(
             attack_param=AnalogParam.FILTER_ENV_ATTACK_TIME,
             decay_param=AnalogParam.FILTER_ENV_DECAY_TIME,

@@ -71,7 +71,7 @@ class WMTEnvPlot(QWidget):
         self.setMaximumHeight(height)
         self.setMaximumWidth(width)
 
-        JDXi.UI.ThemeManager.apply_adsr_plot(self)
+        JDXi.UI.Theme.apply_adsr_plot(self)
         # Sample rate for converting times to samples
         self.sample_rate = 256
         self.setMinimumHeight(150)

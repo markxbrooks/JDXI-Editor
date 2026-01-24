@@ -82,6 +82,7 @@ class AnalogLFOTempoSyncNote(Enum):
 
 class AnalogLFOWaveShape(IntEnum):
     """Analog LFO Waves"""
+
     TRI = 0
     SINE = 1
     SAW = 2
@@ -101,6 +102,7 @@ class AnalogLFOWaveShape(IntEnum):
 
 class AnalogLFOWaveType:
     """Analog LFO Waves"""
+
     TRI: str = "TRI"
     SINE: str = "SINE"
     SAW: str = "SAW"

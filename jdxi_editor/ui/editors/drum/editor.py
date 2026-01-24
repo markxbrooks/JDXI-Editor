@@ -160,8 +160,8 @@ class DrumCommonEditor(SynthEditor):
 
         instrument_vrow_layout.addWidget(self.instrument_preset)
 
-        drum_kit_presets_icon = JDXi.UI.IconRegistry.get_icon(
-            JDXi.UI.IconRegistry.MUSIC_NOTES, color=JDXi.UI.Style.GREY
+        drum_kit_presets_icon = JDXi.UI.Icon.get_icon(
+            JDXi.UI.Icon.MUSIC_NOTES, color=JDXi.UI.Style.GREY
         )
         self.presets_parts_tab_widget.addTab(
             instrument_widget, drum_kit_presets_icon, "Drum Kit Presets"
@@ -177,7 +177,7 @@ class DrumCommonEditor(SynthEditor):
         container_layout.addWidget(self.partial_tab_widget)
 
         # Add the base widget as the second tab (it contains the scroll area)
-        drum_kit_parts_icon = JDXi.UI.IconRegistry.get_icon(
+        drum_kit_parts_icon = JDXi.UI.Icon.get_icon(
             "mdi.puzzle", color=JDXi.UI.Style.GREY
         )
         self.presets_parts_tab_widget.addTab(
@@ -195,21 +195,17 @@ class DrumCommonEditor(SynthEditor):
             midi_helper=self.midi_helper,
             address=self.address,
         )
-        common_icon = JDXi.UI.IconRegistry.get_icon(
-            "mdi.cog-outline", color=JDXi.UI.Style.GREY
-        )
+        common_icon = JDXi.UI.Icon.get_icon("mdi.cog-outline", color=JDXi.UI.Style.GREY)
         self.partial_tab_widget.addTab(self.common_section, common_icon, "Common")
 
         # Create and add the mixer tab
         from jdxi_editor.ui.editors.drum.mixer import DrumKitMixer
 
         mixer_widget = DrumKitMixer(midi_helper=self.midi_helper, parent=self)
-        mixer_icon = JDXi.UI.IconRegistry.get_icon(
-            "ei.adjust-alt", color=JDXi.UI.Style.GREY
-        )
+        mixer_icon = JDXi.UI.Icon.get_icon("ei.adjust-alt", color=JDXi.UI.Style.GREY)
         if mixer_icon is None or mixer_icon.isNull():
             # Fallback icon if mixer icon not available
-            mixer_icon = JDXi.UI.IconRegistry.get_icon(
+            mixer_icon = JDXi.UI.Icon.get_icon(
                 "ph.sliders-bold", color=JDXi.UI.Style.GREY
             )
         self.presets_parts_tab_widget.addTab(mixer_widget, mixer_icon, "Drum Kit Mixer")

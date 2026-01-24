@@ -484,8 +484,8 @@ class MidiTrackViewer(QWidget):
             button_hlayout = QHBoxLayout()
             label_vlayout.addLayout(button_hlayout)
 
-            apply_icon = JDXi.UI.IconRegistry.get_icon(
-                JDXi.UI.IconRegistry.SAVE, color=JDXi.UI.Style.FOREGROUND
+            apply_icon = JDXi.UI.Icon.get_icon(
+                JDXi.UI.Icon.SAVE, color=JDXi.UI.Style.FOREGROUND
             )
             apply_button = QPushButton()
             apply_button.setIcon(apply_icon)
@@ -505,8 +505,8 @@ class MidiTrackViewer(QWidget):
             """
             button_hlayout.addWidget(apply_button)
 
-            mute_icon = JDXi.UI.IconRegistry.get_icon(
-                JDXi.UI.IconRegistry.MUTE, color=JDXi.UI.Style.FOREGROUND
+            mute_icon = JDXi.UI.Icon.get_icon(
+                JDXi.UI.Icon.MUTE, color=JDXi.UI.Style.FOREGROUND
             )
             mute_button = QPushButton()
             mute_button.setIcon(mute_icon)
@@ -521,8 +521,8 @@ class MidiTrackViewer(QWidget):
             )
             button_hlayout.addWidget(mute_button)
 
-            delete_icon = JDXi.UI.IconRegistry.get_icon(
-                JDXi.UI.IconRegistry.DELETE, color=JDXi.UI.Style.FOREGROUND
+            delete_icon = JDXi.UI.Icon.get_icon(
+                JDXi.UI.Icon.DELETE, color=JDXi.UI.Style.FOREGROUND
             )
             delete_button = QPushButton()
             delete_button.setIcon(delete_icon)

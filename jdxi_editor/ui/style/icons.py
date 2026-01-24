@@ -9,6 +9,7 @@ from PySide6.QtGui import QIcon, Qt
 from PySide6.QtWidgets import QHBoxLayout, QLabel
 
 from decologr import Decologr as log
+from jdxi_editor.midi.data.digital.oscillator import WaveformType
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from jdxi_editor.ui.style.jdxi import JDXiUIStyle
@@ -17,6 +18,7 @@ from jdxi_editor.ui.style.jdxi import JDXiUIStyle
 class JDXiUIIconRegistry:
     """Centralized icon definitions and retrieval"""
 
+    Wave: WaveformType = WaveformType
     # Action icons
     CLEAR = "ei.broom"
     RUN = "msc.run"
@@ -113,7 +115,7 @@ class JDXiUIIconRegistry:
     FILTER = "ri.filter-3-fill"
     AMPLIFIER = "mdi.amplifier"
     WAVEFORM = "mdi.waveform"
-    
+
     SAW_WAVE: str = "mdi.sawtooth-wave"
     SQUARE_WAVE: str = "mdi.square-wave"
     WAVEFORM: str = "mdi.waveform"

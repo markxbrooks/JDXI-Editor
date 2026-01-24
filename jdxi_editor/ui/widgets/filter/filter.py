@@ -73,8 +73,9 @@ class FilterWidget(EnvelopeWidgetBase):
             max_value=Midi.VALUE.MAX.SEVEN_BIT,
             units=" Hz/10",
             label="Cutoff (Hz /10)",
-            value=int(self.envelope["cutoff_param"]
-            * Midi.VALUE.MAX.SEVEN_BIT),  # Convert from 0.0–1.0 to 0–100
+            value=int(
+                self.envelope["cutoff_param"] * Midi.VALUE.MAX.SEVEN_BIT
+            ),  # Convert from 0.0–1.0 to 0–100
             create_parameter_slider=self._create_parameter_slider,
             parent=self,
         )

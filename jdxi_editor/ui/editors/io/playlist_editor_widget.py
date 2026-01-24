@@ -96,7 +96,7 @@ class PlaylistEditorWidget(QWidget):
 
         # Add icon row at the top (transfer items to avoid "already has a parent" errors)
         icon_row_container = QHBoxLayout()
-        icon_row = JDXi.UI.IconRegistry.create_generic_musical_icon_row()
+        icon_row = JDXi.UI.Icon.create_generic_musical_icon_row()
 
         transfer_layout_items(icon_row, icon_row_container)
         layout.addLayout(icon_row_container)
@@ -125,7 +125,7 @@ class PlaylistEditorWidget(QWidget):
         # Add/Delete buttons
         button_layout = QHBoxLayout()
         self.add_to_playlist_button = QPushButton(
-            JDXi.UI.IconRegistry.get_icon(JDXi.UI.IconRegistry.PLUS_CIRCLE),
+            JDXi.UI.Icon.get_icon(JDXi.UI.Icon.PLUS_CIRCLE),
             "Add to Playlist",
         )
         self.add_to_playlist_button.clicked.connect(self.add_program_to_playlist)
@@ -135,8 +135,8 @@ class PlaylistEditorWidget(QWidget):
         button_layout.addWidget(self.add_to_playlist_button)
 
         self.delete_from_playlist_button = QPushButton(
-            JDXi.UI.IconRegistry.get_icon(
-                JDXi.UI.IconRegistry.TRASH_FILL, color=JDXi.UI.Style.FOREGROUND
+            JDXi.UI.Icon.get_icon(
+                JDXi.UI.Icon.TRASH_FILL, color=JDXi.UI.Style.FOREGROUND
             ),
             "Delete from Playlist",
         )

@@ -96,7 +96,7 @@ class DrumTVFEnvPlot(QWidget):
         self.setMaximumHeight(height)
         self.setMaximumWidth(width)
 
-        JDXi.UI.ThemeManager.apply_adsr_plot(self)
+        JDXi.UI.Theme.apply_adsr_plot(self)
         self.sample_rate = 256
         self.setMinimumHeight(150)
 
@@ -336,9 +336,7 @@ class DrumTVFSection(DrumBaseSection):
         self.tvf_tab_widget = QTabWidget()
 
         # --- Basic TVF controls and envelope controls ---
-        controls_icon = JDXi.UI.IconRegistry.get_icon(
-            "mdi.tune", color=JDXi.UI.Style.GREY
-        )
+        controls_icon = JDXi.UI.Icon.get_icon("mdi.tune", color=JDXi.UI.Style.GREY)
         self.tvf_tab_widget.addTab(
             self._create_tvf_basic_group(), controls_icon, "Controls"
         )

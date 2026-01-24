@@ -98,7 +98,7 @@ class PatternSequenceEditor(SynthEditor):
         self._init_midi_file()
         self._initialize_default_bar()
 
-        JDXi.UI.ThemeManager.apply_editor_style(self)
+        JDXi.UI.Theme.apply_editor_style(self)
 
         # If MidiFileEditor is provided and has a loaded file, load it
         if self.midi_file_editor and hasattr(self.midi_file_editor, "midi_state"):
@@ -134,24 +134,18 @@ class PatternSequenceEditor(SynthEditor):
         file_layout = QHBoxLayout()
 
         self.load_button = QPushButton(
-            JDXi.UI.IconRegistry.get_icon(
-                JDXi.UI.IconRegistry.MUSIC, color=JDXi.UI.Style.FOREGROUND
-            ),
+            JDXi.UI.Icon.get_icon(JDXi.UI.Icon.MUSIC, color=JDXi.UI.Style.FOREGROUND),
             "Load",
         )
         self.load_button.clicked.connect(self._load_pattern_dialog)
         self.save_button = QPushButton(
-            JDXi.UI.IconRegistry.get_icon(
-                JDXi.UI.IconRegistry.SAVE, color=JDXi.UI.Style.FOREGROUND
-            ),
+            JDXi.UI.Icon.get_icon(JDXi.UI.Icon.SAVE, color=JDXi.UI.Style.FOREGROUND),
             "Save",
         )
         self.save_button.clicked.connect(self._save_pattern_dialog)
         # --- Add the Clear Learned Pattern button
         self.clear_learn_button = QPushButton(
-            JDXi.UI.IconRegistry.get_icon(
-                JDXi.UI.IconRegistry.CLEAR, color=JDXi.UI.Style.FOREGROUND
-            ),
+            JDXi.UI.Icon.get_icon(JDXi.UI.Icon.CLEAR, color=JDXi.UI.Style.FOREGROUND),
             "Clear",
         )
         self.clear_learn_button.clicked.connect(self._clear_learned_pattern)
@@ -173,9 +167,7 @@ class PatternSequenceEditor(SynthEditor):
         # First row: Add Bar button and Copy checkbox
         bar_controls_layout = QHBoxLayout()
         self.add_bar_button = QPushButton(
-            JDXi.UI.IconRegistry.get_icon(
-                JDXi.UI.IconRegistry.ADD, color=JDXi.UI.Style.FOREGROUND
-            ),
+            JDXi.UI.Icon.get_icon(JDXi.UI.Icon.ADD, color=JDXi.UI.Style.FOREGROUND),
             "Add Bar",
         )
         self.add_bar_button.clicked.connect(self._add_bar)
@@ -230,16 +222,12 @@ class PatternSequenceEditor(SynthEditor):
 
         # Add the Clear Learned Pattern button
         self.learn_button = QPushButton(
-            JDXi.UI.IconRegistry.get_icon(
-                JDXi.UI.IconRegistry.PLAY, color=JDXi.UI.Style.FOREGROUND
-            ),
+            JDXi.UI.Icon.get_icon(JDXi.UI.Icon.PLAY, color=JDXi.UI.Style.FOREGROUND),
             "Start",
         )
         self.learn_button.clicked.connect(self.on_learn_pattern_button_clicked)
         self.stop_learn_button = QPushButton(
-            JDXi.UI.IconRegistry.get_icon(
-                JDXi.UI.IconRegistry.STOP, color=JDXi.UI.Style.FOREGROUND
-            ),
+            JDXi.UI.Icon.get_icon(JDXi.UI.Icon.STOP, color=JDXi.UI.Style.FOREGROUND),
             "Stop",
         )
         self.stop_learn_button.clicked.connect(
@@ -261,9 +249,7 @@ class PatternSequenceEditor(SynthEditor):
         self.tempo_spinbox.valueChanged.connect(self._on_tempo_changed)
 
         self.tap_tempo_button = QPushButton(
-            JDXi.UI.IconRegistry.get_icon(
-                JDXi.UI.IconRegistry.DRUM, color=JDXi.UI.Style.FOREGROUND
-            ),
+            JDXi.UI.Icon.get_icon(JDXi.UI.Icon.DRUM, color=JDXi.UI.Style.FOREGROUND),
             "Tap",
         )
         self.tap_tempo_button.clicked.connect(self._on_tap_tempo)
@@ -337,15 +323,11 @@ class PatternSequenceEditor(SynthEditor):
         transport_layout = QHBoxLayout()
 
         self.start_button = QPushButton(
-            JDXi.UI.IconRegistry.get_icon(
-                JDXi.UI.IconRegistry.PLAY, color=JDXi.UI.Style.FOREGROUND
-            ),
+            JDXi.UI.Icon.get_icon(JDXi.UI.Icon.PLAY, color=JDXi.UI.Style.FOREGROUND),
             "Play",
         )
         self.stop_button = QPushButton(
-            JDXi.UI.IconRegistry.get_icon(
-                JDXi.UI.IconRegistry.STOP, color=JDXi.UI.Style.FOREGROUND
-            ),
+            JDXi.UI.Icon.get_icon(JDXi.UI.Icon.STOP, color=JDXi.UI.Style.FOREGROUND),
             "Stop",
         )
         self.start_button.clicked.connect(self.play_pattern)
@@ -393,12 +375,12 @@ class PatternSequenceEditor(SynthEditor):
             header_layout = QHBoxLayout()
 
             if label_text == "Drums":
-                icon = JDXi.UI.IconRegistry.get_icon(
-                    JDXi.UI.IconRegistry.DRUM, color=JDXi.UI.Style.FOREGROUND
+                icon = JDXi.UI.Icon.get_icon(
+                    JDXi.UI.Icon.DRUM, color=JDXi.UI.Style.FOREGROUND
                 )
             else:
-                icon = JDXi.UI.IconRegistry.get_icon(
-                    JDXi.UI.IconRegistry.PIANO, color=JDXi.UI.Style.FOREGROUND
+                icon = JDXi.UI.Icon.get_icon(
+                    JDXi.UI.Icon.PIANO, color=JDXi.UI.Style.FOREGROUND
                 )
             # Create and add label
             icon_label = QLabel()

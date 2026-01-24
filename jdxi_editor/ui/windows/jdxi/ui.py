@@ -234,7 +234,7 @@ class JDXiWindow(QMainWindow):
         file_menu.addSeparator()
 
         load_program_action = QAction(
-            JDXi.UI.IconRegistry.get_icon(JDXi.UI.IconRegistry.FOLDER_OPENED),
+            JDXi.UI.Icon.get_icon(JDXi.UI.Icon.FOLDER_OPENED),
             "Load Program...",
             self,
         )
@@ -379,7 +379,7 @@ class JDXiWindow(QMainWindow):
         self.help_menu.addAction(about_help_action)
 
         preferences_action = QAction(
-            JDXi.UI.IconRegistry.get_icon(JDXi.UI.IconRegistry.SETTINGS),
+            JDXi.UI.Icon.get_icon(JDXi.UI.Icon.SETTINGS),
             "Preferences",
             self,
         )
@@ -388,7 +388,7 @@ class JDXiWindow(QMainWindow):
         self.help_menu.addAction(preferences_action)
 
         documentation_action = QAction(
-            JDXi.UI.IconRegistry.get_icon(JDXi.UI.IconRegistry.HELP_RHOMBUS),
+            JDXi.UI.Icon.get_icon(JDXi.UI.Icon.HELP_RHOMBUS),
             "Documentation",
             self,
         )
@@ -406,7 +406,7 @@ class JDXiWindow(QMainWindow):
         """Create status bar with MIDI indicators"""
         status_bar = self.statusBar()
 
-        JDXi.UI.ThemeManager.apply_transparent(status_bar)
+        JDXi.UI.Theme.apply_transparent(status_bar)
 
         midi_indicator_container = QWidget()
         midi_indicator_container.setLayout(self._build_status_layout())

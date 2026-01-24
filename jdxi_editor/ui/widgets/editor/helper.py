@@ -236,7 +236,7 @@ def create_group_adsr_with_hlayout(
     controls_group.setLayout(hlayout)
     if analog:
 
-        JDXi.UI.ThemeManager.apply_adsr_style(controls_group, analog=True)
+        JDXi.UI.Theme.apply_adsr_style(controls_group, analog=True)
     else:
         controls_group.setStyleSheet(JDXi.UI.Style.ADSR)
     return controls_group
@@ -277,7 +277,7 @@ def create_envelope_group(
 
     if analog:
 
-        JDXi.UI.ThemeManager.apply_adsr_style(env_group, analog=True)
+        JDXi.UI.Theme.apply_adsr_style(env_group, analog=True)
     else:
         env_group.setStyleSheet(JDXi.UI.Style.ADSR)
 

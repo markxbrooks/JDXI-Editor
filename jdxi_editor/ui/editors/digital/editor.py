@@ -145,8 +145,8 @@ class DigitalSynthEditor(SynthEditor):
         self.setMinimumSize(850, 300)
         self.resize(1030, 600)
 
-        JDXi.UI.ThemeManager.apply_tabs_style(self)
-        JDXi.UI.ThemeManager.apply_editor_style(self)
+        JDXi.UI.Theme.apply_tabs_style(self)
+        JDXi.UI.Theme.apply_editor_style(self)
 
         # Use EditorBaseWidget for consistent layout structure
         self.base_widget = EditorBaseWidget(parent=self, analog=False)
@@ -168,7 +168,7 @@ class DigitalSynthEditor(SynthEditor):
 
         # Partials panel only
         self.partials_panel = PartialsPanel()
-        JDXi.UI.ThemeManager.apply_tabs_style(self.partials_panel)
+        JDXi.UI.Theme.apply_tabs_style(self.partials_panel)
 
         for switch in self.partials_panel.switches.values():
             switch.stateChanged.connect(self._on_partial_state_changed)
@@ -205,14 +205,14 @@ class DigitalSynthEditor(SynthEditor):
         self.partial_tab_widget.setStyleSheet(JDXi.UI.Style.TAB_TITLE)
         instrument_widget.setLayout(instrument_layout)
         try:
-            presets_icon = JDXi.UI.IconRegistry.get_icon(
-                JDXi.UI.IconRegistry.MUSIC_NOTE_MULTIPLE, color=JDXi.UI.Style.GREY
+            presets_icon = JDXi.UI.Icon.get_icon(
+                JDXi.UI.Icon.MUSIC_NOTE_MULTIPLE, color=JDXi.UI.Style.GREY
             )
             if presets_icon is None or presets_icon.isNull():
                 raise ValueError("Icon is null")
         except:
-            presets_icon = JDXi.UI.IconRegistry.get_icon(
-                JDXi.UI.IconRegistry.MUSIC, color=JDXi.UI.Style.GREY
+            presets_icon = JDXi.UI.Icon.get_icon(
+                JDXi.UI.Icon.MUSIC, color=JDXi.UI.Style.GREY
             )
         self.partial_tab_widget.addTab(instrument_widget, presets_icon, "Presets")
         self._create_partial_tab_widget(container_layout, self.midi_helper)
@@ -228,8 +228,8 @@ class DigitalSynthEditor(SynthEditor):
         :return: None
         """
 
-        JDXi.UI.ThemeManager.apply_tabs_style(self.partial_tab_widget)
-        JDXi.UI.ThemeManager.apply_editor_style(self.partial_tab_widget)
+        JDXi.UI.Theme.apply_tabs_style(self.partial_tab_widget)
+        JDXi.UI.Theme.apply_editor_style(self.partial_tab_widget)
         self.partial_editors = {}
         # --- Create editor for each partial
         for i in range(1, 4):
@@ -241,7 +241,7 @@ class DigitalSynthEditor(SynthEditor):
                 parent=self,
             )
             self.partial_editors[i] = editor
-            partial_icon = JDXi.UI.IconRegistry.get_icon(
+            partial_icon = JDXi.UI.Icon.get_icon(
                 f"mdi.numeric-{i}-circle-outline", color=JDXi.UI.Style.GREY
             )
             self.partial_tab_widget.addTab(editor, partial_icon, f"Partial {i}")
@@ -251,8 +251,8 @@ class DigitalSynthEditor(SynthEditor):
             self._create_parameter_combo_box,
             self.controls,
         )
-        common_icon = JDXi.UI.IconRegistry.get_icon(
-            JDXi.UI.IconRegistry.COG_OUTLINE, color=JDXi.UI.Style.GREY
+        common_icon = JDXi.UI.Icon.get_icon(
+            JDXi.UI.Icon.COG_OUTLINE, color=JDXi.UI.Style.GREY
         )
         self.partial_tab_widget.addTab(self.common_section, common_icon, "Common")
         self.tone_modify_section = DigitalToneModifySection(
@@ -261,8 +261,8 @@ class DigitalSynthEditor(SynthEditor):
             self._create_parameter_switch,
             self.controls,
         )
-        misc_icon = JDXi.UI.IconRegistry.get_icon(
-             JDXi.UI.IconRegistry.DOTS_HORIZONTAL, color=JDXi.UI.Style.GREY
+        misc_icon = JDXi.UI.Icon.get_icon(
+            JDXi.UI.Icon.DOTS_HORIZONTAL, color=JDXi.UI.Style.GREY
         )
         self.partial_tab_widget.addTab(self.tone_modify_section, misc_icon, "Misc")
         container_layout.addWidget(self.partial_tab_widget)
@@ -639,17 +639,22 @@ class DigitalSynthEditor(SynthEditor):
         # Try to get controls from the oscillator section's controls dictionary
         oscillator_section = self.partial_editors[partial_no].oscillator_tab
         control = None
-        
+
         # First, try to get from controls dictionary (new parameter-based system)
-        if hasattr(oscillator_section, 'controls') and param in oscillator_section.controls:
+        if (
+            hasattr(oscillator_section, "controls")
+            and param in oscillator_section.controls
+        ):
             control = oscillator_section.controls[param]
         # Fallback: try to access pwm_widget (old system, for backward compatibility)
-        elif hasattr(oscillator_section, 'pwm_widget') and oscillator_section.pwm_widget:
+        elif (
+            hasattr(oscillator_section, "pwm_widget") and oscillator_section.pwm_widget
+        ):
             if param == DigitalPartialParam.OSC_PULSE_WIDTH:
                 control = oscillator_section.pwm_widget.pulse_width_control
             elif param == DigitalPartialParam.OSC_PULSE_WIDTH_MOD_DEPTH:
                 control = oscillator_section.pwm_widget.mod_depth_control
-        
+
         if control:
             control.blockSignals(True)
             control.setValue(new_value)
@@ -675,7 +680,7 @@ class DigitalSynthEditor(SynthEditor):
         :return: None
         """
         from jdxi_editor.midi.data.digital.partial import DigitalPartial
-        
+
         param_name = param.name
         partial_switch_map = {
             "PARTIAL1_SWITCH": 1,
@@ -686,7 +691,7 @@ class DigitalSynthEditor(SynthEditor):
         if partial_number is None:
             failures.append(param.name)
             return
-        
+
         # Convert integer to DigitalPartial enum for dictionary lookup
         partial_enum = DigitalPartial(partial_number)
         check_box = self.partials_panel.switches.get(partial_enum)
@@ -719,7 +724,7 @@ class DigitalSynthEditor(SynthEditor):
         :return: None
         """
         from jdxi_editor.midi.data.digital.partial import DigitalPartial
-        
+
         param_name = param.name
         partial_switch_map = {
             "PARTIAL1_SELECT": 1,
@@ -730,7 +735,7 @@ class DigitalSynthEditor(SynthEditor):
         if partial_number is None:
             failures.append(param.name)
             return
-        
+
         # Convert integer to DigitalPartial enum for dictionary lookup
         partial_enum = DigitalPartial(partial_number)
         check_box = self.partials_panel.switches.get(partial_enum)

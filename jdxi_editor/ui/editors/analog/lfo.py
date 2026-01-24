@@ -20,14 +20,16 @@ class AnalogLFOSection(BaseLFOSection):
     DEPTH_SLIDERS = [
         SliderSpec(
             JDXi.Midi.Analog.Param.LFO_PITCH_DEPTH,
-            JDXi.Midi.Analog.Display.Name.LFO_PITCH_DEPTH
+            JDXi.Midi.Analog.Display.Name.LFO_PITCH_DEPTH,
         ),
         SliderSpec(
             JDXi.Midi.Analog.Param.LFO_FILTER_DEPTH,
-            JDXi.Midi.Analog.Display.Name.LFO_FILTER_DEPTH
+            JDXi.Midi.Analog.Display.Name.LFO_FILTER_DEPTH,
         ),
-        SliderSpec(JDXi.Midi.Analog.Param.LFO_AMP_DEPTH,
-                   JDXi.Midi.Analog.Display.Name.LFO_AMP_DEPTH),
+        SliderSpec(
+            JDXi.Midi.Analog.Param.LFO_AMP_DEPTH,
+            JDXi.Midi.Analog.Display.Name.LFO_AMP_DEPTH,
+        ),
     ]
     SWITCH_SPECS = [
         SwitchSpec(
@@ -47,10 +49,13 @@ class AnalogLFOSection(BaseLFOSection):
         ),
     ]
     RATE_FADE_SLIDERS = [
-        SliderSpec(JDXi.Midi.Analog.Param.LFO_RATE,
-                   JDXi.Midi.Analog.Display.Name.LFO_RATE),
-        SliderSpec(JDXi.Midi.Analog.Param.LFO_FADE_TIME,
-                   JDXi.Midi.Analog.Display.Name.LFO_FADE_TIME),
+        SliderSpec(
+            JDXi.Midi.Analog.Param.LFO_RATE, JDXi.Midi.Analog.Display.Name.LFO_RATE
+        ),
+        SliderSpec(
+            JDXi.Midi.Analog.Param.LFO_FADE_TIME,
+            JDXi.Midi.Analog.Display.Name.LFO_FADE_TIME,
+        ),
     ]
 
     def __init__(
@@ -77,17 +82,22 @@ class AnalogLFOSection(BaseLFOSection):
             JDXi.Midi.Analog.Wave.LFO.RANDOM,
         ]
         self.shape_icon_map = {
-            JDXi.Midi.Analog.Wave.LFO.TRI: JDXi.UI.IconRegistry.TRIANGLE_WAVE,
-            JDXi.Midi.Analog.Wave.LFO.SINE: JDXi.UI.IconRegistry.SINE_WAVE,
-            JDXi.Midi.Analog.Wave.LFO.SAW: JDXi.UI.IconRegistry.SAW_WAVE,
-            JDXi.Midi.Analog.Wave.LFO.SQUARE: JDXi.UI.IconRegistry.SQUARE_WAVE,
-            JDXi.Midi.Analog.Wave.LFO.SAMPLE_HOLD: JDXi.UI.IconRegistry.WAVEFORM,
-            JDXi.Midi.Analog.Wave.LFO.RANDOM: JDXi.UI.IconRegistry.RANDOM_WAVE,
+            JDXi.Midi.Analog.Wave.LFO.TRI: JDXi.UI.Icon.TRIANGLE_WAVE,
+            JDXi.Midi.Analog.Wave.LFO.SINE: JDXi.UI.Icon.SINE_WAVE,
+            JDXi.Midi.Analog.Wave.LFO.SAW: JDXi.UI.Icon.SAW_WAVE,
+            JDXi.Midi.Analog.Wave.LFO.SQUARE: JDXi.UI.Icon.SQUARE_WAVE,
+            JDXi.Midi.Analog.Wave.LFO.SAMPLE_HOLD: JDXi.UI.Icon.WAVEFORM,
+            JDXi.Midi.Analog.Wave.LFO.RANDOM: JDXi.UI.Icon.RANDOM_WAVE,
         }
         self.analog: bool = True
-        super().__init__(icon_type=IconType.ADSR, analog=self.analog, send_midi_parameter=send_midi_parameter)
+        super().__init__(
+            icon_type=IconType.ADSR,
+            analog=self.analog,
+            send_midi_parameter=send_midi_parameter,
+        )
         # --- Set LFO shape parameter for Analog
         from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
+
         self.lfo_shape_param: Literal[AnalogParam.LFO_SHAPE] = AnalogParam.LFO_SHAPE
         self.build_widgets()
         self.setup_ui()

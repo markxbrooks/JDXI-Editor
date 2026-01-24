@@ -14,7 +14,6 @@ from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
 from jdxi_editor.midi.data.parameter.analog.name import AnalogDisplayName
 from jdxi_editor.midi.data.parameter.analog.option import AnalogDisplayOptions
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.ui.widgets.pulse_width.pwm import PWMWidget
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from jdxi_editor.ui.widgets.button.waveform.analog import AnalogWaveformButton
@@ -22,6 +21,7 @@ from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.pitch.envelope import PitchEnvelopeWidget
+from jdxi_editor.ui.widgets.pulse_width.pwm import PWMWidget
 from picomidi.sysex.parameter.address import AddressParameter
 
 
@@ -30,7 +30,7 @@ def generate_analog_wave_button(
     waveform: Literal[AnalogOscWave.PULSE, AnalogOscWave.TRIANGLE, AnalogOscWave.SAW],
 ) -> AnalogWaveformButton:
     btn = AnalogWaveformButton(waveform)
-    JDXi.UI.ThemeManager.apply_button_rect_analog(btn)
+    JDXi.UI.Theme.apply_button_rect_analog(btn)
     icon_base64 = generate_waveform_icon(icon_name, JDXi.UI.Style.WHITE, 0.7)
     btn.setIcon(QIcon(base64_to_pixmap(icon_base64)))
     btn.setFixedSize(
@@ -99,14 +99,14 @@ class AnalogOscillatorSection(SectionBaseWidget):
 
         # --- Tab widget to add pitch and PW controls to ---
         self.oscillator_tab_widget = QTabWidget()
-        JDXi.UI.ThemeManager.apply_tabs_style(self.oscillator_tab_widget, analog=True)
+        JDXi.UI.Theme.apply_tabs_style(self.oscillator_tab_widget, analog=True)
         layout.addWidget(self.oscillator_tab_widget)
 
         # --- Tuning and Pitch tab (standardized name matching Digital) ---
         tuning_widget = self._create_tuning_group()
         pitch_widget = self._create_tuning_pitch_widget()
-        tuning_icon = JDXi.UI.IconRegistry.get_icon(
-            JDXi.UI.IconRegistry.MUSIC_NOTE, color=JDXi.UI.Style.GREY
+        tuning_icon = JDXi.UI.Icon.get_icon(
+            JDXi.UI.Icon.MUSIC_NOTE, color=JDXi.UI.Style.GREY
         )
         self.oscillator_tab_widget.addTab(pitch_widget, tuning_icon, "Pitch")
         self.oscillator_tab_widget.addTab(tuning_widget, tuning_icon, "Tuning")
@@ -230,7 +230,7 @@ class AnalogOscillatorSection(SectionBaseWidget):
             controls=self.controls,
             address=self.address,
         )
-        JDXi.UI.ThemeManager.apply_adsr_style(self.pitch_env_widget, analog=True)
+        JDXi.UI.Theme.apply_adsr_style(self.pitch_env_widget, analog=True)
 
         env_group = QGroupBox("Envelope")
         env_group.setProperty("adsr", True)

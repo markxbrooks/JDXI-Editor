@@ -2,18 +2,19 @@
 Digital Filter Section for the JDXI Editor
 """
 
+from PySide6.QtWidgets import QTabWidget, QWidget
+
 from decologr import Decologr as log
-from jdxi_editor.midi.data.digital.filter import DigitalFilterMode, DigitalFilterType, DigitalFilterModeType
-from jdxi_editor.midi.data.parameter.digital.name import DigitalDisplayName
-from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParam
-from jdxi_editor.ui.adsr.type import ADSRType
+from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.ui.editors.param_section import ParameterSectionBase
 from jdxi_editor.ui.editors.widget_specs import SliderSpec
-from jdxi_editor.midi.data.digital.oscillator import WaveformIconType
-from PySide6.QtWidgets import QWidget, QTabWidget
-from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.ui.widgets.editor.helper import (
+    create_adsr_icon,
+    create_envelope_group,
+    create_layout_with_widgets,
+)
 from jdxi_editor.ui.widgets.filter.filter import FilterWidget
-from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets, create_envelope_group, create_adsr_icon
 
 
 class DigitalFilterSection(ParameterSectionBase):
@@ -22,66 +23,123 @@ class DigitalFilterSection(ParameterSectionBase):
     # --- Filter sliders
     #     Note: FILTER_CUTOFF and FILTER_SLOPE are handled by FilterWidget (includes plot)
     PARAM_SPECS = [
-        SliderSpec(DigitalPartialParam.FILTER_RESONANCE, DigitalDisplayName.FILTER_RESONANCE),
-        SliderSpec(DigitalPartialParam.FILTER_CUTOFF_KEYFOLLOW, DigitalDisplayName.FILTER_CUTOFF_KEYFOLLOW),
-        SliderSpec(DigitalPartialParam.FILTER_ENV_VELOCITY_SENSITIVITY, DigitalDisplayName.FILTER_ENV_VELOCITY_SENSITIVITY),
-        SliderSpec(DigitalPartialParam.FILTER_ENV_DEPTH, DigitalDisplayName.FILTER_ENV_DEPTH),
+        SliderSpec(
+            Digital.Param.FILTER_RESONANCE, Digital.Display.Name.FILTER_RESONANCE
+        ),
+        SliderSpec(
+            Digital.Param.FILTER_CUTOFF_KEYFOLLOW,
+            Digital.Display.Name.FILTER_CUTOFF_KEYFOLLOW,
+        ),
+        SliderSpec(
+            Digital.Param.FILTER_ENV_VELOCITY_SENSITIVITY,
+            Digital.Display.Name.FILTER_ENV_VELOCITY_SENSITIVITY,
+        ),
+        SliderSpec(
+            Digital.Param.FILTER_ENV_DEPTH, Digital.Display.Name.FILTER_ENV_DEPTH
+        ),
     ]
-    
+
     # --- Log PARAM_SPECS at class definition time
     _log_param_specs = True
     if _log_param_specs:
-        filter_env_depth_spec = next((s for s in PARAM_SPECS if hasattr(s.param, 'name') and s.param.name == 'FILTER_ENV_DEPTH'), None)
+        filter_env_depth_spec = next(
+            (
+                s
+                for s in PARAM_SPECS
+                if hasattr(s.param, "name") and s.param.name == "FILTER_ENV_DEPTH"
+            ),
+            None,
+        )
         if filter_env_depth_spec:
-            log.message(f"🎯 DigitalFilterSection: FILTER_ENV_DEPTH found in PARAM_SPECS: {filter_env_depth_spec.param}, label: {filter_env_depth_spec.label}")
+            log.message(
+                f"🎯 DigitalFilterSection: FILTER_ENV_DEPTH found in PARAM_SPECS: {filter_env_depth_spec.param}, label: {filter_env_depth_spec.label}"
+            )
         else:
-            log.warning(f"⚠️ DigitalFilterSection: FILTER_ENV_DEPTH NOT found in PARAM_SPECS!")
+            log.warning(
+                f"⚠️ DigitalFilterSection: FILTER_ENV_DEPTH NOT found in PARAM_SPECS!"
+            )
         log.message(f"📋 DigitalFilterSection PARAM_SPECS count: {len(PARAM_SPECS)}")
-        log.message(f"📋 PARAM_SPECS params: {[getattr(s.param, 'name', str(s.param)) for s in PARAM_SPECS]}")
+        log.message(
+            f"📋 PARAM_SPECS params: {[getattr(s.param, 'name', str(s.param)) for s in PARAM_SPECS]}"
+        )
 
     # --- Filter mode buttons
     BUTTON_SPECS = [
-        SliderSpec(DigitalFilterMode.BYPASS, DigitalFilterType.BYPASS, icon_name=WaveformIconType.BYPASS_FILTER),
-        SliderSpec(DigitalFilterMode.LPF, DigitalFilterType.LPF, icon_name=WaveformIconType.LPF_FILTER),
-        SliderSpec(DigitalFilterMode.HPF, DigitalFilterType.HPF, icon_name=WaveformIconType.HPF_FILTER),
-        SliderSpec(DigitalFilterMode.BPF, DigitalFilterType.BPF, icon_name=WaveformIconType.BPF_FILTER),
-        SliderSpec(DigitalFilterMode.PKG, DigitalFilterType.PKG, icon_name=WaveformIconType.LPF_FILTER),
-        SliderSpec(DigitalFilterMode.LPF2, DigitalFilterType.LPF2, icon_name=WaveformIconType.LPF_FILTER),
-        SliderSpec(DigitalFilterMode.LPF3, DigitalFilterType.LPF3, icon_name=WaveformIconType.LPF_FILTER),
-        SliderSpec(DigitalFilterMode.LPF4, DigitalFilterType.LPF4, icon_name=WaveformIconType.LPF_FILTER),
+        SliderSpec(
+            Digital.Filter.Mode.BYPASS,
+            Digital.Filter.FilterType.BYPASS,
+            icon_name=JDXi.UI.Icon.Wave.BYPASS_FILTER,
+        ),
+        SliderSpec(
+            Digital.Filter.Mode.LPF,
+            Digital.Filter.FilterType.LPF,
+            icon_name=JDXi.UI.Icon.Wave.LPF_FILTER,
+        ),
+        SliderSpec(
+            Digital.Filter.Mode.HPF,
+            Digital.Filter.FilterType.HPF,
+            icon_name=JDXi.UI.Icon.Wave.HPF_FILTER,
+        ),
+        SliderSpec(
+            Digital.Filter.Mode.BPF,
+            Digital.Filter.FilterType.BPF,
+            icon_name=JDXi.UI.Icon.Wave.BPF_FILTER,
+        ),
+        SliderSpec(
+            Digital.Filter.Mode.PKG,
+            Digital.Filter.FilterType.PKG,
+            icon_name=JDXi.UI.Icon.Wave.LPF_FILTER,
+        ),
+        SliderSpec(
+            Digital.Filter.Mode.LPF2,
+            Digital.Filter.FilterType.LPF2,
+            icon_name=JDXi.UI.Icon.Wave.LPF_FILTER,
+        ),
+        SliderSpec(
+            Digital.Filter.Mode.LPF3,
+            Digital.Filter.FilterType.LPF3,
+            icon_name=JDXi.UI.Icon.Wave.LPF_FILTER,
+        ),
+        SliderSpec(
+            Digital.Filter.Mode.LPF4,
+            Digital.Filter.FilterType.LPF4,
+            icon_name=JDXi.UI.Icon.Wave.LPF_FILTER,
+        ),
     ]
 
     BUTTON_ENABLE_RULES = {
-        DigitalFilterMode.BYPASS: [],  # disables everything
+        Digital.Filter.Mode.BYPASS: [],  # disables everything
         # --- Other modes: all sliders are enabled (default)
     }
 
     ADSR_SPEC = {
-        ADSRType.ATTACK: DigitalPartialParam.FILTER_ENV_ATTACK_TIME,
-        ADSRType.DECAY: DigitalPartialParam.FILTER_ENV_DECAY_TIME,
-        ADSRType.SUSTAIN: DigitalPartialParam.FILTER_ENV_SUSTAIN_LEVEL,
-        ADSRType.RELEASE: DigitalPartialParam.FILTER_ENV_RELEASE_TIME,
-        ADSRType.PEAK: DigitalPartialParam.FILTER_ENV_DEPTH,
+        Digital.Filter.ADSR.ATTACK: Digital.Param.FILTER_ENV_ATTACK_TIME,
+        Digital.Filter.ADSR.DECAY: Digital.Param.FILTER_ENV_DECAY_TIME,
+        Digital.Filter.ADSR.SUSTAIN: Digital.Param.FILTER_ENV_SUSTAIN_LEVEL,
+        Digital.Filter.ADSR.RELEASE: Digital.Param.FILTER_ENV_RELEASE_TIME,
+        Digital.Filter.ADSR.PEAK: Digital.Param.FILTER_ENV_DEPTH,
     }
-    
+
     # --- Log ADSR_SPEC at class definition time
     if _log_param_specs:
-        peak_param = ADSR_SPEC.get(ADSRType.PEAK)
+        peak_param = ADSR_SPEC.get(Digital.Filter.ADSR.PEAK)
         if peak_param:
-            peak_name = getattr(peak_param, 'name', str(peak_param))
-            log.message(f"🎯 DigitalFilterSection: ADSR_SPEC peak param: {peak_param} (name: {peak_name})")
-            if peak_name == 'FILTER_ENV_DEPTH':
+            peak_name = getattr(peak_param, "name", str(peak_param))
+            log.message(
+                f"🎯 DigitalFilterSection: ADSR_SPEC peak param: {peak_param} (name: {peak_name})"
+            )
+            if peak_name == "FILTER_ENV_DEPTH":
                 log.message(f"✅ ADSR_SPEC peak is FILTER_ENV_DEPTH")
         else:
             log.warning(f"⚠️ DigitalFilterSection: No peak param in ADSR_SPEC!")
         log.message(f"📋 ADSR_SPEC keys: {list(ADSR_SPEC.keys())}")
-    
+
     def build_widgets(self):
         """Override to create FilterWidget with plot"""
         # --- Create FilterWidget first (includes cutoff and slope with plot)
         self.filter_widget = FilterWidget(
-            cutoff_param=DigitalPartialParam.FILTER_CUTOFF,
-            slope_param=DigitalPartialParam.FILTER_SLOPE,
+            cutoff_param=Digital.Param.FILTER_CUTOFF,
+            slope_param=Digital.Param.FILTER_SLOPE,
             midi_helper=self.midi_helper,
             create_parameter_slider=self._create_parameter_slider,
             create_parameter_switch=self._create_parameter_switch,
@@ -89,13 +147,17 @@ class DigitalFilterSection(ParameterSectionBase):
             address=self.address,
         )
         # --- Store filter widget controls
-        self.controls[DigitalPartialParam.FILTER_CUTOFF] = self.filter_widget.cutoff_param_control
-        if hasattr(self.filter_widget, 'slope_param_control'):
-            self.controls[DigitalPartialParam.FILTER_SLOPE] = self.filter_widget.slope_param_control
-        
+        self.controls[Digital.Param.FILTER_CUTOFF] = (
+            self.filter_widget.cutoff_param_control
+        )
+        if hasattr(self.filter_widget, "slope_param_control"):
+            self.controls[Digital.Param.FILTER_SLOPE] = (
+                self.filter_widget.slope_param_control
+            )
+
         # --- Call parent to create other widgets from PARAM_SPECS
         super().build_widgets()
-    
+
     def _create_tab_widget(self):
         """Override to add FilterWidget to Controls tab"""
         self.tab_widget = QTabWidget()
@@ -108,47 +170,55 @@ class DigitalFilterSection(ParameterSectionBase):
         controls_layout = create_layout_with_widgets(all_control_widgets)
         controls_widget.setLayout(controls_layout)
         self.tab_widget.addTab(
-            controls_widget, 
-            JDXi.UI.IconRegistry.get_icon(JDXi.UI.IconRegistry.TUNE, JDXi.UI.Style.GREY), 
-            "Controls"
+            controls_widget,
+            JDXi.UI.Icon.get_icon(JDXi.UI.Icon.TUNE, JDXi.UI.Style.GREY),
+            "Controls",
         )
 
         # --- ADSR tab
         if self.adsr_widget:
-            adsr_group = create_envelope_group("Envelope", adsr_widget=self.adsr_widget, analog=self.analog)
+            adsr_group = create_envelope_group(
+                name="Envelope", adsr_widget=self.adsr_widget, analog=self.analog
+            )
             self.tab_widget.addTab(adsr_group, create_adsr_icon(), "ADSR")
-    
+
     def _on_button_selected(self, button_param):
         """Override to update filter mode in FilterWidget plot and enable/disable plot and ADSR"""
         # --- Call parent to handle button selection
         super()._on_button_selected(button_param)
-        
+
         # --- Determine if bypass is selected
-        is_bypass = button_param == DigitalFilterMode.BYPASS
+        is_bypass = button_param == Digital.Filter.Mode.BYPASS
         enabled = not is_bypass
-        
+
         # --- Update filter mode in FilterWidget plot
-        if hasattr(self, 'filter_widget') and self.filter_widget and hasattr(self.filter_widget, 'plot'):
-            # Map DigitalFilterMode to filter mode string
+        if (
+            hasattr(self, "filter_widget")
+            and self.filter_widget
+            and hasattr(self.filter_widget, "plot")
+        ):
+            # Map Digital.Filter.Mode to filter mode string
             filter_mode_map = {
-                DigitalFilterMode.BYPASS: DigitalFilterModeType.BYPASS,
-                DigitalFilterMode.LPF: DigitalFilterModeType.LPF,
-                DigitalFilterMode.HPF: DigitalFilterModeType.HPF,
-                DigitalFilterMode.BPF: DigitalFilterModeType.BPF,
-                DigitalFilterMode.PKG: DigitalFilterModeType.LPF,  # PKG uses LPF-style plot
-                DigitalFilterMode.LPF2: DigitalFilterModeType.LPF,
-                DigitalFilterMode.LPF3: DigitalFilterModeType.LPF,
-                DigitalFilterMode.LPF4: DigitalFilterModeType.LPF,
+                Digital.Filter.Mode.BYPASS: Digital.Filter.ModeType.BYPASS,
+                Digital.Filter.Mode.LPF: Digital.Filter.ModeType.LPF,
+                Digital.Filter.Mode.HPF: Digital.Filter.ModeType.HPF,
+                Digital.Filter.Mode.BPF: Digital.Filter.ModeType.BPF,
+                Digital.Filter.Mode.PKG: Digital.Filter.ModeType.LPF,  # PKG uses LPF-style plot
+                Digital.Filter.Mode.LPF2: Digital.Filter.ModeType.LPF,
+                Digital.Filter.Mode.LPF3: Digital.Filter.ModeType.LPF,
+                Digital.Filter.Mode.LPF4: Digital.Filter.ModeType.LPF,
             }
-            filter_mode_str = filter_mode_map.get(button_param, DigitalFilterModeType.LPF)
+            filter_mode_str = filter_mode_map.get(
+                button_param, Digital.Filter.ModeType.LPF
+            )
             self.filter_widget.filter_mode = filter_mode_str
-            if hasattr(self.filter_widget.plot, 'set_filter_mode'):
+            if hasattr(self.filter_widget.plot, "set_filter_mode"):
                 self.filter_widget.plot.set_filter_mode(filter_mode_str)
-            
+
             # --- Disable plot display when bypass is selected
             self.filter_widget.plot.enabled = enabled
             self.filter_widget.plot.update()  # Trigger redraw
-        
+
         # --- Enable/disable ADSR widget based on filter mode (like PWM widget)
         if self.adsr_widget:
             self.adsr_widget.setEnabled(enabled)
@@ -161,39 +231,38 @@ class DigitalFilterSection(ParameterSectionBase):
         :param value: int - Filter mode value (0=BYPASS, 1=LPF, 2=HPF, etc.)
         :return: None
         """
-        from jdxi_editor.midi.data.digital.filter import DigitalFilterMode
-        
+
         filter_mode_map = {
-            0: DigitalFilterMode.BYPASS,
-            1: DigitalFilterMode.LPF,
-            2: DigitalFilterMode.HPF,
-            3: DigitalFilterMode.BPF,
-            4: DigitalFilterMode.PKG,
-            5: DigitalFilterMode.LPF2,
-            6: DigitalFilterMode.LPF3,
-            7: DigitalFilterMode.LPF4,
+            0: Digital.Filter.Mode.BYPASS,
+            1: Digital.Filter.Mode.LPF,
+            2: Digital.Filter.Mode.HPF,
+            3: Digital.Filter.Mode.BPF,
+            4: Digital.Filter.Mode.PKG,
+            5: Digital.Filter.Mode.LPF2,
+            6: Digital.Filter.Mode.LPF3,
+            7: Digital.Filter.Mode.LPF4,
         }
-        
+
         selected_filter_mode = filter_mode_map.get(value)
         if selected_filter_mode is None:
             log.warning(f"Unknown filter mode value: {value}")
             return
-        
+
         # --- Enable/disable controls based on filter mode
-        is_bypass = selected_filter_mode == DigitalFilterMode.BYPASS
+        is_bypass = selected_filter_mode == Digital.Filter.Mode.BYPASS
         enabled = not is_bypass
-        
+
         # --- Enable/disable filter controls
         filter_params = [
-            DigitalPartialParam.FILTER_CUTOFF,
-            DigitalPartialParam.FILTER_SLOPE,
-            DigitalPartialParam.FILTER_RESONANCE,
-            DigitalPartialParam.FILTER_CUTOFF_KEYFOLLOW,
-            DigitalPartialParam.FILTER_ENV_VELOCITY_SENSITIVITY,
-            DigitalPartialParam.FILTER_ENV_DEPTH,
+            Digital.Param.FILTER_CUTOFF,
+            Digital.Param.FILTER_SLOPE,
+            Digital.Param.FILTER_RESONANCE,
+            Digital.Param.FILTER_CUTOFF_KEYFOLLOW,
+            Digital.Param.FILTER_ENV_VELOCITY_SENSITIVITY,
+            Digital.Param.FILTER_ENV_DEPTH,
         ]
-        
-        for param in filter_params:
+        # --- TODO: This section seems to disable the filter section, never to be used again
+        """for param in filter_params:
             if param in self.controls:
                 self.controls[param].setEnabled(enabled)
         
@@ -205,24 +274,30 @@ class DigitalFilterSection(ParameterSectionBase):
                 self.filter_widget.slope_param_control.setEnabled(enabled)
             if hasattr(self.filter_widget, 'plot'):
                 self.filter_widget.plot.enabled = enabled
-                self.filter_widget.plot.update()
-        
+                self.filter_widget.plot.update()"""
+
         if self.adsr_widget:
             self.adsr_widget.setEnabled(enabled)
-        
+
         # --- Update filter mode in FilterWidget plot
-        if hasattr(self, 'filter_widget') and self.filter_widget and hasattr(self.filter_widget, 'plot'):
+        if (
+            hasattr(self, "filter_widget")
+            and self.filter_widget
+            and hasattr(self.filter_widget, "plot")
+        ):
             filter_mode_str_map = {
-                DigitalFilterMode.BYPASS: DigitalFilterModeType.BYPASS,
-                DigitalFilterMode.LPF: DigitalFilterModeType.LPF,
-                DigitalFilterMode.HPF: DigitalFilterModeType.HPF,
-                DigitalFilterMode.BPF: DigitalFilterModeType.BPF,
-                DigitalFilterMode.PKG: DigitalFilterModeType.BYPASS,
-                DigitalFilterMode.LPF2: DigitalFilterModeType.BYPASS,
-                DigitalFilterMode.LPF3: DigitalFilterModeType.BYPASS,
-                DigitalFilterMode.LPF4: DigitalFilterModeType.BYPASS,
+                Digital.Filter.Mode.BYPASS: Digital.Filter.ModeType.BYPASS,
+                Digital.Filter.Mode.LPF: Digital.Filter.ModeType.LPF,
+                Digital.Filter.Mode.HPF: Digital.Filter.ModeType.HPF,
+                Digital.Filter.Mode.BPF: Digital.Filter.ModeType.BPF,
+                Digital.Filter.Mode.PKG: Digital.Filter.ModeType.BYPASS,
+                Digital.Filter.Mode.LPF2: Digital.Filter.ModeType.BYPASS,
+                Digital.Filter.Mode.LPF3: Digital.Filter.ModeType.BYPASS,
+                Digital.Filter.Mode.LPF4: Digital.Filter.ModeType.BYPASS,
             }
-            filter_mode_str = filter_mode_str_map.get(selected_filter_mode, DigitalFilterModeType.BYPASS)
+            filter_mode_str = filter_mode_str_map.get(
+                selected_filter_mode, Digital.Filter.ModeType.BYPASS
+            )
             self.filter_widget.filter_mode = filter_mode_str
-            if hasattr(self.filter_widget.plot, 'set_filter_mode'):
+            if hasattr(self.filter_widget.plot, "set_filter_mode"):
                 self.filter_widget.plot.set_filter_mode(filter_mode_str)

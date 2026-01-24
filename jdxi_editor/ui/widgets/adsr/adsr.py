@@ -212,7 +212,7 @@ class ADSR(EnvelopeWidgetBase):
         for control in self._control_widgets:
             control.envelope_changed.connect(self.on_control_changed)
         self.update_controls_from_envelope()
-        JDXi.UI.ThemeManager.apply_adsr_style(self, analog=analog)
+        JDXi.UI.Theme.apply_adsr_style(self, analog=analog)
 
     def on_control_changed(self, change: dict):
         self.envelope.update(change)

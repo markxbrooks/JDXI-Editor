@@ -68,7 +68,7 @@ class VocalFXEditor(BasicEditor):
         self.preset_helper = preset_helper
         self.address = create_vocal_fx_address()
 
-        JDXi.UI.ThemeManager.apply_editor_style(self)
+        JDXi.UI.Theme.apply_editor_style(self)
 
         # Use EditorBaseWidget for consistent scrollable layout structure
         self.base_widget = EditorBaseWidget(parent=self, analog=False)
@@ -87,22 +87,22 @@ class VocalFXEditor(BasicEditor):
 
         # Get tab widget from helper and add tabs
         self.tab_widget = self.editor_helper.get_tab_widget()
-        common_icon = JDXi.UI.IconRegistry.get_icon(
-            JDXi.UI.IconRegistry.COG_OUTLINE, color=JDXi.UI.Style.GREY
+        common_icon = JDXi.UI.Icon.get_icon(
+            JDXi.UI.Icon.COG_OUTLINE, color=JDXi.UI.Style.GREY
         )
         self.tab_widget.addTab(self._create_common_section(), common_icon, "Common")
-        vocal_fx_icon = JDXi.UI.IconRegistry.get_icon(
-            JDXi.UI.IconRegistry.MICROPHONE, color=JDXi.UI.Style.GREY
+        vocal_fx_icon = JDXi.UI.Icon.get_icon(
+            JDXi.UI.Icon.MICROPHONE, color=JDXi.UI.Style.GREY
         )
         self.tab_widget.addTab(
             self._create_vocal_effect_section(), vocal_fx_icon, "Vocal FX"
         )
-        mixer_icon = JDXi.UI.IconRegistry.get_icon(
-            JDXi.UI.IconRegistry.EQUALIZER, color=JDXi.UI.Style.GREY
+        mixer_icon = JDXi.UI.Icon.get_icon(
+            JDXi.UI.Icon.EQUALIZER, color=JDXi.UI.Style.GREY
         )
         self.tab_widget.addTab(self._create_mixer_section(), mixer_icon, "Mixer")
-        auto_pitch_icon = JDXi.UI.IconRegistry.get_icon(
-            JDXi.UI.IconRegistry.MUSIC_NOTE, color=JDXi.UI.Style.GREY
+        auto_pitch_icon = JDXi.UI.Icon.get_icon(
+            JDXi.UI.Icon.MUSIC_NOTE, color=JDXi.UI.Style.GREY
         )
         self.tab_widget.addTab(
             self._create_auto_pitch_section(), auto_pitch_icon, "Auto Pitch"
@@ -126,7 +126,7 @@ class VocalFXEditor(BasicEditor):
 
         # Icons row (standardized across editor tabs) - transfer items to avoid "already has a parent" errors
         icon_row_container = QHBoxLayout()
-        icon_hlayout = JDXi.UI.IconRegistry.create_generic_musical_icon_row()
+        icon_hlayout = JDXi.UI.Icon.create_generic_musical_icon_row()
 
         transfer_layout_items(icon_hlayout, icon_row_container)
         layout.addLayout(icon_row_container)
@@ -184,7 +184,7 @@ class VocalFXEditor(BasicEditor):
 
         # Icons row (standardized across editor tabs) - transfer items to avoid "already has a parent" errors
         icon_row_container = QHBoxLayout()
-        icon_hlayout = JDXi.UI.IconRegistry.create_adsr_icons_row()
+        icon_hlayout = JDXi.UI.Icon.create_adsr_icons_row()
 
         transfer_layout_items(icon_hlayout, icon_row_container)
         layout.addLayout(icon_row_container)
@@ -252,7 +252,7 @@ class VocalFXEditor(BasicEditor):
         vocoder_layout.addLayout(hpf_row)
 
         layout.addWidget(vocoder_group)
-        JDXi.UI.ThemeManager.apply_adsr_style(vocoder_group)
+        JDXi.UI.Theme.apply_adsr_style(vocoder_group)
         layout.addStretch()
         return vocal_effect_section
 
@@ -268,7 +268,7 @@ class VocalFXEditor(BasicEditor):
 
         # Icons row (standardized across editor tabs) - transfer items to avoid "already has a parent" errors
         icon_row_container = QHBoxLayout()
-        icon_hlayout = JDXi.UI.IconRegistry.create_adsr_icons_row()
+        icon_hlayout = JDXi.UI.Icon.create_adsr_icons_row()
 
         transfer_layout_items(icon_hlayout, icon_row_container)
         layout.addLayout(icon_row_container)
@@ -321,7 +321,7 @@ class VocalFXEditor(BasicEditor):
 
         # Icons row (standardized across editor tabs) - transfer items to avoid "already has a parent" errors
         icon_row_container = QHBoxLayout()
-        icon_hlayout = JDXi.UI.IconRegistry.create_adsr_icons_row()
+        icon_hlayout = JDXi.UI.Icon.create_adsr_icons_row()
 
         transfer_layout_items(icon_hlayout, icon_row_container)
         layout.addLayout(icon_row_container)

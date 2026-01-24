@@ -12,7 +12,7 @@ def create_placeholder_icon(
     placeholder_layout = QVBoxLayout(placeholder_widget)
     placeholder_label = QLabel(f"{error_message} {e}")
     placeholder_layout.addWidget(placeholder_label)
-    playlist_icon = JDXi.UI.IconRegistry.get_icon(icon_name, color=JDXi.UI.Style.GREY)
+    playlist_icon = JDXi.UI.Icon.get_icon(icon_name, color=JDXi.UI.Style.GREY)
     return placeholder_widget, playlist_icon
 
 
@@ -22,7 +22,7 @@ def create_placeholder_(e: Exception) -> tuple[QWidget, QIcon]:
     placeholder_layout = QVBoxLayout(placeholder_widget)
     placeholder_label = QLabel(f"Error loading user programs: {e}")
     placeholder_layout.addWidget(placeholder_label)
-    user_programs_icon = JDXi.UI.IconRegistry.get_icon(
+    user_programs_icon = JDXi.UI.Icon.get_icon(
         "mdi.account-music", color=JDXi.UI.Style.GREY
     )
     return placeholder_widget, user_programs_icon

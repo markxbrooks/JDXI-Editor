@@ -12,20 +12,23 @@ from jdxi_editor.midi.data.parameter.analog.values import AnalogDisplayValues
 
 class AnalogWave:
     """Analog Wave"""
+
     LFO: AnalogLFOWaveShape = AnalogLFOWaveShape
     Osc: AnalogOscWave = AnalogOscWave
-    SubOsc: AnalogSubOscType=  AnalogSubOscType
+    SubOsc: AnalogSubOscType = AnalogSubOscType
 
 
 class AnalogDisplay:
     """Analog Display class"""
+
     Name: AnalogDisplayName = AnalogDisplayName
     Values: AnalogDisplayValues = AnalogDisplayOptions
     Options: AnalogDisplayOptions = AnalogDisplayOptions
 
 
-class Analog:
+class JDXiMidiAnalog:
     """Analog Class"""
+
     Param: AnalogParam = AnalogParam
     Display: AnalogDisplay = AnalogDisplay
     Wave: AnalogWave = AnalogWave

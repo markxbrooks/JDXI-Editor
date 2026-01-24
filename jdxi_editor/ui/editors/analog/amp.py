@@ -29,8 +29,14 @@ class AnalogAmpSection(SectionBaseWidget):
 
     AMP_LEVEL_PARAMS = [
         {"param": AnalogParam.AMP_LEVEL, "display": AnalogDisplayName.AMP_LEVEL},
-        {"param": AnalogParam.AMP_LEVEL_KEYFOLLOW, "display": AnalogDisplayName.AMP_LEVEL_KEYFOLLOW},
-        {"param": AnalogParam.AMP_LEVEL_VELOCITY_SENSITIVITY, "display": AnalogDisplayName.AMP_LEVEL_VELOCITY_SENSITIVITY},
+        {
+            "param": AnalogParam.AMP_LEVEL_KEYFOLLOW,
+            "display": AnalogDisplayName.AMP_LEVEL_KEYFOLLOW,
+        },
+        {
+            "param": AnalogParam.AMP_LEVEL_VELOCITY_SENSITIVITY,
+            "display": AnalogDisplayName.AMP_LEVEL_VELOCITY_SENSITIVITY,
+        },
     ]
 
     AMP_ADSR_PARAMS = {
@@ -76,13 +82,16 @@ class AnalogAmpSection(SectionBaseWidget):
     def _create_amp_level_sliders(self):
         """Create sliders for Level, KeyFollow, and Velocity Sensitivity"""
         for entry in self.AMP_LEVEL_PARAMS:
-            slider = self._create_parameter_slider(entry["param"], entry["display"], vertical=True)
+            slider = self._create_parameter_slider(
+                entry["param"], entry["display"], vertical=True
+            )
             self.amp_sliders[entry["param"]] = slider
             self.controls[entry["param"]] = slider
 
     def _create_amp_adsr_group(self):
         """Create amp ADSR envelope using standardized helper"""
         from jdxi_editor.ui.widgets.adsr.adsr import ADSR
+
         self.amp_env_adsr_widget = ADSR(
             attack_param=self.AMP_ADSR_PARAMS[ADSRType.ATTACK],
             decay_param=self.AMP_ADSR_PARAMS[ADSRType.DECAY],
@@ -108,20 +117,26 @@ class AnalogAmpSection(SectionBaseWidget):
         self.layout = self.create_layout()
 
         # --- Level Controls Tab
-        level_controls_layout = create_layout_with_widgets(list(self.amp_sliders.values()))
+        level_controls_layout = create_layout_with_widgets(
+            list(self.amp_sliders.values())
+        )
         level_controls_widget = QWidget()
         level_controls_widget.setLayout(level_controls_layout)
 
-        controls_icon = JDXi.UI.IconRegistry.get_icon(
-            JDXi.UI.IconRegistry.TUNE, color=JDXi.UI.Style.GREY
+        controls_icon = JDXi.UI.Icon.get_icon(
+            JDXi.UI.Icon.TUNE, color=JDXi.UI.Style.GREY
         )
-        self.analog_amp_tab_widget.addTab(level_controls_widget, controls_icon, AnalogDisplayName.CONTROLS)
+        self.analog_amp_tab_widget.addTab(
+            level_controls_widget, controls_icon, AnalogDisplayName.CONTROLS
+        )
 
         # --- ADSR Tab
         adsr_icon = create_adsr_icon()
-        self.analog_amp_tab_widget.addTab(self.amp_adsr_group, adsr_icon, AnalogDisplayName.ADSR)
+        self.analog_amp_tab_widget.addTab(
+            self.amp_adsr_group, adsr_icon, AnalogDisplayName.ADSR
+        )
 
-        JDXi.UI.ThemeManager.apply_tabs_style(self.analog_amp_tab_widget, analog=True)
+        JDXi.UI.Theme.apply_tabs_style(self.analog_amp_tab_widget, analog=True)
 
         # --- Add tab widget to main layout
         self.layout.addWidget(self.analog_amp_tab_widget)

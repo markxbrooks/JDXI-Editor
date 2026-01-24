@@ -186,14 +186,14 @@ class ProgramEditor(BasicEditor):
 
         # Add Programs/Presets tab to main tab widget (base widget contains the scroll area)
         try:
-            programs_presets_icon = JDXi.UI.IconRegistry.get_icon(
-                JDXi.UI.IconRegistry.MUSIC_NOTE_MULTIPLE, color=JDXi.UI.Style.GREY
+            programs_presets_icon = JDXi.UI.Icon.get_icon(
+                JDXi.UI.Icon.MUSIC_NOTE_MULTIPLE, color=JDXi.UI.Style.GREY
             )
             if programs_presets_icon is None or programs_presets_icon.isNull():
                 raise ValueError("Icon is null")
         except:
-            programs_presets_icon = JDXi.UI.IconRegistry.get_icon(
-                JDXi.UI.IconRegistry.MUSIC, color=JDXi.UI.Style.GREY
+            programs_presets_icon = JDXi.UI.Icon.get_icon(
+                JDXi.UI.Icon.MUSIC, color=JDXi.UI.Style.GREY
             )
         self.main_tab_widget.addTab(
             self.base_widget, programs_presets_icon, "Programs & Presets"
@@ -208,7 +208,7 @@ class ProgramEditor(BasicEditor):
                 parent=self,
                 on_program_loaded=self._on_user_program_loaded,
             )
-            user_programs_icon = JDXi.UI.IconRegistry.get_icon(
+            user_programs_icon = JDXi.UI.Icon.get_icon(
                 "mdi.account-music", color=JDXi.UI.Style.GREY
             )
             self.main_tab_widget.addTab(
@@ -244,7 +244,7 @@ class ProgramEditor(BasicEditor):
                 parent=self,
                 on_playlist_changed=self._on_playlist_changed,
             )
-            playlist_icon = JDXi.UI.IconRegistry.get_icon(
+            playlist_icon = JDXi.UI.Icon.get_icon(
                 "mdi.playlist-music", color=JDXi.UI.Style.GREY
             )
             self.main_tab_widget.addTab(self.playlist_widget, playlist_icon, "Playlist")
@@ -277,7 +277,7 @@ class ProgramEditor(BasicEditor):
                 on_refresh_playlist_combo=self._populate_playlist_editor_combo,
                 get_parent_instrument=lambda: self._get_parent_instrument(),
             )
-            playlist_editor_icon = JDXi.UI.IconRegistry.get_icon(
+            playlist_editor_icon = JDXi.UI.Icon.get_icon(
                 "mdi.playlist-edit", color=JDXi.UI.Style.GREY
             )
             self.main_tab_widget.addTab(
@@ -324,14 +324,14 @@ class ProgramEditor(BasicEditor):
         # Note: The preset widget is already created inside ProgramGroupWidget
         # We need to add it to the program_preset_tab_widget
         try:
-            presets_icon = JDXi.UI.IconRegistry.get_icon(
-                JDXi.UI.IconRegistry.MUSIC_NOTE_MULTIPLE, color=JDXi.UI.Style.GREY
+            presets_icon = JDXi.UI.Icon.get_icon(
+                JDXi.UI.Icon.MUSIC_NOTE_MULTIPLE, color=JDXi.UI.Style.GREY
             )
             if presets_icon.isNull():
                 raise ValueError("Icon is null")
         except:
-            presets_icon = JDXi.UI.IconRegistry.get_icon(
-                JDXi.UI.IconRegistry.MUSIC, color=JDXi.UI.Style.GREY
+            presets_icon = JDXi.UI.Icon.get_icon(
+                JDXi.UI.Icon.MUSIC, color=JDXi.UI.Style.GREY
             )
         self.program_group_widget.program_preset_tab_widget.addTab(
             self.program_group_widget.preset, presets_icon, "Presets"
