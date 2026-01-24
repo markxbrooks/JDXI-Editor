@@ -30,24 +30,24 @@ class DigitalCommonSection(SectionBaseWidget):
         SwitchSpec(
             Digital.Common.PORTAMENTO_SWITCH,
             Digital.Display.Name.PORTAMENTO_SWITCH,
-            DigitalDisplayOptions.PORTAMENTO_SWITCH,
+            Digital.Display.Options.PORTAMENTO_SWITCH,
         ),
         SwitchSpec(
             Digital.Common.PORTAMENTO_MODE,
             Digital.Display.Name.PORTAMENTO_MODE,
-            DigitalDisplayOptions.PORTAMENTO_MODE,
+            Digital.Display.Options.PORTAMENTO_MODE,
         ),
         SwitchSpec(
             Digital.Common.LEGATO_SWITCH,
             Digital.Display.Name.LEGATO_SWITCH,
-            DigitalDisplayOptions.LEGATO_SWITCH,
+            Digital.Display.Options.LEGATO_SWITCH,
         ),
         ]
     COMBO_BOXES = [
         ComboBoxSpec(
             Digital.Common.OCTAVE_SHIFT,
             Digital.Display.Name.OCTAVE_SHIFT,
-            DigitalDisplayOptions.OCTAVE_SHIFT,
+            Digital.Display.Options.OCTAVE_SHIFT,
             [61, 62, 63, 64, 65, 66, 67]
         ),
         ]
@@ -55,22 +55,22 @@ class DigitalCommonSection(SectionBaseWidget):
         SwitchSpec(
             Digital.Common.MONO_SWITCH,
             Digital.Display.Name.MONO_SWITCH,
-            DigitalDisplayOptions.MONO_SWITCH,
+            Digital.Display.Options.MONO_SWITCH,
         ),
         SwitchSpec(
             Digital.Common.RING_SWITCH,
             Digital.Display.Name.RING_SWITCH,
-            DigitalDisplayOptions.RING_SWITCH,
+            Digital.Display.Options.RING_SWITCH,
         ),
         SwitchSpec(
             Digital.Common.UNISON_SWITCH,
             Digital.Display.Name.UNISON_SWITCH,
-            DigitalDisplayOptions.UNISON_SWITCH,
+            Digital.Display.Options.UNISON_SWITCH,
         ),
         SwitchSpec(
             Digital.Common.UNISON_SIZE,
             Digital.Display.Name.UNISON_SIZE,
-            DigitalDisplayOptions.UNISON_SIZE,
+            Digital.Display.Options.UNISON_SIZE,
         ),
     ]
 
