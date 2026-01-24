@@ -7,7 +7,7 @@ from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.digital.filter import DigitalFilterMode
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.ui.editors.widget_specs import SliderSpec, SwitchSpec
+from jdxi_editor.ui.editors.widget_specs import SliderSpec, SwitchSpec, ComboBoxSpec
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (
@@ -17,10 +17,6 @@ from jdxi_editor.ui.widgets.editor.helper import (
 )
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from picomidi.sysex.parameter.address import AddressParameter
-
-
-class ComboBoxSpec:
-    pass
 
 
 class ParameterSectionBase(SectionBaseWidget):
