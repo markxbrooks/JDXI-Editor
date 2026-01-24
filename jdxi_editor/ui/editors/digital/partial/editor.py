@@ -49,6 +49,7 @@ from jdxi_editor.midi.data.digital.oscillator import DigitalOscWave
 from jdxi_editor.midi.data.digital.partial import DIGITAL_PARTIAL_NAMES
 from jdxi_editor.midi.data.parameter.digital import DigitalCommonParam
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParam
+from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.synth.type import JDXiSynth
 from jdxi_editor.ui.editors.digital.partial.amp import DigitalAmpSection
@@ -63,8 +64,8 @@ class DigitalPartialEditor(PartialEditor):
     """Editor for a single Digital Synth partial"""
 
     SYNTH_MAP = {
-        1: JDXiSynth.DIGITAL_SYNTH_1,
-        2: JDXiSynth.DIGITAL_SYNTH_2,
+        1: JDXi.Synth.DIGITAL_SYNTH_1,
+        2: JDXi.Synth.DIGITAL_SYNTH_2,
     }
 
     PARTIAL_ADDRESS_MAP = {
@@ -74,10 +75,10 @@ class DigitalPartialEditor(PartialEditor):
     }
 
     BIPOLAR_PARAMETERS = {
-        JDXi.Midi.Digital.Param.OSC_DETUNE,
-        JDXi.Midi.Digital.Param.OSC_PITCH,
-        JDXi.Midi.Digital.Param.OSC_PITCH_ENV_DEPTH,
-        JDXi.Midi.Digital.Param.AMP_PAN,
+        Digital.Param.OSC_DETUNE,
+        Digital.Param.OSC_PITCH,
+        Digital.Param.OSC_PITCH_ENV_DEPTH,
+        Digital.Param.AMP_PAN,
     }
 
     def __init__(
@@ -242,13 +243,13 @@ class DigitalPartialEditor(PartialEditor):
         :return: dict mapping LFO depth parameters to their control widgets
         """
         lfo_depth_params = {
-            JDXi.Midi.Digital.Param.LFO_PITCH_DEPTH,
-            JDXi.Midi.Digital.Param.LFO_FILTER_DEPTH,
-            JDXi.Midi.Digital.Param.LFO_AMP_DEPTH,
-            JDXi.Midi.Digital.Param.LFO_PAN_DEPTH,
-            JDXi.Midi.Digital.Param.MOD_LFO_PITCH_DEPTH,
-            JDXi.Midi.Digital.Param.MOD_LFO_FILTER_DEPTH,
-            JDXi.Midi.Digital.Param.MOD_LFO_AMP_DEPTH,
+            Digital.Param.LFO_PITCH_DEPTH,
+            Digital.Param.LFO_FILTER_DEPTH,
+            Digital.Param.LFO_AMP_DEPTH,
+            Digital.Param.LFO_PAN_DEPTH,
+            Digital.Param.MOD_LFO_PITCH_DEPTH,
+            Digital.Param.MOD_LFO_FILTER_DEPTH,
+            Digital.Param.MOD_LFO_AMP_DEPTH,
         }
         return {
             param: self.controls[param]
@@ -264,12 +265,12 @@ class DigitalPartialEditor(PartialEditor):
         enabled = mode != 0  # BYPASS == 0
 
         params = (
-            JDXi.Midi.Digital.Param.FILTER_CUTOFF,
-            JDXi.Midi.Digital.Param.FILTER_RESONANCE,
-            JDXi.Midi.Digital.Param.FILTER_CUTOFF_KEYFOLLOW,
-            JDXi.Midi.Digital.Param.FILTER_ENV_VELOCITY_SENSITIVITY,
-            JDXi.Midi.Digital.Param.FILTER_ENV_DEPTH,
-            JDXi.Midi.Digital.Param.FILTER_SLOPE,
+            Digital.Param.FILTER_CUTOFF,
+            Digital.Param.FILTER_RESONANCE,
+            Digital.Param.FILTER_CUTOFF_KEYFOLLOW,
+            Digital.Param.FILTER_ENV_VELOCITY_SENSITIVITY,
+            Digital.Param.FILTER_ENV_DEPTH,
+            Digital.Param.FILTER_SLOPE,
         )
 
         for param in params:
@@ -291,7 +292,7 @@ class DigitalPartialEditor(PartialEditor):
             selected.setStyleSheet(JDXi.UI.Style.BUTTON_RECT_ACTIVE)
 
         if not self.send_midi_parameter(
-            JDXi.Midi.Digital.Param.OSC_WAVE, waveform.value
+            Digital.Param.OSC_WAVE, waveform.value
         ):
             log.warning(f"Failed to set waveform: {waveform.name}")
 
