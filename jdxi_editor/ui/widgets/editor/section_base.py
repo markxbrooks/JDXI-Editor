@@ -193,6 +193,12 @@ class SectionBaseWidget(QWidget):
             for spec in specs
         ]
 
+    def _build_combo_boxes(self, specs: list["ComboBoxSpec"]):
+        return [
+            self._create_parameter_combo_box(spec.param, spec.label, spec.options, spec.values)
+            for spec in specs
+        ]
+
     def _build_switches(self, specs: list["SwitchSpec"]):
         return [
             self._create_parameter_switch(spec.param, spec.label, spec.options)
@@ -203,4 +209,7 @@ class SectionBaseWidget(QWidget):
         pass
 
     def _create_parameter_switch(self, param, label, options) -> QWidget:
+        pass
+
+    def _create_parameter_combo_box(self, param, label, options, values):
         pass

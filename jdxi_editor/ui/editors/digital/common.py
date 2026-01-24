@@ -9,7 +9,7 @@ from PySide6.QtWidgets import QHBoxLayout
 from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParam
 from jdxi_editor.midi.data.parameter.digital.name import DigitalDisplayName
 from jdxi_editor.midi.data.parameter.digital.option import DigitalDisplayOptions
-from jdxi_editor.ui.editors.widget_specs import SliderSpec, SwitchSpec
+from jdxi_editor.ui.editors.widget_specs import SliderSpec, SwitchSpec, ComboBoxSpec
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
@@ -44,6 +44,36 @@ class DigitalCommonSection(SectionBaseWidget):
             DigitalCommonParam.LEGATO_SWITCH,
             DigitalDisplayName.LEGATO_SWITCH,
             DigitalDisplayOptions.LEGATO_SWITCH,
+        ),
+        ]
+    COMBO_BOXES = [
+        ComboBoxSpec(
+            DigitalCommonParam.OCTAVE_SHIFT,
+            DigitalDisplayName.OCTAVE_SHIFT,
+            DigitalDisplayOptions.OCTAVE_SHIFT,
+            [61, 62, 63, 64, 65, 66, 67]
+        ),
+        ]
+    OTHER_SWITCHES = [
+        SwitchSpec(
+            DigitalCommonParam.MONO_SWITCH,
+            DigitalDisplayName.MONO_SWITCH,
+            DigitalDisplayOptions.MONO_SWITCH,
+        ),
+        SwitchSpec(
+            DigitalCommonParam.RING_SWITCH,
+            DigitalDisplayName.RING_SWITCH,
+            DigitalDisplayOptions.RING_SWITCH,
+        ),
+        SwitchSpec(
+            DigitalCommonParam.UNISON_SWITCH,
+            DigitalDisplayName.UNISON_SWITCH,
+            DigitalDisplayOptions.UNISON_SWITCH,
+        ),
+        SwitchSpec(
+            DigitalCommonParam.UNISON_SIZE,
+            DigitalDisplayName.UNISON_SIZE,
+            DigitalDisplayOptions.UNISON_SIZE,
         ),
     ]
 
@@ -90,37 +120,14 @@ class DigitalCommonSection(SectionBaseWidget):
             self.legato_switch,
         ) = self._build_switches(self.PORTAMENTO_SWITCHES)
 
+        (self.octave_shift_switch,) = self._build_combo_boxes(self.COMBO_BOXES)
         # --- Other switches
-        self.octave_shift_switch = self._create_parameter_combo_box(
-            DigitalCommonParam.OCTAVE_SHIFT,
-            DigitalDisplayName.OCTAVE_SHIFT,
-            DigitalDisplayOptions.OCTAVE_SHIFT,
-            values=[61, 62, 63, 64, 65, 66, 67],
-        )
-
-        self.mono_switch = self._create_parameter_switch(
-            DigitalCommonParam.MONO_SWITCH,
-            DigitalDisplayName.MONO_SWITCH,
-            DigitalDisplayOptions.MONO_SWITCH,
-        )
-
-        self.ring_switch = self._create_parameter_switch(
-            DigitalCommonParam.RING_SWITCH,
-            DigitalDisplayName.RING_SWITCH,
-            DigitalDisplayOptions.RING_SWITCH,
-        )
-
-        self.unison_switch = self._create_parameter_switch(
-            DigitalCommonParam.UNISON_SWITCH,
-            DigitalDisplayName.UNISON_SWITCH,
-            DigitalDisplayOptions.UNISON_SWITCH,
-        )
-
-        self.unison_size = self._create_parameter_switch(
-            DigitalCommonParam.UNISON_SIZE,
-            DigitalDisplayName.UNISON_SIZE,
-            DigitalDisplayOptions.UNISON_SIZE,
-        )
+        (
+         self.mono_switch,
+         self.ring_switch,
+         self.unison_switch,
+         self.unison_size)\
+            = self._build_switches(self.OTHER_SWITCHES)
 
     def setup_ui(self) -> None:
         layout = self.get_layout()
