@@ -23,6 +23,14 @@ from picomidi.sysex.parameter.address import AddressParameter
 
 class AnalogOscillatorSection(SectionBaseWidget):
     """Analog Oscillator Section"""
+    
+    SWITCH_SPECS = [
+        SwitchSpec(
+            Analog.Param.SUB_OSCILLATOR_TYPE,
+            Analog.Display.Name.SUB_OSCILLATOR_TYPE,
+            Analog.Display.Options.SUB_OSCILLATOR_TYPE,
+        ),
+    ]
 
     def __init__(
         self,
