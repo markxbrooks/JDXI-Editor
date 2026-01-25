@@ -210,7 +210,7 @@ class DigitalSynthEditor(SynthEditor):
             JDXi.UI.Dimensions.EDITOR_DIGITAL.SPACING
         )  # Minimal spacing instead of stretch
         self.tab_widget.setStyleSheet(JDXi.UI.Style.TAB_TITLE)
-        self.tab_widget.addTab(instrument_widget, presets_icon, "Presets")
+        self._add_tab(key=Digital.Tab.PRESETS, widget=instrument_widget)
         self._setup_tabs(container_layout, self.midi_helper)
 
     def set_style(self):
@@ -259,30 +259,29 @@ class DigitalSynthEditor(SynthEditor):
                 parent=self,
             )
             self.partial_editors[i] = editor
-            partial_icon = JDXi.UI.Icon.get_icon(
-                f"mdi.numeric-{i}-circle-outline", color=JDXi.UI.Style.GREY
-            )
-            self.tab_widget.addTab(editor, partial_icon, f"Partial {i}")
+            # Use tab definitions for partials
+            if i == 1:
+                self._add_tab(key=Digital.Tab.PARTIAL_1, widget=editor)
+            elif i == 2:
+                self._add_tab(key=Digital.Tab.PARTIAL_2, widget=editor)
+            elif i == 3:
+                self._add_tab(key=Digital.Tab.PARTIAL_3, widget=editor)
+        
         self.common_section = DigitalCommonSection(
             self._create_parameter_slider,
             self._create_parameter_switch,
             self._create_parameter_combo_box,
             self.controls,
         )
-        common_icon = JDXi.UI.Icon.get_icon(
-            JDXi.UI.Icon.COG_OUTLINE, color=JDXi.UI.Style.GREY
-        )
-        self.tab_widget.addTab(self.common_section, common_icon, "Common")
+        self._add_tab(key=Digital.Tab.COMMON, widget=self.common_section)
+        
         self.tone_modify_section = DigitalToneModifySection(
             self._create_parameter_slider,
             self._create_parameter_combo_box,
             self._create_parameter_switch,
             self.controls,
         )
-        misc_icon = JDXi.UI.Icon.get_icon(
-            JDXi.UI.Icon.DOTS_HORIZONTAL, color=JDXi.UI.Style.GREY
-        )
-        self.tab_widget.addTab(self.tone_modify_section, misc_icon, "Misc")
+        self._add_tab(key=Digital.Tab.MISC, widget=self.tone_modify_section)
         container_layout.addWidget(self.tab_widget)
 
     def _on_partial_state_changed(

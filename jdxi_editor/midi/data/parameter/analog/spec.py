@@ -35,10 +35,48 @@ class AnalogTab(TabDefinitionMixin, Enum):
         self.icon = icon
 
 
+class AnalogFilterTab(TabDefinitionMixin, Enum):
+    """Definition of Analog Filter Section Tabs"""
+
+    CONTROLS = ("controls", "Controls", JDXiUIIconRegistry.TUNE)
+    ADSR = ("adsr", "ADSR", WaveformType.ADSR)
+
+    def __init__(self, key: str, label: str, icon: Any):
+        self.key = key
+        self.label = label
+        self.icon = icon
+
+
+class AnalogAmpTab(TabDefinitionMixin, Enum):
+    """Definition of Analog Amp Section Tabs"""
+
+    CONTROLS = ("controls", "Controls", JDXiUIIconRegistry.TUNE)
+    ADSR = ("adsr", "ADSR", WaveformType.ADSR)
+
+    def __init__(self, key: str, label: str, icon: Any):
+        self.key = key
+        self.label = label
+        self.icon = icon
+
+
+class AnalogOscillatorTab(TabDefinitionMixin, Enum):
+    """Definition of Analog Oscillator Section Tabs"""
+
+    PITCH = ("pitch", "Pitch", JDXiUIIconRegistry.MUSIC_NOTE)
+    TUNING = ("tuning", "Tuning", JDXiUIIconRegistry.MUSIC_NOTE)
+    PULSE_WIDTH = ("pulse_width", "Pulse Width", WaveformType.SQUARE)
+
+    def __init__(self, key: str, label: str, icon: Any):
+        self.key = key
+        self.label = label
+        self.icon = icon
+
+
 class AnalogAmp:
     """Analog Amp"""
 
     ADSR: ADSRType = ADSRType
+    Tab: AnalogAmpTab = AnalogAmpTab
 
 
 class AnalogFilter:
@@ -48,6 +86,7 @@ class AnalogFilter:
     # ModeType: DigitalFilterModeType = DigitalFilterModeType
     FilterType: AnalogFilterType = AnalogFilterType
     ADSR: ADSRType = ADSRType
+    Tab: AnalogFilterTab = AnalogFilterTab
 
 
 class AnalogWave:
@@ -57,6 +96,7 @@ class AnalogWave:
     Osc: AnalogWaveOsc = AnalogWaveOsc
     SubOsc: AnalogSubOscType = AnalogSubOscType
     WaveType: WaveformType = WaveformType
+    Tab: AnalogOscillatorTab = AnalogOscillatorTab
 
 
 class AnalogDisplay:

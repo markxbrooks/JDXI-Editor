@@ -141,21 +141,24 @@ class BaseOscillatorSection(ParameterSectionBase):
 
     def _create_tab_widget(self):
         """Create tab widget for Rate/Rate Ctrl and Depths"""
+        from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
+        
         tab_widget = QTabWidget()
-
+        self.tab_widget = tab_widget  # Set for _add_tab to use
+        
         rate_widget = self._create_rate_widget()
-        # --- Create icons
-        rate_icon = JDXi.UI.Icon.get_icon(
-            JDXi.UI.Icon.CLOCK, color=JDXi.UI.Style.GREY
-        )
-        depths_icon = JDXi.UI.Icon.get_icon(
-            JDXi.UI.Icon.WAVEFORM, color=JDXi.UI.Style.GREY
-        )
-        tab_widget.addTab(rate_widget, rate_icon, self.controls_tab_label)
         depths_widget = self._create_depths_widget()
-        tab_widget.addTab(
-            depths_widget, depths_icon, self.adsr_tab_label
-        )
+        
+        # Use tab definitions
+        self._add_tab(key=Digital.Wave.OscillatorTab.CONTROLS, widget=rate_widget)
+        # Update label if it differs from default
+        if tab_widget.tabText(0) != self.controls_tab_label:
+            tab_widget.setTabText(0, self.controls_tab_label)
+        
+        self._add_tab(key=Digital.Wave.OscillatorTab.ADSR, widget=depths_widget)
+        # Update label if it differs from default
+        if tab_widget.tabText(1) != self.adsr_tab_label:
+            tab_widget.setTabText(1, self.adsr_tab_label)
         JDXi.UI.Theme.apply_tabs_style(tab_widget, analog=self.analog)
         return tab_widget
 

@@ -178,18 +178,14 @@ class DigitalFilterSection(ParameterSectionBase):
         all_control_widgets = [self.filter_widget] + self.control_widgets
         controls_layout = create_layout_with_widgets(all_control_widgets)
         controls_widget.setLayout(controls_layout)
-        self.tab_widget.addTab(
-            controls_widget,
-            JDXi.UI.Icon.get_icon(JDXi.UI.Icon.TUNE, JDXi.UI.Style.GREY),
-            "Controls",
-        )
+        self._add_tab(key=Digital.Filter.Tab.CONTROLS, widget=controls_widget)
 
         # --- ADSR tab
         if self.adsr_widget:
             adsr_group = create_envelope_group(
                 name="Envelope", adsr_widget=self.adsr_widget, analog=self.analog
             )
-            self.tab_widget.addTab(adsr_group, create_adsr_icon(), "ADSR")
+            self._add_tab(key=Digital.Filter.Tab.ADSR, widget=adsr_group)
 
     def _on_button_selected(self, button_param):
         """Override to update filter mode in FilterWidget plot and enable/disable plot and ADSR"""

@@ -51,7 +51,6 @@ class AnalogAmpSection(SectionBaseWidget):
     ):
         self.midi_helper = midi_helper
         self.address = address
-        self.controls = controls
         self._create_parameter_slider = create_parameter_slider
 
         # Dynamic widgets storage
@@ -62,6 +61,8 @@ class AnalogAmpSection(SectionBaseWidget):
         self.layout = None
 
         super().__init__(icons_row_type=IconType.ADSR, analog=True)
+        # Set controls after super().__init__() to avoid it being overwritten
+        self.controls = controls or {}
 
         self.build_widgets()
         self.setup_ui()
@@ -136,18 +137,10 @@ class AnalogAmpSection(SectionBaseWidget):
         level_controls_widget = QWidget()
         level_controls_widget.setLayout(controls_layout)
 
-        controls_icon = JDXi.UI.Icon.get_icon(
-            JDXi.UI.Icon.TUNE, color=JDXi.UI.Style.GREY
-        )
-        self.tab_widget.addTab(
-            level_controls_widget, controls_icon, AnalogDisplayName.CONTROLS
-        )
+        self._add_tab(key=Analog.Amp.Tab.CONTROLS, widget=level_controls_widget)
 
         # --- ADSR Tab
-        adsr_icon = create_adsr_icon()
-        self.tab_widget.addTab(
-            self.amp_adsr_group, adsr_icon, AnalogDisplayName.ADSR
-        )
+        self._add_tab(key=Analog.Amp.Tab.ADSR, widget=self.amp_adsr_group)
 
         JDXi.UI.Theme.apply_tabs_style(self.tab_widget, analog=True)
 

@@ -17,6 +17,7 @@ from jdxi_editor.ui.widgets.editor.helper import (
     create_envelope_group,
     create_layout_with_widgets,
 )
+from jdxi_editor.midi.data.parameter.digital.spec import TabDefinitionMixin
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from picomidi.sysex.parameter.address import AddressParameter
 
@@ -54,7 +55,6 @@ class ParameterSectionBase(SectionBaseWidget):
         analog: bool = False,
     ):
         self.midi_helper = midi_helper
-        self.controls = controls or {}
         self.address = address
         self.send_midi_parameter = send_midi_parameter
 
@@ -68,6 +68,8 @@ class ParameterSectionBase(SectionBaseWidget):
         self.button_widgets = {}
 
         super().__init__(icons_row_type=icons_row_type, analog=analog)
+        # Set controls after super().__init__() to avoid it being overwritten
+        self.controls = controls or {}
 
         self.build_widgets()
         self.setup_ui()
@@ -353,6 +355,52 @@ class ParameterSectionBase(SectionBaseWidget):
         self._create_tab_widget()
         layout.addWidget(self.tab_widget)
         layout.addStretch()
+
+    def _add_tab(
+        self,
+        *,
+        key: TabDefinitionMixin,
+        widget: QWidget,
+    ) -> None:
+        """Add a tab using TabDefinitionMixin pattern"""
+        from jdxi_editor.midi.data.digital.oscillator import WaveformType
+        
+        # Handle both regular icons and generated waveform icons
+        waveform_type_values = {
+            WaveformType.ADSR,
+            WaveformType.UPSAW,
+            WaveformType.SQUARE,
+            WaveformType.PWSQU,
+            WaveformType.TRIANGLE,
+            WaveformType.SINE,
+            WaveformType.SAW,
+            WaveformType.SPSAW,
+            WaveformType.PCM,
+            WaveformType.NOISE,
+            WaveformType.LPF_FILTER,
+            WaveformType.HPF_FILTER,
+            WaveformType.BYPASS_FILTER,
+            WaveformType.BPF_FILTER,
+            WaveformType.FILTER_SINE,
+        }
+        
+        # Handle icon - could be a string (qtawesome icon name) or WaveformType value
+        if isinstance(key.icon, str) and key.icon in waveform_type_values:
+            # Use generated icon for waveform types
+            icon = JDXi.UI.Icon.get_generated_icon(key.icon)
+        elif isinstance(key.icon, str) and key.icon.startswith("mdi."):
+            # Direct qtawesome icon name (e.g., "mdi.numeric-1-circle-outline")
+            icon = JDXi.UI.Icon.get_icon(key.icon, color=JDXi.UI.Style.GREY)
+        else:
+            # Use regular icon from registry
+            icon = JDXi.UI.Icon.get_icon(key.icon, color=JDXi.UI.Style.GREY)
+        
+        self.tab_widget.addTab(
+            widget,
+            icon,
+            key.label,
+        )
+        setattr(self, key.attr_name, widget)
 
     def _create_tab_widget(self):
         """Create tab widget with controls and optional ADSR"""

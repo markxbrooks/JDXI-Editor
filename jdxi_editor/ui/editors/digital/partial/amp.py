@@ -99,15 +99,11 @@ class DigitalAmpSection(ParameterSectionBase):
         controls_layout.addLayout(pan_layout)
 
         controls_widget.setLayout(controls_layout)
-        self.tab_widget.addTab(
-            controls_widget,
-            JDXi.UI.Icon.get_icon(JDXi.UI.Icon.TUNE, JDXi.UI.Style.GREY),
-            "Controls",
-        )
+        self._add_tab(key=Digital.Amp.Tab.CONTROLS, widget=controls_widget)
 
         # --- ADSR tab if any
         if self.adsr_widget:
             adsr_group = create_envelope_group(
                 "Envelope", adsr_widget=self.adsr_widget, analog=self.analog
             )
-            self.tab_widget.addTab(adsr_group, create_adsr_icon(), "ADSR")
+            self._add_tab(key=Digital.Amp.Tab.ADSR, widget=adsr_group)

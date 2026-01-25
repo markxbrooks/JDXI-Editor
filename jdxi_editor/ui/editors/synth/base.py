@@ -410,9 +410,42 @@ class SynthBase(QWidget):
         key: TabDefinitionMixin,
         widget: QWidget,
     ) -> None:
+        # Handle both regular icons and generated waveform icons
+        from jdxi_editor.midi.data.digital.oscillator import WaveformType
+        
+        # Check if icon is a WaveformType value (string that matches WaveformType attributes)
+        waveform_type_values = {
+            WaveformType.ADSR,
+            WaveformType.UPSAW,
+            WaveformType.SQUARE,
+            WaveformType.PWSQU,
+            WaveformType.TRIANGLE,
+            WaveformType.SINE,
+            WaveformType.SAW,
+            WaveformType.SPSAW,
+            WaveformType.PCM,
+            WaveformType.NOISE,
+            WaveformType.LPF_FILTER,
+            WaveformType.HPF_FILTER,
+            WaveformType.BYPASS_FILTER,
+            WaveformType.BPF_FILTER,
+            WaveformType.FILTER_SINE,
+        }
+        
+        # Handle icon - could be a string (qtawesome icon name) or WaveformType value
+        if isinstance(key.icon, str) and key.icon in waveform_type_values:
+            # Use generated icon for waveform types
+            icon = JDXi.UI.Icon.get_generated_icon(key.icon)
+        elif isinstance(key.icon, str) and key.icon.startswith("mdi."):
+            # Direct qtawesome icon name (e.g., "mdi.numeric-1-circle-outline")
+            icon = JDXi.UI.Icon.get_icon(key.icon, color=JDXi.UI.Style.GREY)
+        else:
+            # Use regular icon from registry
+            icon = JDXi.UI.Icon.get_icon(key.icon, color=JDXi.UI.Style.GREY)
+        
         self.tab_widget.addTab(
             widget,
-            JDXi.UI.Icon.get_icon(key.icon, color=JDXi.UI.Style.GREY),
+            icon,
             key.label,
         )
         setattr(self, key.attr_name, widget)

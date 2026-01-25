@@ -241,11 +241,7 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         controls_widget = QWidget()
         controls_layout = create_layout_with_widgets(self.control_widgets)
         controls_widget.setLayout(controls_layout)
-        self.tab_widget.addTab(
-            controls_widget,
-            JDXi.UI.Icon.get_icon(JDXi.UI.Icon.TUNE, JDXi.UI.Style.GREY),
-            "Controls",
-        )
+        self._add_tab(key=Digital.Wave.Tab.CONTROLS, widget=controls_widget)
 
         # Pulse Width tab
         if hasattr(self, "pwm_widget") and self.pwm_widget:
@@ -256,9 +252,7 @@ class DigitalOscillatorSection(BaseOscillatorSection):
             pw_layout.addWidget(self.pwm_widget)
             pw_layout.addStretch()
             pw_group.setLayout(pw_layout)
-            # Use square wave icon for PWM tab
-            pw_icon = JDXi.UI.Icon.get_generated_icon(Digital.Wave.WaveType.SQUARE)
-            self.tab_widget.addTab(pw_group, pw_icon, "Pulse Width")
+            self._add_tab(key=Digital.Wave.Tab.PULSE_WIDTH, widget=pw_group)
 
         # Pitch Envelope tab
         if hasattr(self, "pitch_env_widget") and self.pitch_env_widget:
@@ -269,7 +263,7 @@ class DigitalOscillatorSection(BaseOscillatorSection):
             pitch_env_layout.addWidget(self.pitch_env_widget)
             pitch_env_layout.addStretch()
             pitch_env_group.setLayout(pitch_env_layout)
-            self.tab_widget.addTab(pitch_env_group, create_adsr_icon(), "Pitch Env")
+            self._add_tab(key=Digital.Wave.Tab.PITCH_ENV, widget=pitch_env_group)
 
         # PCM tab
         if hasattr(self, "pcm_wave_gain") and hasattr(self, "pcm_wave_number"):
@@ -280,16 +274,14 @@ class DigitalOscillatorSection(BaseOscillatorSection):
             pcm_layout.addWidget(self.pcm_wave_number)
             pcm_layout.addStretch()
             pcm_group.setLayout(pcm_layout)
-            # Use PCM wave icon for PCM tab
-            pcm_icon = JDXi.UI.Icon.get_generated_icon(Digital.Wave.WaveType.PCM)
-            self.tab_widget.addTab(pcm_group, pcm_icon, "PCM")
+            self._add_tab(key=Digital.Wave.Tab.PCM, widget=pcm_group)
 
         # ADSR tab (if any)
         if self.adsr_widget:
             adsr_group = create_envelope_group(
                 "Envelope", adsr_widget=self.adsr_widget, analog=self.analog
             )
-            self.tab_widget.addTab(adsr_group, create_adsr_icon(), "ADSR")
+            self._add_tab(key=Digital.Wave.Tab.ADSR, widget=adsr_group)
 
     def _initialize_button_states(self):
         """Override to skip initialization until after all widgets are created"""

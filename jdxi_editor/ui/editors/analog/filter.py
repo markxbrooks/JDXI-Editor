@@ -73,10 +73,12 @@ class AnalogFilterSection(SectionBaseWidget):
         self.send_control_change: Callable = send_control_change
         self.midi_helper: MidiIOHelper = midi_helper
         self.address: RolandSysExAddress = address
-        self.controls: dict = controls
         self.filter_mode_buttons: dict = {}  # Dictionary to store filter mode buttons
 
         super().__init__(icons_row_type=IconType.ADSR, analog=True)
+        # Set controls after super().__init__() to avoid it being overwritten
+        self.controls = controls or {}
+
         self.build_widgets()
         self.setup_ui()
 
@@ -104,17 +106,9 @@ class AnalogFilterSection(SectionBaseWidget):
         """create tab widget"""
         self.tab_widget = QTabWidget()
         # --- Filter Controls ---
-        controls_icon = JDXi.UI.Icon.get_icon(
-            JDXi.UI.Icon.TUNE, color=JDXi.UI.Style.GREY
-        )
-        self.tab_widget.addTab(
-            self.filter_controls_group, controls_icon, "Controls"
-        )
+        self._add_tab(key=Analog.Filter.Tab.CONTROLS, widget=self.filter_controls_group)
         # --- Filter ADSR ---
-        adsr_icon = create_adsr_icon()
-        self.tab_widget.addTab(
-            self.adsr_env_group, adsr_icon, "ADSR"
-        )
+        self._add_tab(key=Analog.Filter.Tab.ADSR, widget=self.adsr_env_group)
 
     def _create_filter_controls_row(self) -> QHBoxLayout:
         """Filter controls row with individual buttons"""

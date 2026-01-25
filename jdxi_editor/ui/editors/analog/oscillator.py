@@ -10,7 +10,6 @@ from PySide6.QtWidgets import QGroupBox, QHBoxLayout, QTabWidget, QVBoxLayout, Q
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.analog.oscillator import AnalogWaveOsc
-from jdxi_editor.midi.data.digital.oscillator import WaveformType
 from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.analog.helpers import generate_analog_wave_button, generate_analog_waveform_icon_name
@@ -53,10 +52,11 @@ class AnalogOscillatorSection(SectionBaseWidget):
         self.wave_buttons = wave_buttons
         self.midi_helper = midi_helper
         self.address = address
-        self.controls = controls
         self.analog = True
 
         super().__init__(icons_row_type=IconType.OSCILLATOR, analog=True)
+        # Set controls after super().__init__() to avoid it being overwritten
+        self.controls = controls or {}
         self.build_widgets()
         self.setup_ui()
 
@@ -80,16 +80,12 @@ class AnalogOscillatorSection(SectionBaseWidget):
         # --- Tab widget to add pitch and PW controls to ---
         JDXi.UI.Theme.apply_tabs_style(self.oscillator_tab_widget, analog=True)
         layout.addWidget(self.oscillator_tab_widget)
-        tuning_icon = JDXi.UI.Icon.get_icon(
-            JDXi.UI.Icon.MUSIC_NOTE, color=JDXi.UI.Style.GREY
-        )
-        self.oscillator_tab_widget.addTab(self.pitch_widget, tuning_icon, "Pitch")
-        self.oscillator_tab_widget.addTab(self.tuning_widget, tuning_icon, "Tuning")
+        self._add_tab(key=Analog.Wave.Tab.PITCH, widget=self.pitch_widget)
+        self._add_tab(key=Analog.Wave.Tab.TUNING, widget=self.tuning_widget)
 
         # --- Pulse Width tab ---
         pw_group = self._create_pw_group()
-        pw_icon = JDXi.UI.Icon.get_generated_icon(name="square")
-        self.oscillator_tab_widget.addTab(pw_group, pw_icon, "Pulse Width")
+        self._add_tab(key=Analog.Wave.Tab.PULSE_WIDTH, widget=pw_group)
 
         layout.addStretch()
 

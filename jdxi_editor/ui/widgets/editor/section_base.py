@@ -40,6 +40,7 @@ from PySide6.QtWidgets import QHBoxLayout, QPushButton, QVBoxLayout, QWidget
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.midi.data.parameter.digital.spec import TabDefinitionMixin
 from jdxi_editor.ui.adsr.spec import ADSRStage, ADSRSpec
 from jdxi_editor.ui.editors.widget_specs import SliderSpec
 from jdxi_editor.ui.widgets.editor.helper import transfer_layout_items, create_envelope_group
@@ -217,6 +218,63 @@ class SectionBaseWidget(QWidget):
         Subclasses can override either setup_ui() or init_ui().
         """
         self.setup_ui()
+
+    def _add_tab(
+        self,
+        *,
+        key: TabDefinitionMixin,
+        widget: QWidget,
+    ) -> None:
+        """Add a tab using TabDefinitionMixin pattern"""
+        from jdxi_editor.midi.data.digital.oscillator import WaveformType
+        
+        # Handle both regular icons and generated waveform icons
+        waveform_type_values = {
+            WaveformType.ADSR,
+            WaveformType.UPSAW,
+            WaveformType.SQUARE,
+            WaveformType.PWSQU,
+            WaveformType.TRIANGLE,
+            WaveformType.SINE,
+            WaveformType.SAW,
+            WaveformType.SPSAW,
+            WaveformType.PCM,
+            WaveformType.NOISE,
+            WaveformType.LPF_FILTER,
+            WaveformType.HPF_FILTER,
+            WaveformType.BYPASS_FILTER,
+            WaveformType.BPF_FILTER,
+            WaveformType.FILTER_SINE,
+        }
+        
+        # Find the tab widget (could be tab_widget or oscillator_tab_widget, etc.)
+        tab_widget = None
+        if hasattr(self, 'tab_widget') and self.tab_widget is not None:
+            tab_widget = self.tab_widget
+        elif hasattr(self, 'oscillator_tab_widget') and self.oscillator_tab_widget is not None:
+            tab_widget = self.oscillator_tab_widget
+        else:
+            from PySide6.QtWidgets import QTabWidget
+            self.tab_widget = QTabWidget()
+            tab_widget = self.tab_widget
+        
+        # Handle icon - could be a string (qtawesome icon name) or WaveformType value
+        if isinstance(key.icon, str) and key.icon in waveform_type_values:
+            # Use generated icon for waveform types
+            icon = JDXi.UI.Icon.get_generated_icon(key.icon)
+        elif isinstance(key.icon, str) and key.icon.startswith("mdi."):
+            # Direct qtawesome icon name (e.g., "mdi.numeric-1-circle-outline")
+            icon = JDXi.UI.Icon.get_icon(key.icon, color=JDXi.UI.Style.GREY)
+        else:
+            # Use regular icon from registry
+            icon = JDXi.UI.Icon.get_icon(key.icon, color=JDXi.UI.Style.GREY)
+        
+        tab_widget.addTab(
+            widget,
+            icon,
+            key.label,
+        )
+        setattr(self, key.attr_name, widget)
 
     def create_layout(self):
         """create main rows layout"""
