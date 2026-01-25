@@ -13,7 +13,7 @@ DrumKitMessage
 # Set pad parameter
 >>> msg = DrumKitMessage(
 >>>     section=DrumKitSection.get_pad_offset(36),  # Pad C1
->>>     param=DrumPadParam.WAVE.STATUS,
+>>>     param=DrumPadParam.WAVE_SAW.STATUS,
 >>>     value=1,  # Wave number
 >>> )
 """

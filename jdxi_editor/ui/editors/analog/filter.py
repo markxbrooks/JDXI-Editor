@@ -55,7 +55,7 @@ class AnalogFilterSection(SectionBaseWidget):
         :param controls: dict[AddressParameter, QWidget] controls to add to
         :param address: RolandSysExAddress
         """
-        self.analog_filter_tab_widget: QTabWidget | None = None
+        self.tab_widget: QTabWidget | None = None
         self.filter_resonance = None
         self._create_parameter_slider = create_parameter_slider
         self._create_parameter_switch = create_parameter_switch
@@ -67,33 +67,43 @@ class AnalogFilterSection(SectionBaseWidget):
         self.filter_mode_buttons = {}  # Dictionary to store filter mode buttons
 
         super().__init__(icons_row_type=IconType.ADSR, analog=True)
+        self.build_widgets()
         self.setup_ui()
+
+    def build_widgets(self):
+        """build widgets"""
+        self._create_tab_widget()
+        self.filter_controls_group = self._create_filter_controls_group()
+        self.adsr_env_group = self._create_filter_adsr_env_group()
 
     def setup_ui(self):
         """Setup the UI (standardized method name matching Digital Filter)"""
         layout = self.get_layout()
-
-        self.analog_filter_tab_widget = QTabWidget()
-        JDXi.UI.Theme.apply_tabs_style(self.analog_filter_tab_widget, analog=True)
+        JDXi.UI.Theme.apply_tabs_style(self.tab_widget, analog=True)
 
         # --- Filter Selection Buttons ---
         filter_row = self._create_filter_controls_row()
         layout.addLayout(filter_row)
-        layout.addWidget(self.analog_filter_tab_widget)
+        layout.addWidget(self.tab_widget)
+
+        layout.addSpacing(JDXi.UI.Style.SPACING)
+        layout.addStretch()
+
+    def _create_tab_widget(self):
+        """create tab widget"""
+        self.tab_widget = QTabWidget()
         # --- Filter Controls ---
         controls_icon = JDXi.UI.Icon.get_icon(
             JDXi.UI.Icon.TUNE, color=JDXi.UI.Style.GREY
         )
-        self.analog_filter_tab_widget.addTab(
-            self._create_filter_controls_group(), controls_icon, "Controls"
+        self.tab_widget.addTab(
+            self.filter_controls_group, controls_icon, "Controls"
         )
         # --- Filter ADSR ---
         adsr_icon = create_adsr_icon()
-        self.analog_filter_tab_widget.addTab(
-            self._create_filter_adsr_env_group(), adsr_icon, "ADSR"
+        self.tab_widget.addTab(
+            self.adsr_env_group, adsr_icon, "ADSR"
         )
-        layout.addSpacing(JDXi.UI.Style.SPACING)
-        layout.addStretch()
 
     def _create_filter_controls_row(self) -> QHBoxLayout:
         """Filter controls row with individual buttons"""
@@ -108,8 +118,8 @@ class AnalogFilterSection(SectionBaseWidget):
 
         # Map filter modes to icon names
         filter_icon_map = {
-            AnalogFilterType.BYPASS: "mdi.power",  # Power/off icon for bypass
-            AnalogFilterType.LPF: "ri.filter-3-fill",  # Filter icon for LPF
+            AnalogFilterType.BYPASS: JDXi.UI.Icon.POWER,  # Power/off icon for bypass
+            AnalogFilterType.LPF: JDXi.UI.Icon.FILTER,  # Filter icon for LPF
         }
 
         widgets = [filter_label]
@@ -117,7 +127,7 @@ class AnalogFilterSection(SectionBaseWidget):
             btn = QPushButton(filter_mode.name)
             btn.setCheckable(True)
             # Add icon
-            icon_name = filter_icon_map.get(filter_mode, "ri.filter-3-fill")
+            icon_name = filter_icon_map.get(filter_mode, JDXi.UI.Icon.FILTER)
             icon = qta.icon(
                 icon_name,
                 color=JDXi.UI.Style.WHITE,

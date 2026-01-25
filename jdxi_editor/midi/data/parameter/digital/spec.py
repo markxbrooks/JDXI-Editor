@@ -52,10 +52,10 @@ class TabDefinitionMixin:
 class DigitalTab(TabDefinitionMixin, Enum):
     """Definition of Digital Tabs"""
 
-    OSCILLATOR = ("oscillator", "Oscillator", JDXiUIIconRegistry.TRIANGLE_WAVE)
+    OSCILLATOR = ("oscillator", "Oscillator", JDXiUIIconRegistry.WAVE_TRIANGLE)
     FILTER = ("filter", "Filter", JDXiUIIconRegistry.FILTER)
     AMP = ("amp", "Amp", JDXiUIIconRegistry.AMPLIFIER)
-    LFO = ("lfo", "LFO", JDXiUIIconRegistry.SINE_WAVE)
+    LFO = ("lfo", "LFO", JDXiUIIconRegistry.WAVE_SINE)
     MODLFO = ("mod_lfo", "Mod LFO", JDXiUIIconRegistry.WAVEFORM)
 
     def __init__(self, key: str, label: str, icon: Any):

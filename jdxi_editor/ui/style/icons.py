@@ -19,6 +19,17 @@ class JDXiUIIconRegistry:
     """Centralized icon definitions and retrieval"""
 
     Wave: WaveformType = WaveformType
+    # Waveform/Synth icons
+    WAVE_TRIANGLE = "mdi.triangle-wave"
+    WAVE_SINE = "mdi.sine-wave"
+    WAVE_SAW: str = "mdi.sawtooth-wave"
+    WAVE_SQUARE: str = "mdi.square-wave"
+    WAVE_RANDOM: str = "mdi.wave"
+    WAVEFORM: str = "mdi.waveform"
+    FILTER = "ri.filter-3-fill"
+    POWER: str = "mdi.power"
+    AMPLIFIER = "mdi.amplifier"
+
     # Action icons
     CLEAR = "ei.broom"
     RUN = "msc.run"
@@ -109,17 +120,6 @@ class JDXiUIIconRegistry:
     SERVER_PROCESS = "msc.server-process"
     REPORT: str = "msc.report"
 
-    # Waveform/Synth icons
-    TRIANGLE_WAVE = "mdi.triangle-wave"
-    SINE_WAVE = "mdi.sine-wave"
-    FILTER = "ri.filter-3-fill"
-    AMPLIFIER = "mdi.amplifier"
-    WAVEFORM = "mdi.waveform"
-
-    SAW_WAVE: str = "mdi.sawtooth-wave"
-    SQUARE_WAVE: str = "mdi.square-wave"
-    WAVEFORM: str = "mdi.waveform"
-    RANDOM_WAVE: str = "mdi.wave"
 
     @staticmethod
     def get_icon(

@@ -23,10 +23,10 @@ class AnalogTab(TabDefinitionMixin, Enum):
     """Analog tab class"""
 
     PRESETS = ("presets", "Presets", JDXiUIIconRegistry.MUSIC_NOTE_MULTIPLE)
-    OSCILLATOR = ("oscillator", "Oscillator", JDXiUIIconRegistry.TRIANGLE_WAVE)
+    OSCILLATOR = ("oscillator", "Oscillator", JDXiUIIconRegistry.WAVE_TRIANGLE)
     FILTER = ("filter", "Filter", JDXiUIIconRegistry.FILTER)
     AMP = ("amp", "Amp", JDXiUIIconRegistry.AMPLIFIER)
-    LFO = ("lfo", "LFO", JDXiUIIconRegistry.SINE_WAVE)
+    LFO = ("lfo", "LFO", JDXiUIIconRegistry.WAVE_SINE)
     COMMON = ("common", "Common", JDXiUIIconRegistry.COG_OUTLINE)
 
     def __init__(self, key: str, label: str, icon: Any):

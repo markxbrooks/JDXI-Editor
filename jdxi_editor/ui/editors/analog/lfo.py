@@ -82,12 +82,12 @@ class AnalogLFOSection(BaseLFOSection):
             JDXi.Midi.Analog.Wave.LFO.RANDOM,
         ]
         self.shape_icon_map = {
-            JDXi.Midi.Analog.Wave.LFO.TRI: JDXi.UI.Icon.TRIANGLE_WAVE,
-            JDXi.Midi.Analog.Wave.LFO.SINE: JDXi.UI.Icon.SINE_WAVE,
-            JDXi.Midi.Analog.Wave.LFO.SAW: JDXi.UI.Icon.SAW_WAVE,
-            JDXi.Midi.Analog.Wave.LFO.SQUARE: JDXi.UI.Icon.SQUARE_WAVE,
+            JDXi.Midi.Analog.Wave.LFO.TRI: JDXi.UI.Icon.WAVE_TRIANGLE,
+            JDXi.Midi.Analog.Wave.LFO.SINE: JDXi.UI.Icon.WAVE_SINE,
+            JDXi.Midi.Analog.Wave.LFO.SAW: JDXi.UI.Icon.WAVE_SAW,
+            JDXi.Midi.Analog.Wave.LFO.SQUARE: JDXi.UI.Icon.WAVE_SQUARE,
             JDXi.Midi.Analog.Wave.LFO.SAMPLE_HOLD: JDXi.UI.Icon.WAVEFORM,
-            JDXi.Midi.Analog.Wave.LFO.RANDOM: JDXi.UI.Icon.RANDOM_WAVE,
+            JDXi.Midi.Analog.Wave.LFO.RANDOM: JDXi.UI.Icon.WAVE_RANDOM,
         }
         self.analog: bool = True
         super().__init__(
