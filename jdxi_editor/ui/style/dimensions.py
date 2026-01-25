@@ -33,6 +33,7 @@ class Margins:
 
 
 class Dimensions:
+    """Dimensions"""
     X: int = 0
     Y: int = 0
     WIDTH: int = 0
@@ -46,6 +47,8 @@ class Dimensions:
 
     INIT_WIDTH: Optional[int] = None
     INIT_HEIGHT: Optional[int] = None
+
+    MARGINS: tuple = (5, 5, 5, 5)
 
     @classmethod
     def right(cls) -> int:
@@ -183,6 +186,7 @@ class AnalogEditorDimensions(EditorDimensions):
     MIN_HEIGHT = 330
     WIDTH = 950
     HEIGHT = 600
+    MARGINS = (1, 1, 1, 1)
 
 
 class LEDDisplayDimensions(Dimensions):

@@ -317,9 +317,9 @@ class DigitalOscillatorSection(BaseOscillatorSection):
             first_param = self.BUTTON_SPECS[0].param
             self._on_button_selected(first_param)
 
-    def _create_buttons(self):
+    def _create_waveform_buttons(self):
         """Override to create waveform buttons with custom icon generation"""
-        self.wave_buttons = {}
+        self.waveform_buttons = {}
         self.wave_layout_widgets = []
 
         for spec in self.BUTTON_SPECS:
@@ -344,7 +344,7 @@ class DigitalOscillatorSection(BaseOscillatorSection):
             btn.clicked.connect(lambda _, w=wave: self._on_button_selected(w))
             btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
 
-            self.wave_buttons[wave] = btn
+            self.waveform_buttons[wave] = btn
             self.button_widgets[wave] = btn
             self.controls[Digital.Param.OSC_WAVE] = btn
             self.wave_layout_widgets.append(btn)

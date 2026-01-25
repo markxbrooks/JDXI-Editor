@@ -35,16 +35,21 @@ Usage Example:
 
 from typing import Any, Callable, Literal, Optional
 
+from PySide6.QtCore import QSize
+from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QHBoxLayout, QPushButton, QVBoxLayout, QWidget
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
+from jdxi_editor.midi.data.digital.filter import DigitalFilterMode
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.data.parameter.digital.spec import TabDefinitionMixin
 from jdxi_editor.ui.adsr.spec import ADSRStage, ADSRSpec
 from jdxi_editor.ui.editors.widget_specs import SliderSpec
 from jdxi_editor.ui.widgets.editor.helper import transfer_layout_items, create_envelope_group
 from jdxi_editor.ui.widgets.editor.icon_type import IconType
+from jdxi_editor.ui.image.utils import base64_to_pixmap
+from jdxi_editor.ui.image.waveform import generate_waveform_icon
 
 
 class SectionBaseWidget(QWidget):
@@ -60,6 +65,8 @@ class SectionBaseWidget(QWidget):
     SLIDER_GROUPS: dict[str, list[SliderSpec]] = {}
     BUTTON_ENABLE_RULES: dict[Any, list[str]] = {}
     ENVELOPE_WIDGET_FACTORIES: list[Callable] = []
+    PARAM_SPECS: list = []  # list of SliderSpec / SwitchSpec / ComboBoxSpec
+    BUTTON_SPECS: list = []  # optional waveform/mode/shape buttons
 
     def __init__(
         self,
@@ -133,6 +140,85 @@ class SectionBaseWidget(QWidget):
             row.addWidget(w)
         row.addStretch()
         self.get_layout().addLayout(row)
+        
+    def _create_waveform_buttons(self):
+        """Create mode/waveform/shape buttons from BUTTON_SPECS"""
+
+        for spec in self.BUTTON_SPECS:
+            # --- Handle both SliderSpec (has 'label') and other specs (may have 'name')
+            button_label = getattr(spec, "label", getattr(spec, "name", "Button"))
+            icon_name_str = getattr(spec, "icon_name", None)
+
+            # --- Create button
+            btn = QPushButton(button_label)
+            btn.setCheckable(True)
+            btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
+
+            # --- Create icon if icon_name is provided
+            if icon_name_str:
+                icon = None
+                try:
+                    # Try to get the WaveformIconType value (it's a class with string constants)
+                    from jdxi_editor.midi.data.digital.oscillator import (
+                        WaveformType,
+                    )
+
+                    # Check if icon_name_str matches a WaveformIconType attribute
+                    icon_type_value = getattr(WaveformType, icon_name_str, None)
+                    if icon_type_value is not None:
+                        # Use generate_waveform_icon directly for waveform/filter icons
+                        icon_base64 = generate_waveform_icon(
+                            icon_type_value, JDXi.UI.Style.WHITE, 1.0
+                        )
+                        pixmap = base64_to_pixmap(icon_base64)
+                        if pixmap and not pixmap.isNull():
+                            icon = QIcon(pixmap)
+                except (AttributeError, KeyError, TypeError):
+                    pass
+
+                # If not a waveform icon, try registry or QTA
+                if icon is None or icon.isNull():
+                    try:
+                        # Try to get icon from registry (which also uses generate_waveform_icon)
+                        icon = JDXi.UI.Icon.get_generated_icon(icon_name_str)
+                    except (AttributeError, KeyError):
+                        try:
+                            # Try to create from QTA icon name
+                            from jdxi_editor.ui.widgets.editor.helper import (
+                                create_icon_from_qta,
+                            )
+
+                            icon = create_icon_from_qta(icon_name_str)
+                        except:
+                            icon = None
+
+                if icon and not icon.isNull():
+                    btn.setIcon(icon)
+                    btn.setIconSize(
+                        QSize(
+                            JDXi.UI.Dimensions.LFOIcon.WIDTH,
+                            JDXi.UI.Dimensions.LFOIcon.HEIGHT,
+                        )
+                    )
+
+            btn.setFixedSize(
+                JDXi.UI.Dimensions.WAVEFORM_ICON.WIDTH,
+                JDXi.UI.Dimensions.WAVEFORM_ICON.HEIGHT,
+            )
+
+            btn.clicked.connect(lambda _, b=spec.param: self._on_button_selected(b))
+            self.button_widgets[spec.param] = btn
+            # Only store in controls if it's a parameter enum, not a mode enum (like DigitalFilterMode)
+            if not isinstance(spec.param, DigitalFilterMode):
+                self.controls[spec.param] = btn
+
+        # For compatibility with code that expects filter_mode_buttons (DigitalFilterSection)
+        # or wave_buttons (DigitalOscillatorSection), create an alias
+        if hasattr(self, "BUTTON_SPECS") and self.BUTTON_SPECS:
+            # Check if this is a filter section by checking the first param type
+            first_param = self.BUTTON_SPECS[0].param
+            if isinstance(first_param, DigitalFilterMode):
+                self.filter_mode_buttons = self.button_widgets
 
     def _add_icon_row(self) -> None:
         """Add the appropriate icon row based on icon_type"""
@@ -314,4 +400,7 @@ class SectionBaseWidget(QWidget):
         pass
 
     def _create_parameter_combo_box(self, param, label, options, values):
+        pass
+
+    def _on_button_selected(self, b):
         pass

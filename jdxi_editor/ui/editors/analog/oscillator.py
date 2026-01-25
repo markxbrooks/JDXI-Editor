@@ -2,7 +2,7 @@
 Analog Oscillator Section
 """
 
-from typing import Callable, Any
+from typing import Callable
 
 from PySide6.QtWidgets import QGroupBox, QHBoxLayout, QTabWidget, QWidget
 
@@ -142,7 +142,7 @@ class AnalogOscillatorSection(SectionBaseWidget):
         Setup the UI (standardized method name matching Digital Oscillator)
         :return: None
         """
-        layout = self.get_layout(margins=(1, 1, 1, 1))
+        layout = self.get_layout(margins=JDXi.UI.Dimensions.EDITOR_ANALOG.MARGINS)
         # --- Waveform buttons ---
         self.waveform_button_layout = self._create_wave_layout()
         layout.addLayout(self.waveform_button_layout)
@@ -168,7 +168,7 @@ class AnalogOscillatorSection(SectionBaseWidget):
 
         :return: QHBoxLayout
         """
-        # Get buttons in order for layout
+        # --- Get buttons in order for layout
         waveform_buttons_list = list(self.waveform_buttons.values())
         waveform_buttons_list.append(self.sub_oscillator_type_switch)
         wave_layout = create_layout_with_widgets(waveform_buttons_list)
