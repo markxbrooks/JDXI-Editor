@@ -799,7 +799,7 @@ class DigitalSynthEditor(SynthEditor):
             log.warning(f"Partial editor {partial_number} not found")
             return
 
-        wave_buttons = self.partial_editors[partial_number].oscillator_tab.wave_buttons
+        wave_buttons = self.partial_editors[partial_number].oscillator_tab.waveform_buttons
 
         # --- Reset all buttons to default style
         for btn in wave_buttons.values():

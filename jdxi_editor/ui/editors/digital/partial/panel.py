@@ -269,11 +269,11 @@ class DigitalPartialPanel(PartialEditor):
 
     def _on_waveform_selected(self, waveform: DigitalWaveOsc) -> None:
         """on waveform selected"""
-        for btn in self.oscillator_tab.wave_buttons.values():
+        for btn in self.oscillator_tab.waveform_buttons.values():
             btn.setChecked(False)
             btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
 
-        selected = self.oscillator_tab.wave_buttons.get(waveform)
+        selected = self.oscillator_tab.waveform_buttons.get(waveform)
         if selected:
             selected.setChecked(True)
             selected.setStyleSheet(JDXi.UI.Style.BUTTON_RECT_ACTIVE)
